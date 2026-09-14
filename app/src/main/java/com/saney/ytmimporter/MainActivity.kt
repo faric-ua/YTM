@@ -98,7 +98,7 @@ class MainActivity : Activity() {
         actions.addView(button("3. Знайти") { searchAll() })
         actions.addView(button("4. Створити") { createPlaylist() })
         actions.addView(button("Відкрити в ютм") { openInYtm() })
-        actions.addView(button("Копіювати заміни") { copyReplacements() })
+        actions.addView(button("Заміни") { showReplacementLog() })
         scroll.addView(actions)
         root.addView(scroll)
 
@@ -594,9 +594,13 @@ class MainActivity : Activity() {
         val candidates = track.candidates
         val labels = mutableListOf<String>()
 
-        candidates.forEach { c ->
+        candidates.forEachIndexed { index, candidate ->
+            val selectedMark =
+                if (candidate.videoId == track.selectedVideoId) "✓ " else ""
+
             labels +=
-                "${(c.score * 100).roundToInt()}%  ${c.title}\n${c.channelTitle}"
+                "$selectedMark${index + 1}. ${(candidate.score * 100).roundToInt()}%  " +
+                    "${candidate.title}\n${candidate.channelTitle}"
         }
 
         labels += "🔗 Вставити YouTube / YouTube Music URL"
@@ -604,13 +608,17 @@ class MainActivity : Activity() {
 
         AlertDialog.Builder(this)
             .setTitle("${track.originalArtist} — ${track.originalTitle}")
+            .setMessage(
+                if (candidates.isEmpty()) {
+                    "Автоматичних кандидатів немає. Можна вставити посилання вручну."
+                } else {
+                    "Натисніть кандидата, щоб перевірити його або вибрати вручну."
+                }
+            )
             .setItems(labels.toTypedArray()) { _, which ->
                 when {
                     which < candidates.size -> {
-                        applyCandidate(track, candidates[which], manual = true)
-                        track.status = TrackStatus.MATCHED
-                        adapter.notifyDataSetChanged()
-                        updateSummary()
+                        showCandidateDialog(track, candidates[which])
                     }
 
                     which == candidates.size -> {
@@ -621,14 +629,80 @@ class MainActivity : Activity() {
                         track.status = TrackStatus.SKIPPED
                         track.selectedVideoId = null
                         track.selectedTitle = null
+                        track.selectedChannel = null
                         track.manuallySelected = true
                         adapter.notifyDataSetChanged()
                         updateSummary()
+                        status(
+                            "Пропущено: ${track.originalArtist} — ${track.originalTitle}"
+                        )
                     }
                 }
             }
             .setNegativeButton("Закрити", null)
             .show()
+    }
+
+    private fun showCandidateDialog(
+        track: Track,
+        candidate: SearchCandidate
+    ) {
+        val scorePercent = (candidate.score * 100).roundToInt()
+        val isCurrent = candidate.videoId == track.selectedVideoId
+
+        AlertDialog.Builder(this)
+            .setTitle(candidate.title)
+            .setMessage(
+                buildString {
+                    append("Канал: ${candidate.channelTitle}\n")
+                    append("Збіг: $scorePercent%")
+                    if (isCurrent) {
+                        append("\n\n✓ Зараз вибрано для цього треку")
+                    }
+                }
+            )
+            .setNegativeButton("Назад") { _, _ ->
+                showTrackDialog(track)
+            }
+            .setNeutralButton("Відкрити в YTM") { _, _ ->
+                openCandidateInYtm(candidate.videoId)
+            }
+            .setPositiveButton(
+                if (isCurrent) "Залишити" else "Використати"
+            ) { _, _ ->
+                applyCandidate(track, candidate, manual = true)
+                track.status = TrackStatus.MATCHED
+                adapter.notifyDataSetChanged()
+                updateSummary()
+
+                status(
+                    "Вибрано вручну: ${track.originalArtist} — " +
+                        "${track.originalTitle} → ${candidate.title}"
+                )
+            }
+            .show()
+    }
+
+    private fun openCandidateInYtm(videoId: String) {
+        val uri = Uri.parse("https://music.youtube.com/watch?v=$videoId")
+
+        val ytmIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+            setPackage("com.google.android.apps.youtube.music")
+        }
+
+        val openedInYtm =
+            runCatching {
+                startActivity(ytmIntent)
+                true
+            }.getOrDefault(false)
+
+        if (openedInYtm) return
+
+        runCatching {
+            startActivity(Intent(Intent.ACTION_VIEW, uri))
+        }.onFailure {
+            toast("Не вдалося відкрити кандидат у YouTube Music")
+        }
     }
 
     private fun showPasteUrlDialog(track: Track) {
@@ -747,42 +821,131 @@ class MainActivity : Activity() {
         toast("Посилання на плейлист скопійовано")
     }
 
-    private fun copyReplacements() {
+    private fun showReplacementLog() {
         val p = playlist ?: return toast("Немає імпортованого плейлиста")
 
-        val replacements =
-            p.tracks
-                .filter { it.manuallySelected }
-                .joinToString("\n") { t ->
-                    val replacement =
-                        when {
-                            t.status == TrackStatus.SKIPPED -> "[пропущено]"
-                            t.selectedTitle == "Ручне посилання" ->
-                                "[ручне YouTube-посилання]"
-                            !t.selectedTitle.isNullOrBlank() ->
-                                t.selectedTitle!!
-                            else ->
-                                "[не знайдено]"
-                        }
+        val problemTracks =
+            p.tracks.filter { track ->
+                track.manuallySelected ||
+                    track.status == TrackStatus.SKIPPED ||
+                    track.status == TrackStatus.MISSING ||
+                    track.status == TrackStatus.FAILED
+            }
 
-                    "${t.originalArtist} – ${t.originalTitle} → $replacement"
-                }
-
-        if (replacements.isBlank()) {
-            return toast("Ручних замін поки немає")
+        if (problemTracks.isEmpty()) {
+            return toast("Замін, пропусків або проблемних треків поки немає")
         }
 
+        val shortText = buildShortReplacementText(problemTracks)
+        val fullText = buildFullReplacementText(problemTracks)
+
+        AlertDialog.Builder(this)
+            .setTitle("Заміни / проблемні треки: ${problemTracks.size}")
+            .setMessage(shortText)
+            .setNegativeButton("Закрити", null)
+            .setNeutralButton("Копіювати повний") { _, _ ->
+                copyText(
+                    label = "YTM Importer replacement log",
+                    text = fullText,
+                    successMessage = "Повний журнал скопійовано"
+                )
+            }
+            .setPositiveButton("Копіювати TikTok") { _, _ ->
+                copyText(
+                    label = "YTM Importer TikTok replacements",
+                    text = shortText,
+                    successMessage = "Короткий список для TikTok скопійовано"
+                )
+            }
+            .show()
+    }
+
+    private fun buildShortReplacementText(tracks: List<Track>): String =
+        buildString {
+            append("Заміни / недоступні треки:\n")
+
+            tracks.forEachIndexed { index, track ->
+                append(index + 1)
+                append(". ")
+                append(track.originalArtist)
+                append(" – ")
+                append(track.originalTitle)
+                append(" → ")
+                append(replacementLabel(track))
+
+                if (index != tracks.lastIndex) {
+                    append('\n')
+                }
+            }
+        }
+
+    private fun buildFullReplacementText(tracks: List<Track>): String =
+        buildString {
+            append("YTM Importer — журнал замін\n\n")
+
+            tracks.forEachIndexed { index, track ->
+                append(index + 1)
+                append(". Оригінал: ")
+                append(track.originalArtist)
+                append(" – ")
+                append(track.originalTitle)
+                append('\n')
+
+                append("   Результат: ")
+                append(replacementLabel(track))
+                append('\n')
+
+                if (!track.selectedChannel.isNullOrBlank()) {
+                    append("   Канал: ")
+                    append(track.selectedChannel)
+                    append('\n')
+                }
+
+                if (!track.selectedVideoId.isNullOrBlank()) {
+                    append("   YTM: https://music.youtube.com/watch?v=")
+                    append(track.selectedVideoId)
+                    append('\n')
+                }
+
+                if (!track.error.isNullOrBlank()) {
+                    append("   Помилка: ")
+                    append(track.error)
+                    append('\n')
+                }
+
+                if (index != tracks.lastIndex) {
+                    append('\n')
+                }
+            }
+        }
+
+    private fun replacementLabel(track: Track): String =
+        when {
+            track.status == TrackStatus.SKIPPED -> "[пропущено]"
+            track.status == TrackStatus.MISSING -> "[не знайдено]"
+            track.status == TrackStatus.FAILED &&
+                track.selectedTitle.isNullOrBlank() -> "[помилка]"
+            track.selectedTitle == "Ручне посилання" ->
+                "[ручне YouTube/YTM посилання]"
+            !track.selectedTitle.isNullOrBlank() ->
+                track.selectedTitle!!
+            else ->
+                "[не знайдено]"
+        }
+
+    private fun copyText(
+        label: String,
+        text: String,
+        successMessage: String
+    ) {
         val clipboard =
             getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
 
         clipboard.setPrimaryClip(
-            ClipData.newPlainText(
-                "YTM Importer replacements",
-                replacements
-            )
+            ClipData.newPlainText(label, text)
         )
 
-        toast("Список замін скопійовано")
+        toast(successMessage)
     }
 
     private fun privacyLabel(value: String): String =
