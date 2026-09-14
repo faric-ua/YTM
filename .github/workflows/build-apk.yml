@@ -1,13 +1,13 @@
-name: Build Android APK
+name: Build Signed Android APK
 
 on: [workflow_dispatch]
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout
@@ -32,11 +32,56 @@ jobs:
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager "platforms;android-36" "build-tools;35.0.0"
 
-      - name: Build debug APK
-        run: gradle :app:assembleDebug
+      - name: Check signing secrets
+        env:
+          KEYSTORE_B64: ${{ secrets.YTM_KEYSTORE_B64 }}
+          STORE_PASSWORD: ${{ secrets.YTM_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.YTM_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "YTM_KEYSTORE_B64 is missing"
+            exit 1
+          fi
 
-      - name: Upload APK
+          if [ -z "$STORE_PASSWORD" ]; then
+            echo "YTM_STORE_PASSWORD is missing"
+            exit 1
+          fi
+
+          if [ -z "$KEY_PASSWORD" ]; then
+            echo "YTM_KEY_PASSWORD is missing"
+            exit 1
+          fi
+
+      - name: Restore signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.YTM_KEYSTORE_B64 }}
+        run: |
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > ytm-importer-release.jks
+          ls -lh ytm-importer-release.jks
+
+      - name: Create signing properties
+        env:
+          STORE_PASSWORD: ${{ secrets.YTM_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.YTM_KEY_PASSWORD }}
+        run: |
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "ytm-importer-release.jks" \
+            "$STORE_PASSWORD" \
+            "ytmimporter" \
+            "$KEY_PASSWORD" \
+            > release-signing.properties
+
+      - name: Build signed release APK
+        run: gradle :app:assembleRelease
+
+      - name: Prepare APK
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk YTM-Importer-release.apk
+          ls -lh YTM-Importer-release.apk
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: YTM-Importer-APK
-          path: app/build/outputs/apk/debug/*.apk
+          name: YTM-Importer-Release
+          path: YTM-Importer-release.apk
