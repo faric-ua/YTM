@@ -1,13 +1,16 @@
+
 # YTM Importer — Roadmap
 
 ## Найближчі покращення
 
 1. **Якість автоматичного пошуку**
-   - пріоритет Topic / VEVO / official / artist channel;
-   - точніше зіставлення remix / edit / original / extended / club / vocal;
-   - штрафи для live / cover / karaoke / reaction / slowed / sped / nightcore;
-   - коректна робота з діакритикою: Tiësto → Tiesto;
-   - більше кандидатів у межах одного search-запиту.
+   - [x] пріоритет Topic / VEVO / official / artist channel;
+   - [x] точніше зіставлення remix / edit / original / extended / club / vocal;
+   - [x] штрафи для live / cover / karaoke / reaction / slowed / sped / nightcore;
+   - [x] коректна робота з діакритикою: Tiësto → Tiesto;
+   - [x] більше кандидатів у межах одного search-запиту;
+   - [x] локальний кеш пошуків, щоб не витрачати API-квоту повторно;
+   - [ ] тестування пошуку на кількох великих trance-плейлистах.
 
 2. **Вибір приватності плейліста**
    - Private / Unlisted / Public перед створенням.
