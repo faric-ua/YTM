@@ -607,12 +607,12 @@ class MainActivity : Activity() {
         labels += "⏭ Пропустити цей трек"
 
         AlertDialog.Builder(this)
-            .setTitle("${track.originalArtist} — ${track.originalTitle}")
-            .setMessage(
+            .setTitle(
                 if (candidates.isEmpty()) {
-                    "Автоматичних кандидатів немає. Можна вставити посилання вручну."
+                    "${track.originalArtist} — ${track.originalTitle}\nКандидатів немає"
                 } else {
-                    "Натисніть кандидата, щоб перевірити його або вибрати вручну."
+                    "${track.originalArtist} — ${track.originalTitle}\n" +
+                        "Кандидати: ${candidates.size}"
                 }
             )
             .setItems(labels.toTypedArray()) { _, which ->
