@@ -1,29 +1,32 @@
-# Changelog
+# Журнал змін (Changelog)
+
+## v0.9.0
+- Додано Google account info (ім'я + email).
+- Додано YouTube/YTM channel info (назва + ID каналу).
+- Додано account picker (вибір іншого Google акаунта).
+- Додано режим New playlist / Existing playlist
+  (новий / існуючий плейлист).
+- Додано `playlists.list(mine=true)`.
+- Додано пошук власного плейлиста за назвою.
+- Додано append (додавання) треків до існуючого плейлиста.
+- Додано діаграми `docs/v.0.9.0/diagrams/`.
+- Збережено виправлений GitHub Actions workflow без
+  `android-actions/setup-android@v3`.
 
 ## v0.8.0
-- Reorganized documentation into versioned snapshots: `docs/v.0.7.1/` and `docs/v.0.8.0/`.
-- Added direct multiline track-list import without CSV/TXT file.
-- Added «1б. Текст» button.
-- Supports `Artist - Track`, en dash, em dash, numbering and common bullets.
-- Optional playlist name for pasted lists.
-- File import and text import now use one shared import flow.
-- Updated Mermaid diagrams.
-- Removed obsolete `.github/workflows/bootstrap.yml`.
-- Hardened `.gitignore` for signing files.
+- Прямий імпорт тексту без CSV/TXT.
 
 ## v0.7.1
-- Candidate-list hotfix.
-- Removed AlertDialog message/list conflict.
-- Added Mermaid documentation set.
+- Hotfix списку кандидатів.
 
 ## v0.7
-- Replacement log.
+- Журнал замін.
 
 ## v0.6
-- Candidate details and manual selection.
+- Деталі кандидата та ручний вибір.
 
 ## v0.5
-- Result panel and playlist link.
+- Result panel і playlist link.
 
 ## v0.4
 - Privacy selector.
@@ -32,4 +35,4 @@
 - Search cache.
 
 ## v0.2
-- Improved scoring and 10 candidates.
+- Improved scoring і 10 кандидатів.

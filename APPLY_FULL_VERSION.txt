@@ -1,34 +1,30 @@
-YTM Importer v0.8.0 FULL — VERSIONED DOCUMENTATION
+YTM Importer v0.9.0 FULL
 
-Поточний код програми: v0.8.0.
+ОСНОВНЕ:
+- Google account info (ім'я + email)
+- YouTube/YTM channel info (назва + ID)
+- Change account (змінити акаунт)
+- New playlist / Existing playlist
+- Search existing playlists
+- Append tracks to existing playlist
 
-НОВА СТРУКТУРА ДОКУМЕНТАЦІЇ:
+ДОДАНО:
+app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
+docs/v.0.9.0/RELEASE.md
+docs/v.0.9.0/diagrams/*
+TERMINAL_APPLY_v0.9.0.md
 
-docs/
-├── README.md
-├── v.0.7.1/
-│   ├── RELEASE.md
-│   └── diagrams/
-└── v.0.8.0/
-    ├── RELEASE.md
-    └── diagrams/
-
-DELETE FROM REPOSITORY:
-docs/diagrams/
-
-ADD:
-docs/README.md
-docs/v.0.7.1/RELEASE.md
-docs/v.0.7.1/diagrams/*
-docs/v.0.8.0/RELEASE.md
-docs/v.0.8.0/diagrams/*
-TERMINAL_APPLY_VERSIONED_DOCS.md
-
-UPDATE:
-README_UA.md
+ЗАМІНЕНО:
+app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
+app/build.gradle.kts
+.github/workflows/build-apk.yml
+BACKLOG.md
 CHANGELOG.md
+README_UA.md
 PROJECT_STATUS.txt
-FILE_MANIFEST.txt
+OAUTH_SETUP.txt
+docs/README.md
 
-Повні команди:
-TERMINAL_APPLY_VERSIONED_DOCS.md
+Повні Termux-команди:
+TERMINAL_APPLY_v0.9.0.md

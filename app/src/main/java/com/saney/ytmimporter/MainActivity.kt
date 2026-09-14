@@ -10,6 +10,8 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -17,10 +19,13 @@ import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.saney.ytmimporter.model.GoogleAccountInfo
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.model.YouTubeChannelInfo
+import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.parser.PlaylistParser
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.youtube.SearchCache
@@ -38,11 +43,15 @@ class MainActivity : Activity() {
 
     private var playlist: ImportedPlaylist? = null
     private var accessToken: String? = null
+    private var googleAccountInfo: GoogleAccountInfo? = null
+    private var youtubeChannelInfo: YouTubeChannelInfo? = null
     private var createdPlaylistId: String? = null
     private var pendingAfterAuth: (() -> Unit)? = null
 
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
+    private lateinit var googleAccountText: TextView
+    private lateinit var youtubeChannelText: TextView
     private lateinit var progress: ProgressBar
     private lateinit var resultPanel: LinearLayout
     private lateinit var resultTitleText: TextView
@@ -95,13 +104,51 @@ class MainActivity : Activity() {
         }
         actions.addView(button("1. Файл") { chooseFile() })
         actions.addView(button("1б. Текст") { showPasteTrackListDialog() })
-        actions.addView(button("2. Google") { authorize(null) })
+        actions.addView(button("2. Акаунт") { showAccountDialog() })
         actions.addView(button("3. Знайти") { searchAll() })
         actions.addView(button("4. Створити") { createPlaylist() })
         actions.addView(button("Відкрити в ютм") { openInYtm() })
         actions.addView(button("Заміни") { showReplacementLog() })
         scroll.addView(actions)
         root.addView(scroll)
+
+        val accountPanel = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(18), dp(10), dp(18), dp(10))
+            setBackgroundColor(Color.rgb(23, 25, 30))
+        }
+        accountPanel.addView(TextView(this).apply {
+            text = "Акаунт і профіль YouTube/YTM"
+            textSize = 14f
+            setTextColor(Color.WHITE)
+            setTypeface(typeface, Typeface.BOLD)
+        })
+
+        googleAccountText = TextView(this).apply {
+            text = "Google: не підключено"
+            textSize = 12.5f
+            setTextColor(Color.rgb(185, 187, 194))
+            setPadding(0, dp(4), 0, 0)
+        }
+        accountPanel.addView(googleAccountText)
+
+        youtubeChannelText = TextView(this).apply {
+            text = "YouTube/YTM: канал ще не визначено"
+            textSize = 12.5f
+            setTextColor(Color.rgb(185, 187, 194))
+            setPadding(0, dp(2), 0, 0)
+        }
+        accountPanel.addView(youtubeChannelText)
+
+        root.addView(
+            accountPanel,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(dp(12), 0, dp(12), dp(8))
+            }
+        )
 
         summaryText = TextView(this).apply {
             setPadding(dp(18), dp(6), dp(18), dp(2))
@@ -236,11 +283,7 @@ class MainActivity : Activity() {
                     if (token.isNullOrBlank()) {
                         toast("Google не повернув access token")
                     } else {
-                        accessToken = token
-                        status("Google підключено. Доступ до YouTube дозволено.")
-                        val action = pendingAfterAuth
-                        pendingAfterAuth = null
-                        action?.invoke()
+                        handleAuthorizedToken(token)
                     }
                 } catch (e: ApiException) {
                     toast("Авторизація не вдалася: ${e.statusCode}")
@@ -382,22 +425,83 @@ class MainActivity : Activity() {
         return uri.lastPathSegment
     }
 
-    private fun authorize(after: (() -> Unit)?) {
-        if (!accessToken.isNullOrBlank()) {
-            after?.invoke()
+    private fun showAccountDialog() {
+        if (accessToken.isNullOrBlank()) {
+            authorize(null)
             return
         }
 
-        pendingAfterAuth = after
-        status("Відкриваю доступ Google…")
+        val googleText =
+            googleAccountInfo?.let {
+                listOf(it.name, it.email)
+                    .filter { value -> value.isNotBlank() }
+                    .joinToString(" • ")
+            }.orEmpty().ifBlank { "Google підключено, профіль не завантажено" }
 
-        val request =
+        val youtubeText =
+            youtubeChannelInfo?.let {
+                "${it.title}\nChannel ID (ID каналу): ${it.id}"
+            } ?: "YouTube/YTM канал не визначено"
+
+        AlertDialog.Builder(this)
+            .setTitle("Акаунт")
+            .setMessage(
+                "Google:\n$googleText\n\n" +
+                    "YouTube / YouTube Music:\n$youtubeText\n\n" +
+                    "Плейлисти записуються саме в цей YouTube/YTM профіль."
+            )
+            .setNegativeButton("Закрити", null)
+            .setPositiveButton("Змінити акаунт") { _, _ ->
+                authorize(after = null, forceAccountPicker = true)
+            }
+            .show()
+    }
+
+    private fun authorize(
+        after: (() -> Unit)?,
+        forceAccountPicker: Boolean = false
+    ) {
+        if (!forceAccountPicker && !accessToken.isNullOrBlank()) {
+            if (googleAccountInfo == null || youtubeChannelInfo == null) {
+                loadAccountIdentity(accessToken!!, after)
+            } else {
+                after?.invoke()
+            }
+            return
+        }
+
+        if (forceAccountPicker) {
+            accessToken = null
+            googleAccountInfo = null
+            youtubeChannelInfo = null
+            updateAccountPanel()
+        }
+
+        pendingAfterAuth = after
+        status(
+            if (forceAccountPicker) {
+                "Виберіть Google акаунт…"
+            } else {
+                "Відкриваю доступ Google…"
+            }
+        )
+
+        val builder =
             AuthorizationRequest.builder()
-                .setRequestedScopes(listOf(Scope(YOUTUBE_SCOPE)))
-                .build()
+                .setRequestedScopes(
+                    listOf(
+                        Scope(YOUTUBE_SCOPE),
+                        Scope(USERINFO_EMAIL_SCOPE),
+                        Scope(USERINFO_PROFILE_SCOPE)
+                    )
+                )
+
+        if (forceAccountPicker) {
+            builder.setPrompt(AuthorizationRequest.Prompt.SELECT_ACCOUNT)
+        }
 
         Identity.getAuthorizationClient(this)
-            .authorize(request)
+            .authorize(builder.build())
             .addOnSuccessListener { result ->
                 if (result.hasResolution()) {
                     try {
@@ -410,23 +514,94 @@ class MainActivity : Activity() {
                             0
                         )
                     } catch (e: Exception) {
+                        pendingAfterAuth = null
                         toast("Не вдалося відкрити Google: ${e.message}")
                     }
                 } else {
                     val token = result.accessToken
                     if (token.isNullOrBlank()) {
+                        pendingAfterAuth = null
                         toast("Google не повернув access token")
                     } else {
-                        accessToken = token
-                        status("Google підключено.")
-                        val action = pendingAfterAuth
-                        pendingAfterAuth = null
-                        action?.invoke()
+                        handleAuthorizedToken(token)
                     }
                 }
             }
             .addOnFailureListener { e ->
+                pendingAfterAuth = null
                 toast("Авторизація Google: ${e.message}")
+            }
+    }
+
+    private fun handleAuthorizedToken(token: String) {
+        accessToken = token
+        googleAccountInfo = null
+        youtubeChannelInfo = null
+        updateAccountPanel()
+        status("Google підключено. Завантажую дані акаунта і YouTube каналу…")
+
+        val action = pendingAfterAuth
+        pendingAfterAuth = null
+
+        loadAccountIdentity(token, action)
+    }
+
+    private fun loadAccountIdentity(
+        token: String,
+        after: (() -> Unit)?
+    ) {
+        executor.execute {
+            val googleResult =
+                runCatching { api.getGoogleAccountInfo(token) }
+
+            val channelResult =
+                runCatching { api.getMyYouTubeChannel(token) }
+
+            runOnUiThread {
+                googleAccountInfo = googleResult.getOrNull()
+                youtubeChannelInfo = channelResult.getOrNull()
+                updateAccountPanel()
+
+                val channel = youtubeChannelInfo
+                status(
+                    if (channel != null) {
+                        "Підключено YouTube/YTM: ${channel.title}"
+                    } else {
+                        "Google підключено, але YouTube канал не вдалося визначити."
+                    }
+                )
+
+                after?.invoke()
+            }
+        }
+    }
+
+    private fun updateAccountPanel() {
+        googleAccountText.text =
+            when {
+                accessToken.isNullOrBlank() ->
+                    "Google: не підключено"
+
+                googleAccountInfo != null -> {
+                    val info = googleAccountInfo!!
+                    val visible =
+                        listOf(info.name, info.email)
+                            .filter { it.isNotBlank() }
+                            .joinToString(" • ")
+                    "Google: ${visible.ifBlank { "підключено" }}"
+                }
+
+                else ->
+                    "Google: підключено • дані профілю завантажуються"
+            }
+
+        youtubeChannelText.text =
+            youtubeChannelInfo?.let {
+                "YouTube/YTM: ${it.title}\nID каналу: ${it.id}"
+            } ?: if (accessToken.isNullOrBlank()) {
+                "YouTube/YTM: канал ще не визначено"
+            } else {
+                "YouTube/YTM: визначаю канал…"
             }
     }
 
@@ -570,11 +745,284 @@ class MainActivity : Activity() {
                 )
                 .setNegativeButton("Перевірю") { _, _ -> }
                 .setPositiveButton("Продовжити") { _, _ ->
-                    choosePrivacyAndCreate(p, selected)
+                    chooseDestination(p, selected)
                 }
                 .show()
         } else {
-            choosePrivacyAndCreate(p, selected)
+            chooseDestination(p, selected)
+        }
+    }
+
+    private fun chooseDestination(
+        p: ImportedPlaylist,
+        selected: List<Track>
+    ) {
+        val labels = arrayOf(
+            "➕ Створити новий плейлист",
+            "📚 Додати до існуючого плейлиста"
+        )
+
+        AlertDialog.Builder(this)
+            .setTitle("Куди додавати треки?")
+            .setItems(labels) { _, which ->
+                when (which) {
+                    0 -> choosePrivacyAndCreate(p, selected)
+                    1 -> chooseExistingPlaylist(p, selected)
+                }
+            }
+            .setNegativeButton("Скасувати", null)
+            .show()
+    }
+
+    private fun chooseExistingPlaylist(
+        p: ImportedPlaylist,
+        selected: List<Track>
+    ) {
+        authorize {
+            val token = accessToken ?: return@authorize
+
+            progress.visibility = View.VISIBLE
+            progress.isIndeterminate = true
+            status("Завантажую ваші існуючі плейлисти…")
+
+            executor.execute {
+                val result = runCatching {
+                    api.listMyPlaylists(token)
+                }
+
+                runOnUiThread {
+                    progress.isIndeterminate = false
+                    progress.visibility = View.GONE
+
+                    result.onSuccess { playlists ->
+                        if (playlists.isEmpty()) {
+                            toast(
+                                "У цьому YouTube/YTM профілі немає доступних плейлистів."
+                            )
+                        } else {
+                            showExistingPlaylistDialog(
+                                p = p,
+                                selected = selected,
+                                playlists = playlists
+                            )
+                        }
+                    }.onFailure { error ->
+                        toast(
+                            error.message ?: "Не вдалося завантажити плейлисти"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showExistingPlaylistDialog(
+        p: ImportedPlaylist,
+        selected: List<Track>,
+        playlists: List<YouTubePlaylistInfo>
+    ) {
+        val searchInput = EditText(this).apply {
+            hint = "Пошук плейлиста за назвою"
+            setSingleLine(true)
+            setPadding(dp(12), dp(8), dp(12), dp(8))
+        }
+
+        val list = ListView(this)
+        val visible = playlists.toMutableList()
+        val labels = visible.map(::existingPlaylistLabel).toMutableList()
+
+        val listAdapter =
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_list_item_1,
+                labels
+            )
+        list.adapter = listAdapter
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(4), dp(16), 0)
+            addView(
+                searchInput,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+            addView(
+                list,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(420)
+                ).apply {
+                    topMargin = dp(8)
+                }
+            )
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Існуючі плейлисти: ${playlists.size}")
+            .setView(container)
+            .setNegativeButton("Скасувати", null)
+            .create()
+
+        fun applyFilter(query: String) {
+            val normalized = query.trim().lowercase()
+            visible.clear()
+            visible.addAll(
+                if (normalized.isBlank()) {
+                    playlists
+                } else {
+                    playlists.filter {
+                        it.title.lowercase().contains(normalized)
+                    }
+                }
+            )
+
+            listAdapter.clear()
+            listAdapter.addAll(visible.map(::existingPlaylistLabel))
+            listAdapter.notifyDataSetChanged()
+        }
+
+        searchInput.addTextChangedListener(
+            object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) = Unit
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                    applyFilter(s?.toString().orEmpty())
+                }
+
+                override fun afterTextChanged(s: Editable?) = Unit
+            }
+        )
+
+        list.setOnItemClickListener { _, _, position, _ ->
+            val target = visible.getOrNull(position) ?: return@setOnItemClickListener
+            dialog.dismiss()
+            confirmAppendToExisting(
+                p = p,
+                selected = selected,
+                target = target
+            )
+        }
+
+        dialog.show()
+    }
+
+    private fun existingPlaylistLabel(item: YouTubePlaylistInfo): String =
+        buildString {
+            append(item.title)
+            append("\n")
+            append(item.itemCount)
+            append(" треків • ")
+            append(privacyLabel(item.privacyStatus))
+        }
+
+    private fun confirmAppendToExisting(
+        p: ImportedPlaylist,
+        selected: List<Track>,
+        target: YouTubePlaylistInfo
+    ) {
+        val google =
+            googleAccountInfo?.email
+                ?.takeIf { it.isNotBlank() }
+                ?: "Google акаунт підключено"
+
+        val channel =
+            youtubeChannelInfo?.let {
+                "${it.title} (${it.id})"
+            } ?: "поточний YouTube/YTM канал"
+
+        AlertDialog.Builder(this)
+            .setTitle("Додати до існуючого?")
+            .setMessage(
+                "Плейлист:\n${target.title}\n\n" +
+                    "Треків буде додано: ${selected.size}\n" +
+                    "Google: $google\n" +
+                    "YouTube/YTM: $channel\n\n" +
+                    "У v0.9.0 дублікати ще не відсіюються автоматично."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Додати") { _, _ ->
+                actuallyAppendToExisting(
+                    p = p,
+                    selected = selected,
+                    target = target
+                )
+            }
+            .show()
+    }
+
+    private fun actuallyAppendToExisting(
+        p: ImportedPlaylist,
+        selected: List<Track>,
+        target: YouTubePlaylistInfo
+    ) {
+        authorize {
+            val token = accessToken ?: return@authorize
+
+            createdPlaylistId = target.id
+            progress.visibility = View.VISIBLE
+            progress.isIndeterminate = false
+            progress.max = selected.size
+            progress.progress = 0
+            status("Додаю треки до «${target.title}»…")
+
+            executor.execute {
+                for ((index, track) in selected.withIndex()) {
+                    val videoId = track.selectedVideoId ?: continue
+
+                    try {
+                        api.addVideo(token, target.id, videoId)
+                        track.status = TrackStatus.ADDED
+                        track.error = null
+                    } catch (e: Exception) {
+                        track.status = TrackStatus.FAILED
+                        track.error = e.message
+                    }
+
+                    runOnUiThread {
+                        progress.progress = index + 1
+                        status(
+                            "Додаю до існуючого плейлиста " +
+                                "${index + 1}/${selected.size}…"
+                        )
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+
+                runOnUiThread {
+                    progress.visibility = View.GONE
+                    updateSummary()
+
+                    val addedCount =
+                        selected.count { it.status == TrackStatus.ADDED }
+                    val failedCount =
+                        selected.count { it.status == TrackStatus.FAILED }
+
+                    status(
+                        "Готово. Додано до існуючого плейлиста «${target.title}»."
+                    )
+
+                    showPlaylistResult(
+                        playlistName = target.title,
+                        addedCount = addedCount,
+                        failedCount = failedCount,
+                        privacyStatus = target.privacyStatus,
+                        operationLabel = "оновлено існуючий"
+                    )
+                }
+            }
         }
     }
 
@@ -670,7 +1118,8 @@ class MainActivity : Activity() {
                             playlistName = p.name,
                             addedCount = addedCount,
                             failedCount = failedCount,
-                            privacyStatus = privacyStatus
+                            privacyStatus = privacyStatus,
+                            operationLabel = "створено новий"
                         )
                     }
                 } catch (e: Exception) {
@@ -858,7 +1307,8 @@ class MainActivity : Activity() {
         playlistName: String,
         addedCount: Int,
         failedCount: Int,
-        privacyStatus: String
+        privacyStatus: String,
+        operationLabel: String
     ) {
         val url = playlistUrl() ?: return
 
@@ -868,6 +1318,10 @@ class MainActivity : Activity() {
                 append("Додано: $addedCount")
                 if (failedCount > 0) append(" • Не додано: $failedCount")
                 append(" • ${privacyLabel(privacyStatus)}")
+                append(" • $operationLabel")
+                youtubeChannelInfo?.title?.let {
+                    append("\nYouTube/YTM: $it")
+                }
             }
         resultLinkText.text = url
         resultPanel.visibility = View.VISIBLE
@@ -879,7 +1333,7 @@ class MainActivity : Activity() {
     }
 
     private fun openInYtm() {
-        val url = playlistUrl() ?: return toast("Спочатку створіть плейлист")
+        val url = playlistUrl() ?: return toast("Спочатку створіть або виберіть плейлист")
         val uri = Uri.parse(url)
 
         val ytmIntent = Intent(Intent.ACTION_VIEW, uri).apply {
@@ -902,7 +1356,7 @@ class MainActivity : Activity() {
     }
 
     private fun copyPlaylistLink() {
-        val url = playlistUrl() ?: return toast("Спочатку створіть плейлист")
+        val url = playlistUrl() ?: return toast("Спочатку створіть або виберіть плейлист")
 
         val clipboard =
             getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
@@ -1094,5 +1548,11 @@ class MainActivity : Activity() {
     companion object {
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"
+
+        private const val USERINFO_EMAIL_SCOPE =
+            "https://www.googleapis.com/auth/userinfo.email"
+
+        private const val USERINFO_PROFILE_SCOPE =
+            "https://www.googleapis.com/auth/userinfo.profile"
     }
 }
