@@ -1,30 +1,27 @@
-YTM Importer v0.9.0 FULL
+YTM Importer v0.9.1 FULL — COMPILE HOTFIX
 
-ОСНОВНЕ:
-- Google account info (ім'я + email)
-- YouTube/YTM channel info (назва + ID)
-- Change account (змінити акаунт)
-- New playlist / Existing playlist
-- Search existing playlists
-- Append tracks to existing playlist
+ПОМИЛКА У v0.9.0:
+No value passed for parameter 'after'
+Argument type mismatch: actual type is '() -> Unit', but 'Boolean' was expected
 
-ДОДАНО:
-app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
-docs/v.0.9.0/RELEASE.md
-docs/v.0.9.0/diagrams/*
-TERMINAL_APPLY_v0.9.0.md
+ПРИЧИНА:
+trailing lambda у Kotlin передається останньому параметру.
+У v0.9.0 останнім параметром authorize був Boolean.
 
 ЗАМІНЕНО:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
 CHANGELOG.md
 README_UA.md
 PROJECT_STATUS.txt
-OAUTH_SETUP.txt
 docs/README.md
 
-Повні Termux-команди:
-TERMINAL_APPLY_v0.9.0.md
+ДОДАНО:
+docs/v.0.9.1/RELEASE.md
+docs/v.0.9.1/diagrams/*
+TERMINAL_APPLY_v0.9.1.md
+
+Повні команди:
+TERMINAL_APPLY_v0.9.1.md

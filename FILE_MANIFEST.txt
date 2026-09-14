@@ -1,21 +1,22 @@
-YTM Importer v0.9.0 FULL — FILE MANIFEST
+YTM Importer v0.9.1 FULL — FILE MANIFEST
 
-93b97f796991a1b0  .github/workflows/build-apk.yml
+48512fb1458790a8  .github/workflows/build-apk.yml
 6cc7d3ae20eee52b  .gitignore
-73f8dbafb18aab48  APPLY_FULL_VERSION.txt
-7b05f08d5edd5f62  BACKLOG.md
-fc93ac2217273155  CHANGELOG.md
+64979eb34f8c148e  APPLY_FULL_VERSION.txt
+b23edecb0be23a28  BACKLOG.md
+06cf02356dce1d26  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
-02c427e76a07e704  PROJECT_STATUS.txt
+c9999f9832b62244  PROJECT_STATUS.txt
 99b62cd4a3f689c8  README.md
-b1aadab633334747  README_UA.md
+7a2786ff6b5ff1c8  README_UA.md
 f4a9c99161f1f7a0  TERMINAL_APPLY_VERSIONED_DOCS.md
 58270b00dcd8efb2  TERMINAL_APPLY_v0.8.0.md
 0524b0478b6143f7  TERMINAL_APPLY_v0.9.0.md
-7528268ed2e8b6f3  app/build.gradle.kts
+ae1826a70db64b5b  TERMINAL_APPLY_v0.9.1.md
+fd6fbdf6fcec8167  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 32a69856f4027a4b  app/src/main/AndroidManifest.xml
-06e651351f717bdd  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+dff556d74cc45174  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 8756a53fe738fb0c  app/src/main/java/com/saney/ytmimporter/model/Track.kt
 249f69059120d001  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
@@ -28,7 +29,7 @@ ab3ee24f934aa08d  app/src/main/res/values/colors.xml
 7c794e3e8b44bad5  app/src/main/res/values/strings.xml
 ce3b1e690fed5536  app/src/main/res/values/styles.xml
 1ad29e43e790095c  build.gradle.kts
-334a21d348a8c527  docs/README.md
+74f7b04f4eb6f374  docs/README.md
 5471f13070583f68  docs/v.0.7.1/RELEASE.md
 ffae6e64d2a8a4b0  docs/v.0.7.1/diagrams/ARCHITECTURE.md
 751db4d4a42095ca  docs/v.0.7.1/diagrams/BEFORE_AFTER_v0.7.1.md
@@ -50,6 +51,13 @@ e69f7e43645b12b5  docs/v.0.9.0/diagrams/BEFORE_AFTER_v0.9.0.md
 cb55333f9bbd26d5  docs/v.0.9.0/diagrams/CURRENT_FLOW.md
 bde1d4c1c895529f  docs/v.0.9.0/diagrams/README.md
 d585f74e0c0cf9b7  docs/v.0.9.0/diagrams/TRACK_STATE_FLOW.md
+f33d2c9f90bf7b56  docs/v.0.9.1/RELEASE.md
+291de4d895815269  docs/v.0.9.1/diagrams/ACCOUNT_DESTINATION_FLOW.md
+84b15a6ada7bc477  docs/v.0.9.1/diagrams/ARCHITECTURE.md
+6ad856a546089879  docs/v.0.9.1/diagrams/BEFORE_AFTER_v0.9.1.md
+201c011758136ade  docs/v.0.9.1/diagrams/CURRENT_FLOW.md
+0824f7c386e47275  docs/v.0.9.1/diagrams/README.md
+d585f74e0c0cf9b7  docs/v.0.9.1/diagrams/TRACK_STATE_FLOW.md
 d5f372c6d46ad7c8  gradle.properties
 45acb5657d044225  release-signing.properties.example
 92f4070125b5330d  samples/sample_playlist.csv

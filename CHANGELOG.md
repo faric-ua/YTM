@@ -1,5 +1,11 @@
 # Журнал змін (Changelog)
 
+## v0.9.1
+- Виправлено Kotlin compilation error (помилку компіляції Kotlin) у `authorize`.
+- `after` тепер останній параметр, тому `authorize { ... }` компілюється правильно.
+- Додано `docs/v.0.9.1/` з окремим snapshot (знімком) документації.
+- Функціональність v0.9.0 збережена без змін.
+
 ## v0.9.0
 - Додано Google account info (ім'я + email).
 - Додано YouTube/YTM channel info (назва + ID каналу).

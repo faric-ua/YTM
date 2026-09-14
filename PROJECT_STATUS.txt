@@ -1,5 +1,5 @@
 YTM Importer
-Version: 0.9.0
+Version: 0.9.1
 Package: com.saney.ytmimporter
 
 Працює / реалізовано:
@@ -29,4 +29,5 @@ Package: com.saney.ytmimporter
 - Resume jobs
 - History
 
-Потрібно протестувати v0.9.0 на телефоні.
+v0.9.1 виправляє compilation error у authorize.
+Потрібно зібрати та протестувати v0.9.1 на телефоні.

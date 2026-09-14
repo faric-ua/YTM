@@ -1,4 +1,4 @@
-# YTM Importer v0.9.0
+# YTM Importer v0.9.1
 
 Android-застосунок для створення та доповнення YouTube / YouTube Music плейлистів.
 
@@ -35,7 +35,7 @@ YouTube каналу. Тому застосунок тепер показує:
 
 Поточна версія:
 
-`docs/v.0.9.0/diagrams/`
+`docs/v.0.9.1/diagrams/`
 
 Попередні snapshots (знімки версій):
 
@@ -48,7 +48,7 @@ GitHub → Actions → **Build Signed Android APK** → **Run workflow**
 
 Артефакт:
 
-`YTM-Importer-v0.9.0-Release`
+`YTM-Importer-v0.9.1-Release`
 
 ## GitHub Secrets
 

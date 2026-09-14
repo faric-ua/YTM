@@ -427,7 +427,7 @@ class MainActivity : Activity() {
 
     private fun showAccountDialog() {
         if (accessToken.isNullOrBlank()) {
-            authorize(null)
+            authorize()
             return
         }
 
@@ -458,8 +458,8 @@ class MainActivity : Activity() {
     }
 
     private fun authorize(
-        after: (() -> Unit)?,
-        forceAccountPicker: Boolean = false
+        forceAccountPicker: Boolean = false,
+        after: (() -> Unit)? = null
     ) {
         if (!forceAccountPicker && !accessToken.isNullOrBlank()) {
             if (googleAccountInfo == null || youtubeChannelInfo == null) {
@@ -950,7 +950,7 @@ class MainActivity : Activity() {
                     "Треків буде додано: ${selected.size}\n" +
                     "Google: $google\n" +
                     "YouTube/YTM: $channel\n\n" +
-                    "У v0.9.0 дублікати ще не відсіюються автоматично."
+                    "У v0.9.1 дублікати ще не відсіюються автоматично."
             )
             .setNegativeButton("Скасувати", null)
             .setPositiveButton("Додати") { _, _ ->

@@ -1,7 +1,7 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v0.9.0 — Акаунт і місце призначення (Account & Destination)**
+**v0.9.1 — Hotfix компіляції + Акаунт і місце призначення (Account & Destination)**
 
 ## 1. Якість автоматичного пошуку
 - [x] пріоритет Topic / VEVO / official;
