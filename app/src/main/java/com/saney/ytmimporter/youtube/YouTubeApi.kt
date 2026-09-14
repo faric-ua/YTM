@@ -61,7 +61,7 @@ class YouTubeApi {
         return result.sortedByDescending { it.score }
     }
 
-    fun createPlaylist(accessToken: String, title: String): String {
+    fun createPlaylist(accessToken: String, title: String, privacyStatus: String): String {
         val url = "https://www.googleapis.com/youtube/v3/playlists?part=snippet,status"
         val body = JSONObject()
             .put(
@@ -70,7 +70,16 @@ class YouTubeApi {
                     .put("title", title.take(150))
                     .put("description", "Створено через YTM Importer")
             )
-            .put("status", JSONObject().put("privacyStatus", "private"))
+            .put(
+                "status",
+                JSONObject().put(
+                    "privacyStatus",
+                    when (privacyStatus) {
+                        "public", "unlisted", "private" -> privacyStatus
+                        else -> "private"
+                    }
+                )
+            )
             .toString()
 
         val response = request("POST", url, accessToken, body)
