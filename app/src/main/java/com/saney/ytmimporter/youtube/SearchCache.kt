@@ -1,0 +1,123 @@
+package com.saney.ytmimporter.youtube
+
+import android.content.Context
+import com.saney.ytmimporter.model.SearchCandidate
+import com.saney.ytmimporter.model.Track
+import org.json.JSONArray
+import org.json.JSONObject
+import java.security.MessageDigest
+
+/**
+ * Persistent local cache for YouTube search results.
+ *
+ * A cache hit does NOT call YouTube Data API, so repeated imports/searches
+ * of the same track do not spend another search request.
+ *
+ * The cache survives app restarts and normal APK updates.
+ * It is removed if the app is uninstalled or its storage is cleared.
+ */
+class SearchCache(context: Context) {
+    private val prefs =
+        context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    /**
+     * @return cached candidates, including an empty list for a cached "nothing found" result.
+     * Returns null only when there is no valid cache entry.
+     */
+    fun get(track: Track): List<SearchCandidate>? {
+        val key = keyFor(track)
+        val raw = prefs.getString(key, null) ?: return null
+
+        return runCatching {
+            val root = JSONObject(raw)
+            val cachedAt = root.optLong("cachedAt", 0L)
+
+            if (cachedAt <= 0L || System.currentTimeMillis() - cachedAt > MAX_AGE_MS) {
+                prefs.edit().remove(key).apply()
+                return null
+            }
+
+            val items = root.optJSONArray("items") ?: JSONArray()
+            val result = mutableListOf<SearchCandidate>()
+
+            for (i in 0 until items.length()) {
+                val item = items.optJSONObject(i) ?: continue
+                val videoId = item.optString("videoId")
+                val title = item.optString("title")
+                val channel = item.optString("channelTitle")
+
+                if (videoId.isBlank() || title.isBlank()) continue
+
+                // Recalculate the score with the CURRENT scorer.
+                // This means a future MatchScorer improvement can reuse cached candidates.
+                val score = MatchScorer.score(
+                    artist = track.originalArtist,
+                    title = track.originalTitle,
+                    candidateTitle = title,
+                    channel = channel
+                )
+
+                result += SearchCandidate(
+                    videoId = videoId,
+                    title = title,
+                    channelTitle = channel,
+                    score = score
+                )
+            }
+
+            result.sortedByDescending { it.score }
+        }.getOrElse {
+            prefs.edit().remove(key).apply()
+            null
+        }
+    }
+
+    fun put(track: Track, candidates: List<SearchCandidate>) {
+        val items = JSONArray()
+
+        candidates
+            .distinctBy { it.videoId }
+            .take(MAX_CANDIDATES)
+            .forEach { candidate ->
+                items.put(
+                    JSONObject()
+                        .put("videoId", candidate.videoId)
+                        .put("title", candidate.title)
+                        .put("channelTitle", candidate.channelTitle)
+                )
+            }
+
+        val root = JSONObject()
+            .put("cachedAt", System.currentTimeMillis())
+            .put("items", items)
+
+        prefs.edit()
+            .putString(keyFor(track), root.toString())
+            .apply()
+    }
+
+    fun clear() {
+        prefs.edit().clear().apply()
+    }
+
+    private fun keyFor(track: Track): String {
+        val normalizedArtist = MatchScorer.normalize(track.originalArtist)
+        val normalizedTitle = MatchScorer.normalize(track.originalTitle)
+        val rawKey = "$CACHE_SCHEMA|$normalizedArtist|$normalizedTitle"
+
+        val bytes = MessageDigest.getInstance("SHA-256")
+            .digest(rawKey.toByteArray(Charsets.UTF_8))
+
+        return bytes.joinToString("") { "%02x".format(it) }
+    }
+
+    companion object {
+        private const val PREFS_NAME = "youtube_search_cache"
+        private const val CACHE_SCHEMA = "search-v2"
+        private const val MAX_CANDIDATES = 10
+
+        // Music search results are fairly stable; 30 days gives strong quota savings
+        // while still allowing results to refresh eventually.
+        private const val MAX_AGE_MS = 30L * 24L * 60L * 60L * 1000L
+    }
+}
