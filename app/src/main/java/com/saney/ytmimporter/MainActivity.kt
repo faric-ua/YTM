@@ -144,13 +144,13 @@ class MainActivity : Activity() {
     }
 
     private fun chooseFile() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
-            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("text/csv", "text/plain", "application/csv", "application/vnd.ms-excel"))
-        }
-        startActivityForResult(intent, fileRequestCode)
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+        type = "*/*"
     }
+
+    startActivityForResult(intent, fileRequestCode)
+}
 
     @Deprecated("Deprecated in Android API but kept for a minimal dependency-free Activity")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
