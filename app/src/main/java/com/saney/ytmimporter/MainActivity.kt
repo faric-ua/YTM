@@ -44,6 +44,10 @@ class MainActivity : Activity() {
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
     private lateinit var progress: ProgressBar
+    private lateinit var resultPanel: LinearLayout
+    private lateinit var resultTitleText: TextView
+    private lateinit var resultDetailsText: TextView
+    private lateinit var resultLinkText: TextView
     private lateinit var listView: ListView
     private lateinit var adapter: TrackAdapter
     private val visibleTracks = mutableListOf<Track>()
@@ -123,6 +127,52 @@ class MainActivity : Activity() {
         root.addView(
             progress,
             LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(4))
+        )
+
+        resultPanel = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            visibility = View.GONE
+            setPadding(dp(18), dp(14), dp(18), dp(14))
+            setBackgroundColor(Color.rgb(27, 29, 34))
+        }
+
+        resultTitleText = TextView(this).apply {
+            textSize = 18f
+            setTextColor(Color.WHITE)
+            setTypeface(typeface, Typeface.BOLD)
+        }
+        resultPanel.addView(resultTitleText)
+
+        resultDetailsText = TextView(this).apply {
+            textSize = 13f
+            setTextColor(Color.rgb(190, 192, 198))
+            setPadding(0, dp(5), 0, dp(6))
+        }
+        resultPanel.addView(resultDetailsText)
+
+        resultLinkText = TextView(this).apply {
+            textSize = 12f
+            setTextColor(Color.rgb(140, 185, 255))
+            setTextIsSelectable(true)
+            setPadding(0, 0, 0, dp(10))
+        }
+        resultPanel.addView(resultLinkText)
+
+        val resultActions = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+        }
+        resultActions.addView(button("Відкрити в YTM") { openInYtm() })
+        resultActions.addView(button("Копіювати посилання") { copyPlaylistLink() })
+        resultPanel.addView(resultActions)
+
+        root.addView(
+            resultPanel,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(dp(12), dp(10), dp(12), dp(10))
+            }
         )
 
         listView = ListView(this).apply {
@@ -218,6 +268,7 @@ class MainActivity : Activity() {
             .onSuccess {
                 playlist = it
                 createdPlaylistId = null
+                resultPanel.visibility = View.GONE
                 visibleTracks.clear()
                 visibleTracks.addAll(it.tracks)
                 adapter.notifyDataSetChanged()
@@ -517,18 +568,17 @@ class MainActivity : Activity() {
                             "Готово. Плейлист створено: ${privacyLabel(privacyStatus)}."
                         )
 
-                        AlertDialog.Builder(this)
-                            .setTitle("Плейлист готовий")
-                            .setMessage(
-                                "Додано ${selected.count { it.status == TrackStatus.ADDED }} треків.\n" +
-                                    "Приватність: ${privacyLabel(privacyStatus)}.\n\n" +
-                                    "Відкрити в YouTube Music?"
-                            )
-                            .setNegativeButton("Пізніше", null)
-                            .setPositiveButton("Відкрити") { _, _ ->
-                                openInYtm()
-                            }
-                            .show()
+                        val addedCount =
+                            selected.count { it.status == TrackStatus.ADDED }
+                        val failedCount =
+                            selected.count { it.status == TrackStatus.FAILED }
+
+                        showPlaylistResult(
+                            playlistName = p.name,
+                            addedCount = addedCount,
+                            failedCount = failedCount,
+                            privacyStatus = privacyStatus
+                        )
                     }
                 } catch (e: Exception) {
                     runOnUiThread {
@@ -637,16 +687,64 @@ class MainActivity : Activity() {
         track.error = null
     }
 
+    private fun showPlaylistResult(
+        playlistName: String,
+        addedCount: Int,
+        failedCount: Int,
+        privacyStatus: String
+    ) {
+        val url = playlistUrl() ?: return
+
+        resultTitleText.text = "✓ $playlistName"
+        resultDetailsText.text =
+            buildString {
+                append("Додано: $addedCount")
+                if (failedCount > 0) append(" • Не додано: $failedCount")
+                append(" • ${privacyLabel(privacyStatus)}")
+            }
+        resultLinkText.text = url
+        resultPanel.visibility = View.VISIBLE
+    }
+
+    private fun playlistUrl(): String? {
+        val id = createdPlaylistId ?: return null
+        return "https://music.youtube.com/playlist?list=$id"
+    }
+
     private fun openInYtm() {
-        val id = createdPlaylistId ?: return toast("Спочатку створіть плейлист")
-        val uri = Uri.parse("https://music.youtube.com/playlist?list=$id")
-        val intent = Intent(Intent.ACTION_VIEW, uri)
+        val url = playlistUrl() ?: return toast("Спочатку створіть плейлист")
+        val uri = Uri.parse(url)
+
+        val ytmIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+            setPackage("com.google.android.apps.youtube.music")
+        }
+
+        val openedInYtm =
+            runCatching {
+                startActivity(ytmIntent)
+                true
+            }.getOrDefault(false)
+
+        if (openedInYtm) return
 
         runCatching {
-            startActivity(intent)
+            startActivity(Intent(Intent.ACTION_VIEW, uri))
         }.onFailure {
-            toast("Не вдалося відкрити ютм")
+            toast("Не вдалося відкрити YouTube Music")
         }
+    }
+
+    private fun copyPlaylistLink() {
+        val url = playlistUrl() ?: return toast("Спочатку створіть плейлист")
+
+        val clipboard =
+            getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+
+        clipboard.setPrimaryClip(
+            ClipData.newPlainText("YTM playlist", url)
+        )
+
+        toast("Посилання на плейлист скопійовано")
     }
 
     private fun copyReplacements() {
