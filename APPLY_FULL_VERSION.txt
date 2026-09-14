@@ -1,0 +1,16 @@
+YTM Importer v0.7.1 FULL
+
+Архів уже має правильну структуру репозиторію.
+
+Що робити:
+1. Розпакувати ZIP.
+2. Відкрити папку YTM_Importer_v0.7.1_FULL.
+3. Скопіювати ВСІ файли і папки в корінь репозиторію YTM із заміною.
+4. НЕ додавати у Git *.jks або release-signing.properties.
+5. GitHub Secrets залишаються в Settings і не входять в архів.
+6. Commit changes.
+7. Actions → Build Signed Android APK → Run workflow.
+8. Встановити release APK поверх поточної програми.
+
+Діаграми:
+docs/diagrams/

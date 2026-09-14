@@ -14,24 +14,18 @@ android {
         applicationId = "com.saney.ytmimporter"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 7
+        versionName = "0.7.1"
     }
 
     signingConfigs {
         create("release") {
             val propsFile = rootProject.file("release-signing.properties")
-
             if (propsFile.exists()) {
                 val props = Properties().apply {
-                    propsFile.inputStream().use { input ->
-                        load(input)
-                    }
+                    propsFile.inputStream().use { load(it) }
                 }
-
-                storeFile = rootProject.file(
-                    props.getProperty("storeFile")
-                )
+                storeFile = rootProject.file(props.getProperty("storeFile"))
                 storePassword = props.getProperty("storePassword")
                 keyAlias = props.getProperty("keyAlias")
                 keyPassword = props.getProperty("keyPassword")
@@ -46,12 +40,10 @@ android {
 
         release {
             isMinifyEnabled = true
-
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
             if (rootProject.file("release-signing.properties").exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
