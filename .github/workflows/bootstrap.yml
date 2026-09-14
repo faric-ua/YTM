@@ -17,7 +17,12 @@ jobs:
         run: |
           mkdir -p _src
           unzip -q YTMImporter_Public_Source.zip -d _src
+
+          # GitHub не дозволяє цьому workflow створювати інший workflow
+          rm -f _src/YTMImporter_Public_Source/.github/workflows/build-apk.yml
+
           cp -a _src/YTMImporter_Public_Source/. .
+
           rm -rf _src
           rm -f YTMImporter_Public_Source.zip
 
@@ -25,6 +30,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add -A
           git commit -m "Add YTM Importer Android project" || true
           git push
