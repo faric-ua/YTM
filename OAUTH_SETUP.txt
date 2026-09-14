@@ -1,0 +1,17 @@
+YTM Importer — Google OAuth Android client
+
+Package name:
+com.saney.ytmimporter
+
+SHA-1 certificate fingerprint:
+41:73:14:31:27:43:BC:40:84:5C:E2:43:C1:6E:DC:29:7D:F5:74:50
+
+Google Cloud:
+1) Enable YouTube Data API v3.
+2) Configure OAuth consent screen.
+3) Create OAuth client ID -> Android.
+4) Enter the package name and SHA-1 above.
+5) If the consent screen is in Testing, add your Google account as a test user.
+
+IMPORTANT:
+Keep ytm-importer-release.jks and release-signing.properties private. They are needed to sign future app updates with the same certificate.

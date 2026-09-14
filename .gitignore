@@ -1,0 +1,9 @@
+.gradle/
+.idea/
+local.properties
+**/build/
+*.apk
+*.aab
+# Keep signing material out of public repositories.
+ytm-importer-release.jks
+release-signing.properties

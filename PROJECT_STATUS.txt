@@ -1,0 +1,20 @@
+YTM Importer MVP 0.1
+
+READY IN SOURCE:
+- CSV/TXT import
+- Google OAuth authorization
+- YouTube search with candidate scoring
+- manual candidate selection
+- manual YouTube/YTM URL override
+- playlist creation
+- ordered track insertion
+- open playlist in YouTube Music
+- copy replacement log for TikTok comments
+
+PACKAGE: com.saney.ytmimporter
+SHA-1: 41:73:14:31:27:43:BC:40:84:5C:E2:43:C1:6E:DC:29:7D:F5:74:50
+
+NEXT:
+1. Create Google Cloud project + Android OAuth client with package/SHA-1.
+2. Build signed APK (Android Studio or GitHub Actions).
+3. Install and test on phone.

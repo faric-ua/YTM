@@ -1,0 +1,6 @@
+# DO NOT put real passwords or keystores in Git.
+# Copy this file to release-signing.properties only on a trusted machine.
+storeFile=ytm-importer-release.jks
+storePassword=CHANGE_ME
+keyAlias=ytmimporter
+keyPassword=CHANGE_ME
