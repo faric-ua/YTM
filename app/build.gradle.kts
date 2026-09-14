@@ -1,3 +1,6 @@
+import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -18,11 +21,17 @@ android {
     signingConfigs {
         create("release") {
             val propsFile = rootProject.file("release-signing.properties")
+
             if (propsFile.exists()) {
-                val props = java.util.Properties().apply {
-                    propsFile.inputStream().use(::load)
+                val props = Properties().apply {
+                    propsFile.inputStream().use { input ->
+                        load(input)
+                    }
                 }
-                storeFile = rootProject.file(props.getProperty("storeFile"))
+
+                storeFile = rootProject.file(
+                    props.getProperty("storeFile")
+                )
                 storePassword = props.getProperty("storePassword")
                 keyAlias = props.getProperty("keyAlias")
                 keyPassword = props.getProperty("keyPassword")
@@ -34,9 +43,15 @@ android {
         debug {
             isMinifyEnabled = false
         }
+
         release {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
             if (rootProject.file("release-signing.properties").exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
@@ -47,9 +62,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
 
-    kotlinOptions {
-        jvmTarget = "17"
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
