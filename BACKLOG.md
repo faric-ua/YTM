@@ -50,21 +50,88 @@
 - [x] підтримка нумерації `1.` / `2)` та маркерів `•` / `-`;
 - [x] необов'язкова назва плейлиста;
 - [x] той самий SearchCache / MatchScorer після імпорту;
-- [ ] v0.8.0 ще не протестовано на телефоні.
+- [x] v0.8.0 зібрано і запущено.
 
-## 7. Історія
-- [ ] створені плейлисти;
-- [ ] дата / кількість / помилки / заміни.
+## 7. Account & Destination — наступний великий етап (план v0.9.0)
+- [ ] показувати Google account: ім'я + email;
+- [ ] показувати YouTube channel: назва + channel ID;
+- [ ] чітко показувати, в який YouTube/YTM профіль піде плейлист;
+- [ ] кнопка «Змінити акаунт» / повторна авторизація;
+- [ ] попередження перед записом, якщо акаунт/канал не той;
+- [ ] режим призначення:
+  - [ ] «Створити новий плейлист»;
+  - [ ] «Додати до існуючого плейлиста».
 
-## 8. Polish / v1.0
+## 8. Existing playlists / Append
+- [ ] завантажувати плейлисти поточного авторизованого користувача;
+- [ ] пошук по назві існуючого плейлиста;
+- [ ] показ privacy / кількість треків;
+- [ ] вибір існуючого playlist ID;
+- [ ] додавати знайдені треки в кінець існуючого плейлиста;
+- [ ] перевіряти дублікати перед додаванням;
+- [ ] опція:
+  - [ ] «пропускати дублікати»;
+  - [ ] «додавати навіть дублікати».
+
+## 9. Quota Planner / Pending Queue (план v0.10.0)
+- [ ] використовувати термін «API quota», а не «кредити»;
+- [ ] показувати локальну оцінку search quota, витраченої цим застосунком сьогодні;
+- [ ] показувати локальну оцінку write quota, витраченої цим застосунком сьогодні;
+- [ ] перед запуском показувати приблизний бюджет операції:
+  - [ ] скільки треків треба шукати через API;
+  - [ ] скільки треків уже є в SearchCache;
+  - [ ] скільки write-операцій потрібно;
+- [ ] показувати «імовірно вистачить / може не вистачити»;
+- [ ] НЕ називати локальну оцінку точним залишком Google quota;
+- [ ] ловити `quotaExceeded` / схожі quota errors;
+- [ ] якщо quota закінчилася:
+  - [ ] залишити вже додані треки в плейлисті;
+  - [ ] не починати все заново;
+  - [ ] зберегти невиконані треки в Pending Queue;
+  - [ ] запам'ятати target playlist ID;
+  - [ ] запам'ятати Google/YouTube account/channel;
+  - [ ] запам'ятати порядок невиконаних треків;
+- [ ] кнопка «Продовжити недороблений плейлист»;
+- [ ] після відновлення quota додавати тільки залишок.
+
+## 10. Jobs / History / Resume (план v0.11.0)
+- [ ] історія імпортів;
+- [ ] дата / назва / джерело CSV-TXT-Text;
+- [ ] account/channel;
+- [ ] target playlist ID;
+- [ ] created / appended;
+- [ ] total / added / pending / skipped / failed;
+- [ ] статус:
+  - [ ] Completed;
+  - [ ] Partial;
+  - [ ] Pending quota;
+  - [ ] Failed;
+- [ ] Resume;
+- [ ] Open in YTM;
+- [ ] Copy link;
+- [ ] replacement log.
+
+## 11. API quota diagnostics
+- [ ] окремий екран «API status»;
+- [ ] SearchCache hits / API searches за сьогодні;
+- [ ] estimated write units by this app;
+- [ ] остання quota error;
+- [ ] пояснення, що фактичну project quota Google показує в Cloud Console;
+- [ ] кнопка/посилання на довідку про quota.
+
+## 12. Polish / v1.0
 - [ ] icon;
 - [ ] stable UI;
 - [ ] better errors;
-- [ ] final tests.
+- [ ] final tests;
+- [ ] backup/restore local jobs and history.
 
-## 9. UI/UX redesign
+## 13. UI/UX redesign
 - [ ] step-by-step flow;
-- [ ] modern screens;
+- [ ] modern account card;
+- [ ] destination card: New / Existing;
+- [ ] quota estimate card;
 - [ ] better track list;
 - [ ] progress/result screen;
+- [ ] pending jobs screen;
 - [ ] Material 3.
