@@ -1,0 +1,31 @@
+name: Bootstrap YTM Importer
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract project
+        run: |
+          mkdir -p _src
+          unzip -q YTMImporter_Public_Source.zip -d _src
+          cp -a _src/YTMImporter_Public_Source/. .
+          rm -rf _src
+          rm -f YTMImporter_Public_Source.zip
+
+      - name: Commit project files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add YTM Importer Android project" || true
+          git push
