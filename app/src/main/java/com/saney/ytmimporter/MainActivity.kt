@@ -426,17 +426,54 @@ class MainActivity : Activity() {
                 )
                 .setNegativeButton("Перевірю") { _, _ -> }
                 .setPositiveButton("Продовжити") { _, _ ->
-                    actuallyCreatePlaylist(p, selected)
+                    choosePrivacyAndCreate(p, selected)
                 }
                 .show()
         } else {
-            actuallyCreatePlaylist(p, selected)
+            choosePrivacyAndCreate(p, selected)
         }
+    }
+
+    private fun choosePrivacyAndCreate(
+        p: ImportedPlaylist,
+        selected: List<Track>
+    ) {
+        val labels = arrayOf(
+            "🔒 Приватний — тільки ви",
+            "🔗 За посиланням — бачать ті, хто має посилання",
+            "🌍 Публічний — видно всім"
+        )
+
+        val values = arrayOf(
+            "private",
+            "unlisted",
+            "public"
+        )
+
+        var selectedIndex = 0
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Приватність плейлиста")
+            .setSingleChoiceItems(labels, selectedIndex) { _, which ->
+                selectedIndex = which
+            }
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Створити") { _, _ ->
+                actuallyCreatePlaylist(
+                    p = p,
+                    selected = selected,
+                    privacyStatus = values[selectedIndex]
+                )
+            }
+            .create()
+
+        dialog.show()
     }
 
     private fun actuallyCreatePlaylist(
         p: ImportedPlaylist,
-        selected: List<Track>
+        selected: List<Track>,
+        privacyStatus: String
     ) {
         authorize {
             val token = accessToken ?: return@authorize
@@ -448,7 +485,7 @@ class MainActivity : Activity() {
 
             executor.execute {
                 try {
-                    val playlistId = api.createPlaylist(token, p.name)
+                    val playlistId = api.createPlaylist(token, p.name, privacyStatus)
                     createdPlaylistId = playlistId
 
                     runOnUiThread {
@@ -476,13 +513,16 @@ class MainActivity : Activity() {
                     runOnUiThread {
                         progress.visibility = View.GONE
                         updateSummary()
-                        status("Готово. Плейлист створено приватним у YouTube.")
+                        status(
+                            "Готово. Плейлист створено: ${privacyLabel(privacyStatus)}."
+                        )
 
                         AlertDialog.Builder(this)
                             .setTitle("Плейлист готовий")
                             .setMessage(
-                                "Додано ${selected.count { it.status == TrackStatus.ADDED }} " +
-                                    "треків. Відкрити в YouTube Music?"
+                                "Додано ${selected.count { it.status == TrackStatus.ADDED }} треків.\n" +
+                                    "Приватність: ${privacyLabel(privacyStatus)}.\n\n" +
+                                    "Відкрити в YouTube Music?"
                             )
                             .setNegativeButton("Пізніше", null)
                             .setPositiveButton("Відкрити") { _, _ ->
@@ -646,6 +686,13 @@ class MainActivity : Activity() {
 
         toast("Список замін скопійовано")
     }
+
+    private fun privacyLabel(value: String): String =
+        when (value) {
+            "public" -> "публічний"
+            "unlisted" -> "за посиланням"
+            else -> "приватний"
+        }
 
     private fun updateSummary() {
         val p = playlist ?: return
