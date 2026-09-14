@@ -51,7 +51,9 @@ object PlaylistParser {
         var playlistName: String? = null
 
         for (raw in lines) {
-            val line = raw.replace(Regex("^\\d{1,3}[.)-]?\\s*"), "").trim()
+            val line = raw
+                .replace(Regex("^\\s*(?:[-*•·▪◦]|\\d{1,3}[.)-]?)\\s+"), "")
+                .trim()
             val separator = when {
                 " - " in line -> " - "
                 " – " in line -> " – "

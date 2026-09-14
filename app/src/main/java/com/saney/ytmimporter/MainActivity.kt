@@ -80,7 +80,7 @@ class MainActivity : Activity() {
             setTypeface(typeface, Typeface.BOLD)
         })
         header.addView(TextView(this).apply {
-            text = "CSV/TXT → пошук → перевірка → плейлист у YouTube Music"
+            text = "CSV/TXT/текст → пошук → перевірка → плейлист у YouTube Music"
             textSize = 13f
             setTextColor(Color.rgb(165, 167, 173))
         })
@@ -94,6 +94,7 @@ class MainActivity : Activity() {
             setPadding(dp(12), 0, dp(12), dp(8))
         }
         actions.addView(button("1. Файл") { chooseFile() })
+        actions.addView(button("1б. Текст") { showPasteTrackListDialog() })
         actions.addView(button("2. Google") { authorize(null) })
         actions.addView(button("3. Знайти") { searchAll() })
         actions.addView(button("4. Створити") { createPlaylist() })
@@ -107,7 +108,7 @@ class MainActivity : Activity() {
             setTextColor(Color.WHITE)
             textSize = 15f
             setTypeface(typeface, Typeface.BOLD)
-            text = "Файл ще не вибрано"
+            text = "Плейлист ще не імпортовано"
         }
         root.addView(summaryText)
 
@@ -115,7 +116,7 @@ class MainActivity : Activity() {
             setPadding(dp(18), dp(4), dp(18), dp(8))
             setTextColor(Color.rgb(165, 167, 173))
             textSize = 13f
-            text = "Виберіть CSV або TXT зі списком треків."
+            text = "Виберіть CSV/TXT або вставте список Artist - Track."
         }
         root.addView(statusText)
 
@@ -266,19 +267,111 @@ class MainActivity : Activity() {
 
         runCatching { PlaylistParser.parse(fileName, text) }
             .onSuccess {
-                playlist = it
-                createdPlaylistId = null
-                resultPanel.visibility = View.GONE
-                visibleTracks.clear()
-                visibleTracks.addAll(it.tracks)
-                adapter.notifyDataSetChanged()
-                updateSummary()
-                status(
-                    "Файл імпортовано. Натисніть «Знайти». " +
-                        "Вже відомі треки будуть взяті з локального кешу."
+                applyImportedPlaylist(
+                    imported = it,
+                    sourceLabel = "Файл"
                 )
             }
             .onFailure { toast(it.message ?: "Помилка імпорту") }
+    }
+
+    private fun showPasteTrackListDialog() {
+        val playlistNameInput = EditText(this).apply {
+            hint = "Назва плейлиста (необов’язково)"
+            setSingleLine(true)
+            setPadding(dp(12), dp(8), dp(12), dp(8))
+        }
+
+        val tracksInput = EditText(this).apply {
+            hint =
+                "Solarstone & JES - Like a Waterfall\n" +
+                    "Sultan & Tone Depth - Moments\n" +
+                    "Ahmet Ertenu - Why"
+            minLines = 9
+            gravity = android.view.Gravity.TOP or android.view.Gravity.START
+            inputType =
+                android.text.InputType.TYPE_CLASS_TEXT or
+                    android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE or
+                    android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            setPadding(dp(12), dp(8), dp(12), dp(8))
+        }
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(18), dp(4), dp(18), 0)
+            addView(
+                playlistNameInput,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+            addView(
+                tracksInput,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = dp(8)
+                }
+            )
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Вставити список треків")
+            .setMessage(
+                "Один трек на рядок: Artist - Track. " +
+                    "Підтримуються також – та — і нумерація 1. / 2)."
+            )
+            .setView(container)
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Імпортувати", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val rawText = tracksInput.text.toString()
+                if (rawText.isBlank()) {
+                    tracksInput.error = "Вставте хоча б один трек"
+                    return@setOnClickListener
+                }
+
+                runCatching {
+                    PlaylistParser.parse("Вставлений список.txt", rawText).also { imported ->
+                        playlistNameInput.text.toString().trim()
+                            .takeIf { it.isNotBlank() }
+                            ?.let { imported.name = it }
+                    }
+                }.onSuccess { imported ->
+                    applyImportedPlaylist(
+                        imported = imported,
+                        sourceLabel = "Текст"
+                    )
+                    dialog.dismiss()
+                }.onFailure { error ->
+                    tracksInput.error = error.message ?: "Не вдалося розібрати список"
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun applyImportedPlaylist(
+        imported: ImportedPlaylist,
+        sourceLabel: String
+    ) {
+        playlist = imported
+        createdPlaylistId = null
+        resultPanel.visibility = View.GONE
+        visibleTracks.clear()
+        visibleTracks.addAll(imported.tracks)
+        adapter.notifyDataSetChanged()
+        updateSummary()
+        status(
+            "$sourceLabel імпортовано: ${imported.tracks.size} треків. " +
+                "Натисніть «Знайти». Відомі треки будуть взяті з кешу."
+        )
     }
 
     private fun queryFileName(uri: Uri): String? {
@@ -338,7 +431,7 @@ class MainActivity : Activity() {
     }
 
     private fun searchAll() {
-        val p = playlist ?: return toast("Спочатку виберіть файл")
+        val p = playlist ?: return toast("Спочатку імпортуйте список треків")
 
         authorize {
             val token = accessToken ?: return@authorize
@@ -459,7 +552,7 @@ class MainActivity : Activity() {
     }
 
     private fun createPlaylist() {
-        val p = playlist ?: return toast("Спочатку виберіть файл")
+        val p = playlist ?: return toast("Спочатку імпортуйте список треків")
         val selected =
             p.tracks.filter {
                 !it.selectedVideoId.isNullOrBlank() && it.status != TrackStatus.SKIPPED

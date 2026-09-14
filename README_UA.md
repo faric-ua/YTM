@@ -1,45 +1,49 @@
-# YTM Importer v0.7.1
+# YTM Importer v0.8.0
 
-Android-застосунок для імпорту CSV/TXT плейлистів у YouTube / YouTube Music.
+Android-застосунок для створення YouTube / YouTube Music плейлистів із CSV, TXT або вставленого тексту.
 
-## Реалізовано
-- CSV/TXT;
-- Google OAuth;
-- YouTube search;
-- до 10 кандидатів;
-- improved MatchScorer;
-- 30-day SearchCache;
-- ручний вибір кандидата;
-- manual URL / skip;
-- Private / Unlisted / Public;
-- create playlist / add tracks;
-- result panel;
-- open in YTM;
-- copy playlist link;
-- replacement log;
-- Mermaid diagrams.
+## Нове у v0.8.0
 
-## Hotfix v0.7.1
-Виправлено невидимий список кандидатів.
-Причина: `AlertDialog.setMessage()` конфліктував із `setItems()`.
+На головному екрані є кнопка **«1б. Текст»**.
+
+Можна вставити список прямо в програму:
+
+```text
+Solarstone & JES - Like a Waterfall
+Sultan & Tone Depth - Moments
+Ahmet Ertenu - Why
+```
+
+Також підтримуються:
+
+```text
+1. Artist - Track
+2) Artist – Track
+• Artist — Track
+- Artist - Track
+```
+
+Назву плейлиста можна вказати окремо. Після імпорту все працює так само, як із CSV:
+SearchCache → YouTube API → MatchScorer → кандидати → створення плейлиста.
 
 ## Збірка
+
 GitHub → Actions → **Build Signed Android APK** → **Run workflow**
 
 Потрібні GitHub Secrets:
+
 - `YTM_KEYSTORE_B64`
 - `YTM_STORE_PASSWORD`
 - `YTM_KEY_PASSWORD`
 
 Alias: `ytmimporter`.
 
-## Безпека
-Не коміть:
-- `.jks`;
-- `release-signing.properties`;
-- паролі/секрети.
-
 ## Діаграми
-`docs/diagrams/`
 
-GitHub сам відображає Mermaid як схеми.
+`docs/v.0.8.0/diagrams/`
+
+Історична документація v0.7.1:
+
+`docs/v.0.7.1/diagrams/`
+
+GitHub автоматично рендерить Mermaid-схеми.

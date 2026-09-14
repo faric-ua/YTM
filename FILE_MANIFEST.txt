@@ -1,20 +1,22 @@
-YTM Importer v0.7.1 FULL — FILE MANIFEST
+YTM Importer v0.8.0 FULL — VERSIONED DOCS FILE MANIFEST
 
-0bc142edb9802ca7  .github/workflows/build-apk.yml
+2fa5d9c256897307  .github/workflows/build-apk.yml
 6cc7d3ae20eee52b  .gitignore
-19798d6a89ec39a1  APPLY_FULL_VERSION.txt
-803b282ed5619fb0  BACKLOG.md
-a9dba24bfcd94f70  CHANGELOG.md
+b9a423c4831bc8e8  APPLY_FULL_VERSION.txt
+9d91c2984eaca19a  BACKLOG.md
+25af20e2c47f4fd0  CHANGELOG.md
 f70607fd579d4c64  OAUTH_SETUP.txt
-83cb63379a34d72e  PROJECT_STATUS.txt
+3bfdf1832773ff43  PROJECT_STATUS.txt
 99b62cd4a3f689c8  README.md
-482cb4fbfa988fe2  README_UA.md
-b1ae3efa808476e1  app/build.gradle.kts
+b5b6c2f9472d8139  README_UA.md
+f4a9c99161f1f7a0  TERMINAL_APPLY_VERSIONED_DOCS.md
+58270b00dcd8efb2  TERMINAL_APPLY_v0.8.0.md
+d143686d2c303705  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 32a69856f4027a4b  app/src/main/AndroidManifest.xml
-0981e046d4080a77  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+d2fed86e4af2e00a  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 8756a53fe738fb0c  app/src/main/java/com/saney/ytmimporter/model/Track.kt
-da5b6ad6336c54d1  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
+249f69059120d001  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
 ae9fac1199ce1ea5  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
 49ea39322f16188f  app/src/main/java/com/saney/ytmimporter/youtube/MatchScorer.kt
 e79c92d233cf4f45  app/src/main/java/com/saney/ytmimporter/youtube/SearchCache.kt
@@ -24,11 +26,19 @@ ab3ee24f934aa08d  app/src/main/res/values/colors.xml
 7c794e3e8b44bad5  app/src/main/res/values/strings.xml
 ce3b1e690fed5536  app/src/main/res/values/styles.xml
 1ad29e43e790095c  build.gradle.kts
-ffae6e64d2a8a4b0  docs/diagrams/ARCHITECTURE.md
-751db4d4a42095ca  docs/diagrams/BEFORE_AFTER_v0.7.1.md
-c67980faec97d53a  docs/diagrams/CURRENT_FLOW.md
-5433aaaf1fd8eb6b  docs/diagrams/README.md
-d585f74e0c0cf9b7  docs/diagrams/TRACK_STATE_FLOW.md
+86cc8849633d782d  docs/README.md
+5471f13070583f68  docs/v.0.7.1/RELEASE.md
+ffae6e64d2a8a4b0  docs/v.0.7.1/diagrams/ARCHITECTURE.md
+751db4d4a42095ca  docs/v.0.7.1/diagrams/BEFORE_AFTER_v0.7.1.md
+c67980faec97d53a  docs/v.0.7.1/diagrams/CURRENT_FLOW.md
+5433aaaf1fd8eb6b  docs/v.0.7.1/diagrams/README.md
+d585f74e0c0cf9b7  docs/v.0.7.1/diagrams/TRACK_STATE_FLOW.md
+b115d68fb9d1869b  docs/v.0.8.0/RELEASE.md
+c3d7a7120c9456c9  docs/v.0.8.0/diagrams/ARCHITECTURE.md
+2be15c2e6699e45c  docs/v.0.8.0/diagrams/BEFORE_AFTER_v0.8.0.md
+2762757b7102092c  docs/v.0.8.0/diagrams/CURRENT_FLOW.md
+1d6275e7b5263575  docs/v.0.8.0/diagrams/README.md
+d585f74e0c0cf9b7  docs/v.0.8.0/diagrams/TRACK_STATE_FLOW.md
 d5f372c6d46ad7c8  gradle.properties
 45acb5657d044225  release-signing.properties.example
 92f4070125b5330d  samples/sample_playlist.csv
