@@ -2265,7 +2265,7 @@ class MainActivity : Activity() {
                     "(${BuildConfig.VERSION_CODE})\n" +
                     "Package: $packageName\n" +
                     "Android target SDK: $targetSdk\n\n" +
-                    "Етап: v1.0.0 RC4 (final release hardening перед stable).\n" +
+                    "Етап: v1.0.0 stable (перший стабільний реліз).\n" +
                     "Core behavior frozen (основна логіка заморожена): " +
                     "до v1.0 виправляємо тільки blocker bugs " +
                     "(критичні помилки).\n\n" +
@@ -2306,7 +2306,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.1.0.0-rc4/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.0.0/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()
@@ -2808,7 +2808,7 @@ class MainActivity : Activity() {
                     "(меню поширення).\n\n" +
                     "Для повного Restore використовується тільки " +
                     "«Повний backup», а не History JSON.\n" +
-                    "Перед Restore RC4 автоматично створює safety snapshot " +
+                    "Перед Restore v1.0.0 автоматично створює safety snapshot " +
                     "(точку відкату) поточних локальних даних."
             textSize = 14f
             setPadding(dp(16), dp(8), dp(16), dp(8))
@@ -3010,7 +3010,7 @@ class MainActivity : Activity() {
                     "YouTube Channel ID і назви плейлистів.\n\n" +
                     "OAuth access token, паролі та signing keys " +
                     "НЕ зберігаються.\n\n" +
-                    "RC4 також має SHA-256 integrity check, щоб " +
+                    "v1.0.0 також має SHA-256 integrity check, щоб " +
                     "пошкоджений backup не відновлювався мовчки."
             )
             .setNegativeButton("Скасувати", null)

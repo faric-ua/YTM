@@ -1,7 +1,7 @@
-# YTM Importer — Документація
+# YTM Importer — Versioned documentation
 
-Поточна версія:
+Поточна stable версія:
 
-`docs/v.1.0.0-rc4/`
+`docs/v.1.0.0/`
 
-RC4 — final release hardening.
+Попередні RC та старі версії не перезаписуються.

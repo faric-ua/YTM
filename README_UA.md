@@ -1,18 +1,15 @@
-# YTM Importer v1.0.0-rc4
+# YTM Importer v1.0.0
 
-Фінальний технічний Release Candidate перед stable.
+Перший стабільний реліз.
 
-Нової користувацької функціональності немає.
+Основний функціонал зафіксований:
+імпорт → пошук → review → duplicates → playlist → History → YTM Project,
+а також Queue/Resume, Backup/Restore/Rollback і Diagnostics.
 
-RC4:
-- setup-java@v5;
-- перевірка підпису APK;
-- zipalign;
-- package/version check;
-- SHA-256;
-- artifact APK + checksum.
+Release pipeline перевіряє signed APK та генерує SHA-256.
 
-Після успішного build/install/smoke/data-safety наступний крок:
-`v1.0.0 stable`.
+Наступний великий етап після підтвердження stable build:
+**UI/UX redesign (v1.1.x)**.
 
-UI/UX redesign — після stable.
+До redesign функціональна поведінка v1.0.0 є baseline,
+який не можна ламати.

@@ -1,31 +1,36 @@
 # YTM Importer — Roadmap
 
 ## Поточна версія
-**v1.0.0-rc4 — final release hardening**
+**v1.0.0 stable**
 
-## RC4
-- [x] setup-java v5;
+## v1.0.0
+- [x] core functionality frozen;
+- [x] History / YTM Project;
+- [x] duplicate flow;
+- [x] manual URL metadata;
+- [x] Quota / Queue / Resume;
+- [x] Backup / Restore / Rollback;
+- [x] Diagnostics / Share;
+- [x] signed build pipeline;
+- [x] setup-java@v5;
 - [x] APK signature verification;
 - [x] zipalign verification;
 - [x] package/version inspection;
-- [x] APK SHA-256;
-- [x] artifact APK + checksum;
-- [ ] GitHub Actions RC4 build;
-- [ ] signed upgrade RC3.1 → RC4;
-- [ ] smoke test;
-- [ ] backup/restore/rollback test.
+- [x] SHA-256 checksum;
+- [ ] final GitHub Actions stable build;
+- [ ] signed update RC4 → v1.0.0;
+- [ ] stable smoke test.
 
-## v1.0.0 stable
-- [ ] no blocker bugs;
-- [ ] no data-loss bugs;
-- [ ] final version;
-- [ ] final release notes;
-- [ ] final APK + SHA-256.
-
-## Після stable
+## v1.1.x — UI/UX redesign
 - [ ] Material 3;
-- [ ] responsive layout;
-- [ ] separate screens;
-- [ ] navigation redesign;
+- [ ] responsive main screen;
+- [ ] separate screens instead of overloaded dialogs;
+- [ ] proper navigation/back behavior;
+- [ ] small-screen fitting;
 - [ ] typography/spacing;
-- [ ] accessibility.
+- [ ] accessibility;
+- [ ] consistent icons/components.
+
+## Later functionality
+- [ ] new features only after UI baseline is stable;
+- [ ] keep v1.0 functional regression checklist as guard.

@@ -1,22 +1,22 @@
 YTM Importer
-Version: 1.0.0-rc4
-Version code: 25
+Version: 1.0.0
+Version code: 26
 Package: com.saney.ytmimporter
-Stage: Final Release Candidate hardening
+Stage: Stable release
 
-RC4:
-- setup-java@v5
-- apksigner verify
-- zipalign verify
-- aapt package/version check
-- SHA-256 checksum
-- artifact APK + checksum
-
-Functional logic unchanged from RC3.1.
-
-Next:
-- GitHub Actions build
-- signed upgrade
-- smoke test
+Stable baseline:
+- import/search/review
+- manual URL metadata
+- new/existing playlist
+- duplicate detection
+- quota/queue/resume
+- History
+- YTM Project
 - backup/restore/rollback
-- v1.0.0 stable
+- diagnostics/share/cache tools
+- signed release pipeline
+- APK verification
+- SHA-256
+
+Next major phase:
+v1.1.x UI/UX redesign

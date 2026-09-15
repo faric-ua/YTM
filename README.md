@@ -1,5 +1,6 @@
-# YTM Importer v1.0.0-rc4
+# YTM Importer v1.0.0
 
-Final release-hardening candidate before v1.0.0 stable.
+First stable release.
 
-Includes Java action modernization and post-build signed APK verification.
+This version freezes the verified RC4 functionality as the stable baseline.
+Next major phase: UI/UX redesign in v1.1.x.
