@@ -1,4 +1,5 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -222,6 +223,7 @@ class HistoryActivity : Activity() {
             )
 
             setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
             return
         }
 
@@ -248,6 +250,7 @@ class HistoryActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
 
         val adapter =
             HistoryListAdapter(entries)
@@ -606,6 +609,7 @@ class HistoryActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     private fun showActions(

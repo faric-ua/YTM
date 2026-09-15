@@ -1,4 +1,5 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -205,6 +206,7 @@ class ReviewActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     private fun showListScreen() {
@@ -431,6 +433,7 @@ class ReviewActivity : Activity() {
         }
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     private fun showTrackScreen(
@@ -634,6 +637,7 @@ class ReviewActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     private fun candidateCard(
@@ -935,24 +939,23 @@ class ReviewActivity : Activity() {
     }
 
     private fun showProjectActions() {
-        AlertDialog.Builder(this)
-            .setTitle("Поточний YTM Project")
-            .setItems(
-                arrayOf(
-                    "Зберегти YTM Project",
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = "Поточний YTM Project",
+            subtitle = "Збереження та обмін робочим проектом.",
+            actions = listOf(
+                UiChrome.MenuAction(
+                    "Зберегти YTM Project"
+                ) {
+                    saveCurrentProject()
+                },
+                UiChrome.MenuAction(
                     "Поділитися YTM Project"
-                )
-            ) { _, which ->
-                when (which) {
-                    0 -> saveCurrentProject()
-                    1 -> shareCurrentProject()
+                ) {
+                    shareCurrentProject()
                 }
-            }
-            .setNegativeButton(
-                "Закрити",
-                null
             )
-            .show()
+        )
     }
 
     private fun currentProjectJson(): String {

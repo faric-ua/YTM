@@ -1,7 +1,13 @@
-YTM Importer v1.4.1 FULL
+YTM Importer v1.4.2 FULL
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
+app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
+app/src/main/java/com/saney/ytmimporter/DataActivity.kt
+app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
+app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 app/build.gradle.kts
 scripts/release-preflight.sh
 .github/workflows/build-apk.yml
@@ -14,16 +20,11 @@ OPEN_QUESTIONS.md
 docs/README.md
 
 ADDED:
-scripts/mainactivity-audit.sh
-docs/v.1.4.1/
-TERMINAL_APPLY_v1.4.1.md
-
-DELETED:
-none
-
-CODE REMOVED INSIDE MainActivity:
-legacy Destination/Create AlertDialog functions only
+app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+scripts/ui-chrome-audit.sh
+docs/v.1.4.2/
+TERMINAL_APPLY_v1.4.2.md
 
 VERSION:
-versionCode = 35
-versionName = 1.4.1
+versionCode = 36
+versionName = 1.4.2

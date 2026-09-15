@@ -2,6 +2,6 @@
 
 Current version:
 
-`docs/v.1.4.1/`
+`docs/v.1.4.2/`
 
-v1.4.1 removes the obsolete Destination/Create dialog layer from MainActivity.
+v1.4.2 adds safe-area handling and styles the main secondary dialogs.

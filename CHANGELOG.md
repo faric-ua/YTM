@@ -1,16 +1,13 @@
 # Журнал змін (Changelog)
 
+## v1.4.2
+- Added shared `UiChrome` helper.
+- Added safe-area top/bottom insets to main screens.
+- Styled the `Ще` menu.
+- Styled the import source menu.
+- Styled Review `Project` actions dialog.
+- Added `scripts/ui-chrome-audit.sh`.
+- versionCode 36 / versionName 1.4.2.
+
 ## v1.4.1
 - Removed obsolete Destination/Create AlertDialog flow from MainActivity.
-- DestinationActivity remains the only Step 4 user navigation.
-- Kept create/append/duplicate/write core behavior.
-- Added `scripts/mainactivity-audit.sh`.
-- MainActivity reduced from 5953 to 5434 lines.
-- Q-001 remains OPEN for later.
-- versionCode 35 / versionName 1.4.1.
-
-## v1.4.0
-- Dedicated Destination/Create screen.
-
-## v1.3.2
-- Review wording / Project save feedback correction.

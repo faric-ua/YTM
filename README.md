@@ -1,10 +1,9 @@
-# YTM Importer v1.4.1
+# YTM Importer v1.4.2
 
-Legacy Destination cleanup release.
+UI polish release.
 
 Highlights:
-- obsolete Step 4 AlertDialog flow removed from MainActivity;
-- DestinationActivity is the active Step 4 UI;
-- YouTube write core remains unchanged;
-- MainActivity audit script added;
+- safe-area top/bottom insets on primary screens;
+- styled dark-card menus for More / Import / Project actions;
+- shared `UiChrome` helper;
 - Q-001 remains open for later review.

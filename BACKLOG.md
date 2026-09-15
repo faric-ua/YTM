@@ -1,20 +1,20 @@
 # YTM Importer — Roadmap
 
 ## Current
-**v1.4.1 — Legacy Destination Cleanup**
+**v1.4.2 — Safe Insets + Dialog Polish**
 
 ## Open question carried forward
-- [~] **Q-001: v1.3.2 Review wording + Project save feedback** — OPEN;
-  повернутися пізніше. Не блокує roadmap. Див. `OPEN_QUESTIONS.md`.
+- [~] **Q-001: v1.3.2 Review wording + Project save feedback** — OPEN; повернутися пізніше. Див. `OPEN_QUESTIONS.md`.
 
-## v1.4.1
-- [x] remove old Destination/Create AlertDialog flow;
-- [x] keep DestinationActivity navigation;
-- [x] keep create/append write core unchanged;
-- [x] add MainActivity audit script;
-- [x] document MainActivity size reduction;
+## v1.4.2
+- [x] add shared `UiChrome` helper;
+- [x] add top/bottom safe-area insets on primary screens;
+- [x] style the `Ще` menu;
+- [x] style the import source menu;
+- [x] style Review project actions menu;
+- [x] add UI chrome audit script;
 - [ ] GitHub build;
-- [ ] v1.4.x phone regression.
+- [ ] phone regression.
 
 ## Next — cleanup wave 2
 - [ ] remove legacy Import dialog/file flow from MainActivity;
@@ -27,12 +27,5 @@
 - [ ] extract account/auth presentation from MainActivity;
 - [ ] extract search orchestration where safe;
 - [ ] reduce MainActivity toward Home/navigation coordinator;
-- [ ] Material 3 components;
-- [ ] responsive typography/spacing;
-- [ ] accessibility and loading/empty/error consistency.
-
-## Public distribution
-- [ ] OAuth production readiness;
-- [ ] hosted privacy-policy URL;
-- [ ] non-developer Google account test;
-- [ ] second-person usability test.
+- [ ] Material 3 components or a fuller custom design system;
+- [ ] accessibility and empty/loading/error consistency.

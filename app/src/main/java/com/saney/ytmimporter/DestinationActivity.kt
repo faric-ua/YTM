@@ -1,4 +1,5 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
 import android.content.Intent
@@ -189,6 +190,7 @@ class DestinationActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     private fun showExistingListScreen() {
@@ -258,6 +260,7 @@ class DestinationActivity : Activity() {
                 )
             )
             setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
             return
         }
 
@@ -378,6 +381,7 @@ class DestinationActivity : Activity() {
         }
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     private fun showExistingConfirmScreen() {
@@ -560,6 +564,7 @@ class DestinationActivity : Activity() {
             )
         )
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     private fun showExistingScanFailedScreen() {
@@ -651,6 +656,7 @@ class DestinationActivity : Activity() {
             )
         )
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     @Deprecated("Deprecated in Java")

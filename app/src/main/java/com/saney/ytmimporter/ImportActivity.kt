@@ -1,4 +1,5 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -355,6 +356,7 @@ class ImportActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     /**

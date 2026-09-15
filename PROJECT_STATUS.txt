@@ -1,29 +1,16 @@
 YTM Importer
-Version: 1.4.1
-Version code: 35
+Version: 1.4.2
+Version code: 36
 Package: com.saney.ytmimporter
 
 Stage:
-Legacy Destination cleanup
+UI polish: safe insets + styled secondary dialogs
 
-MainActivity:
-before = 5953 lines
-after  = 5434 lines
-
-Removed:
-- old destination chooser dialogs
-- old existing-playlist chooser dialog
-- old duplicate-choice dialogs
-- old privacy/create confirmation dialogs
-
-Retained:
-- DestinationActivity bridge
-- OAuth/account validation
-- duplicate analyzer
-- create/append write core
-- Pending Queue
-- History sync
-- quota tracking
+Added:
+- UiChrome helper
+- safe-area handling on primary screens
+- styled menus for More / Import / Project actions
+- ui-chrome audit script
 
 Open:
 Q-001 remains OPEN — revisit later.

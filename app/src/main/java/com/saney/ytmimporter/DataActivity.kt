@@ -1,4 +1,5 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -330,6 +331,7 @@ class DataActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
         refreshSummary()
     }
 

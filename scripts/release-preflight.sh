@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.1/RELEASE.md"
-check_file "docs/v.1.4.1/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.2/RELEASE.md"
+check_file "docs/v.1.4.2/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -29,8 +29,10 @@ check_file "app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt"
 check_file "scripts/mainactivity-audit.sh"
+check_file "scripts/ui-chrome-audit.sh"
 
 bash scripts/mainactivity-audit.sh
+bash scripts/ui-chrome-audit.sh
 check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 check_file "OPEN_QUESTIONS.md"
 
@@ -140,11 +142,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 35' app/build.gradle.kts \
-  || fail "Expected versionCode = 35"
+grep -q 'versionCode = 36' app/build.gradle.kts \
+  || fail "Expected versionCode = 36"
 
-grep -q 'versionName = "1.4.1"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.1"'
+grep -q 'versionName = "1.4.2"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.2"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -224,6 +226,8 @@ echo "- dedicated ReviewActivity navigation"
 echo "- dedicated DestinationActivity navigation"
 echo "- legacy destination dialogs removed from MainActivity"
 echo "- DestinationActivity bridge/write core retained"
+echo "- safe-area insets on primary screens"
+echo "- styled More/Import/Project dialogs"
 echo "- destination duplicate/final-confirm result contract"
 echo "- deferred UX question Q-001 documented"
 echo "- persistent current playlist workspace"

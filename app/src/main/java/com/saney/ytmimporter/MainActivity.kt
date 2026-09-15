@@ -44,6 +44,7 @@ import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.TrackAdapter
+import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
@@ -510,6 +511,7 @@ class MainActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
 
         updateQuotaPanel()
         updatePendingButton()
@@ -815,52 +817,64 @@ class MainActivity : Activity() {
     }
 
     private fun showImportMenu() {
-        val labels =
-            arrayOf(
-                "Файл — CSV / TXT / YTM Project",
-                "Вставити текст — Artist - Track"
-            )
-
-        AlertDialog.Builder(this)
-            .setTitle("Імпорт трекліста")
-            .setItems(labels) { _, which ->
-                when (which) {
-                    0 -> chooseFile()
-                    1 -> showPasteTrackListDialog()
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = "Імпорт трекліста",
+            subtitle = "Оберіть джерело для нового списку.",
+            negativeLabel = "Скасувати",
+            actions = listOf(
+                UiChrome.MenuAction(
+                    "Файл — CSV / TXT / YTM Project"
+                ) {
+                    chooseFile()
+                },
+                UiChrome.MenuAction(
+                    "Вставити текст — Artist - Track"
+                ) {
+                    showPasteTrackListDialog()
                 }
-            }
-            .setNegativeButton("Скасувати", null)
-            .show()
+            )
+        )
     }
 
     private fun showMoreActions() {
-        val labels =
-            arrayOf(
-                "Поточний проект — review / save / share",
-                "Заміни — перевірити ручні заміни",
-                "Відкрити останній плейлист у YTM",
-                "Дані — export / backup / restore",
-                "Сервіс — допомога / diagnostics / cache"
-            )
-
-        AlertDialog.Builder(this)
-            .setTitle("Ще")
-            .setItems(labels) { _, which ->
-                when (which) {
-                    0 -> openReviewScreen()
-                    1 -> showReplacementLog()
-                    2 -> openInYtm()
-                    3 -> startActivity(
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = "Ще",
+            subtitle = "Додаткові дії та сервісні інструменти.",
+            actions = listOf(
+                UiChrome.MenuAction(
+                    "Поточний проект — review / save / share"
+                ) {
+                    openReviewScreen()
+                },
+                UiChrome.MenuAction(
+                    "Заміни — перевірити ручні заміни"
+                ) {
+                    showReplacementLog()
+                },
+                UiChrome.MenuAction(
+                    "Відкрити останній плейлист у YTM"
+                ) {
+                    openInYtm()
+                },
+                UiChrome.MenuAction(
+                    "Дані — export / backup / restore"
+                ) {
+                    startActivity(
                         Intent(
                             this,
                             DataActivity::class.java
                         )
                     )
-                    4 -> showServiceTools()
+                },
+                UiChrome.MenuAction(
+                    "Сервіс — допомога / diagnostics / cache"
+                ) {
+                    showServiceTools()
                 }
-            }
-            .setNegativeButton("Закрити", null)
-            .show()
+            )
+        )
     }
 
     /**

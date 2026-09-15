@@ -1,14 +1,10 @@
-# YTM Importer v1.4.1
+# YTM Importer v1.4.2
 
-Технічний cleanup після перенесення Step 4 у `DestinationActivity`.
+Реліз візуального полірування інтерфейсу.
 
 Що змінилось:
+- додано safe-area відступи зверху і знизу на основних екранах;
+- меню `Ще`, `Імпорт трекліста` і `Поточний YTM Project` тепер оформлені у темному стилі;
+- додано спільний helper `UiChrome`.
 
-- старий Destination/Create flow через AlertDialog видалено з MainActivity;
-- новий DestinationActivity залишається єдиним UI-шляхом Step 4;
-- create/append, duplicates, OAuth, quota, Pending Queue і History core не переписувалися;
-- додано `scripts/mainactivity-audit.sh`.
-
-Відкрите питання Q-001 з v1.3.2 залишається OPEN і буде переглянуте пізніше.
-
-Наступний cleanup: старі Import / History / Data / Pending dialog-шляхи.
+Q-001 залишається OPEN і буде переглянуте пізніше.

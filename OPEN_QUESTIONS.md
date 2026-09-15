@@ -20,3 +20,7 @@ Do not treat this item as a blocker for Destination/Create work.
 ## v1.4.1 note
 
 Q-001 is intentionally still OPEN. The legacy Destination cleanup does not resolve or redefine it.
+
+## v1.4.2 note
+
+Top/bottom insets and secondary-dialog styling are addressed in v1.4.2. Q-001 still remains OPEN.

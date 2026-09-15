@@ -1,4 +1,5 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -204,6 +205,7 @@ class PendingActivity : Activity() {
             )
 
             setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
             return
         }
 
@@ -233,6 +235,7 @@ class PendingActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
 
         val adapter =
             PendingListAdapter(jobs)
@@ -573,6 +576,7 @@ class PendingActivity : Activity() {
         )
 
         setContentView(root)
+        UiChrome.applyScreenInsets(this, root)
     }
 
     private fun requestResume(
