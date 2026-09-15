@@ -1,6 +1,5 @@
-# YTM Importer v1.0.0-rc3.1
+# YTM Importer v1.0.0-rc4
 
-Release Candidate 3 — backup integrity and restore rollback hardening.
+Final release-hardening candidate before v1.0.0 stable.
 
-Українська документація: `README_UA.md`.
-RC docs: `docs/v.1.0.0-rc3/`.
+Includes Java action modernization and post-build signed APK verification.

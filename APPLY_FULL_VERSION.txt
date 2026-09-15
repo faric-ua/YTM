@@ -1,31 +1,16 @@
-YTM Importer v1.0.0-rc3.1 FULL
-
-BLOCKER:
-RC3 compileReleaseKotlin:
-MainActivity.kt:2810-2811
-Syntax error: Expecting '"'
-
-FIX:
-broken real newline inside Kotlin string
-->
-escaped \n
-
-ЗАМІНЕНО:
-app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/build.gradle.kts
-scripts/rc-preflight.sh
-.github/workflows/build-apk.yml
-BACKLOG.md
-CHANGELOG.md
-README.md
-README_UA.md
-PROJECT_STATUS.txt
-docs/README.md
-
-ДОДАНО:
-docs/v.1.0.0-rc3.1/
-TERMINAL_APPLY_v1.0.0-rc3.1.md
+YTM Importer v1.0.0-rc4 FULL
 
 VERSION:
-versionCode = 24
-versionName = 1.0.0-rc3.1
+versionCode = 25
+versionName = 1.0.0-rc4
+
+MAIN CHANGES:
+- actions/setup-java@v5
+- Verify signed APK
+- apksigner
+- zipalign
+- aapt package/version
+- SHA-256
+- artifact APK + checksum
+
+NO USER-FACING FUNCTIONAL LOGIC CHANGES.

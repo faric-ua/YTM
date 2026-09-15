@@ -1,38 +1,18 @@
-# YTM Importer v1.0.0-rc3.1
+# YTM Importer v1.0.0-rc4
 
-RC3 — це **data safety hardening** перед stable v1.0.
+Фінальний технічний Release Candidate перед stable.
 
-## Головне
+Нової користувацької функціональності немає.
 
-Нових великих playlist-функцій тут немає.
-Ми захищаємо локальні дані перед фінальним релізом.
+RC4:
+- setup-java@v5;
+- перевірка підпису APK;
+- zipalign;
+- package/version check;
+- SHA-256;
+- artifact APK + checksum.
 
-### Backup schema v2
+Після успішного build/install/smoke/data-safety наступний крок:
+`v1.0.0 stable`.
 
-Full Backup тепер має SHA-256 integrity check.
-Пошкоджений backup не повинен мовчки перезаписати локальні дані.
-
-### Safety snapshot
-
-Перед Restore застосунок автоматично запам'ятовує стан:
-
-- History;
-- Queue;
-- Quota;
-- SearchCache.
-
-Потім доступно:
-
-`Дані → Відкотити останній Restore`
-
-### UI
-
-Візуальний redesign досі відкладаємо до після `v1.0.0`.
-
-## RC3.1
-
-Технічний build hotfix.
-
-RC3 Data Safety логіка не змінена.
-Виправлений лише некоректно розірваний Kotlin string literal
-у меню `Дані`.
+UI/UX redesign — після stable.

@@ -16,17 +16,17 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.0.0-rc3.1/RELEASE.md"
-check_file "docs/v.1.0.0-rc3.1/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.0.0-rc4/RELEASE.md"
+check_file "docs/v.1.0.0-rc4/REGRESSION_CHECKLIST.md"
 
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 24' app/build.gradle.kts \
-  || fail "Expected versionCode = 24"
+grep -q 'versionCode = 25' app/build.gradle.kts \
+  || fail "Expected versionCode = 25"
 
-grep -q 'versionName = "1.0.0-rc3.1"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.0.0-rc3.1"'
+grep -q 'versionName = "1.0.0-rc4"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.0.0-rc4"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -59,7 +59,29 @@ grep -q 'Locate Android SDK' .github/workflows/build-apk.yml \
 
 grep -Fq '"«Повний backup», а не History JSON.\n" +' \
   app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
-  || fail "RC3.1 Data dialog string guard failed"
+  || fail "Data dialog string guard failed"
+
+grep -q 'uses:[[:space:]]*actions/setup-java@v5' \
+  .github/workflows/build-apk.yml \
+  || fail "Expected actions/setup-java@v5"
+
+grep -q 'name:[[:space:]]*Verify signed APK' \
+  .github/workflows/build-apk.yml \
+  || fail "APK verification step is missing"
+
+grep -q 'verify --verbose --print-certs' \
+  .github/workflows/build-apk.yml \
+  || fail "apksigner verification command is missing"
+
+grep -q 'ZIPALIGN.*-c -v 4' \
+  .github/workflows/build-apk.yml \
+  || grep -q '"$ZIPALIGN" -c -v 4 "$APK"' \
+  .github/workflows/build-apk.yml \
+  || fail "zipalign verification is missing"
+
+grep -q 'sha256sum' \
+  .github/workflows/build-apk.yml \
+  || fail "APK SHA-256 generation is missing"
 
 echo
 echo "PASS:"
@@ -69,5 +91,9 @@ echo "- BuildConfig"
 echo "- SDK levels"
 echo "- signing material not tracked"
 echo "- Android SDK workflow hotfix"
-echo "- RC3.1 Data dialog string guard"
+echo "- Data dialog string guard"
+echo "- setup-java v5"
+echo "- APK signature verification step"
+echo "- APK zipalign verification step"
+echo "- APK SHA-256 generation"
 echo "- RC docs"

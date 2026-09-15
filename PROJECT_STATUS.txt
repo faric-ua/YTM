@@ -1,34 +1,22 @@
 YTM Importer
-Version: 1.0.0-rc3.1
-Version code: 24
+Version: 1.0.0-rc4
+Version code: 25
 Package: com.saney.ytmimporter
-Stage: Release Candidate 3
+Stage: Final Release Candidate hardening
 
-Verified before RC3:
-- signed upgrade preserved History
-- History navigation works
-- YTM Project save/import works
-- manual URL metadata works
-- duplicate flow works
+RC4:
+- setup-java@v5
+- apksigner verify
+- zipalign verify
+- aapt package/version check
+- SHA-256 checksum
+- artifact APK + checksum
 
-RC3 data safety:
-- backup schema v2
-- BuildConfig appVersion
-- SHA-256 integrity
-- structural validation
-- pre-restore safety snapshot
-- manual rollback
-- automatic rollback attempt
-- schema v1 compatibility
+Functional logic unchanged from RC3.1.
 
-Needs verification:
-- GitHub Actions RC3 build
-- signed update RC2 -> RC3
-- real backup -> restore -> rollback
-
-RC3.1:
-- exact GitHub failure analyzed
-- compileReleaseKotlin failed due malformed string literal
-- MainActivity Data dialog string fixed
-- RC preflight regression guard added
-- setup-java@v4 warning intentionally not changed in this blocker hotfix
+Next:
+- GitHub Actions build
+- signed upgrade
+- smoke test
+- backup/restore/rollback
+- v1.0.0 stable
