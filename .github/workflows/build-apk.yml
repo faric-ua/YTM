@@ -13,6 +13,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: RC preflight
+        shell: bash
+        run: bash scripts/rc-preflight.sh
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -112,11 +116,11 @@ jobs:
 
       - name: Prepare APK
         run: |
-          cp app/build/outputs/apk/release/app-release.apk YTM-Importer-v0.15.2-release.apk
-          ls -lh YTM-Importer-v0.15.2-release.apk
+          cp app/build/outputs/apk/release/app-release.apk YTM-Importer-v1.0.0-rc1-release.apk
+          ls -lh YTM-Importer-v1.0.0-rc1-release.apk
 
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: YTM-Importer-v0.15.2-Release
-          path: YTM-Importer-v0.15.2-release.apk
+          name: YTM-Importer-v1.0.0-rc1-Release
+          path: YTM-Importer-v1.0.0-rc1-release.apk

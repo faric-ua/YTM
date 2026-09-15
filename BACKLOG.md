@@ -1,63 +1,61 @@
 # YTM Importer — План розвитку (Roadmap)
 
-## v0.15.2 — Manual URL metadata hotfix
-- [x] ручний URL зберігає правильний `videoId`;
-- [x] додано `videos.list(part=snippet)` для ручного URL;
-- [x] `selectedTitle` отримує фактичну назву;
-- [x] `selectedChannel` отримує фактичний канал;
-- [x] ручна заміна показується як головна назва у списку;
-- [x] оригінальна назва зберігається як `Заміна для`;
-- [x] History / replacement log зберігають Original → Replacement;
-- [ ] перевірити на реальному ручному URL після v0.15.2.
-
-## v0.15.1 — BuildConfig compilation hotfix
-- [x] розібрано GitHub Actions log;
-- [x] причина: `BuildConfig` не генерувався для модуля;
-- [x] додано `buildFeatures { buildConfig = true }`;
-- [ ] підтвердити успішну GitHub Actions збірку v0.15.1.
-
 ## Поточна версія
-**v0.15.2 — Stabilization / підготовка Release Candidate v1.0**
+**v1.0.0-rc1 — Release Candidate 1**
 
-## 1–13. Реалізовано раніше
+## Реалізовано до RC1
+- [x] CSV / TXT / direct text import;
+- [x] Google OAuth + account/channel;
 - [x] SearchCache + MatchScorer;
-- [x] manual candidate / manual URL;
-- [x] account/channel;
-- [x] new / existing playlist;
+- [x] candidate review;
+- [x] manual candidate;
+- [x] manual URL → real title/channel;
+- [x] create new playlist;
+- [x] append existing playlist;
 - [x] duplicate detection;
+- [x] privacy;
 - [x] Quota Planner;
 - [x] Pending Queue + Resume;
 - [x] History;
-- [x] compact UI;
 - [x] Export / Backup / Restore;
-- [x] Diagnostics / Share / Cache tools.
-
-## 14. Stabilization / RC preparation — v0.15.0
-- [x] adaptive app icon;
-- [x] round icon;
-- [x] Android 13+ monochrome icon;
-- [x] `Сервіс → Про програму`;
-- [x] dynamic version from BuildConfig;
+- [x] Diagnostics / Share / Cache tools;
 - [x] centralized ErrorMessages;
-- [x] friendly HTTP/API errors;
-- [x] friendly network errors;
-- [x] cleanup unused `markAllPending`;
-- [x] cleanup unused button fields;
-- [x] full regression checklist;
-- [ ] прогнати regression checklist на телефоні;
-- [ ] перевірити adaptive/themed icon на телефоні;
-- [ ] протестувати Share / SearchCache tools v0.14+;
-- [ ] зафіксувати всі blocker bugs перед v1.0 RC.
+- [x] signed GitHub Actions builds;
+- [x] Termux build/download/install workflow.
 
-## 15. v1.0 Release Candidate — наступний етап після тестів
-- [ ] закрити blocker bugs із regression testing;
-- [ ] freeze core behavior;
-- [ ] final version naming;
+## v1.0.0-rc1
+- [x] core behavior freeze;
+- [x] final RC naming;
+- [x] RC release notes;
+- [x] RC regression checklist;
+- [x] automatic RC preflight script;
+- [x] workflow runs preflight before build;
+- [x] guard against tracked JKS / release-signing.properties;
+- [x] preserve BuildConfig + Android SDK workflow hotfixes;
+- [ ] GitHub Actions RC1 build;
+- [ ] signed upgrade v0.15.2 → RC1;
+- [ ] regression checklist on phone;
+- [ ] fix blocker bugs only.
+
+## v1.0.0 stable
+- [ ] no blocker bugs;
+- [ ] final signed upgrade test;
 - [ ] final release notes;
-- [ ] final clean build / signed upgrade test.
+- [ ] versionName `1.0.0`;
+- [ ] versionCode > RC1;
+- [ ] stable APK artifact.
 
-## 16. Після v1.0
-- [ ] повний Material 3 UI/UX redesign;
+## Після v1.0.0
+### UI/UX redesign
+- [ ] Material 3;
 - [ ] окремі screens замість великої кількості dialogs;
+- [ ] responsive layout для різних екранів;
+- [ ] toolbar / navigation;
+- [ ] покращення щільності інформації;
+- [ ] accessibility / larger text;
+- [ ] polishing animations/icons.
+
+### Future functionality
 - [ ] додаткові джерела імпорту;
-- [ ] optional advanced playlist management.
+- [ ] optional advanced playlist management;
+- [ ] інші функції тільки після стабільного v1.0.

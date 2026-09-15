@@ -1,45 +1,38 @@
 YTM Importer
-Version: 0.15.2
-Version code: 20
+Version: 1.0.0-rc1
+Version code: 21
 Package: com.saney.ytmimporter
-Stage: stabilization before v1.0 Release Candidate
+Stage: Release Candidate 1
 
-Core implemented:
-- CSV/TXT/direct text import
-- Google OAuth + account/channel
+Core functionality:
+- import CSV/TXT/text
+- OAuth account/channel
 - SearchCache / MatchScorer
-- candidate review / manual URL
+- candidate review / manual URL metadata
 - new / existing playlist
-- privacy
 - duplicate detection
 - Quota Planner
 - Pending Queue / Resume
 - History
 - Export / Backup / Restore
 - Diagnostics / Share / Cache tools
+- friendly errors
+- signed GitHub Actions
+- Termux workflow
 
-v0.15.0 polish:
-- adaptive/round/monochrome icon
-- About dialog
-- ErrorMessages
-- regression checklist
-- old-code cleanup
+RC policy:
+- core behavior frozen
+- blocker fixes only before v1.0.0
+- UI/UX redesign postponed until after v1.0.0
+- UI issues are fixed now only if they block a required action
 
-Next gate:
-- GitHub Actions compile
-- install over previous APK
-- run docs/v.0.15.0/REGRESSION_CHECKLIST.md
-- fix blocker bugs
-- prepare v1.0 Release Candidate
+RC1 additions:
+- scripts/rc-preflight.sh
+- workflow preflight step
+- RC regression checklist
+- final RC naming/docs
 
-v0.15.1 hotfix:
-- GitHub Actions v0.15.0 failed in compileReleaseKotlin
-- BuildConfig unresolved
-- buildFeatures.buildConfig explicitly enabled
-- needs real GitHub Actions verification
-
-v0.15.2:
-- manual YouTube/YTM URL now resolves real video title/channel
-- manual replacement is primary local display
-- original track is preserved for audit/history
-- needs real GitHub Actions build + phone test
+Needs verification:
+- GitHub Actions RC1 build
+- signed update from v0.15.2
+- phone regression checklist

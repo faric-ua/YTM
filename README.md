@@ -1,16 +1,9 @@
-# YTM Importer v0.15.2
+# YTM Importer v1.0.0-rc1
 
-Android importer for YouTube / YouTube Music playlists.
+Release Candidate 1 for the Android YouTube / YouTube Music playlist importer.
 
-v0.15.2 is the stabilization build before the v1.0 Release Candidate.
-
-Highlights:
-- adaptive launcher icon;
-- About dialog;
-- centralized user-friendly errors;
-- regression checklist;
-- cleanup before RC.
+Core behavior is frozen. RC phase focuses on regression testing and blocker fixes.
 
 Українська документація: `README_UA.md`.
 
-Current version docs: `docs/v.0.15.0/`.
+RC docs: `docs/v.1.0.0-rc1/`.

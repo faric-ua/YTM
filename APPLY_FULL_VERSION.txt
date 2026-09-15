@@ -1,20 +1,20 @@
-YTM Importer v0.15.2 FULL — MANUAL URL METADATA HOTFIX
+YTM Importer v1.0.0-rc1 FULL — RELEASE CANDIDATE 1
 
-ПРОБЛЕМА:
-ручний URL додавав правильний videoId у YTM,
-але локально selectedTitle залишався "Ручне посилання".
+ФУНКЦІОНАЛЬНА ПОЛІТИКА:
+- core behavior frozen
+- до v1.0.0 тільки blocker fixes
+- Material 3 / UI redesign після v1.0.0
+- UI зараз чіпаємо лише якщо він блокує роботу
 
-ВИПРАВЛЕННЯ:
-- YouTubeApi.getVideoInfo()
-- MainActivity.applyManualUrl()
-- MainActivity.applyManualUrlFallback()
-- TrackAdapter показує фактичну ручну заміну основним рядком
-- оригінал зберігається як "Заміна для"
+ДОДАНО:
+scripts/rc-preflight.sh
+docs/v.1.0.0-rc1/RELEASE.md
+docs/v.1.0.0-rc1/REGRESSION_CHECKLIST.md
+docs/v.1.0.0-rc1/diagrams/*
+TERMINAL_APPLY_v1.0.0-rc1.md
 
 ЗАМІНЕНО:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
@@ -24,9 +24,6 @@ README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
-ДОДАНО:
-docs/v.0.15.2/
-TERMINAL_APPLY_v0.15.2.md
-
-versionCode = 20
-versionName = 0.15.2
+VERSION:
+versionCode = 21
+versionName = 1.0.0-rc1

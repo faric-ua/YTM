@@ -2199,7 +2199,10 @@ class MainActivity : Activity() {
                     "(${BuildConfig.VERSION_CODE})\n" +
                     "Package: $packageName\n" +
                     "Android target SDK: $targetSdk\n\n" +
-                    "Етап: підготовка Release Candidate (кандидата у реліз) v1.0.\n\n" +
+                    "Етап: v1.0.0 RC1 (перший кандидат у стабільний реліз).\n" +
+                    "Core behavior frozen (основна логіка заморожена): " +
+                    "до v1.0 виправляємо тільки blocker bugs " +
+                    "(критичні помилки).\n\n" +
                     "Основні можливості:\n" +
                     "• CSV / TXT / прямий текст\n" +
                     "• Google + YouTube/YTM account\n" +
@@ -2237,7 +2240,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.0.15.0/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.0.0-rc1/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()
