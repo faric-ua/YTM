@@ -1,16 +1,22 @@
-YTM Importer v0.14.0 FULL — DIAGNOSTICS / SHARE / CACHE
+YTM Importer v0.15.0 FULL — STABILIZATION / RC PREP
 
 ДОДАНО:
-app/src/main/res/xml/file_paths.xml
-docs/v.0.14.0/RELEASE.md
-docs/v.0.14.0/diagrams/*
-TERMINAL_APPLY_v0.14.0.md
+app/src/main/java/com/saney/ytmimporter/util/ErrorMessages.kt
+app/src/main/res/drawable/ic_launcher_foreground.xml
+app/src/main/res/drawable/ic_launcher_monochrome.xml
+app/src/main/res/mipmap-anydpi/ic_launcher.xml
+app/src/main/res/mipmap-anydpi/ic_launcher_round.xml
+app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+app/src/main/res/mipmap-anydpi-v33/ic_launcher.xml
+app/src/main/res/mipmap-anydpi-v33/ic_launcher_round.xml
+docs/v.0.15.0/
+TERMINAL_APPLY_v0.15.0.md
 
 ЗАМІНЕНО:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/java/com/saney/ytmimporter/youtube/SearchCache.kt
-app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
 app/src/main/AndroidManifest.xml
+app/src/main/res/values/colors.xml
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
@@ -20,11 +26,10 @@ README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
-НОВЕ:
-- Diagnostics TXT
-- Android Share через FileProvider
-- SearchCache statistics / cleanup
-- Google Cloud quota shortcut
+ОЧИЩЕНО В КОДІ:
+- removed unused markAllPending
+- removed unused History/Data/Service button fields
 
-versionCode = 17
-versionName = 0.14.0
+VERSION:
+versionCode = 18
+versionName = 0.15.0

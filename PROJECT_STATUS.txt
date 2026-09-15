@@ -1,34 +1,33 @@
 YTM Importer
-Version: 0.14.0
-Version code: 17
+Version: 0.15.0
+Version code: 18
 Package: com.saney.ytmimporter
+Stage: stabilization before v1.0 Release Candidate
 
-Реалізовано:
-- CSV/TXT/text import
+Core implemented:
+- CSV/TXT/direct text import
 - Google OAuth + account/channel
 - SearchCache / MatchScorer
-- candidate review
+- candidate review / manual URL
 - new / existing playlist
+- privacy
 - duplicate detection
 - Quota Planner
 - Pending Queue / Resume
 - History
-- compact UI
 - Export / Backup / Restore
-- Diagnostics
-- Diagnostics save/share
-- History TXT share
-- Full Backup share
-- SearchCache statistics/cleanup
-- Google Cloud Console shortcut
-- versioned Mermaid diagrams
-- Termux build/download/install workflow
+- Diagnostics / Share / Cache tools
 
-Потрібно протестувати:
-- GitHub Actions build v0.14.0
-- Android Share History TXT
-- Android Share Diagnostics TXT
-- Android Share Full Backup
-- SearchCache stats
-- clear expired SearchCache
-- Google Cloud quick link
+v0.15.0 polish:
+- adaptive/round/monochrome icon
+- About dialog
+- ErrorMessages
+- regression checklist
+- old-code cleanup
+
+Next gate:
+- GitHub Actions compile
+- install over previous APK
+- run docs/v.0.15.0/REGRESSION_CHECKLIST.md
+- fix blocker bugs
+- prepare v1.0 Release Candidate

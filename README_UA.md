@@ -1,70 +1,23 @@
-# YTM Importer v0.14.0
+# YTM Importer v0.15.0
 
-## Нове: Сервіс (Diagnostics / Cache)
+Версія стабілізації перед Release Candidate v1.0.
 
-У верхньому горизонтальному меню з'явилась компактна кнопка:
+## Нове
 
-`Сервіс`
+- адаптивна іконка застосунку;
+- `Сервіс → Про програму`;
+- зрозуміліші повідомлення про помилки;
+- regression checklist;
+- невелике очищення старого коду.
 
-Вона не зменшує висоту списку треків.
+## Поточний функціонал
 
-### Діагностика
+CSV/TXT/текст → пошук → ручна перевірка → новий/існуючий playlist → duplicate check → quota-safe write → Queue/Resume → History → Export/Backup → Diagnostics.
 
-`Сервіс → Діагностика`
+## Тестування
 
-Показує:
+Повний список перед v1.0:
 
-- версію YTM Importer;
-- Android / телефон;
-- стан Google / YouTube/YTM account;
-- локальну quota estimate;
-- SearchCache statistics;
-- History count;
-- Pending Queue count;
-- останню quota error.
+`docs/v.0.15.0/REGRESSION_CHECKLIST.md`
 
-Email і Channel ID у Diagnostics маскуються.
-
-### Share
-
-`Дані → Поділитися History TXT`
-
-або:
-
-`Дані → Поділитися повним backup`
-
-Android відкриває стандартне меню поширення.
-
-Повний backup може містити приватні метадані, тому перед Share є попередження.
-
-### SearchCache
-
-`Сервіс → SearchCache`
-
-Можна подивитися:
-
-- активні записи;
-- прострочені записи;
-- пошкоджені записи;
-- приблизний розмір.
-
-Можна:
-
-- очистити тільки прострочені;
-- очистити весь кеш.
-
-History, Queue і YouTube/YTM playlists при цьому не видаляються.
-
-### Google Cloud
-
-`Сервіс → Google Cloud Console`
-
-або:
-
-`Квота → Google Cloud`
-
-відкриває сторінку quota YouTube Data API у браузері.
-
-## Документація
-
-`docs/v.0.14.0/`
+Для великого regression test підходить наш `50 Clubland Classics` із 50 треків.

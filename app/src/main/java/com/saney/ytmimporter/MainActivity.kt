@@ -40,6 +40,7 @@ import com.saney.ytmimporter.storage.LocalBackupManager
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.TrackAdapter
+import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
@@ -110,9 +111,6 @@ class MainActivity : Activity() {
     private lateinit var accountButton: Button
     private lateinit var quotaButton: Button
     private lateinit var pendingButton: Button
-    private lateinit var historyButton: Button
-    private lateinit var dataButton: Button
-    private lateinit var serviceButton: Button
     private lateinit var progress: ProgressBar
     private lateinit var resultPanel: LinearLayout
     private lateinit var resultTitleText: TextView
@@ -179,12 +177,9 @@ class MainActivity : Activity() {
         actions.addView(quotaButton)
         pendingButton = button("Черга") { showPendingJobs() }
         actions.addView(pendingButton)
-        historyButton = button("Історія") { showHistory() }
-        actions.addView(historyButton)
-        dataButton = button("Дані") { showDataTools() }
-        actions.addView(dataButton)
-        serviceButton = button("Сервіс") { showServiceTools() }
-        actions.addView(serviceButton)
+        actions.addView(button("Історія") { showHistory() })
+        actions.addView(button("Дані") { showDataTools() })
+        actions.addView(button("Сервіс") { showServiceTools() })
         scroll.addView(actions)
         root.addView(scroll)
 
@@ -568,7 +563,7 @@ class MainActivity : Activity() {
                         )
                     } catch (e: Exception) {
                         pendingAfterAuth = null
-                        toast("Не вдалося відкрити Google: ${e.message}")
+                        toast(ErrorMessages.userMessage(e, "Не вдалося відкрити Google"))
                     }
                 } else {
                     val token = result.accessToken
@@ -582,7 +577,7 @@ class MainActivity : Activity() {
             }
             .addOnFailureListener { e ->
                 pendingAfterAuth = null
-                toast("Авторизація Google: ${e.message}")
+                toast(ErrorMessages.userMessage(e, "Авторизація Google не вдалася"))
             }
     }
 
@@ -733,7 +728,11 @@ class MainActivity : Activity() {
                         }
                     } catch (e: Exception) {
                         track.status = TrackStatus.FAILED
-                        track.error = e.message
+                        track.error =
+                            ErrorMessages.userMessage(
+                                e,
+                                "Не вдалося виконати пошук"
+                            )
 
                         if (isQuotaError(e)) {
                             quotaBlocked = true
@@ -895,7 +894,10 @@ class MainActivity : Activity() {
                         }
                     }.onFailure { error ->
                         toast(
-                            error.message ?: "Не вдалося завантажити плейлисти"
+                            ErrorMessages.userMessage(
+                                error,
+                                "Не вдалося завантажити плейлисти"
+                            )
                         )
                     }
                 }
@@ -1232,8 +1234,13 @@ class MainActivity : Activity() {
             .setTitle("Не вдалося перевірити дублікати")
             .setMessage(
                 "Плейлист: ${target.title}\n\n" +
-                    "Помилка:\n" +
-                    (error.message ?: "невідома помилка") +
+                    "Причина:\n" +
+                    ErrorMessages.userMessage(
+                        error,
+                        "Не вдалося прочитати вміст плейлиста"
+                    ) +
+                    "\n\nТехнічно: " +
+                    ErrorMessages.technicalDetails(error) +
                     "\n\nМожна скасувати або продовжити без перевірки. " +
                     "У другому випадку можливі повтори."
             )
@@ -1571,10 +1578,16 @@ class MainActivity : Activity() {
                             showQuotaPausedDialog(job)
                         }
                     } else {
+                        val friendlyError =
+                            ErrorMessages.userMessage(
+                                e,
+                                "Не вдалося створити плейлист"
+                            )
+
                         job =
                             job.copy(
                                 updatedAt = System.currentTimeMillis(),
-                                lastError = e.message
+                                lastError = friendlyError
                             )
                         syncHistoryFromJob(job, HistoryStatus.FAILED)
                         pendingJobStore.remove(job.id)
@@ -1582,7 +1595,7 @@ class MainActivity : Activity() {
                         runOnUiThread {
                             progress.visibility = View.GONE
                             updatePendingButton()
-                            toast(e.message ?: "Не вдалося створити плейлист")
+                            toast(friendlyError)
                         }
                     }
 
@@ -1681,15 +1694,21 @@ class MainActivity : Activity() {
                         return@execute
                     }
 
+                    val friendlyError =
+                        ErrorMessages.userMessage(
+                            e,
+                            "Не вдалося додати трек"
+                        )
+
                     track.status = TrackStatus.FAILED
-                    track.error = e.message
+                    track.error = friendlyError
 
                     job =
                         job.copy(
                             updatedAt = System.currentTimeMillis(),
                             failedCount = job.failedCount + 1,
                             remainingTracks = job.remainingTracks.drop(1),
-                            lastError = e.message
+                            lastError = friendlyError
                         )
 
                     pendingJobStore.upsert(job)
@@ -1798,20 +1817,6 @@ class MainActivity : Activity() {
             historyIndex = item.historyIndex.takeIf { it >= 0 }
         )
 
-    private fun markAllPending(
-        tracks: List<Track>,
-        error: String?
-    ) {
-        tracks.forEach {
-            it.status = TrackStatus.PENDING
-            it.error =
-                "Очікує продовження: " +
-                    (error ?: "операцію зупинено")
-        }
-
-        adapter.notifyDataSetChanged()
-        updateSummary()
-    }
 
     private fun showQuotaPausedDialog(job: PendingJob) {
         val playlistInfo =
@@ -2125,7 +2130,10 @@ class MainActivity : Activity() {
                     "Розмір, записи, очищення",
 
                 "Google Cloud Console\n" +
-                    "Відкрити сторінку квоти YouTube Data API"
+                    "Відкрити сторінку квоти YouTube Data API",
+
+                "Про програму\n" +
+                    "Версія, приватність і статус підготовки до v1.0"
             )
 
         val list = ListView(this).apply {
@@ -2152,7 +2160,7 @@ class MainActivity : Activity() {
                 list,
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(390)
+                    dp(440)
                 )
             )
         }
@@ -2173,10 +2181,66 @@ class MainActivity : Activity() {
                 2 -> saveDiagnostics()
                 3 -> showSearchCacheTools()
                 4 -> openGoogleCloudQuota()
+                5 -> showAboutDialog()
             }
         }
 
         dialog.show()
+    }
+
+    private fun showAboutDialog() {
+        val targetSdk = applicationInfo.targetSdkVersion
+
+        AlertDialog.Builder(this)
+            .setTitle("YTM Importer — Про програму")
+            .setIcon(R.mipmap.ic_launcher)
+            .setMessage(
+                "Версія: ${BuildConfig.VERSION_NAME} " +
+                    "(${BuildConfig.VERSION_CODE})\n" +
+                    "Package: $packageName\n" +
+                    "Android target SDK: $targetSdk\n\n" +
+                    "Етап: підготовка Release Candidate (кандидата у реліз) v1.0.\n\n" +
+                    "Основні можливості:\n" +
+                    "• CSV / TXT / прямий текст\n" +
+                    "• Google + YouTube/YTM account\n" +
+                    "• SearchCache + MatchScorer\n" +
+                    "• новий / існуючий плейлист\n" +
+                    "• перевірка дублікатів\n" +
+                    "• Quota Planner + Pending Queue\n" +
+                    "• History\n" +
+                    "• Export / Backup / Restore\n" +
+                    "• Diagnostics / Share / Cache tools\n\n" +
+                    "Приватність:\n" +
+                    "застосунок не має власного сервера, реклами або " +
+                    "вбудованої аналітики. OAuth access token не входить " +
+                    "у backup або Diagnostics."
+            )
+            .setNegativeButton("Закрити", null)
+            .setPositiveButton("Regression checklist") { _, _ ->
+                showRegressionChecklist()
+            }
+            .show()
+    }
+
+    private fun showRegressionChecklist() {
+        AlertDialog.Builder(this)
+            .setTitle("Перевірка перед v1.0")
+            .setMessage(
+                "Короткий список:\n\n" +
+                    "1. Імпорт CSV/TXT/текст\n" +
+                    "2. Google account + YTM channel\n" +
+                    "3. Пошук + кеш + ручний кандидат\n" +
+                    "4. Новий playlist + privacy\n" +
+                    "5. Existing playlist + duplicates\n" +
+                    "6. Quota / Pending Queue / Resume\n" +
+                    "7. History\n" +
+                    "8. Export / Backup / Restore\n" +
+                    "9. Diagnostics / Share / SearchCache\n" +
+                    "10. Оновлення APK поверх попередньої версії\n\n" +
+                    "Повний checklist є у docs/v.0.15.0/REGRESSION_CHECKLIST.md."
+            )
+            .setPositiveButton("OK", null)
+            .show()
     }
 
     private fun showDiagnostics() {
@@ -2222,7 +2286,7 @@ class MainActivity : Activity() {
 
         return buildString {
             append("YTM Importer — Diagnostics\n")
-            append("Version: 0.14.0 (17)\n")
+            append("Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n")
             append("Package: $packageName\n")
             append(
                 "Android: ${Build.VERSION.RELEASE} " +

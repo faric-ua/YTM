@@ -4,4 +4,5 @@
     <color name="app_text">#F4F4F5</color>
     <color name="app_muted">#A5A7AD</color>
     <color name="app_accent">#FF0033</color>
+    <color name="icon_background">#0F1013</color>
 </resources>

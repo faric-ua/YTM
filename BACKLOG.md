@@ -1,11 +1,11 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v0.14.0 — Diagnostics / Share / Cache tools**
+**v0.15.0 — Stabilization / підготовка Release Candidate v1.0**
 
-## 1–12. Реалізовано раніше
+## 1–13. Реалізовано раніше
 - [x] SearchCache + MatchScorer;
-- [x] ручний вибір кандидата;
+- [x] manual candidate / manual URL;
 - [x] account/channel;
 - [x] new / existing playlist;
 - [x] duplicate detection;
@@ -14,40 +14,34 @@
 - [x] History;
 - [x] compact UI;
 - [x] Export / Backup / Restore;
-- [x] hotfix меню Дані v0.13.1.
+- [x] Diagnostics / Share / Cache tools.
 
-## 13. Diagnostics / Share / Cache tools — v0.14.0
-- [x] компактна кнопка `Сервіс`;
-- [x] Diagnostics dialog;
-- [x] Diagnostics TXT;
-- [x] share Diagnostics TXT;
-- [x] save Diagnostics TXT;
-- [x] Android Share History TXT;
-- [x] Android Share Full Backup JSON;
-- [x] privacy warning before sharing backup;
-- [x] Android FileProvider;
-- [x] SearchCache entry count;
-- [x] SearchCache approximate size;
-- [x] expired / malformed cache count;
-- [x] oldest / newest cache timestamps;
-- [x] clear expired cache;
-- [x] clear all cache with confirmation;
-- [x] Google Cloud Console quick link;
-- [x] Google Cloud button inside Quota dialog;
-- [ ] протестувати Share на телефоні;
-- [ ] протестувати очистку SearchCache;
-- [ ] перевірити Diagnostics TXT після великого 50-track test playlist.
+## 14. Stabilization / RC preparation — v0.15.0
+- [x] adaptive app icon;
+- [x] round icon;
+- [x] Android 13+ monochrome icon;
+- [x] `Сервіс → Про програму`;
+- [x] dynamic version from BuildConfig;
+- [x] centralized ErrorMessages;
+- [x] friendly HTTP/API errors;
+- [x] friendly network errors;
+- [x] cleanup unused `markAllPending`;
+- [x] cleanup unused button fields;
+- [x] full regression checklist;
+- [ ] прогнати regression checklist на телефоні;
+- [ ] перевірити adaptive/themed icon на телефоні;
+- [ ] протестувати Share / SearchCache tools v0.14+;
+- [ ] зафіксувати всі blocker bugs перед v1.0 RC.
 
-## 14. Доведення до v1.0 — наступний етап
-- [ ] app icon / adaptive icon;
-- [ ] app version / about dialog;
-- [ ] unified wording;
-- [ ] better error messages;
-- [ ] regression test checklist;
-- [ ] cleanup old temporary code;
-- [ ] release candidate.
+## 15. v1.0 Release Candidate — наступний етап після тестів
+- [ ] закрити blocker bugs із regression testing;
+- [ ] freeze core behavior;
+- [ ] final version naming;
+- [ ] final release notes;
+- [ ] final clean build / signed upgrade test.
 
-## 15. Повний UI/UX redesign після стабілізації
-- [ ] покроковий flow;
+## 16. Після v1.0
+- [ ] повний Material 3 UI/UX redesign;
 - [ ] окремі screens замість великої кількості dialogs;
-- [ ] Material 3.
+- [ ] додаткові джерела імпорту;
+- [ ] optional advanced playlist management.

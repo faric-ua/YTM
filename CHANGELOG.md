@@ -1,23 +1,23 @@
 # Журнал змін (Changelog)
 
+## v0.15.0
+- Підготовка до v1.0 Release Candidate.
+- Додано adaptive / round / monochrome app icon.
+- Додано `Сервіс → Про програму`.
+- Додано короткий regression checklist у застосунку.
+- Diagnostics використовує BuildConfig version.
+- Додано централізований `ErrorMessages`.
+- Покращено повідомлення HTTP/API/network errors.
+- Покращено помилки search / existing playlist / duplicate scan / write.
+- Прибрано невикористаний `markAllPending`.
+- Прибрано непотрібні поля кнопок History / Дані / Сервіс.
+- Додано `docs/v.0.15.0/REGRESSION_CHECKLIST.md`.
+
 ## v0.14.0
-- Додано компактну кнопку `Сервіс`.
-- Додано Diagnostics view / save / share.
-- Diagnostics маскує email і Channel ID.
-- Додано FileProvider для безпечного Android Share файлів.
-- Додано Share History TXT.
-- Додано Share Full Backup з privacy warning.
-- Додано SearchCache stats.
-- Додано clear expired / clear all SearchCache.
-- Додано Google Cloud Console quick link.
-- Додано кнопку Google Cloud у Quota dialog.
-- Додано `docs/v.0.14.0/`.
+- Diagnostics / Share / SearchCache tools.
 
-## v0.13.1
-- Hotfix меню Дані.
-
-## v0.13.0
-- Export / Backup / Restore.
+## v0.13.x
+- Export / Backup / Restore + Data menu hotfix.
 
 ## v0.12.0
 - Duplicate detection.
