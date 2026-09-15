@@ -1,8 +1,12 @@
-# YTM Importer v1.3.2
+# YTM Importer v1.4.0
 
-UX correction release.
+Destination/Create navigation release.
 
 Highlights:
-- clearer manual-selection wording;
-- original imported track remains primary;
-- project save toast shows project name and actual saved filename.
+- dedicated DestinationActivity;
+- new vs existing playlist flow;
+- privacy selection;
+- searchable existing playlists;
+- duplicate preview and final write choice;
+- existing OAuth/write core preserved in MainActivity;
+- open UX question from v1.3.2 recorded for later revisit.

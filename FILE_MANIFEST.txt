@@ -1,16 +1,17 @@
-YTM Importer v1.3.2 FULL — FILE MANIFEST
+YTM Importer v1.4.0 FULL — FILE MANIFEST
 
-8ba0e2d5a30f5a87  .github/workflows/build-apk.yml
+66cdc1e9f71f6609  .github/workflows/build-apk.yml
 6cc7d3ae20eee52b  .gitignore
-9cbf0f39ad47735e  APPLY_FULL_VERSION.txt
-f28bacf0611b0530  BACKLOG.md
-97a9ebdb1c85b0d9  CHANGELOG.md
+bfb9a236eb53d120  APPLY_FULL_VERSION.txt
+08cd1dc53c024481  BACKLOG.md
+db15f196ff3c2aa1  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
+5b8092772809c20d  OPEN_QUESTIONS.md
 d587b884d3808902  PRIVACY.md
-bb04d99eff4eb759  PROJECT_STATUS.txt
-e4909b8d84cb7f2b  PUBLIC_RELEASE_CHECKLIST.md
-365f07f7921683e8  README.md
-098f4c880e89bd0c  README_UA.md
+eba61e8bdc075c3f  PROJECT_STATUS.txt
+ce775606933d5b6f  PUBLIC_RELEASE_CHECKLIST.md
+f71a169e52a76fb7  README.md
+a6d87e8e22883ee2  README_UA.md
 f4a9c99161f1f7a0  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
 e0ce791b58f2a591  TERMINAL_APPLY_v0.10.1.md
@@ -38,13 +39,15 @@ b18f3a200e6193e0  TERMINAL_APPLY_v1.2.2.md
 4a4a3f975fce6a29  TERMINAL_APPLY_v1.3.0.md
 c96b6015d574c359  TERMINAL_APPLY_v1.3.1.md
 eac5117f33e62bb1  TERMINAL_APPLY_v1.3.2.md
-e8185ca36f040853  app/build.gradle.kts
+039a81cdc2c9bf3f  TERMINAL_APPLY_v1.4.0.md
+a077e2cbaa5e70e9  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
-615d5eff9074ed2b  app/src/main/AndroidManifest.xml
+21af9e4b25337494  app/src/main/AndroidManifest.xml
 db346aba61f2824e  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
+c4b9ec4c527c5890  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 df31db68beb210b4  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 1d8080f26aad4800  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
-95dd88a220054c6c  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+2c97578c061d8510  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 a2daba2a7c66c33c  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 9e89500527ec9148  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
@@ -77,7 +80,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 ce3b1e690fed5536  app/src/main/res/values/styles.xml
 6260627b41d420da  app/src/main/res/xml/file_paths.xml
 1ad29e43e790095c  build.gradle.kts
-1e7bc1889153cad6  docs/README.md
+67aee6fff3466fdd  docs/README.md
 fba063f3df84f31a  docs/v.0.10.0/RELEASE.md
 40eb6695cc102a64  docs/v.0.10.0/diagrams/ARCHITECTURE.md
 d36539446325c8a5  docs/v.0.10.0/diagrams/BEFORE_AFTER_v0.10.0.md
@@ -670,10 +673,17 @@ b76a93ed4968d2cf  docs/v.1.3.2/REGRESSION_CHECKLIST.md
 6aa9c92ae1a61998  docs/v.1.3.2/diagrams/BEFORE_AFTER_v1.3.2.md
 5e0f425b401e6885  docs/v.1.3.2/diagrams/PROJECT_SAVE_FEEDBACK.md
 8dbf941bf016968f  docs/v.1.3.2/diagrams/README.md
+de0b2e2f834dd2b9  docs/v.1.4.0/REGRESSION_CHECKLIST.md
+29dbca442fadcc7b  docs/v.1.4.0/RELEASE.md
+587083ea94b1c8c4  docs/v.1.4.0/diagrams/BACK_NAVIGATION.md
+1fbc97d146947d70  docs/v.1.4.0/diagrams/BEFORE_AFTER_v1.4.0.md
+d7ff8ab8b748ab5c  docs/v.1.4.0/diagrams/DESTINATION_SCREEN_FLOW.md
+5655160160fd9601  docs/v.1.4.0/diagrams/DUPLICATE_CONFIRMATION_FLOW.md
+811de39bbc284a07  docs/v.1.4.0/diagrams/README.md
 d5f372c6d46ad7c8  gradle.properties
 45acb5657d044225  release-signing.properties.example
 92f4070125b5330d  samples/sample_playlist.csv
 85ee2b48bd8ad374  samples/sample_playlist.txt
 62193ffaa1f110da  scripts/download-latest-apk.sh
-eace5d634ca79376  scripts/release-preflight.sh
+15e98159330bf034  scripts/release-preflight.sh
 3ef7b58ae9c2bd82  settings.gradle.kts

@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.0
+- Added dedicated `DestinationActivity`.
+- Step 4 now uses a full screen instead of destination/privacy/duplicate confirmation dialogs.
+- New playlist privacy selection moved to the destination screen.
+- Existing playlists are loaded only when requested and shown in a searchable list.
+- Duplicate scan results are shown on-screen before writing.
+- User can skip duplicates or add them anyway from the same flow.
+- Duplicate-scan failure has a dedicated continue-without-check screen.
+- Final account/quota information is shown before write.
+- Added durable `OPEN_QUESTIONS.md`; v1.3.2 Review/Project-feedback item is marked for later revisit.
+- versionCode 34 / versionName 1.4.0.
+
 ## v1.3.2
 - Manual selection no longer swaps original and selected track in the main list.
 - Original imported track always remains the primary row title.

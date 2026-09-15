@@ -1,15 +1,36 @@
 YTM Importer
-Version: 1.3.2
-Version code: 33
+Version: 1.4.0
+Version code: 34
 Package: com.saney.ytmimporter
+Stage: Destination / Create Navigation
 
-Stage:
-Review UX correction after v1.3.1
+Dedicated screens:
+- ImportActivity
+- ReviewActivity
+- DestinationActivity
+- HistoryActivity
+- DataActivity
+- PendingActivity
 
-Fixed:
-- confusing manual replacement wording
-- original/selected title visual inversion
-- Project save toast missing project/file name
+DestinationActivity:
+- New / Existing playlist
+- privacy selection
+- searchable existing playlist list
+- duplicate preview
+- skip duplicates / add anyway
+- scan-failure fallback
+- final account/quota confirmation
+
+Core retained in MainActivity:
+- OAuth
+- YouTube API list/duplicate scan
+- create/append write execution
+- Pending Queue / History write tracking
+
+OPEN QUESTION:
+- Q-001 v1.3.2 Review wording + Project save feedback: revisit later.
 
 Next:
-- destination/create screen after v1.3.2 phone regression
+- phone regression
+- remove legacy destination dialogs after confirmation
+- continue MainActivity cleanup / Material polish

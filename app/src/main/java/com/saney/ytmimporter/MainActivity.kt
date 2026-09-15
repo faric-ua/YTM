@@ -93,6 +93,7 @@ class MainActivity : Activity() {
     private val pendingQueueRequestCode = 1201
     private val importScreenRequestCode = 1301
     private val reviewScreenRequestCode = 1302
+    private val destinationScreenRequestCode = 1401
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
@@ -113,6 +114,10 @@ class MainActivity : Activity() {
     private var currentImportSourceLabel: String = "Невідоме джерело"
     private var pendingExportContent: String? = null
     private var pendingExportSuccessMessage: String? = null
+    private var destinationPlaylists: List<YouTubePlaylistInfo> = emptyList()
+    private var pendingDestinationTarget: YouTubePlaylistInfo? = null
+    private var pendingDestinationAnalysis: DuplicateAnalysis? = null
+    private var pendingDestinationScanRequestCount: Int = 0
 
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
@@ -996,6 +1001,10 @@ class MainActivity : Activity() {
                 }
             }
 
+            destinationScreenRequestCode -> {
+                handleDestinationResult(data)
+            }
+
             authRequestCode -> {
                 try {
                     val result =
@@ -1634,30 +1643,624 @@ class MainActivity : Activity() {
     }
 
     private fun createPlaylist() {
-        val p = playlist ?: return toast("Спочатку імпортуйте список треків")
+        val p =
+            playlist
+                ?: return toast(
+                    "Спочатку імпортуйте список треків"
+                )
+
         val selected =
-            p.tracks.filter {
-                !it.selectedVideoId.isNullOrBlank() && it.status != TrackStatus.SKIPPED
+            currentTracksForDestination(p)
+
+        if (selected.isEmpty()) {
+            return toast(
+                "Спочатку знайдіть або виберіть треки"
+            )
+        }
+
+        destinationPlaylists = emptyList()
+        pendingDestinationTarget = null
+        pendingDestinationAnalysis = null
+        pendingDestinationScanRequestCount = 0
+
+        openDestinationStart(
+            p = p,
+            selected = selected
+        )
+    }
+
+    private fun currentTracksForDestination(
+        p: ImportedPlaylist
+    ): List<Track> =
+        p.tracks.filter { track ->
+            !track.selectedVideoId.isNullOrBlank() &&
+                track.status != TrackStatus.SKIPPED
+        }
+
+    private fun openDestinationStart(
+        p: ImportedPlaylist,
+        selected: List<Track>
+    ) {
+        val intent =
+            destinationBaseIntent(
+                p = p,
+                selected = selected
+            ).apply {
+                putExtra(
+                    DestinationActivity.EXTRA_MODE,
+                    DestinationActivity.MODE_START
+                )
+                putExtra(
+                    DestinationActivity.EXTRA_NEW_QUOTA_PLAN,
+                    quotaPlanForWrite(
+                        trackCount = selected.size,
+                        createPlaylist = true
+                    )
+                )
             }
 
-        if (selected.isEmpty()) return toast("Спочатку знайдіть треки")
+        startActivityForResult(
+            intent,
+            destinationScreenRequestCode
+        )
+    }
 
-        val questionable = selected.count { it.status == TrackStatus.REVIEW }
-        if (questionable > 0) {
-            AlertDialog.Builder(this)
-                .setTitle("Є $questionable неперевірених треків")
-                .setMessage(
-                    "Можна створити плейлист зараз, але краще переглянути " +
-                        "жовті позиції. Продовжити?"
-                )
-                .setNegativeButton("Перевірю") { _, _ -> }
-                .setPositiveButton("Продовжити") { _, _ ->
-                    chooseDestination(p, selected)
-                }
-                .show()
-        } else {
-            chooseDestination(p, selected)
+    private fun destinationBaseIntent(
+        p: ImportedPlaylist,
+        selected: List<Track>
+    ): Intent {
+        val questionable =
+            selected.count {
+                it.status == TrackStatus.REVIEW
+            }
+
+        val googleLabel =
+            googleAccountInfo
+                ?.email
+                ?.takeIf { it.isNotBlank() }
+                ?: "буде перевірено перед записом"
+
+        val channelLabel =
+            youtubeChannelInfo
+                ?.title
+                ?.takeIf { it.isNotBlank() }
+                ?: "буде перевірено перед записом"
+
+        return Intent(
+            this,
+            DestinationActivity::class.java
+        ).apply {
+            putExtra(
+                DestinationActivity.EXTRA_PLAYLIST_NAME,
+                p.name
+            )
+            putExtra(
+                DestinationActivity.EXTRA_IMPORTED_COUNT,
+                p.tracks.size
+            )
+            putExtra(
+                DestinationActivity.EXTRA_SELECTED_COUNT,
+                selected.size
+            )
+            putExtra(
+                DestinationActivity.EXTRA_QUESTIONABLE_COUNT,
+                questionable
+            )
+            putExtra(
+                DestinationActivity.EXTRA_GOOGLE_LABEL,
+                googleLabel
+            )
+            putExtra(
+                DestinationActivity.EXTRA_CHANNEL_LABEL,
+                channelLabel
+            )
         }
+    }
+
+    private fun handleDestinationResult(
+        data: Intent
+    ) {
+        val p =
+            playlist
+                ?: return toast(
+                    "Поточний список уже недоступний"
+                )
+
+        val selected =
+            currentTracksForDestination(p)
+
+        if (selected.isEmpty()) {
+            return toast(
+                "Немає треків для запису"
+            )
+        }
+
+        when (
+            data.getStringExtra(
+                DestinationActivity.EXTRA_ACTION
+            )
+        ) {
+            DestinationActivity.ACTION_CREATE_NEW -> {
+                val privacy =
+                    data.getStringExtra(
+                        DestinationActivity.EXTRA_PRIVACY
+                    ) ?: "private"
+
+                actuallyCreatePlaylist(
+                    p = p,
+                    selected = selected,
+                    privacyStatus = privacy
+                )
+            }
+
+            DestinationActivity.ACTION_LOAD_EXISTING -> {
+                loadExistingPlaylistsForDestination(
+                    p = p,
+                    selected = selected
+                )
+            }
+
+            DestinationActivity.ACTION_BACK_TO_START -> {
+                openDestinationStart(
+                    p = p,
+                    selected = selected
+                )
+            }
+
+            DestinationActivity.ACTION_BACK_TO_EXISTING_LIST -> {
+                if (destinationPlaylists.isEmpty()) {
+                    loadExistingPlaylistsForDestination(
+                        p = p,
+                        selected = selected
+                    )
+                } else {
+                    openDestinationExistingList(
+                        p = p,
+                        selected = selected,
+                        playlists = destinationPlaylists
+                    )
+                }
+            }
+
+            DestinationActivity.ACTION_SELECT_EXISTING -> {
+                val id =
+                    data.getStringExtra(
+                        DestinationActivity.EXTRA_TARGET_ID
+                    ).orEmpty()
+
+                if (id.isBlank()) {
+                    return toast(
+                        "Не вдалося визначити вибраний плейлист"
+                    )
+                }
+
+                val target =
+                    destinationPlaylists
+                        .firstOrNull {
+                            it.id == id
+                        }
+                        ?: YouTubePlaylistInfo(
+                            id = id,
+                            title =
+                                data.getStringExtra(
+                                    DestinationActivity.EXTRA_TARGET_TITLE
+                                ) ?: "Плейлист",
+                            privacyStatus =
+                                data.getStringExtra(
+                                    DestinationActivity.EXTRA_TARGET_PRIVACY
+                                ) ?: "private",
+                            itemCount =
+                                data.getLongExtra(
+                                    DestinationActivity.EXTRA_TARGET_COUNT,
+                                    0L
+                                )
+                        )
+
+                pendingDestinationTarget = target
+
+                checkDuplicatesForDestination(
+                    p = p,
+                    selected = selected,
+                    target = target
+                )
+            }
+
+            DestinationActivity.ACTION_CONFIRM_EXISTING -> {
+                finishExistingDestination(
+                    p = p,
+                    selected = selected,
+                    duplicateMode =
+                        data.getStringExtra(
+                            DestinationActivity.EXTRA_DUPLICATE_MODE
+                        ) ?: DestinationActivity.DUPLICATE_MODE_SKIP
+                )
+            }
+        }
+    }
+
+    private fun loadExistingPlaylistsForDestination(
+        p: ImportedPlaylist,
+        selected: List<Track>
+    ) {
+        authorize {
+            val token =
+                accessToken
+                    ?: return@authorize
+
+            progress.visibility = View.VISIBLE
+            progress.isIndeterminate = true
+            status(
+                "Завантажую ваші існуючі плейлисти…"
+            )
+
+            executor.execute {
+                quotaTracker.recordGeneralUnits(
+                    QuotaTracker.SIMPLE_LIST_COST
+                )
+
+                val result =
+                    runCatching {
+                        api.listMyPlaylists(token)
+                    }
+
+                runOnUiThread {
+                    progress.isIndeterminate = false
+                    progress.visibility = View.GONE
+                    updateQuotaPanel()
+
+                    result.onSuccess { playlists ->
+                        destinationPlaylists = playlists
+
+                        if (playlists.isEmpty()) {
+                            toast(
+                                "У цьому YouTube/YTM профілі немає доступних плейлистів."
+                            )
+                        } else {
+                            openDestinationExistingList(
+                                p = p,
+                                selected = selected,
+                                playlists = playlists
+                            )
+                        }
+                    }.onFailure { error ->
+                        toast(
+                            ErrorMessages.userMessage(
+                                error,
+                                "Не вдалося завантажити плейлисти"
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun openDestinationExistingList(
+        p: ImportedPlaylist,
+        selected: List<Track>,
+        playlists: List<YouTubePlaylistInfo>
+    ) {
+        val intent =
+            destinationBaseIntent(
+                p = p,
+                selected = selected
+            ).apply {
+                putExtra(
+                    DestinationActivity.EXTRA_MODE,
+                    DestinationActivity.MODE_EXISTING_LIST
+                )
+                putStringArrayListExtra(
+                    DestinationActivity.EXTRA_EXISTING_IDS,
+                    ArrayList(
+                        playlists.map { it.id }
+                    )
+                )
+                putStringArrayListExtra(
+                    DestinationActivity.EXTRA_EXISTING_TITLES,
+                    ArrayList(
+                        playlists.map { it.title }
+                    )
+                )
+                putStringArrayListExtra(
+                    DestinationActivity.EXTRA_EXISTING_PRIVACY,
+                    ArrayList(
+                        playlists.map { it.privacyStatus }
+                    )
+                )
+                putExtra(
+                    DestinationActivity.EXTRA_EXISTING_COUNTS,
+                    playlists
+                        .map { it.itemCount }
+                        .toLongArray()
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            destinationScreenRequestCode
+        )
+    }
+
+    private fun checkDuplicatesForDestination(
+        p: ImportedPlaylist,
+        selected: List<Track>,
+        target: YouTubePlaylistInfo
+    ) {
+        authorize {
+            val token =
+                accessToken
+                    ?: return@authorize
+
+            progress.visibility = View.VISIBLE
+            progress.isIndeterminate = true
+            status(
+                "Перевіряю дублікати у «${target.title}»…"
+            )
+
+            executor.execute {
+                val result =
+                    runCatching {
+                        api.listPlaylistVideoIds(
+                            accessToken = token,
+                            playlistId = target.id
+                        )
+                    }
+
+                runOnUiThread {
+                    progress.isIndeterminate = false
+                    progress.visibility = View.GONE
+
+                    result.onSuccess { playlistContents ->
+                        quotaTracker.recordGeneralUnits(
+                            playlistContents.requestCount *
+                                QuotaTracker.SIMPLE_LIST_COST
+                        )
+                        updateQuotaPanel()
+
+                        val analysis =
+                            analyzeDuplicates(
+                                selected = selected,
+                                existingVideoIds =
+                                    playlistContents.videoIds
+                            )
+
+                        pendingDestinationTarget = target
+                        pendingDestinationAnalysis = analysis
+                        pendingDestinationScanRequestCount =
+                            playlistContents.requestCount
+
+                        openDestinationExistingConfirm(
+                            p = p,
+                            selected = selected,
+                            target = target,
+                            analysis = analysis,
+                            scanRequestCount =
+                                playlistContents.requestCount
+                        )
+                    }.onFailure { error ->
+                        if (isQuotaError(error)) {
+                            quotaTracker.recordQuotaError(
+                                error.message
+                                    ?: "Не вдалося перевірити дублікати через квоту"
+                            )
+                            updateQuotaPanel()
+                        }
+
+                        pendingDestinationTarget = target
+                        pendingDestinationAnalysis = null
+                        pendingDestinationScanRequestCount = 0
+
+                        openDestinationScanFailed(
+                            p = p,
+                            selected = selected,
+                            target = target,
+                            error = error
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun openDestinationExistingConfirm(
+        p: ImportedPlaylist,
+        selected: List<Track>,
+        target: YouTubePlaylistInfo,
+        analysis: DuplicateAnalysis,
+        scanRequestCount: Int
+    ) {
+        val intent =
+            destinationBaseIntent(
+                p = p,
+                selected = selected
+            ).apply {
+                putExtra(
+                    DestinationActivity.EXTRA_MODE,
+                    DestinationActivity.MODE_EXISTING_CONFIRM
+                )
+                putDestinationTargetExtras(target)
+                putExtra(
+                    DestinationActivity.EXTRA_ALREADY_COUNT,
+                    analysis.alreadyInPlaylist.size
+                )
+                putExtra(
+                    DestinationActivity.EXTRA_REPEATED_COUNT,
+                    analysis.repeatedInImport.size
+                )
+                putExtra(
+                    DestinationActivity.EXTRA_NEW_COUNT,
+                    analysis.tracksToAdd.size
+                )
+                putExtra(
+                    DestinationActivity.EXTRA_SCAN_REQUESTS,
+                    scanRequestCount
+                )
+                putExtra(
+                    DestinationActivity.EXTRA_QUOTA_SKIP,
+                    quotaPlanForWrite(
+                        trackCount = analysis.tracksToAdd.size,
+                        createPlaylist = false
+                    )
+                )
+                putExtra(
+                    DestinationActivity.EXTRA_QUOTA_ALL,
+                    quotaPlanForWrite(
+                        trackCount = selected.size,
+                        createPlaylist = false
+                    )
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            destinationScreenRequestCode
+        )
+    }
+
+    private fun openDestinationScanFailed(
+        p: ImportedPlaylist,
+        selected: List<Track>,
+        target: YouTubePlaylistInfo,
+        error: Throwable
+    ) {
+        val intent =
+            destinationBaseIntent(
+                p = p,
+                selected = selected
+            ).apply {
+                putExtra(
+                    DestinationActivity.EXTRA_MODE,
+                    DestinationActivity.MODE_EXISTING_SCAN_FAILED
+                )
+                putDestinationTargetExtras(target)
+                putExtra(
+                    DestinationActivity.EXTRA_SCAN_ERROR,
+                    ErrorMessages.userMessage(
+                        error,
+                        "Не вдалося прочитати вміст плейлиста"
+                    ) +
+                        "\n\nТехнічно: " +
+                        ErrorMessages.technicalDetails(error)
+                )
+                putExtra(
+                    DestinationActivity.EXTRA_QUOTA_ALL,
+                    quotaPlanForWrite(
+                        trackCount = selected.size,
+                        createPlaylist = false
+                    )
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            destinationScreenRequestCode
+        )
+    }
+
+    private fun Intent.putDestinationTargetExtras(
+        target: YouTubePlaylistInfo
+    ) {
+        putExtra(
+            DestinationActivity.EXTRA_TARGET_ID,
+            target.id
+        )
+        putExtra(
+            DestinationActivity.EXTRA_TARGET_TITLE,
+            target.title
+        )
+        putExtra(
+            DestinationActivity.EXTRA_TARGET_PRIVACY,
+            target.privacyStatus
+        )
+        putExtra(
+            DestinationActivity.EXTRA_TARGET_COUNT,
+            target.itemCount
+        )
+    }
+
+    private fun finishExistingDestination(
+        p: ImportedPlaylist,
+        selected: List<Track>,
+        duplicateMode: String
+    ) {
+        val target =
+            pendingDestinationTarget
+                ?: return toast(
+                    "Цільовий плейлист уже недоступний. Виберіть його ще раз."
+                )
+
+        val analysis =
+            pendingDestinationAnalysis
+
+        val plan =
+            when (duplicateMode) {
+                DestinationActivity.DUPLICATE_MODE_NO_SCAN ->
+                    DuplicateWritePlan(
+                        tracksToWrite = selected,
+                        tracksToSkip = emptyList(),
+                        alreadyInPlaylistCount = 0,
+                        repeatedInImportCount = 0,
+                        scanRequestCount = 0,
+                        scanSucceeded = false,
+                        addDuplicatesAnyway = true
+                    )
+
+                DestinationActivity.DUPLICATE_MODE_ALL -> {
+                    val currentAnalysis =
+                        analysis
+                            ?: return toast(
+                                "Результат перевірки дублікатів уже недоступний. Спробуйте ще раз."
+                            )
+
+                    DuplicateWritePlan(
+                        tracksToWrite = selected,
+                        tracksToSkip = emptyList(),
+                        alreadyInPlaylistCount =
+                            currentAnalysis.alreadyInPlaylist.size,
+                        repeatedInImportCount =
+                            currentAnalysis.repeatedInImport.size,
+                        scanRequestCount =
+                            pendingDestinationScanRequestCount,
+                        scanSucceeded = true,
+                        addDuplicatesAnyway = true
+                    )
+                }
+
+                else -> {
+                    val currentAnalysis =
+                        analysis
+                            ?: return toast(
+                                "Результат перевірки дублікатів уже недоступний. Спробуйте ще раз."
+                            )
+
+                    DuplicateWritePlan(
+                        tracksToWrite =
+                            currentAnalysis.tracksToAdd,
+                        tracksToSkip =
+                            currentAnalysis.tracksToSkip,
+                        alreadyInPlaylistCount =
+                            currentAnalysis.alreadyInPlaylist.size,
+                        repeatedInImportCount =
+                            currentAnalysis.repeatedInImport.size,
+                        scanRequestCount =
+                            pendingDestinationScanRequestCount,
+                        scanSucceeded = true,
+                        addDuplicatesAnyway = false
+                    )
+                }
+            }
+
+        pendingDestinationTarget = null
+        pendingDestinationAnalysis = null
+        pendingDestinationScanRequestCount = 0
+
+        actuallyAppendToExisting(
+            p = p,
+            selected = plan.tracksToWrite,
+            target = target,
+            duplicateTracksToSkip =
+                plan.tracksToSkip
+        )
     }
 
     private fun chooseDestination(

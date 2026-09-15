@@ -97,3 +97,15 @@ Next:
 - [x] Current workspace clear action.
 - [x] Current workspace included in Full Backup.
 - [ ] Phone regression of manual URL + Project re-import.
+
+## v1.4.0 destination progress
+
+- [x] Dedicated destination/create screen.
+- [x] New / Existing playlist selection.
+- [x] Privacy selection on screen.
+- [x] Existing-playlist search.
+- [x] Duplicate preview and final choice.
+- [ ] Phone regression of create + append + duplicates.
+- [ ] Remove legacy destination dialogs after regression.
+
+Open UX item Q-001 from v1.3.2 is intentionally deferred; see `OPEN_QUESTIONS.md`.

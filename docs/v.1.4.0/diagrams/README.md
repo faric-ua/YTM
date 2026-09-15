@@ -1,0 +1,6 @@
+# YTM Importer v1.4.0 diagrams
+
+- `DESTINATION_SCREEN_FLOW.md`
+- `DUPLICATE_CONFIRMATION_FLOW.md`
+- `BACK_NAVIGATION.md`
+- `BEFORE_AFTER_v1.4.0.md`

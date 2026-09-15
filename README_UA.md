@@ -1,30 +1,29 @@
-# YTM Importer v1.3.2
+# YTM Importer v1.4.0
 
-Невеликий UX fix після v1.3.1.
+Крок 4 тепер окремий Android screen:
 
-## Manual selection
+`Головний → 4. Створити / додати → DestinationActivity`
 
-Оригінальний імпортований track тепер завжди лишається головною назвою.
+## Новий плейлист
 
-Замість:
+- вибір privacy прямо на screen;
+- видно назву Project, кількість треків, неперевірені позиції;
+- видно Google/YTM account context;
+- видно quota estimate;
+- фінальна кнопка `Створити новий плейлист`.
 
-`Заміна для: ...`
+## Існуючий плейлист
 
-показується:
+- список завантажується тільки після вибору цього режиму;
+- є пошук за назвою;
+- після вибору виконується duplicate scan;
+- preview показує `already in playlist`, `repeated in import`, `new tracks`;
+- можна `Пропустити дублікати` або `Додати все одно`;
+- якщо duplicate scan впав, є окремий screen `Продовжити без перевірки`.
 
-`Ручний вибір: <selected YouTube/YTM result>`
+Core write/OAuth logic лишився в MainActivity.
 
-Manual status:
+## Open question
 
-`✓ вибрано`
-
-Automatic status:
-
-`✓ знайдено`
-
-## Save Project
-
-Після збереження Project повідомлення показує:
-
-- ім'я project;
-- фактичне ім'я збереженого `.ytm.json` файлу.
+Пункт v1.3.2 щодо Review wording / Project save feedback спеціально
+позначений як відкритий для повернення пізніше: `OPEN_QUESTIONS.md`.
