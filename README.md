@@ -1,13 +1,13 @@
-# YTM Importer v0.13.0
+# YTM Importer v0.14.0
 
 Android importer for YouTube / YouTube Music playlists.
 
 Current flow:
 
-**import → search → review → new/existing playlist → duplicate check → quota-safe write → History → Export/Backup**
+**import → search/cache → review → new/existing playlist → duplicate check → quota-safe write → History → Backup → Diagnostics**
 
-v0.13.0 adds local-data export, backup and restore.
+v0.14.0 adds Diagnostics, Android Share, SearchCache tools and Google Cloud quota shortcut.
 
 Українська документація: `README_UA.md`.
 
-Діаграми: `docs/v.0.13.0/`.
+Діаграми: `docs/v.0.14.0/`.

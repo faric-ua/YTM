@@ -1,26 +1,30 @@
-YTM Importer v0.13.1 FULL — DATA MENU HOTFIX
+YTM Importer v0.14.0 FULL — DIAGNOSTICS / SHARE / CACHE
 
-ПРОБЛЕМА v0.13.0:
-AlertDialog setMessage + setItems -> список операцій не відображався.
-
-ВИПРАВЛЕНО:
-MainActivity.showDataTools()
-тепер використовує custom layout:
-TextView + ListView.
+ДОДАНО:
+app/src/main/res/xml/file_paths.xml
+docs/v.0.14.0/RELEASE.md
+docs/v.0.14.0/diagrams/*
+TERMINAL_APPLY_v0.14.0.md
 
 ЗАМІНЕНО:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+app/src/main/java/com/saney/ytmimporter/youtube/SearchCache.kt
+app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
+app/src/main/AndroidManifest.xml
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
 CHANGELOG.md
+README.md
 README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
-ДОДАНО:
-docs/v.0.13.1/
-TERMINAL_APPLY_v0.13.1.md
+НОВЕ:
+- Diagnostics TXT
+- Android Share через FileProvider
+- SearchCache statistics / cleanup
+- Google Cloud quota shortcut
 
-versionCode = 16
-versionName = 0.13.1
+versionCode = 17
+versionName = 0.14.0

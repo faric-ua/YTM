@@ -1,46 +1,34 @@
 YTM Importer
-Version: 0.13.1
-Version code: 16
+Version: 0.14.0
+Version code: 17
 Package: com.saney.ytmimporter
 
 Реалізовано:
-- import CSV/TXT/text
-- OAuth account/channel
+- CSV/TXT/text import
+- Google OAuth + account/channel
 - SearchCache / MatchScorer
+- candidate review
 - new / existing playlist
 - duplicate detection
 - Quota Planner
 - Pending Queue / Resume
 - History
 - compact UI
-- History TXT export
-- History JSON export
-- Pending JSON export
-- full local backup JSON
-- restore backup JSON
-- versioned Mermaid docs
-- Termux build/download/install
-
-Backup includes:
-- history_store_v1
-- pending_jobs_v1
-- quota_tracker_v1
-- youtube_search_cache
-
-Backup excludes:
-- OAuth access token
-- passwords
-- signing keys
+- Export / Backup / Restore
+- Diagnostics
+- Diagnostics save/share
+- History TXT share
+- Full Backup share
+- SearchCache statistics/cleanup
+- Google Cloud Console shortcut
+- versioned Mermaid diagrams
+- Termux build/download/install workflow
 
 Потрібно протестувати:
-- GitHub Actions build v0.13.0
-- History TXT export
-- History JSON export
-- Pending export
-- full backup
-- restore on test data
-
-v0.13.1 hotfix:
-- fixed hidden Data menu actions
-- custom Data dialog
-- clearer Export vs Full Backup vs Restore explanation
+- GitHub Actions build v0.14.0
+- Android Share History TXT
+- Android Share Diagnostics TXT
+- Android Share Full Backup
+- SearchCache stats
+- clear expired SearchCache
+- Google Cloud quick link

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.text.Editable
@@ -15,6 +16,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.FileProvider
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
@@ -41,6 +43,7 @@ import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -109,6 +112,7 @@ class MainActivity : Activity() {
     private lateinit var pendingButton: Button
     private lateinit var historyButton: Button
     private lateinit var dataButton: Button
+    private lateinit var serviceButton: Button
     private lateinit var progress: ProgressBar
     private lateinit var resultPanel: LinearLayout
     private lateinit var resultTitleText: TextView
@@ -179,6 +183,8 @@ class MainActivity : Activity() {
         actions.addView(historyButton)
         dataButton = button("Дані") { showDataTools() }
         actions.addView(dataButton)
+        serviceButton = button("Сервіс") { showServiceTools() }
+        actions.addView(serviceButton)
         scroll.addView(actions)
         root.addView(scroll)
 
@@ -2049,6 +2055,9 @@ class MainActivity : Activity() {
                     }
             )
             .setNegativeButton("Закрити", null)
+            .setNeutralButton("Google Cloud") { _, _ ->
+                openGoogleCloudQuota()
+            }
             .setPositiveButton("Черга") { _, _ ->
                 showPendingJobs()
             }
@@ -2085,6 +2094,457 @@ class MainActivity : Activity() {
             error.message.orEmpty().contains("quota", ignoreCase = true) ||
             error.message.orEmpty().contains("daily limit", ignoreCase = true)
 
+
+    private fun showServiceTools() {
+        val cache = searchCache.stats()
+        val quota = quotaTracker.snapshot()
+
+        val intro = TextView(this).apply {
+            text =
+                "Сервісні інструменти не змінюють YouTube/YTM " +
+                    "плейлисти.\n\n" +
+                    "Cache: ${cache.validEntries} активних записів\n" +
+                    "Quota: search ${quota.searchCalls}/" +
+                    "${QuotaTracker.SEARCH_DAILY_LIMIT}"
+            textSize = 14f
+            setPadding(dp(16), dp(8), dp(16), dp(8))
+        }
+
+        val labels =
+            arrayOf(
+                "Діагностика\n" +
+                    "Показати стан застосунку, quota, cache, History",
+
+                "Поділитися Diagnostics TXT\n" +
+                    "Надіслати технічний звіт без OAuth token",
+
+                "Зберегти Diagnostics TXT\n" +
+                    "Записати технічний звіт у файл",
+
+                "SearchCache\n" +
+                    "Розмір, записи, очищення",
+
+                "Google Cloud Console\n" +
+                    "Відкрити сторінку квоти YouTube Data API"
+            )
+
+        val list = ListView(this).apply {
+            dividerHeight = 1
+            adapter =
+                ArrayAdapter(
+                    this@MainActivity,
+                    android.R.layout.simple_list_item_1,
+                    labels
+                )
+        }
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(8), 0, dp(8), 0)
+            addView(
+                intro,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+            addView(
+                list,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(390)
+                )
+            )
+        }
+
+        val dialog =
+            AlertDialog.Builder(this)
+                .setTitle("Сервіс — Diagnostics / Cache")
+                .setView(container)
+                .setNegativeButton("Закрити", null)
+                .create()
+
+        list.setOnItemClickListener { _, _, position, _ ->
+            dialog.dismiss()
+
+            when (position) {
+                0 -> showDiagnostics()
+                1 -> shareDiagnostics()
+                2 -> saveDiagnostics()
+                3 -> showSearchCacheTools()
+                4 -> openGoogleCloudQuota()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showDiagnostics() {
+        AlertDialog.Builder(this)
+            .setTitle("Діагностика YTM Importer")
+            .setMessage(buildDiagnosticsText())
+            .setNegativeButton("Закрити", null)
+            .setNeutralButton("Зберегти TXT") { _, _ ->
+                saveDiagnostics()
+            }
+            .setPositiveButton("Поділитися") { _, _ ->
+                shareDiagnostics()
+            }
+            .show()
+    }
+
+    private fun saveDiagnostics() {
+        createDocumentForExport(
+            fileName =
+                "YTM_Diagnostics_${exportTimestamp()}.txt",
+            mimeType = "text/plain",
+            content = buildDiagnosticsText(),
+            successMessage = "Diagnostics TXT збережено"
+        )
+    }
+
+    private fun shareDiagnostics() {
+        shareTextFile(
+            fileName =
+                "YTM_Diagnostics_${exportTimestamp()}.txt",
+            mimeType = "text/plain",
+            content = buildDiagnosticsText(),
+            chooserTitle = "Поділитися YTM Diagnostics"
+        )
+    }
+
+    private fun buildDiagnosticsText(): String {
+        val quota = quotaTracker.snapshot()
+        val cache = searchCache.stats()
+        val history = historyStore.getAll()
+        val pending = pendingJobStore.getAll()
+        val tracks = playlist?.tracks.orEmpty()
+
+        return buildString {
+            append("YTM Importer — Diagnostics\n")
+            append("Version: 0.14.0 (17)\n")
+            append("Package: $packageName\n")
+            append(
+                "Android: ${Build.VERSION.RELEASE} " +
+                    "(SDK ${Build.VERSION.SDK_INT})\n"
+            )
+            append(
+                "Device: ${Build.MANUFACTURER} ${Build.MODEL}\n"
+            )
+            append(
+                "Generated: " +
+                    formatHistoryDate(
+                        System.currentTimeMillis()
+                    ) +
+                    "\n\n"
+            )
+
+            append("ACCOUNT\n")
+            append(
+                "Google: " +
+                    if (accessToken.isNullOrBlank()) {
+                        "not connected"
+                    } else {
+                        "connected"
+                    } +
+                    "\n"
+            )
+            append(
+                "Google email: " +
+                    maskedEmail(
+                        googleAccountInfo?.email
+                    ) +
+                    "\n"
+            )
+            append(
+                "YouTube/YTM channel: " +
+                    (
+                        youtubeChannelInfo?.title
+                            ?: "not loaded"
+                    ) +
+                    "\n"
+            )
+            append(
+                "Channel ID: " +
+                    maskedIdentifier(
+                        youtubeChannelInfo?.id
+                    ) +
+                    "\n\n"
+            )
+
+            append("CURRENT IMPORT\n")
+            append(
+                "Playlist: " +
+                    (
+                        playlist?.name
+                            ?: "none"
+                    ) +
+                    "\n"
+            )
+            append("Tracks: ${tracks.size}\n")
+            TrackStatus.entries.forEach { status ->
+                val count =
+                    tracks.count {
+                        it.status == status
+                    }
+
+                if (count > 0) {
+                    append(
+                        "${status.name}: $count\n"
+                    )
+                }
+            }
+            append("\n")
+
+            append("QUOTA — local estimate\n")
+            append(
+                "Day: ${quota.dayKey} Pacific Time\n"
+            )
+            append(
+                "Search: ${quota.searchCalls}/" +
+                    "${QuotaTracker.SEARCH_DAILY_LIMIT} " +
+                    "(remaining ≈${quota.searchRemaining})\n"
+            )
+            append(
+                "General: ${quota.generalUnits}/" +
+                    "${QuotaTracker.GENERAL_DAILY_LIMIT} " +
+                    "(remaining ≈${quota.generalRemaining})\n"
+            )
+            append("Cache hits today: ${quota.cacheHits}\n")
+
+            if (!quota.lastQuotaError.isNullOrBlank()) {
+                append(
+                    "Last quota error: " +
+                        quota.lastQuotaError +
+                        "\n"
+                )
+            }
+
+            append("\nSEARCH CACHE\n")
+            append(
+                "Total entries: ${cache.totalEntries}\n"
+            )
+            append(
+                "Valid: ${cache.validEntries}\n"
+            )
+            append(
+                "Expired: ${cache.expiredEntries}\n"
+            )
+            append(
+                "Malformed: ${cache.malformedEntries}\n"
+            )
+            append(
+                "Approx size: " +
+                    formatBytes(
+                        cache.approximateBytes
+                    ) +
+                    "\n"
+            )
+            append(
+                "Oldest: " +
+                    formatNullableDate(
+                        cache.oldestCachedAt
+                    ) +
+                    "\n"
+            )
+            append(
+                "Newest: " +
+                    formatNullableDate(
+                        cache.newestCachedAt
+                    ) +
+                    "\n\n"
+            )
+
+            append("LOCAL DATA\n")
+            append("History entries: ${history.size}\n")
+            append("Pending jobs: ${pending.size}\n")
+            append(
+                "History JSON size: " +
+                    formatBytes(
+                        historyStore
+                            .exportJson()
+                            .toByteArray(
+                                Charsets.UTF_8
+                            )
+                            .size
+                            .toLong()
+                    ) +
+                    "\n"
+            )
+            append(
+                "Pending JSON size: " +
+                    formatBytes(
+                        pendingJobStore
+                            .exportJson()
+                            .toByteArray(
+                                Charsets.UTF_8
+                            )
+                            .size
+                            .toLong()
+                    ) +
+                    "\n\n"
+            )
+
+            append("PRIVACY\n")
+            append(
+                "Diagnostics does not contain OAuth access token, " +
+                    "Google password or signing keys.\n"
+            )
+            append(
+                "Email and Channel ID are masked."
+            )
+        }
+    }
+
+    private fun showSearchCacheTools() {
+        val stats = searchCache.stats()
+
+        AlertDialog.Builder(this)
+            .setTitle("SearchCache")
+            .setMessage(
+                "Усього записів: ${stats.totalEntries}\n" +
+                    "Активних: ${stats.validEntries}\n" +
+                    "Прострочених: ${stats.expiredEntries}\n" +
+                    "Пошкоджених: ${stats.malformedEntries}\n" +
+                    "Приблизний розмір: " +
+                    formatBytes(
+                        stats.approximateBytes
+                    ) +
+                    "\n\nНайстаріший: " +
+                    formatNullableDate(
+                        stats.oldestCachedAt
+                    ) +
+                    "\nНайновіший: " +
+                    formatNullableDate(
+                        stats.newestCachedAt
+                    ) +
+                    "\n\nОчищення кешу не видаляє History, " +
+                    "Чергу або YouTube/YTM плейлисти. " +
+                    "Після очищення повторний пошук знову " +
+                    "витрачатиме search quota."
+            )
+            .setNegativeButton("Закрити", null)
+            .setNeutralButton("Очистити весь") { _, _ ->
+                confirmClearSearchCache()
+            }
+            .setPositiveButton("Очистити прострочені") { _, _ ->
+                val removed =
+                    searchCache.clearExpired()
+
+                toast(
+                    "Видалено записів SearchCache: $removed"
+                )
+            }
+            .show()
+    }
+
+    private fun confirmClearSearchCache() {
+        AlertDialog.Builder(this)
+            .setTitle("Очистити весь SearchCache?")
+            .setMessage(
+                "Усі кешовані результати пошуку буде видалено.\n\n" +
+                    "History і плейлисти не зміняться, але " +
+                    "наступний пошук цих треків знову звернеться " +
+                    "до YouTube API."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Очистити") { _, _ ->
+                val before =
+                    searchCache.stats().totalEntries
+
+                searchCache.clear()
+
+                toast(
+                    "SearchCache очищено: $before записів"
+                )
+            }
+            .show()
+    }
+
+    private fun openGoogleCloudQuota() {
+        val url =
+            "https://console.cloud.google.com/apis/api/" +
+                "youtube.googleapis.com/quotas"
+
+        runCatching {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(url)
+                )
+            )
+        }.onFailure {
+            toast(
+                "Не вдалося відкрити Google Cloud Console"
+            )
+        }
+    }
+
+    private fun formatBytes(bytes: Long): String =
+        when {
+            bytes < 1024L ->
+                "$bytes B"
+
+            bytes < 1024L * 1024L ->
+                String.format(
+                    Locale.US,
+                    "%.1f KB",
+                    bytes / 1024.0
+                )
+
+            else ->
+                String.format(
+                    Locale.US,
+                    "%.2f MB",
+                    bytes / (1024.0 * 1024.0)
+                )
+        }
+
+    private fun formatNullableDate(
+        timestamp: Long?
+    ): String =
+        if (timestamp == null || timestamp <= 0L) {
+            "—"
+        } else {
+            formatHistoryDate(timestamp)
+        }
+
+    private fun maskedEmail(
+        email: String?
+    ): String {
+        if (email.isNullOrBlank()) return "—"
+
+        val at = email.indexOf('@')
+
+        if (at <= 0) {
+            return maskedIdentifier(email)
+        }
+
+        val local = email.substring(0, at)
+        val domain = email.substring(at)
+
+        return when {
+            local.length <= 1 ->
+                "*$domain"
+
+            local.length == 2 ->
+                "${local.first()}*$domain"
+
+            else ->
+                "${local.take(2)}***$domain"
+        }
+    }
+
+    private fun maskedIdentifier(
+        value: String?
+    ): String {
+        if (value.isNullOrBlank()) return "—"
+        if (value.length <= 8) return "***"
+
+        return value.take(4) +
+            "…" +
+            value.takeLast(4)
+    }
 
     private fun syncHistoryFromJob(
         job: PendingJob,
@@ -2210,9 +2670,11 @@ class MainActivity : Activity() {
             text =
                 "History: $historyCount записів\n" +
                     "Черга: $pendingCount завдань\n\n" +
-                    "Оберіть, що потрібно зробити.\n" +
-                    "Важливо: для повного відновлення використовується " +
-                    "саме «Повний backup», а не окремий History JSON."
+                    "Зберегти = записати файл у вибрану папку.\n" +
+                    "Поділитися = відкрити стандартне Android Share " +
+                    "(меню поширення).\n\n" +
+                    "Для повного Restore використовується тільки " +
+                    "«Повний backup», а не History JSON."
             textSize = 14f
             setPadding(dp(16), dp(8), dp(16), dp(8))
         }
@@ -2220,19 +2682,25 @@ class MainActivity : Activity() {
         val labels =
             arrayOf(
                 "Історія → TXT\n" +
-                    "Звичайний читабельний звіт для людини",
+                    "Зберегти читабельний звіт",
 
                 "Історія → JSON\n" +
-                    "Технічний експорт тільки історії",
+                    "Зберегти технічний експорт History",
 
                 "Черга → JSON\n" +
-                    "Технічний експорт незавершених завдань",
+                    "Зберегти технічний експорт Pending Queue",
 
                 "Повний backup → JSON\n" +
-                    "History + Черга + Quota + SearchCache",
+                    "Зберегти History + Черга + Quota + SearchCache",
 
                 "Restore повного backup\n" +
-                    "Відновити локальні дані з YTM_Backup_*.json"
+                    "Відновити локальні дані з YTM_Backup_*.json",
+
+                "Поділитися History TXT\n" +
+                    "Надіслати читабельний звіт через Android Share",
+
+                "Поділитися повним backup\n" +
+                    "Надіслати backup JSON — містить приватні метадані"
             )
 
         val list = ListView(this).apply {
@@ -2259,14 +2727,14 @@ class MainActivity : Activity() {
                 list,
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(390)
+                    dp(470)
                 )
             )
         }
 
         val dialog =
             AlertDialog.Builder(this)
-                .setTitle("Дані — експорт і backup")
+                .setTitle("Дані — Export / Backup / Share")
                 .setView(container)
                 .setNegativeButton("Закрити", null)
                 .create()
@@ -2280,6 +2748,8 @@ class MainActivity : Activity() {
                 2 -> exportPendingJson()
                 3 -> createFullBackup()
                 4 -> chooseBackupForRestore()
+                5 -> shareHistoryTxt()
+                6 -> confirmShareFullBackup()
             }
         }
 
@@ -2287,37 +2757,11 @@ class MainActivity : Activity() {
     }
 
     private fun exportHistoryTxt() {
-        val entries = historyStore.getAll()
-
-        if (entries.isEmpty()) {
-            return toast("Історія порожня — експортувати нічого")
-        }
-
         val text =
-            buildString {
-                append("YTM Importer — History export\n")
-                append("Версія застосунку: 0.13.1\n")
-                append("Експортовано: ${formatHistoryDate(System.currentTimeMillis())}\n")
-                append("Записів: ${entries.size}\n\n")
-
-                entries.forEachIndexed { index, entry ->
-                    append("==================================================\n")
-                    append("${index + 1}. ${entry.playlistName}\n")
-                    append("==================================================\n")
-                    append(buildHistorySummary(entry))
-
-                    val problems = buildHistoryProblemLog(entry)
-
-                    if (!problems.isNullOrBlank()) {
-                        append("\n\n")
-                        append(problems)
-                    }
-
-                    if (index != entries.lastIndex) {
-                        append("\n\n")
-                    }
-                }
-            }
+            buildHistoryExportTxt()
+                ?: return toast(
+                    "Історія порожня — експортувати нічого"
+                )
 
         createDocumentForExport(
             fileName = "YTM_History_${exportTimestamp()}.txt",
@@ -2325,6 +2769,48 @@ class MainActivity : Activity() {
             content = text,
             successMessage = "History TXT збережено"
         )
+    }
+
+    private fun buildHistoryExportTxt(): String? {
+        val entries = historyStore.getAll()
+
+        if (entries.isEmpty()) return null
+
+        return buildString {
+            append("YTM Importer — History export\n")
+            append("Версія застосунку: 0.14.0\n")
+            append(
+                "Експортовано: " +
+                    formatHistoryDate(
+                        System.currentTimeMillis()
+                    ) +
+                    "\n"
+            )
+            append("Записів: ${entries.size}\n\n")
+
+            entries.forEachIndexed { index, entry ->
+                append(
+                    "==================================================\n"
+                )
+                append("${index + 1}. ${entry.playlistName}\n")
+                append(
+                    "==================================================\n"
+                )
+                append(buildHistorySummary(entry))
+
+                val problems =
+                    buildHistoryProblemLog(entry)
+
+                if (!problems.isNullOrBlank()) {
+                    append("\n\n")
+                    append(problems)
+                }
+
+                if (index != entries.lastIndex) {
+                    append("\n\n")
+                }
+            }
+        }
     }
 
     private fun exportHistoryJson() {
@@ -2393,6 +2879,132 @@ class MainActivity : Activity() {
                 )
             }
             .show()
+    }
+
+    private fun shareHistoryTxt() {
+        val content =
+            buildHistoryExportTxt()
+                ?: return toast(
+                    "Історія порожня — ділитися нічим"
+                )
+
+        shareTextFile(
+            fileName = "YTM_History_${exportTimestamp()}.txt",
+            mimeType = "text/plain",
+            content = content,
+            chooserTitle = "Поділитися History"
+        )
+    }
+
+    private fun confirmShareFullBackup() {
+        AlertDialog.Builder(this)
+            .setTitle("Поділитися повним backup?")
+            .setMessage(
+                "Backup може містити:\n" +
+                    "• Google email\n" +
+                    "• YouTube Channel ID\n" +
+                    "• назви плейлистів\n" +
+                    "• History / Queue / SearchCache\n\n" +
+                    "OAuth token, паролі та signing keys " +
+                    "у файл не входять.\n\n" +
+                    "Надсилайте backup тільки туди, де ви готові " +
+                    "розкрити ці локальні дані."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Поділитися") { _, _ ->
+                val content =
+                    runCatching {
+                        localBackupManager.createBackupJson()
+                    }.getOrElse { error ->
+                        toast(
+                            error.message
+                                ?: "Не вдалося створити backup"
+                        )
+                        return@setPositiveButton
+                    }
+
+                shareTextFile(
+                    fileName =
+                        "YTM_Backup_${exportTimestamp()}.json",
+                    mimeType = "application/json",
+                    content = content,
+                    chooserTitle = "Поділитися YTM backup"
+                )
+            }
+            .show()
+    }
+
+    private fun shareTextFile(
+        fileName: String,
+        mimeType: String,
+        content: String,
+        chooserTitle: String
+    ) {
+        runCatching {
+            val directory =
+                File(
+                    cacheDir,
+                    "shared_exports"
+                ).apply {
+                    mkdirs()
+                }
+
+            directory
+                .listFiles()
+                ?.filter {
+                    System.currentTimeMillis() -
+                        it.lastModified() >
+                        24L * 60L * 60L * 1000L
+                }
+                ?.forEach(File::delete)
+
+            val file =
+                File(
+                    directory,
+                    fileName
+                ).apply {
+                    writeText(
+                        content,
+                        Charsets.UTF_8
+                    )
+                }
+
+            val uri =
+                FileProvider.getUriForFile(
+                    this,
+                    "$packageName.fileprovider",
+                    file
+                )
+
+            val intent =
+                Intent(Intent.ACTION_SEND).apply {
+                    type = mimeType
+                    putExtra(
+                        Intent.EXTRA_STREAM,
+                        uri
+                    )
+                    addFlags(
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                    clipData =
+                        ClipData.newRawUri(
+                            fileName,
+                            uri
+                        )
+                }
+
+            startActivity(
+                Intent.createChooser(
+                    intent,
+                    chooserTitle
+                )
+            )
+        }.onFailure { error ->
+            toast(
+                "Не вдалося поділитися файлом: " +
+                    (error.message ?: "невідома помилка")
+            )
+        }
     }
 
     private fun createDocumentForExport(

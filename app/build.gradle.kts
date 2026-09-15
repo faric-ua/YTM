@@ -14,8 +14,8 @@ android {
         applicationId = "com.saney.ytmimporter"
         minSdk = 26
         targetSdk = 36
-        versionCode = 16
-        versionName = "0.13.1"
+        versionCode = 17
+        versionName = "0.14.0"
     }
 
     signingConfigs {
@@ -64,4 +64,5 @@ kotlin {
 
 dependencies {
     implementation("com.google.android.gms:play-services-auth:21.6.0")
+    implementation("androidx.core:core:1.15.0")
 }

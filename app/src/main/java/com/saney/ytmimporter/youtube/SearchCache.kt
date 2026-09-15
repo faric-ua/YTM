@@ -16,6 +16,16 @@ import java.security.MessageDigest
  * The cache survives app restarts and normal APK updates.
  * It is removed if the app is uninstalled or its storage is cleared.
  */
+data class SearchCacheStats(
+    val totalEntries: Int,
+    val validEntries: Int,
+    val expiredEntries: Int,
+    val malformedEntries: Int,
+    val approximateBytes: Long,
+    val oldestCachedAt: Long?,
+    val newestCachedAt: Long?
+)
+
 class SearchCache(context: Context) {
     private val prefs =
         context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -94,6 +104,98 @@ class SearchCache(context: Context) {
         prefs.edit()
             .putString(keyFor(track), root.toString())
             .apply()
+    }
+
+    fun stats(): SearchCacheStats {
+        var valid = 0
+        var expired = 0
+        var malformed = 0
+        var approximateBytes = 0L
+        var oldest: Long? = null
+        var newest: Long? = null
+        val now = System.currentTimeMillis()
+
+        prefs.all.forEach { (_, value) ->
+            val raw = value as? String
+
+            if (raw == null) {
+                malformed += 1
+                return@forEach
+            }
+
+            approximateBytes +=
+                raw.toByteArray(Charsets.UTF_8).size.toLong()
+
+            runCatching {
+                val root = JSONObject(raw)
+                val cachedAt = root.optLong("cachedAt", 0L)
+
+                if (cachedAt <= 0L) {
+                    malformed += 1
+                    return@runCatching
+                }
+
+                oldest =
+                    oldest?.let { minOf(it, cachedAt) }
+                        ?: cachedAt
+
+                newest =
+                    newest?.let { maxOf(it, cachedAt) }
+                        ?: cachedAt
+
+                if (now - cachedAt > MAX_AGE_MS) {
+                    expired += 1
+                } else {
+                    valid += 1
+                }
+            }.onFailure {
+                malformed += 1
+            }
+        }
+
+        return SearchCacheStats(
+            totalEntries = prefs.all.size,
+            validEntries = valid,
+            expiredEntries = expired,
+            malformedEntries = malformed,
+            approximateBytes = approximateBytes,
+            oldestCachedAt = oldest,
+            newestCachedAt = newest
+        )
+    }
+
+    fun clearExpired(): Int {
+        val now = System.currentTimeMillis()
+        val keysToRemove = mutableListOf<String>()
+
+        prefs.all.forEach { (key, value) ->
+            val raw = value as? String
+
+            val remove =
+                if (raw == null) {
+                    true
+                } else {
+                    runCatching {
+                        val cachedAt =
+                            JSONObject(raw).optLong("cachedAt", 0L)
+
+                        cachedAt <= 0L ||
+                            now - cachedAt > MAX_AGE_MS
+                    }.getOrDefault(true)
+                }
+
+            if (remove) {
+                keysToRemove += key
+            }
+        }
+
+        if (keysToRemove.isNotEmpty()) {
+            val editor = prefs.edit()
+            keysToRemove.forEach(editor::remove)
+            editor.apply()
+        }
+
+        return keysToRemove.size
     }
 
     fun clear() {

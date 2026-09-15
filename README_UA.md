@@ -1,68 +1,70 @@
-# YTM Importer v0.13.1
+# YTM Importer v0.14.0
 
-## Нове: Дані (Export / Backup)
+## Нове: Сервіс (Diagnostics / Cache)
 
-У верхньому меню:
+У верхньому горизонтальному меню з'явилась компактна кнопка:
 
-`Дані`
+`Сервіс`
 
-Доступні операції:
+Вона не зменшує висоту списку треків.
 
-- `Експорт History → TXT`
-- `Експорт History → JSON`
-- `Експорт Черги → JSON`
-- `Створити повний backup → JSON`
-- `Відновити з backup JSON`
+### Діагностика
 
-### Повний backup
+`Сервіс → Діагностика`
 
-Включає:
+Показує:
 
-- History;
-- Pending Queue;
-- локальну статистику квоти;
-- SearchCache.
+- версію YTM Importer;
+- Android / телефон;
+- стан Google / YouTube/YTM account;
+- локальну quota estimate;
+- SearchCache statistics;
+- History count;
+- Pending Queue count;
+- останню quota error.
 
-Не включає:
+Email і Channel ID у Diagnostics маскуються.
 
-- OAuth access token;
-- Google password;
-- signing key;
-- GitHub secrets.
+### Share
 
-Backup може містити Google email, YouTube Channel ID,
-назви плейлистів та історію треків, тому його краще не публікувати.
+`Дані → Поділитися History TXT`
 
-### Збереження файлу
+або:
 
-Android сам відкриє системне вікно вибору папки.
-Можна вибрати, наприклад, `Download`.
+`Дані → Поділитися повним backup`
 
-### Restore
+Android відкриває стандартне меню поширення.
 
-Restore замінює поточні локальні History / Queue / Quota / Cache
-даними з backup.
+Повний backup може містити приватні метадані, тому перед Share є попередження.
 
-YouTube/YTM плейлисти в інтернеті restore не змінює.
+### SearchCache
+
+`Сервіс → SearchCache`
+
+Можна подивитися:
+
+- активні записи;
+- прострочені записи;
+- пошкоджені записи;
+- приблизний розмір.
+
+Можна:
+
+- очистити тільки прострочені;
+- очистити весь кеш.
+
+History, Queue і YouTube/YTM playlists при цьому не видаляються.
+
+### Google Cloud
+
+`Сервіс → Google Cloud Console`
+
+або:
+
+`Квота → Google Cloud`
+
+відкриває сторінку quota YouTube Data API у браузері.
 
 ## Документація
 
-`docs/v.0.13.0/`
-
-## Уточнення логіки експорту
-
-`Історія → TXT`
-- для читання людиною;
-- можна відкрити звичайним текстовим редактором.
-
-`Історія → JSON`
-- технічна копія тільки History;
-- НЕ використовується як повний Restore.
-
-`Черга → JSON`
-- технічна копія Pending Queue;
-- НЕ є повним backup.
-
-`Повний backup → JSON`
-- саме цей файл містить History + Queue + Quota + SearchCache;
-- саме його потрібно використовувати через `Restore повного backup`.
+`docs/v.0.14.0/`

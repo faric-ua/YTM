@@ -270,7 +270,7 @@ class LocalBackupManager(
     }
 
     companion object {
-        const val APP_VERSION = "0.13.0"
+        const val APP_VERSION = "0.14.0"
 
         private const val FORMAT = "ytm-importer-local-backup"
         private const val SCHEMA_VERSION = 1
