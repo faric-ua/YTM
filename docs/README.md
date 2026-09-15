@@ -1,7 +1,7 @@
 # YTM Importer — Versioned documentation
 
-Поточна stable версія:
+Current version:
 
-`docs/v.1.0.0/`
+`docs/v.1.1.0/`
 
-Попередні RC та старі версії не перезаписуються.
+v1.1.0 starts the public UX phase while preserving the v1.0 functional baseline.

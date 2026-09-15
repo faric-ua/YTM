@@ -1,17 +1,21 @@
-YTM Importer v1.0.0 FULL
+YTM Importer v1.1.0 FULL
 
-STABLE RELEASE
+PUBLIC UX FOUNDATION
 
-VERSION:
-versionCode = 26
-versionName = 1.0.0
+ADDED:
+PRIVACY.md
+PUBLIC_RELEASE_CHECKLIST.md
+scripts/release-preflight.sh
+docs/v.1.1.0/
+TERMINAL_APPLY_v1.1.0.md
 
-NO NEW USER-FACING FUNCTIONALITY VS RC4.
-
-CHANGED:
-app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/build.gradle.kts
+DELETED:
 scripts/rc-preflight.sh
+
+REPLACED:
+app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
+app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
 CHANGELOG.md
@@ -20,6 +24,6 @@ README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
-ADDED:
-docs/v.1.0.0/
-TERMINAL_APPLY_v1.0.0.md
+VERSION:
+versionCode = 27
+versionName = 1.1.0

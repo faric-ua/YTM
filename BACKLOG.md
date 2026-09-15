@@ -1,36 +1,39 @@
 # YTM Importer — Roadmap
 
 ## Поточна версія
-**v1.0.0 stable**
+**v1.1.0 — Public UX Foundation**
 
-## v1.0.0
-- [x] core functionality frozen;
-- [x] History / YTM Project;
-- [x] duplicate flow;
-- [x] manual URL metadata;
-- [x] Quota / Queue / Resume;
-- [x] Backup / Restore / Rollback;
-- [x] Diagnostics / Share;
-- [x] signed build pipeline;
-- [x] setup-java@v5;
-- [x] APK signature verification;
-- [x] zipalign verification;
-- [x] package/version inspection;
-- [x] SHA-256 checksum;
-- [ ] final GitHub Actions stable build;
-- [ ] signed update RC4 → v1.0.0;
-- [ ] stable smoke test.
+## v1.1.0
+- [x] 4-step main flow;
+- [x] remove horizontal action bar;
+- [x] compact History / Queue / Quota / More row;
+- [x] first-run Quick Start;
+- [x] in-app Privacy;
+- [x] public-facing About;
+- [x] root PRIVACY.md;
+- [x] public release checklist;
+- [x] release-preflight naming;
+- [ ] build/install test;
+- [ ] second-person usability test;
+- [ ] Google OAuth production readiness.
 
-## v1.1.x — UI/UX redesign
+## v1.2.x — Screen/navigation redesign
+- [ ] separate Import/Review screen;
+- [ ] separate History screen;
+- [ ] separate Data/Backup screen;
+- [ ] proper toolbar/back navigation;
+- [ ] empty/loading/error states.
+
+## v1.3.x — Material / responsive polish
 - [ ] Material 3;
-- [ ] responsive main screen;
-- [ ] separate screens instead of overloaded dialogs;
-- [ ] proper navigation/back behavior;
-- [ ] small-screen fitting;
-- [ ] typography/spacing;
+- [ ] phone-size responsiveness;
+- [ ] typography / spacing;
 - [ ] accessibility;
-- [ ] consistent icons/components.
+- [ ] consistent icons;
+- [ ] light/dark theme decision.
 
-## Later functionality
-- [ ] new features only after UI baseline is stable;
-- [ ] keep v1.0 functional regression checklist as guard.
+## Public distribution blocker outside APK code
+- [ ] OAuth audience/production status;
+- [ ] Google verification when required for requested YouTube scopes;
+- [ ] hosted privacy-policy URL;
+- [ ] test with non-developer Google account.

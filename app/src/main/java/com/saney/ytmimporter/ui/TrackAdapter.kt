@@ -3,6 +3,7 @@ package com.saney.ytmimporter.ui
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -28,9 +29,28 @@ class TrackAdapter(
         if (convertView == null) {
             view = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
-                setPadding(dp(16), dp(10), dp(16), dp(10))
+                setPadding(dp(14), dp(10), dp(14), dp(10))
                 minimumHeight = dp(72)
-                setBackgroundColor(Color.rgb(25, 27, 32))
+                background =
+                    GradientDrawable().apply {
+                        shape = GradientDrawable.RECTANGLE
+                        cornerRadius = dp(12).toFloat()
+                        setColor(
+                            Color.rgb(
+                                25,
+                                27,
+                                32
+                            )
+                        )
+                        setStroke(
+                            dp(1),
+                            Color.rgb(
+                                44,
+                                47,
+                                54
+                            )
+                        )
+                    }
             }
             val top = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
@@ -106,6 +126,13 @@ class TrackAdapter(
         }
         holder.status.text = statusLabel(track)
         holder.status.setTextColor(statusColor(track.status))
+
+        view.layoutParams =
+            android.widget.AbsListView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+
         return view
     }
 

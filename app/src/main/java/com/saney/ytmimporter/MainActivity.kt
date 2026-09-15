@@ -7,6 +7,7 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -111,9 +112,15 @@ class MainActivity : Activity() {
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
     private lateinit var accountButton: Button
+    private lateinit var searchButton: Button
+    private lateinit var createButton: Button
     private lateinit var quotaButton: Button
     private lateinit var pendingButton: Button
     private lateinit var progress: ProgressBar
+
+    private val uiPrefs by lazy {
+        getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
+    }
     private lateinit var resultPanel: LinearLayout
     private lateinit var resultTitleText: TextView
     private lateinit var resultDetailsText: TextView
@@ -130,6 +137,12 @@ class MainActivity : Activity() {
         historyStore = HistoryStore(this)
         localBackupManager = LocalBackupManager(this)
         buildUi()
+
+        if (savedInstanceState == null) {
+            window.decorView.post {
+                maybeShowWelcome()
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -144,49 +157,182 @@ class MainActivity : Activity() {
         }
 
         val header = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(10), dp(16), dp(6))
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            setPadding(dp(18), dp(14), dp(18), dp(10))
         }
-        header.addView(TextView(this).apply {
-            text = "YTM Importer"
-            textSize = 22f
-            setTextColor(Color.WHITE)
-            setTypeface(typeface, Typeface.BOLD)
-        })
-        header.addView(TextView(this).apply {
-            text = "CSV/TXT/текст → пошук → перевірка → плейлист у YouTube Music"
-            textSize = 12f
-            setTextColor(Color.rgb(165, 167, 173))
-        })
+
+        val titleBlock = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+
+        titleBlock.addView(
+            TextView(this).apply {
+                text = "YTM Importer"
+                textSize = 23f
+                setTextColor(Color.WHITE)
+                setTypeface(typeface, Typeface.BOLD)
+            }
+        )
+
+        titleBlock.addView(
+            TextView(this).apply {
+                text = "Імпорт трекліста → YouTube Music"
+                textSize = 12.5f
+                setTextColor(Color.rgb(165, 167, 173))
+                setPadding(0, dp(2), 0, 0)
+            }
+        )
+
+        header.addView(
+            titleBlock,
+            LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        )
+
+        header.addView(
+            TextView(this).apply {
+                text = "v${BuildConfig.VERSION_NAME}"
+                textSize = 11.5f
+                setTextColor(Color.rgb(220, 222, 228))
+                gravity = android.view.Gravity.CENTER
+                setPadding(dp(10), dp(6), dp(10), dp(6))
+                background =
+                    roundedBackground(
+                        color = Color.rgb(31, 33, 39),
+                        radiusDp = 18,
+                        strokeColor = Color.rgb(55, 58, 66)
+                    )
+            }
+        )
+
         root.addView(header)
 
-        val scroll = HorizontalScrollView(this).apply {
-            isHorizontalScrollBarEnabled = false
+        val flowCard = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            background =
+                roundedBackground(
+                    color = Color.rgb(25, 27, 32),
+                    radiusDp = 16,
+                    strokeColor = Color.rgb(48, 51, 59)
+                )
         }
-        val actions = LinearLayout(this).apply {
+
+        flowCard.addView(
+            TextView(this).apply {
+                text = "4 кроки до плейлиста"
+                textSize = 12f
+                setTextColor(Color.rgb(165, 167, 173))
+                setTypeface(typeface, Typeface.BOLD)
+                setPadding(dp(2), 0, 0, dp(8))
+            }
+        )
+
+        val importButton =
+            button("1. Імпорт") {
+                showImportMenu()
+            }
+
+        accountButton =
+            button("2. Google / YTM") {
+                showAccountDialog()
+            }
+
+        searchButton =
+            primaryButton("3. Знайти треки") {
+                searchAll()
+            }.apply {
+                isEnabled = false
+                alpha = 0.55f
+            }
+
+        createButton =
+            primaryButton("4. Створити / додати") {
+                createPlaylist()
+            }.apply {
+                isEnabled = false
+                alpha = 0.55f
+            }
+
+        flowCard.addView(
+            equalButtonsRow(
+                importButton,
+                accountButton
+            )
+        )
+
+        flowCard.addView(
+            equalButtonsRow(
+                searchButton,
+                createButton
+            ).apply {
+                setPadding(0, dp(8), 0, 0)
+            }
+        )
+
+        root.addView(
+            flowCard,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(dp(12), 0, dp(12), dp(8))
+            }
+        )
+
+        val utilityRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             setPadding(dp(12), 0, dp(12), dp(8))
         }
-        actions.addView(button("1. Файл") { chooseFile() })
-        actions.addView(button("1б. Текст") { showPasteTrackListDialog() })
-        accountButton = button("2. Акаунт") { showAccountDialog() }
-        actions.addView(accountButton)
-        actions.addView(button("3. Знайти") { searchAll() })
-        actions.addView(button("4. Створити") { createPlaylist() })
-        actions.addView(button("Відкрити в ютм") { openInYtm() })
-        actions.addView(button("Заміни") { showReplacementLog() })
-        quotaButton = button("Квота") { showQuotaDialog() }
-        actions.addView(quotaButton)
-        pendingButton = button("Черга") { showPendingJobs() }
-        actions.addView(pendingButton)
-        actions.addView(button("Історія") { showHistory() })
-        actions.addView(button("Дані") { showDataTools() })
-        actions.addView(button("Сервіс") { showServiceTools() })
-        scroll.addView(actions)
-        root.addView(scroll)
+
+        val historyButton =
+            compactButton("Історія") {
+                showHistory()
+            }
+
+        pendingButton =
+            compactButton("Черга") {
+                showPendingJobs()
+            }
+
+        quotaButton =
+            compactButton("Квота") {
+                showQuotaDialog()
+            }
+
+        val moreButton =
+            compactButton("Ще") {
+                showMoreActions()
+            }
+
+        listOf(
+            historyButton,
+            pendingButton,
+            quotaButton,
+            moreButton
+        ).forEachIndexed { index, item ->
+            utilityRow.addView(
+                item,
+                LinearLayout.LayoutParams(
+                    0,
+                    dp(42),
+                    1f
+                ).apply {
+                    if (index > 0) {
+                        marginStart = dp(6)
+                    }
+                }
+            )
+        }
+
+        root.addView(utilityRow)
 
         summaryText = TextView(this).apply {
-            setPadding(dp(16), dp(4), dp(16), 0)
+            setPadding(dp(16), dp(5), dp(16), 0)
             setTextColor(Color.WHITE)
             textSize = 15f
             setTypeface(typeface, Typeface.BOLD)
@@ -195,28 +341,42 @@ class MainActivity : Activity() {
         root.addView(summaryText)
 
         statusText = TextView(this).apply {
-            setPadding(dp(16), dp(2), dp(16), dp(5))
+            setPadding(dp(16), dp(3), dp(16), dp(7))
             setTextColor(Color.rgb(165, 167, 173))
             textSize = 13f
-            text = "Виберіть CSV/TXT або вставте список Artist - Track."
+            text = "Почніть з «1. Імпорт»."
         }
         root.addView(statusText)
 
-        progress = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
-            max = 100
-            progress = 0
-            visibility = View.GONE
-        }
+        progress =
+            ProgressBar(
+                this,
+                null,
+                android.R.attr.progressBarStyleHorizontal
+            ).apply {
+                max = 100
+                progress = 0
+                visibility = View.GONE
+            }
+
         root.addView(
             progress,
-            LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(4))
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(4)
+            )
         )
 
         resultPanel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             visibility = View.GONE
             setPadding(dp(18), dp(14), dp(18), dp(14))
-            setBackgroundColor(Color.rgb(27, 29, 34))
+            background =
+                roundedBackground(
+                    color = Color.rgb(27, 29, 34),
+                    radiusDp = 14,
+                    strokeColor = Color.rgb(52, 55, 63)
+                )
         }
 
         resultTitleText = TextView(this).apply {
@@ -244,8 +404,37 @@ class MainActivity : Activity() {
         val resultActions = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
         }
-        resultActions.addView(button("Відкрити в YTM") { openInYtm() })
-        resultActions.addView(button("Копіювати посилання") { copyPlaylistLink() })
+
+        val openResultButton =
+            button("Відкрити в YTM") {
+                openInYtm()
+            }
+
+        val copyResultButton =
+            button("Копіювати посилання") {
+                copyPlaylistLink()
+            }
+
+        resultActions.addView(
+            openResultButton,
+            LinearLayout.LayoutParams(
+                0,
+                dp(42),
+                1f
+            )
+        )
+
+        resultActions.addView(
+            copyResultButton,
+            LinearLayout.LayoutParams(
+                0,
+                dp(42),
+                1f
+            ).apply {
+                marginStart = dp(8)
+            }
+        )
+
         resultPanel.addView(resultActions)
 
         root.addView(
@@ -254,7 +443,7 @@ class MainActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(dp(12), dp(10), dp(12), dp(10))
+                setMargins(dp(12), dp(4), dp(12), dp(8))
             }
         )
 
@@ -262,34 +451,219 @@ class MainActivity : Activity() {
             divider = null
             dividerHeight = dp(1)
             setBackgroundColor(Color.rgb(15, 16, 19))
+            clipToPadding = false
+            setPadding(dp(8), 0, dp(8), dp(12))
         }
-        adapter = TrackAdapter(this, visibleTracks)
+
+        adapter =
+            TrackAdapter(
+                this,
+                visibleTracks
+            )
+
         listView.adapter = adapter
+
         listView.setOnItemClickListener { _, _, position, _ ->
-            showTrackDialog(visibleTracks[position])
+            showTrackDialog(
+                visibleTracks[position]
+            )
         }
+
         root.addView(
             listView,
-            LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f)
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
         )
 
         setContentView(root)
+
         updateQuotaPanel()
         updatePendingButton()
+        updatePrimaryActions()
     }
 
-    private fun button(label: String, action: () -> Unit): Button = Button(this).apply {
-        text = label
-        isAllCaps = false
-        textSize = 13f
-        setTextColor(Color.WHITE)
-        setBackgroundColor(Color.rgb(34, 36, 42))
-        setPadding(dp(12), 0, dp(12), 0)
-        setOnClickListener { action() }
-        layoutParams =
-            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(40)).apply {
-                marginEnd = dp(6)
+    private fun button(
+        label: String,
+        action: () -> Unit
+    ): Button =
+        Button(this).apply {
+            text = label
+            isAllCaps = false
+            textSize = 13f
+            setTextColor(Color.WHITE)
+            setPadding(dp(10), 0, dp(10), 0)
+            background =
+                roundedBackground(
+                    color = Color.rgb(34, 36, 42),
+                    radiusDp = 12,
+                    strokeColor = Color.rgb(58, 61, 70)
+                )
+            setOnClickListener {
+                action()
             }
+        }
+
+    private fun primaryButton(
+        label: String,
+        action: () -> Unit
+    ): Button =
+        Button(this).apply {
+            text = label
+            isAllCaps = false
+            textSize = 13.5f
+            setTypeface(typeface, Typeface.BOLD)
+            setTextColor(Color.WHITE)
+            setPadding(dp(10), 0, dp(10), 0)
+            background =
+                roundedBackground(
+                    color = Color.rgb(196, 0, 42),
+                    radiusDp = 12
+                )
+            setOnClickListener {
+                action()
+            }
+        }
+
+    private fun compactButton(
+        label: String,
+        action: () -> Unit
+    ): Button =
+        button(
+            label = label,
+            action = action
+        ).apply {
+            textSize = 12f
+            setPadding(dp(5), 0, dp(5), 0)
+        }
+
+    private fun equalButtonsRow(
+        first: Button,
+        second: Button
+    ): LinearLayout =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+
+            addView(
+                first,
+                LinearLayout.LayoutParams(
+                    0,
+                    dp(46),
+                    1f
+                )
+            )
+
+            addView(
+                second,
+                LinearLayout.LayoutParams(
+                    0,
+                    dp(46),
+                    1f
+                ).apply {
+                    marginStart = dp(8)
+                }
+            )
+        }
+
+    private fun roundedBackground(
+        color: Int,
+        radiusDp: Int,
+        strokeColor: Int? = null
+    ): GradientDrawable =
+        GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dp(radiusDp).toFloat()
+            setColor(color)
+
+            if (strokeColor != null) {
+                setStroke(
+                    dp(1),
+                    strokeColor
+                )
+            }
+        }
+
+    private fun updatePrimaryActions() {
+        if (!::searchButton.isInitialized ||
+            !::createButton.isInitialized
+        ) {
+            return
+        }
+
+        val current = playlist
+
+        searchButton.isEnabled =
+            current != null
+
+        searchButton.alpha =
+            if (searchButton.isEnabled) {
+                1f
+            } else {
+                0.55f
+            }
+
+        val hasSelectedVideo =
+            current
+                ?.tracks
+                .orEmpty()
+                .any {
+                    !it.selectedVideoId.isNullOrBlank() &&
+                        it.status != TrackStatus.SKIPPED
+                }
+
+        createButton.isEnabled =
+            hasSelectedVideo
+
+        createButton.alpha =
+            if (createButton.isEnabled) {
+                1f
+            } else {
+                0.55f
+            }
+    }
+
+    private fun showImportMenu() {
+        val labels =
+            arrayOf(
+                "Файл — CSV / TXT / YTM Project",
+                "Вставити текст — Artist - Track"
+            )
+
+        AlertDialog.Builder(this)
+            .setTitle("Імпорт трекліста")
+            .setItems(labels) { _, which ->
+                when (which) {
+                    0 -> chooseFile()
+                    1 -> showPasteTrackListDialog()
+                }
+            }
+            .setNegativeButton("Скасувати", null)
+            .show()
+    }
+
+    private fun showMoreActions() {
+        val labels =
+            arrayOf(
+                "Заміни — перевірити ручні заміни",
+                "Відкрити останній плейлист у YTM",
+                "Дані — export / backup / restore",
+                "Сервіс — допомога / diagnostics / cache"
+            )
+
+        AlertDialog.Builder(this)
+            .setTitle("Ще")
+            .setItems(labels) { _, which ->
+                when (which) {
+                    0 -> showReplacementLog()
+                    1 -> openInYtm()
+                    2 -> showDataTools()
+                    3 -> showServiceTools()
+                }
+            }
+            .setNegativeButton("Закрити", null)
+            .show()
     }
 
     /**
@@ -494,7 +868,7 @@ class MainActivity : Activity() {
         updateSummary()
         status(
             "$sourceLabel імпортовано: ${imported.tracks.size} треків. " +
-                "Натисніть «Знайти». Відомі треки будуть взяті з кешу."
+                "Крок 3: натисніть «Знайти треки». Відомі треки будуть взяті з кешу."
         )
     }
 
@@ -527,7 +901,7 @@ class MainActivity : Activity() {
                 "Без videoId: ${project.unresolvedCount}." +
                 scopeNote +
                 " Якщо всі потрібні videoId вже є, можна одразу " +
-                "натиснути «4. Створити» без нового пошуку."
+                "натиснути «4. Створити / додати» без нового пошуку."
         )
     }
 
@@ -698,14 +1072,16 @@ class MainActivity : Activity() {
         accountButton.text =
             when {
                 accessToken.isNullOrBlank() ->
-                    "2. Акаунт"
+                    "2. Google / YTM"
 
                 youtubeChannelInfo != null ->
-                    "2. Акаунт ✓"
+                    "2. Google / YTM ✓"
 
                 else ->
-                    "2. Акаунт …"
+                    "2. Google / YTM …"
             }
+
+        updatePrimaryActions()
     }
 
     private fun searchAll() {
@@ -2166,16 +2542,114 @@ class MainActivity : Activity() {
             error.message.orEmpty().contains("daily limit", ignoreCase = true)
 
 
+
+    private fun maybeShowWelcome() {
+        if (
+            uiPrefs.getBoolean(
+                KEY_WELCOME_SEEN,
+                false
+            )
+        ) {
+            return
+        }
+
+        showQuickStartDialog(
+            firstRun = true
+        )
+    }
+
+    private fun showQuickStartDialog(
+        firstRun: Boolean = false
+    ) {
+        val builder =
+            AlertDialog.Builder(this)
+                .setTitle("Вітаємо в YTM Importer")
+                .setMessage(
+                    "Створити плейлист можна у 4 кроки:\n\n" +
+                        "1. Імпортуйте CSV/TXT/YTM Project або вставте текст.\n" +
+                        "2. Підключіть Google / YouTube Music.\n" +
+                        "3. Знайдіть треки та перевірте сумнівні результати.\n" +
+                        "4. Створіть новий плейлист або додайте треки " +
+                        "до існуючого.\n\n" +
+                        "Порада: жовті треки краще переглянути вручну. " +
+                        "SearchCache зменшує повторні API-пошуки.\n\n" +
+                        "YTM Importer не має власного сервера, реклами " +
+                        "або вбудованої аналітики."
+                )
+                .setNeutralButton("Приватність") { _, _ ->
+                    if (firstRun) {
+                        markWelcomeSeen()
+                    }
+
+                    showPrivacyDialog()
+                }
+                .setPositiveButton("Почати") { _, _ ->
+                    markWelcomeSeen()
+                }
+
+        if (firstRun) {
+            builder.setNegativeButton(
+                "Не зараз",
+                null
+            )
+        } else {
+            builder.setNegativeButton(
+                "Закрити",
+                null
+            )
+        }
+
+        builder.show()
+    }
+
+    private fun markWelcomeSeen() {
+        uiPrefs
+            .edit()
+            .putBoolean(
+                KEY_WELCOME_SEEN,
+                true
+            )
+            .apply()
+    }
+
+    private fun showPrivacyDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Приватність")
+            .setMessage(
+                "YTM Importer працює без власного сервера.\n\n" +
+                    "Застосунок використовує Google OAuth та YouTube Data API " +
+                    "лише для дій, які ви запускаєте: читання інформації " +
+                    "про акаунт/канал, пошук, створення плейлистів і " +
+                    "додавання треків.\n\n" +
+                    "Локально на телефоні можуть зберігатися History, " +
+                    "Pending Queue, SearchCache та локальна оцінка quota.\n\n" +
+                    "OAuth access token не входить у backup, YTM Project " +
+                    "або Diagnostics. Diagnostics маскує email та Channel ID.\n\n" +
+                    "Full Backup може містити персональні метадані, наприклад " +
+                    "email, Channel ID, назви плейлистів та History. " +
+                    "Зберігайте та надсилайте backup лише туди, де йому довіряєте.\n\n" +
+                    "Android Share не завантажує файли на сервер YTM Importer: " +
+                    "після вибору іншого застосунку подальша передача залежить " +
+                    "від нього.\n\n" +
+                    "YTM Importer — незалежний інструмент і не є офіційним " +
+                    "застосунком Google або YouTube."
+            )
+            .setNegativeButton("Закрити", null)
+            .setPositiveButton("Швидкий старт") { _, _ ->
+                showQuickStartDialog()
+            }
+            .show()
+    }
+
     private fun showServiceTools() {
         val cache = searchCache.stats()
         val quota = quotaTracker.snapshot()
 
         val intro = TextView(this).apply {
             text =
-                "Сервісні інструменти не змінюють YouTube/YTM " +
-                    "плейлисти.\n\n" +
-                    "Cache: ${cache.validEntries} активних записів\n" +
-                    "Quota: search ${quota.searchCalls}/" +
+                "Допомога та сервісні інструменти.\n\n" +
+                    "Cache: ${cache.validEntries} активних записів • " +
+                    "Search quota: ${quota.searchCalls}/" +
                     "${QuotaTracker.SEARCH_DAILY_LIMIT}"
             textSize = 14f
             setPadding(dp(16), dp(8), dp(16), dp(8))
@@ -2183,8 +2657,14 @@ class MainActivity : Activity() {
 
         val labels =
             arrayOf(
+                "Швидкий старт\n" +
+                    "Як створити плейлист у 4 кроки",
+
+                "Приватність\n" +
+                    "Які дані використовуються та що зберігається локально",
+
                 "Діагностика\n" +
-                    "Показати стан застосунку, quota, cache, History",
+                    "Стан застосунку, quota, cache, History",
 
                 "Поділитися Diagnostics TXT\n" +
                     "Надіслати технічний звіт без OAuth token",
@@ -2193,13 +2673,13 @@ class MainActivity : Activity() {
                     "Записати технічний звіт у файл",
 
                 "SearchCache\n" +
-                    "Розмір, записи, очищення",
+                    "Розмір, записи та очищення",
 
                 "Google Cloud Console\n" +
                     "Відкрити сторінку квоти YouTube Data API",
 
                 "Про програму\n" +
-                    "Версія, приватність і статус підготовки до v1.0"
+                    "Версія та основні можливості"
             )
 
         val list = ListView(this).apply {
@@ -2215,6 +2695,7 @@ class MainActivity : Activity() {
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(8), 0, dp(8), 0)
+
             addView(
                 intro,
                 LinearLayout.LayoutParams(
@@ -2222,6 +2703,7 @@ class MainActivity : Activity() {
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
             )
+
             addView(
                 list,
                 LinearLayout.LayoutParams(
@@ -2233,7 +2715,7 @@ class MainActivity : Activity() {
 
         val dialog =
             AlertDialog.Builder(this)
-                .setTitle("Сервіс — Diagnostics / Cache")
+                .setTitle("Сервіс")
                 .setView(container)
                 .setNegativeButton("Закрити", null)
                 .create()
@@ -2242,12 +2724,14 @@ class MainActivity : Activity() {
             dialog.dismiss()
 
             when (position) {
-                0 -> showDiagnostics()
-                1 -> shareDiagnostics()
-                2 -> saveDiagnostics()
-                3 -> showSearchCacheTools()
-                4 -> openGoogleCloudQuota()
-                5 -> showAboutDialog()
+                0 -> showQuickStartDialog()
+                1 -> showPrivacyDialog()
+                2 -> showDiagnostics()
+                3 -> shareDiagnostics()
+                4 -> saveDiagnostics()
+                5 -> showSearchCacheTools()
+                6 -> openGoogleCloudQuota()
+                7 -> showAboutDialog()
             }
         }
 
@@ -2255,45 +2739,44 @@ class MainActivity : Activity() {
     }
 
     private fun showAboutDialog() {
-        val targetSdk = applicationInfo.targetSdkVersion
+        val targetSdk =
+            applicationInfo.targetSdkVersion
 
         AlertDialog.Builder(this)
-            .setTitle("YTM Importer — Про програму")
+            .setTitle("YTM Importer")
             .setIcon(R.mipmap.ic_launcher)
             .setMessage(
                 "Версія: ${BuildConfig.VERSION_NAME} " +
                     "(${BuildConfig.VERSION_CODE})\n" +
-                    "Package: $packageName\n" +
                     "Android target SDK: $targetSdk\n\n" +
-                    "Етап: v1.0.0 stable (перший стабільний реліз).\n" +
-                    "Core behavior frozen (основна логіка заморожена): " +
-                    "до v1.0 виправляємо тільки blocker bugs " +
-                    "(критичні помилки).\n\n" +
-                    "Основні можливості:\n" +
-                    "• CSV / TXT / прямий текст\n" +
-                    "• Google + YouTube/YTM account\n" +
-                    "• SearchCache + MatchScorer\n" +
-                    "• новий / існуючий плейлист\n" +
+                    "YTM Importer допомагає перетворити трекліст " +
+                    "у плейлист YouTube / YouTube Music.\n\n" +
+                    "Можливості:\n" +
+                    "• CSV / TXT / прямий текст / YTM Project\n" +
+                    "• автоматичний пошук + SearchCache\n" +
+                    "• ручна перевірка та заміна треків\n" +
+                    "• новий або існуючий плейлист\n" +
                     "• перевірка дублікатів\n" +
-                    "• Quota Planner + Pending Queue\n" +
-                    "• History\n" +
-                    "• Export / Backup / Restore\n" +
-                    "• Diagnostics / Share / Cache tools\n\n" +
-                    "Приватність:\n" +
-                    "застосунок не має власного сервера, реклами або " +
-                    "вбудованої аналітики. OAuth access token не входить " +
-                    "у backup або Diagnostics."
+                    "• History + повторно завантажувані YTM Project\n" +
+                    "• Queue / Resume при quota problems\n" +
+                    "• Backup / Restore / Rollback\n\n" +
+                    "Без реклами, власного сервера та вбудованої аналітики.\n\n" +
+                    "Незалежний інструмент. Не є офіційним застосунком " +
+                    "Google або YouTube."
             )
             .setNegativeButton("Закрити", null)
-            .setPositiveButton("Regression checklist") { _, _ ->
-                showRegressionChecklist()
+            .setNeutralButton("Швидкий старт") { _, _ ->
+                showQuickStartDialog()
+            }
+            .setPositiveButton("Приватність") { _, _ ->
+                showPrivacyDialog()
             }
             .show()
     }
 
     private fun showRegressionChecklist() {
         AlertDialog.Builder(this)
-            .setTitle("Перевірка перед v1.0")
+            .setTitle("Regression checklist")
             .setMessage(
                 "Короткий список:\n\n" +
                     "1. Імпорт CSV/TXT/текст\n" +
@@ -2306,7 +2789,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.1.0.0/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.1.0/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()
@@ -4455,6 +4938,8 @@ class MainActivity : Activity() {
             "${p.name} • ${p.tracks.size} треків • " +
                 "✓ $matched  ! $review  ⧉ $duplicates  " +
                 "⏳ $pending  × $missing"
+
+        updatePrimaryActions()
     }
 
     private fun refreshRow(index: Int) {
@@ -4478,6 +4963,9 @@ class MainActivity : Activity() {
         (value * resources.displayMetrics.density).roundToInt()
 
     companion object {
+        private const val KEY_WELCOME_SEEN =
+            "welcome_v1_1_seen"
+
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"
 

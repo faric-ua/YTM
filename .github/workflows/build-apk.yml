@@ -13,9 +13,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: RC preflight
+      - name: Release preflight
         shell: bash
-        run: bash scripts/rc-preflight.sh
+        run: bash scripts/release-preflight.sh
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -116,8 +116,8 @@ jobs:
 
       - name: Prepare APK
         run: |
-          cp app/build/outputs/apk/release/app-release.apk YTM-Importer-v1.0.0-release.apk
-          ls -lh YTM-Importer-v1.0.0-release.apk
+          cp app/build/outputs/apk/release/app-release.apk YTM-Importer-v1.1.0-release.apk
+          ls -lh YTM-Importer-v1.1.0-release.apk
 
       - name: Verify signed APK
         shell: bash
@@ -128,7 +128,7 @@ jobs:
           APKSIGNER="$BUILD_TOOLS/apksigner"
           ZIPALIGN="$BUILD_TOOLS/zipalign"
           AAPT="$BUILD_TOOLS/aapt"
-          APK="YTM-Importer-v1.0.0-release.apk"
+          APK="YTM-Importer-v1.1.0-release.apk"
 
           test -x "$APKSIGNER"
           test -x "$ZIPALIGN"
@@ -151,7 +151,7 @@ jobs:
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: YTM-Importer-v1.0.0-Release
+          name: YTM-Importer-v1.1.0-Release
           path: |
-            YTM-Importer-v1.0.0-release.apk
-            YTM-Importer-v1.0.0-release.apk.sha256
+            YTM-Importer-v1.1.0-release.apk
+            YTM-Importer-v1.1.0-release.apk.sha256
