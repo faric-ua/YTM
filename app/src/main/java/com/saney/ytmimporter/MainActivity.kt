@@ -38,6 +38,8 @@ import com.saney.ytmimporter.parser.PlaylistParser
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.LocalBackupManager
 import com.saney.ytmimporter.storage.PendingJobStore
+import com.saney.ytmimporter.storage.PlaylistProjectCodec
+import com.saney.ytmimporter.storage.PlaylistProjectImport
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.util.ErrorMessages
@@ -344,21 +346,52 @@ class MainActivity : Activity() {
         } catch (_: Exception) {
         }
 
-        val fileName = queryFileName(uri) ?: "playlist.csv"
+        val fileName =
+            queryFileName(uri)
+                ?: "playlist.csv"
+
         val text =
             contentResolver.openInputStream(uri)
                 ?.bufferedReader(Charsets.UTF_8)
                 ?.use { it.readText() }
-                ?: return toast("Не вдалося прочитати файл")
+                ?: return toast(
+                    "Не вдалося прочитати файл"
+                )
 
-        runCatching { PlaylistParser.parse(fileName, text) }
-            .onSuccess {
-                applyImportedPlaylist(
-                    imported = it,
-                    sourceLabel = "Файл ($fileName)"
+        if (PlaylistProjectCodec.isProject(text)) {
+            runCatching {
+                PlaylistProjectCodec.importProject(text)
+            }.onSuccess { project ->
+                applyImportedProject(
+                    project = project,
+                    fileName = fileName
+                )
+            }.onFailure { error ->
+                toast(
+                    error.message
+                        ?: "Не вдалося завантажити YTM Project"
                 )
             }
-            .onFailure { toast(it.message ?: "Помилка імпорту") }
+
+            return
+        }
+
+        runCatching {
+            PlaylistParser.parse(
+                fileName,
+                text
+            )
+        }.onSuccess {
+            applyImportedPlaylist(
+                imported = it,
+                sourceLabel = "Файл ($fileName)"
+            )
+        }.onFailure {
+            toast(
+                it.message
+                    ?: "Помилка імпорту"
+            )
+        }
     }
 
     private fun showPasteTrackListDialog() {
@@ -462,6 +495,39 @@ class MainActivity : Activity() {
         status(
             "$sourceLabel імпортовано: ${imported.tracks.size} треків. " +
                 "Натисніть «Знайти». Відомі треки будуть взяті з кешу."
+        )
+    }
+
+
+    private fun applyImportedProject(
+        project: PlaylistProjectImport,
+        fileName: String
+    ) {
+        applyImportedPlaylist(
+            imported = project.playlist,
+            sourceLabel = "YTM Project ($fileName)"
+        )
+
+        val scopeNote =
+            if (
+                project.sourceDestination ==
+                    PendingDestination.EXISTING_PLAYLIST
+            ) {
+                " Це збережений import batch (пакет імпорту), " +
+                    "а не повна копія старого існуючого плейлиста."
+            } else {
+                ""
+            }
+
+        status(
+            "YTM Project завантажено: " +
+                "${project.playlist.tracks.size} треків. " +
+                "Точних YouTube videoId відновлено: " +
+                "${project.exactSelectionCount}. " +
+                "Без videoId: ${project.unresolvedCount}." +
+                scopeNote +
+                " Якщо всі потрібні videoId вже є, можна одразу " +
+                "натиснути «4. Створити» без нового пошуку."
         )
     }
 
@@ -2199,7 +2265,7 @@ class MainActivity : Activity() {
                     "(${BuildConfig.VERSION_CODE})\n" +
                     "Package: $packageName\n" +
                     "Android target SDK: $targetSdk\n\n" +
-                    "Етап: v1.0.0 RC1 (перший кандидат у стабільний реліз).\n" +
+                    "Етап: v1.0.0 RC2 (другий кандидат у стабільний реліз).\n" +
                     "Core behavior frozen (основна логіка заморожена): " +
                     "до v1.0 виправляємо тільки blocker bugs " +
                     "(критичні помилки).\n\n" +
@@ -2240,7 +2306,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.1.0.0-rc1/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.0.0-rc2/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()
@@ -3366,7 +3432,9 @@ class MainActivity : Activity() {
                     }
                 }
             )
-            .setNegativeButton("Закрити", null)
+            .setNegativeButton("Назад") { _, _ ->
+                showHistory()
+            }
             .setNeutralButton("Дії") { _, _ ->
                 showHistoryActions(entry)
             }
@@ -3393,6 +3461,8 @@ class MainActivity : Activity() {
             labels += "Копіювати посилання на плейлист"
         }
 
+        labels += "Зберегти YTM Project"
+        labels += "Поділитися YTM Project"
         labels += "Копіювати підсумок"
         labels += "Копіювати журнал проблем"
         labels += "Видалити запис з історії"
@@ -3404,34 +3474,71 @@ class MainActivity : Activity() {
 
                 when (selected) {
                     "Копіювати посилання на плейлист" -> {
-                        val id = entry.playlistId ?: return@setItems
+                        val id =
+                            entry.playlistId
+                                ?: return@setItems
+
                         copyText(
                             label = "YTM playlist",
                             text = playlistUrl(id),
-                            successMessage = "Посилання скопійовано"
+                            successMessage =
+                                "Посилання скопійовано"
                         )
+
+                        showHistoryEntry(entry)
+                    }
+
+                    "Зберегти YTM Project" -> {
+                        confirmHistoryProjectScope(
+                            entry = entry,
+                            actionLabel = "Зберегти"
+                        ) {
+                            saveHistoryProject(entry)
+                        }
+                    }
+
+                    "Поділитися YTM Project" -> {
+                        confirmHistoryProjectScope(
+                            entry = entry,
+                            actionLabel = "Поділитися"
+                        ) {
+                            shareHistoryProject(entry)
+                        }
                     }
 
                     "Копіювати підсумок" -> {
                         copyText(
-                            label = "YTM Importer history summary",
-                            text = buildHistorySummary(entry),
-                            successMessage = "Підсумок історії скопійовано"
+                            label =
+                                "YTM Importer history summary",
+                            text =
+                                buildHistorySummary(entry),
+                            successMessage =
+                                "Підсумок історії скопійовано"
                         )
+
+                        showHistoryEntry(entry)
                     }
 
                     "Копіювати журнал проблем" -> {
-                        val text = buildHistoryProblemLog(entry)
+                        val text =
+                            buildHistoryProblemLog(entry)
 
                         if (text == null) {
-                            toast("У цьому записі немає проблемних або замінених треків")
+                            toast(
+                                "У цьому записі немає проблемних " +
+                                    "або замінених треків"
+                            )
                         } else {
                             copyText(
-                                label = "YTM Importer history problems",
+                                label =
+                                    "YTM Importer history problems",
                                 text = text,
-                                successMessage = "Журнал проблем скопійовано"
+                                successMessage =
+                                    "Журнал проблем скопійовано"
                             )
                         }
+
+                        showHistoryEntry(entry)
                     }
 
                     "Видалити запис з історії" -> {
@@ -3439,8 +3546,102 @@ class MainActivity : Activity() {
                     }
                 }
             }
-            .setNegativeButton("Закрити", null)
+            .setNegativeButton("Назад") { _, _ ->
+                showHistoryEntry(entry)
+            }
             .show()
+    }
+
+    private fun confirmHistoryProjectScope(
+        entry: HistoryEntry,
+        actionLabel: String,
+        after: () -> Unit
+    ) {
+        if (
+            entry.destination ==
+                PendingDestination.NEW_PLAYLIST
+        ) {
+            after()
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("$actionLabel YTM Project?")
+            .setMessage(
+                "Цей запис History був додаванням до вже існуючого " +
+                    "плейлиста.\n\n" +
+                    "Тому проект міститиме тільки треки цієї конкретної " +
+                    "операції імпорту, а НЕ повний вміст існуючого " +
+                    "плейлиста в YouTube/YTM.\n\n" +
+                    "Для повторного використання цього import batch " +
+                    "(пакета імпорту) це правильний формат."
+            )
+            .setNegativeButton("Скасувати") { _, _ ->
+                showHistoryEntry(entry)
+            }
+            .setPositiveButton(actionLabel) { _, _ ->
+                after()
+            }
+            .show()
+    }
+
+    private fun saveHistoryProject(
+        entry: HistoryEntry
+    ) {
+        val content =
+            PlaylistProjectCodec.exportHistoryEntry(
+                entry = entry,
+                appVersion = BuildConfig.VERSION_NAME
+            )
+
+        createDocumentForExport(
+            fileName =
+                historyProjectFileName(entry),
+            mimeType =
+                "application/json",
+            content = content,
+            successMessage =
+                "YTM Project збережено"
+        )
+    }
+
+    private fun shareHistoryProject(
+        entry: HistoryEntry
+    ) {
+        val content =
+            PlaylistProjectCodec.exportHistoryEntry(
+                entry = entry,
+                appVersion = BuildConfig.VERSION_NAME
+            )
+
+        shareTextFile(
+            fileName =
+                historyProjectFileName(entry),
+            mimeType =
+                "application/json",
+            content = content,
+            chooserTitle =
+                "Поділитися YTM Project"
+        )
+    }
+
+    private fun historyProjectFileName(
+        entry: HistoryEntry
+    ): String {
+        val safeName =
+            entry.playlistName
+                .replace(
+                    Regex("[^\\p{L}\\p{N}._-]+"),
+                    "_"
+                )
+                .trim('_')
+                .take(60)
+                .ifBlank {
+                    "playlist"
+                }
+
+        return "YTM_Project_${safeName}_" +
+            "${exportTimestamp()}.ytm.json"
     }
 
     private fun buildHistorySummary(entry: HistoryEntry): String =
@@ -3553,6 +3754,10 @@ class MainActivity : Activity() {
             .setPositiveButton("Видалити") { _, _ ->
                 historyStore.remove(entry.id)
                 toast("Запис видалено з історії")
+
+                if (historyStore.getAll().isNotEmpty()) {
+                    showHistory()
+                }
             }
             .show()
     }

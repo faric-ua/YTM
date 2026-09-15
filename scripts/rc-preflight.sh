@@ -16,17 +16,17 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.0.0-rc1/RELEASE.md"
-check_file "docs/v.1.0.0-rc1/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.0.0-rc2/RELEASE.md"
+check_file "docs/v.1.0.0-rc2/REGRESSION_CHECKLIST.md"
 
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 21' app/build.gradle.kts \
-  || fail "Expected versionCode = 21"
+grep -q 'versionCode = 22' app/build.gradle.kts \
+  || fail "Expected versionCode = 22"
 
-grep -q 'versionName = "1.0.0-rc1"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.0.0-rc1"'
+grep -q 'versionName = "1.0.0-rc2"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.0.0-rc2"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

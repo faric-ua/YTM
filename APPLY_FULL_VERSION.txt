@@ -1,21 +1,16 @@
-YTM Importer v1.0.0-rc1 FULL — RELEASE CANDIDATE 1
-
-ФУНКЦІОНАЛЬНА ПОЛІТИКА:
-- core behavior frozen
-- до v1.0.0 тільки blocker fixes
-- Material 3 / UI redesign після v1.0.0
-- UI зараз чіпаємо лише якщо він блокує роботу
+YTM Importer v1.0.0-rc2 FULL
 
 ДОДАНО:
-scripts/rc-preflight.sh
-docs/v.1.0.0-rc1/RELEASE.md
-docs/v.1.0.0-rc1/REGRESSION_CHECKLIST.md
-docs/v.1.0.0-rc1/diagrams/*
-TERMINAL_APPLY_v1.0.0-rc1.md
+app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt
+docs/v.1.0.0-rc2/RELEASE.md
+docs/v.1.0.0-rc2/REGRESSION_CHECKLIST.md
+docs/v.1.0.0-rc2/diagrams/*
+TERMINAL_APPLY_v1.0.0-rc2.md
 
 ЗАМІНЕНО:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 app/build.gradle.kts
+scripts/rc-preflight.sh
 .github/workflows/build-apk.yml
 BACKLOG.md
 CHANGELOG.md
@@ -24,6 +19,13 @@ README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
+ФУНКЦІЇ:
+- History Back navigation
+- Save YTM Project (.ytm.json)
+- Share YTM Project
+- Import YTM Project through 1. Файл
+- restore exact YouTube videoId selections
+
 VERSION:
-versionCode = 21
-versionName = 1.0.0-rc1
+versionCode = 22
+versionName = 1.0.0-rc2

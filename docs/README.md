@@ -1,16 +1,14 @@
 # YTM Importer — Документація за версіями
 
-Попередні version snapshots зберігаються окремо і не перезаписуються.
-
 Поточна версія:
 
-`docs/v.1.0.0-rc1/`
+`docs/v.1.0.0-rc2/`
 
-Release Candidate містить:
+RC2 містить:
 
 - `RELEASE.md`
 - `REGRESSION_CHECKLIST.md`
 - `diagrams/`
 
-Після проходження RC regression без blocker bugs:
-`v1.0.0 stable`.
+Ключова нова функція:
+reusable `YTM Playlist Project (.ytm.json)`.

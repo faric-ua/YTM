@@ -1,23 +1,20 @@
 # Журнал змін (Changelog)
 
+## v1.0.0-rc2
+- History detail отримав `Назад` до списку History.
+- History actions отримали `Назад` до деталей.
+- Додано `PlaylistProjectCodec`.
+- Додано `Зберегти YTM Project` для окремого History entry.
+- Додано `Поділитися YTM Project` через Android Share.
+- `.ytm.json` можна повторно імпортувати через `1. Файл`.
+- Проект зберігає exact videoId, selected title/channel та manual replacements.
+- Existing-playlist History export попереджає, що це лише import batch.
+- Версія: `1.0.0-rc2`, versionCode `22`.
+
 ## v1.0.0-rc1
 - Перший Release Candidate.
-- Основну функціональність заморожено.
-- Нових великих user-facing функцій не додано.
-- Додано `scripts/rc-preflight.sh`.
-- GitHub Actions запускає RC preflight перед build.
-- Preflight перевіряє package/version/SDK/BuildConfig.
-- Preflight не дозволяє tracked JKS або release-signing.properties.
-- Оновлено About/Regression checklist для RC1.
-- Додано `docs/v.1.0.0-rc1/`.
-- Версія: `1.0.0-rc1`, versionCode `21`.
+- RC preflight.
+- Core regression phase.
 
 ## v0.15.2
 - Manual URL metadata hotfix.
-- Реальна назва/канал ручної заміни.
-
-## v0.15.1
-- BuildConfig compilation hotfix.
-
-## v0.15.0
-- Stabilization перед RC.

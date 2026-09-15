@@ -1,38 +1,31 @@
 YTM Importer
-Version: 1.0.0-rc1
-Version code: 21
+Version: 1.0.0-rc2
+Version code: 22
 Package: com.saney.ytmimporter
-Stage: Release Candidate 1
+Stage: Release Candidate 2
 
-Core functionality:
-- import CSV/TXT/text
-- OAuth account/channel
-- SearchCache / MatchScorer
-- candidate review / manual URL metadata
-- new / existing playlist
-- duplicate detection
-- Quota Planner
-- Pending Queue / Resume
-- History
-- Export / Backup / Restore
-- Diagnostics / Share / Cache tools
-- friendly errors
-- signed GitHub Actions
-- Termux workflow
+Verified before RC2:
+- signed upgrade preserved History
+- History works
+- duplicate flow works
+- manual URL real metadata works
 
-RC policy:
-- core behavior frozen
-- blocker fixes only before v1.0.0
-- UI/UX redesign postponed until after v1.0.0
-- UI issues are fixed now only if they block a required action
+RC2:
+- History back navigation
+- YTM Playlist Project export
+- YTM Playlist Project Android Share
+- YTM Playlist Project re-import
+- exact videoId restoration
+- existing-playlist batch warning
 
-RC1 additions:
-- scripts/rc-preflight.sh
-- workflow preflight step
-- RC regression checklist
-- final RC naming/docs
+UI policy:
+- functionality first
+- cosmetic redesign after v1.0.0
+- fix UI now only when it blocks a required action
 
 Needs verification:
-- GitHub Actions RC1 build
-- signed update from v0.15.2
-- phone regression checklist
+- GitHub Actions RC2 build
+- signed upgrade RC1 -> RC2
+- export .ytm.json
+- re-import .ytm.json
+- recreate a test playlist without new Search

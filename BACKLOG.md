@@ -1,17 +1,15 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v1.0.0-rc1 — Release Candidate 1**
+**v1.0.0-rc2 — History navigation + Playlist Project**
 
-## Реалізовано до RC1
+## Реалізовано до RC2
 - [x] CSV / TXT / direct text import;
 - [x] Google OAuth + account/channel;
 - [x] SearchCache + MatchScorer;
-- [x] candidate review;
-- [x] manual candidate;
+- [x] candidate review / manual candidate;
 - [x] manual URL → real title/channel;
-- [x] create new playlist;
-- [x] append existing playlist;
+- [x] new / existing playlist;
 - [x] duplicate detection;
 - [x] privacy;
 - [x] Quota Planner;
@@ -19,43 +17,38 @@
 - [x] History;
 - [x] Export / Backup / Restore;
 - [x] Diagnostics / Share / Cache tools;
-- [x] centralized ErrorMessages;
-- [x] signed GitHub Actions builds;
-- [x] Termux build/download/install workflow.
+- [x] friendly errors;
+- [x] signed update;
+- [x] RC preflight.
 
-## v1.0.0-rc1
-- [x] core behavior freeze;
-- [x] final RC naming;
-- [x] RC release notes;
-- [x] RC regression checklist;
-- [x] automatic RC preflight script;
-- [x] workflow runs preflight before build;
-- [x] guard against tracked JKS / release-signing.properties;
-- [x] preserve BuildConfig + Android SDK workflow hotfixes;
-- [ ] GitHub Actions RC1 build;
-- [ ] signed upgrade v0.15.2 → RC1;
-- [ ] regression checklist on phone;
-- [ ] fix blocker bugs only.
+## v1.0.0-rc2
+- [x] History detail → Back to History list;
+- [x] History actions → Back to detail;
+- [x] export one History entry as reusable YTM Project;
+- [x] Android Share for YTM Project;
+- [x] import `.ytm.json` through `1. Файл`;
+- [x] restore exact YouTube videoId choices;
+- [x] restore manual replacement title/channel;
+- [x] warn that Existing Playlist export contains only this import batch;
+- [ ] GitHub Actions RC2 build;
+- [ ] signed upgrade RC1 → RC2;
+- [ ] phone test: export project → re-import → create test playlist.
 
-## v1.0.0 stable
-- [ ] no blocker bugs;
+## До v1.0.0 stable
+- [ ] finish regression checklist;
+- [ ] fix blocker/data-loss bugs;
 - [ ] final signed upgrade test;
-- [ ] final release notes;
 - [ ] versionName `1.0.0`;
-- [ ] versionCode > RC1;
-- [ ] stable APK artifact.
+- [ ] stable APK.
 
-## Після v1.0.0
-### UI/UX redesign
+## Після v1.0.0 — UI/UX
 - [ ] Material 3;
-- [ ] окремі screens замість великої кількості dialogs;
-- [ ] responsive layout для різних екранів;
-- [ ] toolbar / navigation;
-- [ ] покращення щільності інформації;
-- [ ] accessibility / larger text;
-- [ ] polishing animations/icons.
+- [ ] responsive layout;
+- [ ] separate screens instead of many dialogs;
+- [ ] navigation / toolbar;
+- [ ] typography and spacing;
+- [ ] small-screen fitting;
+- [ ] accessibility.
 
-### Future functionality
-- [ ] додаткові джерела імпорту;
-- [ ] optional advanced playlist management;
-- [ ] інші функції тільки після стабільного v1.0.
+Косметичний UI до v1.0 не є пріоритетом.
+Виправляємо його зараз тільки якщо він блокує функціональну дію.
