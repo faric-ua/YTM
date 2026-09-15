@@ -1,16 +1,16 @@
-YTM Importer v1.3.1 FULL — FILE MANIFEST
+YTM Importer v1.3.2 FULL — FILE MANIFEST
 
-fcce843a7299855d  .github/workflows/build-apk.yml
+8ba0e2d5a30f5a87  .github/workflows/build-apk.yml
 6cc7d3ae20eee52b  .gitignore
-b241ca5e33fd9398  APPLY_FULL_VERSION.txt
-551e3fa6d3fd3d19  BACKLOG.md
-224d2a75ff5d38d8  CHANGELOG.md
+9cbf0f39ad47735e  APPLY_FULL_VERSION.txt
+f28bacf0611b0530  BACKLOG.md
+97a9ebdb1c85b0d9  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 d587b884d3808902  PRIVACY.md
-449b439e820bb169  PROJECT_STATUS.txt
+bb04d99eff4eb759  PROJECT_STATUS.txt
 e4909b8d84cb7f2b  PUBLIC_RELEASE_CHECKLIST.md
-d19e5de5f3dfcd58  README.md
-dab6a83f6b0beeb7  README_UA.md
+365f07f7921683e8  README.md
+098f4c880e89bd0c  README_UA.md
 f4a9c99161f1f7a0  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
 e0ce791b58f2a591  TERMINAL_APPLY_v0.10.1.md
@@ -37,7 +37,8 @@ ced1b795ad8d072c  TERMINAL_APPLY_v1.2.1.md
 b18f3a200e6193e0  TERMINAL_APPLY_v1.2.2.md
 4a4a3f975fce6a29  TERMINAL_APPLY_v1.3.0.md
 c96b6015d574c359  TERMINAL_APPLY_v1.3.1.md
-364c7aefb3ba5618  app/build.gradle.kts
+eac5117f33e62bb1  TERMINAL_APPLY_v1.3.2.md
+e8185ca36f040853  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 615d5eff9074ed2b  app/src/main/AndroidManifest.xml
 db346aba61f2824e  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
@@ -45,7 +46,7 @@ df31db68beb210b4  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 1d8080f26aad4800  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 95dd88a220054c6c  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 a2daba2a7c66c33c  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
-9f7463b160c90b1a  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
+9e89500527ec9148  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 8af5f0f2ce44fbfa  app/src/main/java/com/saney/ytmimporter/model/HistoryEntry.kt
 44eecd0b12bf11f8  app/src/main/java/com/saney/ytmimporter/model/PendingJob.kt
@@ -57,7 +58,7 @@ d8f0c56f39f3fb2f  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupMan
 62796fd0b8b8a572  app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
 0124c54859bc775e  app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt
 1ee13fa92a322d93  app/src/main/java/com/saney/ytmimporter/storage/QuotaTracker.kt
-42873cc963568059  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
+2639bc29a6534a7f  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
 c0102f86d465b27c  app/src/main/java/com/saney/ytmimporter/util/ErrorMessages.kt
 49ea39322f16188f  app/src/main/java/com/saney/ytmimporter/youtube/MatchScorer.kt
 035824b4c324e752  app/src/main/java/com/saney/ytmimporter/youtube/SearchCache.kt
@@ -76,7 +77,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 ce3b1e690fed5536  app/src/main/res/values/styles.xml
 6260627b41d420da  app/src/main/res/xml/file_paths.xml
 1ad29e43e790095c  build.gradle.kts
-1348867e459dda12  docs/README.md
+1e7bc1889153cad6  docs/README.md
 fba063f3df84f31a  docs/v.0.10.0/RELEASE.md
 40eb6695cc102a64  docs/v.0.10.0/diagrams/ARCHITECTURE.md
 d36539446325c8a5  docs/v.0.10.0/diagrams/BEFORE_AFTER_v0.10.0.md
@@ -664,10 +665,15 @@ ab07f8f531dba7a3  docs/v.1.3.1/RELEASE.md
 c30d92edde753ead  docs/v.1.3.1/diagrams/MANUAL_SELECTION_CANONICAL_FLOW.md
 d8f0357a4d806543  docs/v.1.3.1/diagrams/README.md
 b52b722f818ecb89  docs/v.1.3.1/diagrams/WORKING_PROJECT_FLOW.md
+b76a93ed4968d2cf  docs/v.1.3.2/REGRESSION_CHECKLIST.md
+0b6824434b542d32  docs/v.1.3.2/RELEASE.md
+6aa9c92ae1a61998  docs/v.1.3.2/diagrams/BEFORE_AFTER_v1.3.2.md
+5e0f425b401e6885  docs/v.1.3.2/diagrams/PROJECT_SAVE_FEEDBACK.md
+8dbf941bf016968f  docs/v.1.3.2/diagrams/README.md
 d5f372c6d46ad7c8  gradle.properties
 45acb5657d044225  release-signing.properties.example
 92f4070125b5330d  samples/sample_playlist.csv
 85ee2b48bd8ad374  samples/sample_playlist.txt
 62193ffaa1f110da  scripts/download-latest-apk.sh
-75af13db098ba7a5  scripts/release-preflight.sh
+eace5d634ca79376  scripts/release-preflight.sh
 3ef7b58ae9c2bd82  settings.gradle.kts

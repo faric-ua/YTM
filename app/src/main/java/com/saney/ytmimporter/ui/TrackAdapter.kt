@@ -85,45 +85,46 @@ class TrackAdapter(
 
         val track = getItem(position)
 
-        val manualReplacement =
+        val manualSelection =
             track.manuallySelected &&
                 !track.selectedVideoId.isNullOrBlank() &&
                 !track.selectedTitle.isNullOrBlank()
 
-        if (manualReplacement) {
-            holder.title.text =
-                "${position + 1}. ${track.selectedTitle}"
+        holder.title.text =
+            "${position + 1}. ${track.originalArtist} — " +
+                track.originalTitle
 
-            holder.sub.text =
-                buildString {
-                    append("Заміна для: ")
-                    append(track.originalArtist)
-                    append(" — ")
-                    append(track.originalTitle)
+        holder.sub.text =
+            when {
+                manualSelection ->
+                    buildString {
+                        append("Ручний вибір: ")
+                        append(track.selectedTitle)
 
-                    if (!track.selectedChannel.isNullOrBlank()) {
-                        append(" • ")
-                        append(track.selectedChannel)
+                        if (!track.selectedChannel.isNullOrBlank()) {
+                            append(" • ")
+                            append(track.selectedChannel)
+                        }
                     }
-                }
-        } else {
-            holder.title.text =
-                "${position + 1}. ${track.originalArtist} — " +
-                    track.originalTitle
 
-            holder.sub.text =
-                when {
-                    !track.selectedTitle.isNullOrBlank() ->
-                        "Знайдено: ${track.selectedTitle} • " +
-                            track.selectedChannel.orEmpty()
+                !track.selectedTitle.isNullOrBlank() ->
+                    buildString {
+                        append("Знайдено: ")
+                        append(track.selectedTitle)
 
-                    !track.error.isNullOrBlank() ->
-                        track.error
+                        if (!track.selectedChannel.isNullOrBlank()) {
+                            append(" • ")
+                            append(track.selectedChannel)
+                        }
+                    }
 
-                    else ->
-                        "Натисніть трек, щоб перевірити/вибрати результат"
-                }
-        }
+                !track.error.isNullOrBlank() ->
+                    track.error
+
+                else ->
+                    "Натисніть трек, щоб перевірити/вибрати результат"
+            }
+
         holder.status.text = statusLabel(track)
         holder.status.setTextColor(statusColor(track.status))
 
@@ -139,7 +140,12 @@ class TrackAdapter(
     private fun statusLabel(track: Track): String = when (track.status) {
         TrackStatus.NEW -> "○ новий"
         TrackStatus.SEARCHING -> "… пошук"
-        TrackStatus.MATCHED -> "✓ знайдено"
+        TrackStatus.MATCHED ->
+            if (track.manuallySelected) {
+                "✓ вибрано"
+            } else {
+                "✓ знайдено"
+            }
         TrackStatus.REVIEW -> "! перевірити"
         TrackStatus.MISSING -> "× немає"
         TrackStatus.SKIPPED -> "— пропуск"

@@ -1,16 +1,8 @@
-YTM Importer v1.3.1 FULL
-
-ADDED:
-docs/v.1.3.1/
-TERMINAL_APPLY_v1.3.1.md
+YTM Importer v1.3.2 FULL
 
 REPLACED:
-app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
 app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
-app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
-app/src/main/java/com/saney/ytmimporter/DataActivity.kt
-app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt
-app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
 app/build.gradle.kts
 scripts/release-preflight.sh
 .github/workflows/build-apk.yml
@@ -18,14 +10,16 @@ BACKLOG.md
 CHANGELOG.md
 README.md
 README_UA.md
-PRIVACY.md
 PROJECT_STATUS.txt
-PUBLIC_RELEASE_CHECKLIST.md
 docs/README.md
+
+ADDED:
+docs/v.1.3.2/
+TERMINAL_APPLY_v1.3.2.md
 
 DELETED:
 none
 
 VERSION:
-versionCode = 32
-versionName = 1.3.1
+versionCode = 33
+versionName = 1.3.2

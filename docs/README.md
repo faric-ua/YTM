@@ -2,6 +2,6 @@
 
 Current version:
 
-`docs/v.1.3.1/`
+`docs/v.1.3.2/`
 
-v1.3.1 fixes manual-selection persistence and adds working-list YTM Project save/share before History.
+v1.3.2 fixes Review wording and improves Project save confirmation.

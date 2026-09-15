@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.3.1/RELEASE.md"
-check_file "docs/v.1.3.1/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.3.2/RELEASE.md"
+check_file "docs/v.1.3.2/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -73,6 +73,18 @@ grep -q 'current_playlist_v1' \
   app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt \
   || fail "Full Backup does not include current workspace"
 
+grep -q 'Ручний вибір:' \
+  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt \
+  || fail "Clear manual-selection wording is missing from Main list"
+
+grep -q 'Project «' \
+  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt \
+  || fail "Project save confirmation does not include project name"
+
+grep -q 'OpenableColumns.DISPLAY_NAME' \
+  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt \
+  || fail "Project save confirmation does not read final document filename"
+
 grep -q 'android:name=".PendingActivity"' \
   app/src/main/AndroidManifest.xml \
   || fail "PendingActivity is missing from manifest"
@@ -104,11 +116,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 32' app/build.gradle.kts \
-  || fail "Expected versionCode = 32"
+grep -q 'versionCode = 33' app/build.gradle.kts \
+  || fail "Expected versionCode = 33"
 
-grep -q 'versionName = "1.3.1"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.3.1"'
+grep -q 'versionName = "1.3.2"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.3.2"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -192,3 +204,6 @@ echo "- working-list YTM Project export"
 echo "- manual URL canonical-track guard"
 echo "- manual selections protected from cache overwrite"
 echo "- Full Backup includes current workspace"
+echo "- clear manual-selection wording"
+echo "- Project save toast includes project name"
+echo "- Project save toast includes actual document filename"

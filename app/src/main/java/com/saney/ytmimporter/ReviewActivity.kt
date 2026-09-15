@@ -9,6 +9,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -45,6 +46,12 @@ class ReviewActivity : Activity() {
         Int? = null
 
     private var pendingProjectExport:
+        String? = null
+
+    private var pendingProjectDisplayName:
+        String? = null
+
+    private var pendingProjectSuggestedFileName:
         String? = null
 
     private val saveProjectRequestCode =
@@ -513,7 +520,11 @@ class ReviewActivity : Activity() {
                                     .isNullOrBlank()
                             ) {
                                 append(
-                                    "\n\nЗараз вибрано:\n"
+                                    if (track.manuallySelected) {
+                                        "\n\nРучний вибір:\n"
+                                    } else {
+                                        "\n\nЗнайдено:\n"
+                                    }
                                 )
                                 append(
                                     track.selectedTitle
@@ -526,14 +537,6 @@ class ReviewActivity : Activity() {
                                     append("\n")
                                     append(
                                         track.selectedChannel
-                                    )
-                                }
-
-                                if (
-                                    track.manuallySelected
-                                ) {
-                                    append(
-                                        "\nРучний вибір"
                                     )
                                 }
                             }
@@ -970,8 +973,22 @@ class ReviewActivity : Activity() {
         val content =
             currentProjectJson()
 
+        val projectName =
+            snapshot.playlist.name
+                .trim()
+                .ifBlank {
+                    "YTM Project"
+                }
+
+        val suggestedFileName =
+            projectFileName()
+
         pendingProjectExport =
             content
+        pendingProjectDisplayName =
+            projectName
+        pendingProjectSuggestedFileName =
+            suggestedFileName
 
         val intent =
             Intent(
@@ -983,7 +1000,7 @@ class ReviewActivity : Activity() {
                 type = "application/json"
                 putExtra(
                     Intent.EXTRA_TITLE,
-                    projectFileName()
+                    suggestedFileName
                 )
             }
 
@@ -993,7 +1010,7 @@ class ReviewActivity : Activity() {
                 saveProjectRequestCode
             )
         }.onFailure { error ->
-            pendingProjectExport = null
+            clearPendingProjectExport()
 
             toast(
                 "Не вдалося відкрити вибір файлу: " +
@@ -1095,8 +1112,29 @@ class ReviewActivity : Activity() {
                     "Android не відкрив файл для запису"
                 )
         }.onSuccess {
-            toast(
-                "Поточний YTM Project збережено"
+            val projectName =
+                pendingProjectDisplayName
+                    ?: snapshot.playlist.name
+                        .trim()
+                        .ifBlank {
+                            "YTM Project"
+                        }
+
+            val savedFileName =
+                queryDocumentName(uri)
+                    ?: pendingProjectSuggestedFileName
+
+            toastLong(
+                buildString {
+                    append(
+                        "Project «$projectName» збережено"
+                    )
+
+                    if (!savedFileName.isNullOrBlank()) {
+                        append("\n")
+                        append(savedFileName)
+                    }
+                }
             )
         }.onFailure { error ->
             toast(
@@ -1108,7 +1146,44 @@ class ReviewActivity : Activity() {
             )
         }
 
+        clearPendingProjectExport()
+    }
+
+    private fun queryDocumentName(
+        uri: Uri
+    ): String? =
+        runCatching {
+            contentResolver
+                .query(
+                    uri,
+                    arrayOf(
+                        OpenableColumns.DISPLAY_NAME
+                    ),
+                    null,
+                    null,
+                    null
+                )
+                ?.use { cursor ->
+                    val index =
+                        cursor.getColumnIndex(
+                            OpenableColumns.DISPLAY_NAME
+                        )
+
+                    if (
+                        index >= 0 &&
+                        cursor.moveToFirst()
+                    ) {
+                        cursor.getString(index)
+                    } else {
+                        null
+                    }
+                }
+        }.getOrNull()
+
+    private fun clearPendingProjectExport() {
         pendingProjectExport = null
+        pendingProjectDisplayName = null
+        pendingProjectSuggestedFileName = null
     }
 
     private fun projectFileName(): String {
@@ -1591,6 +1666,18 @@ class ReviewActivity : Activity() {
             .show()
     }
 
+    private fun toastLong(
+        message: String
+    ) {
+        Toast
+            .makeText(
+                this,
+                message,
+                Toast.LENGTH_LONG
+            )
+            .show()
+    }
+
     private fun dp(
         value: Int
     ): Int =
@@ -1709,6 +1796,12 @@ class ReviewActivity : Activity() {
                     !track.selectedTitle
                         .isNullOrBlank() ->
                         buildString {
+                            if (track.manuallySelected) {
+                                append("Ручний вибір: ")
+                            } else {
+                                append("Знайдено: ")
+                            }
+
                             append(
                                 track.selectedTitle
                             )
@@ -1720,14 +1813,6 @@ class ReviewActivity : Activity() {
                                 append(" • ")
                                 append(
                                     track.selectedChannel
-                                )
-                            }
-
-                            if (
-                                track.manuallySelected
-                            ) {
-                                append(
-                                    " • ручний вибір"
                                 )
                             }
                         }

@@ -1,22 +1,15 @@
 YTM Importer
-Version: 1.3.1
-Version code: 32
+Version: 1.3.2
+Version code: 33
 Package: com.saney.ytmimporter
-Stage: Review hotfix / Working Projects
+
+Stage:
+Review UX correction after v1.3.1
 
 Fixed:
-- manual URL stale Track race
-- SearchCache overwrite of manual selection
-
-Added:
-- working YTM Project save/share before History
-- Project schema v2 candidates/status
-- current-workspace clear action
-- current workspace in Full Backup
-
-Autosave behavior:
-- last workspace restores after restart
-- multiple projects should be saved as .ytm.json files
+- confusing manual replacement wording
+- original/selected title visual inversion
+- Project save toast missing project/file name
 
 Next:
-- destination/create screen
+- destination/create screen after v1.3.2 phone regression
