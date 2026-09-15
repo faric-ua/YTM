@@ -1,7 +1,7 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v1.0.0-rc3 — Data Safety / Restore Guard**
+**v1.0.0-rc3.1 — Data Safety / Restore Guard**
 
 ## Підтверджено реальними тестами
 - [x] signed update збережує History;
@@ -21,7 +21,9 @@
 - [x] rollback last Restore;
 - [x] automatic rollback attempt on Restore failure;
 - [x] schema v1 backward compatibility;
-- [ ] GitHub Actions RC3 build;
+- [x] RC3 build failure identified: malformed Kotlin string;
+- [x] RC3.1 syntax hotfix prepared;
+- [ ] GitHub Actions RC3.1 build;
 - [ ] signed update RC2 → RC3;
 - [ ] real backup → restore → rollback test.
 

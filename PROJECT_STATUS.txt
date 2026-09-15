@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.0.0-rc3
-Version code: 23
+Version: 1.0.0-rc3.1
+Version code: 24
 Package: com.saney.ytmimporter
 Stage: Release Candidate 3
 
@@ -25,3 +25,10 @@ Needs verification:
 - GitHub Actions RC3 build
 - signed update RC2 -> RC3
 - real backup -> restore -> rollback
+
+RC3.1:
+- exact GitHub failure analyzed
+- compileReleaseKotlin failed due malformed string literal
+- MainActivity Data dialog string fixed
+- RC preflight regression guard added
+- setup-java@v4 warning intentionally not changed in this blocker hotfix

@@ -2265,7 +2265,7 @@ class MainActivity : Activity() {
                     "(${BuildConfig.VERSION_CODE})\n" +
                     "Package: $packageName\n" +
                     "Android target SDK: $targetSdk\n\n" +
-                    "Етап: v1.0.0 RC3 (data safety candidate перед stable).\n" +
+                    "Етап: v1.0.0 RC3.1 (build hotfix для data safety candidate).\n" +
                     "Core behavior frozen (основна логіка заморожена): " +
                     "до v1.0 виправляємо тільки blocker bugs " +
                     "(критичні помилки).\n\n" +
@@ -2306,7 +2306,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.1.0.0-rc3/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.0.0-rc3.1/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()
@@ -2807,9 +2807,8 @@ class MainActivity : Activity() {
                     "Поділитися = відкрити стандартне Android Share " +
                     "(меню поширення).\n\n" +
                     "Для повного Restore використовується тільки " +
-                    "«Повний backup», а не History JSON.
-" +
-                    "Перед Restore RC3 автоматично створює safety snapshot " +
+                    "«Повний backup», а не History JSON.\n" +
+                    "Перед Restore RC3.1 автоматично створює safety snapshot " +
                     "(точку відкату) поточних локальних даних."
             textSize = 14f
             setPadding(dp(16), dp(8), dp(16), dp(8))
@@ -3011,7 +3010,7 @@ class MainActivity : Activity() {
                     "YouTube Channel ID і назви плейлистів.\n\n" +
                     "OAuth access token, паролі та signing keys " +
                     "НЕ зберігаються.\n\n" +
-                    "RC3 також додає SHA-256 integrity check, щоб " +
+                    "RC3.1 також має SHA-256 integrity check, щоб " +
                     "пошкоджений backup не відновлювався мовчки."
             )
             .setNegativeButton("Скасувати", null)

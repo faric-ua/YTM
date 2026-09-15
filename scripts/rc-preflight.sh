@@ -16,17 +16,17 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.0.0-rc3/RELEASE.md"
-check_file "docs/v.1.0.0-rc3/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.0.0-rc3.1/RELEASE.md"
+check_file "docs/v.1.0.0-rc3.1/REGRESSION_CHECKLIST.md"
 
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 23' app/build.gradle.kts \
-  || fail "Expected versionCode = 23"
+grep -q 'versionCode = 24' app/build.gradle.kts \
+  || fail "Expected versionCode = 24"
 
-grep -q 'versionName = "1.0.0-rc3"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.0.0-rc3"'
+grep -q 'versionName = "1.0.0-rc3.1"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.0.0-rc3.1"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -56,6 +56,11 @@ fi
 grep -q 'Locate Android SDK' .github/workflows/build-apk.yml \
   || fail "Android SDK locator hotfix is missing"
 
+
+grep -Fq '"«Повний backup», а не History JSON.\n" +' \
+  app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
+  || fail "RC3.1 Data dialog string guard failed"
+
 echo
 echo "PASS:"
 echo "- package id"
@@ -64,4 +69,5 @@ echo "- BuildConfig"
 echo "- SDK levels"
 echo "- signing material not tracked"
 echo "- Android SDK workflow hotfix"
+echo "- RC3.1 Data dialog string guard"
 echo "- RC docs"

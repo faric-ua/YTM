@@ -1,4 +1,4 @@
-# YTM Importer v1.0.0-rc3
+# YTM Importer v1.0.0-rc3.1
 
 RC3 — це **data safety hardening** перед stable v1.0.
 
@@ -28,3 +28,11 @@ Full Backup тепер має SHA-256 integrity check.
 ### UI
 
 Візуальний redesign досі відкладаємо до після `v1.0.0`.
+
+## RC3.1
+
+Технічний build hotfix.
+
+RC3 Data Safety логіка не змінена.
+Виправлений лише некоректно розірваний Kotlin string literal
+у меню `Дані`.

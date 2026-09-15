@@ -1,7 +1,16 @@
-YTM Importer v1.0.0-rc3 FULL — DATA SAFETY
+YTM Importer v1.0.0-rc3.1 FULL
+
+BLOCKER:
+RC3 compileReleaseKotlin:
+MainActivity.kt:2810-2811
+Syntax error: Expecting '"'
+
+FIX:
+broken real newline inside Kotlin string
+->
+escaped \n
 
 ЗАМІНЕНО:
-app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 app/build.gradle.kts
 scripts/rc-preflight.sh
@@ -14,9 +23,9 @@ PROJECT_STATUS.txt
 docs/README.md
 
 ДОДАНО:
-docs/v.1.0.0-rc3/
-TERMINAL_APPLY_v1.0.0-rc3.md
+docs/v.1.0.0-rc3.1/
+TERMINAL_APPLY_v1.0.0-rc3.1.md
 
 VERSION:
-versionCode = 23
-versionName = 1.0.0-rc3
+versionCode = 24
+versionName = 1.0.0-rc3.1

@@ -1,5 +1,13 @@
 # Журнал змін (Changelog)
 
+## v1.0.0-rc3.1
+- Виправлено Kotlin syntax error у `MainActivity.kt`.
+- `History JSON.` newline тепер записаний як `\n`.
+- Додано targeted RC preflight guard для цього regression.
+- RC3 Data Safety функціональність не змінювалась.
+- `setup-java@v4` warning не був причиною build failure.
+- Версія: `1.0.0-rc3.1`, versionCode `24`.
+
 ## v1.0.0-rc3
 - Backup metadata тепер використовує `BuildConfig.VERSION_NAME`.
 - History TXT більше не пише hardcoded v0.14.0.
