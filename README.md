@@ -1,9 +1,10 @@
-# YTM Importer v1.4.3
+# YTM Importer v1.4.4
 
-Unified dialog and button-spacing release.
+Adaptive button/layout release.
 
 Highlights:
-- all native popup dialogs use the YTM dark dialog theme;
-- all list menus use styled card buttons;
-- larger text padding and button heights across the app;
-- Q-001 remains open for later review.
+- adaptive multi-action dialogs;
+- flexible-height menu buttons;
+- 2x2 icon review filters;
+- state-aware main flow colors;
+- auto-sized primary step text.

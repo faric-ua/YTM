@@ -1659,7 +1659,12 @@ class HistoryActivity : Activity() {
             setTextColor(Color.WHITE)
             gravity = android.view.Gravity.CENTER
             maxLines = 2
-            setPadding(dp(16), dp(7), dp(16), dp(7))
+            setPadding(dp(16), dp(11), dp(16), dp(11))
+            UiChrome.autoSizeButton(
+                this,
+                minSp = 11,
+                maxSp = 14
+            )
             background =
                 roundedBackground(
                     color =
@@ -1683,10 +1688,11 @@ class HistoryActivity : Activity() {
             layoutParams =
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(54)
+                    ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    bottomMargin = dp(7)
+                    bottomMargin = dp(8)
                 }
+            minimumHeight = dp(58)
         }
 
     private fun roundedBackground(

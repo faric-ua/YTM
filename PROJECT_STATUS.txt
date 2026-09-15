@@ -1,19 +1,20 @@
 YTM Importer
-Version: 1.4.3
-Version code: 37
+Version: 1.4.4
+Version code: 38
 Package: com.saney.ytmimporter
 
 Stage:
-Unified dialogs + comfortable button spacing
+Adaptive buttons + state-aware main flow
 
-Completed:
-- all native dialogs routed through YtmAlertDialogTheme
-- all list menus use UiChrome card buttons
-- larger button padding/heights across primary screens
-- safe insets retained from v1.4.2
+Fixed:
+- native 3-action dialog stacking in key popups
+- clipped long menu labels
+- 4 narrow Review filter buttons
+- unclear main-step completion state
+- clipped History quick actions
 
 Open:
-Q-001 remains OPEN — revisit later.
+Q-001 remains OPEN.
 
 Next:
-cleanup wave 2 for old Import/History/Data/Pending dialog paths.
+cleanup wave 2.

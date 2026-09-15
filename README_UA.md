@@ -1,10 +1,11 @@
-# YTM Importer v1.4.3
+# YTM Importer v1.4.4
 
-Цей реліз доводить popup/dialog styling, початий у v1.4.2.
+UX-полірування кнопок і станів.
 
-- усі старі AlertDialog тепер використовують єдину темну YTM theme;
-- усі menu lists переведено на card-buttons;
-- у кнопках збільшено padding та висоту для тексту;
-- додано `scripts/dialog-style-audit.sh`.
+- multi-action dialogs більше не покладаються на native stacking;
+- long menu buttons ростуть по висоті;
+- Review filters стали 2×2 з символами типів;
+- головні 4 steps мають green / amber / red state colors;
+- кнопки Step 3/4 вищі та мають auto-size text.
 
-Q-001 залишається OPEN і буде переглянуте пізніше.
+Q-001 залишається OPEN.

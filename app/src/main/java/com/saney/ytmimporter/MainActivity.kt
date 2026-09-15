@@ -122,6 +122,7 @@ class MainActivity : Activity() {
 
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
+    private lateinit var importButton: Button
     private lateinit var accountButton: Button
     private lateinit var searchButton: Button
     private lateinit var createButton: Button
@@ -263,7 +264,7 @@ class MainActivity : Activity() {
             }
         )
 
-        val importButton =
+        importButton =
             button("1. Імпорт") {
                 openImportScreen()
             }
@@ -529,7 +530,12 @@ class MainActivity : Activity() {
             setTextColor(Color.WHITE)
             gravity = android.view.Gravity.CENTER
             maxLines = 2
-            setPadding(dp(14), dp(6), dp(14), dp(6))
+            setPadding(dp(14), dp(10), dp(14), dp(10))
+            UiChrome.autoSizeButton(
+                this,
+                minSp = 11,
+                maxSp = 15
+            )
             background =
                 roundedBackground(
                     color = Color.rgb(34, 36, 42),
@@ -553,7 +559,12 @@ class MainActivity : Activity() {
             setTextColor(Color.WHITE)
             gravity = android.view.Gravity.CENTER
             maxLines = 2
-            setPadding(dp(14), dp(6), dp(14), dp(6))
+            setPadding(dp(14), dp(10), dp(14), dp(10))
+            UiChrome.autoSizeButton(
+                this,
+                minSp = 11,
+                maxSp = 15
+            )
             background =
                 roundedBackground(
                     color = Color.rgb(196, 0, 42),
@@ -573,7 +584,12 @@ class MainActivity : Activity() {
             action = action
         ).apply {
             textSize = 12f
-            setPadding(dp(9), dp(5), dp(9), dp(5))
+            setPadding(dp(9), dp(7), dp(9), dp(7))
+            UiChrome.autoSizeButton(
+                this,
+                minSp = 10,
+                maxSp = 13
+            )
         }
 
     private fun equalButtonsRow(
@@ -587,7 +603,7 @@ class MainActivity : Activity() {
                 first,
                 LinearLayout.LayoutParams(
                     0,
-                    dp(58),
+                    dp(70),
                     1f
                 )
             )
@@ -596,7 +612,7 @@ class MainActivity : Activity() {
                 second,
                 LinearLayout.LayoutParams(
                     0,
-                    dp(58),
+                    dp(70),
                     1f
                 ).apply {
                     marginStart = dp(8)
@@ -623,23 +639,18 @@ class MainActivity : Activity() {
         }
 
     private fun updatePrimaryActions() {
-        if (!::searchButton.isInitialized ||
+        if (!::importButton.isInitialized ||
+            !::accountButton.isInitialized ||
+            !::searchButton.isInitialized ||
             !::createButton.isInitialized
         ) {
             return
         }
 
         val current = playlist
-
-        searchButton.isEnabled =
-            current != null
-
-        searchButton.alpha =
-            if (searchButton.isEnabled) {
-                1f
-            } else {
-                0.55f
-            }
+        val hasPlaylist =
+            current != null &&
+                current.tracks.isNotEmpty()
 
         val hasSelectedVideo =
             current
@@ -650,15 +661,126 @@ class MainActivity : Activity() {
                         it.status != TrackStatus.SKIPPED
                 }
 
-        createButton.isEnabled =
-            hasSelectedVideo
+        val needsSearch =
+            current
+                ?.tracks
+                .orEmpty()
+                .any {
+                    it.status in
+                        setOf(
+                            TrackStatus.NEW,
+                            TrackStatus.SEARCHING
+                        )
+                }
 
-        createButton.alpha =
-            if (createButton.isEnabled) {
+        val needsAttention =
+            current
+                ?.tracks
+                .orEmpty()
+                .any {
+                    it.status in
+                        setOf(
+                            TrackStatus.REVIEW,
+                            TrackStatus.MISSING,
+                            TrackStatus.FAILED
+                        )
+                }
+
+        applyStepState(
+            button = importButton,
+            state =
+                if (hasPlaylist) {
+                    StepState.READY
+                } else {
+                    StepState.REQUIRED
+                }
+        )
+
+        applyStepState(
+            button = accountButton,
+            state =
+                when {
+                    accessToken.isNullOrBlank() ->
+                        StepState.REQUIRED
+
+                    youtubeChannelInfo != null ->
+                        StepState.READY
+
+                    else ->
+                        StepState.ATTENTION
+                }
+        )
+
+        searchButton.isEnabled = hasPlaylist
+        applyStepState(
+            button = searchButton,
+            state =
+                when {
+                    !hasPlaylist || needsSearch ->
+                        StepState.REQUIRED
+
+                    needsAttention ->
+                        StepState.ATTENTION
+
+                    else ->
+                        StepState.READY
+                },
+            enabled = hasPlaylist
+        )
+
+        createButton.isEnabled = hasSelectedVideo
+        applyStepState(
+            button = createButton,
+            state =
+                when {
+                    !hasSelectedVideo ->
+                        StepState.REQUIRED
+
+                    needsSearch || needsAttention ->
+                        StepState.ATTENTION
+
+                    else ->
+                        StepState.READY
+                },
+            enabled = hasSelectedVideo
+        )
+    }
+
+    private fun applyStepState(
+        button: Button,
+        state: StepState,
+        enabled: Boolean = true
+    ) {
+        val color =
+            when (state) {
+                StepState.READY ->
+                    Color.rgb(31, 122, 77)
+
+                StepState.ATTENTION ->
+                    Color.rgb(157, 105, 15)
+
+                StepState.REQUIRED ->
+                    Color.rgb(176, 0, 32)
+            }
+
+        button.background =
+            roundedBackground(
+                color = color,
+                radiusDp = 12
+            )
+
+        button.alpha =
+            if (enabled) {
                 1f
             } else {
-                0.55f
+                0.72f
             }
+    }
+
+    private enum class StepState {
+        READY,
+        ATTENTION,
+        REQUIRED
     }
 
     private fun openImportScreen() {
@@ -2793,9 +2915,10 @@ class MainActivity : Activity() {
         val playlistId =
             job.playlistId ?: "ще не створений"
 
-        UiChrome.alertBuilder(this)
-            .setTitle(job.playlistName)
-            .setMessage(
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = job.playlistName,
+            message =
                 "Тип: $destination\n" +
                     "Додано: ${job.addedCount}/${job.totalCount}\n" +
                     "Помилок: ${job.failedCount}\n" +
@@ -2804,16 +2927,23 @@ class MainActivity : Activity() {
                     "YouTube/YTM: ${job.youtubeChannelTitle ?: "не збережено"}\n" +
                     "Channel ID: ${job.youtubeChannelId ?: "—"}\n" +
                     "Playlist ID: $playlistId\n\n" +
-                    "Остання помилка:\n${job.lastError ?: "—"}"
+                    "Остання помилка:\n${job.lastError ?: "—"}",
+            actions = listOf(
+                UiChrome.DialogAction("Продовжити") {
+                    resumePendingJob(job)
+                },
+                UiChrome.DialogAction(
+                    label = "Видалити",
+                    tone = UiChrome.ActionTone.DANGER
+                ) {
+                    confirmDeletePendingJob(job)
+                },
+                UiChrome.DialogAction(
+                    label = "Закрити",
+                    tone = UiChrome.ActionTone.ACCENT
+                ) {}
             )
-            .setNegativeButton("Закрити", null)
-            .setNeutralButton("Видалити") { _, _ ->
-                confirmDeletePendingJob(job)
-            }
-            .setPositiveButton("Продовжити") { _, _ ->
-                resumePendingJob(job)
-            }
-            .show()
+        )
     }
 
     private fun confirmDeletePendingJob(job: PendingJob) {
@@ -2938,36 +3068,43 @@ class MainActivity : Activity() {
         val quota = quotaTracker.snapshot()
         val jobs = pendingJobStore.getAll()
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Квота API (локальна оцінка)")
-            .setMessage(
-                "Search Queries (пошук):\n" +
-                    "${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT} використано\n" +
-                    "≈ ${quota.searchRemaining} залишилось\n\n" +
-                    "General quota (загальна квота):\n" +
-                    "${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT} використано\n" +
-                    "≈ ${quota.generalRemaining} залишилось\n\n" +
-                    "Попадань у кеш сьогодні: ${quota.cacheHits}\n" +
-                    "Недороблених завдань: ${jobs.size}\n" +
-                    "День квоти Google: ${quota.dayKey} (Pacific Time)\n\n" +
-                    "Це локальна оцінка тільки для операцій, які цей застосунок " +
-                    "зафіксував на цьому телефоні. Точний стан знаходиться в " +
-                    "Google Cloud Console." +
-                    if (!quota.lastQuotaError.isNullOrBlank()) {
-                        "\n\nОстання quota error (помилка квоти):\n" +
-                            quota.lastQuotaError
-                    } else {
-                        ""
-                    }
+        val message =
+            "Search Queries (пошук):\n" +
+                "${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT} використано\n" +
+                "≈ ${quota.searchRemaining} залишилось\n\n" +
+                "General quota (загальна квота):\n" +
+                "${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT} використано\n" +
+                "≈ ${quota.generalRemaining} залишилось\n\n" +
+                "Попадань у кеш сьогодні: ${quota.cacheHits}\n" +
+                "Недороблених завдань: ${jobs.size}\n" +
+                "День квоти Google: ${quota.dayKey} (Pacific Time)\n\n" +
+                "Це локальна оцінка тільки для операцій, які цей застосунок " +
+                "зафіксував на цьому телефоні. Точний стан знаходиться в " +
+                "Google Cloud Console." +
+                if (!quota.lastQuotaError.isNullOrBlank()) {
+                    "\n\nОстання quota error (помилка квоти):\n" +
+                        quota.lastQuotaError
+                } else {
+                    ""
+                }
+
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "Квота API (локальна оцінка)",
+            message = message,
+            actions = listOf(
+                UiChrome.DialogAction("Черга") {
+                    showPendingJobs()
+                },
+                UiChrome.DialogAction("Google Cloud") {
+                    openGoogleCloudQuota()
+                },
+                UiChrome.DialogAction(
+                    label = "Закрити",
+                    tone = UiChrome.ActionTone.ACCENT
+                ) {}
             )
-            .setNegativeButton("Закрити", null)
-            .setNeutralButton("Google Cloud") { _, _ ->
-                openGoogleCloudQuota()
-            }
-            .setPositiveButton("Черга") { _, _ ->
-                showPendingJobs()
-            }
-            .show()
+        )
     }
 
     private fun updateQuotaPanel() {
@@ -3020,45 +3157,46 @@ class MainActivity : Activity() {
     private fun showQuickStartDialog(
         firstRun: Boolean = false
     ) {
-        val builder =
-            UiChrome.alertBuilder(this)
-                .setTitle("Вітаємо в YTM Importer")
-                .setMessage(
-                    "Створити плейлист можна у 4 кроки:\n\n" +
-                        "1. Імпортуйте CSV/TXT/YTM Project або вставте текст.\n" +
-                        "2. Підключіть Google / YouTube Music.\n" +
-                        "3. Знайдіть треки та перевірте сумнівні результати.\n" +
-                        "4. Створіть новий плейлист або додайте треки " +
-                        "до існуючого.\n\n" +
-                        "Порада: жовті треки краще переглянути вручну. " +
-                        "SearchCache зменшує повторні API-пошуки.\n\n" +
-                        "YTM Importer не має власного сервера, реклами " +
-                        "або вбудованої аналітики."
-                )
-                .setNeutralButton("Приватність") { _, _ ->
+        val actions =
+            mutableListOf(
+                UiChrome.DialogAction("Почати") {
+                    markWelcomeSeen()
+                },
+                UiChrome.DialogAction("Приватність") {
                     if (firstRun) {
                         markWelcomeSeen()
                     }
-
                     showPrivacyDialog()
                 }
-                .setPositiveButton("Почати") { _, _ ->
-                    markWelcomeSeen()
-                }
-
-        if (firstRun) {
-            builder.setNegativeButton(
-                "Не зараз",
-                null
             )
-        } else {
-            builder.setNegativeButton(
-                "Закрити",
-                null
-            )
-        }
 
-        builder.show()
+        actions +=
+            UiChrome.DialogAction(
+                label =
+                    if (firstRun) {
+                        "Не зараз"
+                    } else {
+                        "Закрити"
+                    },
+                tone = UiChrome.ActionTone.ACCENT
+            ) {}
+
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "Вітаємо в YTM Importer",
+            message =
+                "Створити плейлист можна у 4 кроки:\n\n" +
+                    "1. Імпортуйте CSV/TXT/YTM Project або вставте текст.\n" +
+                    "2. Підключіть Google / YouTube Music.\n" +
+                    "3. Знайдіть треки та перевірте сумнівні результати.\n" +
+                    "4. Створіть новий плейлист або додайте треки " +
+                    "до існуючого.\n\n" +
+                    "Порада: жовті треки краще переглянути вручну. " +
+                    "SearchCache зменшує повторні API-пошуки.\n\n" +
+                    "YTM Importer не має власного сервера, реклами " +
+                    "або вбудованої аналітики.",
+            actions = actions
+        )
     }
 
     private fun markWelcomeSeen() {
@@ -3201,36 +3339,42 @@ class MainActivity : Activity() {
         val targetSdk =
             applicationInfo.targetSdkVersion
 
-        UiChrome.alertBuilder(this)
-            .setTitle("YTM Importer")
-            .setIcon(R.mipmap.ic_launcher)
-            .setMessage(
-                "Версія: ${BuildConfig.VERSION_NAME} " +
-                    "(${BuildConfig.VERSION_CODE})\n" +
-                    "Android target SDK: $targetSdk\n\n" +
-                    "YTM Importer допомагає перетворити трекліст " +
-                    "у плейлист YouTube / YouTube Music.\n\n" +
-                    "Можливості:\n" +
-                    "• CSV / TXT / прямий текст / YTM Project\n" +
-                    "• автоматичний пошук + SearchCache\n" +
-                    "• ручна перевірка та заміна треків\n" +
-                    "• новий або існуючий плейлист\n" +
-                    "• перевірка дублікатів\n" +
-                    "• History + повторно завантажувані YTM Project\n" +
-                    "• Queue / Resume при quota problems\n" +
-                    "• Backup / Restore / Rollback\n\n" +
-                    "Без реклами, власного сервера та вбудованої аналітики.\n\n" +
-                    "Незалежний інструмент. Не є офіційним застосунком " +
-                    "Google або YouTube."
+        val message =
+            "Версія: ${BuildConfig.VERSION_NAME} " +
+                "(${BuildConfig.VERSION_CODE})\n" +
+                "Android target SDK: $targetSdk\n\n" +
+                "YTM Importer допомагає перетворити трекліст " +
+                "у плейлист YouTube / YouTube Music.\n\n" +
+                "Можливості:\n" +
+                "• CSV / TXT / прямий текст / YTM Project\n" +
+                "• автоматичний пошук + SearchCache\n" +
+                "• ручна перевірка та заміна треків\n" +
+                "• новий або існуючий плейлист\n" +
+                "• перевірка дублікатів\n" +
+                "• History + повторно завантажувані YTM Project\n" +
+                "• Queue / Resume при quota problems\n" +
+                "• Backup / Restore / Rollback\n\n" +
+                "Без реклами, власного сервера та вбудованої аналітики.\n\n" +
+                "Незалежний інструмент. Не є офіційним застосунком " +
+                "Google або YouTube."
+
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "YTM Importer",
+            message = message,
+            actions = listOf(
+                UiChrome.DialogAction("Швидкий старт") {
+                    showQuickStartDialog()
+                },
+                UiChrome.DialogAction("Приватність") {
+                    showPrivacyDialog()
+                },
+                UiChrome.DialogAction(
+                    label = "Закрити",
+                    tone = UiChrome.ActionTone.ACCENT
+                ) {}
             )
-            .setNegativeButton("Закрити", null)
-            .setNeutralButton("Швидкий старт") { _, _ ->
-                showQuickStartDialog()
-            }
-            .setPositiveButton("Приватність") { _, _ ->
-                showPrivacyDialog()
-            }
-            .show()
+        )
     }
 
     private fun showRegressionChecklist() {
@@ -3255,17 +3399,23 @@ class MainActivity : Activity() {
     }
 
     private fun showDiagnostics() {
-        UiChrome.alertBuilder(this)
-            .setTitle("Діагностика YTM Importer")
-            .setMessage(buildDiagnosticsText())
-            .setNegativeButton("Закрити", null)
-            .setNeutralButton("Зберегти TXT") { _, _ ->
-                saveDiagnostics()
-            }
-            .setPositiveButton("Поділитися") { _, _ ->
-                shareDiagnostics()
-            }
-            .show()
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "Діагностика YTM Importer",
+            message = buildDiagnosticsText(),
+            actions = listOf(
+                UiChrome.DialogAction("Зберегти TXT") {
+                    saveDiagnostics()
+                },
+                UiChrome.DialogAction("Поділитися") {
+                    shareDiagnostics()
+                },
+                UiChrome.DialogAction(
+                    label = "Закрити",
+                    tone = UiChrome.ActionTone.ACCENT
+                ) {}
+            )
+        )
     }
 
     private fun saveDiagnostics() {
@@ -3474,43 +3624,53 @@ class MainActivity : Activity() {
     private fun showSearchCacheTools() {
         val stats = searchCache.stats()
 
-        UiChrome.alertBuilder(this)
-            .setTitle("SearchCache")
-            .setMessage(
-                "Усього записів: ${stats.totalEntries}\n" +
-                    "Активних: ${stats.validEntries}\n" +
-                    "Прострочених: ${stats.expiredEntries}\n" +
-                    "Пошкоджених: ${stats.malformedEntries}\n" +
-                    "Приблизний розмір: " +
-                    formatBytes(
-                        stats.approximateBytes
-                    ) +
-                    "\n\nНайстаріший: " +
-                    formatNullableDate(
-                        stats.oldestCachedAt
-                    ) +
-                    "\nНайновіший: " +
-                    formatNullableDate(
-                        stats.newestCachedAt
-                    ) +
-                    "\n\nОчищення кешу не видаляє History, " +
-                    "Чергу або YouTube/YTM плейлисти. " +
-                    "Після очищення повторний пошук знову " +
-                    "витрачатиме search quota."
-            )
-            .setNegativeButton("Закрити", null)
-            .setNeutralButton("Очистити весь") { _, _ ->
-                confirmClearSearchCache()
-            }
-            .setPositiveButton("Очистити прострочені") { _, _ ->
-                val removed =
-                    searchCache.clearExpired()
+        val message =
+            "Усього записів: ${stats.totalEntries}\n" +
+                "Активних: ${stats.validEntries}\n" +
+                "Прострочених: ${stats.expiredEntries}\n" +
+                "Пошкоджених: ${stats.malformedEntries}\n" +
+                "Приблизний розмір: " +
+                formatBytes(
+                    stats.approximateBytes
+                ) +
+                "\n\nНайстаріший: " +
+                formatNullableDate(
+                    stats.oldestCachedAt
+                ) +
+                "\nНайновіший: " +
+                formatNullableDate(
+                    stats.newestCachedAt
+                ) +
+                "\n\nОчищення кешу не видаляє History, " +
+                "Чергу або YouTube/YTM плейлисти. " +
+                "Після очищення повторний пошук знову " +
+                "витрачатиме search quota."
 
-                toast(
-                    "Видалено записів SearchCache: $removed"
-                )
-            }
-            .show()
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "SearchCache",
+            message = message,
+            actions = listOf(
+                UiChrome.DialogAction("Прострочені") {
+                    val removed =
+                        searchCache.clearExpired()
+
+                    toast(
+                        "Видалено записів SearchCache: $removed"
+                    )
+                },
+                UiChrome.DialogAction(
+                    label = "Очистити весь",
+                    tone = UiChrome.ActionTone.DANGER
+                ) {
+                    confirmClearSearchCache()
+                },
+                UiChrome.DialogAction(
+                    label = "Закрити",
+                    tone = UiChrome.ActionTone.ACCENT
+                ) {}
+            )
+        )
     }
 
     private fun confirmClearSearchCache() {
@@ -4402,11 +4562,11 @@ class MainActivity : Activity() {
                 }
                 .takeIf { it.isNotBlank() }
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "${historyStatusIcon(status)} ${entry.playlistName}"
-            )
-            .setMessage(
+        UiChrome.showMessageDialog(
+            activity = this,
+            title =
+                "${historyStatusIcon(status)} ${entry.playlistName}",
+            message =
                 buildString {
                     append("Статус: ${historyStatusLabel(status)}\n")
                     append("Дата: ${formatHistoryDate(entry.updatedAt)}\n")
@@ -4441,28 +4601,32 @@ class MainActivity : Activity() {
                             append("\n…ще ${problems - 6}")
                         }
                     }
+                },
+            actions = listOf(
+                UiChrome.DialogAction("Дії") {
+                    showHistoryActions(entry)
+                },
+                UiChrome.DialogAction(
+                    if (entry.playlistId.isNullOrBlank()) {
+                        "Черга"
+                    } else {
+                        "YTM"
+                    }
+                ) {
+                    if (entry.playlistId.isNullOrBlank()) {
+                        showPendingJobs()
+                    } else {
+                        openPlaylistIdInYtm(entry.playlistId)
+                    }
+                },
+                UiChrome.DialogAction(
+                    label = "Назад",
+                    tone = UiChrome.ActionTone.ACCENT
+                ) {
+                    showHistory()
                 }
             )
-            .setNegativeButton("Назад") { _, _ ->
-                showHistory()
-            }
-            .setNeutralButton("Дії") { _, _ ->
-                showHistoryActions(entry)
-            }
-            .setPositiveButton(
-                if (entry.playlistId.isNullOrBlank()) {
-                    "Черга"
-                } else {
-                    "Відкрити в YTM"
-                }
-            ) { _, _ ->
-                if (entry.playlistId.isNullOrBlank()) {
-                    showPendingJobs()
-                } else {
-                    openPlaylistIdInYtm(entry.playlistId)
-                }
-            }
-            .show()
+        )
     }
 
     private fun showHistoryActions(entry: HistoryEntry) {
@@ -4902,37 +5066,42 @@ class MainActivity : Activity() {
         val scorePercent = (candidate.score * 100).roundToInt()
         val isCurrent = candidate.videoId == track.selectedVideoId
 
-        UiChrome.alertBuilder(this)
-            .setTitle(candidate.title)
-            .setMessage(
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = candidate.title,
+            message =
                 buildString {
                     append("Канал: ${candidate.channelTitle}\n")
                     append("Збіг: $scorePercent%")
                     if (isCurrent) {
                         append("\n\n✓ Зараз вибрано для цього треку")
                     }
+                },
+            actions = listOf(
+                UiChrome.DialogAction(
+                    if (isCurrent) "Залишити" else "Використати"
+                ) {
+                    applyCandidate(track, candidate, manual = true)
+                    track.status = TrackStatus.MATCHED
+                    adapter.notifyDataSetChanged()
+                    updateSummary()
+
+                    status(
+                        "Вибрано вручну: ${track.originalArtist} — " +
+                            "${track.originalTitle} → ${candidate.title}"
+                    )
+                },
+                UiChrome.DialogAction("YTM") {
+                    openCandidateInYtm(candidate.videoId)
+                },
+                UiChrome.DialogAction(
+                    label = "Назад",
+                    tone = UiChrome.ActionTone.ACCENT
+                ) {
+                    showTrackDialog(track)
                 }
             )
-            .setNegativeButton("Назад") { _, _ ->
-                showTrackDialog(track)
-            }
-            .setNeutralButton("Відкрити в YTM") { _, _ ->
-                openCandidateInYtm(candidate.videoId)
-            }
-            .setPositiveButton(
-                if (isCurrent) "Залишити" else "Використати"
-            ) { _, _ ->
-                applyCandidate(track, candidate, manual = true)
-                track.status = TrackStatus.MATCHED
-                adapter.notifyDataSetChanged()
-                updateSummary()
-
-                status(
-                    "Вибрано вручну: ${track.originalArtist} — " +
-                        "${track.originalTitle} → ${candidate.title}"
-                )
-            }
-            .show()
+        )
     }
 
     private fun openCandidateInYtm(videoId: String) {
@@ -5269,25 +5438,31 @@ class MainActivity : Activity() {
         val shortText = buildShortReplacementText(problemTracks)
         val fullText = buildFullReplacementText(problemTracks)
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Заміни / проблемні треки: ${problemTracks.size}")
-            .setMessage(shortText)
-            .setNegativeButton("Закрити", null)
-            .setNeutralButton("Копіювати повний") { _, _ ->
-                copyText(
-                    label = "YTM Importer replacement log",
-                    text = fullText,
-                    successMessage = "Повний журнал скопійовано"
-                )
-            }
-            .setPositiveButton("Копіювати TikTok") { _, _ ->
-                copyText(
-                    label = "YTM Importer TikTok replacements",
-                    text = shortText,
-                    successMessage = "Короткий список для TikTok скопійовано"
-                )
-            }
-            .show()
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "Заміни / проблемні треки: ${problemTracks.size}",
+            message = shortText,
+            actions = listOf(
+                UiChrome.DialogAction("TikTok") {
+                    copyText(
+                        label = "YTM Importer TikTok replacements",
+                        text = shortText,
+                        successMessage = "Короткий список для TikTok скопійовано"
+                    )
+                },
+                UiChrome.DialogAction("Повний") {
+                    copyText(
+                        label = "YTM Importer replacement log",
+                        text = fullText,
+                        successMessage = "Повний журнал скопійовано"
+                    )
+                },
+                UiChrome.DialogAction(
+                    label = "Закрити",
+                    tone = UiChrome.ActionTone.ACCENT
+                ) {}
+            )
+        )
     }
 
     private fun buildShortReplacementText(tracks: List<Track>): String =

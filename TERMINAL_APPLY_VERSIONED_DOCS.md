@@ -82,3 +82,5 @@ docs/v.0.8.0/diagrams/
 і перевір, що Mermaid-діаграми рендеряться.
 
 - `TERMINAL_APPLY_v1.4.2.md` — safe insets + dialog polish
+
+- `TERMINAL_APPLY_v1.4.4.md` — adaptive buttons + state colors

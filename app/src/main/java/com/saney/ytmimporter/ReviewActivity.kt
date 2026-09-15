@@ -341,10 +341,10 @@ class ReviewActivity : Activity() {
             }
         )
 
-        val filterRow =
+        val filterGrid =
             LinearLayout(this).apply {
                 orientation =
-                    LinearLayout.HORIZONTAL
+                    LinearLayout.VERTICAL
                 setPadding(
                     dp(12),
                     0,
@@ -378,37 +378,60 @@ class ReviewActivity : Activity() {
 
         val filters =
             listOf(
-                "Усі" to ReviewFilter.ALL,
-                "Перевірити" to ReviewFilter.REVIEW,
-                "Готові" to ReviewFilter.READY,
-                "Проблеми" to ReviewFilter.PROBLEMS
+                "≡  Усі" to ReviewFilter.ALL,
+                "!  Перевірити" to ReviewFilter.REVIEW,
+                "✓  Готові" to ReviewFilter.READY,
+                "×  Проблеми" to ReviewFilter.PROBLEMS
             )
 
-        filters.forEachIndexed {
-                index,
-                pair ->
+        filters.chunked(2).forEachIndexed {
+                rowIndex,
+                rowFilters ->
 
-            filterRow.addView(
-                smallButton(
-                    pair.first
-                ) {
-                    adapter.setFilter(
-                        pair.second
-                    )
-                },
+            val row =
+                LinearLayout(this).apply {
+                    orientation =
+                        LinearLayout.HORIZONTAL
+                }
+
+            rowFilters.forEachIndexed {
+                    columnIndex,
+                    pair ->
+
+                row.addView(
+                    filterButton(
+                        pair.first
+                    ) {
+                        adapter.setFilter(
+                            pair.second
+                        )
+                    },
+                    LinearLayout.LayoutParams(
+                        0,
+                        dp(54),
+                        1f
+                    ).apply {
+                        if (columnIndex > 0) {
+                            marginStart = dp(7)
+                        }
+                    }
+                )
+            }
+
+            filterGrid.addView(
+                row,
                 LinearLayout.LayoutParams(
-                    0,
-                    dp(50),
-                    1f
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    if (index > 0) {
-                        marginStart = dp(5)
+                    if (rowIndex > 0) {
+                        topMargin = dp(7)
                     }
                 }
             )
         }
 
-        root.addView(filterRow)
+        root.addView(filterGrid)
 
         root.addView(
             list,
@@ -1555,6 +1578,23 @@ class ReviewActivity : Activity() {
             setTextIsSelectable(true)
         }
 
+    private fun filterButton(
+        label: String,
+        action: () -> Unit
+    ): Button =
+        smallButton(
+            label = label,
+            action = action
+        ).apply {
+            textSize = 13f
+            maxLines = 1
+            UiChrome.autoSizeButton(
+                this,
+                minSp = 11,
+                maxSp = 14
+            )
+        }
+
     private fun smallButton(
         label: String,
         action: () -> Unit
@@ -1566,7 +1606,12 @@ class ReviewActivity : Activity() {
             setTextColor(Color.WHITE)
             gravity = android.view.Gravity.CENTER
             maxLines = 2
-            setPadding(dp(12), dp(6), dp(12), dp(6))
+            setPadding(dp(14), dp(8), dp(14), dp(8))
+            UiChrome.autoSizeButton(
+                this,
+                minSp = 10,
+                maxSp = 13
+            )
             background =
                 roundedBackground(
                     color =
@@ -1600,7 +1645,12 @@ class ReviewActivity : Activity() {
             setTextColor(Color.WHITE)
             gravity = android.view.Gravity.CENTER
             maxLines = 2
-            setPadding(dp(16), dp(7), dp(16), dp(7))
+            setPadding(dp(16), dp(10), dp(16), dp(10))
+            UiChrome.autoSizeButton(
+                this,
+                minSp = 11,
+                maxSp = 14
+            )
             background =
                 roundedBackground(
                     color =

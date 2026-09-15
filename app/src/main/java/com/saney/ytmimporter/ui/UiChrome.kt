@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,18 @@ import com.saney.ytmimporter.R
 object UiChrome {
     data class MenuAction(
         val label: String,
+        val onClick: () -> Unit
+    )
+
+    enum class ActionTone {
+        NORMAL,
+        ACCENT,
+        DANGER
+    }
+
+    data class DialogAction(
+        val label: String,
+        val tone: ActionTone = ActionTone.NORMAL,
         val onClick: () -> Unit
     )
 
@@ -77,60 +90,14 @@ object UiChrome {
         onNegative: (() -> Unit)? = null
     ) {
         val dialog = alertBuilder(activity).create()
+        val card = dialogCard(activity)
 
-        val outer = FrameLayout(activity).apply {
-            setPadding(
-                dp(context, 18),
-                dp(context, 18),
-                dp(context, 18),
-                dp(context, 18)
-            )
-        }
-
-        val scroll = ScrollView(activity).apply {
-            isFillViewport = true
-            overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
-        }
-
-        val card = LinearLayout(activity).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(
-                dp(context, 18),
-                dp(context, 18),
-                dp(context, 18),
-                dp(context, 18)
-            )
-            background = roundedBackground(
-                context = context,
-                color = SURFACE,
-                radiusDp = 18,
-                strokeColor = BORDER
-            )
-        }
-
-        card.addView(
-            TextView(activity).apply {
-                text = title
-                textSize = 22f
-                setTextColor(Color.WHITE)
-                setTypeface(typeface, Typeface.BOLD)
-            }
+        addDialogHeader(
+            activity = activity,
+            card = card,
+            title = title,
+            subtitle = subtitle
         )
-
-        if (!subtitle.isNullOrBlank()) {
-            card.addView(
-                TextView(activity).apply {
-                    text = subtitle
-                    textSize = 13f
-                    setTextColor(MUTED)
-                    setPadding(0, dp(context, 6), 0, dp(context, 12))
-                }
-            )
-        } else {
-            card.addView(
-                SpaceView(activity, dp(activity, 8))
-            )
-        }
 
         actions.forEachIndexed { index, action ->
             card.addView(
@@ -140,7 +107,7 @@ object UiChrome {
                 },
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(activity, 58)
+                    ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply {
                     if (index > 0) {
                         topMargin = dp(activity, 10)
@@ -160,11 +127,214 @@ object UiChrome {
             },
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(activity, 58)
+                ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
                 topMargin = dp(activity, 14)
             }
         )
+
+        showCustomDialog(
+            activity = activity,
+            dialog = dialog,
+            card = card
+        )
+    }
+
+    fun showMessageDialog(
+        activity: Activity,
+        title: String,
+        message: String,
+        actions: List<DialogAction>,
+        subtitle: String? = null
+    ) {
+        val dialog = alertBuilder(activity).create()
+        val card = dialogCard(activity)
+
+        addDialogHeader(
+            activity = activity,
+            card = card,
+            title = title,
+            subtitle = subtitle
+        )
+
+        card.addView(
+            TextView(activity).apply {
+                text = message
+                textSize = 15f
+                setTextColor(Color.rgb(230, 231, 234))
+                setTextIsSelectable(true)
+                setLineSpacing(0f, 1.08f)
+                setPadding(
+                    0,
+                    dp(context, 6),
+                    0,
+                    dp(context, 16)
+                )
+            }
+        )
+
+        addDialogActions(
+            activity = activity,
+            dialog = dialog,
+            card = card,
+            actions = actions
+        )
+
+        showCustomDialog(
+            activity = activity,
+            dialog = dialog,
+            card = card
+        )
+    }
+
+    fun autoSizeButton(
+        button: Button,
+        minSp: Int = 11,
+        maxSp: Int = 15
+    ) {
+        button.setAutoSizeTextTypeUniformWithConfiguration(
+            minSp,
+            maxSp,
+            1,
+            TypedValue.COMPLEX_UNIT_SP
+        )
+    }
+
+    private fun addDialogActions(
+        activity: Activity,
+        dialog: AlertDialog,
+        card: LinearLayout,
+        actions: List<DialogAction>
+    ) {
+        if (actions.isEmpty()) return
+
+        val compactRow =
+            actions.size <= 3
+
+        if (compactRow) {
+            val row = LinearLayout(activity).apply {
+                orientation = LinearLayout.HORIZONTAL
+            }
+
+            actions.forEachIndexed { index, action ->
+                row.addView(
+                    dialogActionButton(
+                        activity = activity,
+                        action = action
+                    ) {
+                        dialog.dismiss()
+                        action.onClick()
+                    },
+                    LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1f
+                    ).apply {
+                        if (index > 0) {
+                            marginStart = dp(activity, 8)
+                        }
+                    }
+                )
+            }
+
+            card.addView(row)
+            return
+        }
+
+        actions.forEachIndexed { index, action ->
+            card.addView(
+                dialogActionButton(
+                    activity = activity,
+                    action = action
+                ) {
+                    dialog.dismiss()
+                    action.onClick()
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    if (index > 0) {
+                        topMargin = dp(activity, 9)
+                    }
+                }
+            )
+        }
+    }
+
+    private fun dialogCard(
+        activity: Activity
+    ): LinearLayout =
+        LinearLayout(activity).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(
+                dp(context, 18),
+                dp(context, 18),
+                dp(context, 18),
+                dp(context, 18)
+            )
+            background = roundedBackground(
+                context = context,
+                color = SURFACE,
+                radiusDp = 18,
+                strokeColor = BORDER
+            )
+        }
+
+    private fun addDialogHeader(
+        activity: Activity,
+        card: LinearLayout,
+        title: String,
+        subtitle: String?
+    ) {
+        card.addView(
+            TextView(activity).apply {
+                text = title
+                textSize = 22f
+                setTextColor(Color.WHITE)
+                setTypeface(typeface, Typeface.BOLD)
+            }
+        )
+
+        if (!subtitle.isNullOrBlank()) {
+            card.addView(
+                TextView(activity).apply {
+                    text = subtitle
+                    textSize = 13f
+                    setTextColor(MUTED)
+                    setPadding(
+                        0,
+                        dp(context, 6),
+                        0,
+                        dp(context, 12)
+                    )
+                }
+            )
+        } else {
+            card.addView(
+                SpaceView(activity, dp(activity, 8))
+            )
+        }
+    }
+
+    private fun showCustomDialog(
+        activity: Activity,
+        dialog: AlertDialog,
+        card: LinearLayout
+    ) {
+        val outer = FrameLayout(activity).apply {
+            setPadding(
+                dp(context, 18),
+                dp(context, 18),
+                dp(context, 18),
+                dp(context, 18)
+            )
+        }
+
+        val scroll = ScrollView(activity).apply {
+            isFillViewport = true
+            overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
+        }
 
         scroll.addView(
             card,
@@ -192,17 +362,18 @@ object UiChrome {
         Button(activity).apply {
             text = label
             isAllCaps = false
-            textSize = 14.5f
             gravity = Gravity.START or Gravity.CENTER_VERTICAL
-            minHeight = 0
-            minimumHeight = 0
+            minHeight = dp(context, 60)
+            minimumHeight = dp(context, 60)
+            minWidth = 0
+            minimumWidth = 0
+            maxLines = 3
             setPadding(
                 dp(context, 18),
-                dp(context, 8),
+                dp(context, 12),
                 dp(context, 18),
-                dp(context, 8)
+                dp(context, 12)
             )
-            maxLines = 2
             setTextColor(
                 if (accent) ACCENT else Color.WHITE
             )
@@ -212,6 +383,44 @@ object UiChrome {
                 radiusDp = 14,
                 strokeColor = BORDER
             )
+            autoSizeButton(this, minSp = 12, maxSp = 15)
+            setOnClickListener { onClick() }
+        }
+
+    private fun dialogActionButton(
+        activity: Activity,
+        action: DialogAction,
+        onClick: () -> Unit
+    ): Button =
+        Button(activity).apply {
+            text = action.label
+            isAllCaps = false
+            gravity = Gravity.CENTER
+            minHeight = dp(context, 54)
+            minimumHeight = dp(context, 54)
+            minWidth = 0
+            minimumWidth = 0
+            maxLines = 2
+            setPadding(
+                dp(context, 10),
+                dp(context, 9),
+                dp(context, 10),
+                dp(context, 9)
+            )
+            setTextColor(
+                when (action.tone) {
+                    ActionTone.NORMAL -> Color.WHITE
+                    ActionTone.ACCENT -> ACCENT
+                    ActionTone.DANGER -> Color.rgb(255, 100, 115)
+                }
+            )
+            background = roundedBackground(
+                context = context,
+                color = ROW_SURFACE,
+                radiusDp = 12,
+                strokeColor = BORDER
+            )
+            autoSizeButton(this, minSp = 10, maxSp = 14)
             setOnClickListener { onClick() }
         }
 

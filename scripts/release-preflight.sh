@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.3/RELEASE.md"
-check_file "docs/v.1.4.3/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.4/RELEASE.md"
+check_file "docs/v.1.4.4/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -31,10 +31,12 @@ check_file "app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt"
 check_file "scripts/mainactivity-audit.sh"
 check_file "scripts/ui-chrome-audit.sh"
 check_file "scripts/dialog-style-audit.sh"
+check_file "scripts/button-layout-audit.sh"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/ui-chrome-audit.sh
 bash scripts/dialog-style-audit.sh
+bash scripts/button-layout-audit.sh
 check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 check_file "OPEN_QUESTIONS.md"
 
@@ -144,11 +146,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 37' app/build.gradle.kts \
-  || fail "Expected versionCode = 37"
+grep -q 'versionCode = 38' app/build.gradle.kts \
+  || fail "Expected versionCode = 38"
 
-grep -q 'versionName = "1.4.3"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.3"'
+grep -q 'versionName = "1.4.4"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.4"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -246,3 +248,6 @@ echo "- Project save toast includes actual document filename"
 echo "- all dialogs routed through unified YTM theme"
 echo "- all menu lists converted to card-button menus"
 echo "- larger text padding in app buttons"
+
+echo "- adaptive button layouts and filter grid"
+echo "- state-aware main flow colors"
