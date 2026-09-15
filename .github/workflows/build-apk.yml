@@ -112,11 +112,11 @@ jobs:
 
       - name: Prepare APK
         run: |
-          cp app/build/outputs/apk/release/app-release.apk YTM-Importer-v0.12.0-release.apk
-          ls -lh YTM-Importer-v0.12.0-release.apk
+          cp app/build/outputs/apk/release/app-release.apk YTM-Importer-v0.13.0-release.apk
+          ls -lh YTM-Importer-v0.13.0-release.apk
 
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: YTM-Importer-v0.12.0-Release
-          path: YTM-Importer-v0.12.0-release.apk
+          name: YTM-Importer-v0.13.0-Release
+          path: YTM-Importer-v0.13.0-release.apk

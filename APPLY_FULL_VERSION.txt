@@ -1,22 +1,15 @@
-YTM Importer v0.12.0 FULL — DUPLICATE DETECTION
+YTM Importer v0.13.0 FULL — EXPORT / BACKUP / RESTORE
 
-ДОДАНО / РОЗШИРЕНО:
-- YouTubeApi.listPlaylistVideoIds
-- exact videoId duplicate scan
-- incoming duplicate detection
-- DuplicateWritePlan
-- TrackStatus.DUPLICATE
-- History duplicateCount
-- duplicate replacement/problem log
-- docs/v.0.12.0/
+ДОДАНО:
+app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
+docs/v.0.13.0/RELEASE.md
+docs/v.0.13.0/diagrams/*
+TERMINAL_APPLY_v0.13.0.md
 
 ЗАМІНЕНО:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/java/com/saney/ytmimporter/model/Track.kt
-app/src/main/java/com/saney/ytmimporter/model/HistoryEntry.kt
 app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
-app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
+app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
@@ -27,5 +20,5 @@ PROJECT_STATUS.txt
 docs/README.md
 
 Версія:
-versionCode = 14
-versionName = 0.12.0
+versionCode = 15
+versionName = 0.13.0

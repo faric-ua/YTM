@@ -1,53 +1,51 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v0.12.0 — Дублікати в існуючих плейлистах**
+**v0.13.0 — Export / Backup / Restore**
 
-## 1–10. Реалізовано раніше
+## 1–11. Реалізовано раніше
 - [x] SearchCache + MatchScorer;
 - [x] ручний вибір кандидата;
-- [x] приватність;
-- [x] Google account + YouTube/YTM channel;
 - [x] новий / існуючий плейлист;
+- [x] Google account + YouTube/YTM channel;
 - [x] Quota Planner;
 - [x] Pending Queue + Resume;
-- [x] компактний UI;
-- [x] History / Jobs.
+- [x] History / Jobs;
+- [x] duplicate detection для existing playlist;
+- [x] compact UI.
 
-## 11. Дублікати в існуючих плейлистах — v0.12.0
-- [x] `playlistItems.list`;
-- [x] пагінація `maxResults=50`;
-- [x] exact `videoId` comparison;
-- [x] визначення треків, що вже є в target playlist;
-- [x] визначення повторів `videoId` всередині імпорту;
-- [x] діалог перед write;
-- [x] `Пропустити дублікати`;
-- [x] `Додати все одно`;
-- [x] статус `TrackStatus.DUPLICATE`;
-- [x] UI label `⧉ дублікат`;
-- [x] не робити `playlistItems.insert` для пропущених дублікатів;
-- [x] оцінка заощадженої write quota;
-- [x] History `duplicateCount`;
-- [x] replacement/problem log для duplicate;
-- [x] fallback «продовжити без перевірки», якщо list API впав;
-- [ ] протестувати на реальному existing playlist з відомими дублями.
+## 12. Export / Backup / Restore — v0.13.0
+- [x] компактна кнопка `Дані`;
+- [x] History → TXT;
+- [x] History → JSON;
+- [x] Pending Queue → JSON;
+- [x] full backup → JSON;
+- [x] backup History;
+- [x] backup Pending Queue;
+- [x] backup local quota counters;
+- [x] backup SearchCache;
+- [x] restore full backup;
+- [x] validate backup format/schema;
+- [x] confirmation before restore;
+- [x] system file picker for save/open;
+- [x] backup does NOT contain OAuth token/password/JKS;
+- [ ] протестувати export TXT/JSON на телефоні;
+- [ ] протестувати backup → clear data/uninstall → restore на окремому тесті.
 
-## 12. Діагностика / експорт — наступний етап
-- [ ] експорт History у TXT;
-- [ ] експорт History у JSON;
-- [ ] експорт Pending Queue;
-- [ ] backup local data;
-- [ ] restore local data;
-- [ ] share/export файл через Android;
-- [ ] кнопка переходу до Google Cloud Console.
+## 13. Діагностика / зручність — наступний етап
+- [ ] Android Share для export-файлів;
+- [ ] Google Cloud Console quick link;
+- [ ] окремий Diagnostics TXT;
+- [ ] cache size / clear cache UI;
+- [ ] storage statistics.
 
-## 13. Доведення до v1.0
+## 14. Доведення до v1.0
 - [ ] app icon;
 - [ ] стабільний UI;
 - [ ] кращі error messages;
-- [ ] фінальне тестування.
+- [ ] фінальне regression testing.
 
-## 14. Повний UI/UX redesign
-- [ ] покроковий процес;
-- [ ] окремі екрани замість великої кількості dialogs;
+## 15. Повний UI/UX redesign
+- [ ] покроковий flow;
+- [ ] окремі screens замість великої кількості dialogs;
 - [ ] Material 3.

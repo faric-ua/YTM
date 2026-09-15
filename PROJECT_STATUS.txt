@@ -1,32 +1,41 @@
 YTM Importer
-Version: 0.12.0
-Version code: 14
+Version: 0.13.0
+Version code: 15
 Package: com.saney.ytmimporter
 
 Реалізовано:
-- CSV/TXT/text import
+- import CSV/TXT/text
 - OAuth account/channel
 - SearchCache / MatchScorer
-- candidate review
 - new / existing playlist
-- privacy
+- duplicate detection
 - Quota Planner
 - Pending Queue / Resume
-- compact UI
 - History
-- duplicate scan for existing playlist
-- exact videoId comparison
-- skip duplicates / add anyway
-- duplicate status + history
-- versioned Mermaid diagrams
-- Termux build/download/install workflow
+- compact UI
+- History TXT export
+- History JSON export
+- Pending JSON export
+- full local backup JSON
+- restore backup JSON
+- versioned Mermaid docs
+- Termux build/download/install
+
+Backup includes:
+- history_store_v1
+- pending_jobs_v1
+- quota_tracker_v1
+- youtube_search_cache
+
+Backup excludes:
+- OAuth access token
+- passwords
+- signing keys
 
 Потрібно протестувати:
-- GitHub Actions build v0.12.0
-- existing playlist without duplicates
-- existing playlist with known duplicates
-- skip duplicate mode
-- add duplicates anyway mode
-- all tracks are duplicates
-- duplicate scan failure fallback
-- History duplicateCount
+- GitHub Actions build v0.13.0
+- History TXT export
+- History JSON export
+- Pending export
+- full backup
+- restore on test data

@@ -34,6 +34,7 @@ import com.saney.ytmimporter.model.YouTubeChannelInfo
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.parser.PlaylistParser
 import com.saney.ytmimporter.storage.HistoryStore
+import com.saney.ytmimporter.storage.LocalBackupManager
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.TrackAdapter
@@ -79,6 +80,8 @@ class MainActivity : Activity() {
     }
 
     private val fileRequestCode = 1001
+    private val saveExportRequestCode = 1101
+    private val restoreBackupRequestCode = 1102
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
@@ -87,6 +90,7 @@ class MainActivity : Activity() {
     private lateinit var quotaTracker: QuotaTracker
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var historyStore: HistoryStore
+    private lateinit var localBackupManager: LocalBackupManager
 
     private var playlist: ImportedPlaylist? = null
     private var accessToken: String? = null
@@ -95,6 +99,8 @@ class MainActivity : Activity() {
     private var createdPlaylistId: String? = null
     private var pendingAfterAuth: (() -> Unit)? = null
     private var currentImportSourceLabel: String = "Невідоме джерело"
+    private var pendingExportContent: String? = null
+    private var pendingExportSuccessMessage: String? = null
 
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
@@ -102,6 +108,7 @@ class MainActivity : Activity() {
     private lateinit var quotaButton: Button
     private lateinit var pendingButton: Button
     private lateinit var historyButton: Button
+    private lateinit var dataButton: Button
     private lateinit var progress: ProgressBar
     private lateinit var resultPanel: LinearLayout
     private lateinit var resultTitleText: TextView
@@ -117,6 +124,7 @@ class MainActivity : Activity() {
         quotaTracker = QuotaTracker(this)
         pendingJobStore = PendingJobStore(this)
         historyStore = HistoryStore(this)
+        localBackupManager = LocalBackupManager(this)
         buildUi()
     }
 
@@ -169,6 +177,8 @@ class MainActivity : Activity() {
         actions.addView(pendingButton)
         historyButton = button("Історія") { showHistory() }
         actions.addView(historyButton)
+        dataButton = button("Дані") { showDataTools() }
+        actions.addView(dataButton)
         scroll.addView(actions)
         root.addView(scroll)
 
@@ -297,7 +307,15 @@ class MainActivity : Activity() {
         if (resultCode != RESULT_OK || data == null) return
 
         when (requestCode) {
-            fileRequestCode -> data.data?.let(::loadFile)
+            fileRequestCode ->
+                data.data?.let(::loadFile)
+
+            saveExportRequestCode ->
+                data.data?.let(::writePendingExport)
+
+            restoreBackupRequestCode ->
+                data.data?.let(::prepareRestoreBackup)
+
             authRequestCode -> {
                 try {
                     val result =
@@ -2183,6 +2201,332 @@ class MainActivity : Activity() {
             manuallySelected = track.manuallySelected,
             error = track.error
         )
+
+    private fun showDataTools() {
+        val historyCount = historyStore.getAll().size
+        val pendingCount = pendingJobStore.getAll().size
+
+        val labels =
+            arrayOf(
+                "Експорт History → TXT",
+                "Експорт History → JSON",
+                "Експорт Черги → JSON",
+                "Створити повний backup → JSON",
+                "Відновити з backup JSON"
+            )
+
+        AlertDialog.Builder(this)
+            .setTitle("Дані (Export / Backup)")
+            .setMessage(
+                "History: $historyCount записів\n" +
+                    "Черга: $pendingCount завдань\n\n" +
+                    "Повний backup містить History, Чергу, " +
+                    "локальну статистику квоти та SearchCache.\n\n" +
+                    "OAuth access token, паролі та signing keys " +
+                    "у backup НЕ записуються."
+            )
+            .setItems(labels) { _, which ->
+                when (which) {
+                    0 -> exportHistoryTxt()
+                    1 -> exportHistoryJson()
+                    2 -> exportPendingJson()
+                    3 -> createFullBackup()
+                    4 -> chooseBackupForRestore()
+                }
+            }
+            .setNegativeButton("Закрити", null)
+            .show()
+    }
+
+    private fun exportHistoryTxt() {
+        val entries = historyStore.getAll()
+
+        if (entries.isEmpty()) {
+            return toast("Історія порожня — експортувати нічого")
+        }
+
+        val text =
+            buildString {
+                append("YTM Importer — History export\n")
+                append("Версія застосунку: 0.13.0\n")
+                append("Експортовано: ${formatHistoryDate(System.currentTimeMillis())}\n")
+                append("Записів: ${entries.size}\n\n")
+
+                entries.forEachIndexed { index, entry ->
+                    append("==================================================\n")
+                    append("${index + 1}. ${entry.playlistName}\n")
+                    append("==================================================\n")
+                    append(buildHistorySummary(entry))
+
+                    val problems = buildHistoryProblemLog(entry)
+
+                    if (!problems.isNullOrBlank()) {
+                        append("\n\n")
+                        append(problems)
+                    }
+
+                    if (index != entries.lastIndex) {
+                        append("\n\n")
+                    }
+                }
+            }
+
+        createDocumentForExport(
+            fileName = "YTM_History_${exportTimestamp()}.txt",
+            mimeType = "text/plain",
+            content = text,
+            successMessage = "History TXT збережено"
+        )
+    }
+
+    private fun exportHistoryJson() {
+        val entries = historyStore.getAll()
+
+        if (entries.isEmpty()) {
+            return toast("Історія порожня — експортувати нічого")
+        }
+
+        createDocumentForExport(
+            fileName = "YTM_History_${exportTimestamp()}.json",
+            mimeType = "application/json",
+            content = historyStore.exportJson(),
+            successMessage = "History JSON збережено"
+        )
+    }
+
+    private fun exportPendingJson() {
+        val jobs = pendingJobStore.getAll()
+
+        if (jobs.isEmpty()) {
+            return toast("Черга порожня — експортувати нічого")
+        }
+
+        createDocumentForExport(
+            fileName = "YTM_Pending_${exportTimestamp()}.json",
+            mimeType = "application/json",
+            content = pendingJobStore.exportJson(),
+            successMessage = "Pending Queue JSON збережено"
+        )
+    }
+
+    private fun createFullBackup() {
+        val content =
+            runCatching {
+                localBackupManager.createBackupJson()
+            }.getOrElse { error ->
+                toast(
+                    error.message
+                        ?: "Не вдалося створити backup"
+                )
+                return
+            }
+
+        AlertDialog.Builder(this)
+            .setTitle("Створити повний backup?")
+            .setMessage(
+                "У JSON буде збережено:\n" +
+                    "• History\n" +
+                    "• Pending Queue (Черга)\n" +
+                    "• локальні quota counters\n" +
+                    "• SearchCache\n\n" +
+                    "Backup може містити Google email, " +
+                    "YouTube Channel ID і назви плейлистів.\n\n" +
+                    "OAuth access token, паролі та signing keys " +
+                    "НЕ зберігаються."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Зберегти") { _, _ ->
+                createDocumentForExport(
+                    fileName =
+                        "YTM_Backup_${exportTimestamp()}.json",
+                    mimeType = "application/json",
+                    content = content,
+                    successMessage = "Повний backup збережено"
+                )
+            }
+            .show()
+    }
+
+    private fun createDocumentForExport(
+        fileName: String,
+        mimeType: String,
+        content: String,
+        successMessage: String
+    ) {
+        pendingExportContent = content
+        pendingExportSuccessMessage = successMessage
+
+        val intent =
+            Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = mimeType
+                putExtra(Intent.EXTRA_TITLE, fileName)
+            }
+
+        runCatching {
+            startActivityForResult(
+                intent,
+                saveExportRequestCode
+            )
+        }.onFailure { error ->
+            pendingExportContent = null
+            pendingExportSuccessMessage = null
+            toast(
+                "Не вдалося відкрити вибір файлу: " +
+                    (error.message ?: "невідома помилка")
+            )
+        }
+    }
+
+    private fun writePendingExport(uri: Uri) {
+        val content =
+            pendingExportContent
+                ?: return toast(
+                    "Немає підготовлених даних для експорту"
+                )
+
+        val success =
+            pendingExportSuccessMessage
+                ?: "Файл збережено"
+
+        runCatching {
+            contentResolver.openOutputStream(
+                uri,
+                "w"
+            )?.bufferedWriter(Charsets.UTF_8)?.use { writer ->
+                writer.write(content)
+            } ?: throw IllegalStateException(
+                "Android не відкрив файл для запису"
+            )
+        }.onSuccess {
+            toast(success)
+        }.onFailure { error ->
+            toast(
+                "Помилка запису файлу: " +
+                    (error.message ?: "невідома помилка")
+            )
+        }
+
+        pendingExportContent = null
+        pendingExportSuccessMessage = null
+    }
+
+    private fun chooseBackupForRestore() {
+        AlertDialog.Builder(this)
+            .setTitle("Відновити backup?")
+            .setMessage(
+                "Restore (відновлення) замінить локальні дані " +
+                    "цих розділів даними з backup:\n\n" +
+                    "• History\n" +
+                    "• Черга\n" +
+                    "• локальна квота\n" +
+                    "• SearchCache\n\n" +
+                    "YouTube/YTM плейлисти в інтернеті " +
+                    "не змінюються."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Вибрати backup") { _, _ ->
+                val intent =
+                    Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                    }
+
+                startActivityForResult(
+                    intent,
+                    restoreBackupRequestCode
+                )
+            }
+            .show()
+    }
+
+    private fun prepareRestoreBackup(uri: Uri) {
+        val raw =
+            runCatching {
+                contentResolver.openInputStream(uri)
+                    ?.bufferedReader(Charsets.UTF_8)
+                    ?.use { it.readText() }
+                    ?: throw IllegalStateException(
+                        "Не вдалося прочитати backup"
+                    )
+            }.getOrElse { error ->
+                toast(
+                    "Помилка читання backup: " +
+                        (error.message ?: "невідома помилка")
+                )
+                return
+            }
+
+        val summary =
+            runCatching {
+                localBackupManager.inspectBackup(raw)
+            }.getOrElse { error ->
+                toast(
+                    "Backup не підходить: " +
+                        (error.message ?: "невідома помилка")
+                )
+                return
+            }
+
+        val exportedDate =
+            if (summary.exportedAt > 0L) {
+                formatHistoryDate(summary.exportedAt)
+            } else {
+                "невідомо"
+            }
+
+        AlertDialog.Builder(this)
+            .setTitle("Підтвердити Restore")
+            .setMessage(
+                "Backup YTM Importer\n\n" +
+                    "Версія backup schema: ${summary.schemaVersion}\n" +
+                    "Версія застосунку при створенні: ${summary.appVersion}\n" +
+                    "Дата backup: $exportedDate\n" +
+                    "Груп даних: ${summary.preferenceGroups}\n" +
+                    "Значень: ${summary.valueCount}\n\n" +
+                    "Поточні локальні History / Queue / Quota / Cache " +
+                    "будуть замінені."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Відновити") { _, _ ->
+                restoreBackupNow(raw)
+            }
+            .show()
+    }
+
+    private fun restoreBackupNow(raw: String) {
+        val result =
+            runCatching {
+                localBackupManager.restoreBackupJson(raw)
+            }.getOrElse { error ->
+                toast(
+                    "Restore не виконано: " +
+                        (error.message ?: "невідома помилка")
+                )
+                return
+            }
+
+        updatePendingButton()
+        updateQuotaPanel()
+
+        AlertDialog.Builder(this)
+            .setTitle("Backup відновлено")
+            .setMessage(
+                "Груп даних: ${result.preferenceGroups}\n" +
+                    "Відновлено значень: ${result.restoredValues}\n\n" +
+                    "History, Черга, локальна квота та SearchCache " +
+                    "вже доступні без перевстановлення застосунку."
+            )
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun exportTimestamp(): String =
+        SimpleDateFormat(
+            "yyyyMMdd_HHmmss",
+            Locale.US
+        ).format(Date())
+
 
     private fun showHistory() {
         val entries = historyStore.getAll()

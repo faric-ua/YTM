@@ -34,6 +34,14 @@ class PendingJobStore(context: Context) {
         writeJobs(readJobs().filterNot { it.id == jobId })
     }
 
+    @Synchronized
+    fun exportJson(): String {
+        val raw = prefs.getString(KEY_JOBS, "[]").orEmpty()
+        return runCatching {
+            JSONArray(raw).toString(2)
+        }.getOrDefault("[]")
+    }
+
     private fun readJobs(): List<PendingJob> {
         val raw = prefs.getString(KEY_JOBS, "[]").orEmpty()
 

@@ -48,6 +48,14 @@ class HistoryStore(context: Context) {
         prefs.edit().remove(KEY_HISTORY).apply()
     }
 
+    @Synchronized
+    fun exportJson(): String {
+        val raw = prefs.getString(KEY_HISTORY, "[]").orEmpty()
+        return runCatching {
+            JSONArray(raw).toString(2)
+        }.getOrDefault("[]")
+    }
+
     private fun readEntries(): List<HistoryEntry> {
         val raw = prefs.getString(KEY_HISTORY, "[]").orEmpty()
 
