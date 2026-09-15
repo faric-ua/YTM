@@ -1,23 +1,24 @@
-YTM Importer v0.10.0 FULL — FILE MANIFEST
+YTM Importer v0.10.1 FULL — FILE MANIFEST
 
-4f264c8fda0d7b54  .github/workflows/build-apk.yml
+20bb442c8066b8cc  .github/workflows/build-apk.yml
 6cc7d3ae20eee52b  .gitignore
-e4ceb1a59a40ba06  APPLY_FULL_VERSION.txt
-20653d8eb814ba38  BACKLOG.md
-21f5a6a8f64e3250  CHANGELOG.md
+e249a935859a2cf4  APPLY_FULL_VERSION.txt
+bd260e80e1a6e4f6  BACKLOG.md
+379b6e05b24e4ad7  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
-08888af58bc064f3  PROJECT_STATUS.txt
+44f4fdb343874c65  PROJECT_STATUS.txt
 d1c001ca69cbe197  README.md
-7da299daba2b4a12  README_UA.md
+9f3bdfe5007b25d5  README_UA.md
 f4a9c99161f1f7a0  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
+e0ce791b58f2a591  TERMINAL_APPLY_v0.10.1.md
 58270b00dcd8efb2  TERMINAL_APPLY_v0.8.0.md
 0524b0478b6143f7  TERMINAL_APPLY_v0.9.0.md
 ae1826a70db64b5b  TERMINAL_APPLY_v0.9.1.md
-a02dbe812ecdbe1b  app/build.gradle.kts
+867877d99f046b20  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 32a69856f4027a4b  app/src/main/AndroidManifest.xml
-39e0a2add896b4f9  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+fb9b3528e709b9e8  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 32e50325cc4f37bf  app/src/main/java/com/saney/ytmimporter/model/PendingJob.kt
 c22f09b0d83b0ad8  app/src/main/java/com/saney/ytmimporter/model/Track.kt
@@ -33,7 +34,7 @@ ab3ee24f934aa08d  app/src/main/res/values/colors.xml
 7c794e3e8b44bad5  app/src/main/res/values/strings.xml
 ce3b1e690fed5536  app/src/main/res/values/styles.xml
 1ad29e43e790095c  build.gradle.kts
-94070b26fbdcb070  docs/README.md
+6b19e909abc23eac  docs/README.md
 fba063f3df84f31a  docs/v.0.10.0/RELEASE.md
 40eb6695cc102a64  docs/v.0.10.0/diagrams/ARCHITECTURE.md
 d36539446325c8a5  docs/v.0.10.0/diagrams/BEFORE_AFTER_v0.10.0.md
@@ -42,6 +43,15 @@ b25153bf602917b1  docs/v.0.10.0/diagrams/PENDING_JOB_STATE.md
 446cf203e2365bbe  docs/v.0.10.0/diagrams/QUOTA_PENDING_FLOW.md
 aa3d52a06154e9b9  docs/v.0.10.0/diagrams/README.md
 286ff9143eb3c8ab  docs/v.0.10.0/diagrams/TRACK_STATE_FLOW.md
+36ee6bf070c27649  docs/v.0.10.1/RELEASE.md
+9b449f64d3c2c33a  docs/v.0.10.1/diagrams/ARCHITECTURE.md
+72d46e0ccc813979  docs/v.0.10.1/diagrams/BEFORE_AFTER_v0.10.1.md
+7bd433cf4614f2ca  docs/v.0.10.1/diagrams/CURRENT_FLOW.md
+c1426859df197812  docs/v.0.10.1/diagrams/PENDING_JOB_STATE.md
+0adb9f91a1862a3a  docs/v.0.10.1/diagrams/QUOTA_PENDING_FLOW.md
+1648032d13bad905  docs/v.0.10.1/diagrams/README.md
+f3c4a1535941454a  docs/v.0.10.1/diagrams/TRACK_STATE_FLOW.md
+f796124e9c1fd115  docs/v.0.10.1/diagrams/UI_LAYOUT.md
 5471f13070583f68  docs/v.0.7.1/RELEASE.md
 ffae6e64d2a8a4b0  docs/v.0.7.1/diagrams/ARCHITECTURE.md
 751db4d4a42095ca  docs/v.0.7.1/diagrams/BEFORE_AFTER_v0.7.1.md

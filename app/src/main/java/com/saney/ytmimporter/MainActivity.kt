@@ -59,9 +59,8 @@ class MainActivity : Activity() {
 
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
-    private lateinit var googleAccountText: TextView
-    private lateinit var youtubeChannelText: TextView
-    private lateinit var quotaText: TextView
+    private lateinit var accountButton: Button
+    private lateinit var quotaButton: Button
     private lateinit var pendingButton: Button
     private lateinit var progress: ProgressBar
     private lateinit var resultPanel: LinearLayout
@@ -93,17 +92,17 @@ class MainActivity : Activity() {
 
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(18), dp(18), dp(18), dp(12))
+            setPadding(dp(16), dp(10), dp(16), dp(6))
         }
         header.addView(TextView(this).apply {
             text = "YTM Importer"
-            textSize = 26f
+            textSize = 22f
             setTextColor(Color.WHITE)
             setTypeface(typeface, Typeface.BOLD)
         })
         header.addView(TextView(this).apply {
             text = "CSV/TXT/текст → пошук → перевірка → плейлист у YouTube Music"
-            textSize = 13f
+            textSize = 12f
             setTextColor(Color.rgb(165, 167, 173))
         })
         root.addView(header)
@@ -117,75 +116,21 @@ class MainActivity : Activity() {
         }
         actions.addView(button("1. Файл") { chooseFile() })
         actions.addView(button("1б. Текст") { showPasteTrackListDialog() })
-        actions.addView(button("2. Акаунт") { showAccountDialog() })
+        accountButton = button("2. Акаунт") { showAccountDialog() }
+        actions.addView(accountButton)
         actions.addView(button("3. Знайти") { searchAll() })
         actions.addView(button("4. Створити") { createPlaylist() })
         actions.addView(button("Відкрити в ютм") { openInYtm() })
         actions.addView(button("Заміни") { showReplacementLog() })
-        actions.addView(button("Квота") { showQuotaDialog() })
+        quotaButton = button("Квота") { showQuotaDialog() }
+        actions.addView(quotaButton)
         pendingButton = button("Черга") { showPendingJobs() }
         actions.addView(pendingButton)
         scroll.addView(actions)
         root.addView(scroll)
 
-        val accountPanel = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(18), dp(10), dp(18), dp(10))
-            setBackgroundColor(Color.rgb(23, 25, 30))
-        }
-        accountPanel.addView(TextView(this).apply {
-            text = "Акаунт і профіль YouTube/YTM"
-            textSize = 14f
-            setTextColor(Color.WHITE)
-            setTypeface(typeface, Typeface.BOLD)
-        })
-
-        googleAccountText = TextView(this).apply {
-            text = "Google: не підключено"
-            textSize = 12.5f
-            setTextColor(Color.rgb(185, 187, 194))
-            setPadding(0, dp(4), 0, 0)
-        }
-        accountPanel.addView(googleAccountText)
-
-        youtubeChannelText = TextView(this).apply {
-            text = "YouTube/YTM: канал ще не визначено"
-            textSize = 12.5f
-            setTextColor(Color.rgb(185, 187, 194))
-            setPadding(0, dp(2), 0, 0)
-        }
-        accountPanel.addView(youtubeChannelText)
-
-        root.addView(
-            accountPanel,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(dp(12), 0, dp(12), dp(8))
-            }
-        )
-
-        quotaText = TextView(this).apply {
-            textSize = 12.5f
-            setTextColor(Color.rgb(185, 187, 194))
-            setPadding(dp(18), dp(8), dp(18), dp(8))
-            setBackgroundColor(Color.rgb(23, 25, 30))
-            setOnClickListener { showQuotaDialog() }
-        }
-
-        root.addView(
-            quotaText,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(dp(12), 0, dp(12), dp(8))
-            }
-        )
-
         summaryText = TextView(this).apply {
-            setPadding(dp(18), dp(6), dp(18), dp(2))
+            setPadding(dp(16), dp(4), dp(16), 0)
             setTextColor(Color.WHITE)
             textSize = 15f
             setTypeface(typeface, Typeface.BOLD)
@@ -194,7 +139,7 @@ class MainActivity : Activity() {
         root.addView(summaryText)
 
         statusText = TextView(this).apply {
-            setPadding(dp(18), dp(4), dp(18), dp(8))
+            setPadding(dp(16), dp(2), dp(16), dp(5))
             setTextColor(Color.rgb(165, 167, 173))
             textSize = 13f
             text = "Виберіть CSV/TXT або вставте список Artist - Track."
@@ -286,8 +231,8 @@ class MainActivity : Activity() {
         setPadding(dp(12), 0, dp(12), 0)
         setOnClickListener { action() }
         layoutParams =
-            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(44)).apply {
-                marginEnd = dp(8)
+            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(40)).apply {
+                marginEnd = dp(6)
             }
     }
 
@@ -615,31 +560,18 @@ class MainActivity : Activity() {
     }
 
     private fun updateAccountPanel() {
-        googleAccountText.text =
+        if (!::accountButton.isInitialized) return
+
+        accountButton.text =
             when {
                 accessToken.isNullOrBlank() ->
-                    "Google: не підключено"
+                    "2. Акаунт"
 
-                googleAccountInfo != null -> {
-                    val info = googleAccountInfo!!
-                    val visible =
-                        listOf(info.name, info.email)
-                            .filter { it.isNotBlank() }
-                            .joinToString(" • ")
-                    "Google: ${visible.ifBlank { "підключено" }}"
-                }
+                youtubeChannelInfo != null ->
+                    "2. Акаунт ✓"
 
                 else ->
-                    "Google: підключено • дані профілю завантажуються"
-            }
-
-        youtubeChannelText.text =
-            youtubeChannelInfo?.let {
-                "YouTube/YTM: ${it.title}\nID каналу: ${it.id}"
-            } ?: if (accessToken.isNullOrBlank()) {
-                "YouTube/YTM: канал ще не визначено"
-            } else {
-                "YouTube/YTM: визначаю канал…"
+                    "2. Акаунт …"
             }
     }
 
@@ -1037,7 +969,7 @@ class MainActivity : Activity() {
                         trackCount = selected.size,
                         createPlaylist = false
                     ) +
-                    "\n\nУ v0.10.0 дублікати ще не відсіюються автоматично."
+                    "\n\nУ v0.10.1 дублікати ще не відсіюються автоматично."
             )
             .setNegativeButton("Скасувати", null)
             .setPositiveButton("Додати") { _, _ ->
@@ -1734,17 +1666,16 @@ class MainActivity : Activity() {
     }
 
     private fun updateQuotaPanel() {
-        if (!::quotaText.isInitialized) return
+        if (!::quotaButton.isInitialized) return
 
         val quota = quotaTracker.snapshot()
 
-        quotaText.text =
-            "Квота API — локальна оцінка\n" +
-                "Пошук: ${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT} " +
-                "• ≈${quota.searchRemaining} залишилось\n" +
-                "Інші операції: ${quota.generalUnits}/" +
-                "${QuotaTracker.GENERAL_DAILY_LIMIT} " +
-                "• ≈${quota.generalRemaining} units"
+        quotaButton.text =
+            if (quota.lastQuotaError.isNullOrBlank()) {
+                "Квота"
+            } else {
+                "Квота ⚠"
+            }
     }
 
     private fun updatePendingButton() {

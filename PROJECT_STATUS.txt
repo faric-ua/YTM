@@ -1,6 +1,6 @@
 YTM Importer
-Version: 0.10.0
-Version code: 11
+Version: 0.10.1
+Version code: 12
 Package: com.saney.ytmimporter
 
 Реалізовано:
@@ -29,3 +29,8 @@ Package: com.saney.ytmimporter
 - quota panel на телефоні
 - Pending Queue
 - реальний quotaExceeded / Resume
+
+UI v0.10.1:
+- persistent account/quota panels removed
+- compact buttons/status
+- track list gets more vertical space
