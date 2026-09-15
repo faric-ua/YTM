@@ -1,7 +1,7 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v0.13.0 — Export / Backup / Restore**
+**v0.13.1 — Hotfix меню Дані + Export / Backup / Restore**
 
 ## 1–11. Реалізовано раніше
 - [x] SearchCache + MatchScorer;
@@ -29,7 +29,7 @@
 - [x] confirmation before restore;
 - [x] system file picker for save/open;
 - [x] backup does NOT contain OAuth token/password/JKS;
-- [ ] протестувати export TXT/JSON на телефоні;
+- [ ] протестувати export TXT/JSON на телефоні після hotfix v0.13.1;
 - [ ] протестувати backup → clear data/uninstall → restore на окремому тесті.
 
 ## 13. Діагностика / зручність — наступний етап

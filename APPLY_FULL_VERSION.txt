@@ -1,24 +1,26 @@
-YTM Importer v0.13.0 FULL — EXPORT / BACKUP / RESTORE
+YTM Importer v0.13.1 FULL — DATA MENU HOTFIX
 
-ДОДАНО:
-app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
-docs/v.0.13.0/RELEASE.md
-docs/v.0.13.0/diagrams/*
-TERMINAL_APPLY_v0.13.0.md
+ПРОБЛЕМА v0.13.0:
+AlertDialog setMessage + setItems -> список операцій не відображався.
+
+ВИПРАВЛЕНО:
+MainActivity.showDataTools()
+тепер використовує custom layout:
+TextView + ListView.
 
 ЗАМІНЕНО:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
-app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
 CHANGELOG.md
-README.md
 README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
-Версія:
-versionCode = 15
-versionName = 0.13.0
+ДОДАНО:
+docs/v.0.13.1/
+TERMINAL_APPLY_v0.13.1.md
+
+versionCode = 16
+versionName = 0.13.1

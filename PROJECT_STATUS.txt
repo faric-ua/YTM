@@ -1,6 +1,6 @@
 YTM Importer
-Version: 0.13.0
-Version code: 15
+Version: 0.13.1
+Version code: 16
 Package: com.saney.ytmimporter
 
 Реалізовано:
@@ -39,3 +39,8 @@ Backup excludes:
 - Pending export
 - full backup
 - restore on test data
+
+v0.13.1 hotfix:
+- fixed hidden Data menu actions
+- custom Data dialog
+- clearer Export vs Full Backup vs Restore explanation

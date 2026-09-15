@@ -2206,36 +2206,84 @@ class MainActivity : Activity() {
         val historyCount = historyStore.getAll().size
         val pendingCount = pendingJobStore.getAll().size
 
-        val labels =
-            arrayOf(
-                "Експорт History → TXT",
-                "Експорт History → JSON",
-                "Експорт Черги → JSON",
-                "Створити повний backup → JSON",
-                "Відновити з backup JSON"
-            )
-
-        AlertDialog.Builder(this)
-            .setTitle("Дані (Export / Backup)")
-            .setMessage(
+        val intro = TextView(this).apply {
+            text =
                 "History: $historyCount записів\n" +
                     "Черга: $pendingCount завдань\n\n" +
-                    "Повний backup містить History, Чергу, " +
-                    "локальну статистику квоти та SearchCache.\n\n" +
-                    "OAuth access token, паролі та signing keys " +
-                    "у backup НЕ записуються."
+                    "Оберіть, що потрібно зробити.\n" +
+                    "Важливо: для повного відновлення використовується " +
+                    "саме «Повний backup», а не окремий History JSON."
+            textSize = 14f
+            setPadding(dp(16), dp(8), dp(16), dp(8))
+        }
+
+        val labels =
+            arrayOf(
+                "Історія → TXT\n" +
+                    "Звичайний читабельний звіт для людини",
+
+                "Історія → JSON\n" +
+                    "Технічний експорт тільки історії",
+
+                "Черга → JSON\n" +
+                    "Технічний експорт незавершених завдань",
+
+                "Повний backup → JSON\n" +
+                    "History + Черга + Quota + SearchCache",
+
+                "Restore повного backup\n" +
+                    "Відновити локальні дані з YTM_Backup_*.json"
             )
-            .setItems(labels) { _, which ->
-                when (which) {
-                    0 -> exportHistoryTxt()
-                    1 -> exportHistoryJson()
-                    2 -> exportPendingJson()
-                    3 -> createFullBackup()
-                    4 -> chooseBackupForRestore()
-                }
+
+        val list = ListView(this).apply {
+            dividerHeight = 1
+            adapter =
+                ArrayAdapter(
+                    this@MainActivity,
+                    android.R.layout.simple_list_item_1,
+                    labels
+                )
+        }
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(8), 0, dp(8), 0)
+            addView(
+                intro,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+            addView(
+                list,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(390)
+                )
+            )
+        }
+
+        val dialog =
+            AlertDialog.Builder(this)
+                .setTitle("Дані — експорт і backup")
+                .setView(container)
+                .setNegativeButton("Закрити", null)
+                .create()
+
+        list.setOnItemClickListener { _, _, position, _ ->
+            dialog.dismiss()
+
+            when (position) {
+                0 -> exportHistoryTxt()
+                1 -> exportHistoryJson()
+                2 -> exportPendingJson()
+                3 -> createFullBackup()
+                4 -> chooseBackupForRestore()
             }
-            .setNegativeButton("Закрити", null)
-            .show()
+        }
+
+        dialog.show()
     }
 
     private fun exportHistoryTxt() {
@@ -2248,7 +2296,7 @@ class MainActivity : Activity() {
         val text =
             buildString {
                 append("YTM Importer — History export\n")
-                append("Версія застосунку: 0.13.0\n")
+                append("Версія застосунку: 0.13.1\n")
                 append("Експортовано: ${formatHistoryDate(System.currentTimeMillis())}\n")
                 append("Записів: ${entries.size}\n\n")
 
