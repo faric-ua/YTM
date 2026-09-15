@@ -18,12 +18,21 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import com.saney.ytmimporter.R
 
 object UiChrome {
     data class MenuAction(
         val label: String,
         val onClick: () -> Unit
     )
+
+    fun alertBuilder(
+        context: Context
+    ): AlertDialog.Builder =
+        AlertDialog.Builder(
+            context,
+            R.style.YtmAlertDialogTheme
+        )
 
     fun applyScreenInsets(
         activity: Activity,
@@ -64,9 +73,10 @@ object UiChrome {
         title: String,
         actions: List<MenuAction>,
         negativeLabel: String = "Закрити",
-        subtitle: String? = null
+        subtitle: String? = null,
+        onNegative: (() -> Unit)? = null
     ) {
-        val dialog = AlertDialog.Builder(activity).create()
+        val dialog = alertBuilder(activity).create()
 
         val outer = FrameLayout(activity).apply {
             setPadding(
@@ -130,7 +140,7 @@ object UiChrome {
                 },
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(activity, 52)
+                    dp(activity, 58)
                 ).apply {
                     if (index > 0) {
                         topMargin = dp(activity, 10)
@@ -146,10 +156,11 @@ object UiChrome {
                 accent = true
             ) {
                 dialog.dismiss()
+                onNegative?.invoke()
             },
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(activity, 52)
+                dp(activity, 58)
             ).apply {
                 topMargin = dp(activity, 14)
             }
@@ -186,11 +197,12 @@ object UiChrome {
             minHeight = 0
             minimumHeight = 0
             setPadding(
-                dp(context, 16),
-                0,
-                dp(context, 16),
-                0
+                dp(context, 18),
+                dp(context, 8),
+                dp(context, 18),
+                dp(context, 8)
             )
+            maxLines = 2
             setTextColor(
                 if (accent) ACCENT else Color.WHITE
             )

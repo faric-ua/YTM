@@ -1,16 +1,16 @@
 YTM Importer
-Version: 1.4.2
-Version code: 36
+Version: 1.4.3
+Version code: 37
 Package: com.saney.ytmimporter
 
 Stage:
-UI polish: safe insets + styled secondary dialogs
+Unified dialogs + comfortable button spacing
 
-Added:
-- UiChrome helper
-- safe-area handling on primary screens
-- styled menus for More / Import / Project actions
-- ui-chrome audit script
+Completed:
+- all native dialogs routed through YtmAlertDialogTheme
+- all list menus use UiChrome card buttons
+- larger button padding/heights across primary screens
+- safe insets retained from v1.4.2
 
 Open:
 Q-001 remains OPEN — revisit later.

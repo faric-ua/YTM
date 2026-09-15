@@ -596,7 +596,7 @@ class PendingActivity : Activity() {
     private fun confirmDelete(
         job: PendingJob
     ) {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(
                 "Видалити із черги?"
             )
@@ -1072,7 +1072,7 @@ class PendingActivity : Activity() {
             layoutParams =
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(46)
+                    dp(54)
                 ).apply {
                     bottomMargin =
                         dp(7)

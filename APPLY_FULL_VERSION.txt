@@ -1,6 +1,13 @@
-YTM Importer v1.4.2 FULL
+YTM Importer v1.4.3 FULL
+
+ADDED:
+app/src/main/res/drawable/bg_ytm_dialog.xml
+scripts/dialog-style-audit.sh
+docs/v.1.4.3/
+TERMINAL_APPLY_v1.4.3.md
 
 REPLACED:
+app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
@@ -8,6 +15,7 @@ app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
+app/src/main/res/values/styles.xml
 app/build.gradle.kts
 scripts/release-preflight.sh
 .github/workflows/build-apk.yml
@@ -19,12 +27,9 @@ PROJECT_STATUS.txt
 OPEN_QUESTIONS.md
 docs/README.md
 
-ADDED:
-app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
-scripts/ui-chrome-audit.sh
-docs/v.1.4.2/
-TERMINAL_APPLY_v1.4.2.md
+DELETED:
+none
 
 VERSION:
-versionCode = 36
-versionName = 1.4.2
+versionCode = 37
+versionName = 1.4.3

@@ -350,7 +350,7 @@ class MainActivity : Activity() {
                 item,
                 LinearLayout.LayoutParams(
                     0,
-                    dp(42),
+                    dp(50),
                     1f
                 ).apply {
                     if (index > 0) {
@@ -527,7 +527,9 @@ class MainActivity : Activity() {
             isAllCaps = false
             textSize = 13f
             setTextColor(Color.WHITE)
-            setPadding(dp(10), 0, dp(10), 0)
+            gravity = android.view.Gravity.CENTER
+            maxLines = 2
+            setPadding(dp(14), dp(6), dp(14), dp(6))
             background =
                 roundedBackground(
                     color = Color.rgb(34, 36, 42),
@@ -549,7 +551,9 @@ class MainActivity : Activity() {
             textSize = 13.5f
             setTypeface(typeface, Typeface.BOLD)
             setTextColor(Color.WHITE)
-            setPadding(dp(10), 0, dp(10), 0)
+            gravity = android.view.Gravity.CENTER
+            maxLines = 2
+            setPadding(dp(14), dp(6), dp(14), dp(6))
             background =
                 roundedBackground(
                     color = Color.rgb(196, 0, 42),
@@ -569,7 +573,7 @@ class MainActivity : Activity() {
             action = action
         ).apply {
             textSize = 12f
-            setPadding(dp(5), 0, dp(5), 0)
+            setPadding(dp(9), dp(5), dp(9), dp(5))
         }
 
     private fun equalButtonsRow(
@@ -583,7 +587,7 @@ class MainActivity : Activity() {
                 first,
                 LinearLayout.LayoutParams(
                     0,
-                    dp(46),
+                    dp(58),
                     1f
                 )
             )
@@ -592,7 +596,7 @@ class MainActivity : Activity() {
                 second,
                 LinearLayout.LayoutParams(
                     0,
-                    dp(46),
+                    dp(58),
                     1f
                 ).apply {
                     marginStart = dp(8)
@@ -1136,7 +1140,7 @@ class MainActivity : Activity() {
             )
         }
 
-        val dialog = AlertDialog.Builder(this)
+        val dialog = UiChrome.alertBuilder(this)
             .setTitle("Вставити список треків")
             .setMessage(
                 "Один трек на рядок: Artist - Track. " +
@@ -1257,7 +1261,7 @@ class MainActivity : Activity() {
                 "${it.title}\nChannel ID (ID каналу): ${it.id}"
             } ?: "YouTube/YTM канал не визначено"
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Акаунт")
             .setMessage(
                 "Google:\n$googleText\n\n" +
@@ -1451,7 +1455,7 @@ class MainActivity : Activity() {
                 ""
             }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("План пошуку (Search plan)")
             .setMessage(
                 "Треків у списку: ${p.tracks.size}\n" +
@@ -2748,7 +2752,7 @@ class MainActivity : Activity() {
                 "Playlist ID (ID плейлиста): ${job.playlistId}"
             }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Операцію призупинено")
             .setMessage(
                 "YouTube API повідомив про вичерпання квоти.\n\n" +
@@ -2789,7 +2793,7 @@ class MainActivity : Activity() {
         val playlistId =
             job.playlistId ?: "ще не створений"
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(job.playlistName)
             .setMessage(
                 "Тип: $destination\n" +
@@ -2813,7 +2817,7 @@ class MainActivity : Activity() {
     }
 
     private fun confirmDeletePendingJob(job: PendingJob) {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Видалити із черги?")
             .setMessage(
                 "Локальний запис «${job.playlistName}» буде видалений. " +
@@ -2846,7 +2850,7 @@ class MainActivity : Activity() {
                     !job.googleEmail.equals(currentEmail, ignoreCase = true)
 
             if (channelMismatch || emailMismatch) {
-                AlertDialog.Builder(this)
+                UiChrome.alertBuilder(this)
                     .setTitle("Потрібен інший акаунт")
                     .setMessage(
                         "Це завдання було створено для:\n" +
@@ -2934,7 +2938,7 @@ class MainActivity : Activity() {
         val quota = quotaTracker.snapshot()
         val jobs = pendingJobStore.getAll()
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Квота API (локальна оцінка)")
             .setMessage(
                 "Search Queries (пошук):\n" +
@@ -3017,7 +3021,7 @@ class MainActivity : Activity() {
         firstRun: Boolean = false
     ) {
         val builder =
-            AlertDialog.Builder(this)
+            UiChrome.alertBuilder(this)
                 .setTitle("Вітаємо в YTM Importer")
                 .setMessage(
                     "Створити плейлист можна у 4 кроки:\n\n" +
@@ -3068,7 +3072,7 @@ class MainActivity : Activity() {
     }
 
     private fun showPrivacyDialog() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Приватність")
             .setMessage(
                 "YTM Importer працює без власного сервера.\n\n" +
@@ -3169,7 +3173,7 @@ class MainActivity : Activity() {
         }
 
         val dialog =
-            AlertDialog.Builder(this)
+            UiChrome.alertBuilder(this)
                 .setTitle("Сервіс")
                 .setView(container)
                 .setNegativeButton("Закрити", null)
@@ -3197,7 +3201,7 @@ class MainActivity : Activity() {
         val targetSdk =
             applicationInfo.targetSdkVersion
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("YTM Importer")
             .setIcon(R.mipmap.ic_launcher)
             .setMessage(
@@ -3230,7 +3234,7 @@ class MainActivity : Activity() {
     }
 
     private fun showRegressionChecklist() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Regression checklist")
             .setMessage(
                 "Короткий список:\n\n" +
@@ -3251,7 +3255,7 @@ class MainActivity : Activity() {
     }
 
     private fun showDiagnostics() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Діагностика YTM Importer")
             .setMessage(buildDiagnosticsText())
             .setNegativeButton("Закрити", null)
@@ -3470,7 +3474,7 @@ class MainActivity : Activity() {
     private fun showSearchCacheTools() {
         val stats = searchCache.stats()
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("SearchCache")
             .setMessage(
                 "Усього записів: ${stats.totalEntries}\n" +
@@ -3510,7 +3514,7 @@ class MainActivity : Activity() {
     }
 
     private fun confirmClearSearchCache() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Очистити весь SearchCache?")
             .setMessage(
                 "Усі кешовані результати пошуку буде видалено.\n\n" +
@@ -3813,7 +3817,7 @@ class MainActivity : Activity() {
         }
 
         val dialog =
-            AlertDialog.Builder(this)
+            UiChrome.alertBuilder(this)
                 .setTitle("Дані — Export / Backup / Share")
                 .setView(container)
                 .setNegativeButton("Закрити", null)
@@ -3936,7 +3940,7 @@ class MainActivity : Activity() {
                 return
             }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Створити повний backup?")
             .setMessage(
                 "У JSON буде збережено:\n" +
@@ -3980,7 +3984,7 @@ class MainActivity : Activity() {
     }
 
     private fun confirmShareFullBackup() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Поділитися повним backup?")
             .setMessage(
                 "Backup може містити:\n" +
@@ -4155,7 +4159,7 @@ class MainActivity : Activity() {
     }
 
     private fun chooseBackupForRestore() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Відновити backup?")
             .setMessage(
                 "Restore (відновлення) замінить локальні дані " +
@@ -4218,7 +4222,7 @@ class MainActivity : Activity() {
                 "невідомо"
             }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Підтвердити Restore")
             .setMessage(
                 "Backup YTM Importer\n\n" +
@@ -4263,7 +4267,7 @@ class MainActivity : Activity() {
         updatePendingButton()
         updateQuotaPanel()
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Backup відновлено")
             .setMessage(
                 "Груп даних: ${result.preferenceGroups}\n" +
@@ -4311,7 +4315,7 @@ class MainActivity : Activity() {
                 "невідомо"
             }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Відкотити останній Restore?")
             .setMessage(
                 "Буде відновлено локальний стан, який був ДО " +
@@ -4344,7 +4348,7 @@ class MainActivity : Activity() {
         updatePendingButton()
         updateQuotaPanel()
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Відкат виконано")
             .setMessage(
                 "Локальний стан ДО останнього Restore повернуто.\n\n" +
@@ -4398,7 +4402,7 @@ class MainActivity : Activity() {
                 }
                 .takeIf { it.isNotBlank() }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(
                 "${historyStatusIcon(status)} ${entry.playlistName}"
             )
@@ -4462,101 +4466,101 @@ class MainActivity : Activity() {
     }
 
     private fun showHistoryActions(entry: HistoryEntry) {
-        val labels = mutableListOf<String>()
+        val actions =
+            mutableListOf<UiChrome.MenuAction>()
 
         if (!entry.playlistId.isNullOrBlank()) {
-            labels += "Копіювати посилання на плейлист"
+            actions +=
+                UiChrome.MenuAction(
+                    "Копіювати посилання на плейлист"
+                ) {
+                    entry.playlistId
+                        ?.let { id ->
+                            copyText(
+                                label = "YTM playlist",
+                                text = playlistUrl(id),
+                                successMessage = "Посилання скопійовано"
+                            )
+                        }
+                    showHistoryEntry(entry)
+                }
         }
 
-        labels += "Зберегти YTM Project"
-        labels += "Поділитися YTM Project"
-        labels += "Копіювати підсумок"
-        labels += "Копіювати журнал проблем"
-        labels += "Видалити запис з історії"
-
-        AlertDialog.Builder(this)
-            .setTitle("Дії з історією")
-            .setItems(labels.toTypedArray()) { _, which ->
-                val selected = labels[which]
-
-                when (selected) {
-                    "Копіювати посилання на плейлист" -> {
-                        val id =
-                            entry.playlistId
-                                ?: return@setItems
-
-                        copyText(
-                            label = "YTM playlist",
-                            text = playlistUrl(id),
-                            successMessage =
-                                "Посилання скопійовано"
-                        )
-
-                        showHistoryEntry(entry)
-                    }
-
-                    "Зберегти YTM Project" -> {
-                        confirmHistoryProjectScope(
-                            entry = entry,
-                            actionLabel = "Зберегти"
-                        ) {
-                            saveHistoryProject(entry)
-                        }
-                    }
-
-                    "Поділитися YTM Project" -> {
-                        confirmHistoryProjectScope(
-                            entry = entry,
-                            actionLabel = "Поділитися"
-                        ) {
-                            shareHistoryProject(entry)
-                        }
-                    }
-
-                    "Копіювати підсумок" -> {
-                        copyText(
-                            label =
-                                "YTM Importer history summary",
-                            text =
-                                buildHistorySummary(entry),
-                            successMessage =
-                                "Підсумок історії скопійовано"
-                        )
-
-                        showHistoryEntry(entry)
-                    }
-
-                    "Копіювати журнал проблем" -> {
-                        val text =
-                            buildHistoryProblemLog(entry)
-
-                        if (text == null) {
-                            toast(
-                                "У цьому записі немає проблемних " +
-                                    "або замінених треків"
-                            )
-                        } else {
-                            copyText(
-                                label =
-                                    "YTM Importer history problems",
-                                text = text,
-                                successMessage =
-                                    "Журнал проблем скопійовано"
-                            )
-                        }
-
-                        showHistoryEntry(entry)
-                    }
-
-                    "Видалити запис з історії" -> {
-                        confirmDeleteHistoryEntry(entry)
-                    }
+        actions +=
+            UiChrome.MenuAction(
+                "Зберегти YTM Project"
+            ) {
+                confirmHistoryProjectScope(
+                    entry = entry,
+                    actionLabel = "Зберегти"
+                ) {
+                    saveHistoryProject(entry)
                 }
             }
-            .setNegativeButton("Назад") { _, _ ->
+
+        actions +=
+            UiChrome.MenuAction(
+                "Поділитися YTM Project"
+            ) {
+                confirmHistoryProjectScope(
+                    entry = entry,
+                    actionLabel = "Поділитися"
+                ) {
+                    shareHistoryProject(entry)
+                }
+            }
+
+        actions +=
+            UiChrome.MenuAction(
+                "Копіювати підсумок"
+            ) {
+                copyText(
+                    label = "YTM Importer history summary",
+                    text = buildHistorySummary(entry),
+                    successMessage = "Підсумок історії скопійовано"
+                )
                 showHistoryEntry(entry)
             }
-            .show()
+
+        actions +=
+            UiChrome.MenuAction(
+                "Копіювати журнал проблем"
+            ) {
+                val text =
+                    buildHistoryProblemLog(entry)
+
+                if (text == null) {
+                    toast(
+                        "У цьому записі немає проблемних або замінених треків"
+                    )
+                } else {
+                    copyText(
+                        label = "YTM Importer history problems",
+                        text = text,
+                        successMessage = "Журнал проблем скопійовано"
+                    )
+                }
+
+                showHistoryEntry(entry)
+            }
+
+        actions +=
+            UiChrome.MenuAction(
+                "Видалити запис з історії"
+            ) {
+                confirmDeleteHistoryEntry(entry)
+            }
+
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = "Дії з історією",
+            subtitle = "Project, копіювання та локальне керування записом.",
+            negativeLabel = "Назад",
+            actions = actions,
+            onNegative = {
+                showHistoryEntry(entry)
+            }
+        )
     }
 
     private fun confirmHistoryProjectScope(
@@ -4572,7 +4576,7 @@ class MainActivity : Activity() {
             return
         }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("$actionLabel YTM Project?")
             .setMessage(
                 "Цей запис History був додаванням до вже існуючого " +
@@ -4751,7 +4755,7 @@ class MainActivity : Activity() {
         }
 
     private fun confirmDeleteHistoryEntry(entry: HistoryEntry) {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Видалити запис історії?")
             .setMessage(
                 "Буде видалено тільки локальний запис «${entry.playlistName}». " +
@@ -4770,7 +4774,7 @@ class MainActivity : Activity() {
     }
 
     private fun confirmClearHistory() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Очистити всю історію?")
             .setMessage(
                 "Будуть видалені тільки локальні записи історії. " +
@@ -4831,55 +4835,64 @@ class MainActivity : Activity() {
 
     private fun showTrackDialog(track: Track) {
         val candidates = track.candidates
-        val labels = mutableListOf<String>()
+        val actions =
+            mutableListOf<UiChrome.MenuAction>()
 
         candidates.forEachIndexed { index, candidate ->
             val selectedMark =
-                if (candidate.videoId == track.selectedVideoId) "✓ " else ""
+                if (candidate.videoId == track.selectedVideoId) {
+                    "✓ "
+                } else {
+                    ""
+                }
 
-            labels +=
-                "$selectedMark${index + 1}. ${(candidate.score * 100).roundToInt()}%  " +
-                    "${candidate.title}\n${candidate.channelTitle}"
+            actions +=
+                UiChrome.MenuAction(
+                    "$selectedMark${index + 1}. " +
+                        "${(candidate.score * 100).roundToInt()}%  " +
+                        "${candidate.title} • ${candidate.channelTitle}"
+                ) {
+                    showCandidateDialog(
+                        track,
+                        candidate
+                    )
+                }
         }
 
-        labels += "🔗 Вставити YouTube / YouTube Music URL"
-        labels += "⏭ Пропустити цей трек"
-
-        AlertDialog.Builder(this)
-            .setTitle(
-                if (candidates.isEmpty()) {
-                    "${track.originalArtist} — ${track.originalTitle}\nКандидатів немає"
-                } else {
-                    "${track.originalArtist} — ${track.originalTitle}\n" +
-                        "Кандидати: ${candidates.size}"
-                }
-            )
-            .setItems(labels.toTypedArray()) { _, which ->
-                when {
-                    which < candidates.size -> {
-                        showCandidateDialog(track, candidates[which])
-                    }
-
-                    which == candidates.size -> {
-                        showPasteUrlDialog(track)
-                    }
-
-                    else -> {
-                        track.status = TrackStatus.SKIPPED
-                        track.selectedVideoId = null
-                        track.selectedTitle = null
-                        track.selectedChannel = null
-                        track.manuallySelected = true
-                        adapter.notifyDataSetChanged()
-                        updateSummary()
-                        status(
-                            "Пропущено: ${track.originalArtist} — ${track.originalTitle}"
-                        )
-                    }
-                }
+        actions +=
+            UiChrome.MenuAction(
+                "🔗 Вставити YouTube / YouTube Music URL"
+            ) {
+                showPasteUrlDialog(track)
             }
-            .setNegativeButton("Закрити", null)
-            .show()
+
+        actions +=
+            UiChrome.MenuAction(
+                "⏭ Пропустити цей трек"
+            ) {
+                track.status = TrackStatus.SKIPPED
+                track.selectedVideoId = null
+                track.selectedTitle = null
+                track.selectedChannel = null
+                track.manuallySelected = true
+                adapter.notifyDataSetChanged()
+                updateSummary()
+                status(
+                    "Пропущено: ${track.originalArtist} — ${track.originalTitle}"
+                )
+            }
+
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = "${track.originalArtist} — ${track.originalTitle}",
+            subtitle =
+                if (candidates.isEmpty()) {
+                    "Кандидатів немає"
+                } else {
+                    "Кандидати: ${candidates.size}"
+                },
+            actions = actions
+        )
     }
 
     private fun showCandidateDialog(
@@ -4889,7 +4902,7 @@ class MainActivity : Activity() {
         val scorePercent = (candidate.score * 100).roundToInt()
         val isCurrent = candidate.videoId == track.selectedVideoId
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(candidate.title)
             .setMessage(
                 buildString {
@@ -4951,7 +4964,7 @@ class MainActivity : Activity() {
             setPadding(dp(16), dp(8), dp(16), dp(8))
         }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Вставити посилання")
             .setMessage(
                 "Програма спробує отримати з YouTube реальну назву " +
@@ -5256,7 +5269,7 @@ class MainActivity : Activity() {
         val shortText = buildShortReplacementText(problemTracks)
         val fullText = buildFullReplacementText(problemTracks)
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Заміни / проблемні треки: ${problemTracks.size}")
             .setMessage(shortText)
             .setNegativeButton("Закрити", null)

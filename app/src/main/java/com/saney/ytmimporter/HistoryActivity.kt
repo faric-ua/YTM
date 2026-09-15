@@ -615,76 +615,72 @@ class HistoryActivity : Activity() {
     private fun showActions(
         entry: HistoryEntry
     ) {
-        val labels =
-            mutableListOf<String>()
+        val actions =
+            mutableListOf<UiChrome.MenuAction>()
 
         if (!entry.playlistId.isNullOrBlank()) {
-            labels += "Копіювати посилання на плейлист"
+            actions +=
+                UiChrome.MenuAction(
+                    "Копіювати посилання на плейлист"
+                ) {
+                    entry.playlistId
+                        ?.let { id ->
+                            copyText(
+                                label = "YTM playlist",
+                                text = playlistUrl(id),
+                                message = "Посилання скопійовано"
+                            )
+                        }
+                }
         }
 
-        labels += "Копіювати підсумок"
+        actions +=
+            UiChrome.MenuAction(
+                "Копіювати підсумок"
+            ) {
+                copyText(
+                    label = "YTM Importer history summary",
+                    text = buildHistorySummary(entry),
+                    message = "Підсумок скопійовано"
+                )
+            }
 
         if (buildHistoryProblemLog(entry) != null) {
-            labels += "Переглянути журнал проблем"
-            labels += "Копіювати журнал проблем"
+            actions +=
+                UiChrome.MenuAction(
+                    "Переглянути журнал проблем"
+                ) {
+                    showProblemLog(entry)
+                }
+
+            actions +=
+                UiChrome.MenuAction(
+                    "Копіювати журнал проблем"
+                ) {
+                    buildHistoryProblemLog(entry)
+                        ?.let { text ->
+                            copyText(
+                                label = "YTM Importer history problems",
+                                text = text,
+                                message = "Журнал проблем скопійовано"
+                            )
+                        }
+                }
         }
 
-        labels += "Видалити локальний запис"
-
-        AlertDialog.Builder(this)
-            .setTitle("Дії")
-            .setItems(
-                labels.toTypedArray()
-            ) { _, which ->
-                when (
-                    labels.getOrNull(which)
-                ) {
-                    "Копіювати посилання на плейлист" -> {
-                        val id =
-                            entry.playlistId
-                                ?: return@setItems
-
-                        copyText(
-                            label = "YTM playlist",
-                            text = playlistUrl(id),
-                            message = "Посилання скопійовано"
-                        )
-                    }
-
-                    "Копіювати підсумок" -> {
-                        copyText(
-                            label = "YTM Importer history summary",
-                            text = buildHistorySummary(entry),
-                            message = "Підсумок скопійовано"
-                        )
-                    }
-
-                    "Переглянути журнал проблем" -> {
-                        showProblemLog(entry)
-                    }
-
-                    "Копіювати журнал проблем" -> {
-                        val text =
-                            buildHistoryProblemLog(entry)
-                                ?: return@setItems
-
-                        copyText(
-                            label = "YTM Importer history problems",
-                            text = text,
-                            message = "Журнал проблем скопійовано"
-                        )
-                    }
-
-                    "Видалити локальний запис" -> {
-                        confirmDeleteHistoryEntry(entry)
-                    }
-                }
+        actions +=
+            UiChrome.MenuAction(
+                "Видалити локальний запис"
+            ) {
+                confirmDeleteHistoryEntry(entry)
             }
-            .setNegativeButton(
-                "Закрити",
-                null
-            )
-            .show()
+
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = "Дії",
+            subtitle = "Дії з локальним записом історії.",
+            actions = actions
+        )
     }
 
     private fun showProblemLog(
@@ -696,7 +692,7 @@ class HistoryActivity : Activity() {
                     "У цьому записі немає проблемних треків"
                 )
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Заміни та проблеми")
             .setMessage(text)
             .setNegativeButton(
@@ -728,7 +724,7 @@ class HistoryActivity : Activity() {
             return
         }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(
                 "$actionLabel YTM Project?"
             )
@@ -976,7 +972,7 @@ class HistoryActivity : Activity() {
     private fun confirmDeleteHistoryEntry(
         entry: HistoryEntry
     ) {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(
                 "Видалити запис?"
             )
@@ -1014,7 +1010,7 @@ class HistoryActivity : Activity() {
             return
         }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(
                 "Очистити всю історію?"
             )
@@ -1661,6 +1657,9 @@ class HistoryActivity : Activity() {
             isAllCaps = false
             textSize = 13f
             setTextColor(Color.WHITE)
+            gravity = android.view.Gravity.CENTER
+            maxLines = 2
+            setPadding(dp(16), dp(7), dp(16), dp(7))
             background =
                 roundedBackground(
                     color =
@@ -1684,7 +1683,7 @@ class HistoryActivity : Activity() {
             layoutParams =
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(46)
+                    dp(54)
                 ).apply {
                     bottomMargin = dp(7)
                 }

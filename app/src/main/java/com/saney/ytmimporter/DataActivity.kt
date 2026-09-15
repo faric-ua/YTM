@@ -414,7 +414,7 @@ class DataActivity : Activity() {
                 return
             }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Зберегти повний backup?")
             .setMessage(
                 "Буде збережено:\n" +
@@ -449,7 +449,7 @@ class DataActivity : Activity() {
     }
 
     private fun chooseBackupForRestore() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Відновити backup?")
             .setMessage(
                 "Restore замінить локальні:\n\n" +
@@ -527,7 +527,7 @@ class DataActivity : Activity() {
                 return
             }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Підтвердити Restore")
             .setMessage(
                 "Backup YTM Importer\n\n" +
@@ -580,7 +580,7 @@ class DataActivity : Activity() {
 
         refreshSummary()
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Backup відновлено")
             .setMessage(
                 "Груп даних: ${result.preferenceGroups}\n" +
@@ -628,7 +628,7 @@ class DataActivity : Activity() {
             return
         }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(
                 "Відкотити останній Restore?"
             )
@@ -669,7 +669,7 @@ class DataActivity : Activity() {
 
         refreshSummary()
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Відкат виконано")
             .setMessage(
                 "Локальний стан ДО останнього Restore повернуто.\n\n" +
@@ -767,7 +767,7 @@ class DataActivity : Activity() {
     }
 
     private fun confirmShareFullBackup() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(
                 "Поділитися повним backup?"
             )
@@ -1328,7 +1328,7 @@ class DataActivity : Activity() {
                 ),
                 LinearLayout.LayoutParams(
                     0,
-                    dp(46),
+                    dp(54),
                     1f
                 )
             )
@@ -1341,7 +1341,7 @@ class DataActivity : Activity() {
                 ),
                 LinearLayout.LayoutParams(
                     0,
-                    dp(46),
+                    dp(54),
                     1f
                 ).apply {
                     marginStart =
@@ -1365,6 +1365,9 @@ class DataActivity : Activity() {
             isAllCaps = false
             textSize = 13f
             setTextColor(Color.WHITE)
+            gravity = android.view.Gravity.CENTER
+            maxLines = 2
+            setPadding(dp(16), dp(7), dp(16), dp(7))
 
             background =
                 roundedBackground(
@@ -1441,7 +1444,7 @@ class DataActivity : Activity() {
                     }
                 },
                 LinearLayout.LayoutParams(
-                    dp(46),
+                    dp(54),
                     dp(46)
                 )
             )

@@ -561,7 +561,7 @@ class ImportActivity : Activity() {
     private fun confirmClearWorkspace(
         playlistName: String
     ) {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(
                 "Очистити поточний список?"
             )
@@ -756,6 +756,9 @@ class ImportActivity : Activity() {
             isAllCaps = false
             textSize = 13f
             setTextColor(Color.WHITE)
+            gravity = android.view.Gravity.CENTER
+            maxLines = 2
+            setPadding(dp(16), dp(7), dp(16), dp(7))
             background =
                 roundedBackground(
                     color =
@@ -790,7 +793,7 @@ class ImportActivity : Activity() {
             layoutParams =
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(46)
+                    dp(54)
                 )
         }
 

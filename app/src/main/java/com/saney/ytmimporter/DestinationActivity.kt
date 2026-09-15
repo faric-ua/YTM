@@ -930,6 +930,9 @@ class DestinationActivity : Activity() {
             isAllCaps = false
             textSize = 13f
             setTextColor(Color.WHITE)
+            gravity = android.view.Gravity.CENTER
+            maxLines = 2
+            setPadding(dp(16), dp(7), dp(16), dp(7))
             background = roundedBackground(
                 color =
                     if (primary) {
@@ -948,7 +951,7 @@ class DestinationActivity : Activity() {
             setOnClickListener { action() }
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(46)
+                dp(54)
             ).apply {
                 bottomMargin = dp(7)
             }

@@ -299,7 +299,7 @@ class ReviewActivity : Activity() {
             },
             LinearLayout.LayoutParams(
                 0,
-                dp(40),
+                dp(50),
                 1f
             )
         )
@@ -312,7 +312,7 @@ class ReviewActivity : Activity() {
             },
             LinearLayout.LayoutParams(
                 0,
-                dp(40),
+                dp(50),
                 1f
             ).apply {
                 marginStart =
@@ -330,7 +330,7 @@ class ReviewActivity : Activity() {
             },
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(40)
+                dp(50)
             ).apply {
                 setMargins(
                     dp(12),
@@ -398,7 +398,7 @@ class ReviewActivity : Activity() {
                 },
                 LinearLayout.LayoutParams(
                     0,
-                    dp(40),
+                    dp(50),
                     1f
                 ).apply {
                     if (index > 0) {
@@ -718,7 +718,7 @@ class ReviewActivity : Activity() {
                 },
                 LinearLayout.LayoutParams(
                     0,
-                    dp(42),
+                    dp(50),
                     1f
                 )
             )
@@ -733,7 +733,7 @@ class ReviewActivity : Activity() {
                 },
                 LinearLayout.LayoutParams(
                     0,
-                    dp(42),
+                    dp(50),
                     1f
                 ).apply {
                     marginStart = dp(8)
@@ -804,7 +804,7 @@ class ReviewActivity : Activity() {
                 )
             }
 
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle(
                 "Ручне посилання"
             )
@@ -1216,7 +1216,7 @@ class ReviewActivity : Activity() {
     }
 
     private fun requestRepeatSearch() {
-        AlertDialog.Builder(this)
+        UiChrome.alertBuilder(this)
             .setTitle("Повторити пошук?")
             .setMessage(
                 "YTM Importer повернеться на головний екран і знову " +
@@ -1564,6 +1564,9 @@ class ReviewActivity : Activity() {
             isAllCaps = false
             textSize = 11.5f
             setTextColor(Color.WHITE)
+            gravity = android.view.Gravity.CENTER
+            maxLines = 2
+            setPadding(dp(12), dp(6), dp(12), dp(6))
             background =
                 roundedBackground(
                     color =
@@ -1595,6 +1598,9 @@ class ReviewActivity : Activity() {
             isAllCaps = false
             textSize = 13f
             setTextColor(Color.WHITE)
+            gravity = android.view.Gravity.CENTER
+            maxLines = 2
+            setPadding(dp(16), dp(7), dp(16), dp(7))
             background =
                 roundedBackground(
                     color =
@@ -1629,7 +1635,7 @@ class ReviewActivity : Activity() {
             layoutParams =
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(46)
+                    dp(54)
                 ).apply {
                     bottomMargin = dp(7)
                 }

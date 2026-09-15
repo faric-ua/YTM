@@ -2,6 +2,6 @@
 
 Current version:
 
-`docs/v.1.4.2/`
+`docs/v.1.4.3/`
 
-v1.4.2 adds safe-area handling and styles the main secondary dialogs.
+v1.4.3 unifies all popup dialogs and increases button text spacing.

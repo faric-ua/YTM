@@ -24,3 +24,7 @@ Q-001 is intentionally still OPEN. The legacy Destination cleanup does not resol
 ## v1.4.2 note
 
 Top/bottom insets and secondary-dialog styling are addressed in v1.4.2. Q-001 still remains OPEN.
+
+## v1.4.3 note
+
+Dialog styling and button spacing were standardized. Q-001 remains OPEN and is intentionally not resolved by this release.
