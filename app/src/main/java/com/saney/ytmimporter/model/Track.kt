@@ -28,7 +28,8 @@ data class Track(
     var status: TrackStatus = TrackStatus.NEW,
     var candidates: List<SearchCandidate> = emptyList(),
     var manuallySelected: Boolean = false,
-    var error: String? = null
+    var error: String? = null,
+    var historyIndex: Int? = null
 ) {
     val query: String
         get() = listOf(originalArtist, originalTitle)

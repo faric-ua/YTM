@@ -20,6 +20,9 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.saney.ytmimporter.model.GoogleAccountInfo
+import com.saney.ytmimporter.model.HistoryEntry
+import com.saney.ytmimporter.model.HistoryStatus
+import com.saney.ytmimporter.model.HistoryTrack
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
@@ -30,12 +33,16 @@ import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.model.YouTubeChannelInfo
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.parser.PlaylistParser
+import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
@@ -49,6 +56,7 @@ class MainActivity : Activity() {
     private lateinit var searchCache: SearchCache
     private lateinit var quotaTracker: QuotaTracker
     private lateinit var pendingJobStore: PendingJobStore
+    private lateinit var historyStore: HistoryStore
 
     private var playlist: ImportedPlaylist? = null
     private var accessToken: String? = null
@@ -56,12 +64,14 @@ class MainActivity : Activity() {
     private var youtubeChannelInfo: YouTubeChannelInfo? = null
     private var createdPlaylistId: String? = null
     private var pendingAfterAuth: (() -> Unit)? = null
+    private var currentImportSourceLabel: String = "Невідоме джерело"
 
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
     private lateinit var accountButton: Button
     private lateinit var quotaButton: Button
     private lateinit var pendingButton: Button
+    private lateinit var historyButton: Button
     private lateinit var progress: ProgressBar
     private lateinit var resultPanel: LinearLayout
     private lateinit var resultTitleText: TextView
@@ -76,6 +86,7 @@ class MainActivity : Activity() {
         searchCache = SearchCache(this)
         quotaTracker = QuotaTracker(this)
         pendingJobStore = PendingJobStore(this)
+        historyStore = HistoryStore(this)
         buildUi()
     }
 
@@ -126,6 +137,8 @@ class MainActivity : Activity() {
         actions.addView(quotaButton)
         pendingButton = button("Черга") { showPendingJobs() }
         actions.addView(pendingButton)
+        historyButton = button("Історія") { showHistory() }
+        actions.addView(historyButton)
         scroll.addView(actions)
         root.addView(scroll)
 
@@ -293,7 +306,7 @@ class MainActivity : Activity() {
             .onSuccess {
                 applyImportedPlaylist(
                     imported = it,
-                    sourceLabel = "Файл"
+                    sourceLabel = "Файл ($fileName)"
                 )
             }
             .onFailure { toast(it.message ?: "Помилка імпорту") }
@@ -385,7 +398,12 @@ class MainActivity : Activity() {
         imported: ImportedPlaylist,
         sourceLabel: String
     ) {
+        imported.tracks.forEachIndexed { index, track ->
+            track.historyIndex = index
+        }
+
         playlist = imported
+        currentImportSourceLabel = sourceLabel
         createdPlaylistId = null
         resultPanel.visibility = View.GONE
         visibleTracks.clear()
@@ -1146,6 +1164,7 @@ class MainActivity : Activity() {
     ) {
         executor.execute {
             var job = initialJob
+            syncHistoryFromJob(job, HistoryStatus.RUNNING)
             var playlistId = job.playlistId
 
             if (playlistId.isNullOrBlank()) {
@@ -1169,6 +1188,7 @@ class MainActivity : Activity() {
                         )
 
                     pendingJobStore.upsert(job)
+                    syncHistoryFromJob(job, HistoryStatus.RUNNING)
 
                     runOnUiThread {
                         progress.progress = 1
@@ -1188,15 +1208,29 @@ class MainActivity : Activity() {
                             )
 
                         pendingJobStore.upsert(job)
+                        tracks.forEach { pendingTrack ->
+                            pendingTrack.status = TrackStatus.PENDING
+                            pendingTrack.error =
+                                "Очікує продовження: " +
+                                    (e.message ?: "закінчилась квота API")
+                        }
+                        syncHistoryFromJob(job, HistoryStatus.PENDING_QUOTA)
 
                         runOnUiThread {
                             progress.visibility = View.GONE
-                            markAllPending(tracks, e.message)
+                            adapter.notifyDataSetChanged()
+                            updateSummary()
                             updateQuotaPanel()
                             updatePendingButton()
                             showQuotaPausedDialog(job)
                         }
                     } else {
+                        job =
+                            job.copy(
+                                updatedAt = System.currentTimeMillis(),
+                                lastError = e.message
+                            )
+                        syncHistoryFromJob(job, HistoryStatus.FAILED)
                         pendingJobStore.remove(job.id)
 
                         runOnUiThread {
@@ -1231,6 +1265,7 @@ class MainActivity : Activity() {
                         )
 
                     pendingJobStore.upsert(job)
+                    syncHistoryFromJob(job, HistoryStatus.RUNNING)
 
                     runOnUiThread {
                         progress.progress = index + 1 + createOffset
@@ -1261,6 +1296,7 @@ class MainActivity : Activity() {
                         )
 
                     pendingJobStore.upsert(job)
+                    syncHistoryFromJob(job, HistoryStatus.RUNNING)
                 } catch (e: Exception) {
                     if (isQuotaError(e)) {
                         quotaTracker.recordQuotaError(
@@ -1279,14 +1315,15 @@ class MainActivity : Activity() {
 
                         pendingJobStore.upsert(job)
 
-                        runOnUiThread {
-                            tracks.drop(index).forEach { pendingTrack ->
-                                pendingTrack.status = TrackStatus.PENDING
-                                pendingTrack.error =
-                                    "Очікує продовження: " +
-                                        (e.message ?: "закінчилась квота API")
-                            }
+                        tracks.drop(index).forEach { pendingTrack ->
+                            pendingTrack.status = TrackStatus.PENDING
+                            pendingTrack.error =
+                                "Очікує продовження: " +
+                                    (e.message ?: "закінчилась квота API")
+                        }
+                        syncHistoryFromJob(job, HistoryStatus.PENDING_QUOTA)
 
+                        runOnUiThread {
                             progress.visibility = View.GONE
                             adapter.notifyDataSetChanged()
                             updateSummary()
@@ -1310,6 +1347,7 @@ class MainActivity : Activity() {
                         )
 
                     pendingJobStore.upsert(job)
+                    syncHistoryFromJob(job, HistoryStatus.RUNNING)
                 }
 
                 runOnUiThread {
@@ -1325,6 +1363,14 @@ class MainActivity : Activity() {
                 }
             }
 
+            syncHistoryFromJob(
+                job,
+                if (job.failedCount > 0) {
+                    HistoryStatus.PARTIAL
+                } else {
+                    HistoryStatus.COMPLETED
+                }
+            )
             pendingJobStore.remove(job.id)
 
             runOnUiThread {
@@ -1365,6 +1411,7 @@ class MainActivity : Activity() {
             id = UUID.randomUUID().toString(),
             createdAt = now,
             updatedAt = now,
+            sourceLabel = currentImportSourceLabel,
             playlistName = playlistName,
             playlistId = playlistId,
             privacyStatus = privacyStatus,
@@ -1388,7 +1435,8 @@ class MainActivity : Activity() {
             originalArtist = track.originalArtist,
             videoId = videoId,
             selectedTitle = track.selectedTitle,
-            selectedChannel = track.selectedChannel
+            selectedChannel = track.selectedChannel,
+            historyIndex = track.historyIndex ?: -1
         )
     }
 
@@ -1400,7 +1448,8 @@ class MainActivity : Activity() {
             selectedTitle = item.selectedTitle,
             selectedChannel = item.selectedChannel,
             status = TrackStatus.PENDING,
-            manuallySelected = false
+            manuallySelected = false,
+            historyIndex = item.historyIndex.takeIf { it >= 0 }
         )
 
     private fun markAllPending(
@@ -1577,6 +1626,7 @@ class MainActivity : Activity() {
                     name = job.playlistName,
                     tracks = tracks.toMutableList()
                 )
+            currentImportSourceLabel = job.sourceLabel
 
             visibleTracks.clear()
             visibleTracks.addAll(tracks)
@@ -1694,6 +1744,474 @@ class MainActivity : Activity() {
         (error as? YouTubeApiException)?.isQuotaError == true ||
             error.message.orEmpty().contains("quota", ignoreCase = true) ||
             error.message.orEmpty().contains("daily limit", ignoreCase = true)
+
+
+    private fun syncHistoryFromJob(
+        job: PendingJob,
+        historyStatus: HistoryStatus
+    ) {
+        val existing = historyStore.get(job.id)
+        val liveTracks = playlist?.tracks.orEmpty()
+
+        val merged =
+            if (existing == null) {
+                liveTracks
+                    .mapIndexed { index, track ->
+                        historyTrackFromTrack(
+                            track = track,
+                            fallbackIndex = index
+                        )
+                    }
+                    .sortedBy { it.index }
+                    .toMutableList()
+            } else {
+                existing.tracks
+                    .sortedBy { it.index }
+                    .toMutableList()
+                    .also { stored ->
+                        liveTracks.forEachIndexed { fallbackIndex, track ->
+                            val historyTrack =
+                                historyTrackFromTrack(
+                                    track = track,
+                                    fallbackIndex = fallbackIndex
+                                )
+
+                            val targetIndex =
+                                stored.indexOfFirst {
+                                    it.index == historyTrack.index
+                                }
+
+                            if (targetIndex >= 0) {
+                                stored[targetIndex] = historyTrack
+                            } else {
+                                stored += historyTrack
+                            }
+                        }
+                    }
+                    .sortedBy { it.index }
+                    .toMutableList()
+            }
+
+        val now = System.currentTimeMillis()
+
+        val entry =
+            HistoryEntry(
+                id = job.id,
+                createdAt = existing?.createdAt ?: job.createdAt,
+                updatedAt = now,
+                status = historyStatus,
+                sourceLabel = job.sourceLabel,
+                playlistName = job.playlistName,
+                playlistId = job.playlistId,
+                privacyStatus = job.privacyStatus,
+                destination = job.destination,
+                googleEmail = job.googleEmail,
+                youtubeChannelId = job.youtubeChannelId,
+                youtubeChannelTitle = job.youtubeChannelTitle,
+                totalImportedCount =
+                    existing?.totalImportedCount
+                        ?: merged.size
+                        .coerceAtLeast(job.totalCount),
+                writeTargetCount =
+                    existing?.writeTargetCount
+                        ?: job.totalCount,
+                addedCount =
+                    merged.count {
+                        it.status == TrackStatus.ADDED.name
+                    },
+                failedCount =
+                    merged.count {
+                        it.status == TrackStatus.FAILED.name
+                    },
+                pendingCount =
+                    merged.count {
+                        it.status == TrackStatus.PENDING.name
+                    },
+                skippedCount =
+                    merged.count {
+                        it.status == TrackStatus.SKIPPED.name
+                    },
+                missingCount =
+                    merged.count {
+                        it.status == TrackStatus.MISSING.name
+                    },
+                lastError = job.lastError,
+                tracks = merged
+            )
+
+        historyStore.upsert(entry)
+    }
+
+    private fun historyTrackFromTrack(
+        track: Track,
+        fallbackIndex: Int
+    ): HistoryTrack =
+        HistoryTrack(
+            index = track.historyIndex ?: fallbackIndex,
+            originalTitle = track.originalTitle,
+            originalArtist = track.originalArtist,
+            videoId = track.selectedVideoId,
+            selectedTitle = track.selectedTitle,
+            selectedChannel = track.selectedChannel,
+            status = track.status.name,
+            manuallySelected = track.manuallySelected,
+            error = track.error
+        )
+
+    private fun showHistory() {
+        val entries = historyStore.getAll()
+
+        if (entries.isEmpty()) {
+            return toast("Історія порожня")
+        }
+
+        val labels =
+            entries.map { entry ->
+                val status = effectiveHistoryStatus(entry)
+                buildString {
+                    append(historyStatusIcon(status))
+                    append(" ")
+                    append(entry.playlistName)
+                    append("\n")
+                    append(formatHistoryDate(entry.updatedAt))
+                    append(" • ")
+                    append(historyStatusLabel(status))
+                    append(" • ✓ ")
+                    append(entry.addedCount)
+                    append("/")
+                    append(entry.writeTargetCount)
+
+                    if (entry.pendingCount > 0) {
+                        append(" • ⏳ ")
+                        append(entry.pendingCount)
+                    }
+
+                    if (entry.failedCount > 0) {
+                        append(" • × ")
+                        append(entry.failedCount)
+                    }
+                }
+            }
+
+        AlertDialog.Builder(this)
+            .setTitle("Історія (History): ${entries.size}")
+            .setItems(labels.toTypedArray()) { _, which ->
+                entries.getOrNull(which)?.let(::showHistoryEntry)
+            }
+            .setNegativeButton("Закрити", null)
+            .setNeutralButton("Очистити") { _, _ ->
+                confirmClearHistory()
+            }
+            .show()
+    }
+
+    private fun showHistoryEntry(entry: HistoryEntry) {
+        val status = effectiveHistoryStatus(entry)
+        val destination =
+            when (entry.destination) {
+                PendingDestination.NEW_PLAYLIST ->
+                    "новий плейлист"
+                PendingDestination.EXISTING_PLAYLIST ->
+                    "існуючий плейлист"
+            }
+
+        val problems =
+            entry.tracks.count(::isHistoryProblemTrack)
+
+        val preview =
+            entry.tracks
+                .filter(::isHistoryProblemTrack)
+                .take(6)
+                .joinToString("\n") {
+                    "• ${it.originalArtist} — ${it.originalTitle}: " +
+                        historyReplacementLabel(it)
+                }
+                .takeIf { it.isNotBlank() }
+
+        AlertDialog.Builder(this)
+            .setTitle(
+                "${historyStatusIcon(status)} ${entry.playlistName}"
+            )
+            .setMessage(
+                buildString {
+                    append("Статус: ${historyStatusLabel(status)}\n")
+                    append("Дата: ${formatHistoryDate(entry.updatedAt)}\n")
+                    append("Джерело: ${entry.sourceLabel}\n")
+                    append("Тип: $destination\n")
+                    append("Приватність: ${privacyLabel(entry.privacyStatus)}\n\n")
+
+                    append("Імпортовано: ${entry.totalImportedCount}\n")
+                    append("Для запису: ${entry.writeTargetCount}\n")
+                    append("Додано: ${entry.addedCount}\n")
+                    append("Помилок: ${entry.failedCount}\n")
+                    append("Очікує: ${entry.pendingCount}\n")
+                    append("Пропущено: ${entry.skippedCount}\n")
+                    append("Не знайдено: ${entry.missingCount}\n")
+                    append("Проблемних/замінених: $problems\n\n")
+
+                    append("Google: ${entry.googleEmail ?: "—"}\n")
+                    append("YouTube/YTM: ${entry.youtubeChannelTitle ?: "—"}\n")
+                    append("Channel ID: ${entry.youtubeChannelId ?: "—"}\n")
+                    append("Playlist ID: ${entry.playlistId ?: "—"}")
+
+                    if (!entry.lastError.isNullOrBlank()) {
+                        append("\n\nОстання помилка:\n${entry.lastError}")
+                    }
+
+                    if (!preview.isNullOrBlank()) {
+                        append("\n\nПроблемні треки:\n")
+                        append(preview)
+
+                        if (problems > 6) {
+                            append("\n…ще ${problems - 6}")
+                        }
+                    }
+                }
+            )
+            .setNegativeButton("Закрити", null)
+            .setNeutralButton("Дії") { _, _ ->
+                showHistoryActions(entry)
+            }
+            .setPositiveButton(
+                if (entry.playlistId.isNullOrBlank()) {
+                    "Черга"
+                } else {
+                    "Відкрити в YTM"
+                }
+            ) { _, _ ->
+                if (entry.playlistId.isNullOrBlank()) {
+                    showPendingJobs()
+                } else {
+                    openPlaylistIdInYtm(entry.playlistId)
+                }
+            }
+            .show()
+    }
+
+    private fun showHistoryActions(entry: HistoryEntry) {
+        val labels = mutableListOf<String>()
+
+        if (!entry.playlistId.isNullOrBlank()) {
+            labels += "Копіювати посилання на плейлист"
+        }
+
+        labels += "Копіювати підсумок"
+        labels += "Копіювати журнал проблем"
+        labels += "Видалити запис з історії"
+
+        AlertDialog.Builder(this)
+            .setTitle("Дії з історією")
+            .setItems(labels.toTypedArray()) { _, which ->
+                val selected = labels[which]
+
+                when (selected) {
+                    "Копіювати посилання на плейлист" -> {
+                        val id = entry.playlistId ?: return@setItems
+                        copyText(
+                            label = "YTM playlist",
+                            text = playlistUrl(id),
+                            successMessage = "Посилання скопійовано"
+                        )
+                    }
+
+                    "Копіювати підсумок" -> {
+                        copyText(
+                            label = "YTM Importer history summary",
+                            text = buildHistorySummary(entry),
+                            successMessage = "Підсумок історії скопійовано"
+                        )
+                    }
+
+                    "Копіювати журнал проблем" -> {
+                        val text = buildHistoryProblemLog(entry)
+
+                        if (text == null) {
+                            toast("У цьому записі немає проблемних або замінених треків")
+                        } else {
+                            copyText(
+                                label = "YTM Importer history problems",
+                                text = text,
+                                successMessage = "Журнал проблем скопійовано"
+                            )
+                        }
+                    }
+
+                    "Видалити запис з історії" -> {
+                        confirmDeleteHistoryEntry(entry)
+                    }
+                }
+            }
+            .setNegativeButton("Закрити", null)
+            .show()
+    }
+
+    private fun buildHistorySummary(entry: HistoryEntry): String =
+        buildString {
+            val status = effectiveHistoryStatus(entry)
+
+            append("YTM Importer — історія\n")
+            append("Плейлист: ${entry.playlistName}\n")
+            append("Статус: ${historyStatusLabel(status)}\n")
+            append("Дата: ${formatHistoryDate(entry.updatedAt)}\n")
+            append("Джерело: ${entry.sourceLabel}\n")
+            append("Додано: ${entry.addedCount}/${entry.writeTargetCount}\n")
+            append("Помилок: ${entry.failedCount}\n")
+            append("Очікує: ${entry.pendingCount}\n")
+            append("Пропущено: ${entry.skippedCount}\n")
+            append("Не знайдено: ${entry.missingCount}\n")
+
+            if (!entry.playlistId.isNullOrBlank()) {
+                append("YTM: ${playlistUrl(entry.playlistId)}\n")
+            }
+
+            if (!entry.lastError.isNullOrBlank()) {
+                append("Остання помилка: ${entry.lastError}\n")
+            }
+        }.trimEnd()
+
+    private fun buildHistoryProblemLog(entry: HistoryEntry): String? {
+        val tracks = entry.tracks.filter(::isHistoryProblemTrack)
+        if (tracks.isEmpty()) return null
+
+        return buildString {
+            append("YTM Importer — історичний журнал проблем\n")
+            append("Плейлист: ${entry.playlistName}\n\n")
+
+            tracks.forEachIndexed { index, track ->
+                append(index + 1)
+                append(". ")
+                append(track.originalArtist)
+                append(" — ")
+                append(track.originalTitle)
+                append(" → ")
+                append(historyReplacementLabel(track))
+
+                if (!track.selectedChannel.isNullOrBlank()) {
+                    append("\n   Канал: ${track.selectedChannel}")
+                }
+
+                if (!track.videoId.isNullOrBlank()) {
+                    append(
+                        "\n   YTM: https://music.youtube.com/watch?v=${track.videoId}"
+                    )
+                }
+
+                if (!track.error.isNullOrBlank()) {
+                    append("\n   Помилка: ${track.error}")
+                }
+
+                if (index != tracks.lastIndex) {
+                    append("\n\n")
+                }
+            }
+        }
+    }
+
+    private fun isHistoryProblemTrack(track: HistoryTrack): Boolean =
+        track.manuallySelected ||
+            track.status == TrackStatus.SKIPPED.name ||
+            track.status == TrackStatus.MISSING.name ||
+            track.status == TrackStatus.PENDING.name ||
+            track.status == TrackStatus.FAILED.name
+
+    private fun historyReplacementLabel(track: HistoryTrack): String =
+        when {
+            track.status == TrackStatus.SKIPPED.name ->
+                "[пропущено]"
+
+            track.status == TrackStatus.MISSING.name ->
+                "[не знайдено]"
+
+            track.status == TrackStatus.PENDING.name ->
+                "[очікує в черзі]"
+
+            track.status == TrackStatus.FAILED.name &&
+                track.selectedTitle.isNullOrBlank() ->
+                "[помилка]"
+
+            track.selectedTitle == "Ручне посилання" ->
+                "[ручне YouTube/YTM посилання]"
+
+            !track.selectedTitle.isNullOrBlank() ->
+                track.selectedTitle
+
+            else ->
+                "[без заміни]"
+        }
+
+    private fun confirmDeleteHistoryEntry(entry: HistoryEntry) {
+        AlertDialog.Builder(this)
+            .setTitle("Видалити запис історії?")
+            .setMessage(
+                "Буде видалено тільки локальний запис «${entry.playlistName}». " +
+                    "Плейлист у YouTube/YTM не зміниться."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Видалити") { _, _ ->
+                historyStore.remove(entry.id)
+                toast("Запис видалено з історії")
+            }
+            .show()
+    }
+
+    private fun confirmClearHistory() {
+        AlertDialog.Builder(this)
+            .setTitle("Очистити всю історію?")
+            .setMessage(
+                "Будуть видалені тільки локальні записи історії. " +
+                    "Плейлисти YouTube/YTM і Черга не видаляються."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Очистити") { _, _ ->
+                historyStore.clear()
+                toast("Історію очищено")
+            }
+            .show()
+    }
+
+    private fun effectiveHistoryStatus(entry: HistoryEntry): HistoryStatus {
+        if (
+            entry.status == HistoryStatus.RUNNING &&
+            pendingJobStore.getAll().any { it.id == entry.id }
+        ) {
+            return HistoryStatus.PARTIAL
+        }
+
+        return entry.status
+    }
+
+    private fun historyStatusLabel(status: HistoryStatus): String =
+        when (status) {
+            HistoryStatus.RUNNING ->
+                "виконується"
+
+            HistoryStatus.COMPLETED ->
+                "завершено"
+
+            HistoryStatus.PARTIAL ->
+                "частково / очікує продовження"
+
+            HistoryStatus.PENDING_QUOTA ->
+                "очікує квоти"
+
+            HistoryStatus.FAILED ->
+                "помилка"
+        }
+
+    private fun historyStatusIcon(status: HistoryStatus): String =
+        when (status) {
+            HistoryStatus.RUNNING -> "▶"
+            HistoryStatus.COMPLETED -> "✓"
+            HistoryStatus.PARTIAL -> "◐"
+            HistoryStatus.PENDING_QUOTA -> "⏳"
+            HistoryStatus.FAILED -> "×"
+        }
+
+    private fun formatHistoryDate(timestamp: Long): String =
+        SimpleDateFormat(
+            "dd.MM.yyyy HH:mm",
+            Locale.getDefault()
+        ).format(Date(timestamp))
 
 
     private fun showTrackDialog(track: Track) {
@@ -1893,12 +2411,22 @@ class MainActivity : Activity() {
 
     private fun playlistUrl(): String? {
         val id = createdPlaylistId ?: return null
-        return "https://music.youtube.com/playlist?list=$id"
+        return playlistUrl(id)
     }
 
+    private fun playlistUrl(playlistId: String): String =
+        "https://music.youtube.com/playlist?list=$playlistId"
+
     private fun openInYtm() {
-        val url = playlistUrl() ?: return toast("Спочатку створіть або виберіть плейлист")
-        val uri = Uri.parse(url)
+        val id =
+            createdPlaylistId
+                ?: return toast("Спочатку створіть або виберіть плейлист")
+
+        openPlaylistIdInYtm(id)
+    }
+
+    private fun openPlaylistIdInYtm(playlistId: String) {
+        val uri = Uri.parse(playlistUrl(playlistId))
 
         val ytmIntent = Intent(Intent.ACTION_VIEW, uri).apply {
             setPackage("com.google.android.apps.youtube.music")

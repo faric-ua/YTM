@@ -1,24 +1,22 @@
-# YTM Importer v0.10.0
+# YTM Importer v0.11.0
 
 Android-застосунок для імпорту треків у YouTube / YouTube Music.
 
-Коротко:
+Поточний ланцюжок:
 
-**CSV/TXT/текст → пошук → перевірка → новий/існуючий плейлист → Resume при quota error**
+**CSV/TXT/текст → пошук → review → new/existing playlist → quota-safe write → Pending Queue → History**
 
 Основні функції:
 
-- Google OAuth (авторизація);
-- Google account + YouTube/YTM channel;
-- SearchCache (кеш);
-- MatchScorer (оцінка відповідності);
-- ручний вибір;
-- новий або існуючий playlist (плейлист);
-- Quota Planner (планувальник квоти);
-- Pending Queue (черга);
-- Resume (продовження);
-- versioned docs (документація за версіями).
+- SearchCache;
+- MatchScorer;
+- account/channel;
+- new / existing playlist;
+- Quota Planner;
+- Pending Queue + Resume;
+- compact UI;
+- History / Jobs.
 
 Українська документація: `README_UA.md`.
 
-Документація поточної версії: `docs/v.0.10.0/`.
+Діаграми: `docs/v.0.11.0/`.

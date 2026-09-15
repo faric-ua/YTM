@@ -1,23 +1,30 @@
 package com.saney.ytmimporter.model
 
-enum class PendingDestination {
-    NEW_PLAYLIST,
-    EXISTING_PLAYLIST
+enum class HistoryStatus {
+    RUNNING,
+    COMPLETED,
+    PARTIAL,
+    PENDING_QUOTA,
+    FAILED
 }
 
-data class PendingTrack(
+data class HistoryTrack(
+    val index: Int,
     val originalTitle: String,
     val originalArtist: String,
-    val videoId: String,
+    val videoId: String?,
     val selectedTitle: String?,
     val selectedChannel: String?,
-    val historyIndex: Int = -1
+    val status: String,
+    val manuallySelected: Boolean,
+    val error: String?
 )
 
-data class PendingJob(
+data class HistoryEntry(
     val id: String,
     val createdAt: Long,
     val updatedAt: Long,
+    val status: HistoryStatus,
     val sourceLabel: String,
     val playlistName: String,
     val playlistId: String?,
@@ -26,9 +33,13 @@ data class PendingJob(
     val googleEmail: String?,
     val youtubeChannelId: String?,
     val youtubeChannelTitle: String?,
-    val totalCount: Int,
+    val totalImportedCount: Int,
+    val writeTargetCount: Int,
     val addedCount: Int,
     val failedCount: Int,
-    val remainingTracks: List<PendingTrack>,
-    val lastError: String?
+    val pendingCount: Int,
+    val skippedCount: Int,
+    val missingCount: Int,
+    val lastError: String?,
+    val tracks: List<HistoryTrack>
 )

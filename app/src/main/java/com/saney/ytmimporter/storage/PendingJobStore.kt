@@ -61,6 +61,7 @@ class PendingJobStore(context: Context) {
             .put("id", job.id)
             .put("createdAt", job.createdAt)
             .put("updatedAt", job.updatedAt)
+            .put("sourceLabel", job.sourceLabel)
             .put("playlistName", job.playlistName)
             .put("playlistId", job.playlistId ?: JSONObject.NULL)
             .put("privacyStatus", job.privacyStatus)
@@ -82,6 +83,7 @@ class PendingJobStore(context: Context) {
                                 .put("videoId", track.videoId)
                                 .put("selectedTitle", track.selectedTitle ?: JSONObject.NULL)
                                 .put("selectedChannel", track.selectedChannel ?: JSONObject.NULL)
+                                .put("historyIndex", track.historyIndex)
                         )
                     }
                 }
@@ -99,7 +101,8 @@ class PendingJobStore(context: Context) {
                 originalArtist = item.optString("originalArtist"),
                 videoId = item.optString("videoId"),
                 selectedTitle = nullableString(item, "selectedTitle"),
-                selectedChannel = nullableString(item, "selectedChannel")
+                selectedChannel = nullableString(item, "selectedChannel"),
+                historyIndex = item.optInt("historyIndex", i)
             )
         }
 
@@ -107,6 +110,7 @@ class PendingJobStore(context: Context) {
             id = json.getString("id"),
             createdAt = json.optLong("createdAt"),
             updatedAt = json.optLong("updatedAt"),
+            sourceLabel = json.optString("sourceLabel", "Черга з попередньої версії"),
             playlistName = json.optString("playlistName", "YTM Importer"),
             playlistId = nullableString(json, "playlistId"),
             privacyStatus = json.optString("privacyStatus", "private"),

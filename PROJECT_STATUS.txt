@@ -1,36 +1,30 @@
 YTM Importer
-Version: 0.10.1
-Version code: 12
+Version: 0.11.0
+Version code: 13
 Package: com.saney.ytmimporter
 
 Реалізовано:
 - CSV/TXT/text import
-- Google OAuth
-- account/channel info
+- Google OAuth + account/channel
 - SearchCache / MatchScorer
 - candidate review
-- create new playlist
-- append existing playlist
+- create new / append existing playlist
 - privacy
-- result panel
-- replacement log
-- local quota estimate
-- search plan
-- write quota plan
-- YouTube quota error detection
+- Quota Planner
 - Pending Queue
-- Resume pending job
-- account/channel validation before Resume
-- versioned Mermaid diagrams
-- Termux APK download helper
+- Resume
+- compact UI
+- HistoryStore
+- up to 100 history jobs
+- history status + counters
+- historical playlist link
+- historical problem/replacement log
+- versioned Mermaid docs
+- Termux APK workflow
 
 Потрібно протестувати:
-- v0.10.0 build на GitHub Actions
-- quota panel на телефоні
-- Pending Queue
-- реальний quotaExceeded / Resume
-
-UI v0.10.1:
-- persistent account/quota panels removed
-- compact buttons/status
-- track list gets more vertical space
+- GitHub Actions build v0.11.0
+- History after successful new playlist
+- History after append to existing playlist
+- delete / clear history
+- History + real quotaExceeded + Resume

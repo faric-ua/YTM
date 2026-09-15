@@ -1,27 +1,26 @@
-YTM Importer v0.10.1 FULL — COMPACT UI
+YTM Importer v0.11.0 FULL — HISTORY / JOBS
+
+ДОДАНО:
+app/src/main/java/com/saney/ytmimporter/model/HistoryEntry.kt
+app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
+docs/v.0.11.0/RELEASE.md
+docs/v.0.11.0/diagrams/*
+TERMINAL_APPLY_v0.11.0.md
 
 ЗАМІНЕНО:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+app/src/main/java/com/saney/ytmimporter/model/Track.kt
+app/src/main/java/com/saney/ytmimporter/model/PendingJob.kt
+app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
 CHANGELOG.md
+README.md
 README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
-ДОДАНО:
-docs/v.0.10.1/RELEASE.md
-docs/v.0.10.1/diagrams/*
-TERMINAL_APPLY_v0.10.1.md
-
-ФУНКЦІОНАЛЬНО:
-- прибрано persistent Account panel
-- прибрано persistent Quota panel
-- account state → кнопка
-- quota warning → кнопка
-- більше місця для Track List
-
 Версія:
-versionCode = 12
-versionName = 0.10.1
+versionCode = 13
+versionName = 0.11.0

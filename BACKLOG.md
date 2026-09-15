@@ -1,81 +1,63 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v0.10.1 — Компактний UI + Планувальник квоти (Quota Planner) + Черга (Pending Queue)**
+**v0.11.0 — Історія операцій (History / Jobs)**
 
-## 1–8. Базові функції
-- [x] покращений пошук і MatchScorer;
-- [x] SearchCache;
-- [x] приватність;
+## 1–9. Реалізовано раніше
+- [x] SearchCache + MatchScorer;
 - [x] ручний вибір кандидата;
-- [x] журнал замін;
-- [x] імпорт CSV/TXT/текст;
+- [x] приватність;
+- [x] новий / існуючий плейлист;
 - [x] Google account + YouTube/YTM channel;
-- [x] новий / існуючий плейлист.
+- [x] Quota Planner (планувальник квоти);
+- [x] Pending Queue (черга);
+- [x] Resume (продовження);
+- [x] компактний головний екран.
 
-## 9. Планувальник квоти (Quota Planner) + Черга (Pending Queue) — v0.10.0
-- [x] локальний лічильник `search.list`;
-- [x] cache hits;
-- [x] локальна оцінка general quota;
-- [x] Search plan перед пошуком;
-- [x] write plan перед створенням / append;
-- [x] пояснення, що це не точний Google quota remaining;
-- [x] розбір API error reason;
-- [x] `quotaExceeded` / daily quota detection;
-- [x] вже додані треки не видаляються;
-- [x] невиконані → `PENDING`;
-- [x] PendingJobStore між перезапусками;
-- [x] playlist ID;
-- [x] Google email;
-- [x] YouTube Channel ID;
-- [x] порядок невиконаних треків;
-- [x] кнопка `Черга`;
-- [x] Resume (продовжити);
-- [x] перевірка account/channel перед Resume;
-- [x] сценарій, коли quota закінчилась ще до `playlists.insert`;
-- [ ] перевірити поведінку на реальному `quotaExceeded`.
+## 10. Історія операцій (History / Jobs) — v0.11.0
+- [x] кнопка `Історія`;
+- [x] до 100 локальних записів;
+- [x] дата / час;
+- [x] source (джерело);
+- [x] account/channel;
+- [x] target playlist ID;
+- [x] new / existing destination;
+- [x] Completed (завершено);
+- [x] Partial (частково);
+- [x] Pending quota (очікує квоти);
+- [x] Failed (помилка);
+- [x] imported / target / added / pending / skipped / failed;
+- [x] відкриття старого плейлиста в YTM;
+- [x] копіювання playlist link;
+- [x] копіювання summary (підсумку);
+- [x] історичний replacement/problem log;
+- [x] видалення одного запису;
+- [x] очищення історії;
+- [ ] протестувати історію на телефоні після v0.11.0;
+- [ ] протестувати History + реальний quotaExceeded + Resume.
 
-## 9б. Компактний головний екран — v0.10.1
-- [x] прибрано постійний великий Account panel;
-- [x] прибрано постійний великий Quota panel;
-- [x] стан акаунта перенесено в кнопку `2. Акаунт`;
-- [x] quota warning перенесено в кнопку `Квота ⚠`;
-- [x] повні дані відкриваються в dialogs (діалогах);
-- [x] більше вертикального простору для списку треків;
-- [ ] протестувати на телефоні після встановлення v0.10.1.
-
-## 10. Історія і відновлення (Jobs / History / Resume)
-- [ ] окремий екран історії завершених завдань;
-- [ ] Completed / Partial / Pending quota / Failed;
-- [ ] дата / source / target;
-- [ ] added / failed / skipped;
-- [ ] повторно відкрити результат;
-- [ ] replacement log для історичного job.
-
-## 11. Дублікати в існуючих плейлистах
+## 11. Дублікати в існуючих плейлистах — наступний етап
 - [ ] `playlistItems.list`;
-- [ ] визначати videoId, які вже є;
-- [ ] режим «пропускати дублікати»;
-- [ ] режим «додавати навіть дублікати»;
-- [ ] показати скільки quota заощаджено.
+- [ ] отримати videoId існуючих треків;
+- [ ] показати кількість дублікатів до write;
+- [ ] режим «Пропускати дублікати»;
+- [ ] режим «Додавати навіть дублікати»;
+- [ ] не витрачати `playlistItems.insert` на пропущені дублікати;
+- [ ] показувати заощаджену quota estimate.
 
-## 12. Діагностика API quota
-- [x] локальний quota panel;
-- [x] остання quota error;
-- [ ] експорт діагностики;
+## 12. Діагностика / експорт
+- [ ] експорт History у TXT/JSON;
+- [ ] експорт Pending Queue;
+- [ ] backup/restore локальних даних;
 - [ ] кнопка переходу до Google Cloud Console.
 
 ## 13. Доведення до v1.0 (Polish)
 - [ ] іконка;
 - [ ] стабільний UI;
 - [ ] кращі error messages;
-- [ ] backup/restore local jobs;
 - [ ] фінальне тестування.
 
 ## 14. Повний UI/UX redesign
 - [ ] покроковий процес;
-- [ ] сучасна account card;
-- [ ] destination card;
-- [ ] quota card;
-- [ ] pending/history screen;
+- [ ] окремі екрани замість великої кількості dialogs;
 - [ ] Material 3.
