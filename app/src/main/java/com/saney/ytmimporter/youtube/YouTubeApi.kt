@@ -12,6 +12,25 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 
+class YouTubeApiException(
+    val httpCode: Int,
+    val reason: String?,
+    override val message: String
+) : IllegalStateException(message) {
+    val isQuotaError: Boolean
+        get() {
+            val normalizedReason = reason.orEmpty().lowercase()
+            val normalizedMessage = message.lowercase()
+
+            return normalizedReason.contains("quota") ||
+                normalizedReason.contains("dailylimit") ||
+                normalizedReason.contains("variabletermlimit") ||
+                normalizedReason.contains("variabletermexpireddaily") ||
+                normalizedMessage.contains("quota exceeded") ||
+                normalizedMessage.contains("daily limit")
+        }
+}
+
 class YouTubeApi {
     data class ApiResponse(val code: Int, val body: String)
 
@@ -247,16 +266,33 @@ class YouTubeApi {
     private fun requireSuccess(response: ApiResponse, action: String) {
         if (response.code in 200..299) return
 
-        val message = runCatching {
-            JSONObject(response.body)
-                .optJSONObject("error")
-                ?.optString("message")
-                .orEmpty()
-        }.getOrDefault("")
+        val errorJson =
+            runCatching {
+                JSONObject(response.body).optJSONObject("error")
+            }.getOrNull()
 
-        throw IllegalStateException(
+        val message =
+            errorJson?.optString("message").orEmpty()
+
+        val errors =
+            errorJson?.optJSONArray("errors")
+
+        val reason =
+            if (errors != null && errors.length() > 0) {
+                errors.optJSONObject(0)?.optString("reason")
+            } else {
+                null
+            }
+
+        val fullMessage =
             "$action: HTTP ${response.code}" +
-                if (message.isNotBlank()) " — $message" else ""
+                if (message.isNotBlank()) " — $message" else "" +
+                if (!reason.isNullOrBlank()) " [$reason]" else ""
+
+        throw YouTubeApiException(
+            httpCode = response.code,
+            reason = reason,
+            message = fullMessage
         )
     }
 

@@ -1,66 +1,55 @@
-# YTM Importer v0.9.1
+# YTM Importer v0.10.0
 
-Android-застосунок для створення та доповнення YouTube / YouTube Music плейлистів.
+Android-застосунок для імпорту списків треків у YouTube / YouTube Music.
 
-## Основні можливості
+## Нове у v0.10.0
 
-- CSV / TXT / вставлений текст;
-- Google OAuth (авторизація Google);
-- показ Google акаунта: ім'я + email;
-- показ YouTube/YTM профілю: назва каналу + ID;
-- зміна Google акаунта;
-- SearchCache (кеш пошуку);
-- до 10 кандидатів;
-- MatchScorer (оцінка відповідності);
-- ручна перевірка кандидата;
-- створення нового плейлиста;
-- Private / Unlisted / Public;
-- вибір існуючого власного плейлиста;
-- пошук існуючого плейлиста за назвою;
-- додавання треків до існуючого плейлиста;
-- result panel (екран результату);
-- відкриття в YTM;
-- журнал замін.
+### Квота API (Quota Planner)
 
-## Важлива логіка v0.9.0
+Застосунок локально рахує:
 
-YouTube / YouTube Music playlist записується від імені OAuth-авторизованого
-YouTube каналу. Тому застосунок тепер показує:
+- `search.list` виклики;
+- cache hits (попадання в кеш);
+- приблизні units (одиниці) інших YouTube API операцій.
 
-1. Google account (Google акаунт);
-2. YouTube/YTM channel (канал);
-3. target playlist (цільовий плейлист).
+Перед пошуком і записом показується приблизний план.
 
-## Діаграми
+**Це не точний залишок Google Cloud quota.**
+Точний usage (використання) може відрізнятися, якщо той самий API project
+використовується іншими пристроями.
+
+### Черга (Pending Queue)
+
+Якщо YouTube повертає quota error:
+
+- уже додані треки залишаються;
+- поточний і наступні треки стають `PENDING`;
+- зберігаються playlist ID, account/channel та videoId;
+- завдання переживає перезапуск програми;
+- пізніше можна натиснути `Черга → Продовжити`.
+
+### Termux: завантажити APK
+
+Після успішної GitHub Actions збірки:
+
+```bash
+bash scripts/download-latest-apk.sh
+```
+
+APK буде завантажено в:
+
+`/sdcard/Download/YTM-APK/`
+
+Щоб відкрити його:
+
+```bash
+termux-open "$(find /sdcard/Download/YTM-APK -name '*.apk' | head -n 1)"
+```
+
+## Документація
 
 Поточна версія:
 
-`docs/v.0.9.1/diagrams/`
+`docs/v.0.10.0/`
 
-Попередні snapshots (знімки версій):
-
-- `docs/v.0.7.1/diagrams/`
-- `docs/v.0.8.0/diagrams/`
-
-## Збірка
-
-GitHub → Actions → **Build Signed Android APK** → **Run workflow**
-
-Артефакт:
-
-`YTM-Importer-v0.9.1-Release`
-
-## GitHub Secrets
-
-- `YTM_KEYSTORE_B64`
-- `YTM_STORE_PASSWORD`
-- `YTM_KEY_PASSWORD`
-
-## Безпека
-
-Не комітьте:
-
-- `*.jks`
-- `*.keystore`
-- `release-signing.properties`
-- паролі та OAuth secrets.
+Попередні snapshots (знімки версій) залишаються окремо.

@@ -1,27 +1,28 @@
-YTM Importer v0.9.1 FULL — COMPILE HOTFIX
+YTM Importer v0.10.0 FULL
 
-ПОМИЛКА У v0.9.0:
-No value passed for parameter 'after'
-Argument type mismatch: actual type is '() -> Unit', but 'Boolean' was expected
-
-ПРИЧИНА:
-trailing lambda у Kotlin передається останньому параметру.
-У v0.9.0 останнім параметром authorize був Boolean.
+ДОДАНО:
+app/src/main/java/com/saney/ytmimporter/model/PendingJob.kt
+app/src/main/java/com/saney/ytmimporter/storage/QuotaTracker.kt
+app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
+scripts/download-latest-apk.sh
+docs/v.0.10.0/RELEASE.md
+docs/v.0.10.0/diagrams/*
+TERMINAL_APPLY_v0.10.0.md
 
 ЗАМІНЕНО:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+app/src/main/java/com/saney/ytmimporter/model/Track.kt
+app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
+app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
 CHANGELOG.md
+README.md
 README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
-ДОДАНО:
-docs/v.0.9.1/RELEASE.md
-docs/v.0.9.1/diagrams/*
-TERMINAL_APPLY_v0.9.1.md
-
-Повні команди:
-TERMINAL_APPLY_v0.9.1.md
+Версія:
+versionCode = 11
+versionName = 0.10.0

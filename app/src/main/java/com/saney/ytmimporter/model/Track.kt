@@ -14,6 +14,7 @@ enum class TrackStatus {
     REVIEW,
     MISSING,
     SKIPPED,
+    PENDING,
     ADDED,
     FAILED
 }

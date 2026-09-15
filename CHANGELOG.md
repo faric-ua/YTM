@@ -1,44 +1,29 @@
 # Журнал змін (Changelog)
 
+## v0.10.0
+- Додано QuotaTracker (локальний лічильник квоти).
+- Додано Search plan перед пошуком.
+- Додано оцінку write quota перед записом.
+- Додано точне читання YouTube API error reason.
+- Додано Pending Queue (чергу невиконаних треків).
+- Pending Job створюється до write-операцій.
+- При quotaExceeded запис зупиняється без видалення вже доданих треків.
+- Залишок зберігається між перезапусками застосунку.
+- Додано Resume.
+- Додано перевірку Google account / YouTube Channel перед Resume.
+- Додано статус TrackStatus.PENDING.
+- Додано Termux script `scripts/download-latest-apk.sh`.
+- Додано `docs/v.0.10.0/` з Mermaid-діаграмами.
+
 ## v0.9.1
-- Виправлено Kotlin compilation error (помилку компіляції Kotlin) у `authorize`.
-- `after` тепер останній параметр, тому `authorize { ... }` компілюється правильно.
-- Додано `docs/v.0.9.1/` з окремим snapshot (знімком) документації.
-- Функціональність v0.9.0 збережена без змін.
+- Hotfix Kotlin `authorize` compilation.
 
 ## v0.9.0
-- Додано Google account info (ім'я + email).
-- Додано YouTube/YTM channel info (назва + ID каналу).
-- Додано account picker (вибір іншого Google акаунта).
-- Додано режим New playlist / Existing playlist
-  (новий / існуючий плейлист).
-- Додано `playlists.list(mine=true)`.
-- Додано пошук власного плейлиста за назвою.
-- Додано append (додавання) треків до існуючого плейлиста.
-- Додано діаграми `docs/v.0.9.0/diagrams/`.
-- Збережено виправлений GitHub Actions workflow без
-  `android-actions/setup-android@v3`.
+- Google account + YouTube/YTM channel.
+- New / Existing playlist.
 
 ## v0.8.0
-- Прямий імпорт тексту без CSV/TXT.
+- Прямий імпорт тексту.
 
 ## v0.7.1
 - Hotfix списку кандидатів.
-
-## v0.7
-- Журнал замін.
-
-## v0.6
-- Деталі кандидата та ручний вибір.
-
-## v0.5
-- Result panel і playlist link.
-
-## v0.4
-- Privacy selector.
-
-## v0.3
-- Search cache.
-
-## v0.2
-- Improved scoring і 10 кандидатів.

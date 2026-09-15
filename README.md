@@ -1,30 +1,24 @@
-# YTM Importer
+# YTM Importer v0.10.0
 
-Minimal Android app for importing track lists into YouTube / YouTube Music.
+Android-застосунок для імпорту треків у YouTube / YouTube Music.
 
-**CSV/TXT → search → review matches → create private playlist → open in YouTube Music.**
+Коротко:
 
-No ads. No analytics. No custom backend. No subscription.
+**CSV/TXT/текст → пошук → перевірка → новий/існуючий плейлист → Resume при quota error**
 
-## MVP features
+Основні функції:
 
-- TuneMyMusic-style CSV import (`Track name`, `Artist name`, `Playlist name`)
-- plain TXT import (`Artist - Track`)
-- Google OAuth authorization
-- YouTube Data API search
-- automatic match scoring for artist/title/remix/edit terms
-- manual candidate selection
-- manual YouTube / YouTube Music URL override
-- private playlist creation
-- ordered playlist insertion
-- open created playlist in YouTube Music
-- copy manual replacement log for TikTok comments
+- Google OAuth (авторизація);
+- Google account + YouTube/YTM channel;
+- SearchCache (кеш);
+- MatchScorer (оцінка відповідності);
+- ручний вибір;
+- новий або існуючий playlist (плейлист);
+- Quota Planner (планувальник квоти);
+- Pending Queue (черга);
+- Resume (продовження);
+- versioned docs (документація за версіями).
 
-## Security
+Українська документація: `README_UA.md`.
 
-Real signing material is intentionally excluded from Git:
-
-- `ytm-importer-release.jks`
-- `release-signing.properties`
-
-For CI signing, use GitHub Actions Secrets. See `README_UA.md` and `OAUTH_SETUP.txt`.
+Документація поточної версії: `docs/v.0.10.0/`.

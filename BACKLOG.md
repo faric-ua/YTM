@@ -1,98 +1,72 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v0.9.1 — Hotfix компіляції + Акаунт і місце призначення (Account & Destination)**
+**v0.10.0 — Планувальник квоти (Quota Planner) + Черга (Pending Queue)**
 
-## 1. Якість автоматичного пошуку
-- [x] пріоритет Topic / VEVO / official;
-- [x] покращений MatchScorer (оцінювач збігу);
-- [x] до 10 кандидатів;
-- [x] SearchCache (кеш пошуку) на 30 днів;
-- [x] кеш протестовано.
+## 1–8. Базові функції
+- [x] покращений пошук і MatchScorer;
+- [x] SearchCache;
+- [x] приватність;
+- [x] ручний вибір кандидата;
+- [x] журнал замін;
+- [x] імпорт CSV/TXT/текст;
+- [x] Google account + YouTube/YTM channel;
+- [x] новий / існуючий плейлист.
 
-## 2. Приватність
-- [x] Private / Unlisted / Public;
-- [x] протестовано.
-
-## 3. Екран результату (Result screen)
-- [x] результат після запису;
-- [x] відкрити в YTM;
-- [x] копіювати посилання.
-
-## 4. Ручний вибір кандидата
-- [x] до 10 кандидатів;
-- [x] % відповідності;
-- [x] канал;
-- [x] відкрити в YTM;
-- [x] вибрати вручну;
-- [x] ручний URL;
-- [x] пропустити.
-
-## 5. Журнал замін
-- [x] replacement / skipped / missing / failed;
-- [x] короткий формат для TikTok;
-- [x] повний журнал.
-
-## 6. Вставка списку без CSV
-- [x] «1б. Текст»;
-- [x] Artist - Track;
-- [x] нумерація та різні тире;
-- [x] v0.8.0 зібрано і запущено.
-
-## 7. Акаунт і місце призначення (Account & Destination) — v0.9.0
-- [x] Google account: ім'я + email;
-- [x] YouTube/YTM channel: назва + Channel ID (ID каналу);
-- [x] картка акаунта в головному екрані;
-- [x] «Змінити акаунт» через account picker (вибір акаунта);
-- [x] перед записом видно, куди піде плейлист;
-- [x] режим «Створити новий плейлист»;
-- [x] режим «Додати до існуючого плейлиста».
-
-## 8. Існуючі плейлисти (Existing playlists / Append) — v0.9.0
-- [x] `playlists.list(mine=true)`;
-- [x] список власних плейлистів;
-- [x] пошук за назвою;
-- [x] показ privacy (приватності);
-- [x] показ кількості треків;
-- [x] вибір playlist ID;
-- [x] додавання в кінець існуючого плейлиста;
-- [ ] перевірка дублікатів;
-- [ ] опція «пропускати дублікати / дозволяти дублікати».
-
-## 9. Планувальник квоти (Quota Planner) + черга (Pending Queue) — наступний етап
-- [ ] локальна оцінка search quota (квоти пошуку);
-- [ ] локальна оцінка write quota (квоти запису);
-- [ ] попередній розрахунок вартості поточного job (завдання);
-- [ ] пояснення, що це оцінка, а не точний залишок Google;
-- [ ] обробка quotaExceeded;
-- [ ] зберігати вже додані треки;
-- [ ] невиконані треки → Pending Queue;
-- [ ] зберігати playlist ID + account/channel + порядок треків;
-- [ ] кнопка «Продовжити недороблений плейлист».
+## 9. Планувальник квоти (Quota Planner) + Черга (Pending Queue) — v0.10.0
+- [x] локальний лічильник `search.list`;
+- [x] cache hits;
+- [x] локальна оцінка general quota;
+- [x] Search plan перед пошуком;
+- [x] write plan перед створенням / append;
+- [x] пояснення, що це не точний Google quota remaining;
+- [x] розбір API error reason;
+- [x] `quotaExceeded` / daily quota detection;
+- [x] вже додані треки не видаляються;
+- [x] невиконані → `PENDING`;
+- [x] PendingJobStore між перезапусками;
+- [x] playlist ID;
+- [x] Google email;
+- [x] YouTube Channel ID;
+- [x] порядок невиконаних треків;
+- [x] кнопка `Черга`;
+- [x] Resume (продовжити);
+- [x] перевірка account/channel перед Resume;
+- [x] сценарій, коли quota закінчилась ще до `playlists.insert`;
+- [ ] перевірити поведінку на реальному `quotaExceeded`.
 
 ## 10. Історія і відновлення (Jobs / History / Resume)
-- [ ] історія імпортів;
+- [ ] окремий екран історії завершених завдань;
 - [ ] Completed / Partial / Pending quota / Failed;
-- [ ] Resume (продовжити);
-- [ ] Open in YTM;
-- [ ] replacement log.
+- [ ] дата / source / target;
+- [ ] added / failed / skipped;
+- [ ] повторно відкрити результат;
+- [ ] replacement log для історичного job.
 
-## 11. Діагностика API quota
-- [ ] API status;
-- [ ] cache hits / API searches;
-- [ ] estimated write units;
-- [ ] остання quota error.
+## 11. Дублікати в існуючих плейлистах
+- [ ] `playlistItems.list`;
+- [ ] визначати videoId, які вже є;
+- [ ] режим «пропускати дублікати»;
+- [ ] режим «додавати навіть дублікати»;
+- [ ] показати скільки quota заощаджено.
 
-## 12. Доведення до v1.0 (Polish)
+## 12. Діагностика API quota
+- [x] локальний quota panel;
+- [x] остання quota error;
+- [ ] експорт діагностики;
+- [ ] кнопка переходу до Google Cloud Console.
+
+## 13. Доведення до v1.0 (Polish)
 - [ ] іконка;
-- [ ] кращі повідомлення про помилки;
 - [ ] стабільний UI;
+- [ ] кращі error messages;
+- [ ] backup/restore local jobs;
 - [ ] фінальне тестування.
 
-## 13. Повний редизайн UI/UX
-- [ ] step-by-step flow (покроковий процес);
-- [ ] сучасна account card (картка акаунта);
-- [ ] destination card: New / Existing;
-- [ ] quota estimate card;
-- [ ] pending jobs screen;
+## 14. Повний UI/UX redesign
+- [ ] покроковий процес;
+- [ ] сучасна account card;
+- [ ] destination card;
+- [ ] quota card;
+- [ ] pending/history screen;
 - [ ] Material 3.
