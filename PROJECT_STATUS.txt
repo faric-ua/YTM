@@ -1,6 +1,6 @@
 YTM Importer
-Version: 0.15.1
-Version code: 19
+Version: 0.15.2
+Version code: 20
 Package: com.saney.ytmimporter
 Stage: stabilization before v1.0 Release Candidate
 
@@ -37,3 +37,9 @@ v0.15.1 hotfix:
 - BuildConfig unresolved
 - buildFeatures.buildConfig explicitly enabled
 - needs real GitHub Actions verification
+
+v0.15.2:
+- manual YouTube/YTM URL now resolves real video title/channel
+- manual replacement is primary local display
+- original track is preserved for audit/history
+- needs real GitHub Actions build + phone test

@@ -3738,6 +3738,11 @@ class MainActivity : Activity() {
 
         AlertDialog.Builder(this)
             .setTitle("Вставити посилання")
+            .setMessage(
+                "Програма спробує отримати з YouTube реальну назву " +
+                    "та канал цього відео. Оригінальна назва треку " +
+                    "залишиться в історії як джерело заміни."
+            )
             .setView(input)
             .setNegativeButton("Скасувати", null)
             .setPositiveButton("Використати") { _, _ ->
@@ -3746,16 +3751,108 @@ class MainActivity : Activity() {
                 if (videoId == null) {
                     toast("Не бачу YouTube video ID у посиланні")
                 } else {
-                    track.selectedVideoId = videoId
-                    track.selectedTitle = "Ручне посилання"
-                    track.selectedChannel = "YouTube"
-                    track.status = TrackStatus.MATCHED
-                    track.manuallySelected = true
-                    adapter.notifyDataSetChanged()
-                    updateSummary()
+                    applyManualUrl(
+                        track = track,
+                        videoId = videoId
+                    )
                 }
             }
             .show()
+    }
+
+    private fun applyManualUrl(
+        track: Track,
+        videoId: String
+    ) {
+        authorize {
+            val token = accessToken ?: return@authorize
+
+            status(
+                "Отримую назву ручної заміни для " +
+                    "${track.originalArtist} — ${track.originalTitle}…"
+            )
+
+            executor.execute {
+                quotaTracker.recordGeneralUnits(
+                    QuotaTracker.SIMPLE_LIST_COST
+                )
+
+                val result =
+                    runCatching {
+                        api.getVideoInfo(
+                            accessToken = token,
+                            videoId = videoId
+                        )
+                    }
+
+                runOnUiThread {
+                    updateQuotaPanel()
+
+                    result.onSuccess { videoInfo ->
+                        if (videoInfo != null) {
+                            applyCandidate(
+                                track = track,
+                                candidate = videoInfo,
+                                manual = true
+                            )
+                            track.status = TrackStatus.MATCHED
+                            track.error = null
+
+                            adapter.notifyDataSetChanged()
+                            updateSummary()
+
+                            status(
+                                "Ручна заміна: " +
+                                    "${track.originalArtist} — " +
+                                    "${track.originalTitle} → " +
+                                    videoInfo.title
+                            )
+                        } else {
+                            applyManualUrlFallback(
+                                track = track,
+                                videoId = videoId,
+                                reason =
+                                    "YouTube не повернув назву цього відео"
+                            )
+                        }
+                    }.onFailure { error ->
+                        applyManualUrlFallback(
+                            track = track,
+                            videoId = videoId,
+                            reason =
+                                ErrorMessages.userMessage(
+                                    error,
+                                    "Не вдалося отримати назву відео"
+                                )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun applyManualUrlFallback(
+        track: Track,
+        videoId: String,
+        reason: String
+    ) {
+        track.selectedVideoId = videoId
+        track.selectedTitle = "YouTube video $videoId"
+        track.selectedChannel = "метадані не завантажено"
+        track.status = TrackStatus.MATCHED
+        track.manuallySelected = true
+        track.error = null
+
+        adapter.notifyDataSetChanged()
+        updateSummary()
+
+        status(
+            "Посилання збережено, але назву не вдалося отримати: $reason"
+        )
+
+        toast(
+            "Посилання використано. Назву можна перевірити у YTM."
+        )
     }
 
     private fun extractVideoId(value: String): String? {
@@ -3765,6 +3862,8 @@ class MainActivity : Activity() {
             listOf(
                 Regex("[?&]v=([A-Za-z0-9_-]{11})"),
                 Regex("youtu\\.be/([A-Za-z0-9_-]{11})"),
+                Regex("youtube\\.com/shorts/([A-Za-z0-9_-]{11})"),
+                Regex("youtube\\.com/live/([A-Za-z0-9_-]{11})"),
                 Regex("^([A-Za-z0-9_-]{11})$")
             )
 

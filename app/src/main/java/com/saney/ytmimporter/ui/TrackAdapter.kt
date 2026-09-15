@@ -64,11 +64,45 @@ class TrackAdapter(
         }
 
         val track = getItem(position)
-        holder.title.text = "${position + 1}. ${track.originalArtist} — ${track.originalTitle}"
-        holder.sub.text = when {
-            !track.selectedTitle.isNullOrBlank() -> "Знайдено: ${track.selectedTitle} • ${track.selectedChannel.orEmpty()}"
-            !track.error.isNullOrBlank() -> track.error
-            else -> "Натисніть трек, щоб перевірити/вибрати результат"
+
+        val manualReplacement =
+            track.manuallySelected &&
+                !track.selectedVideoId.isNullOrBlank() &&
+                !track.selectedTitle.isNullOrBlank()
+
+        if (manualReplacement) {
+            holder.title.text =
+                "${position + 1}. ${track.selectedTitle}"
+
+            holder.sub.text =
+                buildString {
+                    append("Заміна для: ")
+                    append(track.originalArtist)
+                    append(" — ")
+                    append(track.originalTitle)
+
+                    if (!track.selectedChannel.isNullOrBlank()) {
+                        append(" • ")
+                        append(track.selectedChannel)
+                    }
+                }
+        } else {
+            holder.title.text =
+                "${position + 1}. ${track.originalArtist} — " +
+                    track.originalTitle
+
+            holder.sub.text =
+                when {
+                    !track.selectedTitle.isNullOrBlank() ->
+                        "Знайдено: ${track.selectedTitle} • " +
+                            track.selectedChannel.orEmpty()
+
+                    !track.error.isNullOrBlank() ->
+                        track.error
+
+                    else ->
+                        "Натисніть трек, щоб перевірити/вибрати результат"
+                }
         }
         holder.status.text = statusLabel(track)
         holder.status.setTextColor(statusColor(track.status))

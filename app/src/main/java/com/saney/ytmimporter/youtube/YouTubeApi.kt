@@ -203,6 +203,65 @@ class YouTubeApi {
         )
     }
 
+    fun getVideoInfo(
+        accessToken: String,
+        videoId: String
+    ): SearchCandidate? {
+        val encodedId =
+            URLEncoder.encode(
+                videoId,
+                Charsets.UTF_8.name()
+            )
+
+        val url =
+            "https://www.googleapis.com/youtube/v3/videos" +
+                "?part=snippet" +
+                "&id=$encodedId"
+
+        val response = request("GET", url, accessToken)
+        requireSuccess(
+            response,
+            "Отримання даних відео"
+        )
+
+        val items =
+            JSONObject(response.body)
+                .optJSONArray("items")
+                ?: return null
+
+        if (items.length() == 0) {
+            return null
+        }
+
+        val item = items.getJSONObject(0)
+        val snippet =
+            item.optJSONObject("snippet")
+                ?: return null
+
+        val title =
+            decodeEntities(
+                snippet.optString("title")
+            ).trim()
+
+        val channel =
+            decodeEntities(
+                snippet.optString("channelTitle")
+            ).trim()
+
+        return SearchCandidate(
+            videoId = videoId,
+            title =
+                title.ifBlank {
+                    "YouTube video $videoId"
+                },
+            channelTitle =
+                channel.ifBlank {
+                    "YouTube"
+                },
+            score = 1.0
+        )
+    }
+
     fun search(accessToken: String, track: Track): List<SearchCandidate> {
         val q = URLEncoder.encode(track.query, Charsets.UTF_8.name())
 

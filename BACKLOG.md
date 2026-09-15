@@ -1,5 +1,15 @@
 # YTM Importer — План розвитку (Roadmap)
 
+## v0.15.2 — Manual URL metadata hotfix
+- [x] ручний URL зберігає правильний `videoId`;
+- [x] додано `videos.list(part=snippet)` для ручного URL;
+- [x] `selectedTitle` отримує фактичну назву;
+- [x] `selectedChannel` отримує фактичний канал;
+- [x] ручна заміна показується як головна назва у списку;
+- [x] оригінальна назва зберігається як `Заміна для`;
+- [x] History / replacement log зберігають Original → Replacement;
+- [ ] перевірити на реальному ручному URL після v0.15.2.
+
 ## v0.15.1 — BuildConfig compilation hotfix
 - [x] розібрано GitHub Actions log;
 - [x] причина: `BuildConfig` не генерувався для модуля;
@@ -7,7 +17,7 @@
 - [ ] підтвердити успішну GitHub Actions збірку v0.15.1.
 
 ## Поточна версія
-**v0.15.1 — Stabilization / підготовка Release Candidate v1.0**
+**v0.15.2 — Stabilization / підготовка Release Candidate v1.0**
 
 ## 1–13. Реалізовано раніше
 - [x] SearchCache + MatchScorer;

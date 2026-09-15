@@ -1,18 +1,20 @@
-YTM Importer v0.15.1 FULL — BUILDCONFIG HOTFIX
+YTM Importer v0.15.2 FULL — MANUAL URL METADATA HOTFIX
 
-ПОМИЛКА v0.15.0:
-Unresolved reference 'BuildConfig'
-у MainActivity.kt під час compileReleaseKotlin.
+ПРОБЛЕМА:
+ручний URL додавав правильний videoId у YTM,
+але локально selectedTitle залишався "Ручне посилання".
 
 ВИПРАВЛЕННЯ:
-app/build.gradle.kts
-
-ДОДАНО:
-buildFeatures {
-    buildConfig = true
-}
+- YouTubeApi.getVideoInfo()
+- MainActivity.applyManualUrl()
+- MainActivity.applyManualUrlFallback()
+- TrackAdapter показує фактичну ручну заміну основним рядком
+- оригінал зберігається як "Заміна для"
 
 ЗАМІНЕНО:
+app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
+app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
@@ -23,8 +25,8 @@ PROJECT_STATUS.txt
 docs/README.md
 
 ДОДАНО:
-docs/v.0.15.1/
-TERMINAL_APPLY_v0.15.1.md
+docs/v.0.15.2/
+TERMINAL_APPLY_v0.15.2.md
 
-versionCode = 19
-versionName = 0.15.1
+versionCode = 20
+versionName = 0.15.2
