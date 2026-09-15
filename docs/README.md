@@ -2,6 +2,6 @@
 
 Current version:
 
-`docs/v.1.2.0/`
+`docs/v.1.2.1/`
 
-v1.2.0 starts multi-screen navigation with dedicated History.
+v1.2.1 adds a dedicated Data / Backup / Restore screen.

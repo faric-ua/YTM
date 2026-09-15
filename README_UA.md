@@ -1,20 +1,22 @@
-# YTM Importer v1.2.0
+# YTM Importer v1.2.1
 
-History тепер окремий Android screen:
+Другий окремий screen у новій navigation architecture:
 
-`Головний екран → Історія → запис → деталі`
+`Головний → Ще → Дані`
 
-Є:
-- пошук;
-- нормальний Back;
-- counters/status;
-- replacement/problem preview;
-- Open in YTM;
-- Save/Share YTM Project;
-- Copy summary/problem log;
-- delete/clear local History.
+DataActivity містить:
 
-Core playlist functionality не змінювалась.
+- локальну статистику;
+- Full Backup;
+- Restore;
+- Rollback Last Restore;
+- History TXT/JSON export;
+- Pending Queue JSON export;
+- Android Share.
 
-Наступний модуль для винесення з dialogs:
-Data / Backup / Restore.
+SHA-256 backup integrity і safety snapshot логіка збережені.
+
+Попередній dedicated History screen також залишається.
+
+Наступний крок: окремий Pending Queue screen,
+потім Import / Review.

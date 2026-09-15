@@ -20,6 +20,11 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
+            android:name=".DataActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".HistoryActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />

@@ -1,11 +1,11 @@
-# YTM Importer v1.2.0
+# YTM Importer v1.2.1
 
-Navigation foundation release.
+Dedicated Data / Backup screen release.
 
 Highlights:
-- dedicated HistoryActivity;
-- searchable History list;
-- dedicated History detail screen;
-- proper Android Back navigation.
-
-Core playlist functionality remains unchanged.
+- DataActivity;
+- Full Backup / Restore / Rollback;
+- local data summary;
+- History and Pending Queue export;
+- Android Share;
+- existing backup integrity protections preserved.

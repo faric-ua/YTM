@@ -658,7 +658,12 @@ class MainActivity : Activity() {
                 when (which) {
                     0 -> showReplacementLog()
                     1 -> openInYtm()
-                    2 -> showDataTools()
+                    2 -> startActivity(
+                        Intent(
+                            this,
+                            DataActivity::class.java
+                        )
+                    )
                     3 -> showServiceTools()
                 }
             }
@@ -2789,7 +2794,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.1.1.0/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.2.1/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()

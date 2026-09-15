@@ -16,10 +16,20 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.2.0/RELEASE.md"
-check_file "docs/v.1.2.0/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.2.1/RELEASE.md"
+check_file "docs/v.1.2.1/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
+
+check_file "app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
+
+grep -q 'android:name=".DataActivity"' \
+  app/src/main/AndroidManifest.xml \
+  || fail "DataActivity is missing from manifest"
+
+grep -q 'DataActivity::class.java' \
+  app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
+  || fail "MainActivity does not open DataActivity"
 
 grep -q 'android:name=".HistoryActivity"' \
   app/src/main/AndroidManifest.xml \
@@ -32,11 +42,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 28' app/build.gradle.kts \
-  || fail "Expected versionCode = 28"
+grep -q 'versionCode = 29' app/build.gradle.kts \
+  || fail "Expected versionCode = 29"
 
-grep -q 'versionName = "1.2.0"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.2.0"'
+grep -q 'versionName = "1.2.1"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.2.1"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -108,3 +118,4 @@ echo "- APK zipalign verification step"
 echo "- APK SHA-256 generation"
 echo "- release docs"
 echo "- dedicated HistoryActivity navigation"
+echo "- dedicated DataActivity navigation"

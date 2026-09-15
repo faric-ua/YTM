@@ -1,9 +1,9 @@
-YTM Importer v1.2.0 FULL
+YTM Importer v1.2.1 FULL
 
 ADDED:
-app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-docs/v.1.2.0/
-TERMINAL_APPLY_v1.2.0.md
+app/src/main/java/com/saney/ytmimporter/DataActivity.kt
+docs/v.1.2.1/
+TERMINAL_APPLY_v1.2.1.md
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
@@ -23,5 +23,5 @@ DELETED:
 none
 
 VERSION:
-versionCode = 28
-versionName = 1.2.0
+versionCode = 29
+versionName = 1.2.1

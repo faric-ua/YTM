@@ -1,17 +1,24 @@
 YTM Importer
-Version: 1.2.0
-Version code: 28
+Version: 1.2.1
+Version code: 29
 Package: com.saney.ytmimporter
 Stage: Navigation Foundation
 
-Added:
+Dedicated screens:
 - HistoryActivity
-- searchable History list
-- detail screen
-- normal Back navigation
-- History YTM Project actions
+- DataActivity
+
+DataActivity:
+- local data summary
+- backup/restore/rollback
+- export/share
+
+Preserved:
+- stable import/search/write logic
+- backup SHA-256
+- safety snapshot rollback
+- release verification workflow
 
 Next:
-- Data/Backup dedicated screen
-- Queue screen
+- Pending Queue screen
 - Import/Review screen
