@@ -39,6 +39,7 @@ data class HistoryEntry(
     val failedCount: Int,
     val pendingCount: Int,
     val skippedCount: Int,
+    val duplicateCount: Int,
     val missingCount: Int,
     val lastError: String?,
     val tracks: List<HistoryTrack>

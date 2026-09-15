@@ -91,6 +91,7 @@ class HistoryStore(context: Context) {
             .put("failedCount", entry.failedCount)
             .put("pendingCount", entry.pendingCount)
             .put("skippedCount", entry.skippedCount)
+            .put("duplicateCount", entry.duplicateCount)
             .put("missingCount", entry.missingCount)
             .put("lastError", entry.lastError ?: JSONObject.NULL)
             .put(
@@ -166,6 +167,7 @@ class HistoryStore(context: Context) {
             failedCount = json.optInt("failedCount", 0),
             pendingCount = json.optInt("pendingCount", 0),
             skippedCount = json.optInt("skippedCount", 0),
+            duplicateCount = json.optInt("duplicateCount", 0),
             missingCount = json.optInt("missingCount", 0),
             lastError = nullableString(json, "lastError"),
             tracks = tracks.sortedBy { it.index }

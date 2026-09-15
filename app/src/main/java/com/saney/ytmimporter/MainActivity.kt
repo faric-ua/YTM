@@ -48,6 +48,36 @@ import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
 class MainActivity : Activity() {
+    private data class DuplicateAnalysis(
+        val alreadyInPlaylist: List<Track>,
+        val repeatedInImport: List<Track>,
+        val tracksToAdd: List<Track>
+    ) {
+        val tracksToSkip: List<Track>
+            get() = alreadyInPlaylist + repeatedInImport
+
+        val totalDuplicates: Int
+            get() = tracksToSkip.size
+    }
+
+    private data class DuplicateWritePlan(
+        val tracksToWrite: List<Track>,
+        val tracksToSkip: List<Track>,
+        val alreadyInPlaylistCount: Int,
+        val repeatedInImportCount: Int,
+        val scanRequestCount: Int,
+        val scanSucceeded: Boolean,
+        val addDuplicatesAnyway: Boolean
+    ) {
+        val duplicatesFound: Int
+            get() = alreadyInPlaylistCount + repeatedInImportCount
+
+        val savedWriteUnits: Int
+            get() =
+                tracksToSkip.size *
+                    QuotaTracker.PLAYLIST_ITEM_INSERT_COST
+    }
+
     private val fileRequestCode = 1001
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
@@ -942,7 +972,7 @@ class MainActivity : Activity() {
         list.setOnItemClickListener { _, _, position, _ ->
             val target = visible.getOrNull(position) ?: return@setOnItemClickListener
             dialog.dismiss()
-            confirmAppendToExisting(
+            checkDuplicatesBeforeAppend(
                 p = p,
                 selected = selected,
                 target = target
@@ -961,10 +991,252 @@ class MainActivity : Activity() {
             append(privacyLabel(item.privacyStatus))
         }
 
-    private fun confirmAppendToExisting(
+    private fun checkDuplicatesBeforeAppend(
         p: ImportedPlaylist,
         selected: List<Track>,
         target: YouTubePlaylistInfo
+    ) {
+        authorize {
+            val token = accessToken ?: return@authorize
+
+            progress.visibility = View.VISIBLE
+            progress.isIndeterminate = true
+            status(
+                "Перевіряю дублікати у «${target.title}»…"
+            )
+
+            executor.execute {
+                val result =
+                    runCatching {
+                        api.listPlaylistVideoIds(
+                            accessToken = token,
+                            playlistId = target.id
+                        )
+                    }
+
+                runOnUiThread {
+                    progress.isIndeterminate = false
+                    progress.visibility = View.GONE
+
+                    result.onSuccess { playlistContents ->
+                        quotaTracker.recordGeneralUnits(
+                            playlistContents.requestCount *
+                                QuotaTracker.SIMPLE_LIST_COST
+                        )
+                        updateQuotaPanel()
+
+                        val analysis =
+                            analyzeDuplicates(
+                                selected = selected,
+                                existingVideoIds =
+                                    playlistContents.videoIds
+                            )
+
+                        if (analysis.totalDuplicates == 0) {
+                            val plan =
+                                DuplicateWritePlan(
+                                    tracksToWrite = selected,
+                                    tracksToSkip = emptyList(),
+                                    alreadyInPlaylistCount = 0,
+                                    repeatedInImportCount = 0,
+                                    scanRequestCount =
+                                        playlistContents.requestCount,
+                                    scanSucceeded = true,
+                                    addDuplicatesAnyway = false
+                                )
+
+                            confirmAppendToExisting(
+                                p = p,
+                                target = target,
+                                plan = plan
+                            )
+                        } else {
+                            showDuplicateChoiceDialog(
+                                p = p,
+                                target = target,
+                                selected = selected,
+                                analysis = analysis,
+                                scanRequestCount =
+                                    playlistContents.requestCount
+                            )
+                        }
+                    }.onFailure { error ->
+                        if (isQuotaError(error)) {
+                            quotaTracker.recordQuotaError(
+                                error.message
+                                    ?: "Не вдалося перевірити дублікати через квоту"
+                            )
+                            updateQuotaPanel()
+                        }
+
+                        showDuplicateCheckFailureDialog(
+                            p = p,
+                            selected = selected,
+                            target = target,
+                            error = error
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun analyzeDuplicates(
+        selected: List<Track>,
+        existingVideoIds: Set<String>
+    ): DuplicateAnalysis {
+        val alreadyInPlaylist = mutableListOf<Track>()
+        val repeatedInImport = mutableListOf<Track>()
+        val tracksToAdd = mutableListOf<Track>()
+        val seenIncoming = mutableSetOf<String>()
+
+        selected.forEach { track ->
+            val videoId =
+                track.selectedVideoId
+                    ?.trim()
+                    .orEmpty()
+
+            if (videoId.isBlank()) {
+                tracksToAdd += track
+                return@forEach
+            }
+
+            val isAlreadyInPlaylist =
+                videoId in existingVideoIds
+
+            val isRepeatedInImport =
+                !seenIncoming.add(videoId)
+
+            when {
+                isAlreadyInPlaylist ->
+                    alreadyInPlaylist += track
+
+                isRepeatedInImport ->
+                    repeatedInImport += track
+
+                else ->
+                    tracksToAdd += track
+            }
+        }
+
+        return DuplicateAnalysis(
+            alreadyInPlaylist = alreadyInPlaylist,
+            repeatedInImport = repeatedInImport,
+            tracksToAdd = tracksToAdd
+        )
+    }
+
+    private fun showDuplicateChoiceDialog(
+        p: ImportedPlaylist,
+        target: YouTubePlaylistInfo,
+        selected: List<Track>,
+        analysis: DuplicateAnalysis,
+        scanRequestCount: Int
+    ) {
+        val savedUnits =
+            analysis.totalDuplicates *
+                QuotaTracker.PLAYLIST_ITEM_INSERT_COST
+
+        AlertDialog.Builder(this)
+            .setTitle(
+                "Знайдено дублікатів: ${analysis.totalDuplicates}"
+            )
+            .setMessage(
+                "Плейлист: ${target.title}\n\n" +
+                    "Уже є в плейлисті: " +
+                    "${analysis.alreadyInPlaylist.size}\n" +
+                    "Повтори всередині імпорту: " +
+                    "${analysis.repeatedInImport.size}\n" +
+                    "Нових треків: ${analysis.tracksToAdd.size}\n\n" +
+                    "Якщо пропустити дублікати, приблизно " +
+                    "$savedUnits units (одиниць) write quota " +
+                    "не буде витрачено.\n\n" +
+                    "Порівняння виконується за точним YouTube videoId, " +
+                    "а не за назвою треку."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setNeutralButton("Додати все одно") { _, _ ->
+                val plan =
+                    DuplicateWritePlan(
+                        tracksToWrite = selected,
+                        tracksToSkip = emptyList(),
+                        alreadyInPlaylistCount =
+                            analysis.alreadyInPlaylist.size,
+                        repeatedInImportCount =
+                            analysis.repeatedInImport.size,
+                        scanRequestCount = scanRequestCount,
+                        scanSucceeded = true,
+                        addDuplicatesAnyway = true
+                    )
+
+                confirmAppendToExisting(
+                    p = p,
+                    target = target,
+                    plan = plan
+                )
+            }
+            .setPositiveButton("Пропустити дублікати") { _, _ ->
+                val plan =
+                    DuplicateWritePlan(
+                        tracksToWrite = analysis.tracksToAdd,
+                        tracksToSkip = analysis.tracksToSkip,
+                        alreadyInPlaylistCount =
+                            analysis.alreadyInPlaylist.size,
+                        repeatedInImportCount =
+                            analysis.repeatedInImport.size,
+                        scanRequestCount = scanRequestCount,
+                        scanSucceeded = true,
+                        addDuplicatesAnyway = false
+                    )
+
+                confirmAppendToExisting(
+                    p = p,
+                    target = target,
+                    plan = plan
+                )
+            }
+            .show()
+    }
+
+    private fun showDuplicateCheckFailureDialog(
+        p: ImportedPlaylist,
+        selected: List<Track>,
+        target: YouTubePlaylistInfo,
+        error: Throwable
+    ) {
+        AlertDialog.Builder(this)
+            .setTitle("Не вдалося перевірити дублікати")
+            .setMessage(
+                "Плейлист: ${target.title}\n\n" +
+                    "Помилка:\n" +
+                    (error.message ?: "невідома помилка") +
+                    "\n\nМожна скасувати або продовжити без перевірки. " +
+                    "У другому випадку можливі повтори."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Продовжити без перевірки") { _, _ ->
+                confirmAppendToExisting(
+                    p = p,
+                    target = target,
+                    plan =
+                        DuplicateWritePlan(
+                            tracksToWrite = selected,
+                            tracksToSkip = emptyList(),
+                            alreadyInPlaylistCount = 0,
+                            repeatedInImportCount = 0,
+                            scanRequestCount = 0,
+                            scanSucceeded = false,
+                            addDuplicatesAnyway = true
+                        )
+                )
+            }
+            .show()
+    }
+
+    private fun confirmAppendToExisting(
+        p: ImportedPlaylist,
+        target: YouTubePlaylistInfo,
+        plan: DuplicateWritePlan
     ) {
         val google =
             googleAccountInfo?.email
@@ -976,25 +1248,57 @@ class MainActivity : Activity() {
                 "${it.title} (${it.id})"
             } ?: "поточний YouTube/YTM канал"
 
+        val duplicateInfo =
+            when {
+                !plan.scanSucceeded ->
+                    "Дублікати: перевірка не виконана"
+
+                plan.duplicatesFound == 0 ->
+                    "Дублікати: не знайдено"
+
+                plan.addDuplicatesAnyway ->
+                    "Дублікатів знайдено: ${plan.duplicatesFound} • " +
+                        "режим: додати все одно"
+
+                else ->
+                    "Дублікатів буде пропущено: " +
+                        "${plan.tracksToSkip.size}\n" +
+                        "  Уже є в playlist: " +
+                        "${plan.alreadyInPlaylistCount}\n" +
+                        "  Повтори в імпорті: " +
+                        "${plan.repeatedInImportCount}\n" +
+                        "  Економія write quota: ≈" +
+                        "${plan.savedWriteUnits} units"
+            }
+
         AlertDialog.Builder(this)
             .setTitle("Додати до існуючого?")
             .setMessage(
                 "Плейлист:\n${target.title}\n\n" +
-                    "Треків буде додано: ${selected.size}\n" +
-                    "Google: $google\n" +
+                    "В імпорті: ${p.tracks.size} треків\n" +
+                    "Буде записано: ${plan.tracksToWrite.size}\n" +
+                    duplicateInfo +
+                    "\n\nПеревірка playlistItems.list: " +
+                    if (plan.scanSucceeded) {
+                        "${plan.scanRequestCount} API request(s)"
+                    } else {
+                        "не виконана"
+                    } +
+                    "\n\nGoogle: $google\n" +
                     "YouTube/YTM: $channel\n\n" +
                     quotaPlanForWrite(
-                        trackCount = selected.size,
+                        trackCount = plan.tracksToWrite.size,
                         createPlaylist = false
-                    ) +
-                    "\n\nУ v0.10.1 дублікати ще не відсіюються автоматично."
+                    )
             )
             .setNegativeButton("Скасувати", null)
             .setPositiveButton("Додати") { _, _ ->
                 actuallyAppendToExisting(
                     p = p,
-                    selected = selected,
-                    target = target
+                    selected = plan.tracksToWrite,
+                    target = target,
+                    duplicateTracksToSkip =
+                        plan.tracksToSkip
                 )
             }
             .show()
@@ -1003,8 +1307,20 @@ class MainActivity : Activity() {
     private fun actuallyAppendToExisting(
         p: ImportedPlaylist,
         selected: List<Track>,
-        target: YouTubePlaylistInfo
+        target: YouTubePlaylistInfo,
+        duplicateTracksToSkip: List<Track>
     ) {
+        duplicateTracksToSkip.forEach { track ->
+            track.status = TrackStatus.DUPLICATE
+            track.error =
+                "Дублікат: цей YouTube videoId уже є у вибраному " +
+                    "плейлисті або повторюється в поточному імпорті. " +
+                    "Write-запит пропущено."
+        }
+
+        adapter.notifyDataSetChanged()
+        updateSummary()
+
         authorize {
             val token = accessToken ?: return@authorize
 
@@ -1023,7 +1339,12 @@ class MainActivity : Activity() {
             createdPlaylistId = target.id
             prepareWriteUi(
                 total = selected.size,
-                message = "Додаю треки до «${target.title}»…"
+                message =
+                    if (selected.isEmpty()) {
+                        "Усі треки — дублікати. API write не потрібен."
+                    } else {
+                        "Додаю треки до «${target.title}»…"
+                    }
             )
 
             executeWriteJob(
@@ -1034,6 +1355,7 @@ class MainActivity : Activity() {
             )
         }
     }
+
 
     private fun choosePrivacyAndCreate(
         p: ImportedPlaylist,
@@ -1831,6 +2153,10 @@ class MainActivity : Activity() {
                     merged.count {
                         it.status == TrackStatus.SKIPPED.name
                     },
+                duplicateCount =
+                    merged.count {
+                        it.status == TrackStatus.DUPLICATE.name
+                    },
                 missingCount =
                     merged.count {
                         it.status == TrackStatus.MISSING.name
@@ -1945,7 +2271,8 @@ class MainActivity : Activity() {
                     append("Додано: ${entry.addedCount}\n")
                     append("Помилок: ${entry.failedCount}\n")
                     append("Очікує: ${entry.pendingCount}\n")
-                    append("Пропущено: ${entry.skippedCount}\n")
+                    append("Пропущено вручну: ${entry.skippedCount}\n")
+                    append("Дублікатів пропущено: ${entry.duplicateCount}\n")
                     append("Не знайдено: ${entry.missingCount}\n")
                     append("Проблемних/замінених: $problems\n\n")
 
@@ -2057,7 +2384,8 @@ class MainActivity : Activity() {
             append("Додано: ${entry.addedCount}/${entry.writeTargetCount}\n")
             append("Помилок: ${entry.failedCount}\n")
             append("Очікує: ${entry.pendingCount}\n")
-            append("Пропущено: ${entry.skippedCount}\n")
+            append("Пропущено вручну: ${entry.skippedCount}\n")
+            append("Дублікатів пропущено: ${entry.duplicateCount}\n")
             append("Не знайдено: ${entry.missingCount}\n")
 
             if (!entry.playlistId.isNullOrBlank()) {
@@ -2110,6 +2438,7 @@ class MainActivity : Activity() {
     private fun isHistoryProblemTrack(track: HistoryTrack): Boolean =
         track.manuallySelected ||
             track.status == TrackStatus.SKIPPED.name ||
+            track.status == TrackStatus.DUPLICATE.name ||
             track.status == TrackStatus.MISSING.name ||
             track.status == TrackStatus.PENDING.name ||
             track.status == TrackStatus.FAILED.name
@@ -2118,6 +2447,9 @@ class MainActivity : Activity() {
         when {
             track.status == TrackStatus.SKIPPED.name ->
                 "[пропущено]"
+
+            track.status == TrackStatus.DUPLICATE.name ->
+                "[дублікат — уже є у плейлисті]"
 
             track.status == TrackStatus.MISSING.name ->
                 "[не знайдено]"
@@ -2399,6 +2731,16 @@ class MainActivity : Activity() {
             buildString {
                 append("Додано: $addedCount")
                 if (failedCount > 0) append(" • Не додано: $failedCount")
+
+                val duplicateCount =
+                    playlist?.tracks?.count {
+                        it.status == TrackStatus.DUPLICATE
+                    } ?: 0
+
+                if (duplicateCount > 0) {
+                    append(" • Дублікати: $duplicateCount")
+                }
+
                 append(" • ${privacyLabel(privacyStatus)}")
                 append(" • $operationLabel")
                 youtubeChannelInfo?.title?.let {
@@ -2467,6 +2809,7 @@ class MainActivity : Activity() {
             p.tracks.filter { track ->
                 track.manuallySelected ||
                     track.status == TrackStatus.SKIPPED ||
+                    track.status == TrackStatus.DUPLICATE ||
                     track.status == TrackStatus.MISSING ||
                     track.status == TrackStatus.PENDING ||
                     track.status == TrackStatus.FAILED
@@ -2562,6 +2905,8 @@ class MainActivity : Activity() {
     private fun replacementLabel(track: Track): String =
         when {
             track.status == TrackStatus.SKIPPED -> "[пропущено]"
+            track.status == TrackStatus.DUPLICATE ->
+                "[дублікат — write-запит пропущено]"
             track.status == TrackStatus.MISSING -> "[не знайдено]"
             track.status == TrackStatus.PENDING -> "[очікує в черзі]"
             track.status == TrackStatus.FAILED &&
@@ -2609,6 +2954,11 @@ class MainActivity : Activity() {
                 it.status == TrackStatus.REVIEW
             }
 
+        val duplicates =
+            p.tracks.count {
+                it.status == TrackStatus.DUPLICATE
+            }
+
         val pending =
             p.tracks.count {
                 it.status == TrackStatus.PENDING
@@ -2621,7 +2971,8 @@ class MainActivity : Activity() {
 
         summaryText.text =
             "${p.name} • ${p.tracks.size} треків • " +
-                "✓ $matched  ! $review  ⏳ $pending  × $missing"
+                "✓ $matched  ! $review  ⧉ $duplicates  " +
+                "⏳ $pending  × $missing"
     }
 
     private fun refreshRow(index: Int) {

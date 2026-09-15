@@ -34,6 +34,11 @@ class YouTubeApiException(
 class YouTubeApi {
     data class ApiResponse(val code: Int, val body: String)
 
+    data class PlaylistVideoIdsResult(
+        val videoIds: Set<String>,
+        val requestCount: Int
+    )
+
     fun getGoogleAccountInfo(accessToken: String): GoogleAccountInfo {
         val response = request(
             method = "GET",
@@ -128,6 +133,74 @@ class YouTubeApi {
         } while (pageToken != null && pages < 20)
 
         return result.sortedBy { it.title.lowercase() }
+    }
+
+    fun listPlaylistVideoIds(
+        accessToken: String,
+        playlistId: String
+    ): PlaylistVideoIdsResult {
+        val videoIds = linkedSetOf<String>()
+        var pageToken: String? = null
+        var requestCount = 0
+        var pages = 0
+
+        do {
+            var url =
+                "https://www.googleapis.com/youtube/v3/playlistItems" +
+                    "?part=contentDetails" +
+                    "&maxResults=50" +
+                    "&playlistId=" +
+                    URLEncoder.encode(
+                        playlistId,
+                        Charsets.UTF_8.name()
+                    )
+
+            if (!pageToken.isNullOrBlank()) {
+                url += "&pageToken=" +
+                    URLEncoder.encode(
+                        pageToken,
+                        Charsets.UTF_8.name()
+                    )
+            }
+
+            val response = request("GET", url, accessToken)
+            requestCount += 1
+            requireSuccess(
+                response,
+                "Перевірка дублікатів у плейлисті"
+            )
+
+            val json = JSONObject(response.body)
+            val items = json.optJSONArray("items")
+
+            if (items != null) {
+                for (i in 0 until items.length()) {
+                    val videoId =
+                        items
+                            .getJSONObject(i)
+                            .optJSONObject("contentDetails")
+                            ?.optString("videoId")
+                            .orEmpty()
+                            .trim()
+
+                    if (videoId.isNotBlank()) {
+                        videoIds += videoId
+                    }
+                }
+            }
+
+            pageToken =
+                json.optString("nextPageToken")
+                    .trim()
+                    .takeIf { it.isNotBlank() }
+
+            pages += 1
+        } while (pageToken != null && pages < 200)
+
+        return PlaylistVideoIdsResult(
+            videoIds = videoIds,
+            requestCount = requestCount
+        )
     }
 
     fun search(accessToken: String, track: Track): List<SearchCandidate> {

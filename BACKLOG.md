@@ -1,58 +1,48 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v0.11.0 — Історія операцій (History / Jobs)**
+**v0.12.0 — Дублікати в існуючих плейлистах**
 
-## 1–9. Реалізовано раніше
+## 1–10. Реалізовано раніше
 - [x] SearchCache + MatchScorer;
 - [x] ручний вибір кандидата;
 - [x] приватність;
-- [x] новий / існуючий плейлист;
 - [x] Google account + YouTube/YTM channel;
-- [x] Quota Planner (планувальник квоти);
-- [x] Pending Queue (черга);
-- [x] Resume (продовження);
-- [x] компактний головний екран.
+- [x] новий / існуючий плейлист;
+- [x] Quota Planner;
+- [x] Pending Queue + Resume;
+- [x] компактний UI;
+- [x] History / Jobs.
 
-## 10. Історія операцій (History / Jobs) — v0.11.0
-- [x] кнопка `Історія`;
-- [x] до 100 локальних записів;
-- [x] дата / час;
-- [x] source (джерело);
-- [x] account/channel;
-- [x] target playlist ID;
-- [x] new / existing destination;
-- [x] Completed (завершено);
-- [x] Partial (частково);
-- [x] Pending quota (очікує квоти);
-- [x] Failed (помилка);
-- [x] imported / target / added / pending / skipped / failed;
-- [x] відкриття старого плейлиста в YTM;
-- [x] копіювання playlist link;
-- [x] копіювання summary (підсумку);
-- [x] історичний replacement/problem log;
-- [x] видалення одного запису;
-- [x] очищення історії;
-- [ ] протестувати історію на телефоні після v0.11.0;
-- [ ] протестувати History + реальний quotaExceeded + Resume.
+## 11. Дублікати в існуючих плейлистах — v0.12.0
+- [x] `playlistItems.list`;
+- [x] пагінація `maxResults=50`;
+- [x] exact `videoId` comparison;
+- [x] визначення треків, що вже є в target playlist;
+- [x] визначення повторів `videoId` всередині імпорту;
+- [x] діалог перед write;
+- [x] `Пропустити дублікати`;
+- [x] `Додати все одно`;
+- [x] статус `TrackStatus.DUPLICATE`;
+- [x] UI label `⧉ дублікат`;
+- [x] не робити `playlistItems.insert` для пропущених дублікатів;
+- [x] оцінка заощадженої write quota;
+- [x] History `duplicateCount`;
+- [x] replacement/problem log для duplicate;
+- [x] fallback «продовжити без перевірки», якщо list API впав;
+- [ ] протестувати на реальному existing playlist з відомими дублями.
 
-## 11. Дублікати в існуючих плейлистах — наступний етап
-- [ ] `playlistItems.list`;
-- [ ] отримати videoId існуючих треків;
-- [ ] показати кількість дублікатів до write;
-- [ ] режим «Пропускати дублікати»;
-- [ ] режим «Додавати навіть дублікати»;
-- [ ] не витрачати `playlistItems.insert` на пропущені дублікати;
-- [ ] показувати заощаджену quota estimate.
-
-## 12. Діагностика / експорт
-- [ ] експорт History у TXT/JSON;
+## 12. Діагностика / експорт — наступний етап
+- [ ] експорт History у TXT;
+- [ ] експорт History у JSON;
 - [ ] експорт Pending Queue;
-- [ ] backup/restore локальних даних;
+- [ ] backup local data;
+- [ ] restore local data;
+- [ ] share/export файл через Android;
 - [ ] кнопка переходу до Google Cloud Console.
 
-## 13. Доведення до v1.0 (Polish)
-- [ ] іконка;
+## 13. Доведення до v1.0
+- [ ] app icon;
 - [ ] стабільний UI;
 - [ ] кращі error messages;
 - [ ] фінальне тестування.
