@@ -1,36 +1,25 @@
 # YTM Importer — Roadmap
 
 ## Поточна версія
-**v1.3.0 — Import / Review Navigation**
+**v1.3.1 — Manual Selection + Working Project Hotfix**
 
-## Completed navigation
-- [x] Public main screen;
-- [x] History screen;
-- [x] Data / Backup screen;
-- [x] Pending Queue screen;
-- [x] Import screen;
-- [x] Review screen;
-- [x] persistent current workspace.
-
-## v1.3.0
-- [x] ImportActivity;
-- [x] CSV/TXT/YTM Project/text import;
-- [x] CurrentPlaylistStore;
-- [x] ReviewActivity;
-- [x] review filters;
-- [x] candidate cards;
-- [x] repeat-search contract;
-- [x] manual URL result contract;
-- [x] preserve v0.15.2 YouTube metadata lookup;
-- [ ] build/install test;
-- [ ] 50-track Clubland regression.
+## v1.3.1
+- [x] fix stale Track race after manual URL metadata lookup;
+- [x] manual selection cannot be overwritten by SearchCache;
+- [x] save current working list as YTM Project before History;
+- [x] share current working Project;
+- [x] Project schema v2 with candidates/status;
+- [x] autosave remains last-workspace safety;
+- [x] clear current workspace action;
+- [x] Full Backup includes current workspace;
+- [ ] GitHub build;
+- [ ] phone regression.
 
 ## Next
 - [ ] dedicated destination/create screen;
-- [ ] remove legacy import/review dialog code after regression;
-- [ ] Material 3 components;
-- [ ] responsive typography/spacing;
-- [ ] accessibility.
+- [ ] remove legacy import/review dialogs after regression;
+- [ ] Material 3 / responsive polish;
+- [ ] optional recent-project library inside app.
 
 ## Public distribution
 - [ ] OAuth production readiness;

@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -97,6 +98,58 @@ class ImportActivity : Activity() {
                     0,
                     dp(12),
                     dp(24)
+                )
+            }
+
+        currentPlaylistStore
+            .load()
+            ?.let { current ->
+                content.addView(
+                    sectionTitle(
+                        "Поточний робочий список"
+                    )
+                )
+
+                content.addView(
+                    card().apply {
+                        addView(
+                            TextView(
+                                this@ImportActivity
+                            ).apply {
+                                text =
+                                    current.playlist.name
+                                textSize = 16f
+                                setTextColor(
+                                    Color.WHITE
+                                )
+                                setTypeface(
+                                    typeface,
+                                    Typeface.BOLD
+                                )
+                            }
+                        )
+
+                        addView(
+                            infoText(
+                                "${current.playlist.tracks.size} треків • " +
+                                    current.sourceLabel +
+                                    "\nАвтовідновлення зберігає тільки останній робочий список. " +
+                                    "Для кількох списків використовуйте YTM Project."
+                            )
+                        )
+
+                        addView(
+                            actionButton(
+                                label =
+                                    "Очистити поточний список",
+                                primary = false
+                            ) {
+                                confirmClearWorkspace(
+                                    current.playlist.name
+                                )
+                            }
+                        )
+                    }
                 )
             }
 
@@ -503,6 +556,40 @@ class ImportActivity : Activity() {
         finish()
     }
 
+    private fun confirmClearWorkspace(
+        playlistName: String
+    ) {
+        AlertDialog.Builder(this)
+            .setTitle(
+                "Очистити поточний список?"
+            )
+            .setMessage(
+                "Автозбережений робочий список «$playlistName» буде видалено з пристрою.\n\n" +
+                    "YTM Project-файли та плейлисти в YouTube/YTM не змінюються."
+            )
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Очистити"
+            ) { _, _ ->
+                currentPlaylistStore.clear()
+
+                setResult(
+                    RESULT_OK,
+                    Intent()
+                        .putExtra(
+                            EXTRA_CLEAR_WORKSPACE,
+                            true
+                        )
+                )
+
+                finish()
+            }
+            .show()
+    }
+
     private fun queryFileName(
         uri: Uri
     ): String? {
@@ -750,6 +837,9 @@ class ImportActivity : Activity() {
     companion object {
         const val EXTRA_IMPORT_MESSAGE =
             "import_message"
+
+        const val EXTRA_CLEAR_WORKSPACE =
+            "clear_current_workspace"
 
         private val BACKGROUND =
             Color.rgb(

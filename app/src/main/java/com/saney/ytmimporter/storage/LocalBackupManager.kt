@@ -476,7 +476,8 @@ class LocalBackupManager(
                 "history_store_v1",
                 "pending_jobs_v1",
                 "quota_tracker_v1",
-                "youtube_search_cache"
+                "youtube_search_cache",
+                "current_playlist_v1"
             )
     }
 }

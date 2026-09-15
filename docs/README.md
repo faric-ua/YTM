@@ -2,7 +2,6 @@
 
 Current version:
 
-`docs/v.1.3.0/`
+`docs/v.1.3.1/`
 
-v1.3.0 introduces dedicated Import and Review screens
-plus persistent current-workspace state.
+v1.3.1 fixes manual-selection persistence and adds working-list YTM Project save/share before History.

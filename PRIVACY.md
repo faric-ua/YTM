@@ -70,3 +70,9 @@ locally on the device so it can survive an app restart. This can include track
 names, candidate YouTube video IDs, channels, statuses and manual selections.
 
 The Google OAuth access token is not stored in this current-workspace data.
+
+## Working YTM Project files
+
+A YTM Project saved from Review may contain track names, selected YouTube video IDs, channel names, search candidate IDs/scores, statuses, errors and source labels. It does not contain the Google OAuth access token, passwords or signing keys.
+
+The automatic current workspace stores only the latest working list locally. Full Backup now includes this current workspace.

@@ -157,7 +157,7 @@ class DataActivity : Activity() {
             actionCard(
                 title = "Повний backup",
                 description =
-                    "History + Черга + локальна квота + SearchCache. " +
+                    "History + Черга + робочий список + локальна квота + SearchCache. " +
                         "Має SHA-256 integrity check.",
                 buttonLabel = "Зберегти backup",
                 primary = true,
@@ -289,7 +289,7 @@ class DataActivity : Activity() {
                     "OAuth access token, паролі та signing keys не входять " +
                         "у Full Backup.\n\n" +
                         "Але backup може містити Google email, YouTube Channel ID, " +
-                        "назви плейлистів, History, Queue та SearchCache. " +
+                        "назви плейлистів, History, Queue, поточний робочий список та SearchCache. " +
                         "Не надсилайте backup туди, де не готові розкрити ці дані."
                 textSize = 12.5f
                 setTextColor(MUTED)
@@ -419,7 +419,8 @@ class DataActivity : Activity() {
                     "• History\n" +
                     "• Pending Queue\n" +
                     "• локальні quota counters\n" +
-                    "• SearchCache\n\n" +
+                    "• SearchCache\n" +
+                    "• поточний робочий список\n\n" +
                     "Backup може містити Google email, Channel ID " +
                     "та назви плейлистів.\n\n" +
                     "OAuth token, паролі та signing keys не входять.\n\n" +
@@ -453,7 +454,8 @@ class DataActivity : Activity() {
                     "• History\n" +
                     "• Чергу\n" +
                     "• локальну квоту\n" +
-                    "• SearchCache\n\n" +
+                    "• SearchCache\n" +
+                    "• поточний робочий список\n\n" +
                     "YouTube/YTM плейлисти в інтернеті не змінюються.\n\n" +
                     "Перед Restore буде створено safety snapshot."
             )
@@ -581,7 +583,7 @@ class DataActivity : Activity() {
             .setMessage(
                 "Груп даних: ${result.preferenceGroups}\n" +
                     "Відновлено значень: ${result.restoredValues}\n\n" +
-                    "History, Черга, локальна квота та SearchCache " +
+                    "History, Черга, робочий список, локальна квота та SearchCache " +
                     "вже відновлені.\n\n" +
                     if (result.safetySnapshotCreated) {
                         "Safety snapshot стану ДО Restore збережено."
@@ -769,7 +771,7 @@ class DataActivity : Activity() {
             )
             .setMessage(
                 "Backup може містити Google email, Channel ID, " +
-                    "назви плейлистів, History, Queue та SearchCache.\n\n" +
+                    "назви плейлистів, History, Queue, поточний робочий список та SearchCache.\n\n" +
                     "OAuth token, паролі та signing keys у файл не входять.\n\n" +
                     "Надсилайте backup лише туди, де довіряєте одержувачу."
             )

@@ -1,44 +1,24 @@
-# YTM Importer v1.3.0
+# YTM Importer v1.3.1
 
-Основний Import / Review flow тепер має окремі screens.
+Hotfix основного Review workflow.
 
-## Import
+## Виправлено
 
-`1. Імпорт → ImportActivity`
+Ручний YouTube/YTM URL тепер застосовується до актуального Track object у поточному workspace, тому cached automatic candidate більше не повинен повертатися як вибраний трек.
 
-Підтримує:
-- CSV;
-- TXT;
-- YTM Project;
-- pasted Artist - Track;
-- optional playlist name.
+Manual selections захищені від автоматичного перезапису SearchCache.
 
-## Review
+## YTM Project до History
 
-`3. Знайти / перевірити → ReviewActivity`
+Project тепер можна зберегти прямо з Review ДО створення плейлиста у YouTube/YTM:
 
-Є filters:
-- Усі;
-- Перевірити;
-- Готові;
-- Проблеми.
+- `Зберегти Project`;
+- `Поділитися`.
 
-Кожен трек має окремий detail screen з search candidates,
-score/channel, Use/Open YTM, manual URL та Skip.
+Project schema v2 зберігає selected videoId, title/channel, manual flag, candidates, score, status/error.
 
-## Workspace
+## Autosave
 
-Поточний незавершений playlist зберігається локально,
-тому може відновитися після перезапуску застосунку.
+Застосунок і далі автоматично відновлює останній робочий список після перезапуску. Це safety/autosave, а не бібліотека проектів.
 
-OAuth token у workspace НЕ зберігається.
-
-Тепер окремі screens:
-- Import;
-- Review;
-- History;
-- Data;
-- Pending Queue.
-
-Наступний великий крок:
-destination/create flow.
+Для кількох списків зберігайте окремі `.ytm.json` Project files. У Import screen є `Очистити поточний список`.

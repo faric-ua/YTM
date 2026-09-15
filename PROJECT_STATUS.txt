@@ -1,28 +1,22 @@
 YTM Importer
-Version: 1.3.0
-Version code: 31
+Version: 1.3.1
+Version code: 32
 Package: com.saney.ytmimporter
-Stage: Import / Review Navigation
+Stage: Review hotfix / Working Projects
 
-Dedicated screens:
-- ImportActivity
-- ReviewActivity
-- HistoryActivity
-- DataActivity
-- PendingActivity
+Fixed:
+- manual URL stale Track race
+- SearchCache overwrite of manual selection
 
-Current workspace:
-- persists playlist/tracks/candidates/selections
-- does NOT persist OAuth token
+Added:
+- working YTM Project save/share before History
+- Project schema v2 candidates/status
+- current-workspace clear action
+- current workspace in Full Backup
 
-Core retained in MainActivity:
-- OAuth
-- YouTube search
-- manual URL metadata lookup
-- create/append write flow
-- duplicate protection
+Autosave behavior:
+- last workspace restores after restart
+- multiple projects should be saved as .ytm.json files
 
 Next:
-- dedicated destination/create flow
-- legacy dialog cleanup after regression
-- Material/responsive polish
+- destination/create screen

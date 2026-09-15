@@ -89,3 +89,11 @@ Next:
 - [x] Persistent unfinished-workspace state.
 - [ ] Dedicated destination/create screen.
 - [ ] Remove legacy dialog code after full regression.
+
+## v1.3.1 project safety
+
+- [x] Working Project can be saved before History.
+- [x] Manual URL selection protected from cache overwrite.
+- [x] Current workspace clear action.
+- [x] Current workspace included in Full Backup.
+- [ ] Phone regression of manual URL + Project re-import.

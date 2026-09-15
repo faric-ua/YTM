@@ -795,6 +795,20 @@ class MainActivity : Activity() {
         )
     }
 
+    private fun clearCurrentWorkspaceInMemory() {
+        playlist = null
+        currentImportSourceLabel =
+            "Невідоме джерело"
+
+        visibleTracks.clear()
+        adapter.notifyDataSetChanged()
+
+        summaryText.text =
+            "Плейлист ще не імпортовано"
+
+        updatePrimaryActions()
+    }
+
     private fun showImportMenu() {
         val labels =
             arrayOf(
@@ -817,6 +831,7 @@ class MainActivity : Activity() {
     private fun showMoreActions() {
         val labels =
             arrayOf(
+                "Поточний проект — review / save / share",
                 "Заміни — перевірити ручні заміни",
                 "Відкрити останній плейлист у YTM",
                 "Дані — export / backup / restore",
@@ -827,15 +842,16 @@ class MainActivity : Activity() {
             .setTitle("Ще")
             .setItems(labels) { _, which ->
                 when (which) {
-                    0 -> showReplacementLog()
-                    1 -> openInYtm()
-                    2 -> startActivity(
+                    0 -> openReviewScreen()
+                    1 -> showReplacementLog()
+                    2 -> openInYtm()
+                    3 -> startActivity(
                         Intent(
                             this,
                             DataActivity::class.java
                         )
                     )
-                    3 -> showServiceTools()
+                    4 -> showServiceTools()
                 }
             }
             .setNegativeButton("Закрити", null)
@@ -894,6 +910,20 @@ class MainActivity : Activity() {
             }
 
             importScreenRequestCode -> {
+                if (
+                    data.getBooleanExtra(
+                        ImportActivity.EXTRA_CLEAR_WORKSPACE,
+                        false
+                    )
+                ) {
+                    clearCurrentWorkspaceInMemory()
+                    status(
+                        "Поточний робочий список очищено. " +
+                            "Виберіть новий файл або YTM Project."
+                    )
+                    return
+                }
+
                 reloadCurrentWorkspace(
                     force = true
                 )
@@ -1364,14 +1394,20 @@ class MainActivity : Activity() {
         val p = playlist ?: return toast("Спочатку імпортуйте список треків")
 
         val tracksToSearch =
-            if (preserveExistingExact) {
-                p.tracks.filter { track ->
+            p.tracks.filter { track ->
+                val manualExact =
+                    track.manuallySelected &&
+                        !track.selectedVideoId.isNullOrBlank()
+
+                if (manualExact) {
+                    false
+                } else if (preserveExistingExact) {
                     track.selectedVideoId.isNullOrBlank() ||
                         track.status != TrackStatus.MATCHED ||
                         track.candidates.isNotEmpty()
+                } else {
+                    true
                 }
-            } else {
-                p.tracks
             }
 
         val cachedCount =
@@ -1442,18 +1478,29 @@ class MainActivity : Activity() {
                 for ((index, track) in p.tracks.withIndex()) {
                     if (Thread.currentThread().isInterrupted) break
 
+                    val keepManualSelection =
+                        track.manuallySelected &&
+                            !track.selectedVideoId.isNullOrBlank()
+
                     val keepExactSelection =
                         preserveExistingExact &&
                             !track.selectedVideoId.isNullOrBlank() &&
                             track.status == TrackStatus.MATCHED &&
                             track.candidates.isEmpty()
 
-                    if (keepExactSelection) {
+                    if (
+                        keepManualSelection ||
+                        keepExactSelection
+                    ) {
                         runOnUiThread {
                             progress.progress = index + 1
                             status(
                                 "Пошук ${index + 1}/${p.tracks.size} • " +
-                                    "точний videoId з Project збережено"
+                                    if (keepManualSelection) {
+                                        "ручний вибір збережено"
+                                    } else {
+                                        "точний videoId з Project збережено"
+                                    }
                             )
                             adapter.notifyDataSetChanged()
                             updateSummary()
@@ -1558,6 +1605,15 @@ class MainActivity : Activity() {
         candidates: List<SearchCandidate>
     ) {
         track.candidates = candidates
+
+        if (
+            track.manuallySelected &&
+            !track.selectedVideoId.isNullOrBlank()
+        ) {
+            track.status = TrackStatus.MATCHED
+            track.error = null
+            return
+        }
 
         val best = candidates.firstOrNull()
         if (best == null) {
@@ -3090,7 +3146,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.1.3.0/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.3.1/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()
@@ -4852,28 +4908,38 @@ class MainActivity : Activity() {
 
                     result.onSuccess { videoInfo ->
                         if (videoInfo != null) {
+                            val targetTrack =
+                                resolveCurrentTrack(
+                                    fallbackTrack = track,
+                                    historyIndex =
+                                        reopenReviewHistoryIndex
+                                            ?: track.historyIndex
+                                )
+
                             applyCandidate(
-                                track = track,
+                                track = targetTrack,
                                 candidate = videoInfo,
                                 manual = true
                             )
-                            track.status = TrackStatus.MATCHED
-                            track.error = null
+                            targetTrack.status = TrackStatus.MATCHED
+                            targetTrack.error = null
 
                             adapter.notifyDataSetChanged()
                             updateSummary()
 
                             status(
                                 "Ручна заміна: " +
-                                    "${track.originalArtist} — " +
-                                    "${track.originalTitle} → " +
+                                    "${targetTrack.originalArtist} — " +
+                                    "${targetTrack.originalTitle} → " +
                                     videoInfo.title
                             )
 
-                            reopenReviewHistoryIndex
-                                ?.let {
-                                    openReviewScreen(it)
-                                }
+                            (
+                                reopenReviewHistoryIndex
+                                    ?: targetTrack.historyIndex
+                            )?.let {
+                                openReviewScreen(it)
+                            }
                         } else {
                             applyManualUrlFallback(
                                 track = track,
@@ -4908,12 +4974,20 @@ class MainActivity : Activity() {
         reason: String,
         reopenReviewHistoryIndex: Int? = null
     ) {
-        track.selectedVideoId = videoId
-        track.selectedTitle = "YouTube video $videoId"
-        track.selectedChannel = "метадані не завантажено"
-        track.status = TrackStatus.MATCHED
-        track.manuallySelected = true
-        track.error = null
+        val targetTrack =
+            resolveCurrentTrack(
+                fallbackTrack = track,
+                historyIndex =
+                    reopenReviewHistoryIndex
+                        ?: track.historyIndex
+            )
+
+        targetTrack.selectedVideoId = videoId
+        targetTrack.selectedTitle = "YouTube video $videoId"
+        targetTrack.selectedChannel = "метадані не завантажено"
+        targetTrack.status = TrackStatus.MATCHED
+        targetTrack.manuallySelected = true
+        targetTrack.error = null
 
         adapter.notifyDataSetChanged()
         updateSummary()
@@ -4926,10 +5000,28 @@ class MainActivity : Activity() {
             "Посилання використано. Назву можна перевірити у YTM."
         )
 
-        reopenReviewHistoryIndex
-            ?.let {
-                openReviewScreen(it)
+        (
+            reopenReviewHistoryIndex
+                ?: targetTrack.historyIndex
+        )?.let {
+            openReviewScreen(it)
+        }
+    }
+
+    private fun resolveCurrentTrack(
+        fallbackTrack: Track,
+        historyIndex: Int?
+    ): Track {
+        val index =
+            historyIndex
+                ?: fallbackTrack.historyIndex
+
+        return playlist
+            ?.tracks
+            ?.firstOrNull { candidate ->
+                candidate.historyIndex == index
             }
+            ?: fallbackTrack
     }
 
     private fun extractVideoId(value: String): String? {

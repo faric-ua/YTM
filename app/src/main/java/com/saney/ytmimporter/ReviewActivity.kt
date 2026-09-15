@@ -2,6 +2,7 @@ package com.saney.ytmimporter
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ClipData
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -20,11 +21,17 @@ import android.widget.ListView
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.storage.PlaylistProjectCodec
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.roundToInt
 
 class ReviewActivity : Activity() {
@@ -36,6 +43,12 @@ class ReviewActivity : Activity() {
 
     private var currentTrackHistoryIndex:
         Int? = null
+
+    private var pendingProjectExport:
+        String? = null
+
+    private val saveProjectRequestCode =
+        3301
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -89,6 +102,29 @@ class ReviewActivity : Activity() {
         }
 
         showListScreen()
+    }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(
+            requestCode,
+            resultCode,
+            data
+        )
+
+        if (
+            requestCode == saveProjectRequestCode &&
+            resultCode == RESULT_OK
+        ) {
+            data
+                ?.data
+                ?.let(
+                    ::writePendingProject
+                )
+        }
     }
 
     override fun onSaveInstanceState(
@@ -186,9 +222,9 @@ class ReviewActivity : Activity() {
                     finish()
                 },
                 actionLabel =
-                    "Готово",
+                    "Проект",
                 onAction = {
-                    finish()
+                    showProjectActions()
                 }
             )
         )
@@ -233,6 +269,49 @@ class ReviewActivity : Activity() {
                 )
             }
         )
+
+        val projectRow =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.HORIZONTAL
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(8)
+                )
+            }
+
+        projectRow.addView(
+            smallButton(
+                "Зберегти Project"
+            ) {
+                saveCurrentProject()
+            },
+            LinearLayout.LayoutParams(
+                0,
+                dp(40),
+                1f
+            )
+        )
+
+        projectRow.addView(
+            smallButton(
+                "Поділитися"
+            ) {
+                shareCurrentProject()
+            },
+            LinearLayout.LayoutParams(
+                0,
+                dp(40),
+                1f
+            ).apply {
+                marginStart =
+                    dp(6)
+            }
+        )
+
+        root.addView(projectRow)
 
         root.addView(
             smallButton(
@@ -368,6 +447,11 @@ class ReviewActivity : Activity() {
                     "${track.originalArtist} — ${track.originalTitle}",
                 onBack = {
                     showListScreen()
+                },
+                actionLabel =
+                    "Проект",
+                onAction = {
+                    showProjectActions()
                 }
             )
         )
@@ -845,6 +929,212 @@ class ReviewActivity : Activity() {
                 )
             }
         }
+    }
+
+    private fun showProjectActions() {
+        AlertDialog.Builder(this)
+            .setTitle("Поточний YTM Project")
+            .setItems(
+                arrayOf(
+                    "Зберегти YTM Project",
+                    "Поділитися YTM Project"
+                )
+            ) { _, which ->
+                when (which) {
+                    0 -> saveCurrentProject()
+                    1 -> shareCurrentProject()
+                }
+            }
+            .setNegativeButton(
+                "Закрити",
+                null
+            )
+            .show()
+    }
+
+    private fun currentProjectJson(): String {
+        reloadSnapshot()
+
+        return PlaylistProjectCodec
+            .exportWorkingPlaylist(
+                playlist =
+                    snapshot.playlist,
+                sourceLabel =
+                    snapshot.sourceLabel,
+                appVersion =
+                    BuildConfig.VERSION_NAME
+            )
+    }
+
+    private fun saveCurrentProject() {
+        val content =
+            currentProjectJson()
+
+        pendingProjectExport =
+            content
+
+        val intent =
+            Intent(
+                Intent.ACTION_CREATE_DOCUMENT
+            ).apply {
+                addCategory(
+                    Intent.CATEGORY_OPENABLE
+                )
+                type = "application/json"
+                putExtra(
+                    Intent.EXTRA_TITLE,
+                    projectFileName()
+                )
+            }
+
+        runCatching {
+            startActivityForResult(
+                intent,
+                saveProjectRequestCode
+            )
+        }.onFailure { error ->
+            pendingProjectExport = null
+
+            toast(
+                "Не вдалося відкрити вибір файлу: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+    }
+
+    private fun shareCurrentProject() {
+        val content =
+            currentProjectJson()
+
+        runCatching {
+            val directory =
+                File(
+                    cacheDir,
+                    "shared_exports"
+                ).apply {
+                    mkdirs()
+                }
+
+            val file =
+                File(
+                    directory,
+                    projectFileName()
+                ).apply {
+                    writeText(
+                        content,
+                        Charsets.UTF_8
+                    )
+                }
+
+            val uri =
+                FileProvider.getUriForFile(
+                    this,
+                    "$packageName.fileprovider",
+                    file
+                )
+
+            val intent =
+                Intent(
+                    Intent.ACTION_SEND
+                ).apply {
+                    type = "application/json"
+                    putExtra(
+                        Intent.EXTRA_STREAM,
+                        uri
+                    )
+                    addFlags(
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                    clipData =
+                        ClipData.newRawUri(
+                            file.name,
+                            uri
+                        )
+                }
+
+            startActivity(
+                Intent.createChooser(
+                    intent,
+                    "Поділитися YTM Project"
+                )
+            )
+        }.onFailure { error ->
+            toast(
+                "Не вдалося поділитися Project: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+    }
+
+    private fun writePendingProject(
+        uri: Uri
+    ) {
+        val content =
+            pendingProjectExport
+                ?: return
+
+        runCatching {
+            contentResolver
+                .openOutputStream(
+                    uri,
+                    "w"
+                )
+                ?.bufferedWriter(
+                    Charsets.UTF_8
+                )
+                ?.use { writer ->
+                    writer.write(content)
+                }
+                ?: error(
+                    "Android не відкрив файл для запису"
+                )
+        }.onSuccess {
+            toast(
+                "Поточний YTM Project збережено"
+            )
+        }.onFailure { error ->
+            toast(
+                "Не вдалося зберегти Project: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+
+        pendingProjectExport = null
+    }
+
+    private fun projectFileName(): String {
+        val safeName =
+            snapshot.playlist.name
+                .replace(
+                    Regex(
+                        "[^\\p{L}\\p{N}._-]+"
+                    ),
+                    "_"
+                )
+                .trim('_')
+                .take(60)
+                .ifBlank {
+                    "playlist"
+                }
+
+        val timestamp =
+            SimpleDateFormat(
+                "yyyyMMdd_HHmmss",
+                Locale.US
+            ).format(
+                Date()
+            )
+
+        return "YTM_Project_${safeName}_${timestamp}.ytm.json"
     }
 
     private fun requestRepeatSearch() {

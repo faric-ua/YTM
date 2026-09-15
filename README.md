@@ -1,10 +1,10 @@
-# YTM Importer v1.3.0
+# YTM Importer v1.3.1
 
-Import / Review navigation release.
+Manual selection + working project hotfix.
 
 Highlights:
-- dedicated ImportActivity;
-- dedicated ReviewActivity;
-- persistent current playlist workspace;
-- candidate review without nested dialogs;
-- manual URL metadata keeps the existing YouTube API path.
+- canonical-track fix for manual URL metadata;
+- manual selections protected from cache overwrite;
+- save/share current working playlist as YTM Project before History;
+- Project schema v2 preserves candidates/status;
+- current workspace included in Full Backup.
