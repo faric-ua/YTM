@@ -59,3 +59,11 @@ Next:
 - responsive layout / larger text;
 - accessibility;
 - consistent empty/loading/error states.
+
+## v1.2.0 navigation progress
+
+- [x] Dedicated History screen.
+- [x] Searchable History list.
+- [x] Normal Back navigation.
+- [ ] Dedicated Data / Backup screen.
+- [ ] Dedicated Import / Review screen.

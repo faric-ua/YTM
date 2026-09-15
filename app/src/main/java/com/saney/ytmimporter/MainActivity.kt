@@ -3912,50 +3912,12 @@ class MainActivity : Activity() {
 
 
     private fun showHistory() {
-        val entries = historyStore.getAll()
-
-        if (entries.isEmpty()) {
-            return toast("Історія порожня")
-        }
-
-        val labels =
-            entries.map { entry ->
-                val status = effectiveHistoryStatus(entry)
-                buildString {
-                    append(historyStatusIcon(status))
-                    append(" ")
-                    append(entry.playlistName)
-                    append("\n")
-                    append(formatHistoryDate(entry.updatedAt))
-                    append(" • ")
-                    append(historyStatusLabel(status))
-                    append(" • ✓ ")
-                    append(entry.addedCount)
-                    append("/")
-                    append(entry.writeTargetCount)
-
-                    if (entry.pendingCount > 0) {
-                        append(" • ⏳ ")
-                        append(entry.pendingCount)
-                    }
-
-                    if (entry.failedCount > 0) {
-                        append(" • × ")
-                        append(entry.failedCount)
-                    }
-                }
-            }
-
-        AlertDialog.Builder(this)
-            .setTitle("Історія (History): ${entries.size}")
-            .setItems(labels.toTypedArray()) { _, which ->
-                entries.getOrNull(which)?.let(::showHistoryEntry)
-            }
-            .setNegativeButton("Закрити", null)
-            .setNeutralButton("Очистити") { _, _ ->
-                confirmClearHistory()
-            }
-            .show()
+        startActivity(
+            Intent(
+                this,
+                HistoryActivity::class.java
+            )
+        )
     }
 
     private fun showHistoryEntry(entry: HistoryEntry) {

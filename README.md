@@ -1,10 +1,11 @@
-# YTM Importer v1.1.0
+# YTM Importer v1.2.0
 
-Public UX foundation for the Android YouTube / YouTube Music playlist importer.
+Navigation foundation release.
 
 Highlights:
-- clear four-step main flow;
-- first-run onboarding;
-- in-app privacy information;
-- public release checklist;
-- stable v1.0 functional baseline preserved.
+- dedicated HistoryActivity;
+- searchable History list;
+- dedicated History detail screen;
+- proper Android Back navigation.
+
+Core playlist functionality remains unchanged.

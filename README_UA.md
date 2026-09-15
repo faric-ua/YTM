@@ -1,34 +1,20 @@
-# YTM Importer v1.1.0
+# YTM Importer v1.2.0
 
-YTM Importer перетворює список треків на плейлист YouTube / YouTube Music.
+History тепер окремий Android screen:
 
-## Основний flow
+`Головний екран → Історія → запис → деталі`
 
-1. Імпорт
-2. Google / YTM
-3. Знайти треки
-4. Створити / додати
+Є:
+- пошук;
+- нормальний Back;
+- counters/status;
+- replacement/problem preview;
+- Open in YTM;
+- Save/Share YTM Project;
+- Copy summary/problem log;
+- delete/clear local History.
 
-## Підтримується
+Core playlist functionality не змінювалась.
 
-- CSV / TXT / вставлений текст;
-- YTM Project;
-- SearchCache;
-- ручний вибір/URL;
-- existing playlists;
-- duplicates;
-- History;
-- Queue/Resume;
-- Backup/Restore/Rollback;
-- Diagnostics.
-
-## Privacy
-
-Без реклами, власного application server та built-in analytics.
-
-Детальніше: `PRIVACY.md`.
-
-## Public distribution
-
-Перед передачею широкому колу користувачів:
-`PUBLIC_RELEASE_CHECKLIST.md`.
+Наступний модуль для винесення з dialogs:
+Data / Backup / Restore.

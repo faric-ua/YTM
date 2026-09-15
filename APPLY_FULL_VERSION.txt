@@ -1,29 +1,27 @@
-YTM Importer v1.1.0 FULL
-
-PUBLIC UX FOUNDATION
+YTM Importer v1.2.0 FULL
 
 ADDED:
-PRIVACY.md
-PUBLIC_RELEASE_CHECKLIST.md
-scripts/release-preflight.sh
-docs/v.1.1.0/
-TERMINAL_APPLY_v1.1.0.md
-
-DELETED:
-scripts/rc-preflight.sh
+app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
+docs/v.1.2.0/
+TERMINAL_APPLY_v1.2.0.md
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
+app/src/main/AndroidManifest.xml
 app/build.gradle.kts
+scripts/release-preflight.sh
 .github/workflows/build-apk.yml
 BACKLOG.md
 CHANGELOG.md
 README.md
 README_UA.md
 PROJECT_STATUS.txt
+PUBLIC_RELEASE_CHECKLIST.md
 docs/README.md
 
+DELETED:
+none
+
 VERSION:
-versionCode = 27
-versionName = 1.1.0
+versionCode = 28
+versionName = 1.2.0

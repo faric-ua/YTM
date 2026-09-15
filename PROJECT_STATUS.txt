@@ -1,25 +1,17 @@
 YTM Importer
-Version: 1.1.0
-Version code: 27
+Version: 1.2.0
+Version code: 28
 Package: com.saney.ytmimporter
-Stage: Public UX Foundation
+Stage: Navigation Foundation
 
-Stable core:
-- preserved from v1.0.0
-
-v1.1.0:
-- 4-step main flow
-- no horizontal action bar
-- Quick Start
-- Privacy dialog
-- public About
-- PRIVACY.md
-- PUBLIC_RELEASE_CHECKLIST.md
-- release-preflight.sh
-
-Important external public-release item:
-Google OAuth / YouTube scope production verification/readiness
-must be confirmed before broad distribution.
+Added:
+- HistoryActivity
+- searchable History list
+- detail screen
+- normal Back navigation
+- History YTM Project actions
 
 Next:
-v1.2.x screen/navigation redesign
+- Data/Backup dedicated screen
+- Queue screen
+- Import/Review screen

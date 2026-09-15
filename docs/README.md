@@ -2,6 +2,6 @@
 
 Current version:
 
-`docs/v.1.1.0/`
+`docs/v.1.2.0/`
 
-v1.1.0 starts the public UX phase while preserving the v1.0 functional baseline.
+v1.2.0 starts multi-screen navigation with dedicated History.

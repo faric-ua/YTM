@@ -16,17 +16,27 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.1.0/RELEASE.md"
-check_file "docs/v.1.1.0/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.2.0/RELEASE.md"
+check_file "docs/v.1.2.0/REGRESSION_CHECKLIST.md"
+
+check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
+
+grep -q 'android:name=".HistoryActivity"' \
+  app/src/main/AndroidManifest.xml \
+  || fail "HistoryActivity is missing from manifest"
+
+grep -q 'HistoryActivity::class.java' \
+  app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
+  || fail "MainActivity does not open HistoryActivity"
 
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 27' app/build.gradle.kts \
-  || fail "Expected versionCode = 27"
+grep -q 'versionCode = 28' app/build.gradle.kts \
+  || fail "Expected versionCode = 28"
 
-grep -q 'versionName = "1.1.0"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.1.0"'
+grep -q 'versionName = "1.2.0"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.2.0"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -97,3 +107,4 @@ echo "- APK signature verification step"
 echo "- APK zipalign verification step"
 echo "- APK SHA-256 generation"
 echo "- release docs"
+echo "- dedicated HistoryActivity navigation"

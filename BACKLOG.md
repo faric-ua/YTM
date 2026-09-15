@@ -1,39 +1,28 @@
 # YTM Importer — Roadmap
 
 ## Поточна версія
-**v1.1.0 — Public UX Foundation**
+**v1.2.0 — Navigation Foundation / Dedicated History**
 
-## v1.1.0
-- [x] 4-step main flow;
-- [x] remove horizontal action bar;
-- [x] compact History / Queue / Quota / More row;
-- [x] first-run Quick Start;
-- [x] in-app Privacy;
-- [x] public-facing About;
-- [x] root PRIVACY.md;
-- [x] public release checklist;
-- [x] release-preflight naming;
+## v1.2.0
+- [x] dedicated HistoryActivity;
+- [x] normal Back navigation;
+- [x] searchable History list;
+- [x] dedicated History detail;
+- [x] YTM Project save/share from History;
+- [x] replacement/problem preview;
+- [x] masked email;
 - [ ] build/install test;
-- [ ] second-person usability test;
-- [ ] Google OAuth production readiness.
+- [ ] phone usability test.
 
-## v1.2.x — Screen/navigation redesign
-- [ ] separate Import/Review screen;
-- [ ] separate History screen;
-- [ ] separate Data/Backup screen;
-- [ ] proper toolbar/back navigation;
-- [ ] empty/loading/error states.
+## Next
+- [ ] dedicated Data / Backup / Restore screen;
+- [ ] dedicated Queue screen;
+- [ ] dedicated Import / Review screen;
+- [ ] reduce remaining AlertDialogs;
+- [ ] Material 3 / responsive polish.
 
-## v1.3.x — Material / responsive polish
-- [ ] Material 3;
-- [ ] phone-size responsiveness;
-- [ ] typography / spacing;
-- [ ] accessibility;
-- [ ] consistent icons;
-- [ ] light/dark theme decision.
-
-## Public distribution blocker outside APK code
-- [ ] OAuth audience/production status;
-- [ ] Google verification when required for requested YouTube scopes;
+## Public distribution
+- [ ] OAuth production readiness;
 - [ ] hosted privacy-policy URL;
-- [ ] test with non-developer Google account.
+- [ ] non-developer Google account test;
+- [ ] second-person usability test.
