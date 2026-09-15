@@ -81,3 +81,11 @@ Next:
 - [x] Dedicated Data / Backup / Restore screen.
 - [x] Dedicated Pending Queue screen.
 - [ ] Dedicated Import / Review screen.
+
+## v1.3.0 navigation progress
+
+- [x] Dedicated Import screen.
+- [x] Dedicated Review screen.
+- [x] Persistent unfinished-workspace state.
+- [ ] Dedicated destination/create screen.
+- [ ] Remove legacy dialog code after full regression.

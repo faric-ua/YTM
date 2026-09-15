@@ -1,28 +1,44 @@
-# YTM Importer v1.2.2
+# YTM Importer v1.3.0
 
-Третій окремий screen у новій navigation architecture:
+Основний Import / Review flow тепер має окремі screens.
 
-`Головний → Черга`
+## Import
 
-PendingActivity має:
+`1. Імпорт → ImportActivity`
 
-- searchable queue list;
-- progress/counters;
-- job detail;
-- remaining tracks preview;
-- masked account identifiers;
-- Open in YTM;
-- Delete local job;
-- Continue.
+Підтримує:
+- CSV;
+- TXT;
+- YTM Project;
+- pasted Artist - Track;
+- optional playlist name.
 
-Важливо: `Continue` не дублює write logic.
-PendingActivity повертає `jobId` назад у MainActivity,
-де використовується старий перевірений `resumePendingJob()`.
+## Review
 
-Тепер окремими screens уже є:
+`3. Знайти / перевірити → ReviewActivity`
 
+Є filters:
+- Усі;
+- Перевірити;
+- Готові;
+- Проблеми.
+
+Кожен трек має окремий detail screen з search candidates,
+score/channel, Use/Open YTM, manual URL та Skip.
+
+## Workspace
+
+Поточний незавершений playlist зберігається локально,
+тому може відновитися після перезапуску застосунку.
+
+OAuth token у workspace НЕ зберігається.
+
+Тепер окремі screens:
+- Import;
+- Review;
 - History;
-- Data / Backup;
+- Data;
 - Pending Queue.
 
-Наступний великий крок — Import / Review.
+Наступний великий крок:
+destination/create flow.

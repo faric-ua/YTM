@@ -38,6 +38,7 @@ import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.parser.PlaylistParser
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.LocalBackupManager
+import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
@@ -90,6 +91,8 @@ class MainActivity : Activity() {
     private val saveExportRequestCode = 1101
     private val restoreBackupRequestCode = 1102
     private val pendingQueueRequestCode = 1201
+    private val importScreenRequestCode = 1301
+    private val reviewScreenRequestCode = 1302
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
@@ -99,6 +102,7 @@ class MainActivity : Activity() {
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var historyStore: HistoryStore
     private lateinit var localBackupManager: LocalBackupManager
+    private lateinit var currentPlaylistStore: CurrentPlaylistStore
 
     private var playlist: ImportedPlaylist? = null
     private var accessToken: String? = null
@@ -137,7 +141,9 @@ class MainActivity : Activity() {
         pendingJobStore = PendingJobStore(this)
         historyStore = HistoryStore(this)
         localBackupManager = LocalBackupManager(this)
+        currentPlaylistStore = CurrentPlaylistStore(this)
         buildUi()
+        restoreCurrentWorkspaceOnLaunch()
 
         if (savedInstanceState == null) {
             window.decorView.post {
@@ -148,6 +154,10 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+
+        if (::adapter.isInitialized) {
+            reloadCurrentWorkspace()
+        }
 
         if (::pendingButton.isInitialized) {
             updatePendingButton()
@@ -249,7 +259,7 @@ class MainActivity : Activity() {
 
         val importButton =
             button("1. Імпорт") {
-                showImportMenu()
+                openImportScreen()
             }
 
         accountButton =
@@ -258,8 +268,8 @@ class MainActivity : Activity() {
             }
 
         searchButton =
-            primaryButton("3. Знайти треки") {
-                searchAll()
+            primaryButton("3. Знайти / перевірити") {
+                searchOrReview()
             }.apply {
                 isEnabled = false
                 alpha = 0.55f
@@ -479,8 +489,9 @@ class MainActivity : Activity() {
         listView.adapter = adapter
 
         listView.setOnItemClickListener { _, _, position, _ ->
-            showTrackDialog(
+            openReviewScreen(
                 visibleTracks[position]
+                    .historyIndex
             )
         }
 
@@ -639,6 +650,151 @@ class MainActivity : Activity() {
             }
     }
 
+    private fun openImportScreen() {
+        startActivityForResult(
+            Intent(
+                this,
+                ImportActivity::class.java
+            ),
+            importScreenRequestCode
+        )
+    }
+
+    private fun openReviewScreen(
+        focusHistoryIndex: Int? = null
+    ) {
+        val current =
+            playlist
+                ?: return toast(
+                    "Спочатку імпортуйте список треків"
+                )
+
+        currentPlaylistStore.save(
+            playlist = current,
+            sourceLabel =
+                currentImportSourceLabel
+        )
+
+        val intent =
+            Intent(
+                this,
+                ReviewActivity::class.java
+            )
+
+        focusHistoryIndex
+            ?.let {
+                intent.putExtra(
+                    ReviewActivity
+                        .EXTRA_FOCUS_HISTORY_INDEX,
+                    it
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            reviewScreenRequestCode
+        )
+    }
+
+    private fun searchOrReview() {
+        val current =
+            playlist
+                ?: return toast(
+                    "Спочатку імпортуйте список треків"
+                )
+
+        val needsInitialSearch =
+            current.tracks.any { track ->
+                track.status ==
+                    TrackStatus.NEW &&
+                    track.selectedVideoId
+                        .isNullOrBlank()
+            }
+
+        if (needsInitialSearch) {
+            searchAll(
+                openReviewAfter = true,
+                preserveExistingExact = true
+            )
+        } else {
+            openReviewScreen()
+        }
+    }
+
+    private fun restoreCurrentWorkspaceOnLaunch() {
+        val snapshot =
+            currentPlaylistStore
+                .load()
+                ?: return
+
+        playlist =
+            snapshot.playlist
+        currentImportSourceLabel =
+            snapshot.sourceLabel
+
+        visibleTracks.clear()
+        visibleTracks.addAll(
+            snapshot.playlist.tracks
+        )
+
+        adapter.notifyDataSetChanged()
+        updateSummary()
+
+        status(
+            "Відновлено робочий список: " +
+                "${snapshot.playlist.name} • " +
+                "${snapshot.playlist.tracks.size} треків."
+        )
+    }
+
+    private fun reloadCurrentWorkspace(
+        force: Boolean = false
+    ) {
+        val snapshot =
+            currentPlaylistStore
+                .load()
+                ?: return
+
+        val current =
+            playlist
+
+        if (
+            !force &&
+            current != null &&
+            current.tracks.any {
+                it.status ==
+                    TrackStatus.SEARCHING
+            }
+        ) {
+            return
+        }
+
+        playlist =
+            snapshot.playlist
+        currentImportSourceLabel =
+            snapshot.sourceLabel
+
+        visibleTracks.clear()
+        visibleTracks.addAll(
+            snapshot.playlist.tracks
+        )
+
+        adapter.notifyDataSetChanged()
+        updateSummary()
+    }
+
+    private fun persistCurrentWorkspace() {
+        val current =
+            playlist
+                ?: return
+
+        currentPlaylistStore.save(
+            playlist = current,
+            sourceLabel =
+                currentImportSourceLabel
+        )
+    }
+
     private fun showImportMenu() {
         val labels =
             arrayOf(
@@ -733,6 +889,79 @@ class MainActivity : Activity() {
                         )
                     } else {
                         resumePendingJob(job)
+                    }
+                }
+            }
+
+            importScreenRequestCode -> {
+                reloadCurrentWorkspace(
+                    force = true
+                )
+
+                val message =
+                    data.getStringExtra(
+                        ImportActivity.EXTRA_IMPORT_MESSAGE
+                    )
+
+                if (!message.isNullOrBlank()) {
+                    status(
+                        message +
+                            " Крок 3: «Знайти / перевірити»."
+                    )
+                }
+            }
+
+            reviewScreenRequestCode -> {
+                reloadCurrentWorkspace(
+                    force = true
+                )
+
+                if (
+                    data.getBooleanExtra(
+                        ReviewActivity.EXTRA_REPEAT_SEARCH,
+                        false
+                    )
+                ) {
+                    searchAll(
+                        openReviewAfter = true
+                    )
+                    return
+                }
+
+                val videoId =
+                    data.getStringExtra(
+                        ReviewActivity.EXTRA_MANUAL_VIDEO_ID
+                    )
+
+                val historyIndex =
+                    data.getIntExtra(
+                        ReviewActivity.EXTRA_MANUAL_HISTORY_INDEX,
+                        Int.MIN_VALUE
+                    )
+
+                if (
+                    !videoId.isNullOrBlank() &&
+                    historyIndex != Int.MIN_VALUE
+                ) {
+                    val track =
+                        playlist
+                            ?.tracks
+                            ?.firstOrNull {
+                                it.historyIndex ==
+                                    historyIndex
+                            }
+
+                    if (track == null) {
+                        toast(
+                            "Не вдалося знайти трек для ручної заміни"
+                        )
+                    } else {
+                        applyManualUrl(
+                            track = track,
+                            videoId = videoId,
+                            reopenReviewHistoryIndex =
+                                historyIndex
+                        )
                     }
                 }
             }
@@ -912,7 +1141,7 @@ class MainActivity : Activity() {
         updateSummary()
         status(
             "$sourceLabel імпортовано: ${imported.tracks.size} треків. " +
-                "Крок 3: натисніть «Знайти треки». Відомі треки будуть взяті з кешу."
+                "Крок 3: натисніть «Знайти / перевірити». Відомі треки будуть взяті з кешу."
         )
     }
 
@@ -1128,13 +1357,31 @@ class MainActivity : Activity() {
         updatePrimaryActions()
     }
 
-    private fun searchAll() {
+    private fun searchAll(
+        openReviewAfter: Boolean = false,
+        preserveExistingExact: Boolean = false
+    ) {
         val p = playlist ?: return toast("Спочатку імпортуйте список треків")
 
-        val cachedCount =
-            p.tracks.count { searchCache.get(it) != null }
+        val tracksToSearch =
+            if (preserveExistingExact) {
+                p.tracks.filter { track ->
+                    track.selectedVideoId.isNullOrBlank() ||
+                        track.status != TrackStatus.MATCHED ||
+                        track.candidates.isNotEmpty()
+                }
+            } else {
+                p.tracks
+            }
 
-        val apiNeeded = p.tracks.size - cachedCount
+        val cachedCount =
+            tracksToSearch.count {
+                searchCache.get(it) != null
+            }
+
+        val apiNeeded =
+            tracksToSearch.size -
+                cachedCount
         val quota = quotaTracker.snapshot()
 
         val warning =
@@ -1148,7 +1395,8 @@ class MainActivity : Activity() {
         AlertDialog.Builder(this)
             .setTitle("План пошуку (Search plan)")
             .setMessage(
-                "Треків: ${p.tracks.size}\n" +
+                "Треків у списку: ${p.tracks.size}\n" +
+                    "Пошук потрібен для: ${tracksToSearch.size}\n" +
                     "Вже є в кеші: $cachedCount\n" +
                     "Потрібно нових search.list: $apiNeeded\n\n" +
                     "Локально використано сьогодні: ${quota.searchCalls}/" +
@@ -1161,12 +1409,22 @@ class MainActivity : Activity() {
             )
             .setNegativeButton("Скасувати", null)
             .setPositiveButton("Почати") { _, _ ->
-                startSearch(p)
+                startSearch(
+                    p = p,
+                    openReviewAfter =
+                        openReviewAfter,
+                    preserveExistingExact =
+                        preserveExistingExact
+                )
             }
             .show()
     }
 
-    private fun startSearch(p: ImportedPlaylist) {
+    private fun startSearch(
+        p: ImportedPlaylist,
+        openReviewAfter: Boolean = false,
+        preserveExistingExact: Boolean = false
+    ) {
         authorize {
             val token = accessToken ?: return@authorize
 
@@ -1183,6 +1441,26 @@ class MainActivity : Activity() {
 
                 for ((index, track) in p.tracks.withIndex()) {
                     if (Thread.currentThread().isInterrupted) break
+
+                    val keepExactSelection =
+                        preserveExistingExact &&
+                            !track.selectedVideoId.isNullOrBlank() &&
+                            track.status == TrackStatus.MATCHED &&
+                            track.candidates.isEmpty()
+
+                    if (keepExactSelection) {
+                        runOnUiThread {
+                            progress.progress = index + 1
+                            status(
+                                "Пошук ${index + 1}/${p.tracks.size} • " +
+                                    "точний videoId з Project збережено"
+                            )
+                            adapter.notifyDataSetChanged()
+                            updateSummary()
+                            updateQuotaPanel()
+                        }
+                        continue
+                    }
 
                     track.status = TrackStatus.SEARCHING
                     track.error = null
@@ -1266,6 +1544,10 @@ class MainActivity : Activity() {
 
                     updateSummary()
                     updateQuotaPanel()
+
+                    if (openReviewAfter) {
+                        openReviewScreen()
+                    }
                 }
             }
         }
@@ -2808,7 +3090,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.1.2.2/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.3.0/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()
@@ -4541,7 +4823,8 @@ class MainActivity : Activity() {
 
     private fun applyManualUrl(
         track: Track,
-        videoId: String
+        videoId: String,
+        reopenReviewHistoryIndex: Int? = null
     ) {
         authorize {
             val token = accessToken ?: return@authorize
@@ -4586,12 +4869,19 @@ class MainActivity : Activity() {
                                     "${track.originalTitle} → " +
                                     videoInfo.title
                             )
+
+                            reopenReviewHistoryIndex
+                                ?.let {
+                                    openReviewScreen(it)
+                                }
                         } else {
                             applyManualUrlFallback(
                                 track = track,
                                 videoId = videoId,
                                 reason =
-                                    "YouTube не повернув назву цього відео"
+                                    "YouTube не повернув назву цього відео",
+                                reopenReviewHistoryIndex =
+                                    reopenReviewHistoryIndex
                             )
                         }
                     }.onFailure { error ->
@@ -4602,7 +4892,9 @@ class MainActivity : Activity() {
                                 ErrorMessages.userMessage(
                                     error,
                                     "Не вдалося отримати назву відео"
-                                )
+                                ),
+                            reopenReviewHistoryIndex =
+                                reopenReviewHistoryIndex
                         )
                     }
                 }
@@ -4613,7 +4905,8 @@ class MainActivity : Activity() {
     private fun applyManualUrlFallback(
         track: Track,
         videoId: String,
-        reason: String
+        reason: String,
+        reopenReviewHistoryIndex: Int? = null
     ) {
         track.selectedVideoId = videoId
         track.selectedTitle = "YouTube video $videoId"
@@ -4632,6 +4925,11 @@ class MainActivity : Activity() {
         toast(
             "Посилання використано. Назву можна перевірити у YTM."
         )
+
+        reopenReviewHistoryIndex
+            ?.let {
+                openReviewScreen(it)
+            }
     }
 
     private fun extractVideoId(value: String): String? {
@@ -4920,6 +5218,7 @@ class MainActivity : Activity() {
                 "✓ $matched  ! $review  ⧉ $duplicates  " +
                 "⏳ $pending  × $missing"
 
+        persistCurrentWorkspace()
         updatePrimaryActions()
     }
 

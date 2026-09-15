@@ -1,13 +1,14 @@
-YTM Importer v1.2.2 FULL
+YTM Importer v1.3.0 FULL
 
 ADDED:
-app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
-docs/v.1.2.2/
-TERMINAL_APPLY_v1.2.2.md
+app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
+app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
+docs/v.1.3.0/
+TERMINAL_APPLY_v1.3.0.md
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
 app/src/main/AndroidManifest.xml
 app/build.gradle.kts
 scripts/release-preflight.sh
@@ -16,6 +17,7 @@ BACKLOG.md
 CHANGELOG.md
 README.md
 README_UA.md
+PRIVACY.md
 PROJECT_STATUS.txt
 PUBLIC_RELEASE_CHECKLIST.md
 docs/README.md
@@ -24,5 +26,5 @@ DELETED:
 none
 
 VERSION:
-versionCode = 30
-versionName = 1.2.2
+versionCode = 31
+versionName = 1.3.0

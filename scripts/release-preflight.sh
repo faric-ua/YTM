@@ -16,14 +16,46 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.2.2/RELEASE.md"
-check_file "docs/v.1.2.2/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.3.0/RELEASE.md"
+check_file "docs/v.1.3.0/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
 check_file "app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
 
 check_file "app/src/main/java/com/saney/ytmimporter/PendingActivity.kt"
+
+check_file "app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
+
+grep -q 'android:name=".ImportActivity"' \
+  app/src/main/AndroidManifest.xml \
+  || fail "ImportActivity is missing from manifest"
+
+grep -q 'android:name=".ReviewActivity"' \
+  app/src/main/AndroidManifest.xml \
+  || fail "ReviewActivity is missing from manifest"
+
+grep -q 'ImportActivity::class.java' \
+  app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
+  || fail "MainActivity does not open ImportActivity"
+
+grep -q 'ReviewActivity::class.java' \
+  app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
+  || fail "MainActivity does not open ReviewActivity"
+
+grep -q 'EXTRA_MANUAL_VIDEO_ID' \
+  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt \
+  || fail "Review manual URL result contract is missing"
+
+grep -q 'EXTRA_REPEAT_SEARCH' \
+  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt \
+  || fail "Review repeat-search result contract is missing"
+
+grep -q 'current_playlist_v1' \
+  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt \
+  || fail "Current playlist persistence is missing"
 
 grep -q 'android:name=".PendingActivity"' \
   app/src/main/AndroidManifest.xml \
@@ -56,11 +88,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 30' app/build.gradle.kts \
-  || fail "Expected versionCode = 30"
+grep -q 'versionCode = 31' app/build.gradle.kts \
+  || fail "Expected versionCode = 31"
 
-grep -q 'versionName = "1.2.2"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.2.2"'
+grep -q 'versionName = "1.3.0"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.3.0"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -135,3 +167,8 @@ echo "- dedicated HistoryActivity navigation"
 echo "- dedicated DataActivity navigation"
 echo "- dedicated PendingActivity navigation"
 echo "- Pending Queue resume result contract"
+echo "- dedicated ImportActivity navigation"
+echo "- dedicated ReviewActivity navigation"
+echo "- persistent current playlist workspace"
+echo "- Review manual URL result contract"
+echo "- Review repeat-search result contract"

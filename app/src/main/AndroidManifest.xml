@@ -20,6 +20,16 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
+            android:name=".ReviewActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
+            android:name=".ImportActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".PendingActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />

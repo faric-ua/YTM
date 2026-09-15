@@ -62,3 +62,11 @@ subsequent transfer or storage.
 
 YTM Importer is an independent utility and is not an official Google,
 YouTube, or YouTube Music application.
+
+## Current working playlist
+
+Starting with v1.3.0, the current unfinished imported playlist may be stored
+locally on the device so it can survive an app restart. This can include track
+names, candidate YouTube video IDs, channels, statuses and manual selections.
+
+The Google OAuth access token is not stored in this current-workspace data.

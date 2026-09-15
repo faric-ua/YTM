@@ -1,36 +1,35 @@
 # YTM Importer — Roadmap
 
 ## Поточна версія
-**v1.2.2 — Dedicated Pending Queue Screen**
+**v1.3.0 — Import / Review Navigation**
 
-## Completed navigation refactor
-- [x] public 4-step main screen;
-- [x] dedicated History screen;
-- [x] dedicated Data / Backup screen;
-- [x] dedicated Pending Queue screen;
-- [x] normal Back navigation for utility screens.
+## Completed navigation
+- [x] Public main screen;
+- [x] History screen;
+- [x] Data / Backup screen;
+- [x] Pending Queue screen;
+- [x] Import screen;
+- [x] Review screen;
+- [x] persistent current workspace.
 
-## v1.2.2
-- [x] PendingActivity;
-- [x] searchable queue list;
-- [x] job detail screen;
-- [x] remaining track preview;
-- [x] resume result contract back to MainActivity;
-- [x] preserve OAuth/account mismatch validation;
-- [x] local delete confirmation;
+## v1.3.0
+- [x] ImportActivity;
+- [x] CSV/TXT/YTM Project/text import;
+- [x] CurrentPlaylistStore;
+- [x] ReviewActivity;
+- [x] review filters;
+- [x] candidate cards;
+- [x] repeat-search contract;
+- [x] manual URL result contract;
+- [x] preserve v0.15.2 YouTube metadata lookup;
 - [ ] build/install test;
-- [ ] phone regression.
+- [ ] 50-track Clubland regression.
 
-## Next major step
-- [ ] dedicated Import / Review screen;
-- [ ] move track-review UI out of MainActivity dialogs;
-- [ ] candidate/manual replacement navigation;
-- [ ] reduce legacy dialog code after regression.
-
-## Later polish
-- [ ] Material 3;
-- [ ] responsive layout;
-- [ ] typography/spacing;
+## Next
+- [ ] dedicated destination/create screen;
+- [ ] remove legacy import/review dialog code after regression;
+- [ ] Material 3 components;
+- [ ] responsive typography/spacing;
 - [ ] accessibility.
 
 ## Public distribution

@@ -2,7 +2,7 @@
 
 Current version:
 
-`docs/v.1.2.2/`
+`docs/v.1.3.0/`
 
-v1.2.2 adds a dedicated Pending Queue screen while keeping
-resume/write logic in the existing core path.
+v1.3.0 introduces dedicated Import and Review screens
+plus persistent current-workspace state.

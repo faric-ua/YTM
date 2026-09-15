@@ -1,23 +1,28 @@
 YTM Importer
-Version: 1.2.2
-Version code: 30
+Version: 1.3.0
+Version code: 31
 Package: com.saney.ytmimporter
-Stage: Navigation Foundation
+Stage: Import / Review Navigation
 
 Dedicated screens:
+- ImportActivity
+- ReviewActivity
 - HistoryActivity
 - DataActivity
 - PendingActivity
 
-PendingActivity:
-- searchable queue
-- detail screen
-- remaining track preview
-- continue via jobId result
-- local delete
+Current workspace:
+- persists playlist/tracks/candidates/selections
+- does NOT persist OAuth token
 
-Core resume/write path remains in MainActivity.
+Core retained in MainActivity:
+- OAuth
+- YouTube search
+- manual URL metadata lookup
+- create/append write flow
+- duplicate protection
 
 Next:
-- Import/Review screen
-- then Material/responsive polish
+- dedicated destination/create flow
+- legacy dialog cleanup after regression
+- Material/responsive polish

@@ -1,0 +1,1594 @@
+package com.saney.ytmimporter
+
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
+import android.net.Uri
+import android.os.Bundle
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AbsListView
+import android.widget.BaseAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.ListView
+import android.widget.ScrollView
+import android.widget.TextView
+import android.widget.Toast
+import com.saney.ytmimporter.model.SearchCandidate
+import com.saney.ytmimporter.model.Track
+import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
+import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import kotlin.math.roundToInt
+
+class ReviewActivity : Activity() {
+    private lateinit var currentPlaylistStore:
+        CurrentPlaylistStore
+
+    private lateinit var snapshot:
+        CurrentPlaylistSnapshot
+
+    private var currentTrackHistoryIndex:
+        Int? = null
+
+    override fun onCreate(
+        savedInstanceState: Bundle?
+    ) {
+        super.onCreate(savedInstanceState)
+
+        currentPlaylistStore =
+            CurrentPlaylistStore(this)
+
+        val loaded =
+            currentPlaylistStore.load()
+
+        if (loaded == null) {
+            showEmptyState()
+            return
+        }
+
+        snapshot = loaded
+
+        val restoredTrackIndex =
+            savedInstanceState
+                ?.getInt(
+                    KEY_TRACK_HISTORY_INDEX,
+                    Int.MIN_VALUE
+                )
+                ?.takeIf {
+                    it != Int.MIN_VALUE
+                }
+
+        val requestedTrackIndex =
+            intent
+                .getIntExtra(
+                    EXTRA_FOCUS_HISTORY_INDEX,
+                    Int.MIN_VALUE
+                )
+                .takeIf {
+                    it != Int.MIN_VALUE
+                }
+
+        val focus =
+            restoredTrackIndex
+                ?: requestedTrackIndex
+
+        if (focus != null) {
+            findTrackByHistoryIndex(
+                focus
+            )?.let { track ->
+                showTrackScreen(track)
+                return
+            }
+        }
+
+        showListScreen()
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        currentTrackHistoryIndex
+            ?.let { value ->
+                outState.putInt(
+                    KEY_TRACK_HISTORY_INDEX,
+                    value
+                )
+            }
+
+        super.onSaveInstanceState(
+            outState
+        )
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (
+            currentTrackHistoryIndex != null
+        ) {
+            showListScreen()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    private fun showEmptyState() {
+        val root =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setBackgroundColor(
+                    BACKGROUND
+                )
+            }
+
+        root.addView(
+            topBar(
+                title =
+                    "Перевірка треків",
+                onBack = {
+                    finish()
+                }
+            )
+        )
+
+        root.addView(
+            TextView(this).apply {
+                text =
+                    "Немає активного імпортованого списку.\n\n" +
+                        "Поверніться на головний екран і почніть з «1. Імпорт»."
+                gravity =
+                    Gravity.CENTER
+                textSize = 15f
+                setTextColor(MUTED)
+                setPadding(
+                    dp(24),
+                    dp(40),
+                    dp(24),
+                    dp(40)
+                )
+            },
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        setContentView(root)
+    }
+
+    private fun showListScreen() {
+        currentTrackHistoryIndex = null
+
+        reloadSnapshot()
+
+        val root =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setBackgroundColor(
+                    BACKGROUND
+                )
+            }
+
+        root.addView(
+            topBar(
+                title =
+                    "Перевірка треків",
+                onBack = {
+                    finish()
+                },
+                actionLabel =
+                    "Готово",
+                onAction = {
+                    finish()
+                }
+            )
+        )
+
+        val summary =
+            TextView(this).apply {
+                text =
+                    buildSummaryText()
+                textSize = 13f
+                setTextColor(
+                    Color.rgb(
+                        205,
+                        207,
+                        213
+                    )
+                )
+                setPadding(
+                    dp(14),
+                    dp(12),
+                    dp(14),
+                    dp(12)
+                )
+                background =
+                    roundedBackground(
+                        color = SURFACE,
+                        radiusDp = 14,
+                        strokeColor = BORDER
+                    )
+            }
+
+        root.addView(
+            summary,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(8)
+                )
+            }
+        )
+
+        root.addView(
+            smallButton(
+                "Повторити пошук"
+            ) {
+                requestRepeatSearch()
+            },
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(40)
+            ).apply {
+                setMargins(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(8)
+                )
+            }
+        )
+
+        val filterRow =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.HORIZONTAL
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(8)
+                )
+            }
+
+        val list =
+            ListView(this).apply {
+                divider = null
+                dividerHeight = dp(6)
+                clipToPadding = false
+                setPadding(
+                    dp(10),
+                    0,
+                    dp(10),
+                    dp(14)
+                )
+                setBackgroundColor(
+                    BACKGROUND
+                )
+            }
+
+        val adapter =
+            ReviewListAdapter(
+                snapshot.playlist.tracks
+            )
+
+        list.adapter = adapter
+
+        val filters =
+            listOf(
+                "Усі" to ReviewFilter.ALL,
+                "Перевірити" to ReviewFilter.REVIEW,
+                "Готові" to ReviewFilter.READY,
+                "Проблеми" to ReviewFilter.PROBLEMS
+            )
+
+        filters.forEachIndexed {
+                index,
+                pair ->
+
+            filterRow.addView(
+                smallButton(
+                    pair.first
+                ) {
+                    adapter.setFilter(
+                        pair.second
+                    )
+                },
+                LinearLayout.LayoutParams(
+                    0,
+                    dp(40),
+                    1f
+                ).apply {
+                    if (index > 0) {
+                        marginStart = dp(5)
+                    }
+                }
+            )
+        }
+
+        root.addView(filterRow)
+
+        root.addView(
+            list,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        list.setOnItemClickListener {
+                _,
+                _,
+                position,
+                _ ->
+
+            adapter
+                .getItem(position)
+                ?.let(
+                    ::showTrackScreen
+                )
+        }
+
+        setContentView(root)
+    }
+
+    private fun showTrackScreen(
+        track: Track
+    ) {
+        currentTrackHistoryIndex =
+            track.historyIndex
+
+        val root =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setBackgroundColor(
+                    BACKGROUND
+                )
+            }
+
+        root.addView(
+            topBar(
+                title =
+                    "${track.originalArtist} — ${track.originalTitle}",
+                onBack = {
+                    showListScreen()
+                }
+            )
+        )
+
+        val scroll =
+            ScrollView(this).apply {
+                isFillViewport = true
+            }
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(24)
+                )
+            }
+
+        content.addView(
+            card().apply {
+                addView(
+                    TextView(
+                        this@ReviewActivity
+                    ).apply {
+                        text =
+                            statusLabel(track)
+                        textSize = 17f
+                        setTextColor(
+                            statusColor(
+                                track.status
+                            )
+                        )
+                        setTypeface(
+                            typeface,
+                            Typeface.BOLD
+                        )
+                    }
+                )
+
+                addView(
+                    infoText(
+                        buildString {
+                            append(
+                                "Оригінал:\n"
+                            )
+                            append(
+                                track.originalArtist
+                            )
+                            append(" — ")
+                            append(
+                                track.originalTitle
+                            )
+
+                            if (
+                                !track.selectedTitle
+                                    .isNullOrBlank()
+                            ) {
+                                append(
+                                    "\n\nЗараз вибрано:\n"
+                                )
+                                append(
+                                    track.selectedTitle
+                                )
+
+                                if (
+                                    !track.selectedChannel
+                                        .isNullOrBlank()
+                                ) {
+                                    append("\n")
+                                    append(
+                                        track.selectedChannel
+                                    )
+                                }
+
+                                if (
+                                    track.manuallySelected
+                                ) {
+                                    append(
+                                        "\nРучний вибір"
+                                    )
+                                }
+                            }
+
+                            if (
+                                !track.error
+                                    .isNullOrBlank()
+                            ) {
+                                append(
+                                    "\n\nПомилка:\n"
+                                )
+                                append(
+                                    track.error
+                                )
+                            }
+                        }
+                    )
+                )
+            }
+        )
+
+        content.addView(
+            sectionTitle("Кандидати")
+        )
+
+        if (
+            track.candidates
+                .isEmpty()
+        ) {
+            content.addView(
+                card().apply {
+                    addView(
+                        infoText(
+                            "Кандидатів немає. Можна вставити YouTube/YTM URL " +
+                                "або повернутися на головний екран і запустити пошук."
+                        )
+                    )
+                }
+            )
+        } else {
+            track.candidates
+                .take(10)
+                .forEach { candidate ->
+                    content.addView(
+                        candidateCard(
+                            track = track,
+                            candidate =
+                                candidate
+                        )
+                    )
+                }
+        }
+
+        content.addView(
+            sectionTitle("Ручна дія")
+        )
+
+        content.addView(
+            card().apply {
+                addView(
+                    actionButton(
+                        label =
+                            "Вставити YouTube / YTM URL",
+                        primary =
+                            false
+                    ) {
+                        showManualUrlDialog(
+                            track
+                        )
+                    }
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            "Пропустити цей трек",
+                        primary =
+                            false
+                    ) {
+                        skipTrack(track)
+                    }
+                )
+            }
+        )
+
+        scroll.addView(content)
+
+        root.addView(
+            scroll,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        setContentView(root)
+    }
+
+    private fun candidateCard(
+        track: Track,
+        candidate: SearchCandidate
+    ): LinearLayout {
+        val isSelected =
+            candidate.videoId ==
+                track.selectedVideoId
+
+        return card().apply {
+            addView(
+                TextView(
+                    this@ReviewActivity
+                ).apply {
+                    text =
+                        buildString {
+                            if (isSelected) {
+                                append("✓ ")
+                            }
+
+                            append(
+                                (
+                                    candidate.score *
+                                        100
+                                ).roundToInt()
+                            )
+                            append("%  ")
+                            append(
+                                candidate.title
+                            )
+                        }
+                    textSize = 15f
+                    setTextColor(
+                        if (isSelected) {
+                            Color.rgb(
+                                105,
+                                210,
+                                135
+                            )
+                        } else {
+                            Color.WHITE
+                        }
+                    )
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                }
+            )
+
+            addView(
+                infoText(
+                    candidate.channelTitle
+                )
+            )
+
+            val row =
+                LinearLayout(
+                    this@ReviewActivity
+                ).apply {
+                    orientation =
+                        LinearLayout.HORIZONTAL
+                }
+
+            row.addView(
+                smallButton(
+                    if (isSelected) {
+                        "Вибрано"
+                    } else {
+                        "Використати"
+                    }
+                ) {
+                    useCandidate(
+                        track = track,
+                        candidate = candidate
+                    )
+                },
+                LinearLayout.LayoutParams(
+                    0,
+                    dp(42),
+                    1f
+                )
+            )
+
+            row.addView(
+                smallButton(
+                    "Відкрити YTM"
+                ) {
+                    openCandidateInYtm(
+                        candidate.videoId
+                    )
+                },
+                LinearLayout.LayoutParams(
+                    0,
+                    dp(42),
+                    1f
+                ).apply {
+                    marginStart = dp(8)
+                }
+            )
+
+            addView(row)
+        }
+    }
+
+    private fun useCandidate(
+        track: Track,
+        candidate: SearchCandidate
+    ) {
+        track.selectedVideoId =
+            candidate.videoId
+        track.selectedTitle =
+            candidate.title
+        track.selectedChannel =
+            candidate.channelTitle
+        track.manuallySelected = true
+        track.status =
+            TrackStatus.MATCHED
+        track.error = null
+
+        saveSnapshot()
+
+        toast(
+            "Вибрано: ${candidate.title}"
+        )
+
+        showTrackScreen(track)
+    }
+
+    private fun skipTrack(
+        track: Track
+    ) {
+        track.status =
+            TrackStatus.SKIPPED
+        track.selectedVideoId = null
+        track.selectedTitle = null
+        track.selectedChannel = null
+        track.manuallySelected = true
+        track.error = null
+
+        saveSnapshot()
+
+        toast(
+            "Трек пропущено"
+        )
+
+        showListScreen()
+    }
+
+    private fun showManualUrlDialog(
+        track: Track
+    ) {
+        val input =
+            EditText(this).apply {
+                hint =
+                    "https://music.youtube.com/watch?v=…"
+                setSingleLine(true)
+                setPadding(
+                    dp(14),
+                    dp(8),
+                    dp(14),
+                    dp(8)
+                )
+            }
+
+        AlertDialog.Builder(this)
+            .setTitle(
+                "Ручне посилання"
+            )
+            .setMessage(
+                "YTM Importer повернеться на головний екран, " +
+                    "отримає реальну назву та канал через YouTube API, " +
+                    "а потім знову відкриє цей трек."
+            )
+            .setView(input)
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Використати"
+            ) { _, _ ->
+                val videoId =
+                    extractVideoId(
+                        input
+                            .text
+                            .toString()
+                    )
+
+                if (videoId == null) {
+                    toast(
+                        "Не бачу YouTube video ID"
+                    )
+                    return@setPositiveButton
+                }
+
+                val historyIndex =
+                    track.historyIndex
+
+                if (historyIndex == null) {
+                    toast(
+                        "Не вдалося визначити позицію треку"
+                    )
+                    return@setPositiveButton
+                }
+
+                setResult(
+                    RESULT_OK,
+                    Intent()
+                        .putExtra(
+                            EXTRA_MANUAL_VIDEO_ID,
+                            videoId
+                        )
+                        .putExtra(
+                            EXTRA_MANUAL_HISTORY_INDEX,
+                            historyIndex
+                        )
+                )
+
+                finish()
+            }
+            .show()
+    }
+
+    private fun extractVideoId(
+        value: String
+    ): String? {
+        val text =
+            value.trim()
+
+        val regexes =
+            listOf(
+                Regex(
+                    "[?&]v=([A-Za-z0-9_-]{11})"
+                ),
+                Regex(
+                    "youtu\\.be/([A-Za-z0-9_-]{11})"
+                ),
+                Regex(
+                    "youtube\\.com/shorts/([A-Za-z0-9_-]{11})"
+                ),
+                Regex(
+                    "youtube\\.com/live/([A-Za-z0-9_-]{11})"
+                ),
+                Regex(
+                    "^([A-Za-z0-9_-]{11})$"
+                )
+            )
+
+        return regexes
+            .firstNotNullOfOrNull {
+                it.find(text)
+                    ?.groupValues
+                    ?.getOrNull(1)
+            }
+    }
+
+    private fun openCandidateInYtm(
+        videoId: String
+    ) {
+        val uri =
+            Uri.parse(
+                "https://music.youtube.com/watch?v=$videoId"
+            )
+
+        val ytmIntent =
+            Intent(
+                Intent.ACTION_VIEW,
+                uri
+            ).apply {
+                setPackage(
+                    "com.google.android.apps.youtube.music"
+                )
+            }
+
+        val opened =
+            runCatching {
+                startActivity(
+                    ytmIntent
+                )
+                true
+            }.getOrDefault(false)
+
+        if (!opened) {
+            runCatching {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        uri
+                    )
+                )
+            }.onFailure {
+                toast(
+                    "Не вдалося відкрити YouTube Music"
+                )
+            }
+        }
+    }
+
+    private fun requestRepeatSearch() {
+        AlertDialog.Builder(this)
+            .setTitle("Повторити пошук?")
+            .setMessage(
+                "YTM Importer повернеться на головний екран і знову " +
+                    "пройде всі треки через SearchCache / YouTube search. " +
+                    "Кешовані результати не витрачають search.list quota."
+            )
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Повторити"
+            ) { _, _ ->
+                setResult(
+                    RESULT_OK,
+                    Intent()
+                        .putExtra(
+                            EXTRA_REPEAT_SEARCH,
+                            true
+                        )
+                )
+                finish()
+            }
+            .show()
+    }
+
+    private fun reloadSnapshot() {
+        currentPlaylistStore
+            .load()
+            ?.let {
+                snapshot = it
+            }
+    }
+
+    private fun saveSnapshot() {
+        currentPlaylistStore.save(
+            playlist =
+                snapshot.playlist,
+            sourceLabel =
+                snapshot.sourceLabel
+        )
+    }
+
+    private fun findTrackByHistoryIndex(
+        historyIndex: Int
+    ): Track? =
+        snapshot
+            .playlist
+            .tracks
+            .firstOrNull {
+                it.historyIndex ==
+                    historyIndex
+            }
+
+    private fun buildSummaryText():
+        String {
+        val tracks =
+            snapshot
+                .playlist
+                .tracks
+
+        val ready =
+            tracks.count {
+                it.status in
+                    setOf(
+                        TrackStatus.MATCHED,
+                        TrackStatus.ADDED
+                    )
+            }
+
+        val review =
+            tracks.count {
+                it.status ==
+                    TrackStatus.REVIEW
+            }
+
+        val problems =
+            tracks.count {
+                it.status in
+                    setOf(
+                        TrackStatus.MISSING,
+                        TrackStatus.FAILED,
+                        TrackStatus.SKIPPED
+                    )
+            }
+
+        return (
+            "${snapshot.playlist.name}\n" +
+                "${tracks.size} треків • " +
+                "✓ $ready • ! $review • × $problems"
+            )
+    }
+
+    private fun statusLabel(
+        track: Track
+    ): String =
+        when (track.status) {
+            TrackStatus.NEW ->
+                "○ Новий"
+
+            TrackStatus.SEARCHING ->
+                "… Пошук"
+
+            TrackStatus.MATCHED ->
+                "✓ Готовий"
+
+            TrackStatus.REVIEW ->
+                "! Потрібна перевірка"
+
+            TrackStatus.MISSING ->
+                "× Не знайдено"
+
+            TrackStatus.SKIPPED ->
+                "— Пропущено"
+
+            TrackStatus.DUPLICATE ->
+                "⧉ Дублікат"
+
+            TrackStatus.PENDING ->
+                "⏳ Черга"
+
+            TrackStatus.ADDED ->
+                "✓ Додано"
+
+            TrackStatus.FAILED ->
+                "× Помилка"
+        }
+
+    private fun statusColor(
+        status: TrackStatus
+    ): Int =
+        when (status) {
+            TrackStatus.MATCHED,
+            TrackStatus.ADDED ->
+                Color.rgb(
+                    105,
+                    210,
+                    135
+                )
+
+            TrackStatus.REVIEW,
+            TrackStatus.PENDING ->
+                Color.rgb(
+                    255,
+                    195,
+                    80
+                )
+
+            TrackStatus.DUPLICATE ->
+                Color.rgb(
+                    120,
+                    170,
+                    255
+                )
+
+            TrackStatus.MISSING,
+            TrackStatus.FAILED ->
+                Color.rgb(
+                    255,
+                    105,
+                    105
+                )
+
+            else ->
+                MUTED
+        }
+
+    private fun topBar(
+        title: String,
+        onBack: () -> Unit,
+        actionLabel: String? = null,
+        onAction: (() -> Unit)? = null
+    ): LinearLayout =
+        LinearLayout(this).apply {
+            orientation =
+                LinearLayout.HORIZONTAL
+            gravity =
+                Gravity.CENTER_VERTICAL
+            setPadding(
+                dp(10),
+                dp(8),
+                dp(10),
+                dp(8)
+            )
+
+            addView(
+                Button(
+                    this@ReviewActivity
+                ).apply {
+                    text = "‹"
+                    isAllCaps = false
+                    textSize = 26f
+                    setTextColor(
+                        Color.WHITE
+                    )
+                    background =
+                        roundedBackground(
+                            color = SURFACE,
+                            radiusDp = 12,
+                            strokeColor = BORDER
+                        )
+                    setOnClickListener {
+                        onBack()
+                    }
+                },
+                LinearLayout.LayoutParams(
+                    dp(46),
+                    dp(46)
+                )
+            )
+
+            addView(
+                TextView(
+                    this@ReviewActivity
+                ).apply {
+                    text =
+                        title.take(70)
+                    textSize = 19f
+                    setTextColor(Color.WHITE)
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setPadding(
+                        dp(12),
+                        0,
+                        dp(8),
+                        0
+                    )
+                    maxLines = 2
+                },
+                LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            )
+
+            if (
+                !actionLabel.isNullOrBlank() &&
+                onAction != null
+            ) {
+                addView(
+                    Button(
+                        this@ReviewActivity
+                    ).apply {
+                        text =
+                            actionLabel
+                        isAllCaps = false
+                        textSize = 12f
+                        setTextColor(
+                            Color.WHITE
+                        )
+                        background =
+                            roundedBackground(
+                                color = SURFACE,
+                                radiusDp = 12,
+                                strokeColor = BORDER
+                            )
+                        setOnClickListener {
+                            onAction()
+                        }
+                    },
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        dp(42)
+                    )
+                )
+            }
+        }
+
+    private fun card():
+        LinearLayout =
+        LinearLayout(this).apply {
+            orientation =
+                LinearLayout.VERTICAL
+            setPadding(
+                dp(14),
+                dp(14),
+                dp(14),
+                dp(14)
+            )
+            background =
+                roundedBackground(
+                    color = SURFACE,
+                    radiusDp = 14,
+                    strokeColor = BORDER
+                )
+            layoutParams =
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    bottomMargin = dp(8)
+                }
+        }
+
+    private fun sectionTitle(
+        text: String
+    ): TextView =
+        TextView(this).apply {
+            this.text = text
+            textSize = 13f
+            setTextColor(MUTED)
+            setTypeface(
+                typeface,
+                Typeface.BOLD
+            )
+            setPadding(
+                dp(4),
+                dp(9),
+                0,
+                dp(6)
+            )
+        }
+
+    private fun infoText(
+        text: String
+    ): TextView =
+        TextView(this).apply {
+            this.text = text
+            textSize = 13f
+            setTextColor(
+                Color.rgb(
+                    202,
+                    204,
+                    210
+                )
+            )
+            setPadding(
+                0,
+                dp(7),
+                0,
+                dp(8)
+            )
+            setTextIsSelectable(true)
+        }
+
+    private fun smallButton(
+        label: String,
+        action: () -> Unit
+    ): Button =
+        Button(this).apply {
+            text = label
+            isAllCaps = false
+            textSize = 11.5f
+            setTextColor(Color.WHITE)
+            background =
+                roundedBackground(
+                    color =
+                        Color.rgb(
+                            37,
+                            39,
+                            46
+                        ),
+                    radiusDp = 10,
+                    strokeColor =
+                        Color.rgb(
+                            63,
+                            66,
+                            76
+                        )
+                )
+            setOnClickListener {
+                action()
+            }
+        }
+
+    private fun actionButton(
+        label: String,
+        primary: Boolean,
+        action: () -> Unit
+    ): Button =
+        Button(this).apply {
+            text = label
+            isAllCaps = false
+            textSize = 13f
+            setTextColor(Color.WHITE)
+            background =
+                roundedBackground(
+                    color =
+                        if (primary) {
+                            Color.rgb(
+                                196,
+                                0,
+                                42
+                            )
+                        } else {
+                            Color.rgb(
+                                37,
+                                39,
+                                46
+                            )
+                        },
+                    radiusDp = 11,
+                    strokeColor =
+                        if (primary) {
+                            null
+                        } else {
+                            Color.rgb(
+                                63,
+                                66,
+                                76
+                            )
+                        }
+                )
+            setOnClickListener {
+                action()
+            }
+            layoutParams =
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(46)
+                ).apply {
+                    bottomMargin = dp(7)
+                }
+        }
+
+    private fun roundedBackground(
+        color: Int,
+        radiusDp: Int,
+        strokeColor: Int? = null
+    ): GradientDrawable =
+        GradientDrawable().apply {
+            shape =
+                GradientDrawable.RECTANGLE
+            cornerRadius =
+                dp(radiusDp).toFloat()
+            setColor(color)
+
+            if (
+                strokeColor != null
+            ) {
+                setStroke(
+                    dp(1),
+                    strokeColor
+                )
+            }
+        }
+
+    private fun toast(
+        message: String
+    ) {
+        Toast
+            .makeText(
+                this,
+                message,
+                Toast.LENGTH_SHORT
+            )
+            .show()
+    }
+
+    private fun dp(
+        value: Int
+    ): Int =
+        (
+            value *
+                resources
+                    .displayMetrics
+                    .density
+        ).toInt()
+
+    private inner class ReviewListAdapter(
+        tracks: List<Track>
+    ) : BaseAdapter() {
+        private val allTracks =
+            tracks.toList()
+
+        private val visibleTracks =
+            tracks.toMutableList()
+
+        private var filter =
+            ReviewFilter.ALL
+
+        fun setFilter(
+            value: ReviewFilter
+        ) {
+            filter = value
+            applyFilter()
+        }
+
+        private fun applyFilter() {
+            visibleTracks.clear()
+
+            visibleTracks.addAll(
+                allTracks.filter { track ->
+                    when (filter) {
+                        ReviewFilter.ALL ->
+                            true
+
+                        ReviewFilter.REVIEW ->
+                            track.status ==
+                                TrackStatus.REVIEW
+
+                        ReviewFilter.READY ->
+                            track.status in
+                                setOf(
+                                    TrackStatus.MATCHED,
+                                    TrackStatus.ADDED
+                                )
+
+                        ReviewFilter.PROBLEMS ->
+                            track.status in
+                                setOf(
+                                    TrackStatus.MISSING,
+                                    TrackStatus.FAILED,
+                                    TrackStatus.SKIPPED,
+                                    TrackStatus.DUPLICATE,
+                                    TrackStatus.PENDING
+                                )
+                    }
+                }
+            )
+
+            notifyDataSetChanged()
+        }
+
+        override fun getCount():
+            Int =
+            visibleTracks.size
+
+        override fun getItem(
+            position: Int
+        ): Track? =
+            visibleTracks.getOrNull(
+                position
+            )
+
+        override fun getItemId(
+            position: Int
+        ): Long =
+            position.toLong()
+
+        override fun getView(
+            position: Int,
+            convertView: View?,
+            parent: ViewGroup?
+        ): View {
+            val track =
+                visibleTracks[position]
+
+            val row =
+                convertView as?
+                    LinearLayout
+                    ?: createRow()
+
+            val title =
+                row.getChildAt(0)
+                    as TextView
+
+            val meta =
+                row.getChildAt(1)
+                    as TextView
+
+            title.text =
+                "${statusGlyph(track.status)} " +
+                    "${track.originalArtist} — " +
+                    track.originalTitle
+
+            title.setTextColor(
+                statusColor(
+                    track.status
+                )
+            )
+
+            meta.text =
+                when {
+                    !track.selectedTitle
+                        .isNullOrBlank() ->
+                        buildString {
+                            append(
+                                track.selectedTitle
+                            )
+
+                            if (
+                                !track.selectedChannel
+                                    .isNullOrBlank()
+                            ) {
+                                append(" • ")
+                                append(
+                                    track.selectedChannel
+                                )
+                            }
+
+                            if (
+                                track.manuallySelected
+                            ) {
+                                append(
+                                    " • ручний вибір"
+                                )
+                            }
+                        }
+
+                    !track.error
+                        .isNullOrBlank() ->
+                        track.error
+
+                    else ->
+                        "Кандидат ще не вибрано"
+                }
+
+            return row
+        }
+
+        private fun createRow():
+            LinearLayout =
+            LinearLayout(
+                this@ReviewActivity
+            ).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(14),
+                    dp(12),
+                    dp(14),
+                    dp(12)
+                )
+                background =
+                    roundedBackground(
+                        color = SURFACE,
+                        radiusDp = 13,
+                        strokeColor = BORDER
+                    )
+                layoutParams =
+                    AbsListView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+
+                addView(
+                    TextView(
+                        this@ReviewActivity
+                    ).apply {
+                        textSize = 15f
+                        setTypeface(
+                            typeface,
+                            Typeface.BOLD
+                        )
+                        maxLines = 2
+                    }
+                )
+
+                addView(
+                    TextView(
+                        this@ReviewActivity
+                    ).apply {
+                        textSize = 12.5f
+                        setTextColor(MUTED)
+                        setPadding(
+                            0,
+                            dp(5),
+                            0,
+                            0
+                        )
+                        maxLines = 2
+                    }
+                )
+            }
+
+        private fun statusGlyph(
+            status: TrackStatus
+        ): String =
+            when (status) {
+                TrackStatus.NEW ->
+                    "○"
+
+                TrackStatus.SEARCHING ->
+                    "…"
+
+                TrackStatus.MATCHED,
+                TrackStatus.ADDED ->
+                    "✓"
+
+                TrackStatus.REVIEW ->
+                    "!"
+
+                TrackStatus.DUPLICATE ->
+                    "⧉"
+
+                TrackStatus.PENDING ->
+                    "⏳"
+
+                TrackStatus.SKIPPED ->
+                    "—"
+
+                TrackStatus.MISSING,
+                TrackStatus.FAILED ->
+                    "×"
+            }
+    }
+
+    private enum class ReviewFilter {
+        ALL,
+        REVIEW,
+        READY,
+        PROBLEMS
+    }
+
+    companion object {
+        const val EXTRA_FOCUS_HISTORY_INDEX =
+            "review_focus_history_index"
+
+        const val EXTRA_REPEAT_SEARCH =
+            "review_repeat_search"
+
+        const val EXTRA_MANUAL_VIDEO_ID =
+            "review_manual_video_id"
+
+        const val EXTRA_MANUAL_HISTORY_INDEX =
+            "review_manual_history_index"
+
+        private const val KEY_TRACK_HISTORY_INDEX =
+            "review_current_track_history_index"
+
+        private val BACKGROUND =
+            Color.rgb(
+                15,
+                16,
+                19
+            )
+
+        private val SURFACE =
+            Color.rgb(
+                25,
+                27,
+                32
+            )
+
+        private val BORDER =
+            Color.rgb(
+                48,
+                51,
+                59
+            )
+
+        private val MUTED =
+            Color.rgb(
+                165,
+                167,
+                173
+            )
+    }
+}

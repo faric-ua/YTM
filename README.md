@@ -1,10 +1,10 @@
-# YTM Importer v1.2.2
+# YTM Importer v1.3.0
 
-Dedicated Pending Queue screen release.
+Import / Review navigation release.
 
 Highlights:
-- PendingActivity;
-- searchable queue list;
-- job detail and remaining-track preview;
-- resume returns to the existing MainActivity write path;
-- History and Data dedicated screens preserved.
+- dedicated ImportActivity;
+- dedicated ReviewActivity;
+- persistent current playlist workspace;
+- candidate review without nested dialogs;
+- manual URL metadata keeps the existing YouTube API path.
