@@ -1,13 +1,7 @@
-YTM Importer v1.0.0-rc2 FULL
-
-ДОДАНО:
-app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt
-docs/v.1.0.0-rc2/RELEASE.md
-docs/v.1.0.0-rc2/REGRESSION_CHECKLIST.md
-docs/v.1.0.0-rc2/diagrams/*
-TERMINAL_APPLY_v1.0.0-rc2.md
+YTM Importer v1.0.0-rc3 FULL — DATA SAFETY
 
 ЗАМІНЕНО:
+app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 app/build.gradle.kts
 scripts/rc-preflight.sh
@@ -19,13 +13,10 @@ README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
-ФУНКЦІЇ:
-- History Back navigation
-- Save YTM Project (.ytm.json)
-- Share YTM Project
-- Import YTM Project through 1. Файл
-- restore exact YouTube videoId selections
+ДОДАНО:
+docs/v.1.0.0-rc3/
+TERMINAL_APPLY_v1.0.0-rc3.md
 
 VERSION:
-versionCode = 22
-versionName = 1.0.0-rc2
+versionCode = 23
+versionName = 1.0.0-rc3

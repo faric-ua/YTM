@@ -1,20 +1,19 @@
 # Журнал змін (Changelog)
 
+## v1.0.0-rc3
+- Backup metadata тепер використовує `BuildConfig.VERSION_NAME`.
+- History TXT більше не пише hardcoded v0.14.0.
+- Full Backup schema піднята до v2.
+- Додано SHA-256 integrity check.
+- Додано structural/type validation перед Restore.
+- Перед Restore автоматично створюється safety snapshot.
+- Додано `Дані → Відкотити останній Restore`.
+- При Restore failure виконується automatic rollback attempt.
+- Schema v1 backup залишається сумісним.
+- Версія: `1.0.0-rc3`, versionCode `23`.
+
 ## v1.0.0-rc2
-- History detail отримав `Назад` до списку History.
-- History actions отримали `Назад` до деталей.
-- Додано `PlaylistProjectCodec`.
-- Додано `Зберегти YTM Project` для окремого History entry.
-- Додано `Поділитися YTM Project` через Android Share.
-- `.ytm.json` можна повторно імпортувати через `1. Файл`.
-- Проект зберігає exact videoId, selected title/channel та manual replacements.
-- Existing-playlist History export попереджає, що це лише import batch.
-- Версія: `1.0.0-rc2`, versionCode `22`.
+- History navigation + reusable YTM Project.
 
 ## v1.0.0-rc1
-- Перший Release Candidate.
-- RC preflight.
-- Core regression phase.
-
-## v0.15.2
-- Manual URL metadata hotfix.
+- Release Candidate 1 + RC preflight.

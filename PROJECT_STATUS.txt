@@ -1,31 +1,27 @@
 YTM Importer
-Version: 1.0.0-rc2
-Version code: 22
+Version: 1.0.0-rc3
+Version code: 23
 Package: com.saney.ytmimporter
-Stage: Release Candidate 2
+Stage: Release Candidate 3
 
-Verified before RC2:
+Verified before RC3:
 - signed upgrade preserved History
-- History works
+- History navigation works
+- YTM Project save/import works
+- manual URL metadata works
 - duplicate flow works
-- manual URL real metadata works
 
-RC2:
-- History back navigation
-- YTM Playlist Project export
-- YTM Playlist Project Android Share
-- YTM Playlist Project re-import
-- exact videoId restoration
-- existing-playlist batch warning
-
-UI policy:
-- functionality first
-- cosmetic redesign after v1.0.0
-- fix UI now only when it blocks a required action
+RC3 data safety:
+- backup schema v2
+- BuildConfig appVersion
+- SHA-256 integrity
+- structural validation
+- pre-restore safety snapshot
+- manual rollback
+- automatic rollback attempt
+- schema v1 compatibility
 
 Needs verification:
-- GitHub Actions RC2 build
-- signed upgrade RC1 -> RC2
-- export .ytm.json
-- re-import .ytm.json
-- recreate a test playlist without new Search
+- GitHub Actions RC3 build
+- signed update RC2 -> RC3
+- real backup -> restore -> rollback

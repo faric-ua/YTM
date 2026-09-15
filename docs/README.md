@@ -2,13 +2,6 @@
 
 Поточна версія:
 
-`docs/v.1.0.0-rc2/`
+`docs/v.1.0.0-rc3/`
 
-RC2 містить:
-
-- `RELEASE.md`
-- `REGRESSION_CHECKLIST.md`
-- `diagrams/`
-
-Ключова нова функція:
-reusable `YTM Playlist Project (.ytm.json)`.
+RC3 focus: backup integrity + restore safety/rollback.

@@ -1,10 +1,6 @@
-# YTM Importer v1.0.0-rc2
+# YTM Importer v1.0.0-rc3
 
-Release Candidate 2.
-
-RC2 adds History back-navigation and a reusable `.ytm.json`
-Playlist Project format that preserves exact YouTube selections.
+Release Candidate 3 — backup integrity and restore rollback hardening.
 
 Українська документація: `README_UA.md`.
-
-RC docs: `docs/v.1.0.0-rc2/`.
+RC docs: `docs/v.1.0.0-rc3/`.

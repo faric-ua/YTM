@@ -2265,7 +2265,7 @@ class MainActivity : Activity() {
                     "(${BuildConfig.VERSION_CODE})\n" +
                     "Package: $packageName\n" +
                     "Android target SDK: $targetSdk\n\n" +
-                    "Етап: v1.0.0 RC2 (другий кандидат у стабільний реліз).\n" +
+                    "Етап: v1.0.0 RC3 (data safety candidate перед stable).\n" +
                     "Core behavior frozen (основна логіка заморожена): " +
                     "до v1.0 виправляємо тільки blocker bugs " +
                     "(критичні помилки).\n\n" +
@@ -2306,7 +2306,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.1.0.0-rc2/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.0.0-rc3/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()
@@ -2807,7 +2807,10 @@ class MainActivity : Activity() {
                     "Поділитися = відкрити стандартне Android Share " +
                     "(меню поширення).\n\n" +
                     "Для повного Restore використовується тільки " +
-                    "«Повний backup», а не History JSON."
+                    "«Повний backup», а не History JSON.
+" +
+                    "Перед Restore RC3 автоматично створює safety snapshot " +
+                    "(точку відкату) поточних локальних даних."
             textSize = 14f
             setPadding(dp(16), dp(8), dp(16), dp(8))
         }
@@ -2833,7 +2836,14 @@ class MainActivity : Activity() {
                     "Надіслати читабельний звіт через Android Share",
 
                 "Поділитися повним backup\n" +
-                    "Надіслати backup JSON — містить приватні метадані"
+                    "Надіслати backup JSON — містить приватні метадані",
+
+                "Відкотити останній Restore\n" +
+                    if (localBackupManager.hasSafetySnapshot()) {
+                        "Safety snapshot доступний"
+                    } else {
+                        "Safety snapshot ще не створено"
+                    }
             )
 
         val list = ListView(this).apply {
@@ -2883,6 +2893,7 @@ class MainActivity : Activity() {
                 4 -> chooseBackupForRestore()
                 5 -> shareHistoryTxt()
                 6 -> confirmShareFullBackup()
+                7 -> confirmRestoreSafetySnapshot()
             }
         }
 
@@ -2911,7 +2922,7 @@ class MainActivity : Activity() {
 
         return buildString {
             append("YTM Importer — History export\n")
-            append("Версія застосунку: 0.14.0\n")
+            append("Версія застосунку: ${BuildConfig.VERSION_NAME}\n")
             append(
                 "Експортовано: " +
                     formatHistoryDate(
@@ -2999,7 +3010,9 @@ class MainActivity : Activity() {
                     "Backup може містити Google email, " +
                     "YouTube Channel ID і назви плейлистів.\n\n" +
                     "OAuth access token, паролі та signing keys " +
-                    "НЕ зберігаються."
+                    "НЕ зберігаються.\n\n" +
+                    "RC3 також додає SHA-256 integrity check, щоб " +
+                    "пошкоджений backup не відновлювався мовчки."
             )
             .setNegativeButton("Скасувати", null)
             .setPositiveButton("Зберегти") { _, _ ->
@@ -3276,9 +3289,20 @@ class MainActivity : Activity() {
                     "Версія застосунку при створенні: ${summary.appVersion}\n" +
                     "Дата backup: $exportedDate\n" +
                     "Груп даних: ${summary.preferenceGroups}\n" +
-                    "Значень: ${summary.valueCount}\n\n" +
-                    "Поточні локальні History / Queue / Quota / Cache " +
-                    "будуть замінені."
+                    "Значень: ${summary.valueCount}\n" +
+                    "Integrity: " +
+                    if (summary.integrityProtected) {
+                        if (summary.integrityVerified) {
+                            "SHA-256 ✓\n\n"
+                        } else {
+                            "SHA-256 ?\n\n"
+                        }
+                    } else {
+                        "legacy backup без checksum\n\n"
+                    } +
+                    "Перед Restore буде автоматично створено safety snapshot " +
+                    "поточних History / Queue / Quota / Cache.\n\n" +
+                    "Поточні локальні дані потім будуть замінені."
             )
             .setNegativeButton("Скасувати", null)
             .setPositiveButton("Відновити") { _, _ ->
@@ -3308,8 +3332,92 @@ class MainActivity : Activity() {
                 "Груп даних: ${result.preferenceGroups}\n" +
                     "Відновлено значень: ${result.restoredValues}\n\n" +
                     "History, Черга, локальна квота та SearchCache " +
-                    "вже доступні без перевстановлення застосунку."
+                    "вже доступні без перевстановлення застосунку.\n\n" +
+                    if (result.safetySnapshotCreated) {
+                        "Safety snapshot стану ДО Restore збережено. " +
+                            "Його можна використати через «Дані → " +
+                            "Відкотити останній Restore»."
+                    } else {
+                        ""
+                    }
             )
+            .setNeutralButton("Відкотити") { _, _ ->
+                confirmRestoreSafetySnapshot()
+            }
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun confirmRestoreSafetySnapshot() {
+        val summary =
+            runCatching {
+                localBackupManager.inspectSafetySnapshot()
+            }.getOrElse { error ->
+                toast(
+                    "Safety snapshot пошкоджено: " +
+                        (error.message ?: "невідома помилка")
+                )
+                return
+            }
+
+        if (summary == null) {
+            return toast(
+                "Safety snapshot ще не створено. Він з'явиться " +
+                    "автоматично перед першим Restore."
+            )
+        }
+
+        val date =
+            if (summary.exportedAt > 0L) {
+                formatHistoryDate(summary.exportedAt)
+            } else {
+                "невідомо"
+            }
+
+        AlertDialog.Builder(this)
+            .setTitle("Відкотити останній Restore?")
+            .setMessage(
+                "Буде відновлено локальний стан, який був ДО " +
+                    "останнього Restore.\n\n" +
+                    "Дата safety snapshot: $date\n" +
+                    "Версія: ${summary.appVersion}\n" +
+                    "Груп: ${summary.preferenceGroups}\n" +
+                    "Значень: ${summary.valueCount}\n\n" +
+                    "YouTube/YTM плейлисти в інтернеті не змінюються."
+            )
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Відкотити") { _, _ ->
+                restoreSafetySnapshotNow()
+            }
+            .show()
+    }
+
+    private fun restoreSafetySnapshotNow() {
+        val result =
+            runCatching {
+                localBackupManager.restoreSafetySnapshot()
+            }.getOrElse { error ->
+                toast(
+                    "Відкат не виконано: " +
+                        (error.message ?: "невідома помилка")
+                )
+                return
+            }
+
+        updatePendingButton()
+        updateQuotaPanel()
+
+        AlertDialog.Builder(this)
+            .setTitle("Відкат виконано")
+            .setMessage(
+                "Локальний стан ДО останнього Restore повернуто.\n\n" +
+                    "Груп даних: ${result.preferenceGroups}\n" +
+                    "Відновлено значень: ${result.restoredValues}."
+            )
+            .setNegativeButton("Видалити snapshot") { _, _ ->
+                localBackupManager.clearSafetySnapshot()
+                toast("Safety snapshot видалено")
+            }
             .setPositiveButton("OK", null)
             .show()
     }

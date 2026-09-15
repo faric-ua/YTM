@@ -1,54 +1,40 @@
 # YTM Importer — План розвитку (Roadmap)
 
 ## Поточна версія
-**v1.0.0-rc2 — History navigation + Playlist Project**
+**v1.0.0-rc3 — Data Safety / Restore Guard**
 
-## Реалізовано до RC2
-- [x] CSV / TXT / direct text import;
-- [x] Google OAuth + account/channel;
-- [x] SearchCache + MatchScorer;
-- [x] candidate review / manual candidate;
-- [x] manual URL → real title/channel;
-- [x] new / existing playlist;
+## Підтверджено реальними тестами
+- [x] signed update збережує History;
+- [x] History navigation;
+- [x] YTM Project save/import;
 - [x] duplicate detection;
-- [x] privacy;
-- [x] Quota Planner;
-- [x] Pending Queue + Resume;
-- [x] History;
-- [x] Export / Backup / Restore;
-- [x] Diagnostics / Share / Cache tools;
-- [x] friendly errors;
-- [x] signed update;
-- [x] RC preflight.
+- [x] manual URL metadata replacement;
+- [x] основний playlist flow.
 
-## v1.0.0-rc2
-- [x] History detail → Back to History list;
-- [x] History actions → Back to detail;
-- [x] export one History entry as reusable YTM Project;
-- [x] Android Share for YTM Project;
-- [x] import `.ytm.json` through `1. Файл`;
-- [x] restore exact YouTube videoId choices;
-- [x] restore manual replacement title/channel;
-- [x] warn that Existing Playlist export contains only this import batch;
-- [ ] GitHub Actions RC2 build;
-- [ ] signed upgrade RC1 → RC2;
-- [ ] phone test: export project → re-import → create test playlist.
+## RC3
+- [x] backup appVersion більше не hardcoded `0.14.0`;
+- [x] History TXT використовує BuildConfig version;
+- [x] backup schema v2;
+- [x] SHA-256 integrity check;
+- [x] structural/type validation;
+- [x] automatic safety snapshot before Restore;
+- [x] rollback last Restore;
+- [x] automatic rollback attempt on Restore failure;
+- [x] schema v1 backward compatibility;
+- [ ] GitHub Actions RC3 build;
+- [ ] signed update RC2 → RC3;
+- [ ] real backup → restore → rollback test.
 
 ## До v1.0.0 stable
-- [ ] finish regression checklist;
-- [ ] fix blocker/data-loss bugs;
-- [ ] final signed upgrade test;
-- [ ] versionName `1.0.0`;
-- [ ] stable APK.
+- [ ] finish remaining blocker regression;
+- [ ] verify full backup/restore/rollback;
+- [ ] no data-loss bugs;
+- [ ] final signed upgrade;
+- [ ] versionName `1.0.0`.
 
-## Після v1.0.0 — UI/UX
+## Після v1.0.0
 - [ ] Material 3;
-- [ ] responsive layout;
-- [ ] separate screens instead of many dialogs;
-- [ ] navigation / toolbar;
-- [ ] typography and spacing;
-- [ ] small-screen fitting;
+- [ ] responsive UI;
+- [ ] separate screens;
+- [ ] layout/spacing/typography polish;
 - [ ] accessibility.
-
-Косметичний UI до v1.0 не є пріоритетом.
-Виправляємо його зараз тільки якщо він блокує функціональну дію.
