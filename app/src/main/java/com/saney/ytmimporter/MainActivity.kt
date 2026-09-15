@@ -89,6 +89,7 @@ class MainActivity : Activity() {
     private val fileRequestCode = 1001
     private val saveExportRequestCode = 1101
     private val restoreBackupRequestCode = 1102
+    private val pendingQueueRequestCode = 1201
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
@@ -143,6 +144,20 @@ class MainActivity : Activity() {
                 maybeShowWelcome()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (::pendingButton.isInitialized) {
+            updatePendingButton()
+        }
+
+        if (::quotaButton.isInitialized) {
+            updateQuotaPanel()
+        }
+
+        updatePrimaryActions()
     }
 
     override fun onDestroy() {
@@ -697,6 +712,30 @@ class MainActivity : Activity() {
 
             restoreBackupRequestCode ->
                 data.data?.let(::prepareRestoreBackup)
+
+            pendingQueueRequestCode -> {
+                updatePendingButton()
+
+                val jobId =
+                    data.getStringExtra(
+                        PendingActivity.EXTRA_RESUME_JOB_ID
+                    )
+
+                if (!jobId.isNullOrBlank()) {
+                    val job =
+                        pendingJobStore.get(
+                            jobId
+                        )
+
+                    if (job == null) {
+                        toast(
+                            "Завдання вже відсутнє в черзі"
+                        )
+                    } else {
+                        resumePendingJob(job)
+                    }
+                }
+            }
 
             authRequestCode -> {
                 try {
@@ -2293,38 +2332,13 @@ class MainActivity : Activity() {
     }
 
     private fun showPendingJobs() {
-        val jobs = pendingJobStore.getAll()
-
-        if (jobs.isEmpty()) {
-            return toast("Черга порожня — недороблених плейлистів немає")
-        }
-
-        val labels =
-            jobs.map { job ->
-                buildString {
-                    append(job.playlistName)
-                    append("\n")
-                    append("⏳ ")
-                    append(job.remainingTracks.size)
-                    append(" очікують • ✓ ")
-                    append(job.addedCount)
-                    append("/")
-                    append(job.totalCount)
-
-                    if (job.failedCount > 0) {
-                        append(" • × ")
-                        append(job.failedCount)
-                    }
-                }
-            }
-
-        AlertDialog.Builder(this)
-            .setTitle("Черга (Pending Queue): ${jobs.size}")
-            .setItems(labels.toTypedArray()) { _, which ->
-                jobs.getOrNull(which)?.let(::showPendingJobDetails)
-            }
-            .setNegativeButton("Закрити", null)
-            .show()
+        startActivityForResult(
+            Intent(
+                this,
+                PendingActivity::class.java
+            ),
+            pendingQueueRequestCode
+        )
     }
 
     private fun showPendingJobDetails(job: PendingJob) {
@@ -2794,7 +2808,7 @@ class MainActivity : Activity() {
                     "8. Export / Backup / Restore\n" +
                     "9. Diagnostics / Share / SearchCache\n" +
                     "10. Оновлення APK поверх попередньої версії\n\n" +
-                    "Повний checklist є у docs/v.1.2.1/REGRESSION_CHECKLIST.md."
+                    "Повний checklist є у docs/v.1.2.2/REGRESSION_CHECKLIST.md."
             )
             .setPositiveButton("OK", null)
             .show()

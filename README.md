@@ -1,11 +1,10 @@
-# YTM Importer v1.2.1
+# YTM Importer v1.2.2
 
-Dedicated Data / Backup screen release.
+Dedicated Pending Queue screen release.
 
 Highlights:
-- DataActivity;
-- Full Backup / Restore / Rollback;
-- local data summary;
-- History and Pending Queue export;
-- Android Share;
-- existing backup integrity protections preserved.
+- PendingActivity;
+- searchable queue list;
+- job detail and remaining-track preview;
+- resume returns to the existing MainActivity write path;
+- History and Data dedicated screens preserved.

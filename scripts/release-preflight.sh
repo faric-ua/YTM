@@ -16,12 +16,26 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.2.1/RELEASE.md"
-check_file "docs/v.1.2.1/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.2.2/RELEASE.md"
+check_file "docs/v.1.2.2/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
 check_file "app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
+
+check_file "app/src/main/java/com/saney/ytmimporter/PendingActivity.kt"
+
+grep -q 'android:name=".PendingActivity"' \
+  app/src/main/AndroidManifest.xml \
+  || fail "PendingActivity is missing from manifest"
+
+grep -q 'PendingActivity::class.java' \
+  app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
+  || fail "MainActivity does not open PendingActivity"
+
+grep -q 'EXTRA_RESUME_JOB_ID' \
+  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt \
+  || fail "PendingActivity resume result contract is missing"
 
 grep -q 'android:name=".DataActivity"' \
   app/src/main/AndroidManifest.xml \
@@ -42,11 +56,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 29' app/build.gradle.kts \
-  || fail "Expected versionCode = 29"
+grep -q 'versionCode = 30' app/build.gradle.kts \
+  || fail "Expected versionCode = 30"
 
-grep -q 'versionName = "1.2.1"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.2.1"'
+grep -q 'versionName = "1.2.2"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.2.2"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -119,3 +133,5 @@ echo "- APK SHA-256 generation"
 echo "- release docs"
 echo "- dedicated HistoryActivity navigation"
 echo "- dedicated DataActivity navigation"
+echo "- dedicated PendingActivity navigation"
+echo "- Pending Queue resume result contract"

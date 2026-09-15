@@ -74,3 +74,10 @@ Next:
 - [x] Dedicated Data / Backup / Restore screen.
 - [ ] Dedicated Pending Queue screen.
 - [ ] Dedicated Import / Review screen.
+
+## v1.2.2 navigation progress
+
+- [x] Dedicated History screen.
+- [x] Dedicated Data / Backup / Restore screen.
+- [x] Dedicated Pending Queue screen.
+- [ ] Dedicated Import / Review screen.

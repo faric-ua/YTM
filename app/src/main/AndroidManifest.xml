@@ -20,6 +20,11 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
+            android:name=".PendingActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".DataActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />

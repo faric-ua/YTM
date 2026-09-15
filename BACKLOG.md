@@ -1,32 +1,37 @@
 # YTM Importer — Roadmap
 
 ## Поточна версія
-**v1.2.1 — Dedicated Data / Backup Screen**
+**v1.2.2 — Dedicated Pending Queue Screen**
 
 ## Completed navigation refactor
-- [x] Public 4-step main screen;
-- [x] Dedicated History screen;
-- [x] Dedicated History detail;
-- [x] Dedicated Data / Backup / Restore screen;
-- [x] Normal Back navigation for History/Data.
+- [x] public 4-step main screen;
+- [x] dedicated History screen;
+- [x] dedicated Data / Backup screen;
+- [x] dedicated Pending Queue screen;
+- [x] normal Back navigation for utility screens.
 
-## v1.2.1
-- [x] DataActivity;
-- [x] local data summary;
-- [x] Full Backup card;
-- [x] Restore preview + SHA-256;
-- [x] Rollback safety snapshot;
-- [x] History TXT/JSON export;
-- [x] Queue JSON export;
-- [x] Android Share;
+## v1.2.2
+- [x] PendingActivity;
+- [x] searchable queue list;
+- [x] job detail screen;
+- [x] remaining track preview;
+- [x] resume result contract back to MainActivity;
+- [x] preserve OAuth/account mismatch validation;
+- [x] local delete confirmation;
 - [ ] build/install test;
 - [ ] phone regression.
 
-## Next
-- [ ] dedicated Pending Queue screen;
+## Next major step
 - [ ] dedicated Import / Review screen;
-- [ ] remove legacy dialog-only navigation;
-- [ ] Material 3 / responsive polish.
+- [ ] move track-review UI out of MainActivity dialogs;
+- [ ] candidate/manual replacement navigation;
+- [ ] reduce legacy dialog code after regression.
+
+## Later polish
+- [ ] Material 3;
+- [ ] responsive layout;
+- [ ] typography/spacing;
+- [ ] accessibility.
 
 ## Public distribution
 - [ ] OAuth production readiness;

@@ -1,22 +1,28 @@
-# YTM Importer v1.2.1
+# YTM Importer v1.2.2
 
-Другий окремий screen у новій navigation architecture:
+Третій окремий screen у новій navigation architecture:
 
-`Головний → Ще → Дані`
+`Головний → Черга`
 
-DataActivity містить:
+PendingActivity має:
 
-- локальну статистику;
-- Full Backup;
-- Restore;
-- Rollback Last Restore;
-- History TXT/JSON export;
-- Pending Queue JSON export;
-- Android Share.
+- searchable queue list;
+- progress/counters;
+- job detail;
+- remaining tracks preview;
+- masked account identifiers;
+- Open in YTM;
+- Delete local job;
+- Continue.
 
-SHA-256 backup integrity і safety snapshot логіка збережені.
+Важливо: `Continue` не дублює write logic.
+PendingActivity повертає `jobId` назад у MainActivity,
+де використовується старий перевірений `resumePendingJob()`.
 
-Попередній dedicated History screen також залишається.
+Тепер окремими screens уже є:
 
-Наступний крок: окремий Pending Queue screen,
-потім Import / Review.
+- History;
+- Data / Backup;
+- Pending Queue.
+
+Наступний великий крок — Import / Review.

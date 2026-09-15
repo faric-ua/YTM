@@ -16,6 +16,10 @@ class PendingJobStore(context: Context) {
         readJobs().sortedByDescending { it.updatedAt }
 
     @Synchronized
+    fun get(jobId: String): PendingJob? =
+        readJobs().firstOrNull { it.id == jobId }
+
+    @Synchronized
     fun upsert(job: PendingJob) {
         val jobs = readJobs().toMutableList()
         val index = jobs.indexOfFirst { it.id == job.id }

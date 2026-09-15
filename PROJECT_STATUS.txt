@@ -1,24 +1,23 @@
 YTM Importer
-Version: 1.2.1
-Version code: 29
+Version: 1.2.2
+Version code: 30
 Package: com.saney.ytmimporter
 Stage: Navigation Foundation
 
 Dedicated screens:
 - HistoryActivity
 - DataActivity
+- PendingActivity
 
-DataActivity:
-- local data summary
-- backup/restore/rollback
-- export/share
+PendingActivity:
+- searchable queue
+- detail screen
+- remaining track preview
+- continue via jobId result
+- local delete
 
-Preserved:
-- stable import/search/write logic
-- backup SHA-256
-- safety snapshot rollback
-- release verification workflow
+Core resume/write path remains in MainActivity.
 
 Next:
-- Pending Queue screen
 - Import/Review screen
+- then Material/responsive polish
