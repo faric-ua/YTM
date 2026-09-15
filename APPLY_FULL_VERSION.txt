@@ -1,14 +1,7 @@
-YTM Importer v1.4.0 FULL
-
-ADDED:
-app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
-OPEN_QUESTIONS.md
-docs/v.1.4.0/
-TERMINAL_APPLY_v1.4.0.md
+YTM Importer v1.4.1 FULL
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/AndroidManifest.xml
 app/build.gradle.kts
 scripts/release-preflight.sh
 .github/workflows/build-apk.yml
@@ -17,15 +10,20 @@ CHANGELOG.md
 README.md
 README_UA.md
 PROJECT_STATUS.txt
-PUBLIC_RELEASE_CHECKLIST.md
+OPEN_QUESTIONS.md
 docs/README.md
+
+ADDED:
+scripts/mainactivity-audit.sh
+docs/v.1.4.1/
+TERMINAL_APPLY_v1.4.1.md
 
 DELETED:
 none
 
-VERSION:
-versionCode = 34
-versionName = 1.4.0
+CODE REMOVED INSIDE MainActivity:
+legacy Destination/Create AlertDialog functions only
 
-OPEN QUESTION:
-Q-001 — v1.3.2 Review wording + Project save feedback — revisit later.
+VERSION:
+versionCode = 35
+versionName = 1.4.1

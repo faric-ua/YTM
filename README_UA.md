@@ -1,29 +1,14 @@
-# YTM Importer v1.4.0
+# YTM Importer v1.4.1
 
-Крок 4 тепер окремий Android screen:
+Технічний cleanup після перенесення Step 4 у `DestinationActivity`.
 
-`Головний → 4. Створити / додати → DestinationActivity`
+Що змінилось:
 
-## Новий плейлист
+- старий Destination/Create flow через AlertDialog видалено з MainActivity;
+- новий DestinationActivity залишається єдиним UI-шляхом Step 4;
+- create/append, duplicates, OAuth, quota, Pending Queue і History core не переписувалися;
+- додано `scripts/mainactivity-audit.sh`.
 
-- вибір privacy прямо на screen;
-- видно назву Project, кількість треків, неперевірені позиції;
-- видно Google/YTM account context;
-- видно quota estimate;
-- фінальна кнопка `Створити новий плейлист`.
+Відкрите питання Q-001 з v1.3.2 залишається OPEN і буде переглянуте пізніше.
 
-## Існуючий плейлист
-
-- список завантажується тільки після вибору цього режиму;
-- є пошук за назвою;
-- після вибору виконується duplicate scan;
-- preview показує `already in playlist`, `repeated in import`, `new tracks`;
-- можна `Пропустити дублікати` або `Додати все одно`;
-- якщо duplicate scan впав, є окремий screen `Продовжити без перевірки`.
-
-Core write/OAuth logic лишився в MainActivity.
-
-## Open question
-
-Пункт v1.3.2 щодо Review wording / Project save feedback спеціально
-позначений як відкритий для повернення пізніше: `OPEN_QUESTIONS.md`.
+Наступний cleanup: старі Import / History / Data / Pending dialog-шляхи.

@@ -16,3 +16,7 @@ When revisiting, verify on a real phone:
 - whether the save feedback should remain a Toast or become an in-screen result.
 
 Do not treat this item as a blocker for Destination/Create work.
+
+## v1.4.1 note
+
+Q-001 is intentionally still OPEN. The legacy Destination cleanup does not resolve or redefine it.

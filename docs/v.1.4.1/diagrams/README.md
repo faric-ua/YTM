@@ -1,0 +1,4 @@
+# YTM Importer v1.4.1 diagrams
+
+- `DESTINATION_CLEANUP.md`
+- `MAINACTIVITY_REDUCTION.md`

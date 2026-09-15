@@ -1,36 +1,32 @@
 YTM Importer
-Version: 1.4.0
-Version code: 34
+Version: 1.4.1
+Version code: 35
 Package: com.saney.ytmimporter
-Stage: Destination / Create Navigation
 
-Dedicated screens:
-- ImportActivity
-- ReviewActivity
-- DestinationActivity
-- HistoryActivity
-- DataActivity
-- PendingActivity
+Stage:
+Legacy Destination cleanup
 
-DestinationActivity:
-- New / Existing playlist
-- privacy selection
-- searchable existing playlist list
-- duplicate preview
-- skip duplicates / add anyway
-- scan-failure fallback
-- final account/quota confirmation
+MainActivity:
+before = 5953 lines
+after  = 5434 lines
 
-Core retained in MainActivity:
-- OAuth
-- YouTube API list/duplicate scan
-- create/append write execution
-- Pending Queue / History write tracking
+Removed:
+- old destination chooser dialogs
+- old existing-playlist chooser dialog
+- old duplicate-choice dialogs
+- old privacy/create confirmation dialogs
 
-OPEN QUESTION:
-- Q-001 v1.3.2 Review wording + Project save feedback: revisit later.
+Retained:
+- DestinationActivity bridge
+- OAuth/account validation
+- duplicate analyzer
+- create/append write core
+- Pending Queue
+- History sync
+- quota tracking
+
+Open:
+Q-001 remains OPEN — revisit later.
 
 Next:
-- phone regression
-- remove legacy destination dialogs after confirmation
-- continue MainActivity cleanup / Material polish
+cleanup wave 2 for old Import/History/Data/Pending dialog paths.

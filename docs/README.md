@@ -2,9 +2,6 @@
 
 Current version:
 
-`docs/v.1.4.0/`
+`docs/v.1.4.1/`
 
-v1.4.0 adds a dedicated Destination/Create screen.
-
-Open questions that intentionally do not block the roadmap are tracked in
-`OPEN_QUESTIONS.md`.
+v1.4.1 removes the obsolete Destination/Create dialog layer from MainActivity.
