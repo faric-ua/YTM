@@ -1,7 +1,13 @@
 # YTM Importer — План розвитку (Roadmap)
 
+## v0.15.1 — BuildConfig compilation hotfix
+- [x] розібрано GitHub Actions log;
+- [x] причина: `BuildConfig` не генерувався для модуля;
+- [x] додано `buildFeatures { buildConfig = true }`;
+- [ ] підтвердити успішну GitHub Actions збірку v0.15.1.
+
 ## Поточна версія
-**v0.15.0 — Stabilization / підготовка Release Candidate v1.0**
+**v0.15.1 — Stabilization / підготовка Release Candidate v1.0**
 
 ## 1–13. Реалізовано раніше
 - [x] SearchCache + MatchScorer;

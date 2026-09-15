@@ -1,4 +1,4 @@
-# YTM Importer v0.15.0
+# YTM Importer v0.15.1
 
 Версія стабілізації перед Release Candidate v1.0.
 
@@ -21,3 +21,9 @@ CSV/TXT/текст → пошук → ручна перевірка → нови
 `docs/v.0.15.0/REGRESSION_CHECKLIST.md`
 
 Для великого regression test підходить наш `50 Clubland Classics` із 50 треків.
+
+## v0.15.1 hotfix
+
+У v0.15.0 GitHub Actions падав під час Kotlin-компіляції через відсутній
+згенерований `BuildConfig`. У v0.15.1 генерацію `BuildConfig` явно увімкнено
+в `app/build.gradle.kts`.

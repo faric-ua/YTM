@@ -1,14 +1,14 @@
-YTM Importer v0.15.0 FULL — FILE MANIFEST
+YTM Importer v0.15.1 FULL — FILE MANIFEST
 
-64634e8d3eb4be6b  .github/workflows/build-apk.yml
+07b3c5d65160f2d1  .github/workflows/build-apk.yml
 6cc7d3ae20eee52b  .gitignore
-358b99f63528838e  APPLY_FULL_VERSION.txt
-2d572e1969f1f4e6  BACKLOG.md
-368901de99bb5a78  CHANGELOG.md
+515d21aa1587c68a  APPLY_FULL_VERSION.txt
+f879534918580be9  BACKLOG.md
+87b36f0d75662e9f  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
-6f74511557704945  PROJECT_STATUS.txt
-21117d16abeb3884  README.md
-5a1a9fd6edca142e  README_UA.md
+0cd9453a2f7d40a2  PROJECT_STATUS.txt
+793deaa48d485d4c  README.md
+d84099bc95f28fa0  README_UA.md
 f4a9c99161f1f7a0  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
 e0ce791b58f2a591  TERMINAL_APPLY_v0.10.1.md
@@ -18,10 +18,11 @@ e0ce791b58f2a591  TERMINAL_APPLY_v0.10.1.md
 232f867f62625b24  TERMINAL_APPLY_v0.13.1.md
 7c99dd649e7f3fe7  TERMINAL_APPLY_v0.14.0.md
 5edb4328b49907fe  TERMINAL_APPLY_v0.15.0.md
+a0549620074a0d96  TERMINAL_APPLY_v0.15.1.md
 58270b00dcd8efb2  TERMINAL_APPLY_v0.8.0.md
 0524b0478b6143f7  TERMINAL_APPLY_v0.9.0.md
 ae1826a70db64b5b  TERMINAL_APPLY_v0.9.1.md
-6fc2d5572b2a1997  app/build.gradle.kts
+a86ffe904c1c4d8f  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 9cb7eb55f68a679a  app/src/main/AndroidManifest.xml
 b8ffda69a1846f1d  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
@@ -53,7 +54,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 ce3b1e690fed5536  app/src/main/res/values/styles.xml
 6260627b41d420da  app/src/main/res/xml/file_paths.xml
 1ad29e43e790095c  build.gradle.kts
-bead81a4d11b6a25  docs/README.md
+1ca3385fce861e20  docs/README.md
 fba063f3df84f31a  docs/v.0.10.0/RELEASE.md
 40eb6695cc102a64  docs/v.0.10.0/diagrams/ARCHITECTURE.md
 d36539446325c8a5  docs/v.0.10.0/diagrams/BEFORE_AFTER_v0.10.0.md
@@ -168,6 +169,29 @@ d15e7203476702f0  docs/v.0.15.0/diagrams/RELEASE_CANDIDATE_FLOW.md
 21b34ab0abac8ac8  docs/v.0.15.0/diagrams/SHARE_FLOW.md
 20b49bcc30a3a5c4  docs/v.0.15.0/diagrams/TRACK_STATE_FLOW.md
 99f2aa15f5e63f14  docs/v.0.15.0/diagrams/UI_LAYOUT.md
+3d2f188ace8c232a  docs/v.0.15.1/RELEASE.md
+decf34c3ff01c3b1  docs/v.0.15.1/diagrams/APP_ICON_FLOW.md
+222479174a523338  docs/v.0.15.1/diagrams/ARCHITECTURE.md
+83ae535f4a86913d  docs/v.0.15.1/diagrams/BACKUP_DATA.md
+580b90acb12023db  docs/v.0.15.1/diagrams/BEFORE_AFTER_v0.15.1.md
+09ee405fe35032cd  docs/v.0.15.1/diagrams/BUILD_HOTFIX_FLOW.md
+fa95941791ad6fb7  docs/v.0.15.1/diagrams/CACHE_TOOLS_FLOW.md
+d390f7031a61dca4  docs/v.0.15.1/diagrams/CURRENT_FLOW.md
+27dae7606c06c338  docs/v.0.15.1/diagrams/DATA_MENU_FLOW.md
+3383b05424a4da4f  docs/v.0.15.1/diagrams/DIAGNOSTICS_FLOW.md
+7a8b198444b41358  docs/v.0.15.1/diagrams/DUPLICATE_DATA_FLOW.md
+78c5e816e099a019  docs/v.0.15.1/diagrams/DUPLICATE_FLOW.md
+7f3f95a4c67d69a4  docs/v.0.15.1/diagrams/ERROR_FLOW.md
+5fc841823d47f4e8  docs/v.0.15.1/diagrams/EXPORT_BACKUP_FLOW.md
+3ff00a318c9deb95  docs/v.0.15.1/diagrams/HISTORY_DATA.md
+1c74d5f78d536abf  docs/v.0.15.1/diagrams/HISTORY_FLOW.md
+7a8ad59fcb5c986b  docs/v.0.15.1/diagrams/PENDING_JOB_STATE.md
+4800ba3ec413456f  docs/v.0.15.1/diagrams/QUOTA_PENDING_FLOW.md
+9a324f454cac723d  docs/v.0.15.1/diagrams/README.md
+006d89e801bb7b67  docs/v.0.15.1/diagrams/RELEASE_CANDIDATE_FLOW.md
+fb57573bded9f2be  docs/v.0.15.1/diagrams/SHARE_FLOW.md
+ea8ba8dbc6555c04  docs/v.0.15.1/diagrams/TRACK_STATE_FLOW.md
+ec212b66959b30a8  docs/v.0.15.1/diagrams/UI_LAYOUT.md
 5471f13070583f68  docs/v.0.7.1/RELEASE.md
 ffae6e64d2a8a4b0  docs/v.0.7.1/diagrams/ARCHITECTURE.md
 751db4d4a42095ca  docs/v.0.7.1/diagrams/BEFORE_AFTER_v0.7.1.md

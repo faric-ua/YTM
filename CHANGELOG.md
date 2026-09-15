@@ -1,5 +1,12 @@
 # Журнал змін (Changelog)
 
+## v0.15.1
+- Виправлено `Unresolved reference 'BuildConfig'`.
+- Увімкнено `android.buildFeatures.buildConfig = true`.
+- Версія піднята до `0.15.1` / `versionCode 19`.
+- Функціональність v0.15.0 не змінювалась.
+- Додано `docs/v.0.15.1/`.
+
 ## v0.15.0
 - Підготовка до v1.0 Release Candidate.
 - Додано adaptive / round / monochrome app icon.

@@ -1,22 +1,18 @@
-YTM Importer v0.15.0 FULL — STABILIZATION / RC PREP
+YTM Importer v0.15.1 FULL — BUILDCONFIG HOTFIX
+
+ПОМИЛКА v0.15.0:
+Unresolved reference 'BuildConfig'
+у MainActivity.kt під час compileReleaseKotlin.
+
+ВИПРАВЛЕННЯ:
+app/build.gradle.kts
 
 ДОДАНО:
-app/src/main/java/com/saney/ytmimporter/util/ErrorMessages.kt
-app/src/main/res/drawable/ic_launcher_foreground.xml
-app/src/main/res/drawable/ic_launcher_monochrome.xml
-app/src/main/res/mipmap-anydpi/ic_launcher.xml
-app/src/main/res/mipmap-anydpi/ic_launcher_round.xml
-app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
-app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
-app/src/main/res/mipmap-anydpi-v33/ic_launcher.xml
-app/src/main/res/mipmap-anydpi-v33/ic_launcher_round.xml
-docs/v.0.15.0/
-TERMINAL_APPLY_v0.15.0.md
+buildFeatures {
+    buildConfig = true
+}
 
 ЗАМІНЕНО:
-app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/AndroidManifest.xml
-app/src/main/res/values/colors.xml
 app/build.gradle.kts
 .github/workflows/build-apk.yml
 BACKLOG.md
@@ -26,10 +22,9 @@ README_UA.md
 PROJECT_STATUS.txt
 docs/README.md
 
-ОЧИЩЕНО В КОДІ:
-- removed unused markAllPending
-- removed unused History/Data/Service button fields
+ДОДАНО:
+docs/v.0.15.1/
+TERMINAL_APPLY_v0.15.1.md
 
-VERSION:
-versionCode = 18
-versionName = 0.15.0
+versionCode = 19
+versionName = 0.15.1

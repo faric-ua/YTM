@@ -1,6 +1,6 @@
 YTM Importer
-Version: 0.15.0
-Version code: 18
+Version: 0.15.1
+Version code: 19
 Package: com.saney.ytmimporter
 Stage: stabilization before v1.0 Release Candidate
 
@@ -31,3 +31,9 @@ Next gate:
 - run docs/v.0.15.0/REGRESSION_CHECKLIST.md
 - fix blocker bugs
 - prepare v1.0 Release Candidate
+
+v0.15.1 hotfix:
+- GitHub Actions v0.15.0 failed in compileReleaseKotlin
+- BuildConfig unresolved
+- buildFeatures.buildConfig explicitly enabled
+- needs real GitHub Actions verification

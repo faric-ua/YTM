@@ -1,8 +1,8 @@
-# YTM Importer v0.15.0
+# YTM Importer v0.15.1
 
 Android importer for YouTube / YouTube Music playlists.
 
-v0.15.0 is the stabilization build before the v1.0 Release Candidate.
+v0.15.1 is the stabilization build before the v1.0 Release Candidate.
 
 Highlights:
 - adaptive launcher icon;
