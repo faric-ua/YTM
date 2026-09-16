@@ -17,10 +17,13 @@ G-01 PASS
 G-04 PASS
 G-05 PASS
 G-06 PASS
+G-07 PASS
 H-01 PASS
 
+v1.4.16 phone QA failures/observations:
+B-01 FAIL — BUG-004/Q-004: authorization became invalid while Step 2 stayed green/checked.
+
 Still required for v1.4.16:
-G-07 ADD_ALL explicit write
 NO_SCAN fallback
 destination rotation smoke
 remaining release-plan cases or documented SKIP/BLOCKED decisions
@@ -29,6 +32,7 @@ Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 DEFERRED
 BUG-003/Q-003 DEFERRED FOR LATER FIX
+BUG-004/Q-004 DEFERRED TO AUTH FIX WAVE
 
 QA:
 root qa/ = current definitions/policy

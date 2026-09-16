@@ -7,7 +7,7 @@
 | v1.4.13 | PARTIALLY PHONE-TESTED | Installed; Home/account and successful 3-track playlist creation observed. Full regression not run. |
 | v1.4.14 | **PARTIALLY PHONE-TESTED — FAIL** | A-03/D-03 failed: after update Step 2 remains red; silent account recovery did not work. |
 | v1.4.15 | **NOT TESTED** | Cleanup Wave 4 / PlaylistWriteCoordinator + per-release QA snapshots. |
-| v1.4.16 | **PARTIALLY PHONE-TESTED** | G-01/G-04/G-05/G-06/H-01 passed on phone. G-07 ADD_ALL, NO_SCAN and rotation remain. |
+| v1.4.16 | **PARTIALLY PHONE-TESTED — HAS FAIL** | G-01/G-04/G-05/G-06/G-07/H-01 PASS. B-01 stale green auth indicator FAIL (BUG-004). NO_SCAN and rotation remain. |
 
 Static audits and GitHub build do not equal phone testing.
 
@@ -15,3 +15,5 @@ v1.4.16 phone evidence:
 - `docs/v.1.4.16/qa/TEST_RUN_2026-09-16.md`
 - `docs/v.1.4.16/qa/PHONE_TEST_REPORT_2026-09-16.md`
 - `docs/v.1.4.16/qa/UI_SCREENSHOT_ANALYSIS_2026-09-16.md`
+- `docs/v.1.4.16/qa/UI_SCREENSHOT_ANALYSIS_G07_2026-09-16.md`
+- `docs/v.1.4.16/qa/AUTH_STALE_SESSION_EVIDENCE_2026-09-16.md`

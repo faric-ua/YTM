@@ -1,0 +1,11 @@
+# v1.4.16 QA evidence update manifest
+
+f631ff2e4a4c7750e07d9e26917d778bb8f1b1128411f6d5a1d4b5d447f93029  docs/v.1.4.16/diagrams/G07_AUTH_STATE_FLOW.md
+942c40b2ebfce49dcf72ae7b3141be9628707dae200402ecbfaf25202d3a95ae  docs/v.1.4.16/qa/AUTH_STALE_SESSION_EVIDENCE_2026-09-16.md
+8d71959dd6f902566b2be8d50a26db4cf8fa26f2cfdb27ca06e082896f1b0d5c  docs/v.1.4.16/qa/BUG_REGISTER.md
+adb7e526d354620a41352b57513bbe5b20100f15b559b46a8e34ac8fbcf9287f  docs/v.1.4.16/qa/TEST_RUN_2026-09-16.md
+30734598c283c2b24c7e780cbe463d8535b2616c86c300816b4aabb5b475a68a  docs/v.1.4.16/qa/UI_SCREENSHOT_ANALYSIS_G07_2026-09-16.md
+5053506b78f5b21bddd147ba4273d4f86ce100c8a4849962b6b18a1ac9fb667e  docs/v.1.4.16/qa/evidence/2026-09-16_bug-004_stale-green-auth.jpg
+e5cc1166493731688e193e8cb1e388567c50ebfe44b6da393a10d0f10ad47b6a  docs/v.1.4.16/qa/evidence/2026-09-16_g07_result-added-2.jpg
+cc65feead3cf4e90ee1ba2ad39eba66edc9c0ffef8e4fff8c4b255e1faf7def1  docs/v.1.4.16/qa/evidence/2026-09-16_g07_target-count-6.jpg
+0b1306b64380db2fd8aa091c9c5af33aa278db36933954912c94499354fab5f4  docs/v.1.4.16/qa/evidence/README.md

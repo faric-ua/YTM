@@ -1,0 +1,12 @@
+YTM Importer v1.4.16 — G-07 + stale-auth QA evidence update
+
+Adds/updates:
+- G-07 ADD_ALL -> PASS
+- target playlist count 4 -> 6
+- BUG-004/Q-004 stale green authorization indicator
+- screenshot evidence without exposing the Google email
+- QA state-flow diagram
+- BACKLOG / PROJECT_STATUS / RELEASE_TEST_STATUS
+
+Suggested commit:
+YTM Importer v1.4.16: record G-07 pass and stale auth bug
