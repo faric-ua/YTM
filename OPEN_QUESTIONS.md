@@ -86,3 +86,7 @@ return to it.
 
 Cleanup Wave 2 intentionally does not change UiChrome dialog positioning.
 Q-001 remains OPEN. Q-002 remains DEFERRED.
+
+## v1.4.13 note
+
+SearchCoordinator extraction does not change UiChrome. Q-002 remains DEFERRED BY USER. v1.4.12 is marked NOT TESTED in RELEASE_TEST_STATUS.md.

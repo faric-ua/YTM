@@ -1,15 +1,15 @@
-YTM Importer v1.4.12 FULL
+YTM Importer v1.4.13 FULL
 
 ADDED:
-scripts/mainactivity-cleanup-audit.sh
-docs/v.1.4.12/
-TERMINAL_APPLY_v1.4.12.md
+app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
+scripts/search-coordinator-audit.sh
+RELEASE_TEST_STATUS.md
+docs/v.1.4.13/
+TERMINAL_APPLY_v1.4.13.md
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 app/build.gradle.kts
-scripts/dialog-bounds-audit.sh
-scripts/dialog-animation-audit.sh
 scripts/release-preflight.sh
 .github/workflows/build-apk.yml
 BACKLOG.md
@@ -22,17 +22,12 @@ docs/README.md
 TERMINAL_APPLY_VERSIONED_DOCS.md
 
 DELETED:
-No standalone files.
+none
 
-REMOVED FROM MainActivity:
-- legacy Import UI flow
-- legacy Review/candidate UI flow
-- legacy Pending detail UI
-- legacy History detail/actions
-- legacy Data/export/backup/restore flow
-- legacy Service/Diagnostics/SearchCache flow
-- obsolete request codes / export state / LocalBackupManager dependency
+TEST STATUS:
+v1.4.12 = NOT TESTED
+v1.4.13 = NOT TESTED YET
 
 VERSION:
-versionCode = 46
-versionName = 1.4.12
+versionCode = 47
+versionName = 1.4.13

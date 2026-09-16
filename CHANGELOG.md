@@ -1,5 +1,19 @@
 # Журнал змін (Changelog)
 
+## v1.4.13
+- Marked v1.4.12 explicitly **NOT TESTED** in `RELEASE_TEST_STATUS.md`.
+- Added mutable release test-status register without rewriting immutable old release docs.
+- Cleanup Wave 3: extracted track-search domain into `SearchCoordinator`.
+- SearchCoordinator now owns planning, cache/API selection, quota accounting,
+  quota-stop behavior and automatic candidate/state application.
+- MainActivity now keeps only search UI/auth/executor/result callbacks.
+- Removed direct `api.search`, SearchCache get/put and search quota accounting from MainActivity.
+- Added `scripts/search-coordinator-audit.sh`.
+- MainActivity reduced from 3689 to 3620 lines.
+- Q-002 remains DEFERRED BY USER.
+- versionCode 47 / versionName 1.4.13.
+- v1.4.13 itself is NOT TESTED YET.
+
 ## v1.4.12
 - Cleanup Wave 2: removed obsolete duplicate UI flows from MainActivity.
 - MainActivity reduced from 5668 to 3689 lines

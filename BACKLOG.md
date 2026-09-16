@@ -1,35 +1,36 @@
 # YTM Importer — Roadmap
 
 ## Current
-**v1.4.12 — Cleanup Wave 2**
+**v1.4.13 — Cleanup Wave 3 / SearchCoordinator**
+
+## Test status
+- [!] v1.4.12 — **NOT TESTED**.
+- [!] v1.4.13 — **NOT TESTED YET**.
 
 ## Deferred / open
-- [~] Q-001 — Review wording + Project-save feedback — OPEN.
-- [~] Q-002 — custom dialog entrance motion — DEFERRED BY USER; do not block roadmap.
+- [~] Q-001 — OPEN.
+- [~] Q-002 — custom dialog entrance motion — DEFERRED BY USER.
 
-## v1.4.12
-- [x] remove legacy Import UI from MainActivity;
-- [x] remove legacy Review/candidate UI from MainActivity;
-- [x] remove legacy Pending detail UI from MainActivity;
-- [x] remove legacy History detail/action UI from MainActivity;
-- [x] remove legacy Data/export/backup/restore UI from MainActivity;
-- [x] remove legacy Service/Diagnostics/SearchCache UI from MainActivity;
-- [x] remove obsolete Main request codes/export state/LocalBackupManager;
-- [x] preserve original permissive file picker in ImportActivity;
-- [x] add MainActivity cleanup audit;
+## v1.4.13
+- [x] add explicit mutable release test-status register;
+- [x] mark v1.4.12 NOT TESTED;
+- [x] extract SearchCoordinator;
+- [x] move search plan domain calculation out of MainActivity;
+- [x] move SearchCache get/put out of MainActivity;
+- [x] move search.list call out of MainActivity;
+- [x] move search quota accounting out of MainActivity;
+- [x] move auto best-candidate application out of MainActivity;
+- [x] preserve manual selections and exact Project video IDs;
+- [x] add search-coordinator audit;
 - [ ] GitHub build;
-- [ ] phone regression.
+- [ ] phone search regression;
+- [ ] 50-track search regression.
 
-## Cleanup Wave 3
-Do only one extraction at a time:
-- [ ] extract search orchestration into `SearchCoordinator`, or
-- [ ] extract playlist write execution into `PlaylistWriteCoordinator`.
+## Cleanup Wave 4
+Do not start until v1.4.13 search behavior is phone-tested.
 
-Preferred next target: **SearchCoordinator** because it has a smaller blast
-radius than the create/append write engine.
+Candidate:
+- [ ] `PlaylistWriteCoordinator` for create/append/quota-pause/resume write logic.
 
-## Later
-- [ ] extract auth presentation/orchestration;
-- [ ] extract destination/write coordinator;
-- [ ] reduce MainActivity toward Home + navigation + result bridges;
-- [ ] public-release regression with the 50-track Clubland set.
+Keep the extraction incremental; do not combine major UI redesign with write
+engine extraction.

@@ -37,6 +37,7 @@ import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.util.ErrorMessages
+import com.saney.ytmimporter.search.SearchCoordinator
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
@@ -83,7 +84,7 @@ class MainActivity : Activity() {
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
 
-    private lateinit var searchCache: SearchCache
+    private lateinit var searchCoordinator: SearchCoordinator
     private lateinit var quotaTracker: QuotaTracker
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var historyStore: HistoryStore
@@ -124,8 +125,16 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        searchCache = SearchCache(this)
-        quotaTracker = QuotaTracker(this)
+        val searchCache =
+            SearchCache(this)
+        quotaTracker =
+            QuotaTracker(this)
+        searchCoordinator =
+            SearchCoordinator(
+                api = api,
+                searchCache = searchCache,
+                quotaTracker = quotaTracker
+            )
         pendingJobStore = PendingJobStore(this)
         historyStore = HistoryStore(this)
         currentPlaylistStore = CurrentPlaylistStore(this)
@@ -1327,37 +1336,24 @@ class MainActivity : Activity() {
         openReviewAfter: Boolean = false,
         preserveExistingExact: Boolean = false
     ) {
-        val p = playlist ?: return toast("Спочатку імпортуйте список треків")
+        val p =
+            playlist
+                ?: return toast(
+                    "Спочатку імпортуйте список треків"
+                )
 
-        val tracksToSearch =
-            p.tracks.filter { track ->
-                val manualExact =
-                    track.manuallySelected &&
-                        !track.selectedVideoId.isNullOrBlank()
-
-                if (manualExact) {
-                    false
-                } else if (preserveExistingExact) {
-                    track.selectedVideoId.isNullOrBlank() ||
-                        track.status != TrackStatus.MATCHED ||
-                        track.candidates.isNotEmpty()
-                } else {
-                    true
-                }
-            }
-
-        val cachedCount =
-            tracksToSearch.count {
-                searchCache.get(it) != null
-            }
-
-        val apiNeeded =
-            tracksToSearch.size -
-                cachedCount
-        val quota = quotaTracker.snapshot()
+        val plan =
+            searchCoordinator.plan(
+                playlist = p,
+                preserveExistingExact =
+                    preserveExistingExact
+            )
 
         val warning =
-            if (apiNeeded > quota.searchRemaining) {
+            if (
+                plan.apiNeeded >
+                plan.quota.searchRemaining
+            ) {
                 "\n\n⚠ Локальна оцінка показує, що search quota " +
                     "(квоти пошуку) може не вистачити."
             } else {
@@ -1365,22 +1361,31 @@ class MainActivity : Activity() {
             }
 
         UiChrome.alertBuilder(this)
-            .setTitle("План пошуку (Search plan)")
+            .setTitle(
+                "План пошуку (Search plan)"
+            )
             .setMessage(
-                "Треків у списку: ${p.tracks.size}\n" +
-                    "Пошук потрібен для: ${tracksToSearch.size}\n" +
-                    "Вже є в кеші: $cachedCount\n" +
-                    "Потрібно нових search.list: $apiNeeded\n\n" +
-                    "Локально використано сьогодні: ${quota.searchCalls}/" +
+                "Треків у списку: ${plan.totalTracks}\n" +
+                    "Пошук потрібен для: ${plan.tracksToSearch}\n" +
+                    "Вже є в кеші: ${plan.cachedCount}\n" +
+                    "Потрібно нових search.list: ${plan.apiNeeded}\n\n" +
+                    "Локально використано сьогодні: " +
+                    "${plan.quota.searchCalls}/" +
                     "${QuotaTracker.SEARCH_DAILY_LIMIT}\n" +
-                    "Локальна оцінка залишку: ${quota.searchRemaining}" +
+                    "Локальна оцінка залишку: " +
+                    "${plan.quota.searchRemaining}" +
                     warning +
                     "\n\nЦе не точний залишок Google Cloud. " +
                     "Інші пристрої або клієнти того самого API project " +
                     "(проєкту API) можуть теж витрачати квоту."
             )
-            .setNegativeButton("Скасувати", null)
-            .setPositiveButton("Почати") { _, _ ->
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Почати"
+            ) { _, _ ->
                 startSearch(
                     p = p,
                     openReviewAfter =
@@ -1398,129 +1403,88 @@ class MainActivity : Activity() {
         preserveExistingExact: Boolean = false
     ) {
         authorize {
-            val token = accessToken ?: return@authorize
+            val token =
+                accessToken
+                    ?: return@authorize
 
-            progress.visibility = View.VISIBLE
-            progress.max = p.tracks.size
-            progress.progress = 0
-            status("Пошук 0/${p.tracks.size} • кеш 0 • API 0")
+            progress.visibility =
+                View.VISIBLE
+            progress.max =
+                p.tracks.size
+            progress.progress =
+                0
+
+            status(
+                "Пошук 0/${p.tracks.size} • кеш 0 • API 0"
+            )
 
             executor.execute {
-                var cacheHits = 0
-                var apiSearches = 0
-                var quotaBlocked = false
-                var quotaToastShown = false
+                val result =
+                    searchCoordinator.run(
+                        accessToken = token,
+                        playlist = p,
+                        preserveExistingExact =
+                            preserveExistingExact,
+                        onTrackStateChanged = { index ->
+                            runOnUiThread {
+                                refreshRow(index)
+                            }
+                        },
+                        onProgress = { searchProgress ->
+                            runOnUiThread {
+                                progress.progress =
+                                    searchProgress.processed
 
-                for ((index, track) in p.tracks.withIndex()) {
-                    if (Thread.currentThread().isInterrupted) break
+                                status(
+                                    when (
+                                        searchProgress.preservedSelection
+                                    ) {
+                                        SearchCoordinator.PreservedSelection.MANUAL ->
+                                            "Пошук ${searchProgress.processed}/" +
+                                                "${searchProgress.total} • " +
+                                                "ручний вибір збережено"
 
-                    val keepManualSelection =
-                        track.manuallySelected &&
-                            !track.selectedVideoId.isNullOrBlank()
+                                        SearchCoordinator.PreservedSelection.PROJECT_EXACT ->
+                                            "Пошук ${searchProgress.processed}/" +
+                                                "${searchProgress.total} • " +
+                                                "точний videoId з Project збережено"
 
-                    val keepExactSelection =
-                        preserveExistingExact &&
-                            !track.selectedVideoId.isNullOrBlank() &&
-                            track.status == TrackStatus.MATCHED &&
-                            track.candidates.isEmpty()
-
-                    if (
-                        keepManualSelection ||
-                        keepExactSelection
-                    ) {
-                        runOnUiThread {
-                            progress.progress = index + 1
-                            status(
-                                "Пошук ${index + 1}/${p.tracks.size} • " +
-                                    if (keepManualSelection) {
-                                        "ручний вибір збережено"
-                                    } else {
-                                        "точний videoId з Project збережено"
+                                        null ->
+                                            "Пошук ${searchProgress.processed}/" +
+                                                "${searchProgress.total} • " +
+                                                "кеш ${searchProgress.cacheHits} • " +
+                                                "API ${searchProgress.apiSearches}"
                                     }
-                            )
-                            adapter.notifyDataSetChanged()
-                            updateSummary()
-                            updateQuotaPanel()
-                        }
-                        continue
-                    }
+                                )
 
-                    track.status = TrackStatus.SEARCHING
-                    track.error = null
-                    refreshRow(index)
-
-                    try {
-                        val cachedCandidates = searchCache.get(track)
-
-                        val candidates =
-                            if (cachedCandidates != null) {
-                                cacheHits += 1
-                                quotaTracker.recordCacheHit()
-                                cachedCandidates
-                            } else if (quotaBlocked) {
-                                track.status = TrackStatus.FAILED
-                                track.error =
-                                    "Немає в кеші, а квота YouTube search API вже закінчилась"
-                                emptyList()
-                            } else {
-                                apiSearches += 1
-                                quotaTracker.recordSearchCall()
-                                val freshCandidates = api.search(token, track)
-                                searchCache.put(track, freshCandidates)
-                                freshCandidates
+                                adapter.notifyDataSetChanged()
+                                updateSummary()
+                                updateQuotaPanel()
                             }
-
-                        if (track.status != TrackStatus.FAILED) {
-                            applySearchCandidates(track, candidates)
-                        }
-                    } catch (e: Exception) {
-                        track.status = TrackStatus.FAILED
-                        track.error =
-                            ErrorMessages.userMessage(
-                                e,
-                                "Не вдалося виконати пошук"
-                            )
-
-                        if (isQuotaError(e)) {
-                            quotaBlocked = true
-                            quotaTracker.recordQuotaError(
-                                e.message ?: "Search quota exceeded"
-                            )
-
-                            if (!quotaToastShown) {
-                                quotaToastShown = true
-                                runOnUiThread {
-                                    toast(
-                                        "Закінчилась квота пошуку YouTube API. " +
-                                            "Треки, які вже є в кеші, програма ще обробить."
-                                    )
-                                }
+                        },
+                        onQuotaBlocked = {
+                            runOnUiThread {
+                                toast(
+                                    "Закінчилась квота пошуку YouTube API. " +
+                                        "Треки, які вже є в кеші, програма ще обробить."
+                                )
                             }
                         }
-                    }
-
-                    runOnUiThread {
-                        progress.progress = index + 1
-                        status(
-                            "Пошук ${index + 1}/${p.tracks.size} • " +
-                                "кеш $cacheHits • API $apiSearches"
-                        )
-                        adapter.notifyDataSetChanged()
-                        updateSummary()
-                        updateQuotaPanel()
-                    }
-                }
+                    )
 
                 runOnUiThread {
-                    progress.visibility = View.GONE
+                    progress.visibility =
+                        View.GONE
 
                     status(
-                        if (quotaBlocked) {
-                            "Готово: з кешу $cacheHits, API-запитів $apiSearches. " +
-                                "Квота закінчилась; некешовані треки залишились без пошуку."
+                        if (result.quotaBlocked) {
+                            "Готово: з кешу ${result.cacheHits}, " +
+                                "API-запитів ${result.apiSearches}. " +
+                                "Квота закінчилась; некешовані треки " +
+                                "залишились без пошуку."
                         } else {
-                            "Пошук завершено: з кешу $cacheHits, " +
-                                "нових API-пошуків $apiSearches. " +
+                            "Пошук завершено: з кешу ${result.cacheHits}, " +
+                                "нових API-пошуків ${result.apiSearches}. " +
                                 "Жовті треки краще перевірити натисканням."
                         }
                     )
@@ -1534,39 +1498,6 @@ class MainActivity : Activity() {
                 }
             }
         }
-    }
-
-    private fun applySearchCandidates(
-        track: Track,
-        candidates: List<SearchCandidate>
-    ) {
-        track.candidates = candidates
-
-        if (
-            track.manuallySelected &&
-            !track.selectedVideoId.isNullOrBlank()
-        ) {
-            track.status = TrackStatus.MATCHED
-            track.error = null
-            return
-        }
-
-        val best = candidates.firstOrNull()
-        if (best == null) {
-            track.status = TrackStatus.MISSING
-            track.selectedVideoId = null
-            track.selectedTitle = null
-            track.selectedChannel = null
-            return
-        }
-
-        applyCandidate(track, best, manual = false)
-
-        track.status =
-            when {
-                best.score >= 0.72 -> TrackStatus.MATCHED
-                else -> TrackStatus.REVIEW
-            }
     }
 
     private fun createPlaylist() {

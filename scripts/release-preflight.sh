@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.12/RELEASE.md"
-check_file "docs/v.1.4.12/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.13/RELEASE.md"
+check_file "docs/v.1.4.13/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -30,6 +30,7 @@ check_file "app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt"
 check_file "scripts/mainactivity-audit.sh"
 check_file "scripts/mainactivity-cleanup-audit.sh"
+check_file "scripts/search-coordinator-audit.sh"
 check_file "scripts/ui-chrome-audit.sh"
 check_file "scripts/dialog-style-audit.sh"
 check_file "scripts/button-layout-audit.sh"
@@ -45,6 +46,7 @@ check_file "scripts/dialog-animation-audit.sh"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
+bash scripts/search-coordinator-audit.sh
 bash scripts/ui-chrome-audit.sh
 bash scripts/dialog-style-audit.sh
 bash scripts/button-layout-audit.sh
@@ -57,6 +59,7 @@ bash scripts/rotation-layout-audit.sh
 bash scripts/dialog-animation-audit.sh
 check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 check_file "OPEN_QUESTIONS.md"
+check_file "RELEASE_TEST_STATUS.md"
 
 grep -q 'android:name=".ImportActivity"' \
   app/src/main/AndroidManifest.xml \
@@ -107,6 +110,9 @@ grep -q 'Q-001' OPEN_QUESTIONS.md \
 
 grep -q 'Q-002' OPEN_QUESTIONS.md \
   || fail "Deferred dialog-motion issue Q-002 is not documented"
+
+grep -Fq '| v1.4.12 | **NOT TESTED** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.12 must remain explicitly marked NOT TESTED"
 
 grep -q 'ImportActivity::class.java' \
   app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
@@ -187,11 +193,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 46' app/build.gradle.kts \
-  || fail "Expected versionCode = 46"
+grep -q 'versionCode = 47' app/build.gradle.kts \
+  || fail "Expected versionCode = 47"
 
-grep -q 'versionName = "1.4.12"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.12"'
+grep -q 'versionName = "1.4.13"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.13"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -328,3 +334,7 @@ echo "- Cleanup wave 2: legacy MainActivity UI flows removed"
 echo "- dedicated Import/Review/History/Data/Pending/Service screens retained"
 echo "- original permissive file picker retained in ImportActivity"
 echo "- Q-002 dialog motion deferred by user and not a release blocker"
+
+echo "- v1.4.12 explicitly marked NOT TESTED"
+echo "- SearchCoordinator owns track-search domain orchestration"
+echo "- MainActivity search role reduced to auth/UI bridge"

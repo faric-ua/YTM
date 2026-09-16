@@ -1,26 +1,38 @@
-# YTM Importer v1.4.12
+# YTM Importer v1.4.13
 
-Cleanup Wave 2.
+Cleanup Wave 3 — `SearchCoordinator`.
 
-`MainActivity.kt` зменшено:
+## Статус тестування
+
+- **v1.4.12 — НЕ ТЕСТОВАНО**
+- **v1.4.13 — ЩЕ НЕ ТЕСТОВАНО**
+
+Статус зберігається окремо у `RELEASE_TEST_STATUS.md`, тому старі immutable
+release docs не переписуються.
+
+## Архітектура
+
+Пошукову domain-логіку винесено з `MainActivity` у:
+
+`app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt`
+
+Тепер coordinator відповідає за:
+
+- search plan;
+- SearchCache;
+- search.list;
+- search quota;
+- quota stop;
+- manual/exact Project protection;
+- автоматичний best match;
+- MATCHED / REVIEW / MISSING / FAILED.
+
+`MainActivity` лишає авторизацію та відображення прогресу.
+
+MainActivity:
 
 ```text
-5668 → 3689 рядків
+3689 → 3620 рядків
 ```
 
-Прибрані старі дублікати UI-flow, які вже давно мають окремі екрани:
-
-- Import → `ImportActivity`
-- Review → `ReviewActivity`
-- Destination → `DestinationActivity`
-- Queue → `PendingActivity`
-- History → `HistoryActivity`
-- Data / Backup / Restore → `DataActivity`
-- Service / Diagnostics / Cache / About → `ServiceActivity`
-
-Основний permissive file picker `ACTION_OPEN_DOCUMENT` з `type = "*/*"`
-залишився в `ImportActivity`.
-
-Q-001 залишається OPEN.
-Q-002 (рух custom dialogs при відкритті) позначено DEFERRED за рішенням
-користувача і він не блокує подальшу розробку.
+Q-002 залишається DEFERRED за рішенням користувача.

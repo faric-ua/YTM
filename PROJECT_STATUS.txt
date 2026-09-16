@@ -1,40 +1,43 @@
 YTM Importer
-Version: 1.4.12
-Version code: 46
+Version: 1.4.13
+Version code: 47
 Package: com.saney.ytmimporter
 
+PHONE TEST STATUS:
+- v1.4.12: NOT TESTED
+- v1.4.13: NOT TESTED YET
+
 Stage:
-Cleanup Wave 2 — MainActivity legacy-flow removal
+Cleanup Wave 3 — SearchCoordinator extraction
 
 MainActivity:
-before: 5668 lines
-after:  3689 lines
-removed: 1979 lines (34.9%)
+before v1.4.13: 3689 lines
+after v1.4.13:  3620 lines
 
-Dedicated UI owners:
-- ImportActivity
-- ReviewActivity
-- DestinationActivity
-- PendingActivity
-- HistoryActivity
-- DataActivity
-- ServiceActivity
+SearchCoordinator owns:
+- search plan
+- manual/Project exact preservation
+- SearchCache lookup/write
+- YouTube search.list
+- search quota/cache-hit accounting
+- quota-stop behavior
+- automatic candidate application
+- Track search-state transitions
 
 MainActivity still owns:
 - Home/navigation
-- OAuth bridge
-- search orchestration
-- destination bridge
+- OAuth UI bridge
+- search progress UI bridge
+- Destination bridge
 - YouTube write core
 - Pending resume
-- quota handling
 - History sync
-- manual URL canonical application
-- result/replacement entry points
+- result/replacement UI
 
 Deferred:
 - Q-001 OPEN
-- Q-002 custom-dialog entrance motion DEFERRED BY USER
+- Q-002 dialog entrance motion DEFERRED BY USER
 
-Next:
-Cleanup Wave 3 — extract one core coordinator from MainActivity.
+Next after build/phone test:
+Cleanup Wave 4 — consider PlaylistWriteCoordinator, but only after v1.4.13
+search regression passes.

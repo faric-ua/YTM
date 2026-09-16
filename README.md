@@ -1,12 +1,14 @@
-# YTM Importer v1.4.12
+# YTM Importer v1.4.13
 
-Cleanup Wave 2.
+Cleanup Wave 3 — SearchCoordinator.
 
-MainActivity was reduced from 5668 to 3689 lines
-by removing obsolete duplicate UI flows already owned by dedicated Activities.
+Test status:
+- v1.4.12: **NOT TESTED**
+- v1.4.13: **NOT TESTED YET**
 
-Dedicated ownership now covers Import, Review, Destination, Pending, History,
-Data and Service screens.
+Search planning/execution/cache/quota/candidate-state logic has been extracted
+from MainActivity into a dedicated non-UI `SearchCoordinator`.
 
-Q-001 remains open. Q-002 (custom dialog entrance motion) is deferred by the
-user and does not block the roadmap.
+MainActivity: 3689 → 3620 lines.
+
+Q-002 dialog entrance motion remains deferred by the user.
