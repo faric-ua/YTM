@@ -23,7 +23,7 @@ grep -A100 'private fun showPlaylistResult' "$MAIN" |
   || fail "Open in YTM result action missing"
 
 grep -A100 'private fun showPlaylistResult' "$MAIN" |
-  grep -q 'label = "Копіювати"' \
+  grep -q 'label = "Копіювати посилання"' \
   || fail "Copy result action missing"
 
 grep -A100 'private fun showPlaylistResult' "$MAIN" |

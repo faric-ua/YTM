@@ -868,7 +868,7 @@ dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
 0be731480348ff48  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
 823f019b097e1e30  scripts/release-preflight.sh
-0643a956dbc5f3cd  scripts/result-modal-audit.sh
+394aa3b0170a4062  scripts/result-modal-audit.sh
 d101c2a72335189a  scripts/rotation-layout-audit.sh
 978fa69e27c6b641  scripts/search-coordinator-audit.sh
 8a6853d9b755fa80  scripts/service-navigation-audit.sh
