@@ -31,6 +31,15 @@ if grep -A18 'scroll.addView' "$UI" | grep -q 'Gravity.CENTER'; then
   fail "old centered ScrollView card layout can clip tall dialog tops"
 fi
 
+grep -A12 'val outer =' "$UI" | grep -q 'alpha = 0f' \
+  || fail "custom dialog provisional content is visible"
+
+grep -A40 'setOnApplyWindowInsetsListener' "$UI" | grep -q 'view.alpha = 1f' \
+  || fail "custom dialog is not revealed after final insets"
+
+grep -q 'fun configureWindow()' "$UI" \
+  || fail "dialog window configuration helper missing"
+
 CUSTOM_CALLS="$(
   grep -R -h -E \
     'UiChrome\.show(Menu|Message|Record)Dialog\(' \
@@ -46,4 +55,6 @@ echo "PASS:"
 echo "- custom dialog viewport handles system bars + display cutouts"
 echo "- tall custom dialogs start at the visible top and remain scrollable"
 echo "- short custom dialogs stay vertically centered"
+echo "- provisional custom-dialog frame is hidden until final insets"
+echo "- visible center-to-top snap is guarded"
 echo "- shared fix covers $CUSTOM_CALLS Menu/Message/Record dialog call sites"

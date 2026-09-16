@@ -22,6 +22,7 @@ import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.model.GoogleAccountInfo
 import com.saney.ytmimporter.model.HistoryEntry
 import com.saney.ytmimporter.model.HistoryStatus
@@ -149,8 +150,22 @@ class MainActivity : Activity() {
         historyStore = HistoryStore(this)
         localBackupManager = LocalBackupManager(this)
         currentPlaylistStore = CurrentPlaylistStore(this)
+
+        restoreAuthSessionFromMemory()
         buildUi()
+        updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
+
+        val restoredToken = accessToken
+        if (
+            !restoredToken.isNullOrBlank() &&
+            (googleAccountInfo == null || youtubeChannelInfo == null)
+        ) {
+            loadAccountIdentity(
+                token = restoredToken,
+                after = null
+            )
+        }
 
         if (savedInstanceState == null) {
             window.decorView.post {
@@ -1397,6 +1412,21 @@ class MainActivity : Activity() {
             .show()
     }
 
+    private fun restoreAuthSessionFromMemory() {
+        val snapshot = AuthSessionStore.current()
+        accessToken = snapshot.accessToken
+        googleAccountInfo = snapshot.googleAccountInfo
+        youtubeChannelInfo = snapshot.youtubeChannelInfo
+    }
+
+    private fun syncAuthSessionToMemory() {
+        AuthSessionStore.update(
+            accessToken = accessToken,
+            googleAccountInfo = googleAccountInfo,
+            youtubeChannelInfo = youtubeChannelInfo
+        )
+    }
+
     private fun authorize(
         forceAccountPicker: Boolean = false,
         after: (() -> Unit)? = null
@@ -1414,6 +1444,7 @@ class MainActivity : Activity() {
             accessToken = null
             googleAccountInfo = null
             youtubeChannelInfo = null
+            AuthSessionStore.clear()
             updateAccountPanel()
         }
 
@@ -1477,6 +1508,7 @@ class MainActivity : Activity() {
         accessToken = token
         googleAccountInfo = null
         youtubeChannelInfo = null
+        syncAuthSessionToMemory()
         updateAccountPanel()
         status("Google підключено. Завантажую дані акаунта і YouTube каналу…")
 
@@ -1501,6 +1533,7 @@ class MainActivity : Activity() {
             runOnUiThread {
                 googleAccountInfo = googleResult.getOrNull()
                 youtubeChannelInfo = channelResult.getOrNull()
+                syncAuthSessionToMemory()
                 updateAccountPanel()
                 updateQuotaPanel()
 

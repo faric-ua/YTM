@@ -1,5 +1,14 @@
 # Журнал змін (Changelog)
 
+## v1.4.9
+- Fixed Google/YTM Step 2 state loss after screen rotation.
+- Added process-memory-only AuthSessionStore.
+- OAuth token remains non-persistent.
+- Reloads incomplete account identity after recreation.
+- Fixed visible custom-dialog center-to-top snap.
+- Added configuration-state audit and strengthened dialog-bounds audit.
+- versionCode 43 / versionName 1.4.9.
+
 ## v1.4.8
 - Fixed top clipping in tall custom dialogs.
 - Quota and Problem Tracks now start inside the visible safe viewport.

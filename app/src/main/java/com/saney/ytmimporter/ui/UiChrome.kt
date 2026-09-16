@@ -618,7 +618,10 @@ object UiChrome {
             dp(activity, 12)
 
         val outer =
-            FrameLayout(activity)
+            FrameLayout(activity).apply {
+                // Do not show provisional geometry before final insets arrive.
+                alpha = 0f
+            }
 
         val scroll =
             ScrollView(activity).apply {
@@ -670,12 +673,8 @@ object UiChrome {
             )
         )
 
-        dialog.setView(outer)
-
-        dialog.setOnShowListener {
-            val window =
-                dialog.window
-                    ?: return@setOnShowListener
+        fun configureWindow() {
+            val window = dialog.window ?: return
 
             WindowCompat.setDecorFitsSystemWindows(
                 window,
@@ -692,6 +691,15 @@ object UiChrome {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
+        }
+
+        dialog.setView(outer)
+
+        // Best effort before the first rendered frame.
+        configureWindow()
+
+        dialog.setOnShowListener {
+            configureWindow()
 
             ViewCompat.setOnApplyWindowInsetsListener(
                 outer
@@ -716,6 +724,11 @@ object UiChrome {
                             dp(activity, 8)
                     )
                 )
+
+                // First visible frame is already in its final safe position.
+                if (view.alpha == 0f) {
+                    view.alpha = 1f
+                }
 
                 insets
             }

@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.8/RELEASE.md"
-check_file "docs/v.1.4.8/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.9/RELEASE.md"
+check_file "docs/v.1.4.9/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -37,6 +37,8 @@ check_file "scripts/action-hierarchy-audit.sh"
 check_file "scripts/service-navigation-audit.sh"
 check_file "scripts/dialog-bounds-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt"
+check_file "scripts/configuration-state-audit.sh"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/ui-chrome-audit.sh
@@ -46,6 +48,7 @@ bash scripts/compact-review-audit.sh
 bash scripts/action-hierarchy-audit.sh
 bash scripts/service-navigation-audit.sh
 bash scripts/dialog-bounds-audit.sh
+bash scripts/configuration-state-audit.sh
 check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 check_file "OPEN_QUESTIONS.md"
 
@@ -163,11 +166,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 42' app/build.gradle.kts \
-  || fail "Expected versionCode = 42"
+grep -q 'versionCode = 43' app/build.gradle.kts \
+  || fail "Expected versionCode = 43"
 
-grep -q 'versionName = "1.4.8"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.8"'
+grep -q 'versionName = "1.4.9"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.9"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -283,3 +286,8 @@ echo "- Service diagnostics/about/searchcache structured screens"
 echo "- custom dialog safe viewport / top-clipping guard"
 echo "- tall custom dialogs scroll from visible top"
 echo "- short custom dialogs remain centered"
+
+echo "- auth session survives rotation in process memory"
+echo "- OAuth token remains non-persistent"
+echo "- custom dialogs reveal only after final insets"
+echo "- no visible center-to-top dialog snap"

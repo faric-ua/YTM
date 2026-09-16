@@ -86,3 +86,5 @@ docs/v.0.8.0/diagrams/
 - `TERMINAL_APPLY_v1.4.4.md` — adaptive buttons + state colors
 
 - `TERMINAL_APPLY_v1.4.8.md` — safe bounds for tall custom dialogs
+
+- `TERMINAL_APPLY_v1.4.9.md` — rotation auth + stable dialog first frame

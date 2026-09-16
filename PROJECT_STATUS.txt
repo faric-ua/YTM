@@ -1,24 +1,18 @@
 YTM Importer
-Version: 1.4.8
-Version code: 42
+Version: 1.4.9
+Version code: 43
 Package: com.saney.ytmimporter
 
-Stage:
-Safe custom-dialog viewport
+Stage: rotation/session + dialog first-frame stabilization
 
 Fixed:
-- Quota dialog top clipping
-- Problem Tracks dialog top clipping
-- shared Menu/Message/Record dialog viewport
-- systemBars + displayCutout handling
-- bottom safe area for custom dialog actions
+- Step 2 account state after rotation
+- memory-only auth retention
+- partial identity reload
+- custom dialog center-to-top snap
 
-Added:
-- scripts/dialog-bounds-audit.sh
-- docs/v.1.4.8/
+Privacy:
+- OAuth token not persisted to disk/backups/projects/SavedInstanceState
 
-Open:
-Q-001 remains OPEN — revisit later.
-
-Next after phone regression:
-cleanup wave 2 / further MainActivity reduction.
+Open: Q-001 remains OPEN.
+Next: cleanup wave 2 after phone regression.

@@ -1,10 +1,8 @@
-# YTM Importer v1.4.8
+# YTM Importer v1.4.9
 
-Safe-dialog viewport release.
+Rotation/session and dialog first-frame stabilization release.
 
-Highlights:
-- fixes top clipping in long Quota and Problem Tracks dialogs;
-- one shared safe viewport for UiChrome Menu / Message / Record dialogs;
-- system-bar + display-cutout aware dialog bounds;
-- short dialogs stay centered, long dialogs scroll from the visible top;
+- Account state survives rotation in process memory.
+- OAuth token remains non-persistent.
+- Custom dialogs no longer reveal their provisional position.
 - Q-001 remains open.

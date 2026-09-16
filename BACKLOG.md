@@ -1,27 +1,24 @@
 # YTM Importer — Roadmap
 
 ## Current
-**v1.4.8 — Safe Dialog Viewport**
+**v1.4.9 — Rotation Session + Stable Dialog First Frame**
 
-## Open question carried forward
+## Open question
 - [~] Q-001 remains OPEN — revisit later.
 
-## v1.4.8
-- [x] fix Quota top clipping;
-- [x] fix Problem Tracks top clipping;
-- [x] shared system-bar safe viewport for all custom dialogs;
-- [x] display-cutout handling;
-- [x] preserve centered short dialogs;
-- [x] preserve scrollable tall dialogs;
-- [x] audit all Menu / Message / Record call sites through shared UiChrome;
-- [x] add dialog-bounds audit;
+## v1.4.9
+- [x] retain Google/YTM session through Activity recreation;
+- [x] keep OAuth token memory-only;
+- [x] restore Step 2 after rotation;
+- [x] reload incomplete identity;
+- [x] hide provisional dialog frame;
+- [x] reveal after final safe insets;
+- [x] configuration-state audit;
+- [x] strengthened dialog-bounds audit;
 - [ ] GitHub build;
-- [ ] phone regression.
+- [ ] portrait/landscape phone regression.
 
 ## Next — cleanup wave 2
-- [ ] remove old Import dialog/file flow that is no longer reachable;
-- [ ] remove old History dialog flow that is no longer reachable;
-- [ ] remove old Data/Backup dialog flow that is no longer reachable;
-- [ ] remove old Pending detail paths where replaced by dedicated screens;
+- [ ] remove unreachable legacy Import/History/Data/Pending paths;
 - [ ] reduce MainActivity further;
-- [ ] dead-code audit after cleanup.
+- [ ] dead-code audit.

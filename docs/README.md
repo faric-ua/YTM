@@ -1,7 +1,5 @@
 # YTM Importer — Versioned documentation
 
-Current version:
+Current version: `docs/v.1.4.9/`
 
-`docs/v.1.4.8/`
-
-v1.4.8 fixes tall custom-dialog clipping with one shared safe viewport.
+v1.4.9 preserves Google/YTM session state across rotation and removes visible custom-dialog first-frame jumping.
