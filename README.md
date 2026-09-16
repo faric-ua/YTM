@@ -1,10 +1,3 @@
-# YTM Importer v1.4.10
+# YTM Importer v1.4.11
 
-Layout-stability release.
-
-Highlights:
-- Step 2 no longer shifts vertically after rotation;
-- horizontal action rows ignore child text baselines;
-- custom dialogs use one stable top anchor;
-- no height-dependent center-to-top dialog movement;
-- Q-001 remains open.
+Custom-dialog Window animation fix based on phone-video analysis. UiChrome custom dialogs disable WindowManager animation so the first visible frame should already be at the final TOP anchor. Q-001 remains open.

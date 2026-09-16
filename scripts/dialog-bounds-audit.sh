@@ -43,6 +43,10 @@ grep -A40 'setOnApplyWindowInsetsListener' "$UI" | grep -q 'view.alpha = 1f' \
 grep -q 'fun configureWindow()' "$UI" \
   || fail "dialog window configuration helper missing"
 
+grep -A45 'fun configureWindow()' "$UI" |
+  grep -q 'setWindowAnimations(0)' \
+  || fail "custom dialog WindowManager animation is not disabled"
+
 CUSTOM_CALLS="$(
   grep -R -h -E \
     'UiChrome\.show(Menu|Message|Record)Dialog\(' \
@@ -59,5 +63,6 @@ echo "- custom dialog viewport handles system bars + display cutouts"
 echo "- tall custom dialogs start at the visible top and remain scrollable"
 echo "- custom dialogs use one stable top anchor regardless of content height"
 echo "- provisional custom-dialog frame is hidden until final insets"
-echo "- visible center-to-top snap is removed at the layout source"
+echo "- card layout is TOP anchored"
+echo "- WindowManager animation is disabled, preventing whole-window motion"
 echo "- shared fix covers $CUSTOM_CALLS Menu/Message/Record dialog call sites"

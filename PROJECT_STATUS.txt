@@ -1,28 +1,22 @@
 YTM Importer
-Version: 1.4.10
-Version code: 44
+Version: 1.4.11
+Version code: 45
 Package: com.saney.ytmimporter
 
 Stage:
-Rotation layout + custom-dialog anchor stabilization
+Custom-dialog Window animation stabilization
+
+Video diagnosis:
+- card layout already TOP anchored
+- remaining movement was whole AlertDialog Window animation
 
 Fixed:
-- Step 2 vertical shift after rotation
-- horizontal button baseline alignment issue
-- More/custom-dialog center-to-top movement
-- height-dependent custom-dialog positioning
-
-Retained:
-- v1.4.9 process-memory Google/YTM session
-- safe system-bar/display-cutout dialog insets
-- top/bottom scrolling safety
+- WindowManager dialog animations disabled for UiChrome custom dialogs
+- TOP anchor/safe insets/scrolling retained
 
 Added:
-- scripts/rotation-layout-audit.sh
-- docs/v.1.4.10/
+- scripts/dialog-animation-audit.sh
+- docs/v.1.4.11/
 
 Open:
 Q-001 remains OPEN.
-
-Next after phone regression:
-cleanup wave 2 / MainActivity reduction.

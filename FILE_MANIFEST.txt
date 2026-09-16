@@ -1,18 +1,18 @@
-YTM Importer v1.4.10 FULL — FILE MANIFEST
+YTM Importer v1.4.11 FULL — FILE MANIFEST
 
-d59ac7a6ac0e18e7  .github/workflows/build-apk.yml
+03cef53f67119a9a  .github/workflows/build-apk.yml
 6cc7d3ae20eee52b  .gitignore
-78414432d084e572  APPLY_FULL_VERSION.txt
-cc982e6e4877b931  BACKLOG.md
-95e5e0dd5560df2e  CHANGELOG.md
+15e0ca3d663528be  APPLY_FULL_VERSION.txt
+b96cf6b13c7e63e4  BACKLOG.md
+bc6d00e611c224ac  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
-db11f502a2b50e83  OPEN_QUESTIONS.md
+550f9f58995ad0c4  OPEN_QUESTIONS.md
 d587b884d3808902  PRIVACY.md
-e3244e2a65dd22b8  PROJECT_STATUS.txt
+676aa79cc1c893f9  PROJECT_STATUS.txt
 ce775606933d5b6f  PUBLIC_RELEASE_CHECKLIST.md
-f976d145e62eebd8  README.md
-87634a46005cb28b  README_UA.md
-ce03525426302036  TERMINAL_APPLY_VERSIONED_DOCS.md
+0eff45be52b52d11  README.md
+a755f627cb5a9502  README_UA.md
+e59b1c68ed2843d4  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
 e0ce791b58f2a591  TERMINAL_APPLY_v0.10.1.md
 0039ea66bec1a47e  TERMINAL_APPLY_v0.11.0.md
@@ -42,6 +42,7 @@ eac5117f33e62bb1  TERMINAL_APPLY_v1.3.2.md
 039a81cdc2c9bf3f  TERMINAL_APPLY_v1.4.0.md
 d19c615aecdac5c7  TERMINAL_APPLY_v1.4.1.md
 491f42c6981c6501  TERMINAL_APPLY_v1.4.10.md
+4071b605c52e1816  TERMINAL_APPLY_v1.4.11.md
 fe43f908c47e706c  TERMINAL_APPLY_v1.4.2.md
 68b04fde9f139eac  TERMINAL_APPLY_v1.4.3.md
 1e5078ba6144a8d2  TERMINAL_APPLY_v1.4.4.md
@@ -50,7 +51,7 @@ fe43f908c47e706c  TERMINAL_APPLY_v1.4.2.md
 fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 410caf55096b297c  TERMINAL_APPLY_v1.4.8.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
-599bea4ce3886f32  app/build.gradle.kts
+06609232091203ff  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 27d6378715cbab35  app/src/main/AndroidManifest.xml
 a5a13f70894cac26  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
@@ -74,7 +75,7 @@ d8f0c56f39f3fb2f  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupMan
 0124c54859bc775e  app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt
 1ee13fa92a322d93  app/src/main/java/com/saney/ytmimporter/storage/QuotaTracker.kt
 2639bc29a6534a7f  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-cf167cda004ecf17  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+5b873c436c003640  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 c0102f86d465b27c  app/src/main/java/com/saney/ytmimporter/util/ErrorMessages.kt
 49ea39322f16188f  app/src/main/java/com/saney/ytmimporter/youtube/MatchScorer.kt
 035824b4c324e752  app/src/main/java/com/saney/ytmimporter/youtube/SearchCache.kt
@@ -94,7 +95,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 9d05e1fd1b661172  app/src/main/res/values/styles.xml
 6260627b41d420da  app/src/main/res/xml/file_paths.xml
 1ad29e43e790095c  build.gradle.kts
-07825411a9d2d28f  docs/README.md
+b50770d4dff1b626  docs/README.md
 fba063f3df84f31a  docs/v.0.10.0/RELEASE.md
 40eb6695cc102a64  docs/v.0.10.0/diagrams/ARCHITECTURE.md
 d36539446325c8a5  docs/v.0.10.0/diagrams/BEFORE_AFTER_v0.10.0.md
@@ -705,6 +706,12 @@ b52fe7b54e76e271  docs/v.1.4.10/REGRESSION_CHECKLIST.md
 da93ebc8c9a8e41c  docs/v.1.4.10/diagrams/DIALOG_TOP_ANCHOR.md
 e742bdd0388d0fbd  docs/v.1.4.10/diagrams/README.md
 90b00fa6321f4f17  docs/v.1.4.10/diagrams/STEP_BUTTON_BASELINE_BUG.md
+e66d1c83f80fc729  docs/v.1.4.11/REGRESSION_CHECKLIST.md
+de951bd1997bcc12  docs/v.1.4.11/RELEASE.md
+44d9e43c4e215c6a  docs/v.1.4.11/diagrams/BEFORE_AFTER_v1.4.11.md
+7a0cb7b0b555b58e  docs/v.1.4.11/diagrams/CUSTOM_DIALOG_PIPELINE.md
+7bd4da2ce810456b  docs/v.1.4.11/diagrams/README.md
+a0837fff87866770  docs/v.1.4.11/diagrams/VIDEO_ROOT_CAUSE.md
 855baae3acedb797  docs/v.1.4.2/REGRESSION_CHECKLIST.md
 541dce2a2aae6c9d  docs/v.1.4.2/RELEASE.md
 d3d8ec884ba49140  docs/v.1.4.2/diagrams/README.md
@@ -754,11 +761,12 @@ d5f372c6d46ad7c8  gradle.properties
 1c191237a6305d73  scripts/button-layout-audit.sh
 aebf1b7e01c530bc  scripts/compact-review-audit.sh
 94cd576e835a5493  scripts/configuration-state-audit.sh
-ab8597d6609c120d  scripts/dialog-bounds-audit.sh
+24e4c477c340a2d0  scripts/dialog-animation-audit.sh
+ea7b6a25a668ade5  scripts/dialog-bounds-audit.sh
 49fb8470416bbbc9  scripts/dialog-style-audit.sh
 62193ffaa1f110da  scripts/download-latest-apk.sh
 d0552e9ad9641729  scripts/mainactivity-audit.sh
-05996cde01ca9cd6  scripts/release-preflight.sh
+e8d9381d173ae5dd  scripts/release-preflight.sh
 d101c2a72335189a  scripts/rotation-layout-audit.sh
 8a6853d9b755fa80  scripts/service-navigation-audit.sh
 d668238c4ed09fb7  scripts/ui-chrome-audit.sh

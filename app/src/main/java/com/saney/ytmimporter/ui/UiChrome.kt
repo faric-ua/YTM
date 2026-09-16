@@ -678,6 +678,24 @@ object UiChrome {
         fun configureWindow() {
             val window = dialog.window ?: return
 
+            /*
+             * Phone-video regression showed that the remaining lower/center
+             * -> top movement is not the card layout anymore. The whole
+             * AlertDialog Window is still animated by the inherited Material
+             * dialog Window animation.
+             *
+             * Custom UiChrome dialogs already use a full-screen transparent
+             * Window and position the card themselves, so system dialog
+             * translation/scale is both unnecessary and visually wrong.
+             *
+             * Disable WindowManager enter/exit animation before show().
+             */
+            window.setWindowAnimations(0)
+            window.attributes =
+                window.attributes.apply {
+                    windowAnimations = 0
+                }
+
             WindowCompat.setDecorFitsSystemWindows(
                 window,
                 false

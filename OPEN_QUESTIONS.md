@@ -56,3 +56,7 @@ Rotation/session retention and custom-dialog first-frame stabilization were fixe
 ## v1.4.10 note
 
 Step-button baseline alignment and custom-dialog top anchoring were fixed. Q-001 remains OPEN.
+
+## v1.4.11 note
+
+Phone-video analysis identified the remaining custom-dialog movement as AlertDialog Window animation. It is disabled for UiChrome custom dialogs. Q-001 remains OPEN.

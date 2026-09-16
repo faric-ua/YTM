@@ -1,18 +1,3 @@
-# YTM Importer v1.4.10
+# YTM Importer v1.4.11
 
-## Step 2
-Після повороту account state з v1.4.9 уже зберігався, але сама кнопка могла
-зміститись вниз. Причиною було стандартне baseline alignment horizontal
-LinearLayout + auto-size тексту.
-
-Тепер Step 1/2 та Step 3/4 вирівнюються по межах самих кнопок, а не по
-baseline тексту.
-
-## Custom dialogs
-`Ще` та інші custom dialogs більше не використовують вертикальне
-центрування, залежне від висоти контенту.
-
-Усі такі вікна TOP-anchored після safe top inset, тому не повинні спочатку
-з'являтися по центру, а потім стрибати вгору.
-
-Q-001 залишається OPEN.
+Відео v1.4.10 показало, що card уже TOP-anchored, але рухається все AlertDialog Window через системну/OEM dialog animation. Для custom UiChrome dialogs тепер `windowAnimations = 0`. Q-001 залишається OPEN.

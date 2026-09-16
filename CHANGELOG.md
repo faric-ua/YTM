@@ -1,5 +1,13 @@
 # Журнал змін (Changelog)
 
+## v1.4.11
+- Analyzed v1.4.10 phone video frame-by-frame.
+- Identified remaining dialog motion as AlertDialog Window animation.
+- Disabled WindowManager animations for UiChrome custom dialogs.
+- Kept TOP anchor, safe insets, hidden provisional content and scrolling.
+- Added `scripts/dialog-animation-audit.sh`.
+- versionCode 45 / versionName 1.4.11.
+
 ## v1.4.10
 - Fixed Step 2 vertical displacement after screen rotation.
 - Disabled baseline alignment in Step 1/2 and Step 3/4 button rows.
