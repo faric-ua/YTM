@@ -76,3 +76,27 @@ The Google OAuth access token is not stored in this current-workspace data.
 A YTM Project saved from Review may contain track names, selected YouTube video IDs, channel names, search candidate IDs/scores, statuses, errors and source labels. It does not contain the Google OAuth access token, passwords or signing keys.
 
 The automatic current workspace stores only the latest working list locally. Full Backup now includes this current workspace.
+
+
+## Authorization persistence marker
+
+To avoid forcing Google account selection after every normal app restart or
+in-place APK update, the app stores one local boolean marker in private app
+preferences:
+
+`auth_state_v1 / had_successful_authorization = true`
+
+This marker means only: "authorization succeeded before".
+
+It does **not** contain:
+- OAuth access token;
+- refresh token;
+- Google email/name;
+- YouTube Channel ID/title;
+- password.
+
+The OAuth access token remains process-memory-only. On a later app start the
+marker only tells the app to ask Google AuthorizationClient for a fresh token
+silently. If Google requires user interaction, the app falls back to Step 2.
+
+`auth_state_v1` is not included in YTM Importer's Full Backup format.

@@ -1,43 +1,35 @@
 YTM Importer
-Version: 1.4.13
-Version code: 47
+Version: 1.4.14
+Version code: 48
 Package: com.saney.ytmimporter
 
-PHONE TEST STATUS:
-- v1.4.12: NOT TESTED
-- v1.4.13: NOT TESTED YET
+TEST STATUS:
+- v1.4.12 NOT TESTED
+- v1.4.13 PARTIALLY PHONE-TESTED
+- v1.4.14 NOT TESTED YET
 
-Stage:
-Cleanup Wave 3 — SearchCoordinator extraction
+Current release:
+Session Recovery + Result Modal + Master QA
 
-MainActivity:
-before v1.4.13: 3689 lines
-after v1.4.13:  3620 lines
+Added:
+- auth/PersistentAuthStateStore.kt
+- qa/MASTER_TEST_PLAN.md
+- qa/TEST_RUN_TEMPLATE.md
+- qa/TEST_DATA.md
+- auth-persistence audit
+- result-modal audit
+- QA-plan audit
 
-SearchCoordinator owns:
-- search plan
-- manual/Project exact preservation
-- SearchCache lookup/write
-- YouTube search.list
-- search quota/cache-hit accounting
-- quota-stop behavior
-- automatic candidate application
-- Track search-state transitions
+Auth:
+- OAuth token remains memory-only
+- only a prior-success boolean is persisted
+- app attempts silent AuthorizationClient recovery after restart/update
+- user interaction is requested only if Google returns a resolution
 
-MainActivity still owns:
-- Home/navigation
-- OAuth UI bridge
-- search progress UI bridge
-- Destination bridge
-- YouTube write core
-- Pending resume
-- History sync
-- result/replacement UI
+Result:
+- old inline Home result frame removed
+- modal with Open / Copy / Close
 
 Deferred:
 - Q-001 OPEN
-- Q-002 dialog entrance motion DEFERRED BY USER
-
-Next after build/phone test:
-Cleanup Wave 4 — consider PlaylistWriteCoordinator, but only after v1.4.13
-search regression passes.
+- Q-002 DEFERRED BY USER

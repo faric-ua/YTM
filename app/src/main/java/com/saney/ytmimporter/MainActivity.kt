@@ -17,6 +17,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.auth.PersistentAuthStateStore
 import com.saney.ytmimporter.model.GoogleAccountInfo
 import com.saney.ytmimporter.model.HistoryEntry
 import com.saney.ytmimporter.model.HistoryStatus
@@ -89,6 +90,7 @@ class MainActivity : Activity() {
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var historyStore: HistoryStore
     private lateinit var currentPlaylistStore: CurrentPlaylistStore
+    private lateinit var persistentAuthStateStore: PersistentAuthStateStore
 
     private var playlist: ImportedPlaylist? = null
     private var accessToken: String? = null
@@ -101,6 +103,7 @@ class MainActivity : Activity() {
     private var pendingDestinationTarget: YouTubePlaylistInfo? = null
     private var pendingDestinationAnalysis: DuplicateAnalysis? = null
     private var pendingDestinationScanRequestCount: Int = 0
+    private var restoringPriorAuthorization: Boolean = false
 
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
@@ -115,10 +118,6 @@ class MainActivity : Activity() {
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
     }
-    private lateinit var resultPanel: LinearLayout
-    private lateinit var resultTitleText: TextView
-    private lateinit var resultDetailsText: TextView
-    private lateinit var resultLinkText: TextView
     private lateinit var listView: ListView
     private lateinit var adapter: TrackAdapter
     private val visibleTracks = mutableListOf<Track>()
@@ -138,21 +137,36 @@ class MainActivity : Activity() {
         pendingJobStore = PendingJobStore(this)
         historyStore = HistoryStore(this)
         currentPlaylistStore = CurrentPlaylistStore(this)
+        persistentAuthStateStore =
+            PersistentAuthStateStore(this)
 
         restoreAuthSessionFromMemory()
+
+        restoringPriorAuthorization =
+            accessToken.isNullOrBlank() &&
+                persistentAuthStateStore
+                    .hadSuccessfulAuthorization()
+
         buildUi()
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
 
-        val restoredToken = accessToken
+        val restoredToken =
+            accessToken
+
         if (
             !restoredToken.isNullOrBlank() &&
-            (googleAccountInfo == null || youtubeChannelInfo == null)
+            (
+                googleAccountInfo == null ||
+                    youtubeChannelInfo == null
+            )
         ) {
             loadAccountIdentity(
                 token = restoredToken,
                 after = null
             )
+        } else if (restoringPriorAuthorization) {
+            restorePriorAuthorizationSilently()
         }
 
         if (savedInstanceState == null) {
@@ -404,88 +418,6 @@ class MainActivity : Activity() {
             )
         )
 
-        resultPanel = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            visibility = View.GONE
-            setPadding(dp(18), dp(14), dp(18), dp(14))
-            background =
-                roundedBackground(
-                    color = Color.rgb(27, 29, 34),
-                    radiusDp = 14,
-                    strokeColor = Color.rgb(52, 55, 63)
-                )
-        }
-
-        resultTitleText = TextView(this).apply {
-            textSize = 18f
-            setTextColor(Color.WHITE)
-            setTypeface(typeface, Typeface.BOLD)
-        }
-        resultPanel.addView(resultTitleText)
-
-        resultDetailsText = TextView(this).apply {
-            textSize = 13f
-            setTextColor(Color.rgb(190, 192, 198))
-            setPadding(0, dp(5), 0, dp(6))
-        }
-        resultPanel.addView(resultDetailsText)
-
-        resultLinkText = TextView(this).apply {
-            textSize = 12f
-            setTextColor(Color.rgb(140, 185, 255))
-            setTextIsSelectable(true)
-            setPadding(0, 0, 0, dp(10))
-        }
-        resultPanel.addView(resultLinkText)
-
-        val resultActions = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            isBaselineAligned = false
-            gravity = android.view.Gravity.CENTER_VERTICAL
-        }
-
-        val openResultButton =
-            button("Відкрити в YTM") {
-                openInYtm()
-            }
-
-        val copyResultButton =
-            button("Копіювати посилання") {
-                copyPlaylistLink()
-            }
-
-        resultActions.addView(
-            openResultButton,
-            LinearLayout.LayoutParams(
-                0,
-                dp(42),
-                1f
-            )
-        )
-
-        resultActions.addView(
-            copyResultButton,
-            LinearLayout.LayoutParams(
-                0,
-                dp(42),
-                1f
-            ).apply {
-                marginStart = dp(8)
-            }
-        )
-
-        resultPanel.addView(resultActions)
-
-        root.addView(
-            resultPanel,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(dp(12), dp(4), dp(12), dp(8))
-            }
-        )
-
         listView = ListView(this).apply {
             divider = null
             dividerHeight = dp(1)
@@ -719,6 +651,9 @@ class MainActivity : Activity() {
             button = accountButton,
             state =
                 when {
+                    restoringPriorAuthorization ->
+                        StepState.ATTENTION
+
                     accessToken.isNullOrBlank() ->
                         StepState.REQUIRED
 
@@ -1190,6 +1125,88 @@ class MainActivity : Activity() {
         )
     }
 
+    private fun buildAuthorizationRequest(
+        forceAccountPicker: Boolean
+    ): AuthorizationRequest {
+        val builder =
+            AuthorizationRequest.builder()
+                .setRequestedScopes(
+                    listOf(
+                        Scope(YOUTUBE_SCOPE),
+                        Scope(USERINFO_EMAIL_SCOPE),
+                        Scope(USERINFO_PROFILE_SCOPE)
+                    )
+                )
+
+        if (forceAccountPicker) {
+            builder.setPrompt(
+                AuthorizationRequest.Prompt.SELECT_ACCOUNT
+            )
+        }
+
+        return builder.build()
+    }
+
+    private fun restorePriorAuthorizationSilently() {
+        if (
+            !persistentAuthStateStore
+                .hadSuccessfulAuthorization() ||
+            !accessToken.isNullOrBlank()
+        ) {
+            restoringPriorAuthorization = false
+            updateAccountPanel()
+            return
+        }
+
+        restoringPriorAuthorization = true
+        updateAccountPanel()
+        status(
+            "Відновлюю Google/YTM сесію без повторного входу…"
+        )
+
+        Identity.getAuthorizationClient(this)
+            .authorize(
+                buildAuthorizationRequest(
+                    forceAccountPicker = false
+                )
+            )
+            .addOnSuccessListener { result ->
+                if (result.hasResolution()) {
+                    restoringPriorAuthorization = false
+                    updateAccountPanel()
+                    status(
+                        "Google/YTM потребує підтвердження. " +
+                            "Натисніть «2. Google / YTM»."
+                    )
+                    return@addOnSuccessListener
+                }
+
+                val token =
+                    result.accessToken
+
+                if (token.isNullOrBlank()) {
+                    restoringPriorAuthorization = false
+                    updateAccountPanel()
+                    status(
+                        "Не вдалося автоматично відновити Google/YTM. " +
+                            "Натисніть крок 2."
+                    )
+                    return@addOnSuccessListener
+                }
+
+                restoringPriorAuthorization = false
+                handleAuthorizedToken(token)
+            }
+            .addOnFailureListener {
+                restoringPriorAuthorization = false
+                updateAccountPanel()
+                status(
+                    "Не вдалося автоматично відновити Google/YTM. " +
+                        "Натисніть крок 2."
+                )
+            }
+    }
+
     private fun authorize(
         forceAccountPicker: Boolean = false,
         after: (() -> Unit)? = null
@@ -1220,22 +1237,13 @@ class MainActivity : Activity() {
             }
         )
 
-        val builder =
-            AuthorizationRequest.builder()
-                .setRequestedScopes(
-                    listOf(
-                        Scope(YOUTUBE_SCOPE),
-                        Scope(USERINFO_EMAIL_SCOPE),
-                        Scope(USERINFO_PROFILE_SCOPE)
-                    )
-                )
-
-        if (forceAccountPicker) {
-            builder.setPrompt(AuthorizationRequest.Prompt.SELECT_ACCOUNT)
-        }
-
         Identity.getAuthorizationClient(this)
-            .authorize(builder.build())
+            .authorize(
+                buildAuthorizationRequest(
+                    forceAccountPicker =
+                        forceAccountPicker
+                )
+            )
             .addOnSuccessListener { result ->
                 if (result.hasResolution()) {
                     try {
@@ -1268,9 +1276,12 @@ class MainActivity : Activity() {
     }
 
     private fun handleAuthorizedToken(token: String) {
+        restoringPriorAuthorization = false
         accessToken = token
         googleAccountInfo = null
         youtubeChannelInfo = null
+        persistentAuthStateStore
+            .markSuccessfulAuthorization()
         syncAuthSessionToMemory()
         updateAccountPanel()
         status("Google підключено. Завантажую дані акаунта і YouTube каналу…")
@@ -1319,6 +1330,9 @@ class MainActivity : Activity() {
 
         accountButton.text =
             when {
+                restoringPriorAuthorization ->
+                    "2. Google / YTM …"
+
                 accessToken.isNullOrBlank() ->
                     "2. Google / YTM"
 
@@ -3271,31 +3285,82 @@ class MainActivity : Activity() {
         privacyStatus: String,
         operationLabel: String
     ) {
-        val url = playlistUrl() ?: return
+        val url =
+            playlistUrl()
+                ?: return
 
-        resultTitleText.text = "✓ $playlistName"
-        resultDetailsText.text =
+        val duplicateCount =
+            playlist
+                ?.tracks
+                .orEmpty()
+                .count {
+                    it.status ==
+                        TrackStatus.DUPLICATE
+                }
+
+        val details =
             buildString {
                 append("Додано: $addedCount")
-                if (failedCount > 0) append(" • Не додано: $failedCount")
 
-                val duplicateCount =
-                    playlist?.tracks?.count {
-                        it.status == TrackStatus.DUPLICATE
-                    } ?: 0
+                if (failedCount > 0) {
+                    append(
+                        " • Не додано: $failedCount"
+                    )
+                }
 
                 if (duplicateCount > 0) {
-                    append(" • Дублікати: $duplicateCount")
+                    append(
+                        " • Дублікати: $duplicateCount"
+                    )
                 }
 
-                append(" • ${privacyLabel(privacyStatus)}")
-                append(" • $operationLabel")
-                youtubeChannelInfo?.title?.let {
-                    append("\nYouTube/YTM: $it")
-                }
+                append(
+                    " • ${privacyLabel(privacyStatus)}"
+                )
+                append(
+                    " • $operationLabel"
+                )
+
+                youtubeChannelInfo
+                    ?.title
+                    ?.let {
+                        append(
+                            "\nYouTube/YTM: $it"
+                        )
+                    }
+
+                append(
+                    "\n\n$url"
+                )
             }
-        resultLinkText.text = url
-        resultPanel.visibility = View.VISIBLE
+
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "✓ $playlistName",
+            subtitle =
+                "Операцію завершено",
+            message = details,
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label = "Відкрити в YTM"
+                    ) {
+                        openInYtm()
+                    },
+                    UiChrome.DialogAction(
+                        label = "Копіювати"
+                    ) {
+                        copyPlaylistLink()
+                    },
+                    UiChrome.DialogAction(
+                        label = "Закрити",
+                        tone =
+                            UiChrome.ActionTone.ACCENT
+                    ) {}
+                ),
+            actionLayout =
+                UiChrome.DialogActionLayout.AUTO
+        )
     }
 
     private fun playlistUrl(): String? {

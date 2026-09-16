@@ -96,3 +96,5 @@ docs/v.0.8.0/diagrams/
 - `TERMINAL_APPLY_v1.4.12.md` — Cleanup Wave 2 / legacy MainActivity flow removal
 
 - `TERMINAL_APPLY_v1.4.13.md` — Cleanup Wave 3 / SearchCoordinator extraction
+
+- `TERMINAL_APPLY_v1.4.14.md` — silent auth recovery + result modal + master QA plan

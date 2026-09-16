@@ -1,15 +1,21 @@
-YTM Importer v1.4.13 FULL
+YTM Importer v1.4.14 FULL
 
 ADDED:
-app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
-scripts/search-coordinator-audit.sh
-RELEASE_TEST_STATUS.md
-docs/v.1.4.13/
-TERMINAL_APPLY_v1.4.13.md
+app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
+qa/MASTER_TEST_PLAN.md
+qa/TEST_RUN_TEMPLATE.md
+qa/TEST_DATA.md
+scripts/auth-persistence-audit.sh
+scripts/result-modal-audit.sh
+scripts/qa-plan-audit.sh
+docs/v.1.4.14/
+TERMINAL_APPLY_v1.4.14.md
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 app/build.gradle.kts
+PRIVACY.md
+RELEASE_TEST_STATUS.md
 scripts/release-preflight.sh
 .github/workflows/build-apk.yml
 BACKLOG.md
@@ -22,12 +28,16 @@ docs/README.md
 TERMINAL_APPLY_VERSIONED_DOCS.md
 
 DELETED:
-none
+No standalone files.
+
+REMOVED FROM MAIN UI:
+old inline playlist result frame.
 
 TEST STATUS:
 v1.4.12 = NOT TESTED
-v1.4.13 = NOT TESTED YET
+v1.4.13 = PARTIALLY PHONE-TESTED
+v1.4.14 = NOT TESTED YET
 
 VERSION:
-versionCode = 47
-versionName = 1.4.13
+versionCode = 48
+versionName = 1.4.14

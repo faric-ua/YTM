@@ -90,3 +90,7 @@ Q-001 remains OPEN. Q-002 remains DEFERRED.
 ## v1.4.13 note
 
 SearchCoordinator extraction does not change UiChrome. Q-002 remains DEFERRED BY USER. v1.4.12 is marked NOT TESTED in RELEASE_TEST_STATUS.md.
+
+## v1.4.14 note
+
+Q-002 remains DEFERRED and is not reopened. This release changes auth recovery, result presentation and QA documentation.

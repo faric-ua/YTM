@@ -1,13 +1,10 @@
 # YTM Importer — Versioned documentation
 
-Current version:
+Current:
+`docs/v.1.4.14/`
 
-`docs/v.1.4.13/`
+Global QA:
+`qa/MASTER_TEST_PLAN.md`
 
-Test status is tracked separately in the mutable root file:
-
+Mutable phone-test status:
 `RELEASE_TEST_STATUS.md`
-
-Important:
-- v1.4.12 = NOT TESTED
-- v1.4.13 = NOT TESTED YET

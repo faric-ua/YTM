@@ -1,36 +1,34 @@
 # YTM Importer — Roadmap
 
 ## Current
-**v1.4.13 — Cleanup Wave 3 / SearchCoordinator**
+**v1.4.14 — Session Recovery + Result Modal + Master QA**
 
 ## Test status
-- [!] v1.4.12 — **NOT TESTED**.
-- [!] v1.4.13 — **NOT TESTED YET**.
+- [!] v1.4.12 — NOT TESTED.
+- [~] v1.4.13 — PARTIALLY PHONE-TESTED.
+- [!] v1.4.14 — NOT TESTED YET.
+
+## v1.4.14
+- [x] add master manual QA plan;
+- [x] add reusable test-run template;
+- [x] add test-data guide;
+- [x] persist only non-secret prior-auth success marker;
+- [x] silently request fresh Google token on launch/update;
+- [x] never auto-launch Google resolution during silent restore;
+- [x] replace inline result frame with result modal;
+- [x] add Close action;
+- [x] add auth/result/QA audits;
+- [ ] GitHub build;
+- [ ] real-phone v1.4.14 delta tests;
+- [ ] carry-forward v1.4.12/v1.4.13 smoke suite.
+
+## After v1.4.14 validation
+Return to Cleanup Wave 4 only after the new master QA flow has at least one
+recorded phone run.
+
+Candidate:
+- [ ] PlaylistWriteCoordinator extraction.
 
 ## Deferred / open
 - [~] Q-001 — OPEN.
 - [~] Q-002 — custom dialog entrance motion — DEFERRED BY USER.
-
-## v1.4.13
-- [x] add explicit mutable release test-status register;
-- [x] mark v1.4.12 NOT TESTED;
-- [x] extract SearchCoordinator;
-- [x] move search plan domain calculation out of MainActivity;
-- [x] move SearchCache get/put out of MainActivity;
-- [x] move search.list call out of MainActivity;
-- [x] move search quota accounting out of MainActivity;
-- [x] move auto best-candidate application out of MainActivity;
-- [x] preserve manual selections and exact Project video IDs;
-- [x] add search-coordinator audit;
-- [ ] GitHub build;
-- [ ] phone search regression;
-- [ ] 50-track search regression.
-
-## Cleanup Wave 4
-Do not start until v1.4.13 search behavior is phone-tested.
-
-Candidate:
-- [ ] `PlaylistWriteCoordinator` for create/append/quota-pause/resume write logic.
-
-Keep the extraction incremental; do not combine major UI redesign with write
-engine extraction.

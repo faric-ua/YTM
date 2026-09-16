@@ -1,38 +1,31 @@
-# YTM Importer v1.4.13
+# YTM Importer v1.4.14
 
-Cleanup Wave 3 — `SearchCoordinator`.
+## Google/YTM після оновлення
+Раніше access token жив тільки в пам'яті процесу. Після оновлення APK процес
+перезапускався, token зникав, а програма не робила автоматичну спробу
+отримати новий token із уже наданого Google grant.
 
-## Статус тестування
+Тепер зберігається лише безпечна ознака `авторизація колись була успішною`.
+Після запуску програма пробує відновити доступ через Google AuthorizationClient
+без примусового account picker.
 
-- **v1.4.12 — НЕ ТЕСТОВАНО**
-- **v1.4.13 — ЩЕ НЕ ТЕСТОВАНО**
+OAuth token як і раніше НЕ зберігається на диск.
 
-Статус зберігається окремо у `RELEASE_TEST_STATUS.md`, тому старі immutable
-release docs не переписуються.
+## Результат створення плейлиста
+Старий великий frame на Home прибрано.
+Тепер показується модальне вікно:
 
-## Архітектура
+- Відкрити в YTM
+- Копіювати
+- Закрити
 
-Пошукову domain-логіку винесено з `MainActivity` у:
+## Глобальне тестування
+Головний файл:
+`qa/MASTER_TEST_PLAN.md`
 
-`app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt`
+Також:
+- `qa/TEST_RUN_TEMPLATE.md`
+- `qa/TEST_DATA.md`
 
-Тепер coordinator відповідає за:
-
-- search plan;
-- SearchCache;
-- search.list;
-- search quota;
-- quota stop;
-- manual/exact Project protection;
-- автоматичний best match;
-- MATCHED / REVIEW / MISSING / FAILED.
-
-`MainActivity` лишає авторизацію та відображення прогресу.
-
-MainActivity:
-
-```text
-3689 → 3620 рядків
-```
-
-Q-002 залишається DEFERRED за рішенням користувача.
+Статус v1.4.14: NOT TESTED YET.
+Q-002: DEFERRED.

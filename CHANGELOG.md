@@ -1,5 +1,19 @@
 # Журнал змін (Changelog)
 
+## v1.4.14
+- Added silent Google/YTM authorization recovery after process restart and in-place APK update.
+- Added non-secret `PersistentAuthStateStore` marker; OAuth token remains memory-only.
+- Silent restore never auto-launches a required Google resolution; Step 2 asks the user when interaction is needed.
+- Removed the large inline playlist result frame from Home.
+- Create/append completion now uses a modal result with Open / Copy / Close.
+- Added global QA system under `qa/`.
+- Added `auth-persistence-audit.sh`, `result-modal-audit.sh`, `qa-plan-audit.sh`.
+- v1.4.12 remains NOT TESTED.
+- v1.4.13 marked PARTIALLY PHONE-TESTED.
+- v1.4.14 starts NOT TESTED YET.
+- Q-002 remains DEFERRED.
+- versionCode 48 / versionName 1.4.14.
+
 ## v1.4.13
 - Marked v1.4.12 explicitly **NOT TESTED** in `RELEASE_TEST_STATUS.md`.
 - Added mutable release test-status register without rewriting immutable old release docs.
