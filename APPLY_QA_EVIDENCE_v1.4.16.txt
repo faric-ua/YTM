@@ -1,0 +1,31 @@
+YTM Importer v1.4.16 — QA evidence patch
+
+Purpose:
+Store the real phone-test analysis, results and QA-flow diagram for the 2026-09-16 v1.4.16 DestinationCoordinator test run.
+
+Files added:
+docs/v.1.4.16/qa/PHONE_TEST_REPORT_2026-09-16.md
+docs/v.1.4.16/qa/UI_SCREENSHOT_ANALYSIS_2026-09-16.md
+docs/v.1.4.16/qa/TEST_RUN_2026-09-16.md
+docs/v.1.4.16/qa/EVIDENCE_MANIFEST.txt
+docs/v.1.4.16/diagrams/PHONE_QA_FLOW.md
+qa/TEST_EVIDENCE_POLICY.md
+
+Files updated:
+RELEASE_TEST_STATUS.md
+PROJECT_STATUS.txt
+BACKLOG.md
+docs/README.md
+
+Important:
+G-07 ADD_ALL is intentionally NOT marked PASS.
+NO_SCAN and destination rotation are still pending.
+
+Suggested commit:
+YTM Importer v1.4.16: record phone QA evidence
+
+Exact test fixtures added:
+docs/v.1.4.16/qa/test-data/YTM_QA_01_CREATE_TARGET.csv
+docs/v.1.4.16/qa/test-data/YTM_QA_02_DUPLICATES.csv
+docs/v.1.4.16/qa/test-data/YTM_QA_03_CREATE_TARGET_ADD_ALL.csv
+docs/v.1.4.16/qa/test-data/TEST_DATA_USED.md

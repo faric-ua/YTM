@@ -1,0 +1,10 @@
+# v1.4.16 QA evidence manifest
+
+4bbf4d325d5b9db0eca086e44f8c4b77fcac43941c4fe53620fffa24caa959d5  docs/v.1.4.16/qa/PHONE_TEST_REPORT_2026-09-16.md
+47ba039d029826f6a3aad3711cd8a0ada4b8b01a0d95bc01375f6680a431c406  docs/v.1.4.16/qa/TEST_RUN_2026-09-16.md
+546d1f56cd78da30add5ec8f565e58cc2794d3dcbc81c9fdea1f1d7ac2f0210b  docs/v.1.4.16/qa/UI_SCREENSHOT_ANALYSIS_2026-09-16.md
+6003f50c5139ada384ae61f7bb03f72244657643b24826cfe03eaf0972b1805b  docs/v.1.4.16/qa/test-data/TEST_DATA_USED.md
+9bbabe0c26402c3dc6dcd041ed0c6edcc56ab8cb6cb3fa2ead6abe12d44d05d5  docs/v.1.4.16/qa/test-data/YTM_QA_01_CREATE_TARGET.csv
+bcceb7b28a5c8085a1538b9d2a3f954c341d0848cf4b8e8113c3bc362feffb79  docs/v.1.4.16/qa/test-data/YTM_QA_02_DUPLICATES.csv
+086fa37416a9b14de3a7396dc01b5889e776fba8248a9bd0357b5e737311faba  docs/v.1.4.16/qa/test-data/YTM_QA_03_CREATE_TARGET_ADD_ALL.csv
+a2accbe829ba0a7caf48014cfdb1e13c01f334b684581881882865d5774bd233  docs/v.1.4.16/diagrams/PHONE_QA_FLOW.md

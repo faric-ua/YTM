@@ -6,11 +6,24 @@ v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
 v1.4.14 PARTIALLY PHONE-TESTED — FAIL (BUG-003)
 v1.4.15 NOT TESTED
-v1.4.16 NOT TESTED YET
+v1.4.16 PARTIALLY PHONE-TESTED
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
 Destination playlist cache/selection, duplicate scan/quota accounting and duplicate write planning moved out of MainActivity.
+
+v1.4.16 phone QA confirmed:
+G-01 PASS
+G-04 PASS
+G-05 PASS
+G-06 PASS
+H-01 PASS
+
+Still required for v1.4.16:
+G-07 ADD_ALL explicit write
+NO_SCAN fallback
+destination rotation smoke
+remaining release-plan cases or documented SKIP/BLOCKED decisions
 
 Known:
 BUG-001/Q-001 OPEN
@@ -18,5 +31,6 @@ BUG-002/Q-002 DEFERRED
 BUG-003/Q-003 DEFERRED FOR LATER FIX
 
 QA:
-root qa/ = current
-docs/v.X.Y.Z/qa/ = immutable snapshot
+root qa/ = current definitions/policy
+docs/v.X.Y.Z/qa/ = immutable release snapshot + actual phone-test evidence
+docs/v.X.Y.Z/diagrams/ = architecture and test-flow diagrams
