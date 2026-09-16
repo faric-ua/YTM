@@ -1,12 +1,13 @@
 YTM Importer
-Version: 1.4.16
-Version code: 50
+Version: 1.4.17
+Version code: 51
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
 v1.4.14 PARTIALLY PHONE-TESTED — FAIL (BUG-003)
 v1.4.15 NOT TESTED
 v1.4.16 PARTIALLY PHONE-TESTED
+v1.4.17 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -28,11 +29,20 @@ NO_SCAN fallback
 destination rotation smoke
 remaining release-plan cases or documented SKIP/BLOCKED decisions
 
+
+v1.4.17 focus:
+- invalidate stale auth-ready state after HTTP 401
+- direct Review -> Destination navigation
+- cleaner playlist result actions
+- dynamic APK/artifact naming
+- TERMUX_COMMANDS.md
+- plan YTM account playlist import/export
+
 Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 DEFERRED
-BUG-003/Q-003 DEFERRED FOR LATER FIX
-BUG-004/Q-004 DEFERRED TO AUTH FIX WAVE
+BUG-003/Q-003 RETEST v1.4.17
+BUG-004/Q-004 RETEST v1.4.17
 
 QA:
 root qa/ = current definitions/policy

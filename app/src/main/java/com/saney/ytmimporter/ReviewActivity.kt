@@ -360,6 +360,37 @@ class ReviewActivity : Activity() {
             )
         )
 
+        val canOpenDestination =
+            snapshot.playlist.tracks.any { track ->
+                !track.selectedVideoId.isNullOrBlank() &&
+                    track.status != TrackStatus.SKIPPED
+            }
+
+        if (canOpenDestination) {
+            root.addView(
+                actionButton(
+                    label = "Далі → Створити / додати",
+                    primary = true
+                ) {
+                    saveSnapshot()
+                    setResult(
+                        RESULT_OK,
+                        Intent().putExtra(
+                            EXTRA_OPEN_DESTINATION,
+                            true
+                        )
+                    )
+                    finish()
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(56)
+                ).apply {
+                    setMargins(dp(12), 0, dp(12), dp(10))
+                }
+            )
+        }
+
         list.setOnItemClickListener {
                 _,
                 _,
@@ -1898,6 +1929,9 @@ class ReviewActivity : Activity() {
 
         const val EXTRA_REPEAT_SEARCH =
             "review_repeat_search"
+
+        const val EXTRA_OPEN_DESTINATION =
+            "review_open_destination"
 
         const val EXTRA_MANUAL_VIDEO_ID =
             "review_manual_video_id"

@@ -16,3 +16,10 @@ QA:
 - snapshot цього релізу: `docs/v.1.4.16/qa/`
 
 Статус: NOT TESTED YET.
+
+
+## Розробка з телефона
+
+Основні Termux / Git / SSH / build-команди:
+[`TERMUX_COMMANDS.md`](TERMUX_COMMANDS.md)
+

@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.17
+- Step 2 auth-ready state is invalidated after YouTube API HTTP 401.
+- Added direct `Далі → Створити / додати` action from Review to Destination.
+- Playlist result modal uses clearer vertical action hierarchy.
+- GitHub Actions APK/artifact names now follow `versionName`.
+- Added public QA screenshot redaction/blur policy.
+- Added `TERMUX_COMMANDS.md` with the phone/Termux development workflow.
+- Added design plan for importing/exporting playlists from the connected YTM account.
+- BUG-003 and BUG-004 require real-phone retest.
+- versionCode 51 / versionName 1.4.17.
+
 ## v1.4.16
 - Cleanup Wave 5: extracted destination playlist / duplicate orchestration into `DestinationCoordinator`.
 - DestinationCoordinator now owns eligible-track selection, destination playlist caching/selection,

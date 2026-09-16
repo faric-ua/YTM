@@ -9,6 +9,8 @@
 | v1.4.15 | **NOT TESTED** | Cleanup Wave 4 / PlaylistWriteCoordinator + per-release QA snapshots. |
 | v1.4.16 | **PARTIALLY PHONE-TESTED — HAS FAIL** | G-01/G-04/G-05/G-06/G-07/H-01 PASS. B-01 stale green auth indicator FAIL (BUG-004). NO_SCAN and rotation remain. |
 
+| v1.4.17 | **NOT TESTED YET** | Auth-state + Review→Destination UX; BUG-003/004 require phone retest. |
+
 Static audits and GitHub build do not equal phone testing.
 
 v1.4.16 phone evidence:

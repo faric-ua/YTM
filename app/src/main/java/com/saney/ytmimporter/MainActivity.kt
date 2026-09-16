@@ -42,6 +42,7 @@ import com.saney.ytmimporter.search.SearchCoordinator
 import com.saney.ytmimporter.write.PlaylistWriteCoordinator
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
+import com.saney.ytmimporter.youtube.YouTubeApiException
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
@@ -996,6 +997,16 @@ class MainActivity : Activity() {
                     return
                 }
 
+                if (
+                    data.getBooleanExtra(
+                        ReviewActivity.EXTRA_OPEN_DESTINATION,
+                        false
+                    )
+                ) {
+                    createPlaylist()
+                    return
+                }
+
                 val videoId =
                     data.getStringExtra(
                         ReviewActivity.EXTRA_MANUAL_VIDEO_ID
@@ -1322,6 +1333,45 @@ class MainActivity : Activity() {
             }
 
         updatePrimaryActions()
+    }
+
+    private fun isAuthorizationFailure(
+        error: Throwable
+    ): Boolean {
+        var current: Throwable? = error
+
+        while (current != null) {
+            if (
+                current is YouTubeApiException &&
+                current.httpCode == 401
+            ) {
+                return true
+            }
+            current = current.cause
+        }
+
+        return false
+    }
+
+    private fun invalidateAuthorizationIfNeeded(
+        error: Throwable
+    ): Boolean {
+        if (!isAuthorizationFailure(error)) return false
+
+        accessToken = null
+        googleAccountInfo = null
+        youtubeChannelInfo = null
+        restoringPriorAuthorization = false
+        pendingAfterAuth = null
+        AuthSessionStore.clear()
+
+        updateAccountPanel()
+        status(
+            "Авторизація Google/YTM більше не дійсна. " +
+                "Натисніть «2. Google / YTM» і увійдіть знову."
+        )
+        toast("Сесію Google/YTM потрібно відновити")
+        return true
     }
 
     private fun searchAll(
@@ -1758,6 +1808,10 @@ class MainActivity : Activity() {
                             )
                         }
                     }.onFailure { error ->
+                        if (invalidateAuthorizationIfNeeded(error)) {
+                            return@onFailure
+                        }
+
                         toast(
                             ErrorMessages.userMessage(
                                 error,
@@ -1856,6 +1910,10 @@ class MainActivity : Activity() {
                             scanRequestCount = scan.requestCount
                         )
                     }.onFailure { error ->
+                        if (invalidateAuthorizationIfNeeded(error)) {
+                            return@onFailure
+                        }
+
                         openDestinationScanFailed(
                             p = p,
                             selected = selected,
@@ -2963,7 +3021,7 @@ class MainActivity : Activity() {
                         openInYtm()
                     },
                     UiChrome.DialogAction(
-                        label = "Копіювати"
+                        label = "Копіювати посилання"
                     ) {
                         copyPlaylistLink()
                     },
@@ -2974,7 +3032,7 @@ class MainActivity : Activity() {
                     ) {}
                 ),
             actionLayout =
-                UiChrome.DialogActionLayout.AUTO
+                UiChrome.DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
         )
     }
 
