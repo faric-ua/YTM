@@ -25,7 +25,6 @@ import com.saney.ytmimporter.model.HistoryTrack
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
-import com.saney.ytmimporter.model.PendingTrack
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
@@ -39,10 +38,10 @@ import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.search.SearchCoordinator
+import com.saney.ytmimporter.write.PlaylistWriteCoordinator
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
-import java.util.UUID
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
@@ -86,6 +85,7 @@ class MainActivity : Activity() {
     private val api = YouTubeApi()
 
     private lateinit var searchCoordinator: SearchCoordinator
+    private lateinit var playlistWriteCoordinator: PlaylistWriteCoordinator
     private lateinit var quotaTracker: QuotaTracker
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var historyStore: HistoryStore
@@ -135,6 +135,12 @@ class MainActivity : Activity() {
                 quotaTracker = quotaTracker
             )
         pendingJobStore = PendingJobStore(this)
+        playlistWriteCoordinator =
+            PlaylistWriteCoordinator(
+                api = api,
+                pendingJobStore = pendingJobStore,
+                quotaTracker = quotaTracker
+            )
         historyStore = HistoryStore(this)
         currentPlaylistStore = CurrentPlaylistStore(this)
         persistentAuthStateStore =
@@ -2209,18 +2215,21 @@ class MainActivity : Activity() {
             val token = accessToken ?: return@authorize
 
             val job =
-                buildPendingJob(
+                playlistWriteCoordinator.buildPendingJob(
+                    sourceLabel = currentImportSourceLabel,
                     playlistName = target.title,
                     playlistId = target.id,
                     privacyStatus = target.privacyStatus,
                     destination = PendingDestination.EXISTING_PLAYLIST,
-                    tracks = selected
+                    tracks = selected,
+                    account = currentWriteAccountContext()
                 )
 
             pendingJobStore.upsert(job)
             updatePendingButton()
 
             createdPlaylistId = target.id
+
             prepareWriteUi(
                 total = selected.size,
                 message =
@@ -2240,9 +2249,6 @@ class MainActivity : Activity() {
         }
     }
 
-
-
-
     private fun actuallyCreatePlaylist(
         p: ImportedPlaylist,
         selected: List<Track>,
@@ -2252,18 +2258,21 @@ class MainActivity : Activity() {
             val token = accessToken ?: return@authorize
 
             val job =
-                buildPendingJob(
+                playlistWriteCoordinator.buildPendingJob(
+                    sourceLabel = currentImportSourceLabel,
                     playlistName = p.name,
                     playlistId = null,
                     privacyStatus = privacyStatus,
                     destination = PendingDestination.NEW_PLAYLIST,
-                    tracks = selected
+                    tracks = selected,
+                    account = currentWriteAccountContext()
                 )
 
             pendingJobStore.upsert(job)
             updatePendingButton()
 
             createdPlaylistId = null
+
             prepareWriteUi(
                 total = selected.size + 1,
                 message = "Створюю плейлист…"
@@ -2277,6 +2286,15 @@ class MainActivity : Activity() {
             )
         }
     }
+
+    private fun currentWriteAccountContext():
+        PlaylistWriteCoordinator.AccountContext =
+        PlaylistWriteCoordinator.AccountContext(
+            googleEmail = googleAccountInfo?.email,
+            youtubeChannelId = youtubeChannelInfo?.id,
+            youtubeChannelTitle = youtubeChannelInfo?.title
+        )
+
 
     private fun prepareWriteUi(
         total: Int,
@@ -2296,307 +2314,82 @@ class MainActivity : Activity() {
         operationLabel: String
     ) {
         executor.execute {
-            var job = initialJob
-            syncHistoryFromJob(job, HistoryStatus.RUNNING)
-            var playlistId = job.playlistId
-
-            if (playlistId.isNullOrBlank()) {
-                quotaTracker.recordGeneralUnits(QuotaTracker.PLAYLIST_CREATE_COST)
-
-                try {
-                    playlistId =
-                        api.createPlaylist(
-                            token,
-                            job.playlistName,
-                            job.privacyStatus
+            val outcome =
+                playlistWriteCoordinator.execute(
+                    token = token,
+                    initialJob = initialJob,
+                    tracks = tracks,
+                    onHistoryState = { job, historyStatus ->
+                        syncHistoryFromJob(
+                            job,
+                            historyStatus
                         )
+                    },
+                    onPlaylistIdAvailable = { playlistId ->
+                        createdPlaylistId = playlistId
+                    },
+                    onProgress = { writeProgress ->
+                        runOnUiThread {
+                            progress.progress =
+                                writeProgress.progressValue
 
-                    createdPlaylistId = playlistId
-
-                    job =
-                        job.copy(
-                            playlistId = playlistId,
-                            updatedAt = System.currentTimeMillis(),
-                            lastError = null
-                        )
-
-                    pendingJobStore.upsert(job)
-                    syncHistoryFromJob(job, HistoryStatus.RUNNING)
-
-                    runOnUiThread {
-                        progress.progress = 1
-                        updateQuotaPanel()
-                        updatePendingButton()
-                    }
-                } catch (e: Exception) {
-                    if (isQuotaError(e)) {
-                        quotaTracker.recordQuotaError(
-                            e.message ?: "Quota exceeded while creating playlist"
-                        )
-
-                        job =
-                            job.copy(
-                                updatedAt = System.currentTimeMillis(),
-                                lastError = e.message
+                            status(
+                                if (writeProgress.playlistCreated) {
+                                    "Плейлист створено. Додаю треки…"
+                                } else {
+                                    "Додаю " +
+                                        "${writeProgress.processedTracks}/" +
+                                        "${writeProgress.totalTracks}… " +
+                                        "залишилось " +
+                                        "${writeProgress.job.remainingTracks.size}"
+                                }
                             )
 
-                        pendingJobStore.upsert(job)
-                        tracks.forEach { pendingTrack ->
-                            pendingTrack.status = TrackStatus.PENDING
-                            pendingTrack.error =
-                                "Очікує продовження: " +
-                                    (e.message ?: "закінчилась квота API")
-                        }
-                        syncHistoryFromJob(job, HistoryStatus.PENDING_QUOTA)
-
-                        runOnUiThread {
-                            progress.visibility = View.GONE
                             adapter.notifyDataSetChanged()
                             updateSummary()
                             updateQuotaPanel()
                             updatePendingButton()
-                            showQuotaPausedDialog(job)
-                        }
-                    } else {
-                        val friendlyError =
-                            ErrorMessages.userMessage(
-                                e,
-                                "Не вдалося створити плейлист"
-                            )
-
-                        job =
-                            job.copy(
-                                updatedAt = System.currentTimeMillis(),
-                                lastError = friendlyError
-                            )
-                        syncHistoryFromJob(job, HistoryStatus.FAILED)
-                        pendingJobStore.remove(job.id)
-
-                        runOnUiThread {
-                            progress.visibility = View.GONE
-                            updatePendingButton()
-                            toast(friendlyError)
                         }
                     }
-
-                    return@execute
-                }
-            } else {
-                createdPlaylistId = playlistId
-            }
-
-            val createOffset =
-                if (job.destination == PendingDestination.NEW_PLAYLIST) 1 else 0
-
-            for ((index, track) in tracks.withIndex()) {
-                val videoId = track.selectedVideoId
-
-                if (videoId.isNullOrBlank()) {
-                    track.status = TrackStatus.FAILED
-                    track.error = "Немає videoId для додавання"
-
-                    job =
-                        job.copy(
-                            updatedAt = System.currentTimeMillis(),
-                            failedCount = job.failedCount + 1,
-                            remainingTracks = job.remainingTracks.drop(1),
-                            lastError = track.error
-                        )
-
-                    pendingJobStore.upsert(job)
-                    syncHistoryFromJob(job, HistoryStatus.RUNNING)
-
-                    runOnUiThread {
-                        progress.progress = index + 1 + createOffset
-                        adapter.notifyDataSetChanged()
-                        updateSummary()
-                        updatePendingButton()
-                    }
-
-                    continue
-                }
-
-                quotaTracker.recordGeneralUnits(
-                    QuotaTracker.PLAYLIST_ITEM_INSERT_COST
                 )
-
-                try {
-                    api.addVideo(token, playlistId!!, videoId)
-
-                    track.status = TrackStatus.ADDED
-                    track.error = null
-
-                    job =
-                        job.copy(
-                            updatedAt = System.currentTimeMillis(),
-                            addedCount = job.addedCount + 1,
-                            remainingTracks = job.remainingTracks.drop(1),
-                            lastError = null
-                        )
-
-                    pendingJobStore.upsert(job)
-                    syncHistoryFromJob(job, HistoryStatus.RUNNING)
-                } catch (e: Exception) {
-                    if (isQuotaError(e)) {
-                        quotaTracker.recordQuotaError(
-                            e.message ?: "Quota exceeded while adding track"
-                        )
-
-                        val remaining =
-                            tracks.drop(index).mapNotNull(::trackToPendingTrack)
-
-                        job =
-                            job.copy(
-                                updatedAt = System.currentTimeMillis(),
-                                remainingTracks = remaining,
-                                lastError = e.message
-                            )
-
-                        pendingJobStore.upsert(job)
-
-                        tracks.drop(index).forEach { pendingTrack ->
-                            pendingTrack.status = TrackStatus.PENDING
-                            pendingTrack.error =
-                                "Очікує продовження: " +
-                                    (e.message ?: "закінчилась квота API")
-                        }
-                        syncHistoryFromJob(job, HistoryStatus.PENDING_QUOTA)
-
-                        runOnUiThread {
-                            progress.visibility = View.GONE
-                            adapter.notifyDataSetChanged()
-                            updateSummary()
-                            updateQuotaPanel()
-                            updatePendingButton()
-                            showQuotaPausedDialog(job)
-                        }
-
-                        return@execute
-                    }
-
-                    val friendlyError =
-                        ErrorMessages.userMessage(
-                            e,
-                            "Не вдалося додати трек"
-                        )
-
-                    track.status = TrackStatus.FAILED
-                    track.error = friendlyError
-
-                    job =
-                        job.copy(
-                            updatedAt = System.currentTimeMillis(),
-                            failedCount = job.failedCount + 1,
-                            remainingTracks = job.remainingTracks.drop(1),
-                            lastError = friendlyError
-                        )
-
-                    pendingJobStore.upsert(job)
-                    syncHistoryFromJob(job, HistoryStatus.RUNNING)
-                }
-
-                runOnUiThread {
-                    progress.progress = index + 1 + createOffset
-                    status(
-                        "Додаю ${index + 1}/${tracks.size}… " +
-                            "залишилось ${job.remainingTracks.size}"
-                    )
-                    adapter.notifyDataSetChanged()
-                    updateSummary()
-                    updateQuotaPanel()
-                    updatePendingButton()
-                }
-            }
-
-            syncHistoryFromJob(
-                job,
-                if (job.failedCount > 0) {
-                    HistoryStatus.PARTIAL
-                } else {
-                    HistoryStatus.COMPLETED
-                }
-            )
-            pendingJobStore.remove(job.id)
 
             runOnUiThread {
                 progress.visibility = View.GONE
-                updatePendingButton()
-                updateQuotaPanel()
+                adapter.notifyDataSetChanged()
                 updateSummary()
+                updateQuotaPanel()
+                updatePendingButton()
 
-                val completedAdded = job.addedCount
-                val completedFailed = job.failedCount
+                when (outcome) {
+                    is PlaylistWriteCoordinator.WriteOutcome.Completed -> {
+                        createdPlaylistId = outcome.playlistId
 
-                status(
-                    "Готово. ${job.playlistName}: " +
-                        "додано $completedAdded, помилок $completedFailed."
-                )
+                        status(
+                            "Готово. ${outcome.job.playlistName}: " +
+                                "додано ${outcome.job.addedCount}, " +
+                                "помилок ${outcome.job.failedCount}."
+                        )
 
-                showPlaylistResult(
-                    playlistName = job.playlistName,
-                    addedCount = completedAdded,
-                    failedCount = completedFailed,
-                    privacyStatus = job.privacyStatus,
-                    operationLabel = operationLabel
-                )
+                        showPlaylistResult(
+                            playlistName = outcome.job.playlistName,
+                            addedCount = outcome.job.addedCount,
+                            failedCount = outcome.job.failedCount,
+                            privacyStatus = outcome.job.privacyStatus,
+                            operationLabel = operationLabel
+                        )
+                    }
+
+                    is PlaylistWriteCoordinator.WriteOutcome.PausedForQuota -> {
+                        showQuotaPausedDialog(outcome.job)
+                    }
+
+                    is PlaylistWriteCoordinator.WriteOutcome.Failed -> {
+                        toast(outcome.userMessage)
+                    }
+                }
             }
         }
     }
-
-    private fun buildPendingJob(
-        playlistName: String,
-        playlistId: String?,
-        privacyStatus: String,
-        destination: PendingDestination,
-        tracks: List<Track>
-    ): PendingJob {
-        val now = System.currentTimeMillis()
-
-        return PendingJob(
-            id = UUID.randomUUID().toString(),
-            createdAt = now,
-            updatedAt = now,
-            sourceLabel = currentImportSourceLabel,
-            playlistName = playlistName,
-            playlistId = playlistId,
-            privacyStatus = privacyStatus,
-            destination = destination,
-            googleEmail = googleAccountInfo?.email,
-            youtubeChannelId = youtubeChannelInfo?.id,
-            youtubeChannelTitle = youtubeChannelInfo?.title,
-            totalCount = tracks.size,
-            addedCount = 0,
-            failedCount = 0,
-            remainingTracks = tracks.mapNotNull(::trackToPendingTrack),
-            lastError = null
-        )
-    }
-
-    private fun trackToPendingTrack(track: Track): PendingTrack? {
-        val videoId = track.selectedVideoId ?: return null
-
-        return PendingTrack(
-            originalTitle = track.originalTitle,
-            originalArtist = track.originalArtist,
-            videoId = videoId,
-            selectedTitle = track.selectedTitle,
-            selectedChannel = track.selectedChannel,
-            historyIndex = track.historyIndex ?: -1
-        )
-    }
-
-    private fun pendingTrackToTrack(item: PendingTrack): Track =
-        Track(
-            originalTitle = item.originalTitle,
-            originalArtist = item.originalArtist,
-            selectedVideoId = item.videoId,
-            selectedTitle = item.selectedTitle,
-            selectedChannel = item.selectedChannel,
-            status = TrackStatus.PENDING,
-            manuallySelected = false,
-            historyIndex = item.historyIndex.takeIf { it >= 0 }
-        )
-
 
     private fun showQuotaPausedDialog(job: PendingJob) {
         val playlistInfo =
@@ -2674,7 +2467,7 @@ class MainActivity : Activity() {
             }
 
             val tracks =
-                job.remainingTracks.map(::pendingTrackToTrack)
+                job.remainingTracks.map(playlistWriteCoordinator::trackFromPending)
 
             playlist =
                 ImportedPlaylist(

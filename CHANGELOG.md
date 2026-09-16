@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.15
+- Recorded v1.4.14 auth recovery phone-test failure as BUG-003 / Q-003.
+- v1.4.14 status = PARTIALLY PHONE-TESTED — FAIL.
+- Added `qa/BUG_REGISTER.md`.
+- Started immutable per-release QA snapshots under `docs/v.X.Y.Z/qa/`.
+- Extracted playlist create/append write loop into PlaylistWriteCoordinator.
+- Moved PendingJob construction/conversion and write quota lifecycle out of MainActivity.
+- MainActivity: 3685 → 3478 lines.
+- v1.4.15 = NOT TESTED YET.
+- versionCode 49 / versionName 1.4.15.
+
 ## v1.4.14
 - Added silent Google/YTM authorization recovery after process restart and in-place APK update.
 - Added non-secret `PersistentAuthStateStore` marker; OAuth token remains memory-only.

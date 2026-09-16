@@ -1,35 +1,19 @@
 YTM Importer
-Version: 1.4.14
-Version code: 48
-Package: com.saney.ytmimporter
+Version: 1.4.15
+Version code: 49
 
-TEST STATUS:
-- v1.4.12 NOT TESTED
-- v1.4.13 PARTIALLY PHONE-TESTED
-- v1.4.14 NOT TESTED YET
+v1.4.12 NOT TESTED
+v1.4.13 PARTIALLY PHONE-TESTED
+v1.4.14 PARTIALLY PHONE-TESTED — FAIL (BUG-003)
+v1.4.15 NOT TESTED YET
 
-Current release:
-Session Recovery + Result Modal + Master QA
+MainActivity: 3685 -> 3478
 
-Added:
-- auth/PersistentAuthStateStore.kt
-- qa/MASTER_TEST_PLAN.md
-- qa/TEST_RUN_TEMPLATE.md
-- qa/TEST_DATA.md
-- auth-persistence audit
-- result-modal audit
-- QA-plan audit
+Known:
+BUG-001/Q-001 OPEN
+BUG-002/Q-002 DEFERRED
+BUG-003/Q-003 DEFERRED FOR LATER FIX
 
-Auth:
-- OAuth token remains memory-only
-- only a prior-success boolean is persisted
-- app attempts silent AuthorizationClient recovery after restart/update
-- user interaction is requested only if Google returns a resolution
-
-Result:
-- old inline Home result frame removed
-- modal with Open / Copy / Close
-
-Deferred:
-- Q-001 OPEN
-- Q-002 DEFERRED BY USER
+QA:
+root qa/ = current
+docs/v.X.Y.Z/qa/ = immutable snapshot

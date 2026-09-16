@@ -1,0 +1,343 @@
+package com.saney.ytmimporter.write
+
+import com.saney.ytmimporter.model.HistoryStatus
+import com.saney.ytmimporter.model.PendingDestination
+import com.saney.ytmimporter.model.PendingJob
+import com.saney.ytmimporter.model.PendingTrack
+import com.saney.ytmimporter.model.Track
+import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.storage.PendingJobStore
+import com.saney.ytmimporter.storage.QuotaTracker
+import com.saney.ytmimporter.util.ErrorMessages
+import com.saney.ytmimporter.youtube.YouTubeApi
+import com.saney.ytmimporter.youtube.YouTubeApiException
+import java.util.UUID
+
+class PlaylistWriteCoordinator(
+    private val api: YouTubeApi,
+    private val pendingJobStore: PendingJobStore,
+    private val quotaTracker: QuotaTracker
+) {
+    data class AccountContext(
+        val googleEmail: String?,
+        val youtubeChannelId: String?,
+        val youtubeChannelTitle: String?
+    )
+
+    data class WriteProgress(
+        val job: PendingJob,
+        val processedTracks: Int,
+        val totalTracks: Int,
+        val createOffset: Int,
+        val playlistCreated: Boolean = false
+    ) {
+        val progressValue: Int
+            get() = processedTracks + createOffset
+    }
+
+    sealed class WriteOutcome {
+        data class Completed(
+            val job: PendingJob,
+            val playlistId: String
+        ) : WriteOutcome()
+
+        data class PausedForQuota(
+            val job: PendingJob
+        ) : WriteOutcome()
+
+        data class Failed(
+            val job: PendingJob,
+            val userMessage: String
+        ) : WriteOutcome()
+    }
+
+    fun buildPendingJob(
+        sourceLabel: String,
+        playlistName: String,
+        playlistId: String?,
+        privacyStatus: String,
+        destination: PendingDestination,
+        tracks: List<Track>,
+        account: AccountContext
+    ): PendingJob {
+        val now = System.currentTimeMillis()
+
+        return PendingJob(
+            id = UUID.randomUUID().toString(),
+            createdAt = now,
+            updatedAt = now,
+            sourceLabel = sourceLabel,
+            playlistName = playlistName,
+            playlistId = playlistId,
+            privacyStatus = privacyStatus,
+            destination = destination,
+            googleEmail = account.googleEmail,
+            youtubeChannelId = account.youtubeChannelId,
+            youtubeChannelTitle = account.youtubeChannelTitle,
+            totalCount = tracks.size,
+            addedCount = 0,
+            failedCount = 0,
+            remainingTracks = tracks.mapNotNull(::trackToPendingTrack),
+            lastError = null
+        )
+    }
+
+    fun trackFromPending(item: PendingTrack): Track =
+        Track(
+            originalTitle = item.originalTitle,
+            originalArtist = item.originalArtist,
+            selectedVideoId = item.videoId,
+            selectedTitle = item.selectedTitle,
+            selectedChannel = item.selectedChannel,
+            status = TrackStatus.PENDING,
+            manuallySelected = false,
+            historyIndex = item.historyIndex.takeIf { it >= 0 }
+        )
+
+    fun execute(
+        token: String,
+        initialJob: PendingJob,
+        tracks: List<Track>,
+        onHistoryState: (PendingJob, HistoryStatus) -> Unit,
+        onProgress: (WriteProgress) -> Unit = {},
+        onPlaylistIdAvailable: (String) -> Unit = {}
+    ): WriteOutcome {
+        var job = initialJob
+        onHistoryState(job, HistoryStatus.RUNNING)
+
+        var playlistId = job.playlistId
+
+        if (playlistId.isNullOrBlank()) {
+            quotaTracker.recordGeneralUnits(QuotaTracker.PLAYLIST_CREATE_COST)
+
+            try {
+                playlistId =
+                    api.createPlaylist(
+                        token,
+                        job.playlistName,
+                        job.privacyStatus
+                    )
+
+                onPlaylistIdAvailable(playlistId)
+
+                job =
+                    job.copy(
+                        playlistId = playlistId,
+                        updatedAt = System.currentTimeMillis(),
+                        lastError = null
+                    )
+
+                pendingJobStore.upsert(job)
+                onHistoryState(job, HistoryStatus.RUNNING)
+
+                onProgress(
+                    WriteProgress(
+                        job = job,
+                        processedTracks = 0,
+                        totalTracks = tracks.size,
+                        createOffset = 1,
+                        playlistCreated = true
+                    )
+                )
+            } catch (error: Exception) {
+                if (isQuotaError(error)) {
+                    quotaTracker.recordQuotaError(
+                        error.message ?: "Quota exceeded while creating playlist"
+                    )
+
+                    job =
+                        job.copy(
+                            updatedAt = System.currentTimeMillis(),
+                            lastError = error.message
+                        )
+
+                    pendingJobStore.upsert(job)
+
+                    tracks.forEach { track ->
+                        track.status = TrackStatus.PENDING
+                        track.error =
+                            "Очікує продовження: " +
+                                (error.message ?: "закінчилась квота API")
+                    }
+
+                    onHistoryState(job, HistoryStatus.PENDING_QUOTA)
+                    return WriteOutcome.PausedForQuota(job)
+                }
+
+                val friendlyError =
+                    ErrorMessages.userMessage(
+                        error,
+                        "Не вдалося створити плейлист"
+                    )
+
+                job =
+                    job.copy(
+                        updatedAt = System.currentTimeMillis(),
+                        lastError = friendlyError
+                    )
+
+                onHistoryState(job, HistoryStatus.FAILED)
+                pendingJobStore.remove(job.id)
+
+                return WriteOutcome.Failed(
+                    job = job,
+                    userMessage = friendlyError
+                )
+            }
+        } else {
+            onPlaylistIdAvailable(playlistId)
+        }
+
+        val createOffset =
+            if (job.destination == PendingDestination.NEW_PLAYLIST) 1 else 0
+
+        for ((index, track) in tracks.withIndex()) {
+            val videoId = track.selectedVideoId
+
+            if (videoId.isNullOrBlank()) {
+                track.status = TrackStatus.FAILED
+                track.error = "Немає videoId для додавання"
+
+                job =
+                    job.copy(
+                        updatedAt = System.currentTimeMillis(),
+                        failedCount = job.failedCount + 1,
+                        remainingTracks = job.remainingTracks.drop(1),
+                        lastError = track.error
+                    )
+
+                pendingJobStore.upsert(job)
+                onHistoryState(job, HistoryStatus.RUNNING)
+
+                onProgress(
+                    WriteProgress(
+                        job = job,
+                        processedTracks = index + 1,
+                        totalTracks = tracks.size,
+                        createOffset = createOffset
+                    )
+                )
+                continue
+            }
+
+            quotaTracker.recordGeneralUnits(
+                QuotaTracker.PLAYLIST_ITEM_INSERT_COST
+            )
+
+            try {
+                api.addVideo(
+                    token,
+                    playlistId!!,
+                    videoId
+                )
+
+                track.status = TrackStatus.ADDED
+                track.error = null
+
+                job =
+                    job.copy(
+                        updatedAt = System.currentTimeMillis(),
+                        addedCount = job.addedCount + 1,
+                        remainingTracks = job.remainingTracks.drop(1),
+                        lastError = null
+                    )
+
+                pendingJobStore.upsert(job)
+                onHistoryState(job, HistoryStatus.RUNNING)
+            } catch (error: Exception) {
+                if (isQuotaError(error)) {
+                    quotaTracker.recordQuotaError(
+                        error.message ?: "Quota exceeded while adding track"
+                    )
+
+                    val remaining =
+                        tracks
+                            .drop(index)
+                            .mapNotNull(::trackToPendingTrack)
+
+                    job =
+                        job.copy(
+                            updatedAt = System.currentTimeMillis(),
+                            remainingTracks = remaining,
+                            lastError = error.message
+                        )
+
+                    pendingJobStore.upsert(job)
+
+                    tracks.drop(index).forEach { pendingTrack ->
+                        pendingTrack.status = TrackStatus.PENDING
+                        pendingTrack.error =
+                            "Очікує продовження: " +
+                                (error.message ?: "закінчилась квота API")
+                    }
+
+                    onHistoryState(job, HistoryStatus.PENDING_QUOTA)
+                    return WriteOutcome.PausedForQuota(job)
+                }
+
+                val friendlyError =
+                    ErrorMessages.userMessage(
+                        error,
+                        "Не вдалося додати трек"
+                    )
+
+                track.status = TrackStatus.FAILED
+                track.error = friendlyError
+
+                job =
+                    job.copy(
+                        updatedAt = System.currentTimeMillis(),
+                        failedCount = job.failedCount + 1,
+                        remainingTracks = job.remainingTracks.drop(1),
+                        lastError = friendlyError
+                    )
+
+                pendingJobStore.upsert(job)
+                onHistoryState(job, HistoryStatus.RUNNING)
+            }
+
+            onProgress(
+                WriteProgress(
+                    job = job,
+                    processedTracks = index + 1,
+                    totalTracks = tracks.size,
+                    createOffset = createOffset
+                )
+            )
+        }
+
+        onHistoryState(
+            job,
+            if (job.failedCount > 0) {
+                HistoryStatus.PARTIAL
+            } else {
+                HistoryStatus.COMPLETED
+            }
+        )
+
+        pendingJobStore.remove(job.id)
+
+        return WriteOutcome.Completed(
+            job = job,
+            playlistId = playlistId!!
+        )
+    }
+
+    private fun trackToPendingTrack(track: Track): PendingTrack? {
+        val videoId = track.selectedVideoId ?: return null
+
+        return PendingTrack(
+            originalTitle = track.originalTitle,
+            originalArtist = track.originalArtist,
+            videoId = videoId,
+            selectedTitle = track.selectedTitle,
+            selectedChannel = track.selectedChannel,
+            historyIndex = track.historyIndex ?: -1
+        )
+    }
+
+    private fun isQuotaError(error: Throwable): Boolean =
+        (error as? YouTubeApiException)?.isQuotaError == true ||
+            error.message.orEmpty().contains("quota", ignoreCase = true) ||
+            error.message.orEmpty().contains("daily limit", ignoreCase = true)
+}

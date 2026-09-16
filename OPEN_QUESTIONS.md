@@ -94,3 +94,13 @@ SearchCoordinator extraction does not change UiChrome. Q-002 remains DEFERRED BY
 ## v1.4.14 note
 
 Q-002 remains DEFERRED and is not reopened. This release changes auth recovery, result presentation and QA documentation.
+
+## Q-003 — Silent Google/YTM recovery after update
+
+Status: **DEFERRED FOR LATER FIX**
+
+Reproduced on v1.4.14:
+install over authorized v1.4.13 → launch → Step 2 remains red.
+
+Related QA: A-03, D-03.
+Do not claim fixed until an in-place update test passes without pressing Step 2.

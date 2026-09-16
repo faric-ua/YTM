@@ -10,8 +10,9 @@ PLAN="qa/MASTER_TEST_PLAN.md"
 RUN="qa/TEST_RUN_TEMPLATE.md"
 DATA="qa/TEST_DATA.md"
 STATUS="RELEASE_TEST_STATUS.md"
+BUG="qa/BUG_REGISTER.md"
 
-for f in "$PLAN" "$RUN" "$DATA" "$STATUS"; do
+for f in "$PLAN" "$RUN" "$DATA" "$STATUS" "$BUG"; do
   test -f "$f" || fail "missing QA file: $f"
 done
 
@@ -27,8 +28,8 @@ done
 grep -Fq '| v1.4.12 | **NOT TESTED** |' "$STATUS" \
   || fail "v1.4.12 test status must remain NOT TESTED"
 
-grep -Fq '| v1.4.14 | **NOT TESTED YET** |' "$STATUS" \
-  || fail "v1.4.14 must start NOT TESTED YET"
+grep -Fq '| v1.4.14 | **PARTIALLY PHONE-TESTED — FAIL** |' "$STATUS" \
+  || fail "v1.4.14 auth failure status missing"
 
 echo "PASS:"
 echo "- global master QA plan present"
@@ -36,3 +37,8 @@ echo "- release test-run template present"
 echo "- test-data guide present"
 echo "- critical action coverage present"
 echo "- release status rules present"
+
+grep -Fq '| v1.4.15 | **NOT TESTED YET** |' "$STATUS" \
+  || fail "v1.4.15 must start NOT TESTED YET"
+grep -Fq 'BUG-003 / Q-003' "$BUG" \
+  || fail "BUG-003 auth recovery regression missing"

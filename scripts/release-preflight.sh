@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.14/RELEASE.md"
-check_file "docs/v.1.4.14/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.15/RELEASE.md"
+check_file "docs/v.1.4.15/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -47,6 +47,7 @@ check_file "scripts/dialog-animation-audit.sh"
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/search-coordinator-audit.sh
+bash scripts/playlist-write-coordinator-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh
@@ -63,6 +64,14 @@ bash scripts/dialog-animation-audit.sh
 check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 check_file "OPEN_QUESTIONS.md"
 check_file "RELEASE_TEST_STATUS.md"
+check_file "docs/v.1.4.15/qa/BUG_REGISTER.md"
+check_file "docs/v.1.4.15/qa/TEST_DATA.md"
+check_file "docs/v.1.4.15/qa/TEST_RUN_TEMPLATE.md"
+check_file "docs/v.1.4.15/qa/RELEASE_TEST_PLAN.md"
+check_file "docs/v.1.4.15/qa/MASTER_TEST_PLAN.md"
+check_file "qa/BUG_REGISTER.md"
+check_file "scripts/playlist-write-coordinator-audit.sh"
+check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
 check_file "qa/TEST_DATA.md"
 check_file "qa/TEST_RUN_TEMPLATE.md"
 check_file "qa/MASTER_TEST_PLAN.md"
@@ -124,8 +133,8 @@ grep -q 'Q-002' OPEN_QUESTIONS.md \
 grep -Fq '| v1.4.12 | **NOT TESTED** |' RELEASE_TEST_STATUS.md \
   || fail "v1.4.12 must remain explicitly marked NOT TESTED"
 
-grep -Fq '| v1.4.14 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
-  || fail "v1.4.14 must start NOT TESTED YET"
+grep -Fq '| v1.4.14 | **PARTIALLY PHONE-TESTED — FAIL** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.14 auth failure status missing"
 
 grep -q 'ImportActivity::class.java' \
   app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
@@ -206,11 +215,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 48' app/build.gradle.kts \
-  || fail "Expected versionCode = 48"
+grep -q 'versionCode = 49' app/build.gradle.kts \
+  || fail "Expected versionCode = 49"
 
-grep -q 'versionName = "1.4.14"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.14"'
+grep -q 'versionName = "1.4.15"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.15"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -355,3 +364,11 @@ echo "- MainActivity search role reduced to auth/UI bridge"
 echo "- silent Google/YTM recovery marker is non-secret and token-free"
 echo "- playlist completion result is modal, not an inline Home frame"
 echo "- global master QA plan is present"
+
+grep -Fq '| v1.4.15 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.15 must start NOT TESTED YET"
+grep -Fq 'BUG-003 / Q-003' qa/BUG_REGISTER.md \
+  || fail "BUG-003 must stay documented"
+echo "- BUG-003 auth recovery failure preserved"
+echo "- PlaylistWriteCoordinator extracted"
+echo "- per-release QA snapshot included"

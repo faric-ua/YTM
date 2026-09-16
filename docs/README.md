@@ -1,10 +1,15 @@
-# YTM Importer — Versioned documentation
+# YTM Importer — Documentation convention
 
-Current:
-`docs/v.1.4.14/`
+Current: `docs/v.1.4.15/`
 
-Global QA:
-`qa/MASTER_TEST_PLAN.md`
+Current QA: `qa/`
 
-Mutable phone-test status:
-`RELEASE_TEST_STATUS.md`
+From v1.4.15 every release also includes:
+`docs/v.X.Y.Z/qa/`
+
+Files:
+- MASTER_TEST_PLAN.md
+- RELEASE_TEST_PLAN.md
+- TEST_RUN_TEMPLATE.md
+- TEST_DATA.md
+- BUG_REGISTER.md

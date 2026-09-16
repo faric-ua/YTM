@@ -1,34 +1,25 @@
 # YTM Importer — Roadmap
 
 ## Current
-**v1.4.14 — Session Recovery + Result Modal + Master QA**
+v1.4.15 — Cleanup Wave 4 / PlaylistWriteCoordinator
 
-## Test status
-- [!] v1.4.12 — NOT TESTED.
-- [~] v1.4.13 — PARTIALLY PHONE-TESTED.
-- [!] v1.4.14 — NOT TESTED YET.
+## Known
+- BUG-001/Q-001 OPEN
+- BUG-002/Q-002 DEFERRED
+- BUG-003/Q-003 auth recovery FAIL — DEFERRED FOR LATER FIX
 
-## v1.4.14
-- [x] add master manual QA plan;
-- [x] add reusable test-run template;
-- [x] add test-data guide;
-- [x] persist only non-secret prior-auth success marker;
-- [x] silently request fresh Google token on launch/update;
-- [x] never auto-launch Google resolution during silent restore;
-- [x] replace inline result frame with result modal;
-- [x] add Close action;
-- [x] add auth/result/QA audits;
-- [ ] GitHub build;
-- [ ] real-phone v1.4.14 delta tests;
-- [ ] carry-forward v1.4.12/v1.4.13 smoke suite.
+## v1.4.15
+- [x] bug register
+- [x] per-release QA snapshots
+- [x] PlaylistWriteCoordinator
+- [x] PendingJob factory/conversion extraction
+- [x] write quota/pause/completion extraction
+- [ ] GitHub build
+- [ ] phone tests later
 
-## After v1.4.14 validation
-Return to Cleanup Wave 4 only after the new master QA flow has at least one
-recorded phone run.
+## Next
+Preferred v1.4.16:
+extract destination list/duplicate orchestration into DestinationCoordinator.
 
-Candidate:
-- [ ] PlaylistWriteCoordinator extraction.
-
-## Deferred / open
-- [~] Q-001 — OPEN.
-- [~] Q-002 — custom dialog entrance motion — DEFERRED BY USER.
+## Later bug-fix wave
+Fix every FAIL/BLOCKED case accumulated in BUG_REGISTER and release test runs.
