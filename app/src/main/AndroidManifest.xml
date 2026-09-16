@@ -20,6 +20,11 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
+            android:name=".ServiceActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".DestinationActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />

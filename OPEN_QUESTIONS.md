@@ -36,3 +36,7 @@ Adaptive button/layout fixes do not close Q-001. It remains OPEN.
 ## v1.4.5 note
 
 Compact Review and quota layout changed. Q-001 remains OPEN.
+
+## v1.4.6 note
+
+Dialog hierarchy and Service screen were updated. Q-001 remains OPEN.

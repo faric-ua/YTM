@@ -269,6 +269,63 @@ object UiChrome {
             return
         }
 
+        val trailingTextAction =
+            actions.size == 3 &&
+                actionLayout == DialogActionLayout.AUTO &&
+                actions.last().tone == ActionTone.ACCENT &&
+                actions.last().label in setOf(
+                    "Закрити",
+                    "Назад",
+                    "Не зараз"
+                )
+
+        if (trailingTextAction) {
+            val row = LinearLayout(activity).apply {
+                orientation = LinearLayout.HORIZONTAL
+            }
+
+            actions.take(2).forEachIndexed { index, action ->
+                row.addView(
+                    dialogActionButton(
+                        activity = activity,
+                        action = action
+                    ) {
+                        dialog.dismiss()
+                        action.onClick()
+                    },
+                    LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1f
+                    ).apply {
+                        if (index > 0) {
+                            marginStart = dp(activity, 8)
+                        }
+                    }
+                )
+            }
+
+            card.addView(row)
+
+            val closeAction = actions.last()
+            card.addView(
+                flatDialogActionButton(
+                    activity = activity,
+                    action = closeAction
+                ) {
+                    dialog.dismiss()
+                    closeAction.onClick()
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = dp(activity, 6)
+                }
+            )
+            return
+        }
+
         val compactRow = actions.size <= 3
 
         if (compactRow) {
@@ -481,6 +538,38 @@ object UiChrome {
                 strokeColor = BORDER
             )
             autoSizeButton(this, minSp = 10, maxSp = 14)
+            setOnClickListener { onClick() }
+        }
+
+    private fun flatDialogActionButton(
+        activity: Activity,
+        action: DialogAction,
+        onClick: () -> Unit
+    ): Button =
+        Button(activity).apply {
+            text = action.label
+            isAllCaps = false
+            gravity = Gravity.CENTER
+            minHeight = dp(context, 44)
+            minimumHeight = dp(context, 44)
+            minWidth = 0
+            minimumWidth = 0
+            maxLines = 1
+            setPadding(
+                dp(context, 14),
+                dp(context, 6),
+                dp(context, 14),
+                dp(context, 6)
+            )
+            setTextColor(
+                when (action.tone) {
+                    ActionTone.NORMAL -> Color.WHITE
+                    ActionTone.ACCENT -> ACCENT
+                    ActionTone.DANGER -> Color.rgb(255, 100, 115)
+                }
+            )
+            background = ColorDrawable(Color.TRANSPARENT)
+            autoSizeButton(this, minSp = 11, maxSp = 14)
             setOnClickListener { onClick() }
         }
 

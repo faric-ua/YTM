@@ -1,17 +1,29 @@
-YTM Importer v1.4.5 FULL
+YTM Importer v1.4.6 FULL
+
+ADDED:
+app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
+scripts/action-hierarchy-audit.sh
+docs/v.1.4.6/
+TERMINAL_APPLY_v1.4.6.md
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
+app/src/main/AndroidManifest.xml
 app/build.gradle.kts
 scripts/release-preflight.sh
 .github/workflows/build-apk.yml
-root docs
+BACKLOG.md
+CHANGELOG.md
+README.md
+README_UA.md
+PROJECT_STATUS.txt
+OPEN_QUESTIONS.md
+docs/README.md
 
-ADDED:
-scripts/compact-review-audit.sh
-docs/v.1.4.5/
-TERMINAL_APPLY_v1.4.5.md
+DELETED:
+none
 
-VERSION: 1.4.5 / 39
+VERSION:
+versionCode = 40
+versionName = 1.4.6

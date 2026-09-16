@@ -95,6 +95,7 @@ class MainActivity : Activity() {
     private val importScreenRequestCode = 1301
     private val reviewScreenRequestCode = 1302
     private val destinationScreenRequestCode = 1401
+    private val serviceScreenRequestCode = 1501
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
@@ -1143,6 +1144,10 @@ class MainActivity : Activity() {
 
             destinationScreenRequestCode -> {
                 handleDestinationResult(data)
+            }
+
+            serviceScreenRequestCode -> {
+                handleServiceResult(data)
             }
 
             authRequestCode -> {
@@ -3240,100 +3245,47 @@ class MainActivity : Activity() {
     }
 
     private fun showServiceTools() {
-        val cache = searchCache.stats()
-        val quota = quotaTracker.snapshot()
+        startActivityForResult(
+            Intent(
+                this,
+                ServiceActivity::class.java
+            ),
+            serviceScreenRequestCode
+        )
+    }
 
-        val intro = TextView(this).apply {
-            text =
-                "Допомога та сервісні інструменти.\n\n" +
-                    "Cache: ${cache.validEntries} активних записів • " +
-                    "Search quota: ${quota.searchCalls}/" +
-                    "${QuotaTracker.SEARCH_DAILY_LIMIT}"
-            textSize = 14f
-            setPadding(dp(16), dp(8), dp(16), dp(8))
-        }
-
-        val labels =
-            arrayOf(
-                "Швидкий старт\n" +
-                    "Як створити плейлист у 4 кроки",
-
-                "Приватність\n" +
-                    "Які дані використовуються та що зберігається локально",
-
-                "Діагностика\n" +
-                    "Стан застосунку, quota, cache, History",
-
-                "Поділитися Diagnostics TXT\n" +
-                    "Надіслати технічний звіт без OAuth token",
-
-                "Зберегти Diagnostics TXT\n" +
-                    "Записати технічний звіт у файл",
-
-                "SearchCache\n" +
-                    "Розмір, записи та очищення",
-
-                "Google Cloud Console\n" +
-                    "Відкрити сторінку квоти YouTube Data API",
-
-                "Про програму\n" +
-                    "Версія та основні можливості"
+    private fun handleServiceResult(
+        data: Intent
+    ) {
+        when (
+            data.getStringExtra(
+                ServiceActivity.EXTRA_ACTION
             )
+        ) {
+            ServiceActivity.ACTION_QUICK_START ->
+                showQuickStartDialog()
 
-        val list = ListView(this).apply {
-            dividerHeight = 1
-            adapter =
-                ArrayAdapter(
-                    this@MainActivity,
-                    android.R.layout.simple_list_item_1,
-                    labels
-                )
+            ServiceActivity.ACTION_PRIVACY ->
+                showPrivacyDialog()
+
+            ServiceActivity.ACTION_DIAGNOSTICS ->
+                showDiagnostics()
+
+            ServiceActivity.ACTION_SHARE_DIAGNOSTICS ->
+                shareDiagnostics()
+
+            ServiceActivity.ACTION_SAVE_DIAGNOSTICS ->
+                saveDiagnostics()
+
+            ServiceActivity.ACTION_SEARCH_CACHE ->
+                showSearchCacheTools()
+
+            ServiceActivity.ACTION_GOOGLE_CLOUD ->
+                openGoogleCloudQuota()
+
+            ServiceActivity.ACTION_ABOUT ->
+                showAboutDialog()
         }
-
-        val container = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), 0, dp(8), 0)
-
-            addView(
-                intro,
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-            )
-
-            addView(
-                list,
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(440)
-                )
-            )
-        }
-
-        val dialog =
-            UiChrome.alertBuilder(this)
-                .setTitle("Сервіс")
-                .setView(container)
-                .setNegativeButton("Закрити", null)
-                .create()
-
-        list.setOnItemClickListener { _, _, position, _ ->
-            dialog.dismiss()
-
-            when (position) {
-                0 -> showQuickStartDialog()
-                1 -> showPrivacyDialog()
-                2 -> showDiagnostics()
-                3 -> shareDiagnostics()
-                4 -> saveDiagnostics()
-                5 -> showSearchCacheTools()
-                6 -> openGoogleCloudQuota()
-                7 -> showAboutDialog()
-            }
-        }
-
-        dialog.show()
     }
 
     private fun showAboutDialog() {
@@ -5444,14 +5396,14 @@ class MainActivity : Activity() {
             title = "Заміни / проблемні треки: ${problemTracks.size}",
             message = shortText,
             actions = listOf(
-                UiChrome.DialogAction("TikTok") {
+                UiChrome.DialogAction("TikTok список") {
                     copyText(
                         label = "YTM Importer TikTok replacements",
                         text = shortText,
                         successMessage = "Короткий список для TikTok скопійовано"
                     )
                 },
-                UiChrome.DialogAction("Повний") {
+                UiChrome.DialogAction("Повний текст") {
                     copyText(
                         label = "YTM Importer replacement log",
                         text = fullText,

@@ -1,13 +1,19 @@
 YTM Importer
-Version: 1.4.5
-Version code: 39
+Version: 1.4.6
+Version code: 40
+Package: com.saney.ytmimporter
 
-Stage: compact Review + dialog action hierarchy
+Stage:
+Dialog action hierarchy + Service screen
 
-Changed:
-- quota Google Cloud full-width
-- Queue/Close bottom row
-- Review controls 2 rows total
-- Project filename = playlist name
+Rules:
+- confirmation: flat Cancel / Confirm
+- 3-action detail: two boxed + flat Close/Back
+- quota: Google Cloud primary-top layout
+- long service menu: dedicated Activity
 
+Open:
 Q-001 remains OPEN.
+
+Next:
+continue MainActivity cleanup after phone regression.
