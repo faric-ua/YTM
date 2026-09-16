@@ -2,6 +2,6 @@
 
 Current version:
 
-`docs/v.1.4.6/`
+`docs/v.1.4.7/`
 
-v1.4.6 standardizes dialog action hierarchy and moves Service to a full screen.
+v1.4.7 fixes Service navigation and structures long technical/info content.

@@ -1,10 +1,13 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
@@ -12,135 +15,452 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.FileProvider
+import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.storage.HistoryStore
+import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.youtube.SearchCache
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ServiceActivity : Activity() {
     private lateinit var searchCache: SearchCache
     private lateinit var quotaTracker: QuotaTracker
+    private lateinit var historyStore: HistoryStore
+    private lateinit var pendingJobStore: PendingJobStore
+    private lateinit var currentPlaylistStore: CurrentPlaylistStore
 
-    override fun onCreate(
-        savedInstanceState: Bundle?
-    ) {
+    private var page: Page = Page.HOME
+    private var pendingExportContent: String? = null
+    private val saveDiagnosticsRequestCode = 6101
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         searchCache = SearchCache(this)
         quotaTracker = QuotaTracker(this)
+        historyStore = HistoryStore(this)
+        pendingJobStore = PendingJobStore(this)
+        currentPlaylistStore = CurrentPlaylistStore(this)
+
+        page =
+            savedInstanceState
+                ?.getString(KEY_PAGE)
+                ?.let { raw ->
+                    runCatching { Page.valueOf(raw) }.getOrNull()
+                }
+                ?: Page.HOME
 
         buildUi()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(KEY_PAGE, page.name)
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onResume() {
         super.onResume()
-
         if (::searchCache.isInitialized) {
             buildUi()
         }
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (page != Page.HOME) {
+            page = Page.HOME
+            buildUi()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (
+            requestCode == saveDiagnosticsRequestCode &&
+            resultCode == RESULT_OK
+        ) {
+            val uri = data?.data ?: return
+            writeDiagnostics(uri)
+        }
+    }
+
     private fun buildUi() {
-        val root =
-            LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setBackgroundColor(BACKGROUND)
-            }
+        when (page) {
+            Page.HOME -> buildHome()
+            Page.QUICK_START -> buildQuickStart()
+            Page.PRIVACY -> buildPrivacy()
+            Page.DIAGNOSTICS -> buildDiagnostics()
+            Page.SEARCH_CACHE -> buildSearchCache()
+            Page.ABOUT -> buildAbout()
+        }
+    }
 
-        root.addView(topBar())
+    private fun buildHome() {
+        val root = screenRoot()
+        root.addView(topBar("Сервіс"))
 
-        val scroll =
-            ScrollView(this).apply {
-                isFillViewport = true
-            }
-
-        val content =
-            LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(
-                    dp(12),
-                    0,
-                    dp(12),
-                    dp(24)
-                )
-            }
-
+        val content = contentColumn()
         val cache = searchCache.stats()
         val quota = quotaTracker.snapshot()
 
         content.addView(
-            statusCard(
-                cacheEntries = cache.validEntries,
-                searchCalls = quota.searchCalls,
-                searchLimit = QuotaTracker.SEARCH_DAILY_LIMIT
+            infoCard(
+                title = "Стан",
+                body =
+                    "Cache: ${cache.validEntries} активних записів\n" +
+                        "Search quota: ${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT}"
             )
         )
 
         content.addView(sectionTitle("Допомога"))
         content.addView(
             serviceCard(
-                title = "Швидкий старт",
-                subtitle = "Як створити плейлист у 4 кроки",
-                action = ACTION_QUICK_START
-            )
+                "Швидкий старт",
+                "Як створити плейлист у 4 кроки"
+            ) { open(Page.QUICK_START) }
         )
         content.addView(
             serviceCard(
-                title = "Приватність",
-                subtitle = "Які дані використовуються та що зберігається локально",
-                action = ACTION_PRIVACY
-            )
+                "Приватність",
+                "Які дані використовуються та що зберігається локально"
+            ) { open(Page.PRIVACY) }
         )
 
         content.addView(sectionTitle("Діагностика"))
         content.addView(
             serviceCard(
-                title = "Діагностика",
-                subtitle = "Стан застосунку, quota, cache та History",
-                action = ACTION_DIAGNOSTICS
-            )
-        )
-        content.addView(
-            serviceCard(
-                title = "Поділитися Diagnostics TXT",
-                subtitle = "Надіслати технічний звіт без OAuth token",
-                action = ACTION_SHARE_DIAGNOSTICS
-            )
-        )
-        content.addView(
-            serviceCard(
-                title = "Зберегти Diagnostics TXT",
-                subtitle = "Записати технічний звіт у файл",
-                action = ACTION_SAVE_DIAGNOSTICS
-            )
+                "Діагностика",
+                "Акаунт, імпорт, quota, cache та локальні дані"
+            ) { open(Page.DIAGNOSTICS) }
         )
 
         content.addView(sectionTitle("API та локальні дані"))
         content.addView(
             serviceCard(
-                title = "SearchCache",
-                subtitle = "Розмір, записи та очищення кешу",
-                action = ACTION_SEARCH_CACHE
-            )
+                "SearchCache",
+                "Статистика, прострочені записи та очищення"
+            ) { open(Page.SEARCH_CACHE) }
         )
         content.addView(
             serviceCard(
-                title = "Google Cloud Console",
-                subtitle = "Квота YouTube Data API",
-                action = ACTION_GOOGLE_CLOUD
-            )
+                "Google Cloud Console",
+                "Відкрити квоту YouTube Data API у браузері"
+            ) { openGoogleCloudQuota() }
         )
 
         content.addView(sectionTitle("Про застосунок"))
         content.addView(
             serviceCard(
-                title = "Про YTM Importer",
-                subtitle = "Версія, можливості та технічна інформація",
-                action = ACTION_ABOUT
+                "Про YTM Importer",
+                "Версія, можливості та принципи роботи"
+            ) { open(Page.ABOUT) }
+        )
+
+        setScreen(root, content)
+    }
+
+    private fun buildQuickStart() {
+        val root = screenRoot()
+        root.addView(topBar("Швидкий старт"))
+        val content = contentColumn()
+
+        content.addView(
+            infoCard(
+                "4 кроки до плейлиста",
+                "Кожен крок має окремий екран. Після перевірки треків можна повернутися до проекту пізніше."
             )
         )
 
-        scroll.addView(content)
+        quickStep(content, "1", "Імпорт", "CSV / TXT / YTM Project або вставлений список Artist - Track.")
+        quickStep(content, "2", "Google / YTM", "Підключіть Google OAuth і завантажте інформацію про YouTube channel.")
+        quickStep(content, "3", "Знайти / перевірити", "SearchCache зменшує повторні API-пошуки. Сумнівні результати перевірте вручну.")
+        quickStep(content, "4", "Створити / додати", "Створіть новий плейлист або додайте треки до існуючого з duplicate check.")
 
+        content.addView(sectionTitle("Корисно"))
+        content.addView(
+            serviceCard(
+                "Приватність",
+                "Що зберігається локально і що не входить у backup"
+            ) { open(Page.PRIVACY) }
+        )
+
+        setScreen(root, content)
+    }
+
+    private fun buildPrivacy() {
+        val root = screenRoot()
+        root.addView(topBar("Приватність"))
+        val content = contentColumn()
+
+        content.addView(
+            infoCard(
+                "Google OAuth та YouTube API",
+                "Використовуються лише для дій, які запускає користувач: інформація про акаунт/канал, пошук, створення плейлистів і додавання треків."
+            )
+        )
+        content.addView(
+            infoCard(
+                "Локальні дані",
+                "На телефоні можуть зберігатися History, Pending Queue, SearchCache, поточний робочий список і локальна оцінка quota."
+            )
+        )
+        content.addView(
+            infoCard(
+                "Не зберігається у проектах",
+                "OAuth access token, Google password і signing keys не входять у YTM Project, Diagnostics або Full Backup."
+            )
+        )
+        content.addView(
+            infoCard(
+                "Backup та Android Share",
+                "Full Backup може містити email, Channel ID, назви плейлистів та History. Надсилайте backup лише туди, де довіряєте одержувачу. YTM Importer не має власного сервера."
+            )
+        )
+        content.addView(
+            infoCard(
+                "Незалежний інструмент",
+                "YTM Importer не є офіційним застосунком Google або YouTube."
+            )
+        )
+
+        setScreen(root, content)
+    }
+
+    private fun buildDiagnostics() {
+        val root = screenRoot()
+        root.addView(topBar("Діагностика"))
+        val content = contentColumn()
+
+        val quota = quotaTracker.snapshot()
+        val cache = searchCache.stats()
+        val history = historyStore.getAll()
+        val pending = pendingJobStore.getAll()
+        val playlist = currentPlaylistStore.load()?.playlist
+        val tracks = playlist?.tracks.orEmpty()
+
+        content.addView(
+            infoCard(
+                "Акаунт",
+                "Google: ${if (intent.getBooleanExtra(EXTRA_GOOGLE_CONNECTED, false)) "підключено" else "не підключено"}\n" +
+                    "Email: ${intent.getStringExtra(EXTRA_GOOGLE_EMAIL) ?: "—"}\n" +
+                    "YouTube/YTM: ${intent.getStringExtra(EXTRA_CHANNEL_TITLE) ?: "не завантажено"}\n" +
+                    "Channel ID: ${intent.getStringExtra(EXTRA_CHANNEL_ID) ?: "—"}"
+            )
+        )
+
+        content.addView(
+            infoCard(
+                "Поточний імпорт",
+                buildString {
+                    append("Playlist: ${playlist?.name ?: "немає"}\n")
+                    append("Треків: ${tracks.size}")
+                    TrackStatus.entries.forEach { status ->
+                        val count = tracks.count { it.status == status }
+                        if (count > 0) append("\n${status.name}: $count")
+                    }
+                }
+            )
+        )
+
+        content.addView(
+            infoCard(
+                "Quota — локальна оцінка",
+                "День Google: ${quota.dayKey} Pacific Time\n" +
+                    "Search: ${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT} • ≈${quota.searchRemaining} залишилось\n" +
+                    "General: ${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT} • ≈${quota.generalRemaining} залишилось\n" +
+                    "Cache hits сьогодні: ${quota.cacheHits}"
+            )
+        )
+
+        content.addView(
+            infoCard(
+                "SearchCache",
+                "Усього: ${cache.totalEntries}\n" +
+                    "Активних: ${cache.validEntries}\n" +
+                    "Прострочених: ${cache.expiredEntries}\n" +
+                    "Пошкоджених: ${cache.malformedEntries}\n" +
+                    "Розмір: ${formatBytes(cache.approximateBytes)}\n" +
+                    "Найстаріший: ${formatNullableDate(cache.oldestCachedAt)}\n" +
+                    "Найновіший: ${formatNullableDate(cache.newestCachedAt)}"
+            )
+        )
+
+        content.addView(
+            infoCard(
+                "Локальні дані",
+                "History: ${history.size} записів\n" +
+                    "Pending Queue: ${pending.size} завдань\n" +
+                    "History JSON: ${formatBytes(historyStore.exportJson().toByteArray(Charsets.UTF_8).size.toLong())}\n" +
+                    "Pending JSON: ${formatBytes(pendingJobStore.exportJson().toByteArray(Charsets.UTF_8).size.toLong())}"
+            )
+        )
+
+        content.addView(
+            infoCard(
+                "Приватність Diagnostics",
+                "Звіт не містить OAuth access token, Google password або signing keys. Email та Channel ID передаються вже замаскованими."
+            )
+        )
+
+        content.addView(sectionTitle("Дії"))
+        content.addView(
+            fullActionButton("Зберегти Diagnostics TXT") {
+                saveDiagnostics()
+            }
+        )
+        content.addView(
+            fullActionButton("Поділитися Diagnostics TXT") {
+                shareDiagnostics()
+            }
+        )
+
+        setScreen(root, content)
+    }
+
+    private fun buildSearchCache() {
+        val root = screenRoot()
+        root.addView(topBar("SearchCache"))
+        val content = contentColumn()
+        val stats = searchCache.stats()
+
+        content.addView(
+            infoCard(
+                "Статистика",
+                "Усього записів: ${stats.totalEntries}\n" +
+                    "Активних: ${stats.validEntries}\n" +
+                    "Прострочених: ${stats.expiredEntries}\n" +
+                    "Пошкоджених: ${stats.malformedEntries}\n" +
+                    "Приблизний розмір: ${formatBytes(stats.approximateBytes)}\n" +
+                    "Найстаріший: ${formatNullableDate(stats.oldestCachedAt)}\n" +
+                    "Найновіший: ${formatNullableDate(stats.newestCachedAt)}"
+            )
+        )
+        content.addView(
+            infoCard(
+                "Що станеться після очищення",
+                "History, Pending Queue та YouTube/YTM плейлисти не видаляються. Повторний пошук очищених треків знову витрачатиме search quota."
+            )
+        )
+
+        content.addView(sectionTitle("Дії"))
+        content.addView(
+            fullActionButton("Видалити прострочені записи") {
+                val removed = searchCache.clearExpired()
+                toast("Видалено записів SearchCache: $removed")
+                buildUi()
+            }
+        )
+        content.addView(
+            fullActionButton(
+                label = "Очистити весь SearchCache",
+                danger = true
+            ) {
+                confirmClearSearchCache()
+            }
+        )
+
+        setScreen(root, content)
+    }
+
+    private fun buildAbout() {
+        val root = screenRoot()
+        root.addView(topBar("Про YTM Importer"))
+        val content = contentColumn()
+
+        content.addView(
+            infoCard(
+                "Версія",
+                "YTM Importer ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
+                    "Android target SDK: ${applicationInfo.targetSdkVersion}"
+            )
+        )
+        content.addView(
+            infoCard(
+                "Що робить застосунок",
+                "Перетворює трекліст у плейлист YouTube / YouTube Music і дозволяє вручну перевірити кожен результат перед записом."
+            )
+        )
+        content.addView(
+            infoCard(
+                "Імпорт та пошук",
+                "• CSV / TXT / прямий текст / YTM Project\n" +
+                    "• автоматичний пошук + SearchCache\n" +
+                    "• ручна перевірка та заміна треків"
+            )
+        )
+        content.addView(
+            infoCard(
+                "Плейлисти та відновлення",
+                "• новий або існуючий плейлист\n" +
+                    "• перевірка дублікатів\n" +
+                    "• History + YTM Project\n" +
+                    "• Queue / Resume при quota problems\n" +
+                    "• Backup / Restore / Rollback"
+            )
+        )
+        content.addView(
+            infoCard(
+                "Принципи",
+                "Без реклами, власного сервера та вбудованої аналітики. Незалежний інструмент, не є офіційним застосунком Google або YouTube."
+            )
+        )
+
+        content.addView(sectionTitle("Дізнатися більше"))
+        content.addView(
+            serviceCard(
+                "Швидкий старт",
+                "4 кроки до готового плейлиста"
+            ) { open(Page.QUICK_START) }
+        )
+        content.addView(
+            serviceCard(
+                "Приватність",
+                "Локальні дані, OAuth і backup"
+            ) { open(Page.PRIVACY) }
+        )
+
+        setScreen(root, content)
+    }
+
+    private fun open(value: Page) {
+        page = value
+        buildUi()
+    }
+
+    private fun screenRoot(): LinearLayout =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(BACKGROUND)
+        }
+
+    private fun contentColumn(): LinearLayout =
+        LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), 0, dp(12), dp(24))
+        }
+
+    private fun setScreen(
+        root: LinearLayout,
+        content: LinearLayout
+    ) {
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+        }
+        scroll.addView(content)
         root.addView(
             scroll,
             LinearLayout.LayoutParams(
@@ -149,21 +469,15 @@ class ServiceActivity : Activity() {
                 1f
             )
         )
-
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
     }
 
-    private fun topBar(): LinearLayout =
+    private fun topBar(title: String): LinearLayout =
         LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(
-                dp(10),
-                dp(8),
-                dp(10),
-                dp(10)
-            )
+            setPadding(dp(10), dp(8), dp(10), dp(10))
 
             addView(
                 Button(this@ServiceActivity).apply {
@@ -171,121 +485,105 @@ class ServiceActivity : Activity() {
                     isAllCaps = false
                     textSize = 26f
                     setTextColor(Color.WHITE)
-                    background = roundedBackground(
-                        color = SURFACE,
-                        radiusDp = 12,
-                        strokeColor = BORDER
-                    )
-                    setOnClickListener { finish() }
+                    background = roundedBackground(SURFACE, 12, BORDER)
+                    setOnClickListener { onBackPressed() }
                 },
-                LinearLayout.LayoutParams(
-                    dp(46),
-                    dp(46)
-                )
+                LinearLayout.LayoutParams(dp(46), dp(46))
             )
 
             addView(
                 TextView(this@ServiceActivity).apply {
-                    text = "Сервіс"
-                    textSize = 22f
+                    text = title
+                    textSize = 21f
                     setTextColor(Color.WHITE)
                     setTypeface(typeface, Typeface.BOLD)
-                    setPadding(dp(14), 0, 0, 0)
+                    setPadding(dp(14), 0, dp(4), 0)
+                    maxLines = 1
                 },
-                LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
+                LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             )
         }
 
-    private fun statusCard(
-        cacheEntries: Int,
-        searchCalls: Int,
-        searchLimit: Int
+    private fun quickStep(
+        parent: LinearLayout,
+        number: String,
+        title: String,
+        body: String
+    ) {
+        parent.addView(
+            infoCard(
+                title = "$number. $title",
+                body = body
+            )
+        )
+    }
+
+    private fun infoCard(
+        title: String,
+        body: String
     ): LinearLayout =
         LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(
-                dp(16),
-                dp(14),
-                dp(16),
-                dp(14)
-            )
-            background = roundedBackground(
-                color = SURFACE,
-                radiusDp = 16,
-                strokeColor = BORDER
-            )
+            setPadding(dp(16), dp(14), dp(16), dp(14))
+            background = roundedBackground(SURFACE, 16, BORDER)
+            layoutParams =
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(8) }
 
             addView(
                 TextView(this@ServiceActivity).apply {
-                    text = "Стан"
+                    text = title
                     textSize = 16f
                     setTextColor(Color.WHITE)
                     setTypeface(typeface, Typeface.BOLD)
+                    setLineSpacing(0f, 1.04f)
                 }
             )
-
             addView(
                 TextView(this@ServiceActivity).apply {
-                    text =
-                        "Cache: $cacheEntries активних записів  •  " +
-                            "Search quota: $searchCalls/$searchLimit"
-                    textSize = 13f
+                    text = body
+                    textSize = 13.5f
                     setTextColor(MUTED)
-                    setPadding(0, dp(6), 0, 0)
+                    setPadding(0, dp(7), 0, 0)
+                    setLineSpacing(0f, 1.12f)
+                    setTextIsSelectable(true)
                 }
             )
         }
 
-    private fun sectionTitle(
-        value: String
-    ): TextView =
+    private fun sectionTitle(value: String): TextView =
         TextView(this).apply {
             text = value
             textSize = 13f
             setTextColor(MUTED)
             setTypeface(typeface, Typeface.BOLD)
-            setPadding(
-                dp(4),
-                dp(14),
-                0,
-                dp(7)
-            )
+            setPadding(dp(4), dp(14), 0, dp(7))
         }
 
     private fun serviceCard(
         title: String,
         subtitle: String,
-        action: String
+        action: () -> Unit
     ): LinearLayout =
         LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(
-                dp(16),
-                dp(13),
-                dp(12),
-                dp(13)
-            )
-            background = roundedBackground(
-                color = ROW_SURFACE,
-                radiusDp = 14,
-                strokeColor = BORDER
-            )
+            setPadding(dp(16), dp(13), dp(12), dp(13))
+            background = roundedBackground(ROW_SURFACE, 14, BORDER)
             isClickable = true
             isFocusable = true
-            setOnClickListener {
-                returnAction(action)
+            setOnClickListener { action() }
+            layoutParams =
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(8) }
+
+            val textColumn = LinearLayout(this@ServiceActivity).apply {
+                orientation = LinearLayout.VERTICAL
             }
-
-            val textColumn =
-                LinearLayout(this@ServiceActivity).apply {
-                    orientation = LinearLayout.VERTICAL
-                }
-
             textColumn.addView(
                 TextView(this@ServiceActivity).apply {
                     text = title
@@ -295,7 +593,6 @@ class ServiceActivity : Activity() {
                     maxLines = 2
                 }
             )
-
             textColumn.addView(
                 TextView(this@ServiceActivity).apply {
                     text = subtitle
@@ -305,16 +602,10 @@ class ServiceActivity : Activity() {
                     maxLines = 3
                 }
             )
-
             addView(
                 textColumn,
-                LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
+                LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             )
-
             addView(
                 TextView(this@ServiceActivity).apply {
                     text = "›"
@@ -322,33 +613,195 @@ class ServiceActivity : Activity() {
                     setTextColor(MUTED)
                     gravity = Gravity.CENTER
                 },
-                LinearLayout.LayoutParams(
-                    dp(28),
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
+                LinearLayout.LayoutParams(dp(28), ViewGroup.LayoutParams.MATCH_PARENT)
             )
+        }
 
+    private fun fullActionButton(
+        label: String,
+        danger: Boolean = false,
+        action: () -> Unit
+    ): Button =
+        Button(this).apply {
+            text = label
+            isAllCaps = false
+            minHeight = dp(56)
+            minimumHeight = dp(56)
+            maxLines = 2
+            setPadding(dp(16), dp(10), dp(16), dp(10))
+            setTextColor(
+                if (danger) Color.rgb(255, 100, 115) else Color.WHITE
+            )
+            background = roundedBackground(ROW_SURFACE, 13, BORDER)
+            UiChrome.autoSizeButton(this, 11, 15)
+            setOnClickListener { action() }
             layoutParams =
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin = dp(8)
-                }
+                ).apply { bottomMargin = dp(8) }
         }
 
-    private fun returnAction(
-        action: String
-    ) {
-        setResult(
-            RESULT_OK,
-            Intent().putExtra(
-                EXTRA_ACTION,
-                action
+    private fun confirmClearSearchCache() {
+        UiChrome.alertBuilder(this)
+            .setTitle("Очистити весь SearchCache?")
+            .setMessage(
+                "Усі кешовані результати пошуку буде видалено.\n\n" +
+                    "History і плейлисти не зміняться, але наступний пошук " +
+                    "цих треків знову звернеться до YouTube API."
             )
-        )
-        finish()
+            .setNegativeButton("Скасувати", null)
+            .setPositiveButton("Очистити") { _, _ ->
+                val before = searchCache.stats().totalEntries
+                searchCache.clear()
+                toast("SearchCache очищено: $before записів")
+                buildUi()
+            }
+            .show()
     }
+
+    private fun saveDiagnostics() {
+        pendingExportContent = buildDiagnosticsText()
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "text/plain"
+            putExtra(
+                Intent.EXTRA_TITLE,
+                "YTM_Diagnostics_${exportTimestamp()}.txt"
+            )
+        }
+        startActivityForResult(intent, saveDiagnosticsRequestCode)
+    }
+
+    private fun writeDiagnostics(uri: Uri) {
+        val content = pendingExportContent ?: return
+        runCatching {
+            contentResolver.openOutputStream(uri, "w")
+                ?.bufferedWriter(Charsets.UTF_8)
+                ?.use { it.write(content) }
+                ?: error("Android не відкрив файл для запису")
+        }.onSuccess {
+            toast("Diagnostics TXT збережено")
+        }.onFailure { error ->
+            toast("Помилка запису: ${error.message ?: "невідома помилка"}")
+        }
+        pendingExportContent = null
+    }
+
+    private fun shareDiagnostics() {
+        val fileName = "YTM_Diagnostics_${exportTimestamp()}.txt"
+        runCatching {
+            val directory = File(cacheDir, "shared_exports").apply { mkdirs() }
+            val file = File(directory, fileName).apply {
+                writeText(buildDiagnosticsText(), Charsets.UTF_8)
+            }
+            val uri = FileProvider.getUriForFile(
+                this,
+                "$packageName.fileprovider",
+                file
+            )
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                clipData = ClipData.newRawUri(fileName, uri)
+            }
+            startActivity(
+                Intent.createChooser(
+                    intent,
+                    "Поділитися YTM Diagnostics"
+                )
+            )
+        }.onFailure { error ->
+            toast("Не вдалося поділитися: ${error.message ?: "невідома помилка"}")
+        }
+    }
+
+    private fun buildDiagnosticsText(): String {
+        val quota = quotaTracker.snapshot()
+        val cache = searchCache.stats()
+        val history = historyStore.getAll()
+        val pending = pendingJobStore.getAll()
+        val playlist = currentPlaylistStore.load()?.playlist
+        val tracks = playlist?.tracks.orEmpty()
+
+        return buildString {
+            append("YTM Importer — Diagnostics\n")
+            append("Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n")
+            append("Package: $packageName\n")
+            append("Android: ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})\n")
+            append("Device: ${Build.MANUFACTURER} ${Build.MODEL}\n")
+            append("Generated: ${formatDate(System.currentTimeMillis())}\n\n")
+
+            append("ACCOUNT\n")
+            append("Google: ${if (intent.getBooleanExtra(EXTRA_GOOGLE_CONNECTED, false)) "connected" else "not connected"}\n")
+            append("Google email: ${intent.getStringExtra(EXTRA_GOOGLE_EMAIL) ?: "—"}\n")
+            append("YouTube/YTM channel: ${intent.getStringExtra(EXTRA_CHANNEL_TITLE) ?: "not loaded"}\n")
+            append("Channel ID: ${intent.getStringExtra(EXTRA_CHANNEL_ID) ?: "—"}\n\n")
+
+            append("CURRENT IMPORT\n")
+            append("Playlist: ${playlist?.name ?: "none"}\n")
+            append("Tracks: ${tracks.size}\n")
+            TrackStatus.entries.forEach { status ->
+                val count = tracks.count { it.status == status }
+                if (count > 0) append("${status.name}: $count\n")
+            }
+            append("\n")
+
+            append("QUOTA — local estimate\n")
+            append("Day: ${quota.dayKey} Pacific Time\n")
+            append("Search: ${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT} (remaining ≈${quota.searchRemaining})\n")
+            append("General: ${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT} (remaining ≈${quota.generalRemaining})\n")
+            append("Cache hits today: ${quota.cacheHits}\n\n")
+
+            append("SEARCH CACHE\n")
+            append("Total entries: ${cache.totalEntries}\n")
+            append("Valid: ${cache.validEntries}\n")
+            append("Expired: ${cache.expiredEntries}\n")
+            append("Malformed: ${cache.malformedEntries}\n")
+            append("Approx size: ${formatBytes(cache.approximateBytes)}\n")
+            append("Oldest: ${formatNullableDate(cache.oldestCachedAt)}\n")
+            append("Newest: ${formatNullableDate(cache.newestCachedAt)}\n\n")
+
+            append("LOCAL DATA\n")
+            append("History entries: ${history.size}\n")
+            append("Pending jobs: ${pending.size}\n")
+            append("History JSON size: ${formatBytes(historyStore.exportJson().toByteArray(Charsets.UTF_8).size.toLong())}\n")
+            append("Pending JSON size: ${formatBytes(pendingJobStore.exportJson().toByteArray(Charsets.UTF_8).size.toLong())}\n\n")
+
+            append("PRIVACY\n")
+            append("Diagnostics does not contain OAuth access token, Google password or signing keys.\n")
+            append("Email and Channel ID are masked.")
+        }
+    }
+
+    private fun openGoogleCloudQuota() {
+        val url =
+            "https://console.cloud.google.com/apis/api/" +
+                "youtube.googleapis.com/quotas"
+        runCatching {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }.onFailure {
+            toast("Не вдалося відкрити Google Cloud Console")
+        }
+    }
+
+    private fun exportTimestamp(): String =
+        SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+
+    private fun formatDate(timestamp: Long): String =
+        SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+            .format(Date(timestamp))
+
+    private fun formatNullableDate(timestamp: Long?): String =
+        if (timestamp == null || timestamp <= 0L) "—" else formatDate(timestamp)
+
+    private fun formatBytes(bytes: Long): String =
+        when {
+            bytes < 1024L -> "$bytes B"
+            bytes < 1024L * 1024L -> String.format(Locale.US, "%.1f KB", bytes / 1024.0)
+            else -> String.format(Locale.US, "%.2f MB", bytes / (1024.0 * 1024.0))
+        }
 
     private fun roundedBackground(
         color: Int,
@@ -359,64 +812,37 @@ class ServiceActivity : Activity() {
             shape = GradientDrawable.RECTANGLE
             cornerRadius = dp(radiusDp).toFloat()
             setColor(color)
-
-            if (strokeColor != null) {
-                setStroke(
-                    dp(1),
-                    strokeColor
-                )
-            }
+            if (strokeColor != null) setStroke(dp(1), strokeColor)
         }
 
-    private fun dp(
-        value: Int
-    ): Int =
-        (
-            value *
-                resources.displayMetrics.density
-        ).toInt()
+    private fun toast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun dp(value: Int): Int =
+        (value * resources.displayMetrics.density).toInt()
+
+    private enum class Page {
+        HOME,
+        QUICK_START,
+        PRIVACY,
+        DIAGNOSTICS,
+        SEARCH_CACHE,
+        ABOUT
+    }
 
     companion object {
-        const val EXTRA_ACTION =
-            "service_action"
+        const val EXTRA_GOOGLE_CONNECTED = "service_google_connected"
+        const val EXTRA_GOOGLE_EMAIL = "service_google_email"
+        const val EXTRA_CHANNEL_TITLE = "service_channel_title"
+        const val EXTRA_CHANNEL_ID = "service_channel_id"
 
-        const val ACTION_QUICK_START =
-            "quick_start"
+        private const val KEY_PAGE = "service_page"
 
-        const val ACTION_PRIVACY =
-            "privacy"
-
-        const val ACTION_DIAGNOSTICS =
-            "diagnostics"
-
-        const val ACTION_SHARE_DIAGNOSTICS =
-            "share_diagnostics"
-
-        const val ACTION_SAVE_DIAGNOSTICS =
-            "save_diagnostics"
-
-        const val ACTION_SEARCH_CACHE =
-            "search_cache"
-
-        const val ACTION_GOOGLE_CLOUD =
-            "google_cloud"
-
-        const val ACTION_ABOUT =
-            "about"
-
-        private val BACKGROUND =
-            Color.rgb(15, 16, 19)
-
-        private val SURFACE =
-            Color.rgb(25, 27, 32)
-
-        private val ROW_SURFACE =
-            Color.rgb(31, 33, 39)
-
-        private val BORDER =
-            Color.rgb(48, 51, 59)
-
-        private val MUTED =
-            Color.rgb(165, 167, 173)
+        private val BACKGROUND = Color.rgb(15, 16, 19)
+        private val SURFACE = Color.rgb(25, 27, 32)
+        private val ROW_SURFACE = Color.rgb(31, 33, 39)
+        private val BORDER = Color.rgb(48, 51, 59)
+        private val MUTED = Color.rgb(165, 167, 173)
     }
 }

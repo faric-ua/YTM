@@ -22,8 +22,9 @@ grep -q 'trailingTextAction' "$UI" \
 grep -q 'ServiceActivity::class.java' "$MAIN" \
   || fail "Main does not open ServiceActivity"
 
-grep -q 'handleServiceResult' "$MAIN" \
-  || fail "Service result handler missing"
+if grep -q 'handleServiceResult' "$MAIN"; then
+  fail "Service still returns actions to Main instead of keeping its own navigation"
+fi
 
 grep -q 'android:name=".ServiceActivity"' "$MANIFEST" \
   || fail "ServiceActivity missing from manifest"
@@ -31,8 +32,11 @@ grep -q 'android:name=".ServiceActivity"' "$MANIFEST" \
 grep -q 'Cache:' "$SERVICE" \
   || fail "Service status summary missing"
 
-grep -q 'Поділитися Diagnostics TXT' "$SERVICE" \
-  || fail "Service diagnostics action missing"
+grep -q 'private fun buildDiagnostics' "$SERVICE" \
+  || fail "Service diagnostics detail screen missing"
+
+grep -q 'private fun buildAbout' "$SERVICE" \
+  || fail "Service About detail screen missing"
 
 grep -q 'TikTok список' "$MAIN" \
   || fail "replacement log action label not clarified"
@@ -49,5 +53,5 @@ grep -A12 'private fun showServiceTools()' "$MAIN" | grep -q 'ServiceActivity::c
 echo 'PASS:'
 echo '- three-action dialogs use two boxed actions + flat trailing close/back'
 echo '- two-action confirmation dialogs remain compact text confirmations'
-echo '- Service is a dedicated styled screen'
+echo '- Service keeps nested navigation inside ServiceActivity'
 echo '- replacement-log action labels are explicit'

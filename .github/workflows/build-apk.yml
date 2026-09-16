@@ -116,8 +116,8 @@ jobs:
 
       - name: Prepare APK
         run: |
-          cp app/build/outputs/apk/release/app-release.apk YTM-Importer-v1.4.6-release.apk
-          ls -lh YTM-Importer-v1.4.6-release.apk
+          cp app/build/outputs/apk/release/app-release.apk YTM-Importer-v1.4.7-release.apk
+          ls -lh YTM-Importer-v1.4.7-release.apk
 
       - name: Verify signed APK
         shell: bash
@@ -128,7 +128,7 @@ jobs:
           APKSIGNER="$BUILD_TOOLS/apksigner"
           ZIPALIGN="$BUILD_TOOLS/zipalign"
           AAPT="$BUILD_TOOLS/aapt"
-          APK="YTM-Importer-v1.4.6-release.apk"
+          APK="YTM-Importer-v1.4.7-release.apk"
 
           test -x "$APKSIGNER"
           test -x "$ZIPALIGN"
@@ -151,7 +151,7 @@ jobs:
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: YTM-Importer-v1.4.6-Release
+          name: YTM-Importer-v1.4.7-Release
           path: |
-            YTM-Importer-v1.4.6-release.apk
-            YTM-Importer-v1.4.6-release.apk.sha256
+            YTM-Importer-v1.4.7-release.apk
+            YTM-Importer-v1.4.7-release.apk.sha256

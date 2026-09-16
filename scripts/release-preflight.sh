@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.6/RELEASE.md"
-check_file "docs/v.1.4.6/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.7/RELEASE.md"
+check_file "docs/v.1.4.7/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -34,6 +34,7 @@ check_file "scripts/dialog-style-audit.sh"
 check_file "scripts/button-layout-audit.sh"
 check_file "scripts/compact-review-audit.sh"
 check_file "scripts/action-hierarchy-audit.sh"
+check_file "scripts/service-navigation-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt"
 
 bash scripts/mainactivity-audit.sh
@@ -42,6 +43,7 @@ bash scripts/dialog-style-audit.sh
 bash scripts/button-layout-audit.sh
 bash scripts/compact-review-audit.sh
 bash scripts/action-hierarchy-audit.sh
+bash scripts/service-navigation-audit.sh
 check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 check_file "OPEN_QUESTIONS.md"
 
@@ -159,11 +161,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 40' app/build.gradle.kts \
-  || fail "Expected versionCode = 40"
+grep -q 'versionCode = 41' app/build.gradle.kts \
+  || fail "Expected versionCode = 41"
 
-grep -q 'versionName = "1.4.6"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.6"'
+grep -q 'versionName = "1.4.7"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.7"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -271,3 +273,7 @@ echo "- playlist-based Project filename"
 
 echo "- dialog action hierarchy standardized"
 echo "- Service moved to dedicated styled screen"
+
+echo "- Service nested navigation stays in ServiceActivity"
+echo "- structured problem-track tiles"
+echo "- Service diagnostics/about/searchcache structured screens"

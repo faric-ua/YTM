@@ -1,23 +1,27 @@
 # YTM Importer — Roadmap
 
 ## Current
-**v1.4.6 — Action Hierarchy + Service Screen**
+**v1.4.7 — Service Navigation + Structured Info UI**
 
-## Open question carried forward
+## Open question
 - [~] Q-001 remains OPEN — revisit later.
 
-## v1.4.6
-- [x] define confirmation vs action-menu button hierarchy;
-- [x] fix cramped three-action dialog rows;
-- [x] replacement log uses explicit action labels;
-- [x] move Service from popup to dedicated screen;
-- [x] add service result contract;
-- [x] add action-hierarchy audit;
+## v1.4.7
+- [x] problem tracks as record cards;
+- [x] stacked TikTok / Full text actions;
+- [x] stable Service internal navigation;
+- [x] structured Quick Start page;
+- [x] structured Privacy page;
+- [x] structured Diagnostics page;
+- [x] structured SearchCache page;
+- [x] structured About page;
+- [x] local Diagnostics save/share inside Service;
+- [x] service navigation audit;
 - [ ] GitHub build;
 - [ ] phone regression.
 
 ## Next
-- [ ] cleanup wave 2 for old Import/History/Data/Pending dialog paths;
+- [ ] cleanup wave 2: old Import/History/Data/Pending dialog paths;
+- [ ] remove dead Service popup code from MainActivity after regression;
 - [ ] reduce MainActivity further;
-- [ ] accessibility pass;
-- [ ] final visual consistency pass.
+- [ ] accessibility pass.

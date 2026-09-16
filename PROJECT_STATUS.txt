@@ -1,16 +1,16 @@
 YTM Importer
-Version: 1.4.6
-Version code: 40
+Version: 1.4.7
+Version code: 41
 Package: com.saney.ytmimporter
 
 Stage:
-Dialog action hierarchy + Service screen
+Service navigation + structured information UI
 
-Rules:
-- confirmation: flat Cancel / Confirm
-- 3-action detail: two boxed + flat Close/Back
-- quota: Google Cloud primary-top layout
-- long service menu: dedicated Activity
+Fixed:
+- Service submenu returning to Main
+- dense replacement/problem log
+- monolithic Diagnostics/SearchCache/About popup content
+- uneven problem-log action hierarchy
 
 Open:
 Q-001 remains OPEN.

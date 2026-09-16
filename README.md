@@ -1,9 +1,9 @@
-# YTM Importer v1.4.6
+# YTM Importer v1.4.7
 
-Action hierarchy and Service screen release.
+Service navigation and structured information UI release.
 
 Highlights:
-- two-action confirmations stay compact text actions;
-- three-action detail dialogs use two boxed actions + flat Close/Back;
-- Service is now a dedicated styled screen;
-- Q-001 remains open.
+- record-card problem log;
+- stable Service back stack;
+- structured Diagnostics/SearchCache/About pages;
+- reusable UiChrome record-dialog template.

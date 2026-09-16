@@ -95,7 +95,6 @@ class MainActivity : Activity() {
     private val importScreenRequestCode = 1301
     private val reviewScreenRequestCode = 1302
     private val destinationScreenRequestCode = 1401
-    private val serviceScreenRequestCode = 1501
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
@@ -1144,10 +1143,6 @@ class MainActivity : Activity() {
 
             destinationScreenRequestCode -> {
                 handleDestinationResult(data)
-            }
-
-            serviceScreenRequestCode -> {
-                handleServiceResult(data)
             }
 
             authRequestCode -> {
@@ -3245,47 +3240,29 @@ class MainActivity : Activity() {
     }
 
     private fun showServiceTools() {
-        startActivityForResult(
+        startActivity(
             Intent(
                 this,
                 ServiceActivity::class.java
-            ),
-            serviceScreenRequestCode
+            ).apply {
+                putExtra(
+                    ServiceActivity.EXTRA_GOOGLE_CONNECTED,
+                    !accessToken.isNullOrBlank()
+                )
+                putExtra(
+                    ServiceActivity.EXTRA_GOOGLE_EMAIL,
+                    maskedEmail(googleAccountInfo?.email)
+                )
+                putExtra(
+                    ServiceActivity.EXTRA_CHANNEL_TITLE,
+                    youtubeChannelInfo?.title
+                )
+                putExtra(
+                    ServiceActivity.EXTRA_CHANNEL_ID,
+                    maskedIdentifier(youtubeChannelInfo?.id)
+                )
+            }
         )
-    }
-
-    private fun handleServiceResult(
-        data: Intent
-    ) {
-        when (
-            data.getStringExtra(
-                ServiceActivity.EXTRA_ACTION
-            )
-        ) {
-            ServiceActivity.ACTION_QUICK_START ->
-                showQuickStartDialog()
-
-            ServiceActivity.ACTION_PRIVACY ->
-                showPrivacyDialog()
-
-            ServiceActivity.ACTION_DIAGNOSTICS ->
-                showDiagnostics()
-
-            ServiceActivity.ACTION_SHARE_DIAGNOSTICS ->
-                shareDiagnostics()
-
-            ServiceActivity.ACTION_SAVE_DIAGNOSTICS ->
-                saveDiagnostics()
-
-            ServiceActivity.ACTION_SEARCH_CACHE ->
-                showSearchCacheTools()
-
-            ServiceActivity.ACTION_GOOGLE_CLOUD ->
-                openGoogleCloudQuota()
-
-            ServiceActivity.ACTION_ABOUT ->
-                showAboutDialog()
-        }
     }
 
     private fun showAboutDialog() {
@@ -5391,10 +5368,26 @@ class MainActivity : Activity() {
         val shortText = buildShortReplacementText(problemTracks)
         val fullText = buildFullReplacementText(problemTracks)
 
-        UiChrome.showMessageDialog(
+        UiChrome.showRecordDialog(
             activity = this,
             title = "Заміни / проблемні треки: ${problemTracks.size}",
-            message = shortText,
+            subtitle = "Кожна позиція показана окремою плиткою.",
+            records =
+                problemTracks.mapIndexed { index, track ->
+                    UiChrome.DialogRecord(
+                        title =
+                            "${index + 1}. " +
+                                "${track.originalArtist} — ${track.originalTitle}",
+                        detail =
+                            replacementRecordLabel(track),
+                        tone =
+                            if (track.manuallySelected) {
+                                UiChrome.ActionTone.ACCENT
+                            } else {
+                                UiChrome.ActionTone.NORMAL
+                            }
+                    )
+                },
             actions = listOf(
                 UiChrome.DialogAction("TikTok список") {
                     copyText(
@@ -5414,9 +5407,46 @@ class MainActivity : Activity() {
                     label = "Закрити",
                     tone = UiChrome.ActionTone.ACCENT
                 ) {}
-            )
+            ),
+            actionLayout =
+                UiChrome.DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
         )
     }
+
+    private fun replacementRecordLabel(track: Track): String =
+        when {
+            track.manuallySelected &&
+                !track.selectedTitle.isNullOrBlank() ->
+                buildString {
+                    append("Ручний вибір: ")
+                    append(track.selectedTitle)
+                    if (!track.selectedChannel.isNullOrBlank()) {
+                        append(" • ")
+                        append(track.selectedChannel)
+                    }
+                }
+
+            track.status == TrackStatus.SKIPPED ->
+                "Пропущено"
+
+            track.status == TrackStatus.DUPLICATE ->
+                "Дублікат у цільовому плейлисті"
+
+            track.status == TrackStatus.MISSING ->
+                "Не знайдено"
+
+            track.status == TrackStatus.PENDING ->
+                "Очікує в Pending Queue"
+
+            track.status == TrackStatus.FAILED ->
+                track.error
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { "Помилка: $it" }
+                    ?: "Помилка"
+
+            else ->
+                replacementLabel(track)
+        }
 
     private fun buildShortReplacementText(tracks: List<Track>): String =
         buildString {

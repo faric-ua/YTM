@@ -35,8 +35,15 @@ object UiChrome {
 
     enum class DialogActionLayout {
         AUTO,
-        PRIMARY_TOP
+        PRIMARY_TOP,
+        VERTICAL_WITH_TEXT_CLOSE
     }
+
+    data class DialogRecord(
+        val title: String,
+        val detail: String,
+        val tone: ActionTone = ActionTone.NORMAL
+    )
 
     data class DialogAction(
         val label: String,
@@ -145,6 +152,65 @@ object UiChrome {
         )
     }
 
+    fun showRecordDialog(
+        activity: Activity,
+        title: String,
+        records: List<DialogRecord>,
+        actions: List<DialogAction>,
+        subtitle: String? = null,
+        actionLayout: DialogActionLayout = DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
+    ) {
+        val dialog = alertBuilder(activity).create()
+        val card = dialogCard(activity)
+
+        addDialogHeader(
+            activity = activity,
+            card = card,
+            title = title,
+            subtitle = subtitle
+        )
+
+        records.forEachIndexed { index, record ->
+            card.addView(
+                recordCard(
+                    activity = activity,
+                    record = record
+                ),
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    if (index > 0) {
+                        topMargin = dp(activity, 8)
+                    }
+                }
+            )
+        }
+
+        if (records.isNotEmpty()) {
+            card.addView(
+                SpaceView(
+                    activity,
+                    dp(activity, 14)
+                )
+            )
+        }
+
+        addDialogActions(
+            activity = activity,
+            dialog = dialog,
+            card = card,
+            actions = actions,
+            actionLayout = actionLayout
+        )
+
+        showCustomDialog(
+            activity = activity,
+            dialog = dialog,
+            card = card
+        )
+    }
+
     fun showMessageDialog(
         activity: Activity,
         title: String,
@@ -215,6 +281,66 @@ object UiChrome {
         actionLayout: DialogActionLayout
     ) {
         if (actions.isEmpty()) return
+
+        if (
+            actionLayout == DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE &&
+            actions.isNotEmpty()
+        ) {
+            val boxed =
+                if (
+                    actions.last().tone == ActionTone.ACCENT &&
+                    actions.last().label in setOf(
+                        "Закрити",
+                        "Назад",
+                        "Не зараз"
+                    )
+                ) {
+                    actions.dropLast(1)
+                } else {
+                    actions
+                }
+
+            boxed.forEachIndexed { index, action ->
+                card.addView(
+                    dialogActionButton(
+                        activity = activity,
+                        action = action
+                    ) {
+                        dialog.dismiss()
+                        action.onClick()
+                    },
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        if (index > 0) {
+                            topMargin = dp(activity, 8)
+                        }
+                    }
+                )
+            }
+
+            if (boxed.size != actions.size) {
+                val closeAction = actions.last()
+                card.addView(
+                    flatDialogActionButton(
+                        activity = activity,
+                        action = closeAction
+                    ) {
+                        dialog.dismiss()
+                        closeAction.onClick()
+                    },
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        topMargin = dp(activity, 6)
+                    }
+                )
+            }
+
+            return
+        }
 
         if (
             actionLayout == DialogActionLayout.PRIMARY_TOP &&
@@ -378,6 +504,52 @@ object UiChrome {
             )
         }
     }
+
+    private fun recordCard(
+        activity: Activity,
+        record: DialogRecord
+    ): LinearLayout =
+        LinearLayout(activity).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(
+                dp(context, 14),
+                dp(context, 12),
+                dp(context, 14),
+                dp(context, 12)
+            )
+            background = roundedBackground(
+                context = context,
+                color = ROW_SURFACE,
+                radiusDp = 13,
+                strokeColor = BORDER
+            )
+
+            addView(
+                TextView(activity).apply {
+                    text = record.title
+                    textSize = 14.5f
+                    setTypeface(typeface, Typeface.BOLD)
+                    setTextColor(
+                        when (record.tone) {
+                            ActionTone.NORMAL -> Color.WHITE
+                            ActionTone.ACCENT -> Color.rgb(110, 215, 145)
+                            ActionTone.DANGER -> Color.rgb(255, 120, 130)
+                        }
+                    )
+                    setLineSpacing(0f, 1.05f)
+                }
+            )
+
+            addView(
+                TextView(activity).apply {
+                    text = record.detail
+                    textSize = 13f
+                    setTextColor(MUTED)
+                    setPadding(0, dp(context, 5), 0, 0)
+                    setLineSpacing(0f, 1.08f)
+                }
+            )
+        }
 
     private fun dialogCard(
         activity: Activity

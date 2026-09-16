@@ -40,3 +40,7 @@ Compact Review and quota layout changed. Q-001 remains OPEN.
 ## v1.4.6 note
 
 Dialog hierarchy and Service screen were updated. Q-001 remains OPEN.
+
+## v1.4.7 note
+
+Service navigation and structured info pages were fixed. Q-001 remains OPEN.
