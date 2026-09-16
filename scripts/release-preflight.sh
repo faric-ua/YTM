@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.11/RELEASE.md"
-check_file "docs/v.1.4.11/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.12/RELEASE.md"
+check_file "docs/v.1.4.12/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -29,6 +29,7 @@ check_file "app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt"
 check_file "scripts/mainactivity-audit.sh"
+check_file "scripts/mainactivity-cleanup-audit.sh"
 check_file "scripts/ui-chrome-audit.sh"
 check_file "scripts/dialog-style-audit.sh"
 check_file "scripts/button-layout-audit.sh"
@@ -43,6 +44,7 @@ check_file "scripts/rotation-layout-audit.sh"
 check_file "scripts/dialog-animation-audit.sh"
 
 bash scripts/mainactivity-audit.sh
+bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/ui-chrome-audit.sh
 bash scripts/dialog-style-audit.sh
 bash scripts/button-layout-audit.sh
@@ -59,6 +61,18 @@ check_file "OPEN_QUESTIONS.md"
 grep -q 'android:name=".ImportActivity"' \
   app/src/main/AndroidManifest.xml \
   || fail "ImportActivity is missing from manifest"
+
+grep -q 'Intent(Intent.ACTION_OPEN_DOCUMENT)' \
+  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt \
+  || fail "ImportActivity ACTION_OPEN_DOCUMENT picker missing"
+
+grep -Fq 'type = "*/*"' \
+  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt \
+  || fail 'ImportActivity picker must keep type "*/*"'
+
+grep -q 'startActivityForResult(intent, fileRequestCode)' \
+  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt \
+  || fail "ImportActivity picker request path missing"
 
 grep -q 'android:name=".ReviewActivity"' \
   app/src/main/AndroidManifest.xml \
@@ -90,6 +104,9 @@ grep -q 'DUPLICATE_MODE_SKIP' \
 
 grep -q 'Q-001' OPEN_QUESTIONS.md \
   || fail "Deferred UX question Q-001 is not documented"
+
+grep -q 'Q-002' OPEN_QUESTIONS.md \
+  || fail "Deferred dialog-motion issue Q-002 is not documented"
 
 grep -q 'ImportActivity::class.java' \
   app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
@@ -170,11 +187,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 45' app/build.gradle.kts \
-  || fail "Expected versionCode = 45"
+grep -q 'versionCode = 46' app/build.gradle.kts \
+  || fail "Expected versionCode = 46"
 
-grep -q 'versionName = "1.4.11"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.11"'
+grep -q 'versionName = "1.4.12"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.12"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -205,9 +222,13 @@ grep -q 'Locate Android SDK' .github/workflows/build-apk.yml \
   || fail "Android SDK locator hotfix is missing"
 
 
-grep -Fq '"«Повний backup», а не History JSON.\n" +' \
-  app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
-  || fail "Data dialog string guard failed"
+grep -q 'title = "Повний backup"' \
+  app/src/main/java/com/saney/ytmimporter/DataActivity.kt \
+  || fail "Dedicated DataActivity full-backup UI is missing"
+
+grep -q 'secondLabel = "History JSON"' \
+  app/src/main/java/com/saney/ytmimporter/DataActivity.kt \
+  || fail "Dedicated DataActivity History JSON action is missing"
 
 grep -q 'uses:[[:space:]]*actions/setup-java@v5' \
   .github/workflows/build-apk.yml \
@@ -302,3 +323,8 @@ echo "- custom dialogs are top anchored without center-to-top relayout"
 
 echo "- custom AlertDialog WindowManager animation disabled"
 echo "- first visible custom-dialog frame should remain at the final TOP anchor"
+
+echo "- Cleanup wave 2: legacy MainActivity UI flows removed"
+echo "- dedicated Import/Review/History/Data/Pending/Service screens retained"
+echo "- original permissive file picker retained in ImportActivity"
+echo "- Q-002 dialog motion deferred by user and not a release blocker"

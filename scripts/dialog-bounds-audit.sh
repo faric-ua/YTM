@@ -55,7 +55,7 @@ CUSTOM_CALLS="$(
   tr -d ' '
 )"
 
-[ "$CUSTOM_CALLS" -ge 10 ] \
+[ "$CUSTOM_CALLS" -ge 5 ] \
   || fail "unexpectedly few custom dialog call sites: $CUSTOM_CALLS"
 
 echo "PASS:"

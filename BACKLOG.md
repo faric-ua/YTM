@@ -1,21 +1,35 @@
 # YTM Importer — Roadmap
 
 ## Current
-**v1.4.11 — Custom Dialog Window Animation Fix**
+**v1.4.12 — Cleanup Wave 2**
 
-## Open question carried forward
-- [~] Q-001 remains OPEN — revisit later.
+## Deferred / open
+- [~] Q-001 — Review wording + Project-save feedback — OPEN.
+- [~] Q-002 — custom dialog entrance motion — DEFERRED BY USER; do not block roadmap.
 
-## v1.4.11
-- [x] inspect v1.4.10 phone video frame-by-frame;
-- [x] identify inherited AlertDialog Window animation;
-- [x] disable WindowManager animation for custom UiChrome dialogs;
-- [x] retain TOP anchor + safe insets;
-- [x] add dialog-animation audit;
+## v1.4.12
+- [x] remove legacy Import UI from MainActivity;
+- [x] remove legacy Review/candidate UI from MainActivity;
+- [x] remove legacy Pending detail UI from MainActivity;
+- [x] remove legacy History detail/action UI from MainActivity;
+- [x] remove legacy Data/export/backup/restore UI from MainActivity;
+- [x] remove legacy Service/Diagnostics/SearchCache UI from MainActivity;
+- [x] remove obsolete Main request codes/export state/LocalBackupManager;
+- [x] preserve original permissive file picker in ImportActivity;
+- [x] add MainActivity cleanup audit;
 - [ ] GitHub build;
-- [ ] repeated phone/video regression.
+- [ ] phone regression.
 
-## Next — cleanup wave 2
-- [ ] remove unreachable legacy Import/History/Data/Pending paths;
-- [ ] reduce MainActivity further;
-- [ ] dead-code audit.
+## Cleanup Wave 3
+Do only one extraction at a time:
+- [ ] extract search orchestration into `SearchCoordinator`, or
+- [ ] extract playlist write execution into `PlaylistWriteCoordinator`.
+
+Preferred next target: **SearchCoordinator** because it has a smaller blast
+radius than the create/append write engine.
+
+## Later
+- [ ] extract auth presentation/orchestration;
+- [ ] extract destination/write coordinator;
+- [ ] reduce MainActivity toward Home + navigation + result bridges;
+- [ ] public-release regression with the 50-track Clubland set.

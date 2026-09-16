@@ -1,22 +1,40 @@
 YTM Importer
-Version: 1.4.11
-Version code: 45
+Version: 1.4.12
+Version code: 46
 Package: com.saney.ytmimporter
 
 Stage:
-Custom-dialog Window animation stabilization
+Cleanup Wave 2 — MainActivity legacy-flow removal
 
-Video diagnosis:
-- card layout already TOP anchored
-- remaining movement was whole AlertDialog Window animation
+MainActivity:
+before: 5668 lines
+after:  3689 lines
+removed: 1979 lines (34.9%)
 
-Fixed:
-- WindowManager dialog animations disabled for UiChrome custom dialogs
-- TOP anchor/safe insets/scrolling retained
+Dedicated UI owners:
+- ImportActivity
+- ReviewActivity
+- DestinationActivity
+- PendingActivity
+- HistoryActivity
+- DataActivity
+- ServiceActivity
 
-Added:
-- scripts/dialog-animation-audit.sh
-- docs/v.1.4.11/
+MainActivity still owns:
+- Home/navigation
+- OAuth bridge
+- search orchestration
+- destination bridge
+- YouTube write core
+- Pending resume
+- quota handling
+- History sync
+- manual URL canonical application
+- result/replacement entry points
 
-Open:
-Q-001 remains OPEN.
+Deferred:
+- Q-001 OPEN
+- Q-002 custom-dialog entrance motion DEFERRED BY USER
+
+Next:
+Cleanup Wave 3 — extract one core coordinator from MainActivity.

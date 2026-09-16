@@ -92,3 +92,5 @@ docs/v.0.8.0/diagrams/
 - `TERMINAL_APPLY_v1.4.10.md` — rotation layout + stable dialog anchor
 
 - `TERMINAL_APPLY_v1.4.11.md` — disable custom dialog WindowManager animation
+
+- `TERMINAL_APPLY_v1.4.12.md` — Cleanup Wave 2 / legacy MainActivity flow removal

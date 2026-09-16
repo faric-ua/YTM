@@ -10,7 +10,7 @@ grep -A20 'val holder =' "$UI" | grep -q 'Gravity.TOP' || fail "dialog not TOP a
 grep -A12 'val outer =' "$UI" | grep -q 'alpha = 0f' || fail "provisional content visible"
 grep -A40 'setOnApplyWindowInsetsListener' "$UI" | grep -q 'view.alpha = 1f' || fail "dialog not revealed after insets"
 CUSTOM_CALLS="$(grep -R -h -E 'UiChrome\.show(Menu|Message|Record)Dialog\(' "$SRC" | wc -l | tr -d ' ')"
-[ "$CUSTOM_CALLS" -ge 10 ] || fail "unexpected custom-dialog coverage: $CUSTOM_CALLS"
+[ "$CUSTOM_CALLS" -ge 5 ] || fail "unexpected custom-dialog coverage: $CUSTOM_CALLS"
 echo "PASS:"
 echo "- custom dialog WindowManager animation disabled"
 echo "- no full-window translate/scale is expected on entry"

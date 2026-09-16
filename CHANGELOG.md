@@ -1,5 +1,21 @@
 # Журнал змін (Changelog)
 
+## v1.4.12
+- Cleanup Wave 2: removed obsolete duplicate UI flows from MainActivity.
+- MainActivity reduced from 5668 to 3689 lines
+  (1979 lines / 34.9% smaller).
+- Removed legacy Main import/file/text/project UI; ImportActivity remains owner.
+- Removed legacy Main candidate/manual-review dialogs; ReviewActivity remains owner.
+- Removed legacy Main Pending details; PendingActivity remains owner.
+- Removed legacy Main History details/actions; HistoryActivity remains owner.
+- Removed legacy Main Data/export/backup/restore flow; DataActivity remains owner.
+- Removed legacy Main Service/Diagnostics/SearchCache popup flow; ServiceActivity remains owner.
+- Removed obsolete Main request codes/export state/LocalBackupManager dependency.
+- Added `scripts/mainactivity-cleanup-audit.sh`.
+- Preserved permissive `ACTION_OPEN_DOCUMENT` file picker in ImportActivity.
+- Added Q-002 as DEFERRED by user; dialog motion is not a release blocker.
+- versionCode 46 / versionName 1.4.12.
+
 ## v1.4.11
 - Analyzed v1.4.10 phone video frame-by-frame.
 - Identified remaining dialog motion as AlertDialog Window animation.

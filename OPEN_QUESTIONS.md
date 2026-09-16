@@ -60,3 +60,29 @@ Step-button baseline alignment and custom-dialog top anchoring were fixed. Q-001
 ## v1.4.11 note
 
 Phone-video analysis identified the remaining custom-dialog movement as AlertDialog Window animation. It is disabled for UiChrome custom dialogs. Q-001 remains OPEN.
+
+## Q-002 — Custom dialog entrance motion on real device
+
+Status: **DEFERRED BY USER — does not block the roadmap.**
+
+Observed on the real phone through v1.4.11: some custom UiChrome dialogs can
+still show a short visual movement while opening instead of appearing
+immediately at the final top position.
+
+Attempts already made in v1.4.8–v1.4.11 included:
+
+- safe system-bar/display-cutout viewport;
+- hiding the provisional frame;
+- `Gravity.TOP`;
+- disabling the custom dialog Window animation.
+
+The user explicitly chose to stop spending time on this issue for now and
+continue with YTM development.
+
+Do not reopen or block a release on Q-002 unless the user explicitly asks to
+return to it.
+
+## v1.4.12 note
+
+Cleanup Wave 2 intentionally does not change UiChrome dialog positioning.
+Q-001 remains OPEN. Q-002 remains DEFERRED.
