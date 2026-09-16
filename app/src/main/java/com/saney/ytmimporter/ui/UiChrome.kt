@@ -633,20 +633,22 @@ object UiChrome {
 
         /*
          * Important:
-         * - short dialogs are vertically centered;
-         * - tall dialogs start at the safe top edge and scroll normally.
+         * custom dialogs are intentionally TOP anchored.
          *
-         * Putting the card itself in a centered ScrollView child can move the
-         * beginning of a tall dialog above the visible viewport. The holder
-         * only has extra height when the content is shorter than the viewport,
-         * so CENTER_VERTICAL is safe here.
+         * v1.4.9 hid the provisional frame until insets arrived, but a tall
+         * card could still visibly move after becoming visible because
+         * CENTER_VERTICAL depends on the final measured content height.
+         *
+         * TOP anchoring makes the card position independent of its measured
+         * height, so More / Quota / Problem Tracks and other custom dialogs
+         * do not appear centered first and then jump upward.
          */
         val holder =
             LinearLayout(activity).apply {
                 orientation =
                     LinearLayout.VERTICAL
                 gravity =
-                    Gravity.CENTER_VERTICAL
+                    Gravity.TOP
             }
 
         holder.addView(

@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.9/RELEASE.md"
-check_file "docs/v.1.4.9/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.10/RELEASE.md"
+check_file "docs/v.1.4.10/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -39,6 +39,7 @@ check_file "scripts/dialog-bounds-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt"
 check_file "scripts/configuration-state-audit.sh"
+check_file "scripts/rotation-layout-audit.sh"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/ui-chrome-audit.sh
@@ -49,6 +50,7 @@ bash scripts/action-hierarchy-audit.sh
 bash scripts/service-navigation-audit.sh
 bash scripts/dialog-bounds-audit.sh
 bash scripts/configuration-state-audit.sh
+bash scripts/rotation-layout-audit.sh
 check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 check_file "OPEN_QUESTIONS.md"
 
@@ -166,11 +168,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 43' app/build.gradle.kts \
-  || fail "Expected versionCode = 43"
+grep -q 'versionCode = 44' app/build.gradle.kts \
+  || fail "Expected versionCode = 44"
 
-grep -q 'versionName = "1.4.9"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.9"'
+grep -q 'versionName = "1.4.10"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.10"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -291,3 +293,7 @@ echo "- auth session survives rotation in process memory"
 echo "- OAuth token remains non-persistent"
 echo "- custom dialogs reveal only after final insets"
 echo "- no visible center-to-top dialog snap"
+
+echo "- horizontal action rows ignore child text baselines"
+echo "- Step 2 keeps the same vertical bounds after rotation"
+echo "- custom dialogs are top anchored without center-to-top relayout"

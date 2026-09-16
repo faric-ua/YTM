@@ -333,6 +333,8 @@ class MainActivity : Activity() {
 
         val utilityRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
+            isBaselineAligned = false
+            gravity = android.view.Gravity.CENTER_VERTICAL
             setPadding(dp(12), 0, dp(12), dp(8))
         }
 
@@ -450,6 +452,8 @@ class MainActivity : Activity() {
 
         val resultActions = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
+            isBaselineAligned = false
+            gravity = android.view.Gravity.CENTER_VERTICAL
         }
 
         val openResultButton =
@@ -613,6 +617,18 @@ class MainActivity : Activity() {
     ): LinearLayout =
         LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
+
+            /*
+             * Do not baseline-align sibling buttons.
+             *
+             * Step 2 can auto-size to a slightly different text size after
+             * restoring "2. Google / YTM ✓". A horizontal LinearLayout with
+             * baseline alignment enabled can then move one whole child down
+             * to align text baselines, visually clipping/offsetting the green
+             * button after configuration changes.
+             */
+            isBaselineAligned = false
+            gravity = android.view.Gravity.CENTER_VERTICAL
 
             addView(
                 first,

@@ -1,24 +1,27 @@
 # YTM Importer — Roadmap
 
 ## Current
-**v1.4.9 — Rotation Session + Stable Dialog First Frame**
+**v1.4.10 — Rotation Layout + Stable Dialog Anchor**
 
-## Open question
+## Open question carried forward
 - [~] Q-001 remains OPEN — revisit later.
 
-## v1.4.9
-- [x] retain Google/YTM session through Activity recreation;
-- [x] keep OAuth token memory-only;
-- [x] restore Step 2 after rotation;
-- [x] reload incomplete identity;
-- [x] hide provisional dialog frame;
-- [x] reveal after final safe insets;
-- [x] configuration-state audit;
-- [x] strengthened dialog-bounds audit;
+## v1.4.10
+- [x] diagnose Step 2 shift as LinearLayout baseline alignment;
+- [x] disable baseline alignment for Step rows;
+- [x] harden other horizontal action rows;
+- [x] diagnose remaining dialog movement as content-height centering;
+- [x] switch custom dialogs to stable TOP anchoring;
+- [x] keep safe system-bar/cutout/bottom insets;
+- [x] add rotation-layout audit;
+- [x] update dialog-bounds audit;
 - [ ] GitHub build;
-- [ ] portrait/landscape phone regression.
+- [ ] repeated portrait/landscape phone regression.
 
 ## Next — cleanup wave 2
-- [ ] remove unreachable legacy Import/History/Data/Pending paths;
+- [ ] remove unreachable legacy Import flow;
+- [ ] remove unreachable legacy History flow;
+- [ ] remove unreachable legacy Data/Backup flow;
+- [ ] remove obsolete Pending paths;
 - [ ] reduce MainActivity further;
 - [ ] dead-code audit.

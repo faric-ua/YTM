@@ -1,5 +1,8 @@
 # YTM Importer — Versioned documentation
 
-Current version: `docs/v.1.4.9/`
+Current version:
 
-v1.4.9 preserves Google/YTM session state across rotation and removes visible custom-dialog first-frame jumping.
+`docs/v.1.4.10/`
+
+v1.4.10 fixes Step-button baseline displacement and removes height-dependent
+vertical centering from custom dialogs.

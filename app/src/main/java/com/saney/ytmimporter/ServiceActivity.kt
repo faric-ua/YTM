@@ -476,6 +476,7 @@ class ServiceActivity : Activity() {
     private fun topBar(title: String): LinearLayout =
         LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
+            isBaselineAligned = false
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(10), dp(8), dp(10), dp(10))
 
@@ -569,6 +570,7 @@ class ServiceActivity : Activity() {
     ): LinearLayout =
         LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
+            isBaselineAligned = false
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(16), dp(13), dp(12), dp(13))
             background = roundedBackground(ROW_SURFACE, 14, BORDER)

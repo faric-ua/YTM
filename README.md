@@ -1,8 +1,10 @@
-# YTM Importer v1.4.9
+# YTM Importer v1.4.10
 
-Rotation/session and dialog first-frame stabilization release.
+Layout-stability release.
 
-- Account state survives rotation in process memory.
-- OAuth token remains non-persistent.
-- Custom dialogs no longer reveal their provisional position.
+Highlights:
+- Step 2 no longer shifts vertically after rotation;
+- horizontal action rows ignore child text baselines;
+- custom dialogs use one stable top anchor;
+- no height-dependent center-to-top dialog movement;
 - Q-001 remains open.

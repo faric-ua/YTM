@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.10
+- Fixed Step 2 vertical displacement after screen rotation.
+- Disabled baseline alignment in Step 1/2 and Step 3/4 button rows.
+- Hardened other horizontal action rows against auto-size baseline shifts.
+- Removed height-dependent vertical centering from custom dialogs.
+- All UiChrome custom dialogs are now TOP anchored.
+- Preserved safe system-bar/cutout/bottom insets and scrolling.
+- Added `scripts/rotation-layout-audit.sh`.
+- Updated `scripts/dialog-bounds-audit.sh`.
+- versionCode 44 / versionName 1.4.10.
+
 ## v1.4.9
 - Fixed Google/YTM Step 2 state loss after screen rotation.
 - Added process-memory-only AuthSessionStore.

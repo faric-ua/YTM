@@ -1,9 +1,18 @@
-# YTM Importer v1.4.9
+# YTM Importer v1.4.10
 
-## Rotation
-Step 2 Google/YTM більше не повинен втрачати підключення після повороту екрана. Для цього використовується лише memory-only AuthSessionStore.
+## Step 2
+Після повороту account state з v1.4.9 уже зберігався, але сама кнопка могла
+зміститись вниз. Причиною було стандартне baseline alignment horizontal
+LinearLayout + auto-size тексту.
 
-## Dialogs
-Custom dialogs приховані до отримання фінальних system-bar / cutout insets, тому перший видимий кадр уже має бути в правильній позиції.
+Тепер Step 1/2 та Step 3/4 вирівнюються по межах самих кнопок, а не по
+baseline тексту.
+
+## Custom dialogs
+`Ще` та інші custom dialogs більше не використовують вертикальне
+центрування, залежне від висоти контенту.
+
+Усі такі вікна TOP-anchored після safe top inset, тому не повинні спочатку
+з'являтися по центру, а потім стрибати вгору.
 
 Q-001 залишається OPEN.

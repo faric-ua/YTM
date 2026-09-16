@@ -1,13 +1,15 @@
-YTM Importer v1.4.9 FULL
+YTM Importer v1.4.10 FULL
 
 ADDED:
-app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
-scripts/configuration-state-audit.sh
-docs/v.1.4.9/
-TERMINAL_APPLY_v1.4.9.md
+scripts/rotation-layout-audit.sh
+docs/v.1.4.10/
+TERMINAL_APPLY_v1.4.10.md
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
+app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
+app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 app/build.gradle.kts
 scripts/dialog-bounds-audit.sh
@@ -26,5 +28,5 @@ DELETED:
 none
 
 VERSION:
-versionCode = 43
-versionName = 1.4.9
+versionCode = 44
+versionName = 1.4.10

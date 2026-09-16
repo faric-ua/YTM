@@ -11,9 +11,12 @@ SRC="app/src/main/java/com/saney/ytmimporter"
 
 test -f "$UI" || fail "UiChrome.kt missing"
 
-grep -q 'gravity =.*Gravity.CENTER_VERTICAL' "$UI" \
-  || grep -A6 'val holder' "$UI" | grep -q 'Gravity.CENTER_VERTICAL' \
-  || fail "safe dialog holder is not vertically centered for short dialogs"
+grep -A20 'val holder =' "$UI" | grep -q 'Gravity.TOP' \
+  || fail "custom dialog holder is not top anchored"
+
+if grep -A20 'val holder =' "$UI" | grep -q 'Gravity.CENTER_VERTICAL'; then
+  fail "height-dependent custom-dialog centering is still present"
+fi
 
 grep -q 'WindowCompat.setDecorFitsSystemWindows' "$UI" \
   || fail "dialog window does not opt into explicit inset handling"
@@ -54,7 +57,7 @@ CUSTOM_CALLS="$(
 echo "PASS:"
 echo "- custom dialog viewport handles system bars + display cutouts"
 echo "- tall custom dialogs start at the visible top and remain scrollable"
-echo "- short custom dialogs stay vertically centered"
+echo "- custom dialogs use one stable top anchor regardless of content height"
 echo "- provisional custom-dialog frame is hidden until final insets"
-echo "- visible center-to-top snap is guarded"
+echo "- visible center-to-top snap is removed at the layout source"
 echo "- shared fix covers $CUSTOM_CALLS Menu/Message/Record dialog call sites"

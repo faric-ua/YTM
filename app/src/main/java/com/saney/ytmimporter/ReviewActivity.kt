@@ -279,6 +279,8 @@ class ReviewActivity : Activity() {
         val projectRow =
             LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
+                isBaselineAligned = false
+                gravity = android.view.Gravity.CENTER_VERTICAL
                 setPadding(dp(12), 0, dp(12), dp(7))
             }
 
@@ -307,6 +309,8 @@ class ReviewActivity : Activity() {
         val filterRow =
             LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
+                isBaselineAligned = false
+                gravity = android.view.Gravity.CENTER_VERTICAL
                 setPadding(dp(12), 0, dp(12), dp(8))
             }
 

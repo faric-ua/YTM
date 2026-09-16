@@ -1,18 +1,28 @@
 YTM Importer
-Version: 1.4.9
-Version code: 43
+Version: 1.4.10
+Version code: 44
 Package: com.saney.ytmimporter
 
-Stage: rotation/session + dialog first-frame stabilization
+Stage:
+Rotation layout + custom-dialog anchor stabilization
 
 Fixed:
-- Step 2 account state after rotation
-- memory-only auth retention
-- partial identity reload
-- custom dialog center-to-top snap
+- Step 2 vertical shift after rotation
+- horizontal button baseline alignment issue
+- More/custom-dialog center-to-top movement
+- height-dependent custom-dialog positioning
 
-Privacy:
-- OAuth token not persisted to disk/backups/projects/SavedInstanceState
+Retained:
+- v1.4.9 process-memory Google/YTM session
+- safe system-bar/display-cutout dialog insets
+- top/bottom scrolling safety
 
-Open: Q-001 remains OPEN.
-Next: cleanup wave 2 after phone regression.
+Added:
+- scripts/rotation-layout-audit.sh
+- docs/v.1.4.10/
+
+Open:
+Q-001 remains OPEN.
+
+Next after phone regression:
+cleanup wave 2 / MainActivity reduction.
