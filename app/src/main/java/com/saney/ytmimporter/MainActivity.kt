@@ -37,45 +37,15 @@ import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.util.ErrorMessages
+import com.saney.ytmimporter.destination.DestinationCoordinator
 import com.saney.ytmimporter.search.SearchCoordinator
 import com.saney.ytmimporter.write.PlaylistWriteCoordinator
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
-import com.saney.ytmimporter.youtube.YouTubeApiException
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
 class MainActivity : Activity() {
-    private data class DuplicateAnalysis(
-        val alreadyInPlaylist: List<Track>,
-        val repeatedInImport: List<Track>,
-        val tracksToAdd: List<Track>
-    ) {
-        val tracksToSkip: List<Track>
-            get() = alreadyInPlaylist + repeatedInImport
-
-        val totalDuplicates: Int
-            get() = tracksToSkip.size
-    }
-
-    private data class DuplicateWritePlan(
-        val tracksToWrite: List<Track>,
-        val tracksToSkip: List<Track>,
-        val alreadyInPlaylistCount: Int,
-        val repeatedInImportCount: Int,
-        val scanRequestCount: Int,
-        val scanSucceeded: Boolean,
-        val addDuplicatesAnyway: Boolean
-    ) {
-        val duplicatesFound: Int
-            get() = alreadyInPlaylistCount + repeatedInImportCount
-
-        val savedWriteUnits: Int
-            get() =
-                tracksToSkip.size *
-                    QuotaTracker.PLAYLIST_ITEM_INSERT_COST
-    }
-
     private val pendingQueueRequestCode = 1201
     private val importScreenRequestCode = 1301
     private val reviewScreenRequestCode = 1302
@@ -85,6 +55,7 @@ class MainActivity : Activity() {
     private val api = YouTubeApi()
 
     private lateinit var searchCoordinator: SearchCoordinator
+    private lateinit var destinationCoordinator: DestinationCoordinator
     private lateinit var playlistWriteCoordinator: PlaylistWriteCoordinator
     private lateinit var quotaTracker: QuotaTracker
     private lateinit var pendingJobStore: PendingJobStore
@@ -99,10 +70,6 @@ class MainActivity : Activity() {
     private var createdPlaylistId: String? = null
     private var pendingAfterAuth: (() -> Unit)? = null
     private var currentImportSourceLabel: String = "Невідоме джерело"
-    private var destinationPlaylists: List<YouTubePlaylistInfo> = emptyList()
-    private var pendingDestinationTarget: YouTubePlaylistInfo? = null
-    private var pendingDestinationAnalysis: DuplicateAnalysis? = null
-    private var pendingDestinationScanRequestCount: Int = 0
     private var restoringPriorAuthorization: Boolean = false
 
     private lateinit var statusText: TextView
@@ -128,6 +95,11 @@ class MainActivity : Activity() {
             SearchCache(this)
         quotaTracker =
             QuotaTracker(this)
+        destinationCoordinator =
+            DestinationCoordinator(
+                api = api,
+                quotaTracker = quotaTracker
+            )
         searchCoordinator =
             SearchCoordinator(
                 api = api,
@@ -1528,7 +1500,7 @@ class MainActivity : Activity() {
                 )
 
         val selected =
-            currentTracksForDestination(p)
+            destinationCoordinator.currentTracksForDestination(p)
 
         if (selected.isEmpty()) {
             return toast(
@@ -1536,24 +1508,13 @@ class MainActivity : Activity() {
             )
         }
 
-        destinationPlaylists = emptyList()
-        pendingDestinationTarget = null
-        pendingDestinationAnalysis = null
-        pendingDestinationScanRequestCount = 0
+        destinationCoordinator.reset()
 
         openDestinationStart(
             p = p,
             selected = selected
         )
     }
-
-    private fun currentTracksForDestination(
-        p: ImportedPlaylist
-    ): List<Track> =
-        p.tracks.filter { track ->
-            !track.selectedVideoId.isNullOrBlank() &&
-                track.status != TrackStatus.SKIPPED
-        }
 
     private fun openDestinationStart(
         p: ImportedPlaylist,
@@ -1645,7 +1606,7 @@ class MainActivity : Activity() {
                 )
 
         val selected =
-            currentTracksForDestination(p)
+            destinationCoordinator.currentTracksForDestination(p)
 
         if (selected.isEmpty()) {
             return toast(
@@ -1686,7 +1647,10 @@ class MainActivity : Activity() {
             }
 
             DestinationActivity.ACTION_BACK_TO_EXISTING_LIST -> {
-                if (destinationPlaylists.isEmpty()) {
+                val cachedPlaylists =
+                    destinationCoordinator.cachedPlaylists()
+
+                if (cachedPlaylists.isEmpty()) {
                     loadExistingPlaylistsForDestination(
                         p = p,
                         selected = selected
@@ -1695,7 +1659,7 @@ class MainActivity : Activity() {
                     openDestinationExistingList(
                         p = p,
                         selected = selected,
-                        playlists = destinationPlaylists
+                        playlists = cachedPlaylists
                     )
                 }
             }
@@ -1713,28 +1677,25 @@ class MainActivity : Activity() {
                 }
 
                 val target =
-                    destinationPlaylists
-                        .firstOrNull {
-                            it.id == id
-                        }
-                        ?: YouTubePlaylistInfo(
-                            id = id,
-                            title =
-                                data.getStringExtra(
-                                    DestinationActivity.EXTRA_TARGET_TITLE
-                                ) ?: "Плейлист",
-                            privacyStatus =
-                                data.getStringExtra(
-                                    DestinationActivity.EXTRA_TARGET_PRIVACY
-                                ) ?: "private",
-                            itemCount =
-                                data.getLongExtra(
-                                    DestinationActivity.EXTRA_TARGET_COUNT,
-                                    0L
-                                )
+                    destinationCoordinator.selectExistingTarget(
+                        id = id,
+                        title =
+                            data.getStringExtra(
+                                DestinationActivity.EXTRA_TARGET_TITLE
+                            ),
+                        privacyStatus =
+                            data.getStringExtra(
+                                DestinationActivity.EXTRA_TARGET_PRIVACY
+                            ),
+                        itemCount =
+                            data.getLongExtra(
+                                DestinationActivity.EXTRA_TARGET_COUNT,
+                                0L
+                            )
+                    )
+                        ?: return toast(
+                            "Не вдалося визначити вибраний плейлист"
                         )
-
-                pendingDestinationTarget = target
 
                 checkDuplicatesForDestination(
                     p = p,
@@ -1772,13 +1733,11 @@ class MainActivity : Activity() {
             )
 
             executor.execute {
-                quotaTracker.recordGeneralUnits(
-                    QuotaTracker.SIMPLE_LIST_COST
-                )
-
                 val result =
                     runCatching {
-                        api.listMyPlaylists(token)
+                        destinationCoordinator.loadExistingPlaylists(
+                            accessToken = token
+                        )
                     }
 
                 runOnUiThread {
@@ -1787,8 +1746,6 @@ class MainActivity : Activity() {
                     updateQuotaPanel()
 
                     result.onSuccess { playlists ->
-                        destinationPlaylists = playlists
-
                         if (playlists.isEmpty()) {
                             toast(
                                 "У цьому YouTube/YTM профілі немає доступних плейлистів."
@@ -1878,56 +1835,27 @@ class MainActivity : Activity() {
             executor.execute {
                 val result =
                     runCatching {
-                        api.listPlaylistVideoIds(
+                        destinationCoordinator.scanDuplicates(
                             accessToken = token,
-                            playlistId = target.id
+                            selected = selected,
+                            target = target
                         )
                     }
 
                 runOnUiThread {
                     progress.isIndeterminate = false
                     progress.visibility = View.GONE
+                    updateQuotaPanel()
 
-                    result.onSuccess { playlistContents ->
-                        quotaTracker.recordGeneralUnits(
-                            playlistContents.requestCount *
-                                QuotaTracker.SIMPLE_LIST_COST
-                        )
-                        updateQuotaPanel()
-
-                        val analysis =
-                            analyzeDuplicates(
-                                selected = selected,
-                                existingVideoIds =
-                                    playlistContents.videoIds
-                            )
-
-                        pendingDestinationTarget = target
-                        pendingDestinationAnalysis = analysis
-                        pendingDestinationScanRequestCount =
-                            playlistContents.requestCount
-
+                    result.onSuccess { scan ->
                         openDestinationExistingConfirm(
                             p = p,
                             selected = selected,
                             target = target,
-                            analysis = analysis,
-                            scanRequestCount =
-                                playlistContents.requestCount
+                            analysis = scan.analysis,
+                            scanRequestCount = scan.requestCount
                         )
                     }.onFailure { error ->
-                        if (isQuotaError(error)) {
-                            quotaTracker.recordQuotaError(
-                                error.message
-                                    ?: "Не вдалося перевірити дублікати через квоту"
-                            )
-                            updateQuotaPanel()
-                        }
-
-                        pendingDestinationTarget = target
-                        pendingDestinationAnalysis = null
-                        pendingDestinationScanRequestCount = 0
-
                         openDestinationScanFailed(
                             p = p,
                             selected = selected,
@@ -1944,7 +1872,7 @@ class MainActivity : Activity() {
         p: ImportedPlaylist,
         selected: List<Track>,
         target: YouTubePlaylistInfo,
-        analysis: DuplicateAnalysis,
+        analysis: DestinationCoordinator.DuplicateAnalysis,
         scanRequestCount: Int
     ) {
         val intent =
@@ -2061,138 +1989,38 @@ class MainActivity : Activity() {
         selected: List<Track>,
         duplicateMode: String
     ) {
-        val target =
-            pendingDestinationTarget
-                ?: return toast(
-                    "Цільовий плейлист уже недоступний. Виберіть його ще раз."
-                )
-
-        val analysis =
-            pendingDestinationAnalysis
-
-        val plan =
+        val mode =
             when (duplicateMode) {
                 DestinationActivity.DUPLICATE_MODE_NO_SCAN ->
-                    DuplicateWritePlan(
-                        tracksToWrite = selected,
-                        tracksToSkip = emptyList(),
-                        alreadyInPlaylistCount = 0,
-                        repeatedInImportCount = 0,
-                        scanRequestCount = 0,
-                        scanSucceeded = false,
-                        addDuplicatesAnyway = true
-                    )
+                    DestinationCoordinator.DuplicateMode.NO_SCAN
 
-                DestinationActivity.DUPLICATE_MODE_ALL -> {
-                    val currentAnalysis =
-                        analysis
-                            ?: return toast(
-                                "Результат перевірки дублікатів уже недоступний. Спробуйте ще раз."
-                            )
+                DestinationActivity.DUPLICATE_MODE_ALL ->
+                    DestinationCoordinator.DuplicateMode.ADD_ALL
 
-                    DuplicateWritePlan(
-                        tracksToWrite = selected,
-                        tracksToSkip = emptyList(),
-                        alreadyInPlaylistCount =
-                            currentAnalysis.alreadyInPlaylist.size,
-                        repeatedInImportCount =
-                            currentAnalysis.repeatedInImport.size,
-                        scanRequestCount =
-                            pendingDestinationScanRequestCount,
-                        scanSucceeded = true,
-                        addDuplicatesAnyway = true
-                    )
-                }
-
-                else -> {
-                    val currentAnalysis =
-                        analysis
-                            ?: return toast(
-                                "Результат перевірки дублікатів уже недоступний. Спробуйте ще раз."
-                            )
-
-                    DuplicateWritePlan(
-                        tracksToWrite =
-                            currentAnalysis.tracksToAdd,
-                        tracksToSkip =
-                            currentAnalysis.tracksToSkip,
-                        alreadyInPlaylistCount =
-                            currentAnalysis.alreadyInPlaylist.size,
-                        repeatedInImportCount =
-                            currentAnalysis.repeatedInImport.size,
-                        scanRequestCount =
-                            pendingDestinationScanRequestCount,
-                        scanSucceeded = true,
-                        addDuplicatesAnyway = false
-                    )
-                }
+                else ->
+                    DestinationCoordinator.DuplicateMode.SKIP
             }
 
-        pendingDestinationTarget = null
-        pendingDestinationAnalysis = null
-        pendingDestinationScanRequestCount = 0
+        val plan =
+            runCatching {
+                destinationCoordinator.buildExistingWritePlan(
+                    selected = selected,
+                    mode = mode
+                )
+            }.getOrElse { error ->
+                return toast(
+                    error.message
+                        ?: "Не вдалося підготувати запис у вибраний плейлист"
+                )
+            }
 
         actuallyAppendToExisting(
             p = p,
             selected = plan.tracksToWrite,
-            target = target,
-            duplicateTracksToSkip =
-                plan.tracksToSkip
+            target = plan.target,
+            duplicateTracksToSkip = plan.tracksToSkip
         )
     }
-
-
-
-
-
-
-    private fun analyzeDuplicates(
-        selected: List<Track>,
-        existingVideoIds: Set<String>
-    ): DuplicateAnalysis {
-        val alreadyInPlaylist = mutableListOf<Track>()
-        val repeatedInImport = mutableListOf<Track>()
-        val tracksToAdd = mutableListOf<Track>()
-        val seenIncoming = mutableSetOf<String>()
-
-        selected.forEach { track ->
-            val videoId =
-                track.selectedVideoId
-                    ?.trim()
-                    .orEmpty()
-
-            if (videoId.isBlank()) {
-                tracksToAdd += track
-                return@forEach
-            }
-
-            val isAlreadyInPlaylist =
-                videoId in existingVideoIds
-
-            val isRepeatedInImport =
-                !seenIncoming.add(videoId)
-
-            when {
-                isAlreadyInPlaylist ->
-                    alreadyInPlaylist += track
-
-                isRepeatedInImport ->
-                    repeatedInImport += track
-
-                else ->
-                    tracksToAdd += track
-            }
-        }
-
-        return DuplicateAnalysis(
-            alreadyInPlaylist = alreadyInPlaylist,
-            repeatedInImport = repeatedInImport,
-            tracksToAdd = tracksToAdd
-        )
-    }
-
-
-
 
     private fun actuallyAppendToExisting(
         p: ImportedPlaylist,
@@ -2598,12 +2426,6 @@ class MainActivity : Activity() {
                 "Черга"
             }
     }
-
-    private fun isQuotaError(error: Throwable): Boolean =
-        (error as? YouTubeApiException)?.isQuotaError == true ||
-            error.message.orEmpty().contains("quota", ignoreCase = true) ||
-            error.message.orEmpty().contains("daily limit", ignoreCase = true)
-
 
 
     private fun maybeShowWelcome() {

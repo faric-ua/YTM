@@ -100,3 +100,5 @@ docs/v.0.8.0/diagrams/
 - `TERMINAL_APPLY_v1.4.14.md` — silent auth recovery + result modal + master QA plan
 
 - `TERMINAL_APPLY_v1.4.15.md` — PlaylistWriteCoordinator + per-release QA snapshots
+
+- `TERMINAL_APPLY_v1.4.16.md` — DestinationCoordinator extraction + destination/duplicate orchestration

@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.16
+- Cleanup Wave 5: extracted destination playlist / duplicate orchestration into `DestinationCoordinator`.
+- DestinationCoordinator now owns eligible-track selection, destination playlist caching/selection,
+  existing-playlist scan quota accounting, exact-videoId duplicate analysis and duplicate write planning.
+- MainActivity remains the auth/UI/executor bridge and hands the final write plan to PlaylistWriteCoordinator.
+- Added `scripts/destination-coordinator-audit.sh`.
+- Added immutable `docs/v.1.4.16/` release documentation, diagrams and QA snapshot.
+- BUG-003/Q-003 auth recovery failure remains deferred and is not claimed fixed.
+- v1.4.16 = NOT TESTED YET.
+- versionCode 50 / versionName 1.4.16.
+
 ## v1.4.15
 - Recorded v1.4.14 auth recovery phone-test failure as BUG-003 / Q-003.
 - v1.4.14 status = PARTIALLY PHONE-TESTED — FAIL.

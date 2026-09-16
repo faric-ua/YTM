@@ -6,6 +6,7 @@
 | v1.4.12 | **NOT TESTED** | No phone regression. |
 | v1.4.13 | PARTIALLY PHONE-TESTED | Installed; Home/account and successful 3-track playlist creation observed. Full regression not run. |
 | v1.4.14 | **PARTIALLY PHONE-TESTED — FAIL** | A-03/D-03 failed: after update Step 2 remains red; silent account recovery did not work. |
-| v1.4.15 | **NOT TESTED YET** | Cleanup Wave 4 / PlaylistWriteCoordinator + per-release QA snapshots. |
+| v1.4.15 | **NOT TESTED** | Cleanup Wave 4 / PlaylistWriteCoordinator + per-release QA snapshots. |
+| v1.4.16 | **NOT TESTED YET** | Cleanup Wave 5 / DestinationCoordinator extraction. |
 
 Static audits and GitHub build do not equal phone testing.

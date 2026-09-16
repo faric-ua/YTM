@@ -1,13 +1,16 @@
 YTM Importer
-Version: 1.4.15
-Version code: 49
+Version: 1.4.16
+Version code: 50
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
 v1.4.14 PARTIALLY PHONE-TESTED — FAIL (BUG-003)
-v1.4.15 NOT TESTED YET
+v1.4.15 NOT TESTED
+v1.4.16 NOT TESTED YET
 
-MainActivity: 3685 -> 3478
+Current cleanup:
+DestinationCoordinator extracted from MainActivity.
+Destination playlist cache/selection, duplicate scan/quota accounting and duplicate write planning moved out of MainActivity.
 
 Known:
 BUG-001/Q-001 OPEN
