@@ -1,19 +1,24 @@
 YTM Importer
-Version: 1.4.7
-Version code: 41
+Version: 1.4.8
+Version code: 42
 Package: com.saney.ytmimporter
 
 Stage:
-Service navigation + structured information UI
+Safe custom-dialog viewport
 
 Fixed:
-- Service submenu returning to Main
-- dense replacement/problem log
-- monolithic Diagnostics/SearchCache/About popup content
-- uneven problem-log action hierarchy
+- Quota dialog top clipping
+- Problem Tracks dialog top clipping
+- shared Menu/Message/Record dialog viewport
+- systemBars + displayCutout handling
+- bottom safe area for custom dialog actions
+
+Added:
+- scripts/dialog-bounds-audit.sh
+- docs/v.1.4.8/
 
 Open:
-Q-001 remains OPEN.
+Q-001 remains OPEN — revisit later.
 
-Next:
-continue MainActivity cleanup after phone regression.
+Next after phone regression:
+cleanup wave 2 / further MainActivity reduction.

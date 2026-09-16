@@ -2,6 +2,6 @@
 
 Current version:
 
-`docs/v.1.4.7/`
+`docs/v.1.4.8/`
 
-v1.4.7 fixes Service navigation and structures long technical/info content.
+v1.4.8 fixes tall custom-dialog clipping with one shared safe viewport.

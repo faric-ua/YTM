@@ -1,9 +1,10 @@
-# YTM Importer v1.4.7
+# YTM Importer v1.4.8
 
-Service navigation and structured information UI release.
+Safe-dialog viewport release.
 
 Highlights:
-- record-card problem log;
-- stable Service back stack;
-- structured Diagnostics/SearchCache/About pages;
-- reusable UiChrome record-dialog template.
+- fixes top clipping in long Quota and Problem Tracks dialogs;
+- one shared safe viewport for UiChrome Menu / Message / Record dialogs;
+- system-bar + display-cutout aware dialog bounds;
+- short dialogs stay centered, long dialogs scroll from the visible top;
+- Q-001 remains open.

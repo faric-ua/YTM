@@ -1,5 +1,14 @@
 # Журнал змін (Changelog)
 
+## v1.4.8
+- Fixed top clipping in tall custom dialogs.
+- Quota and Problem Tracks now start inside the visible safe viewport.
+- Added system-bar and display-cutout handling to all UiChrome custom dialogs.
+- Short custom dialogs remain vertically centered.
+- Tall custom dialogs start at the safe top and scroll normally.
+- Added `scripts/dialog-bounds-audit.sh`.
+- versionCode 42 / versionName 1.4.8.
+
 ## v1.4.7
 - Problem tracks are rendered as individual cards.
 - TikTok / Full text actions are stacked vertically with flat Close.

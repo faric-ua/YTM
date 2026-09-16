@@ -1,11 +1,8 @@
-YTM Importer v1.4.7 FULL
+YTM Importer v1.4.8 FULL
 
 REPLACED:
 app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
-app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
-app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 app/build.gradle.kts
-scripts/action-hierarchy-audit.sh
 scripts/release-preflight.sh
 .github/workflows/build-apk.yml
 BACKLOG.md
@@ -15,15 +12,16 @@ README_UA.md
 PROJECT_STATUS.txt
 OPEN_QUESTIONS.md
 docs/README.md
+TERMINAL_APPLY_VERSIONED_DOCS.md
 
 ADDED:
-scripts/service-navigation-audit.sh
-docs/v.1.4.7/
-TERMINAL_APPLY_v1.4.7.md
+scripts/dialog-bounds-audit.sh
+docs/v.1.4.8/
+TERMINAL_APPLY_v1.4.8.md
 
 DELETED:
 none
 
 VERSION:
-versionCode = 41
-versionName = 1.4.7
+versionCode = 42
+versionName = 1.4.8

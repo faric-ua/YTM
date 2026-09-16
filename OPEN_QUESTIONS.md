@@ -44,3 +44,7 @@ Dialog hierarchy and Service screen were updated. Q-001 remains OPEN.
 ## v1.4.7 note
 
 Service navigation and structured info pages were fixed. Q-001 remains OPEN.
+
+## v1.4.8 note
+
+Custom dialog top clipping was fixed globally in UiChrome. Q-001 remains OPEN.

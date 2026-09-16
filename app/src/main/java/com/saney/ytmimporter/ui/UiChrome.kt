@@ -611,35 +611,121 @@ object UiChrome {
         dialog: AlertDialog,
         card: LinearLayout
     ) {
-        val outer = FrameLayout(activity).apply {
-            setPadding(
-                dp(context, 18),
-                dp(context, 18),
-                dp(context, 18),
-                dp(context, 18)
-            )
-        }
+        val horizontalInset =
+            dp(activity, 18)
 
-        val scroll = ScrollView(activity).apply {
-            isFillViewport = true
-            overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
-        }
+        val minimumVerticalInset =
+            dp(activity, 12)
+
+        val outer =
+            FrameLayout(activity)
+
+        val scroll =
+            ScrollView(activity).apply {
+                isFillViewport = true
+                overScrollMode =
+                    View.OVER_SCROLL_IF_CONTENT_SCROLLS
+                isVerticalScrollBarEnabled = true
+            }
+
+        /*
+         * Important:
+         * - short dialogs are vertically centered;
+         * - tall dialogs start at the safe top edge and scroll normally.
+         *
+         * Putting the card itself in a centered ScrollView child can move the
+         * beginning of a tall dialog above the visible viewport. The holder
+         * only has extra height when the content is shorter than the viewport,
+         * so CENTER_VERTICAL is safe here.
+         */
+        val holder =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                gravity =
+                    Gravity.CENTER_VERTICAL
+            }
+
+        holder.addView(
+            card,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
 
         scroll.addView(
-            card,
-            FrameLayout.LayoutParams(
+            holder,
+            ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER
+                ViewGroup.LayoutParams.WRAP_CONTENT
             )
         )
-        outer.addView(scroll)
+
+        outer.addView(
+            scroll,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
 
         dialog.setView(outer)
+
+        dialog.setOnShowListener {
+            val window =
+                dialog.window
+                    ?: return@setOnShowListener
+
+            WindowCompat.setDecorFitsSystemWindows(
+                window,
+                false
+            )
+
+            window.setBackgroundDrawable(
+                ColorDrawable(
+                    Color.TRANSPARENT
+                )
+            )
+
+            window.setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+
+            ViewCompat.setOnApplyWindowInsetsListener(
+                outer
+            ) { view, insets ->
+                val safeInsets =
+                    insets.getInsets(
+                        WindowInsetsCompat.Type.systemBars() or
+                            WindowInsetsCompat.Type.displayCutout()
+                    )
+
+                view.setPadding(
+                    horizontalInset,
+                    maxOf(
+                        minimumVerticalInset,
+                        safeInsets.top +
+                            dp(activity, 8)
+                    ),
+                    horizontalInset,
+                    maxOf(
+                        minimumVerticalInset,
+                        safeInsets.bottom +
+                            dp(activity, 8)
+                    )
+                )
+
+                insets
+            }
+
+            ViewCompat.requestApplyInsets(
+                outer
+            )
+        }
+
         dialog.show()
-        dialog.window?.setBackgroundDrawable(
-            ColorDrawable(Color.TRANSPARENT)
-        )
     }
 
     private fun menuButton(
