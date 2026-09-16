@@ -32,3 +32,7 @@ Dialog styling and button spacing were standardized. Q-001 remains OPEN and is i
 ## v1.4.4 note
 
 Adaptive button/layout fixes do not close Q-001. It remains OPEN.
+
+## v1.4.5 note
+
+Compact Review and quota layout changed. Q-001 remains OPEN.

@@ -31,9 +31,6 @@ import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import kotlin.math.roundToInt
 
 class ReviewActivity : Activity() {
@@ -281,76 +278,36 @@ class ReviewActivity : Activity() {
 
         val projectRow =
             LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.HORIZONTAL
-                setPadding(
-                    dp(12),
-                    0,
-                    dp(12),
-                    dp(8)
-                )
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(dp(12), 0, dp(12), dp(7))
             }
 
-        projectRow.addView(
-            smallButton(
-                "Зберегти Project"
-            ) {
-                saveCurrentProject()
-            },
-            LinearLayout.LayoutParams(
-                0,
-                dp(50),
-                1f
+        val projectActions =
+            listOf(
+                "▣ Зберегти" to { saveCurrentProject() },
+                "↗ Поділитись" to { shareCurrentProject() },
+                "↻ Пошук" to { requestRepeatSearch() }
             )
-        )
 
-        projectRow.addView(
-            smallButton(
-                "Поділитися"
-            ) {
-                shareCurrentProject()
-            },
-            LinearLayout.LayoutParams(
-                0,
-                dp(50),
-                1f
-            ).apply {
-                marginStart =
-                    dp(6)
-            }
-        )
+        projectActions.forEachIndexed { index, action ->
+            projectRow.addView(
+                compactToolbarButton(action.first, action.second),
+                LinearLayout.LayoutParams(
+                    0,
+                    dp(46),
+                    1f
+                ).apply {
+                    if (index > 0) marginStart = dp(6)
+                }
+            )
+        }
 
         root.addView(projectRow)
 
-        root.addView(
-            smallButton(
-                "Повторити пошук"
-            ) {
-                requestRepeatSearch()
-            },
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(50)
-            ).apply {
-                setMargins(
-                    dp(12),
-                    0,
-                    dp(12),
-                    dp(8)
-                )
-            }
-        )
-
-        val filterGrid =
+        val filterRow =
             LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(
-                    dp(12),
-                    0,
-                    dp(12),
-                    dp(8)
-                )
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(dp(12), 0, dp(12), dp(8))
             }
 
         val list =
@@ -358,80 +315,37 @@ class ReviewActivity : Activity() {
                 divider = null
                 dividerHeight = dp(6)
                 clipToPadding = false
-                setPadding(
-                    dp(10),
-                    0,
-                    dp(10),
-                    dp(14)
-                )
-                setBackgroundColor(
-                    BACKGROUND
-                )
+                setPadding(dp(10), 0, dp(10), dp(14))
+                setBackgroundColor(BACKGROUND)
             }
 
-        val adapter =
-            ReviewListAdapter(
-                snapshot.playlist.tracks
-            )
-
+        val adapter = ReviewListAdapter(snapshot.playlist.tracks)
         list.adapter = adapter
 
         val filters =
             listOf(
-                "≡  Усі" to ReviewFilter.ALL,
-                "!  Перевірити" to ReviewFilter.REVIEW,
-                "✓  Готові" to ReviewFilter.READY,
-                "×  Проблеми" to ReviewFilter.PROBLEMS
+                "≡ Усі" to ReviewFilter.ALL,
+                "! Перев." to ReviewFilter.REVIEW,
+                "✓ Готові" to ReviewFilter.READY,
+                "× Пробл." to ReviewFilter.PROBLEMS
             )
 
-        filters.chunked(2).forEachIndexed {
-                rowIndex,
-                rowFilters ->
-
-            val row =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.HORIZONTAL
-                }
-
-            rowFilters.forEachIndexed {
-                    columnIndex,
-                    pair ->
-
-                row.addView(
-                    filterButton(
-                        pair.first
-                    ) {
-                        adapter.setFilter(
-                            pair.second
-                        )
-                    },
-                    LinearLayout.LayoutParams(
-                        0,
-                        dp(54),
-                        1f
-                    ).apply {
-                        if (columnIndex > 0) {
-                            marginStart = dp(7)
-                        }
-                    }
-                )
-            }
-
-            filterGrid.addView(
-                row,
+        filters.forEachIndexed { index, pair ->
+            filterRow.addView(
+                compactFilterButton(pair.first) {
+                    adapter.setFilter(pair.second)
+                },
                 LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
+                    0,
+                    dp(44),
+                    1f
                 ).apply {
-                    if (rowIndex > 0) {
-                        topMargin = dp(7)
-                    }
+                    if (index > 0) marginStart = dp(5)
                 }
             )
         }
 
-        root.addView(filterGrid)
+        root.addView(filterRow)
 
         root.addView(
             list,
@@ -1215,27 +1129,17 @@ class ReviewActivity : Activity() {
     private fun projectFileName(): String {
         val safeName =
             snapshot.playlist.name
+                .trim()
                 .replace(
-                    Regex(
-                        "[^\\p{L}\\p{N}._-]+"
-                    ),
+                    Regex("[\\/:*?\"<>|\\p{Cntrl}]"),
                     "_"
                 )
-                .trim('_')
-                .take(60)
-                .ifBlank {
-                    "playlist"
-                }
+                .replace(Regex("\\s+"), " ")
+                .trim(' ', '.')
+                .take(100)
+                .ifBlank { "YTM Project" }
 
-        val timestamp =
-            SimpleDateFormat(
-                "yyyyMMdd_HHmmss",
-                Locale.US
-            ).format(
-                Date()
-            )
-
-        return "YTM_Project_${safeName}_${timestamp}.ytm.json"
+        return "$safeName.ytm.json"
     }
 
     private fun requestRepeatSearch() {
@@ -1578,21 +1482,24 @@ class ReviewActivity : Activity() {
             setTextIsSelectable(true)
         }
 
-    private fun filterButton(
+    private fun compactToolbarButton(
         label: String,
         action: () -> Unit
     ): Button =
-        smallButton(
-            label = label,
-            action = action
-        ).apply {
-            textSize = 13f
+        smallButton(label, action).apply {
             maxLines = 1
-            UiChrome.autoSizeButton(
-                this,
-                minSp = 11,
-                maxSp = 14
-            )
+            setPadding(dp(6), dp(5), dp(6), dp(5))
+            UiChrome.autoSizeButton(this, minSp = 8, maxSp = 12)
+        }
+
+    private fun compactFilterButton(
+        label: String,
+        action: () -> Unit
+    ): Button =
+        smallButton(label, action).apply {
+            maxLines = 1
+            setPadding(dp(4), dp(4), dp(4), dp(4))
+            UiChrome.autoSizeButton(this, minSp = 8, maxSp = 11)
         }
 
     private fun smallButton(

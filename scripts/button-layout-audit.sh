@@ -14,8 +14,8 @@ done
 
 grep -q 'fun showMessageDialog' "$UI" || fail "adaptive message dialog missing"
 grep -q 'ViewGroup.LayoutParams.WRAP_CONTENT' "$UI" || fail "menu buttons are still fixed-height"
-grep -q '≡  Усі' "$REVIEW" || fail "icon filter grid missing"
-grep -q 'filters.chunked(2)' "$REVIEW" || fail "filters are not 2x2"
+grep -q '≡ Усі' "$REVIEW" || fail "compact icon filter row missing"
+grep -q 'filters.forEachIndexed' "$REVIEW" || fail "filters are not rendered in one adaptive row"
 grep -q 'private lateinit var importButton' "$MAIN" || fail "import step state is not tracked"
 grep -q 'StepState.READY' "$MAIN" || fail "step-state colors missing"
 grep -q 'Color.rgb(31, 122, 77)' "$MAIN" || fail "green ready color missing"
@@ -26,7 +26,7 @@ grep -q 'ViewGroup.LayoutParams.WRAP_CONTENT' "$HISTORY" || fail "history action
 echo 'PASS:'
 echo '- flexible menu/action button height'
 echo '- adaptive three-action dialogs'
-echo '- 2x2 icon filter grid'
+echo '- compact one-row icon filters'
 echo '- state-aware main step colors'
 echo '- taller primary step buttons'
 echo '- no remaining native three-action dialog stacks in active/legacy Main flows'

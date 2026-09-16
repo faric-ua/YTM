@@ -1,11 +1,8 @@
-# YTM Importer v1.4.4
+# YTM Importer v1.4.5
 
-UX-полірування кнопок і станів.
-
-- multi-action dialogs більше не покладаються на native stacking;
-- long menu buttons ростуть по висоті;
-- Review filters стали 2×2 з символами типів;
-- головні 4 steps мають green / amber / red state colors;
-- кнопки Step 3/4 вищі та мають auto-size text.
+- Google Cloud у Quota — окрема кнопка на всю ширину; нижче Черга + Закрити.
+- Review: Save / Share / Search в один ряд.
+- Review filters в один ряд.
+- Save Project одразу пропонує назву playlist як ім'я `.ytm.json`.
 
 Q-001 залишається OPEN.

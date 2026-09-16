@@ -14,8 +14,8 @@ android {
         applicationId = "com.saney.ytmimporter"
         minSdk = 26
         targetSdk = 36
-        versionCode = 38
-        versionName = "1.4.4"
+        versionCode = 39
+        versionName = "1.4.5"
     }
 
     signingConfigs {

@@ -1,20 +1,13 @@
 YTM Importer
-Version: 1.4.4
-Version code: 38
-Package: com.saney.ytmimporter
+Version: 1.4.5
+Version code: 39
 
-Stage:
-Adaptive buttons + state-aware main flow
+Stage: compact Review + dialog action hierarchy
 
-Fixed:
-- native 3-action dialog stacking in key popups
-- clipped long menu labels
-- 4 narrow Review filter buttons
-- unclear main-step completion state
-- clipped History quick actions
+Changed:
+- quota Google Cloud full-width
+- Queue/Close bottom row
+- Review controls 2 rows total
+- Project filename = playlist name
 
-Open:
 Q-001 remains OPEN.
-
-Next:
-cleanup wave 2.

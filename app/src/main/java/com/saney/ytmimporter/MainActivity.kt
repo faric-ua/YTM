@@ -3093,17 +3093,18 @@ class MainActivity : Activity() {
             title = "Квота API (локальна оцінка)",
             message = message,
             actions = listOf(
-                UiChrome.DialogAction("Черга") {
-                    showPendingJobs()
-                },
                 UiChrome.DialogAction("Google Cloud") {
                     openGoogleCloudQuota()
+                },
+                UiChrome.DialogAction("Черга") {
+                    showPendingJobs()
                 },
                 UiChrome.DialogAction(
                     label = "Закрити",
                     tone = UiChrome.ActionTone.ACCENT
                 ) {}
-            )
+            ),
+            actionLayout = UiChrome.DialogActionLayout.PRIMARY_TOP
         )
     }
 

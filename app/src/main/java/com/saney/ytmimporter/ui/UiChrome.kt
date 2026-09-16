@@ -33,6 +33,11 @@ object UiChrome {
         DANGER
     }
 
+    enum class DialogActionLayout {
+        AUTO,
+        PRIMARY_TOP
+    }
+
     data class DialogAction(
         val label: String,
         val tone: ActionTone = ActionTone.NORMAL,
@@ -145,7 +150,8 @@ object UiChrome {
         title: String,
         message: String,
         actions: List<DialogAction>,
-        subtitle: String? = null
+        subtitle: String? = null,
+        actionLayout: DialogActionLayout = DialogActionLayout.AUTO
     ) {
         val dialog = alertBuilder(activity).create()
         val card = dialogCard(activity)
@@ -177,7 +183,8 @@ object UiChrome {
             activity = activity,
             dialog = dialog,
             card = card,
-            actions = actions
+            actions = actions,
+            actionLayout = actionLayout
         )
 
         showCustomDialog(
@@ -204,12 +211,65 @@ object UiChrome {
         activity: Activity,
         dialog: AlertDialog,
         card: LinearLayout,
-        actions: List<DialogAction>
+        actions: List<DialogAction>,
+        actionLayout: DialogActionLayout
     ) {
         if (actions.isEmpty()) return
 
-        val compactRow =
-            actions.size <= 3
+        if (
+            actionLayout == DialogActionLayout.PRIMARY_TOP &&
+            actions.size == 3
+        ) {
+            val primary = actions.first()
+
+            card.addView(
+                dialogActionButton(
+                    activity = activity,
+                    action = primary
+                ) {
+                    dialog.dismiss()
+                    primary.onClick()
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+
+            val row = LinearLayout(activity).apply {
+                orientation = LinearLayout.HORIZONTAL
+            }
+
+            actions.drop(1).forEachIndexed { index, action ->
+                row.addView(
+                    dialogActionButton(
+                        activity = activity,
+                        action = action
+                    ) {
+                        dialog.dismiss()
+                        action.onClick()
+                    },
+                    LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1f
+                    ).apply {
+                        if (index > 0) marginStart = dp(activity, 8)
+                    }
+                )
+            }
+
+            card.addView(
+                row,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(activity, 9) }
+            )
+            return
+        }
+
+        val compactRow = actions.size <= 3
 
         if (compactRow) {
             val row = LinearLayout(activity).apply {
