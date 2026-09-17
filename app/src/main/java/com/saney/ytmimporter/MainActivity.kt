@@ -1286,7 +1286,8 @@ class MainActivity : Activity() {
                     )
                 ) {
                     searchAll(
-                        openReviewAfter = true
+                        openReviewAfter = true,
+                        preserveExistingExact = true
                     )
                     return
                 }
@@ -1670,7 +1671,7 @@ class MainActivity : Activity() {
 
     private fun searchAll(
         openReviewAfter: Boolean = false,
-        preserveExistingExact: Boolean = false
+        preserveExistingExact: Boolean = true
     ) {
         val p =
             playlist

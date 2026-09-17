@@ -151,3 +151,37 @@ v1.4.26 пройшов основний selective-export round trip:
 
 Цей дефект записаний як **BUG-005 / Q-005** і стає навчальним прикладом:
 successful persistence не гарантує correct downstream behavior.
+
+## 9. v1.4.27: fix має бути у call path і domain rule
+
+BUG-005 виявив дві різні точки, які треба узгодити.
+
+Перша — **call path**. Review повертав `EXTRA_REPEAT_SEARCH`, а Main запускав
+`searchAll()` без exact-preservation flag. Тобто UI-дія ненавмисно обирала
+режим «шукати все заново».
+
+Друга — **domain rule** у `SearchCoordinator`. Саме coordinator повинен
+визначати, що canonical exact selection має такі ознаки:
+
+- є `selectedVideoId`;
+- `status == MATCHED`;
+- список search candidates порожній.
+
+Для такого треку ordinary search planning повертає skip/preserve, а не
+SearchCache/API work.
+
+Чому не достатньо виправити лише кнопку? Бо інший caller у майбутньому міг би
+знову передати неправильний flag. Тому v1.4.27 робить обидва кроки:
+
+1. Review repeat-search явно передає `preserveExistingExact = true`;
+2. ordinary `searchAll()` також має safe default `true`;
+3. SearchCoordinator використовує один helper
+   `hasCanonicalExactSelection(track)` і в `plan`, і в `run`.
+
+При цьому candidate-based automatic matches не прирівнюються до canonical
+exact import. Це дозволяє intentional repeat-search для звичайних результатів
+пошуку, не витрачаючи quota на exact account/project data.
+
+Phone invariant для закриття BUG-005:
+
+`top 3 exact 3/3 → Review → ↻ Пошук → search required 0 → new search.list 0`

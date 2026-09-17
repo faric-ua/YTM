@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.27
+- Fixed BUG-005 by preserving canonical exact videoId selections during ordinary Review repeat-search.
+- Review repeat-search explicitly calls search with exact-selection preservation.
+- Ordinary `searchAll` now defaults to preserving existing exact selections.
+- SearchCoordinator uses a shared canonical-exact predicate for planning and execution preservation.
+- Candidate-based searched matches remain eligible for intentional repeat search.
+- Updated Review repeat-search message to explain exact-ID quota protection.
+- Added v1.4.27 audit, release docs, QA plan and bug snapshot.
+- versionCode 61 / versionName 1.4.27.
+- v1.4.27 = NOT PHONE-TESTED YET.
+
 ## v1.4.26
 - Added read-only selective export of multiple connected-account playlists.
 - Added checkbox multi-select before Android folder selection.

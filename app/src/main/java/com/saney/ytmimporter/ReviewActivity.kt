@@ -1177,9 +1177,10 @@ class ReviewActivity : Activity() {
         UiChrome.alertBuilder(this)
             .setTitle("Повторити пошук?")
             .setMessage(
-                "YTM Importer повернеться на головний екран і знову " +
-                    "пройде всі треки через SearchCache / YouTube search. " +
-                    "Кешовані результати не витрачають search.list quota."
+                "YTM Importer повернеться на головний екран і повторить пошук " +
+                    "лише для треків, яким він справді потрібен. " +
+                    "Треки з точним videoId буде збережено без нового search.list. " +
+                    "Кешовані результати також не витрачають search.list quota."
             )
             .setNegativeButton(
                 "Скасувати",

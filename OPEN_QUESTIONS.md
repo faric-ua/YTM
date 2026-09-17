@@ -107,7 +107,7 @@ Do not claim fixed until an in-place update test passes without pressing Step 2.
 
 ## Q-005 — Manual Search should respect exact videoId
 
-Status: **OPEN — BUG-005, planned for v1.4.27.**
+Status: **FIX IMPLEMENTED v1.4.27 — PHONE RETEST REQUIRED.**
 
 Found during the v1.4.26 selective-export round-trip phone test.
 
@@ -123,3 +123,9 @@ Decision for v1.4.27:
   intentionally want to discard an exact selection.
 
 This separates "find missing matches" from "force a new search".
+
+Implementation note for v1.4.27:
+
+- ordinary repeat-search preserves canonical exact selections;
+- exact 3/3 project should plan 0 new search.list;
+- BUG-005 remains open until real-phone retest passes.

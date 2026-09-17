@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.26
-Version code: 60
+Version: 1.4.27
+Version code: 61
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -17,6 +17,7 @@ v1.4.23 PARTIALLY PHONE-TESTED — HOME FIT PASS
 v1.4.24 PARTIALLY PHONE-TESTED — WAVE 2 PASS WITH UI POLISH FINDINGS
 v1.4.25 PARTIALLY PHONE-TESTED — ACCENT CARD TESTED PATHS PASS
 v1.4.26 PARTIALLY PHONE-TESTED — SELECTIVE EXPORT PASS / BUG-005 FOUND
+v1.4.27 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -168,12 +169,22 @@ v1.4.26 phone QA finding:
 - planned next release: v1.4.27 Exact-ID Search Guard
 
 
+
+v1.4.27 focus:
+- BUG-005 Exact-ID Search Guard
+- ordinary repeat-search preserves canonical exact videoId tracks
+- project/account exact selections skip SearchCache/search.list work
+- candidate-based searched matches can still participate in repeat search
+- manual selections remain protected
+- phone retest target: exact `top 3` 3/3 → 0 new search.list
+
+
 Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 DEFERRED
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
 BUG-004/Q-004 RETEST v1.4.17
-BUG-005/Q-005 OPEN — redundant manual search for exact videoId tracks
+BUG-005/Q-005 FIX IMPLEMENTED v1.4.27 — PHONE RETEST REQUIRED
 
 QA:
 root qa/ = current definitions/policy

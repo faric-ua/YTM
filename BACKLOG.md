@@ -1,14 +1,14 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.26 — Selective Account Export
+v1.4.27 — Exact-ID Search Guard
 
 ## Known
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 DEFERRED
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — RETEST v1.4.17
-- BUG-005/Q-005 redundant manual search for exact videoId tracks — OPEN, v1.4.27
+- BUG-005/Q-005 redundant manual search for exact videoId tracks — FIX IMPLEMENTED v1.4.27, PHONE RETEST REQUIRED
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -208,12 +208,14 @@ v1.4.26 — Selective Account Export
 - [x] reopen one exported project and verify exact videoId round trip
 
 ## v1.4.27 — Exact-ID Search Guard
-- [ ] exclude tracks with exact/canonical videoId from ordinary search planning
-- [ ] when all tracks are exact, show 0 required searches / no quota work
-- [ ] preserve explicit manual candidate selections
-- [ ] keep an intentional future re-search path separate from normal search
-- [ ] add BUG-005 static regression audit
-- [ ] add release docs + phone-test plan
+- [x] exclude tracks with exact/canonical videoId from ordinary search planning
+- [x] ordinary repeat-search explicitly preserves existing exact selections
+- [x] ordinary searchAll defaults to exact-selection preservation
+- [x] preserve explicit manual candidate selections
+- [x] keep candidate-based matches eligible for intentional repeat search
+- [x] clarify Review repeat-search quota message
+- [x] add BUG-005 static regression audit
+- [x] add release docs + phone-test plan
 - [ ] GitHub build
 - [ ] phone retest: reopen exact `top 3` project
 - [ ] phone retest: Search plan = 0 new search.list

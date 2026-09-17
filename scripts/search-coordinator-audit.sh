@@ -38,7 +38,7 @@ grep -q 'quotaTracker.recordCacheHit()' "$COORD" \
 grep -q 'AUTO_MATCH_THRESHOLD' "$COORD" \
   || fail "automatic match threshold missing"
 
-if grep -q '^import android\\.' "$COORD"; then
+if grep -q '^import android\.' "$COORD"; then
   fail "SearchCoordinator must not import Android UI classes"
 fi
 
@@ -46,7 +46,7 @@ if grep -q 'api.search(' "$MAIN"; then
   fail "MainActivity still calls YouTube search API directly"
 fi
 
-if grep -q 'searchCache\\.get\\|searchCache\\.put' "$MAIN"; then
+if grep -q 'searchCache\.get\|searchCache\.put' "$MAIN"; then
   fail "MainActivity still owns SearchCache domain flow"
 fi
 
@@ -70,8 +70,42 @@ grep -q 'SearchCoordinator.PreservedSelection.MANUAL' "$MAIN" \
 grep -q 'SearchCoordinator.PreservedSelection.PROJECT_EXACT' "$MAIN" \
   || fail "MainActivity progress bridge does not preserve project-exact message"
 
+grep -q 'hasCanonicalExactSelection' "$COORD" \
+  || fail "canonical exact-selection helper missing"
+
+grep -q 'track.status == TrackStatus.MATCHED' "$COORD" \
+  || fail "canonical exact-selection MATCHED guard missing"
+
+grep -q 'track.candidates.isEmpty()' "$COORD" \
+  || fail "canonical exact-selection empty-candidates guard missing"
+
+grep -q 'preserveExistingExact = true' "$MAIN" \
+  || fail "MainActivity does not explicitly preserve exact selections on repeat search"
+
+python -B - <<'PY'
+from pathlib import Path
+
+main = Path(
+    "app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
+).read_text(encoding="utf-8")
+
+unsafe_search_all = """    private fun searchAll(
+        openReviewAfter: Boolean = false,
+        preserveExistingExact: Boolean = false
+    ) {
+"""
+
+if unsafe_search_all in main:
+    raise SystemExit(
+        "FAIL: ordinary searchAll still defaults to destructive exact re-search"
+    )
+PY
+
 echo "PASS:"
 echo "- SearchCoordinator owns planning/cache/API/quota/search-state domain logic"
 echo "- MainActivity owns only authorization + UI progress bridge"
 echo "- manual and Project exact selections remain protected"
 echo "- coordinator contains no Android UI imports"
+echo "- canonical exact selection guard is present"
+echo "- Review repeat-search explicitly preserves exact IDs"
+echo "- ordinary searchAll safe default is exact-preserving"

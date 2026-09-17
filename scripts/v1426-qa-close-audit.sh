@@ -7,7 +7,7 @@ fail() {
 }
 
 STATUS="RELEASE_TEST_STATUS.md"
-BUG="qa/BUG_REGISTER.md"
+BUG="docs/v.1.4.26/qa/BUG_REGISTER.md"
 BACKLOG="BACKLOG.md"
 RELEASE="docs/v.1.4.26/RELEASE.md"
 CHECKLIST="docs/v.1.4.26/REGRESSION_CHECKLIST.md"
@@ -16,7 +16,7 @@ grep -Fq '| v1.4.26 | **PARTIALLY PHONE-TESTED — PASS FOR SELECTIVE EXPORT PAT
   || fail "v1.4.26 phone status missing"
 
 grep -Fq '| BUG-005 / Q-005 | OPEN — FOUND v1.4.26 |' "$BUG" \
-  || fail "BUG-005 missing from root bug register"
+  || fail "BUG-005 missing from v1.4.26 bug snapshot"
 
 grep -Fq '## v1.4.27 — Exact-ID Search Guard' "$BACKLOG" \
   || fail "v1.4.27 follow-up missing"

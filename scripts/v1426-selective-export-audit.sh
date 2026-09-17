@@ -6,15 +6,15 @@ fail() {
   exit 1
 }
 
-BUILD="app/build.gradle.kts"
+# Historical v1.4.26 feature guard.
+# Active versionCode/versionName are checked by release-preflight
+# for the current release. This audit verifies that the v1.4.26
+# selective-export feature remains preserved in later releases.
 IMPORT="app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 EXPORTER="app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryExporter.kt"
 STATUS="RELEASE_TEST_STATUS.md"
 BACKLOG="BACKLOG.md"
 ROADMAP="docs/tutorial/ROADMAP.md"
-
-grep -q 'versionCode = 60' "$BUILD" || fail "versionCode 60 missing"
-grep -q 'versionName = "1.4.26"' "$BUILD" || fail "versionName 1.4.26 missing"
 
 grep -Fq '"Вибрати плейлисти для експорту"' "$IMPORT" || fail "selective export action missing"
 grep -q 'selectiveExportFolderRequestCode' "$IMPORT" || fail "selective folder request code missing"

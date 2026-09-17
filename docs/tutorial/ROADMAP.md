@@ -11,7 +11,7 @@
 - `08_IMPORT_AND_PROJECT_FORMAT.md` — імпорт та YTM Project;
 - `09_GOOGLE_YOUTUBE_AUTH.md` — авторизація, session state, recovery;
 - `10_YOUTUBE_API_AND_QUOTA.md` — API requests, quota, failure modes;
-- `11_SEARCH_AND_EXACT_VIDEO_ID.md` — пошук vs exact identifiers;
+- `11_SEARCH_AND_EXACT_VIDEO_ID.md` — пошук vs exact identifiers, BUG-005/v1.4.27 quota invariant;
 - `12_DESTINATION_AND_DUPLICATES.md` — existing playlist, duplicate scan, write plan;
 - `13_PENDING_QUEUE_AND_RECOVERY.md` — відкладені операції;
 - `14_BACKUP_AND_EXPORT.md` — local backup, account bulk export, manifest;

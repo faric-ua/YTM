@@ -215,13 +215,14 @@ class SearchCoordinator(
             return false
         }
 
-        return if (preserveExistingExact) {
-            track.selectedVideoId.isNullOrBlank() ||
-                track.status != TrackStatus.MATCHED ||
-                track.candidates.isNotEmpty()
-        } else {
-            true
+        if (
+            preserveExistingExact &&
+            hasCanonicalExactSelection(track)
+        ) {
+            return false
         }
+
+        return true
     }
 
     private fun preservedSelection(
@@ -238,9 +239,7 @@ class SearchCoordinator(
 
         val keepExactSelection =
             preserveExistingExact &&
-                !track.selectedVideoId.isNullOrBlank() &&
-                track.status == TrackStatus.MATCHED &&
-                track.candidates.isEmpty()
+                hasCanonicalExactSelection(track)
 
         return if (keepExactSelection) {
             PreservedSelection.PROJECT_EXACT
@@ -248,6 +247,13 @@ class SearchCoordinator(
             null
         }
     }
+
+    private fun hasCanonicalExactSelection(
+        track: Track
+    ): Boolean =
+        !track.selectedVideoId.isNullOrBlank() &&
+            track.status == TrackStatus.MATCHED &&
+            track.candidates.isEmpty()
 
     private fun applySearchCandidates(
         track: Track,
