@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.18
+- G01: added read-only import of one playlist from the connected YouTube/YTM account.
+- Import screen can list account playlists, select one and load ordered playlist items.
+- Imported account tracks keep exact YouTube videoId and open as the current local workspace.
+- Exact imported selections are marked MATCHED, so Step 3 can open Review without search.list.
+- Playlist source is read-only; no account playlist is modified during import.
+- Added v1.4.18 G01 static audit, release docs and phone-test plan.
+- v1.4.17 FAST_FLOW existing-target duplicate/rotation path recorded as phone-tested PASS; unrelated auth cases remain open/retest.
+- versionCode 52 / versionName 1.4.18.
+- v1.4.18 G01 = NOT PHONE-TESTED YET.
+
 ## v1.4.17
 - Step 2 auth-ready state is invalidated after YouTube API HTTP 401.
 - Added direct `Далі → Створити / додати` action from Review to Destination.

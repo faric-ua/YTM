@@ -19,16 +19,26 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
+import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.parser.PlaylistParser
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
+import com.saney.ytmimporter.youtube.YouTubeApi
+import java.util.concurrent.Executors
 
 class ImportActivity : Activity() {
     private val fileRequestCode =
         2301
+
+    private val executor =
+        Executors.newSingleThreadExecutor()
+
+    private val api =
+        YouTubeApi()
 
     private lateinit var currentPlaylistStore:
         CurrentPlaylistStore
@@ -50,6 +60,11 @@ class ImportActivity : Activity() {
             CurrentPlaylistStore(this)
 
         buildUi()
+    }
+
+    override fun onDestroy() {
+        executor.shutdownNow()
+        super.onDestroy()
     }
 
     override fun onActivityResult(
@@ -153,6 +168,49 @@ class ImportActivity : Activity() {
                     }
                 )
             }
+
+        content.addView(
+            sectionTitle(
+                "Імпорт із YouTube/YTM"
+            )
+        )
+
+        content.addView(
+            card().apply {
+                addView(
+                    TextView(
+                        this@ImportActivity
+                    ).apply {
+                        text =
+                            "Плейлист з підключеного акаунта"
+                        textSize = 16f
+                        setTextColor(Color.WHITE)
+                        setTypeface(
+                            typeface,
+                            Typeface.BOLD
+                        )
+                    }
+                )
+
+                addView(
+                    infoText(
+                        "Read-only імпорт: застосунок лише читає список плейлистів " +
+                            "та їх треки. Плейлист у YouTube/YTM не змінюється. " +
+                            "Треки відкриваються локально вже з точними videoId."
+                    )
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            "Вибрати плейлист з YTM",
+                        primary = true
+                    ) {
+                        importFromYtmAccount()
+                    }
+                )
+            }
+        )
 
         content.addView(
             sectionTitle("Імпорт із файлу")
@@ -357,6 +415,180 @@ class ImportActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+    }
+
+    private fun importFromYtmAccount() {
+        val token =
+            AuthSessionStore
+                .current()
+                .accessToken
+
+        if (token.isNullOrBlank()) {
+            toast(
+                "Спочатку підключіть Google/YTM у кроці 2 на головному екрані."
+            )
+            return
+        }
+
+        toast(
+            "Завантажую плейлисти YouTube/YTM…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    api.listMyPlaylists(token)
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        playlists ->
+
+                    if (playlists.isEmpty()) {
+                        toast(
+                            "У підключеному акаунті немає доступних плейлистів."
+                        )
+                        return@onSuccess
+                    }
+
+                    showYtmPlaylistPicker(
+                        token = token,
+                        playlists = playlists
+                    )
+                }.onFailure { error ->
+                    toast(
+                        error.message
+                            ?: "Не вдалося завантажити список плейлистів"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showYtmPlaylistPicker(
+        token: String,
+        playlists: List<YouTubePlaylistInfo>
+    ) {
+        val labels =
+            playlists.map { playlist ->
+                buildString {
+                    append(playlist.title)
+                    append("\n")
+                    append(playlist.itemCount)
+                    append(" треків • ")
+                    append(
+                        when (
+                            playlist.privacyStatus
+                        ) {
+                            "public" ->
+                                "публічний"
+
+                            "unlisted" ->
+                                "за посиланням"
+
+                            else ->
+                                "приватний"
+                        }
+                    )
+                }
+            }
+
+        UiChrome.showMenuDialog(
+            activity = this,
+            title =
+                "Вибрати плейлист YouTube/YTM",
+            subtitle =
+                "Read-only: виберіть плейлист для локального імпорту.",
+            actions =
+                playlists.mapIndexed {
+                        index,
+                        playlist ->
+
+                    UiChrome.MenuAction(
+                        label = labels[index],
+                        onClick = {
+                            loadYtmPlaylist(
+                                token = token,
+                                playlistInfo =
+                                    playlist
+                            )
+                        }
+                    )
+                },
+            negativeLabel = "Скасувати"
+        )
+    }
+
+    private fun loadYtmPlaylist(
+        token: String,
+        playlistInfo: YouTubePlaylistInfo
+    ) {
+        toast(
+            "Завантажую «${playlistInfo.title}»…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    api.listPlaylistTracks(
+                        accessToken = token,
+                        playlistId =
+                            playlistInfo.id
+                    )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        loaded ->
+
+                    if (loaded.tracks.isEmpty()) {
+                        toast(
+                            "Плейлист «${playlistInfo.title}» порожній або не містить доступних відео."
+                        )
+                        return@onSuccess
+                    }
+
+                    val imported =
+                        ImportedPlaylist(
+                            name =
+                                playlistInfo.title,
+                            tracks =
+                                loaded.tracks
+                                    .toMutableList()
+                        )
+
+                    finishImport(
+                        imported = imported,
+                        sourceLabel =
+                            "YouTube/YTM (${playlistInfo.title})",
+                        message =
+                            "YTM playlist імпортовано: " +
+                                "${imported.tracks.size} треків • " +
+                                "точних videoId: ${imported.tracks.size} • " +
+                                "playlistItems.list: ${loaded.requestCount} request(s)."
+                    )
+                }.onFailure { error ->
+                    toast(
+                        error.message
+                            ?: "Не вдалося завантажити плейлист"
+                    )
+                }
+            }
+        }
     }
 
     /**

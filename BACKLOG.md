@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.17 — Auth-state + Review→Destination UX
+v1.4.18 — YTM account library import/export, G01 one-playlist import
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -50,10 +50,25 @@ v1.4.17 — Auth-state + Review→Destination UX
 - [ ] existing playlist / duplicate smoke
 - [ ] rotation smoke
 
+## v1.4.18
+- [x] G01 list playlists from connected YouTube/YTM account
+- [x] G01 select one account playlist
+- [x] G01 load ordered playlist items with exact videoId
+- [x] G01 open imported account playlist as current local workspace
+- [x] G01 preserve exact selections so search.list is not required
+- [x] G01 static audit + phone-test plan
+- [ ] GitHub build
+- [ ] phone test: account playlist list/picker
+- [ ] phone test: import one playlist
+- [ ] phone test: Step 3 opens Review without search.list
+- [ ] phone test: save imported workspace as YTM Project
+- [ ] phone test: reopen saved YTM Project and preserve exact videoId
+- [ ] next wave: export all account playlists to a chosen folder
+
 ## Next
-Preferred v1.4.18 candidate:
-YTM account library import/export — load one playlist into a local working project,
-save/export it for reuse, and later support exporting all account playlists to a chosen folder.
+After G01 phone verification:
+continue YTM account library work — verify local-project reuse first,
+then add read-only export of all account playlists to a chosen device folder.
 
 ## Later bug-fix wave
 Fix every FAIL/BLOCKED case accumulated in BUG_REGISTER and release test runs,

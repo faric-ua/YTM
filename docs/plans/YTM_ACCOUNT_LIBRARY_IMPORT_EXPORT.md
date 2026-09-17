@@ -18,3 +18,16 @@ Allow the user to reuse playlists already stored in the connected YouTube/YTM ac
 - read-only export: never modify the account.
 
 Suggested implementation wave: v1.4.18.
+
+## v1.4.18 G01
+Implemented scope:
+- list playlists from the connected account;
+- select one playlist;
+- load ordered playlist items with exact videoId;
+- open it as the current local workspace;
+- keep the operation read-only against the source account.
+
+Still pending:
+- phone verification;
+- save/reopen verification as YTM Project;
+- export all account playlists to a chosen folder.

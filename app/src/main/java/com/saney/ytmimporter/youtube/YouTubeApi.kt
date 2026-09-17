@@ -3,6 +3,7 @@ package com.saney.ytmimporter.youtube
 import com.saney.ytmimporter.model.GoogleAccountInfo
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
+import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.model.YouTubeChannelInfo
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import org.json.JSONObject
@@ -36,6 +37,11 @@ class YouTubeApi {
 
     data class PlaylistVideoIdsResult(
         val videoIds: Set<String>,
+        val requestCount: Int
+    )
+
+    data class PlaylistTracksResult(
+        val tracks: List<Track>,
         val requestCount: Int
     )
 
@@ -133,6 +139,148 @@ class YouTubeApi {
         } while (pageToken != null && pages < 20)
 
         return result.sortedBy { it.title.lowercase() }
+    }
+
+    fun listPlaylistTracks(
+        accessToken: String,
+        playlistId: String
+    ): PlaylistTracksResult {
+        val tracks = mutableListOf<Track>()
+        var pageToken: String? = null
+        var requestCount = 0
+        var pages = 0
+
+        do {
+            var url =
+                "https://www.googleapis.com/youtube/v3/playlistItems" +
+                    "?part=snippet,contentDetails" +
+                    "&maxResults=50" +
+                    "&playlistId=" +
+                    URLEncoder.encode(
+                        playlistId,
+                        Charsets.UTF_8.name()
+                    )
+
+            if (!pageToken.isNullOrBlank()) {
+                url += "&pageToken=" +
+                    URLEncoder.encode(
+                        pageToken,
+                        Charsets.UTF_8.name()
+                    )
+            }
+
+            val response =
+                request(
+                    "GET",
+                    url,
+                    accessToken
+                )
+
+            requestCount += 1
+
+            requireSuccess(
+                response,
+                "Завантаження треків плейлиста"
+            )
+
+            val json = JSONObject(response.body)
+            val items = json.optJSONArray("items")
+
+            if (items != null) {
+                for (i in 0 until items.length()) {
+                    val item =
+                        items.getJSONObject(i)
+
+                    val snippet =
+                        item.optJSONObject("snippet")
+
+                    val contentDetails =
+                        item.optJSONObject(
+                            "contentDetails"
+                        )
+
+                    val contentVideoId =
+                        contentDetails
+                            ?.optString("videoId")
+                            .orEmpty()
+                            .trim()
+
+                    val resourceVideoId =
+                        snippet
+                            ?.optJSONObject(
+                                "resourceId"
+                            )
+                            ?.optString("videoId")
+                            .orEmpty()
+                            .trim()
+
+                    val videoId =
+                        contentVideoId
+                            .ifBlank {
+                                resourceVideoId
+                            }
+
+                    if (videoId.isBlank()) {
+                        continue
+                    }
+
+                    val title =
+                        decodeEntities(
+                            snippet
+                                ?.optString("title")
+                                .orEmpty()
+                        )
+                            .trim()
+                            .ifBlank {
+                                "YouTube video $videoId"
+                            }
+
+                    val channel =
+                        decodeEntities(
+                            snippet
+                                ?.optString(
+                                    "videoOwnerChannelTitle"
+                                )
+                                .orEmpty()
+                        )
+                            .trim()
+                            .ifBlank {
+                                "YouTube"
+                            }
+
+                    tracks +=
+                        Track(
+                            originalTitle = title,
+                            originalArtist = channel,
+                            selectedVideoId = videoId,
+                            selectedTitle = title,
+                            selectedChannel = channel,
+                            status = TrackStatus.MATCHED,
+                            candidates = emptyList(),
+                            manuallySelected = false,
+                            error = null,
+                            historyIndex = tracks.size
+                        )
+                }
+            }
+
+            pageToken =
+                json.optString("nextPageToken")
+                    .trim()
+                    .takeIf {
+                        it.isNotBlank()
+                    }
+
+            pages += 1
+        } while (
+            pageToken != null &&
+            pages < 200
+        )
+
+        return PlaylistTracksResult(
+            tracks = tracks,
+            requestCount = requestCount
+        )
     }
 
     fun listPlaylistVideoIds(

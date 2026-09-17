@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.17/RELEASE.md"
-check_file "docs/v.1.4.17/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.18/RELEASE.md"
+check_file "docs/v.1.4.18/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -49,7 +49,7 @@ bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/search-coordinator-audit.sh
 bash scripts/playlist-write-coordinator-audit.sh
 bash scripts/destination-coordinator-audit.sh
-bash scripts/v1417-auth-flow-audit.sh
+bash scripts/v1418-account-library-import-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh
@@ -75,6 +75,7 @@ check_file "qa/BUG_REGISTER.md"
 check_file "scripts/playlist-write-coordinator-audit.sh"
 check_file "scripts/destination-coordinator-audit.sh"
 check_file "scripts/v1417-auth-flow-audit.sh"
+check_file "scripts/v1418-account-library-import-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
 check_file "qa/TEST_DATA.md"
@@ -220,11 +221,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 51' app/build.gradle.kts \
-  || fail "Expected versionCode = 51"
+grep -q 'versionCode = 52' app/build.gradle.kts \
+  || fail "Expected versionCode = 52"
 
-grep -q 'versionName = "1.4.17"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.17"'
+grep -q 'versionName = "1.4.18"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.18"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -370,8 +371,10 @@ echo "- silent Google/YTM recovery marker is non-secret and token-free"
 echo "- playlist completion result is modal, not an inline Home frame"
 echo "- global master QA plan is present"
 
-grep -Fq '| v1.4.17 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
-  || fail "v1.4.17 must start NOT TESTED YET"
+grep -Fq '| v1.4.17 | **PARTIALLY PHONE-TESTED — PASS FOR TESTED PATH** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.17 tested-path status missing"
+grep -Fq '| v1.4.18 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.18 must start NOT TESTED YET"
 grep -Fq 'BUG-003 / Q-003' qa/BUG_REGISTER.md \
   || fail "BUG-003 must stay documented"
 echo "- BUG-003 auth recovery failure preserved"

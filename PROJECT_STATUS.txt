@@ -1,13 +1,14 @@
 YTM Importer
-Version: 1.4.17
-Version code: 51
+Version: 1.4.18
+Version code: 52
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
 v1.4.14 PARTIALLY PHONE-TESTED — FAIL (BUG-003)
 v1.4.15 NOT TESTED
 v1.4.16 PARTIALLY PHONE-TESTED
-v1.4.17 NOT TESTED YET
+v1.4.17 PARTIALLY PHONE-TESTED — FAST_FLOW EXISTING-TARGET PASS
+v1.4.18 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -30,13 +31,13 @@ destination rotation smoke
 remaining release-plan cases or documented SKIP/BLOCKED decisions
 
 
-v1.4.17 focus:
-- invalidate stale auth-ready state after HTTP 401
-- direct Review -> Destination navigation
-- cleaner playlist result actions
-- dynamic APK/artifact naming
-- TERMUX_COMMANDS.md
-- plan YTM account playlist import/export
+v1.4.18 G01 focus:
+- read-only list of playlists from connected YouTube/YTM account
+- select one playlist
+- load playlist items in account order with exact videoId
+- open the account playlist as current local workspace
+- preserve exact selections and avoid unnecessary search.list
+- phone-test local YTM Project save/reopen after account import
 
 Known:
 BUG-001/Q-001 OPEN
