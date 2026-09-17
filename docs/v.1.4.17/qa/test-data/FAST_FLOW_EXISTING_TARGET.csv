@@ -1,0 +1,22 @@
+field,value,notes
+app_version,1.4.17,QA build under test
+flow,FAST_FLOW,Existing target playlist; all imported tracks already exist
+import_tracks,3,All three tracks resolved from cache
+ready_to_write,3,Review screen value
+needs_review,0,Review screen value
+target_playlist,YTM QA Existing Target,Existing private YouTube/YTM playlist
+target_track_count_before,6,Visible before duplicate scan
+selected_for_write,3,Duplicate scan
+already_in_playlist,3,Duplicate scan
+duplicates_in_import,0,Duplicate scan
+new_tracks,0,Duplicate scan
+playlistItems.list_requests,1,Only one duplicate-scan request
+rotation_sequence,portrait -> landscape -> portrait,State preserved
+post_rotation_selected_for_write,3,Unchanged
+post_rotation_already_in_playlist,3,Unchanged
+post_rotation_duplicates_in_import,0,Unchanged
+post_rotation_new_tracks,0,Unchanged
+unexpected_navigation_home,false,No Home navigation after rotation
+final_action,Skip duplicates and add,Existing-target all-duplicate path
+result_added,0,Expected: no duplicate items inserted
+result_target_mode,updated existing,Result modal

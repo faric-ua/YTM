@@ -1,0 +1,20 @@
+YTM Importer v1.4.17 — QA Evidence Manifest
+
+EVIDENCE_01_ROTATION_STATE_PRESERVED_BLURRED.jpg
+- Source: manual screen recording
+- Purpose: confirms duplicate-scan values after returning to portrait
+- Privacy: account/email region blurred
+
+EVIDENCE_02_RESULT_MODAL_ADDED_0.jpg
+- Source: manual screenshot
+- Purpose: confirms all-duplicate result path and vertical result-modal actions
+- Key value: Added = 0
+- Privacy: no visible account email requiring blur
+
+EVIDENCE_03_ROTATION_TEST_BLURRED.mp4
+- Source: manual screen recording
+- Purpose: confirms portrait → landscape → portrait transition and state preservation
+- Privacy: account/email region blurred
+
+FAST_FLOW_EXISTING_TARGET.csv
+- Structured test data and observed values for the run
