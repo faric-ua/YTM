@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.29
-Version code: 63
+Version: 1.4.30
+Version code: 64
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -20,6 +20,7 @@ v1.4.26 PARTIALLY PHONE-TESTED — SELECTIVE EXPORT PASS / BUG-005 FOUND
 v1.4.27 PARTIALLY PHONE-TESTED — BUG-005 EXACT-ID SEARCH GUARD PASS
 v1.4.28 PARTIALLY PHONE-TESTED — BULK MANIFEST IMPORT PATH PASS
 v1.4.29 PARTIALLY PHONE-TESTED — INCREMENTAL BACKUP PATH PASS
+v1.4.30 NOT TESTED YET — CONSOLIDATED DELTA-CHAIN RESTORE
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -242,6 +243,19 @@ v1.4.29 phone QA confirmed:
 - BUG-006 reproduced: long delta-boundary Toast was truncated
 - R2 phone retest PASS: readable `Incremental delta backup` dialog with full text
 - release scope = targeted incremental-backup PASS, not full regression
+
+v1.4.30 focus:
+- choose a common parent folder containing baseline + delta sessions
+- discover one or more incremental chain heads
+- follow baseSessionName backwards with cycle/missing-base guards
+- preserve ALL / SELECTED scope and scopePlaylistIds
+- replay NEW / UPDATED / UNCHANGED / MISSING oldest-to-newest
+- reject FAILED records because exact latest state is unknown
+- validate project playlistId/privacy/fingerprint before materialization
+- write a new schema-v3 CONSOLIDATED_FULL self-contained backup
+- preserve source backup folders unchanged
+- YouTube API = 0 for chain restore/materialization
+- consolidated output opens through normal manifest import and can be a future incremental baseline
 
 
 Known:

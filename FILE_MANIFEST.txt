@@ -1,4 +1,4 @@
-YTM Importer v1.4.29 FULL — FILE MANIFEST
+YTM Importer v1.4.30 FULL — FILE MANIFEST
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 0739c7de5aa06eac  .github/workflows/build-apk.yml
@@ -7,20 +7,20 @@ YTM Importer v1.4.29 FULL — FILE MANIFEST
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
-7436fdcbcc367492  BACKLOG.md
-788a4fc19b41fd4c  CHANGELOG.md
+b9a42dbcf2d06294  BACKLOG.md
+7b239a9feed03088  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 503b7f911c1ac04c  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
-4a97cd207df3e8bf  PROJECT_STATUS.txt
+8b2bfde32c21e7c1  PROJECT_STATUS.txt
 ce775606933d5b6f  PUBLIC_RELEASE_CHECKLIST.md
-a4f2c1c781c1381f  README.md
+723105e72f9e0670  README.md
 48b7e9718ed807af  README_G01A.md
 7b00d1251f822b57  README_GUARD_FIX.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
-7f224564b95c6709  RELEASE_TEST_STATUS.md
-345153784b6b29bb  START_HERE_ASSISTANT.md
+f3bc1f3e137d6032  RELEASE_TEST_STATUS.md
+7d6ac1a5131502db  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
@@ -78,13 +78,13 @@ fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 c75f45f28e9e62b4  TERMUX_COMMANDS.md
 d82aae793cbd99c4  YTM_ASSISTANT_WORKFLOW.md
-f14b25e716462c4e  app/build.gradle.kts
+5cf52a53a0344a1c  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 27d6378715cbab35  app/src/main/AndroidManifest.xml
 651321f836af9236  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 6a4b4fcd5f443032  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 1ae0123d61c7496f  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-5d3787ac56e07a0c  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+be7d82908a65bccc  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 67141799b3184cca  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 f4dc26fd0a49f24c  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 425c1962df17dc4a  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
@@ -98,6 +98,7 @@ e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 32d5c420fc9d2cda  app/src/main/java/com/saney/ytmimporter/model/Track.kt
 249f69059120d001  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
 69f61fe633c18f88  app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
+25de8eada195dd32  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryDeltaChainRestorer.kt
 520a65c9f50141a9  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryExporter.kt
 7872f629b96f6ae9  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryIncrementalBackup.kt
 8b1bd44762ebc099  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryManifestImporter.kt
@@ -163,9 +164,9 @@ bab4310bae2a420f  docs/tutorial/02_DEVELOPMENT_LOOP.md
 f170c73690bc3f42  docs/tutorial/06_ACCOUNT_LIBRARY_EXPORT.md
 1e43ba2979f8d061  docs/tutorial/08_IMPORT_AND_PROJECT_FORMAT.md
 6810b84ddb8b1972  docs/tutorial/11_SEARCH_AND_EXACT_VIDEO_ID.md
-10f41e7f5a2d4f0f  docs/tutorial/14_BACKUP_AND_EXPORT.md
+896ef135ac55fa49  docs/tutorial/14_BACKUP_AND_EXPORT.md
 45a38d90e1550e4e  docs/tutorial/README.md
-11c28eec1c65201d  docs/tutorial/ROADMAP.md
+df453315c2a346a3  docs/tutorial/ROADMAP.md
 fba063f3df84f31a  docs/v.0.10.0/RELEASE.md
 40eb6695cc102a64  docs/v.0.10.0/diagrams/ARCHITECTURE.md
 d36539446325c8a5  docs/v.0.10.0/diagrams/BEFORE_AFTER_v0.10.0.md
@@ -1055,6 +1056,11 @@ cfe983e51369f4ce  docs/v.1.4.3/REGRESSION_CHECKLIST.md
 134d0a0f8bc950e1  docs/v.1.4.3/RELEASE.md
 322116cf7e140e80  docs/v.1.4.3/diagrams/DIALOG_SYSTEM.md
 42915a80b3bcbd50  docs/v.1.4.3/diagrams/README.md
+ece37b475c4e2f79  docs/v.1.4.30/REGRESSION_CHECKLIST.md
+df1bf6d2d0c37df8  docs/v.1.4.30/RELEASE.md
+688028c414808a25  docs/v.1.4.30/diagrams/DELTA_CHAIN_FLOW.md
+0e16a57d70ed0130  docs/v.1.4.30/qa/BUG_REGISTER.md
+4e7ec10751171173  docs/v.1.4.30/qa/PHONE_TEST.md
 34d29ff1ab04898f  docs/v.1.4.4/REGRESSION_CHECKLIST.md
 cd2362465bf4e6de  docs/v.1.4.4/RELEASE.md
 5f809adb076532f4  docs/v.1.4.4/diagrams/ADAPTIVE_BUTTONS.md
@@ -1127,10 +1133,10 @@ f58573a1f289d980  scripts/destination-coordinator-audit.sh
 d0552e9ad9641729  scripts/mainactivity-audit.sh
 f6002f563634451e  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
-b70c085bd291d793  scripts/project-handoff-audit.sh
-6118243dace37196  scripts/qa-plan-audit.sh
+dba7d57ce9d0d5c1  scripts/project-handoff-audit.sh
+c33a21ee18d8c436  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
-faf1cff33ba9efe9  scripts/release-preflight.sh
+f6dd9322c33f00f4  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d101c2a72335189a  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1164,4 +1170,5 @@ a251836bf6c7ae0c  scripts/v1427-exact-id-search-audit.py
 17ce9342abf81f91  scripts/v1428-qa-close-audit.sh
 8380e9a770bf8ac3  scripts/v1429-incremental-backup-audit.sh
 e8b3243088624b9d  scripts/v1429-qa-close-audit.sh
+00339bf567f190f3  scripts/v1430-delta-chain-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts

@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.29/RELEASE.md"
-check_file "docs/v.1.4.29/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.30/RELEASE.md"
+check_file "docs/v.1.4.30/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -60,6 +60,7 @@ bash scripts/v1428-manifest-import-audit.sh
 bash scripts/v1428-qa-close-audit.sh
 bash scripts/v1429-incremental-backup-audit.sh
 bash scripts/v1429-qa-close-audit.sh
+bash scripts/v1430-delta-chain-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -77,6 +78,7 @@ bash scripts/dialog-animation-audit.sh
 check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryManifestImporter.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryIncrementalBackup.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryDeltaChainRestorer.kt"
 check_file "OPEN_QUESTIONS.md"
 check_file "RELEASE_TEST_STATUS.md"
 check_file "docs/v.1.4.17/qa/BUG_REGISTER.md"
@@ -103,6 +105,7 @@ check_file "scripts/v1428-manifest-import-audit.sh"
 check_file "scripts/v1428-qa-close-audit.sh"
 check_file "scripts/v1429-incremental-backup-audit.sh"
 check_file "scripts/v1429-qa-close-audit.sh"
+check_file "scripts/v1430-delta-chain-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -249,11 +252,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 63' app/build.gradle.kts \
-  || fail "Expected versionCode = 63"
+grep -q 'versionCode = 64' app/build.gradle.kts \
+  || fail "Expected versionCode = 64"
 
-grep -q 'versionName = "1.4.29"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.29"'
+grep -q 'versionName = "1.4.30"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.30"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

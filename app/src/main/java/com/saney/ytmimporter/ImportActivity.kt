@@ -27,12 +27,16 @@ import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.parser.PlaylistParser
 import com.saney.ytmimporter.storage.AccountBackupBaseline
+import com.saney.ytmimporter.storage.AccountLibraryDeltaChainRestorer
 import com.saney.ytmimporter.storage.AccountLibraryExporter
 import com.saney.ytmimporter.storage.AccountLibraryIncrementalBackup
 import com.saney.ytmimporter.storage.AccountLibraryManifestEntry
 import com.saney.ytmimporter.storage.AccountLibraryManifestImport
 import com.saney.ytmimporter.storage.AccountLibraryManifestImporter
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.storage.DeltaChainHead
+import com.saney.ytmimporter.storage.DeltaChainMaterializeResult
+import com.saney.ytmimporter.storage.DeltaChainPlan
 import com.saney.ytmimporter.storage.IncrementalBackupPlan
 import com.saney.ytmimporter.storage.IncrementalBackupRecord
 import com.saney.ytmimporter.storage.IncrementalBackupWriteResult
@@ -62,6 +66,16 @@ class ImportActivity : Activity() {
 
     private val incrementalBackupTargetRequestCode =
         2406
+
+    private val deltaChainRootRequestCode =
+        2407
+
+    private val deltaChainTargetRequestCode =
+        2408
+
+    private var pendingDeltaChainPlan:
+        DeltaChainPlan? =
+        null
 
     private var pendingIncrementalBackupPlan:
         IncrementalBackupPlan? =
@@ -183,6 +197,20 @@ class ImportActivity : Activity() {
                     ?.data
                     ?.let(
                         ::writeIncrementalBackup
+                    )
+
+            deltaChainRootRequestCode ->
+                data
+                    ?.data
+                    ?.let(
+                        ::prepareDeltaChainRoot
+                    )
+
+            deltaChainTargetRequestCode ->
+                data
+                    ?.data
+                    ?.let(
+                        ::materializeDeltaChain
                     )
         }
     }
@@ -352,6 +380,17 @@ class ImportActivity : Activity() {
                         topMarginDp = 8
                     ) {
                         chooseIncrementalBackupBase()
+                    }
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            "Зібрати повний backup з chain",
+                        primary = false,
+                        topMarginDp = 8
+                    ) {
+                        chooseDeltaChainRoot()
                     }
                 )
             }
@@ -2002,6 +2041,385 @@ class ImportActivity : Activity() {
             List<YouTubePlaylistInfo>,
         val estimatedPlaylistItemsRequests: Int
     )
+
+
+    private fun chooseDeltaChainRoot() {
+        val intent =
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT_TREE
+            ).apply {
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            deltaChainRootRequestCode
+        )
+    }
+
+    private fun prepareDeltaChainRoot(
+        treeUri: Uri
+    ) {
+        pendingDeltaChainPlan =
+            null
+
+        runCatching {
+            contentResolver
+                .takePersistableUriPermission(
+                    treeUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+        }
+
+        toast(
+            "Сканую backup sessions локально…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    AccountLibraryDeltaChainRestorer
+                        .discoverHeads(
+                            resolver =
+                                contentResolver,
+                            treeUri =
+                                treeUri
+                        )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        heads ->
+
+                    showDeltaChainHeadPicker(
+                        treeUri = treeUri,
+                        heads = heads
+                    )
+                }.onFailure {
+                        error ->
+
+                    toast(
+                        error.message
+                            ?: "Не вдалося знайти backup chain"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showDeltaChainHeadPicker(
+        treeUri: Uri,
+        heads: List<DeltaChainHead>
+    ) {
+        if (
+            heads.size ==
+                1
+        ) {
+            resolveDeltaChain(
+                treeUri = treeUri,
+                head =
+                    heads.first()
+            )
+            return
+        }
+
+        UiChrome.showMenuDialog(
+            activity = this,
+            title =
+                "Backup chain — виберіть head",
+            subtitle =
+                "Знайдено ${heads.size} незалежних delta heads",
+            actions =
+                heads.map {
+                        head ->
+
+                    UiChrome.MenuAction(
+                        label =
+                            "${head.folderName}\n${head.scopeMode}",
+                        onClick = {
+                            resolveDeltaChain(
+                                treeUri =
+                                    treeUri,
+                                head =
+                                    head
+                            )
+                        }
+                    )
+                },
+            negativeLabel =
+                "Скасувати"
+        )
+    }
+
+    private fun resolveDeltaChain(
+        treeUri: Uri,
+        head: DeltaChainHead
+    ) {
+        toast(
+            "Відновлюю logical state із backup chain…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    AccountLibraryDeltaChainRestorer
+                        .resolvePlan(
+                            resolver =
+                                contentResolver,
+                            treeUri =
+                                treeUri,
+                            headFolderName =
+                                head.folderName
+                        )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        plan ->
+
+                    pendingDeltaChainPlan =
+                        plan
+
+                    showDeltaChainPreview(
+                        plan
+                    )
+                }.onFailure {
+                        error ->
+
+                    pendingDeltaChainPlan =
+                        null
+
+                    UiChrome.showMessageDialog(
+                        activity = this,
+                        title =
+                            "Backup chain — помилка",
+                        message =
+                            error.message
+                                ?: "Не вдалося відновити chain",
+                        actions =
+                            listOf(
+                                UiChrome.DialogAction(
+                                    label =
+                                        "Закрити",
+                                    tone =
+                                        UiChrome.ActionTone.ACCENT,
+                                    onClick = {}
+                                )
+                            )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showDeltaChainPreview(
+        plan: DeltaChainPlan
+    ) {
+        val scopeText =
+            if (
+                plan.scopeMode ==
+                    "SELECTED"
+            ) {
+                "SELECTED (${plan.scopePlaylistIds.size})"
+            } else {
+                "ALL"
+            }
+
+        UiChrome.showMessageDialog(
+            activity = this,
+            title =
+                "Backup chain — preview",
+            message =
+                "Base: ${plan.baseFolderName}\n" +
+                    "Head: ${plan.headFolderName}\n" +
+                    "Ланок у chain: ${plan.chainLength}\n" +
+                    "Scope: $scopeText\n\n" +
+                    "Плейлистів у фінальному state: ${plan.playlistCount}\n" +
+                    "YTM Project джерел: ${plan.projectCount}\n" +
+                    "Порожніх плейлистів: ${plan.emptyCount}\n" +
+                    "MISSING подій застосовано: ${plan.missingEvents}\n\n" +
+                    "Локально: YouTube API = 0.\n" +
+                    "Source backup folders не змінюються.",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label =
+                            "Матеріалізувати",
+                        tone =
+                            UiChrome.ActionTone.ACCENT,
+                        onClick = {
+                            chooseDeltaChainTarget()
+                        }
+                    ),
+                    UiChrome.DialogAction(
+                        label =
+                            "Скасувати",
+                        tone =
+                            UiChrome.ActionTone.NORMAL,
+                        onClick = {
+                            pendingDeltaChainPlan =
+                                null
+                        }
+                    )
+                )
+        )
+    }
+
+    private fun chooseDeltaChainTarget() {
+        if (
+            pendingDeltaChainPlan ==
+                null
+        ) {
+            toast(
+                "План backup chain втрачено. Повторіть сканування."
+            )
+            return
+        }
+
+        val intent =
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT_TREE
+            ).apply {
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            deltaChainTargetRequestCode
+        )
+    }
+
+    private fun materializeDeltaChain(
+        treeUri: Uri
+    ) {
+        val plan =
+            pendingDeltaChainPlan
+
+        if (plan == null) {
+            toast(
+                "План backup chain втрачено. Повторіть сканування."
+            )
+            return
+        }
+
+        persistExportFolderPermission(
+            treeUri
+        )
+
+        toast(
+            "Створюю consolidated backup локально…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    AccountLibraryDeltaChainRestorer
+                        .materialize(
+                            resolver =
+                                contentResolver,
+                            treeUri =
+                                treeUri,
+                            appVersion =
+                                BuildConfig.VERSION_NAME,
+                            plan =
+                                plan
+                        )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        summary ->
+
+                    pendingDeltaChainPlan =
+                        null
+
+                    showDeltaChainResult(
+                        summary
+                    )
+                }.onFailure {
+                        error ->
+
+                    UiChrome.showMessageDialog(
+                        activity = this,
+                        title =
+                            "Consolidated backup — помилка",
+                        message =
+                            error.message
+                                ?: "Не вдалося матеріалізувати backup chain",
+                        actions =
+                            listOf(
+                                UiChrome.DialogAction(
+                                    label =
+                                        "Закрити",
+                                    tone =
+                                        UiChrome.ActionTone.ACCENT,
+                                    onClick = {}
+                                )
+                            )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showDeltaChainResult(
+        summary: DeltaChainMaterializeResult
+    ) {
+        UiChrome.showMessageDialog(
+            activity = this,
+            title =
+                "Consolidated backup збережено",
+            message =
+                "Ланок у source chain: ${summary.chainLength}\n" +
+                    "Фінальних плейлистів: ${summary.playlistCount}\n" +
+                    "YTM Project файлів: ${summary.exportedProjects}\n" +
+                    "Порожніх плейлистів: ${summary.emptyPlaylists}\n\n" +
+                    "Папка: ${summary.folderName}\n" +
+                    "Індекс: ${summary.manifestFile}\n\n" +
+                    "Це self-contained full backup. " +
+                    "Його можна відкрити через «Відкрити backup / manifest.json» " +
+                    "або використати як baseline для наступного incremental backup.",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label =
+                            "Закрити",
+                        tone =
+                            UiChrome.ActionTone.ACCENT,
+                        onClick = {}
+                    )
+                )
+        )
+    }
 
     private fun chooseAccountBackupFolder() {
         val intent =

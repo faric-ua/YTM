@@ -30,28 +30,24 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.29**
-- versionCode: **63**
-- release focus: **Incremental Account Backup**
-- release status: **PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH**
+- versionName: **1.4.30**
+- versionCode: **64**
+- release focus: **Consolidated Delta-Chain Restore**
+- release status: **NOT PHONE-TESTED YET**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
-v1.4.29 adds non-destructive incremental account backup on top of existing
-full/selective export manifests.
+v1.4.30 adds local consolidated delta-chain restore/materialization.
 
-The sync path preserves the baseline scope (`ALL` or `SELECTED`), scans current
-playlist contents to build deterministic fingerprints, previews
-`NEW / UPDATED / UNCHANGED / MISSING / FAILED`, and writes a new schema-v3
-delta folder without modifying the older backup.
+The user selects a common parent folder containing a full/selective baseline
+and one or more schema-v3 incremental deltas. The app follows `baseSessionName`
+links, replays `NEW / UPDATED / UNCHANGED / MISSING` locally, rejects `FAILED`
+states, and writes a new self-contained `CONSOLIDATED_FULL` backup.
 
-Real-phone v1.4.29 QA confirmed the targeted unchanged selective-scope path:
+The materializer preserves `ALL` / `SELECTED` scope and exact YTM Project
+identities. Source backup folders are read-only inputs and YouTube API usage is
+zero.
 
-`SELECTED(2) → scan → UNCHANGED=2 → save delta → 0 new project files → old baseline still opens 2/2`
-
-R2 also phone-closed BUG-006: the truncated delta-boundary Toast was replaced
-with a readable `UiChrome` dialog.
-
-The release remains only partially phone-tested overall.
+The current release is not phone-tested yet.
 
 Current known items include:
 
@@ -59,7 +55,8 @@ Current known items include:
 - BUG-002 / Q-002: DEFERRED BY USER — reproduced again on v1.4.27; evidence preserved;
 - BUG-003 / Q-003: CLOSED — PHONE RETEST PASS v1.4.20;
 - BUG-004 / Q-004: RETEST still required;
-- BUG-005 / Q-005: CLOSED — PHONE RETEST PASS v1.4.27.
+- BUG-005 / Q-005: CLOSED — PHONE RETEST PASS v1.4.27;
+- BUG-006 / Q-006: CLOSED — PHONE RETEST PASS v1.4.29 R2.
 
 For the freshest exact status, always read `PROJECT_STATUS.txt`, `BACKLOG.md`, `RELEASE_TEST_STATUS.md`, `qa/BUG_REGISTER.md`, and `OPEN_QUESTIONS.md`.
 
@@ -224,10 +221,10 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. v1.4.29 Incremental Account Backup is QA-closed for its targeted unchanged SELECTED path;
-2. extend backup evolution toward consolidated delta-chain restore/materialization;
-3. add changed/new/missing incremental scenarios in a later focused QA wave;
-4. continue the tutorial so the whole project can be recreated step by step.
+1. build and phone-test v1.4.30 Consolidated Delta-Chain Restore;
+2. verify the existing SELECTED(2) baseline + unchanged delta materializes to a self-contained 2-project backup;
+3. verify the consolidated backup opens normally and preserves exact-ID search guard behavior;
+4. add changed/new/missing incremental scenarios in a later focused QA wave.
 
 Future product requirements already recorded:
 

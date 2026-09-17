@@ -22,6 +22,7 @@
 | v1.4.27 | **PARTIALLY PHONE-TESTED — PASS FOR BUG-005 EXACT-ID SEARCH GUARD** | Real-phone retest: `top 3` remained 3/3 exact and ready; repeat-search plan reported 0 tracks to search and 0 new `search.list`. Full release regression remains incomplete. |
 | v1.4.28 | **PARTIALLY PHONE-TESTED — PASS FOR BULK MANIFEST IMPORT PATH** | Real-phone QA: manifest v2/SELECTED opened 2/2 projects; `top 3` restored exact 3/3; Review 3/3 ready; repeat Search planned 0 new `search.list`; missing-manifest error left the current workspace intact. |
 | v1.4.29 | **PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH** | Real-phone QA: SELECTED(2) baseline preflight passed; unchanged scan = UNCHANGED 2; delta wrote manifest.json with 0 new YTM Project files; old baseline still reopened 2/2; BUG-006 truncated boundary Toast fixed and phone-retested in R2. |
+| v1.4.30 | **NOT TESTED YET** | Consolidated Delta-Chain Restore: resolve a local baseline+delta chain, replay exact state, and materialize a new self-contained schema-v3 `CONSOLIDATED_FULL` backup with zero YouTube API work. |
 
 Static audits and GitHub build do not equal phone testing.
 

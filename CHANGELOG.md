@@ -1,5 +1,20 @@
 # Журнал змін (Changelog)
 
+## v1.4.30
+- Added local consolidated delta-chain restore/materialization.
+- Scans a common parent folder for full/selective and incremental backup sessions.
+- Resolves chain heads and follows `baseSessionName` links back to a full baseline.
+- Added cycle, missing-base and scope-drift guards.
+- Replays NEW / UPDATED / UNCHANGED / MISSING oldest-to-newest.
+- FAILED records stop exact consolidation instead of silently preserving uncertain state.
+- Validates source project playlistId/privacy and delta fingerprints.
+- Writes a self-contained schema-v3 `CONSOLIDATED_FULL` backup.
+- Preserves selected `scopePlaylistIds` for future incremental baselines.
+- Source backup sessions remain read-only.
+- YouTube API usage for materialization is 0.
+- versionCode 64 / versionName 1.4.30.
+- v1.4.30 = NOT PHONE-TESTED YET.
+
 ## v1.4.29
 - Added non-destructive incremental/sync-style account backup.
 - Existing full/selective account exports can be used as baselines.

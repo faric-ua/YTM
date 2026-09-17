@@ -21,10 +21,10 @@ That file explains:
 
 ## Current release
 
-- versionName: **1.4.29**
-- versionCode: **63**
-- focus: **Incremental Account Backup**
-- status: **PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH**
+- versionName: **1.4.30**
+- versionCode: **64**
+- focus: **Consolidated Delta-Chain Restore**
+- status: **NOT PHONE-TESTED YET**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 For exact current status, see:

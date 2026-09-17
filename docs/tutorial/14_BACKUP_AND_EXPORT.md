@@ -133,3 +133,39 @@ Expected:
 `SELECTED(2) → scan → UNCHANGED=2 → save delta → 0 new project files → old backup still opens`
 
 That proves the incremental semantics before adding harder changed/new/missing scenarios.
+
+
+## 12. Consolidated delta-chain restore — v1.4.30
+
+A delta folder is intentionally not a complete backup by itself.
+
+v1.4.30 adds the inverse operation: take a common parent folder containing a
+full baseline plus its incremental delta chain and materialize the latest known
+exact state into a new self-contained full backup.
+
+The resolver follows `baseSessionName` backwards, detects cycles/missing bases,
+and then replays the chain oldest-to-newest.
+
+Replay rules:
+
+- `NEW` adds state;
+- `UPDATED` replaces state;
+- `UNCHANGED` inherits and validates the previous state;
+- `MISSING` removes the playlist from the final state;
+- `FAILED` aborts exact consolidation.
+
+Rejecting `FAILED` is important: a read error does not prove what the actual
+latest playlist contents were.
+
+The materialized output uses schema v3 with
+`backupMode = CONSOLIDATED_FULL`. It keeps `scopePlaylistIds`, which matters
+for a SELECTED backup even when one selected playlist is currently missing.
+
+The output can be opened through the normal manifest picker and can become the
+baseline for another incremental backup.
+
+The complete operation is local:
+
+`full baseline + deltas → replay → consolidated full backup`
+
+No YouTube API request is needed.

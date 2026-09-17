@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.29 — Incremental Account Backup — PHONE QA PASS FOR TESTED PATH
+v1.4.30 — Consolidated Delta-Chain Restore
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -272,9 +272,30 @@ v1.4.29 — Incremental Account Backup — PHONE QA PASS FOR TESTED PATH
 - [x] phone retest BUG-006: full delta-boundary text visible
 - [x] preserve v1.4.29 real-phone evidence + QA closeout
 
+## v1.4.30 — Consolidated Delta-Chain Restore
+- [x] define exact local replay semantics for base + deltas
+- [x] discover delta heads from a common parent folder
+- [x] follow `baseSessionName` with missing-base and cycle guards
+- [x] preserve ALL / SELECTED scope and selected `scopePlaylistIds`
+- [x] replay NEW / UPDATED / UNCHANGED / MISSING
+- [x] reject FAILED for exact consolidation
+- [x] validate playlistId/privacy/fingerprint against source YTM Projects
+- [x] materialize schema-v3 `CONSOLIDATED_FULL`
+- [x] keep source sessions read-only
+- [x] keep YouTube API out of chain materialization
+- [x] add static audit, release docs, QA plan, diagram and tutorial update
+- [ ] GitHub build
+- [ ] phone test: common-parent chain discovery
+- [ ] phone test: SELECTED(2) chain preview
+- [ ] phone test: consolidated folder writes 2 projects + manifest
+- [ ] phone test: consolidated normal-open = manifest v3 / SELECTED / 2 of 2
+- [ ] phone test: `top 3` remains exact 3/3
+- [ ] phone test: repeat Search remains 0 new `search.list`
+- [ ] phone test: source baseline + delta remain intact
+
 ## Next
-After v1.4.29 targeted phone QA:
-- consolidated delta-chain restore/materialization.
+After v1.4.30 targeted phone QA:
+- focused real NEW / UPDATED / MISSING incremental chain tests.
 
 ## Future product plan — localization + exclusive skin
 - [x] seed `docs/design/exclusive/` with prototype references for exclusive styles/skins/avatars
