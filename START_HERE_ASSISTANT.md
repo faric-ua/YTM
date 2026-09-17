@@ -33,7 +33,7 @@ Current application:
 - versionName: **1.4.29**
 - versionCode: **63**
 - release focus: **Incremental Account Backup**
-- release status: **NOT PHONE-TESTED YET**
+- release status: **PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.29 adds non-destructive incremental account backup on top of existing
@@ -44,8 +44,14 @@ playlist contents to build deterministic fingerprints, previews
 `NEW / UPDATED / UNCHANGED / MISSING / FAILED`, and writes a new schema-v3
 delta folder without modifying the older backup.
 
-The current release is not phone-tested yet. Do not treat static audits or a
-successful build as phone QA.
+Real-phone v1.4.29 QA confirmed the targeted unchanged selective-scope path:
+
+`SELECTED(2) → scan → UNCHANGED=2 → save delta → 0 new project files → old baseline still opens 2/2`
+
+R2 also phone-closed BUG-006: the truncated delta-boundary Toast was replaced
+with a readable `UiChrome` dialog.
+
+The release remains only partially phone-tested overall.
 
 Current known items include:
 
@@ -218,9 +224,9 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-test v1.4.29 Incremental Account Backup;
-2. verify unchanged SELECTED scope creates a manifest-only delta and leaves the baseline intact;
-3. then extend backup evolution toward consolidated delta-chain restore;
+1. v1.4.29 Incremental Account Backup is QA-closed for its targeted unchanged SELECTED path;
+2. extend backup evolution toward consolidated delta-chain restore/materialization;
+3. add changed/new/missing incremental scenarios in a later focused QA wave;
 4. continue the tutorial so the whole project can be recreated step by step.
 
 Future product requirements already recorded:

@@ -129,8 +129,8 @@ grep -Fq 'versionCode: **63**' docs/v.1.4.29/RELEASE.md \
   || fail "v1.4.29 release versionCode missing"
 grep -Fq 'versionName: **1.4.29**' docs/v.1.4.29/RELEASE.md \
   || fail "v1.4.29 release versionName missing"
-grep -Fq '**NOT PHONE-TESTED YET**' docs/v.1.4.29/RELEASE.md \
-  || fail "v1.4.29 initial phone status missing"
+grep -Fq '# YTM Importer v1.4.29 — Incremental Account Backup' docs/v.1.4.29/RELEASE.md \
+  || fail "v1.4.29 release identity missing"
 
 echo "PASS:"
 echo "- incremental baseline folder flow"

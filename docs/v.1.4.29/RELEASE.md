@@ -68,6 +68,26 @@ Real-phone QA exposed one non-blocking UX defect: the delta-boundary explanation
 
 R2 routes the delta boundary through a typed manifest exception into a scrollable `UiChrome.showMessageDialog`, so the full explanation and `Закрити` action remain readable.
 
+## Phone QA closeout — 2026-09-18
+
+Targeted real-phone QA passed:
+
+- baseline scope preserved as `SELECTED (2)`;
+- preflight estimated 2 `playlistItems.list` requests;
+- `search.list: 0`;
+- remote write API: 0;
+- scan preview = NEW 0 / UPDATED 0 / UNCHANGED 2 / MISSING 0 / FAILED 0;
+- actual `playlistItems.list`: 2;
+- delta session wrote `manifest.json`;
+- unchanged scope wrote 0 new YTM Project files;
+- old baseline reopened afterward as manifest v2 / SELECTED / 2 of 2;
+- BUG-006 truncated boundary Toast reproduced and preserved as evidence;
+- R2 readable boundary dialog phone retest passed.
+
+**BUG-006 / Q-006 CLOSED — PHONE RETEST PASS v1.4.29 R2.**
+
+This is a targeted incremental-backup PASS, not a full release regression PASS.
+
 ## Scope boundary
 
 v1.4.29 creates a safe incremental **delta chain**.
@@ -83,4 +103,4 @@ That consolidation/chain-restore behavior is a separate future feature.
 
 ## Status
 
-**NOT PHONE-TESTED YET**
+**PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH**

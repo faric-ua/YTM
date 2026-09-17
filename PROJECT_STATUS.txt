@@ -19,7 +19,7 @@ v1.4.25 PARTIALLY PHONE-TESTED — ACCENT CARD TESTED PATHS PASS
 v1.4.26 PARTIALLY PHONE-TESTED — SELECTIVE EXPORT PASS / BUG-005 FOUND
 v1.4.27 PARTIALLY PHONE-TESTED — BUG-005 EXACT-ID SEARCH GUARD PASS
 v1.4.28 PARTIALLY PHONE-TESTED — BULK MANIFEST IMPORT PATH PASS
-v1.4.29 NOT TESTED YET — INCREMENTAL ACCOUNT BACKUP
+v1.4.29 PARTIALLY PHONE-TESTED — INCREMENTAL BACKUP PATH PASS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -227,6 +227,22 @@ v1.4.29 focus:
 - no search.list and no remote playlist write API
 - delta-chain consolidated restore remains future work
 
+v1.4.29 phone QA confirmed:
+- signed v1.4.29 installed on the real phone
+- old selective backup accepted as baseline
+- scope preserved as SELECTED (2)
+- estimated playlistItems.list = 2
+- search.list = 0
+- remote write API = 0
+- scan preview = NEW 0 / UPDATED 0 / UNCHANGED 2 / MISSING 0 / FAILED 0
+- actual playlistItems.list = 2
+- delta session created with manifest.json
+- unchanged scope wrote 0 new YTM Project files
+- original baseline reopened afterward as manifest v2 / SELECTED / available 2/2
+- BUG-006 reproduced: long delta-boundary Toast was truncated
+- R2 phone retest PASS: readable `Incremental delta backup` dialog with full text
+- release scope = targeted incremental-backup PASS, not full regression
+
 
 Known:
 BUG-001/Q-001 OPEN
@@ -234,6 +250,7 @@ BUG-002/Q-002 DEFERRED — REPRODUCED v1.4.27 / VIDEO EVIDENCE PRESERVED
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
 BUG-004/Q-004 RETEST v1.4.17
 BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27
+BUG-006/Q-006 CLOSED — PHONE RETEST PASS v1.4.29 R2
 
 QA:
 root qa/ = current definitions/policy

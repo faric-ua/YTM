@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.29 — Incremental Account Backup
+v1.4.29 — Incremental Account Backup — PHONE QA PASS FOR TESTED PATH
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -261,15 +261,16 @@ v1.4.29 — Incremental Account Backup
 - [x] add schema-v3 `INCREMENTAL_DELTA` manifest
 - [x] keep search.list and remote write API out of sync path
 - [x] add static audit, release docs, QA plan, diagram and tutorial chapter 14
-- [ ] GitHub build
-- [ ] phone test: SELECTED(2) baseline preflight
-- [ ] phone test: unchanged scan preview
-- [ ] phone test: manifest-only delta for unchanged scope
-- [ ] phone test: old baseline still opens
-- [ ] phone test: delta regular-open boundary message
+- [x] GitHub build
+- [x] phone test: SELECTED(2) baseline preflight
+- [x] phone test: unchanged scan preview
+- [x] phone test: manifest-only delta for unchanged scope
+- [x] phone test: old baseline still opens
+- [x] phone test: delta regular-open boundary message
 - [x] detect BUG-006: delta boundary Toast text is truncated on phone
 - [x] R2 fix: show delta boundary in readable UiChrome dialog
-- [ ] phone retest BUG-006: full delta-boundary text visible
+- [x] phone retest BUG-006: full delta-boundary text visible
+- [x] preserve v1.4.29 real-phone evidence + QA closeout
 
 ## Next
 After v1.4.29 targeted phone QA:

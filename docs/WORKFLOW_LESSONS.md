@@ -154,3 +154,31 @@ Guard:
 - a historical structural audit may test that the old invariant still exists in current code;
 - it must not require the current app to keep the historical release number;
 - immutable historical phone status belongs in the release snapshot/QA-close audit.
+
+## 14. Stub contract drift can hide compile errors — v1.4.29 R1
+
+The first v1.4.29 package used a generated compile fixture that did not model the
+real `UiChrome.ActionTone` enum closely enough. The fixture allowed `NEUTRAL`,
+while production `UiChrome` only supports `NORMAL`, `ACCENT`, and `DANGER`.
+
+GitHub Actions correctly caught the Kotlin compile failure.
+
+Guard:
+
+- generated compile stubs must preserve the exact public contract of touched dependencies;
+- when an enum/sealed type is used, copy its real allowed values into the fixture;
+- prefer compiling touched cross-file contracts together over permissive placeholder stubs.
+
+## 15. Clean first-apply selftests must prove every operation mutates — v1.4.29 R2
+
+While preparing the R2 package, a synthetic fixture accidentally contained a
+post-patch marker for one audit operation. The apply helper treated that
+operation as already applied.
+
+The package was rebuilt before delivery.
+
+Guard:
+
+- on a clean fixture, every intended patch operation must change the target file;
+- a first-apply `SKIP already applied` is a selftest failure;
+- keep patch operations independent when possible instead of chaining one anchor from another generated payload.

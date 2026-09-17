@@ -13,9 +13,11 @@
 - No `search.list` or remote playlist write API is used by the sync flow.
 - Delta-chain consolidated restore remains future work.
 - versionCode 63 / versionName 1.4.29.
-- v1.4.29 = NOT PHONE-TESTED YET.
+- v1.4.29 phone QA: **PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH**.
 - R1 fixed invalid `UiChrome.ActionTone.NEUTRAL` build references.
 - R2 replaces the truncated incremental-delta Toast with a readable `UiChrome` message dialog.
+- Targeted phone QA passed: SELECTED(2) → UNCHANGED=2 → manifest-only delta with 0 new project files → original baseline still opens 2/2.
+- BUG-006 / Q-006 closed after R2 readable-dialog phone retest.
 
 ## v1.4.28
 - Added local import of account-library bulk/selective export sessions through `manifest.json`.

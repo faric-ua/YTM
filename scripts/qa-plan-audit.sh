@@ -62,9 +62,11 @@ grep -Fq '| v1.4.27 | **PARTIALLY PHONE-TESTED — PASS FOR BUG-005 EXACT-ID SEA
   || fail "v1.4.27 BUG-005 phone PASS status missing"
 grep -Fq '| v1.4.28 | **PARTIALLY PHONE-TESTED — PASS FOR BULK MANIFEST IMPORT PATH** |' "$STATUS" \
   || fail "v1.4.28 manifest-import phone PASS status missing"
-grep -Fq '| v1.4.29 | **NOT TESTED YET** |' "$STATUS" \
-  || fail "v1.4.29 initial NOT TESTED status missing"
+grep -Fq '| v1.4.29 | **PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH** |' "$STATUS" \
+  || fail "v1.4.29 incremental-backup phone PASS status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
+grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
+  || fail "BUG-006 v1.4.29 R2 closed phone-retest status missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"

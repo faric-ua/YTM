@@ -21,7 +21,7 @@
 | v1.4.26 | **PARTIALLY PHONE-TESTED — PASS FOR SELECTIVE EXPORT PATH; BUG-005 FOUND** | Two-playlist selective export passed: 2 projects + manifest, schema v2/SELECTED, exact-videoId round trip 3/3. Manual Search then proposed redundant search.list for exact tracks (BUG-005). |
 | v1.4.27 | **PARTIALLY PHONE-TESTED — PASS FOR BUG-005 EXACT-ID SEARCH GUARD** | Real-phone retest: `top 3` remained 3/3 exact and ready; repeat-search plan reported 0 tracks to search and 0 new `search.list`. Full release regression remains incomplete. |
 | v1.4.28 | **PARTIALLY PHONE-TESTED — PASS FOR BULK MANIFEST IMPORT PATH** | Real-phone QA: manifest v2/SELECTED opened 2/2 projects; `top 3` restored exact 3/3; Review 3/3 ready; repeat Search planned 0 new `search.list`; missing-manifest error left the current workspace intact. |
-| v1.4.29 | **NOT TESTED YET** | Incremental Account Backup: compare a full/selective baseline against current scoped playlist contents, preview a non-destructive delta, and write schema-v3 sync metadata/projects only for NEW/UPDATED playlists. |
+| v1.4.29 | **PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH** | Real-phone QA: SELECTED(2) baseline preflight passed; unchanged scan = UNCHANGED 2; delta wrote manifest.json with 0 new YTM Project files; old baseline still reopened 2/2; BUG-006 truncated boundary Toast fixed and phone-retested in R2. |
 
 Static audits and GitHub build do not equal phone testing.
 
