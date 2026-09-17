@@ -14,7 +14,7 @@
 - `11_SEARCH_AND_EXACT_VIDEO_ID.md` — пошук vs exact identifiers, BUG-005/v1.4.27 quota invariant;
 - `12_DESTINATION_AND_DUPLICATES.md` — existing playlist, duplicate scan, write plan;
 - `13_PENDING_QUEUE_AND_RECOVERY.md` — відкладені операції;
-- `14_BACKUP_AND_EXPORT.md` — local backup, account bulk export, manifest;
+- `14_BACKUP_AND_EXPORT.md` — local backup, account export, manifest import, incremental delta backup (v1.4.29);
 - `15_THEME_SYSTEM.md` — palette, semantic colors, Accent Card System;
 - `16_GITHUB_ACTIONS_RELEASE.md` — signed APK, checksum, artifact;
 - `17_BUILD_A_FEATURE_FROM_ZERO.md` — повний практичний feature exercise;

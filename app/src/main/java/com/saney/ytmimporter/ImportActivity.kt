@@ -26,11 +26,16 @@ import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.parser.PlaylistParser
+import com.saney.ytmimporter.storage.AccountBackupBaseline
 import com.saney.ytmimporter.storage.AccountLibraryExporter
+import com.saney.ytmimporter.storage.AccountLibraryIncrementalBackup
 import com.saney.ytmimporter.storage.AccountLibraryManifestEntry
 import com.saney.ytmimporter.storage.AccountLibraryManifestImport
 import com.saney.ytmimporter.storage.AccountLibraryManifestImporter
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.storage.IncrementalBackupPlan
+import com.saney.ytmimporter.storage.IncrementalBackupRecord
+import com.saney.ytmimporter.storage.IncrementalBackupWriteResult
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
 import com.saney.ytmimporter.youtube.YouTubeApi
@@ -50,6 +55,16 @@ class ImportActivity : Activity() {
 
     private val manifestImportFolderRequestCode =
         2404
+
+    private val incrementalBackupBaseRequestCode =
+        2405
+
+    private val incrementalBackupTargetRequestCode =
+        2406
+
+    private var pendingIncrementalBackupPlan:
+        IncrementalBackupPlan? =
+        null
 
     private var pendingSelectiveExport:
         List<YouTubePlaylistInfo> =
@@ -153,6 +168,20 @@ class ImportActivity : Activity() {
                     ?.data
                     ?.let(
                         ::openAccountBackupFolder
+                    )
+
+            incrementalBackupBaseRequestCode ->
+                data
+                    ?.data
+                    ?.let(
+                        ::prepareIncrementalBackup
+                    )
+
+            incrementalBackupTargetRequestCode ->
+                data
+                    ?.data
+                    ?.let(
+                        ::writeIncrementalBackup
                     )
         }
     }
@@ -311,6 +340,17 @@ class ImportActivity : Activity() {
                         topMarginDp = 8
                     ) {
                         chooseAccountBackupFolder()
+                    }
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            "Оновити backup (incremental)",
+                        primary = false,
+                        topMarginDp = 8
+                    ) {
+                        chooseIncrementalBackupBase()
                     }
                 )
             }
@@ -1407,6 +1447,560 @@ class ImportActivity : Activity() {
         val playlistItemsRequests: Int
     )
 
+
+
+    private fun chooseIncrementalBackupBase() {
+        val token =
+            AuthSessionStore
+                .current()
+                .accessToken
+
+        if (token.isNullOrBlank()) {
+            toast(
+                "Спочатку підключіть Google/YTM у кроці 2 на головному екрані."
+            )
+            return
+        }
+
+        val intent =
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT_TREE
+            ).apply {
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            incrementalBackupBaseRequestCode
+        )
+    }
+
+    private fun prepareIncrementalBackup(
+        baseTreeUri: Uri
+    ) {
+        val token =
+            AuthSessionStore
+                .current()
+                .accessToken
+
+        if (token.isNullOrBlank()) {
+            toast(
+                "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
+            )
+            return
+        }
+
+        pendingIncrementalBackupPlan =
+            null
+
+        runCatching {
+            contentResolver
+                .takePersistableUriPermission(
+                    baseTreeUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+        }
+
+        toast(
+            "Читаю baseline backup та список плейлистів…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    val baseline =
+                        AccountLibraryIncrementalBackup
+                            .readBaseline(
+                                resolver =
+                                    contentResolver,
+                                treeUri =
+                                    baseTreeUri
+                            )
+
+                    val accountPlaylists =
+                        api.listMyPlaylists(
+                            token
+                        )
+
+                    if (
+                        accountPlaylists.isEmpty()
+                    ) {
+                        error(
+                            "У підключеному акаунті немає доступних плейлистів."
+                        )
+                    }
+
+                    val scopedPlaylists =
+                        AccountLibraryIncrementalBackup
+                            .scopeCurrentPlaylists(
+                                baseline =
+                                    baseline,
+                                currentPlaylists =
+                                    accountPlaylists
+                            )
+
+                    IncrementalBackupPreflight(
+                        baseline =
+                            baseline,
+                        playlists =
+                            scopedPlaylists,
+                        estimatedPlaylistItemsRequests =
+                            AccountLibraryIncrementalBackup
+                                .estimatePlaylistItemsRequests(
+                                    scopedPlaylists
+                                )
+                    )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        preflight ->
+
+                    showIncrementalBackupScanConfirmation(
+                        token = token,
+                        preflight =
+                            preflight
+                    )
+                }.onFailure {
+                        error ->
+
+                    toast(
+                        error.message
+                            ?: "Не вдалося підготувати incremental backup"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showIncrementalBackupScanConfirmation(
+        token: String,
+        preflight: IncrementalBackupPreflight
+    ) {
+        val scopeText =
+            if (
+                preflight.baseline
+                    .scopeMode ==
+                    "SELECTED"
+            ) {
+                "SELECTED (${preflight.baseline.scopePlaylistIds.size})"
+            } else {
+                "ALL"
+            }
+
+        UiChrome.showMessageDialog(
+            activity = this,
+            title =
+                "Incremental backup — перевірка",
+            message =
+                "Baseline: ${preflight.baseline.folderName}\n" +
+                    "Scope: $scopeText\n" +
+                    "Поточних плейлистів у scope: ${preflight.playlists.size}\n" +
+                    "Оцінка playlistItems.list: ${preflight.estimatedPlaylistItemsRequests} request(s)\n\n" +
+                    "Щоб надійно знайти зміни навіть при тій самій кількості треків, " +
+                    "застосунок прочитає вміст кожного непорожнього плейлиста у scope.\n\n" +
+                    "search.list: 0 • write API: 0",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label =
+                            "Перевірити зміни",
+                        tone =
+                            UiChrome.ActionTone.ACCENT,
+                        onClick = {
+                            scanIncrementalBackup(
+                                token = token,
+                                preflight =
+                                    preflight
+                            )
+                        }
+                    ),
+                    UiChrome.DialogAction(
+                        label =
+                            "Скасувати",
+                        tone =
+                            UiChrome.ActionTone.NEUTRAL,
+                        onClick = {}
+                    )
+                )
+        )
+    }
+
+    private fun scanIncrementalBackup(
+        token: String,
+        preflight: IncrementalBackupPreflight
+    ) {
+        toast(
+            "Сканую плейлисти для incremental backup…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    val records =
+                        mutableListOf<
+                            IncrementalBackupRecord
+                        >()
+
+                    var requests = 0
+
+                    preflight.playlists.forEach {
+                            playlistInfo ->
+
+                        if (
+                            playlistInfo.itemCount <=
+                                0L
+                        ) {
+                            val empty =
+                                ImportedPlaylist(
+                                    name =
+                                        playlistInfo.title,
+                                    tracks =
+                                        mutableListOf()
+                                )
+
+                            records +=
+                                AccountLibraryIncrementalBackup
+                                    .classify(
+                                        baseline =
+                                            preflight.baseline,
+                                        playlistInfo =
+                                            playlistInfo,
+                                        playlist =
+                                            empty,
+                                        contentFingerprint =
+                                            AccountLibraryIncrementalBackup
+                                                .fingerprint(
+                                                    empty
+                                                ),
+                                        playlistItemsRequests =
+                                            0
+                                    )
+
+                            return@forEach
+                        }
+
+                        runCatching {
+                            api.listPlaylistTracks(
+                                accessToken =
+                                    token,
+                                playlistId =
+                                    playlistInfo.id
+                            )
+                        }.onSuccess {
+                                loaded ->
+
+                            requests +=
+                                loaded.requestCount
+
+                            if (
+                                loaded.tracks.isEmpty()
+                            ) {
+                                records +=
+                                    AccountLibraryIncrementalBackup
+                                        .failedRecord(
+                                            baseline =
+                                                preflight.baseline,
+                                            playlistInfo =
+                                                playlistInfo,
+                                            playlistItemsRequests =
+                                                loaded.requestCount,
+                                            error =
+                                                IllegalStateException(
+                                                    "Плейлист не повернув доступних videoId"
+                                                )
+                                        )
+                            } else {
+                                val imported =
+                                    ImportedPlaylist(
+                                        name =
+                                            playlistInfo.title,
+                                        tracks =
+                                            loaded.tracks
+                                                .toMutableList()
+                                    )
+
+                                records +=
+                                    AccountLibraryIncrementalBackup
+                                        .classify(
+                                            baseline =
+                                                preflight.baseline,
+                                            playlistInfo =
+                                                playlistInfo,
+                                            playlist =
+                                                imported,
+                                            contentFingerprint =
+                                                AccountLibraryIncrementalBackup
+                                                    .fingerprint(
+                                                        imported
+                                                    ),
+                                            playlistItemsRequests =
+                                                loaded.requestCount
+                                        )
+                            }
+                        }.onFailure {
+                                error ->
+
+                            requests += 1
+
+                            records +=
+                                AccountLibraryIncrementalBackup
+                                    .failedRecord(
+                                        baseline =
+                                            preflight.baseline,
+                                        playlistInfo =
+                                            playlistInfo,
+                                        playlistItemsRequests =
+                                            1,
+                                        error =
+                                            error
+                                    )
+                        }
+                    }
+
+                    val currentScopedIds =
+                        preflight.playlists
+                            .mapTo(
+                                linkedSetOf()
+                            ) {
+                                it.id
+                            }
+
+                    records +=
+                        AccountLibraryIncrementalBackup
+                            .missingRecords(
+                                baseline =
+                                    preflight.baseline,
+                                currentScopedIds =
+                                    currentScopedIds
+                            )
+
+                    IncrementalBackupPlan(
+                        baseline =
+                            preflight.baseline,
+                        records =
+                            records,
+                        playlistItemsRequests =
+                            requests
+                    )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        plan ->
+
+                    pendingIncrementalBackupPlan =
+                        plan
+
+                    showIncrementalBackupPreview(
+                        plan
+                    )
+                }.onFailure {
+                        error ->
+
+                    pendingIncrementalBackupPlan =
+                        null
+
+                    toast(
+                        error.message
+                            ?: "Не вдалося просканувати backup"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showIncrementalBackupPreview(
+        plan: IncrementalBackupPlan
+    ) {
+        UiChrome.showMessageDialog(
+            activity = this,
+            title =
+                "Incremental backup — preview",
+            message =
+                "Нові: ${plan.newCount}\n" +
+                    "Змінені: ${plan.updatedCount}\n" +
+                    "Без змін: ${plan.unchangedCount}\n" +
+                    "Зникли / недоступні в scope: ${plan.missingCount}\n" +
+                    "Помилки читання: ${plan.failedCount}\n" +
+                    "playlistItems.list: ${plan.playlistItemsRequests} request(s)\n\n" +
+                    "Буде створено нову delta-папку. " +
+                    "Старий backup не змінюється і не видаляється.",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label =
+                            "Зберегти delta",
+                        tone =
+                            UiChrome.ActionTone.ACCENT,
+                        onClick = {
+                            chooseIncrementalBackupTarget()
+                        }
+                    ),
+                    UiChrome.DialogAction(
+                        label =
+                            "Скасувати",
+                        tone =
+                            UiChrome.ActionTone.NEUTRAL,
+                        onClick = {
+                            pendingIncrementalBackupPlan =
+                                null
+                        }
+                    )
+                )
+        )
+    }
+
+    private fun chooseIncrementalBackupTarget() {
+        if (
+            pendingIncrementalBackupPlan ==
+                null
+        ) {
+            toast(
+                "План incremental backup втрачено. Повторіть перевірку."
+            )
+            return
+        }
+
+        val intent =
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT_TREE
+            ).apply {
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            incrementalBackupTargetRequestCode
+        )
+    }
+
+    private fun writeIncrementalBackup(
+        treeUri: Uri
+    ) {
+        val plan =
+            pendingIncrementalBackupPlan
+
+        if (plan == null) {
+            toast(
+                "План incremental backup втрачено. Повторіть перевірку."
+            )
+            return
+        }
+
+        persistExportFolderPermission(
+            treeUri
+        )
+
+        toast(
+            "Записую incremental delta локально…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    AccountLibraryIncrementalBackup
+                        .writeDelta(
+                            resolver =
+                                contentResolver,
+                            treeUri =
+                                treeUri,
+                            appVersion =
+                                BuildConfig.VERSION_NAME,
+                            plan =
+                                plan
+                        )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        summary ->
+
+                    pendingIncrementalBackupPlan =
+                        null
+
+                    showIncrementalBackupResult(
+                        summary
+                    )
+                }.onFailure {
+                        error ->
+
+                    toast(
+                        error.message
+                            ?: "Не вдалося записати incremental backup"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showIncrementalBackupResult(
+        summary: IncrementalBackupWriteResult
+    ) {
+        UiChrome.showMessageDialog(
+            activity = this,
+            title =
+                "Incremental backup збережено",
+            message =
+                "Плейлистів у поточному scope: ${summary.currentPlaylistCount}\n" +
+                    "Нові: ${summary.newCount}\n" +
+                    "Змінені: ${summary.updatedCount}\n" +
+                    "Без змін: ${summary.unchangedCount}\n" +
+                    "Зникли: ${summary.missingCount}\n" +
+                    "Помилки: ${summary.failedCount}\n" +
+                    "Нових YTM Project файлів: ${summary.writtenProjects}\n" +
+                    "playlistItems.list: ${summary.playlistItemsRequests} request(s)\n\n" +
+                    "Delta-папка: ${summary.folderName}\n" +
+                    "Індекс: ${summary.manifestFile}\n\n" +
+                    "Старий backup не змінено.",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label =
+                            "Закрити",
+                        tone =
+                            UiChrome.ActionTone.ACCENT,
+                        onClick = {}
+                    )
+                )
+        )
+    }
+
+    private data class IncrementalBackupPreflight(
+        val baseline: AccountBackupBaseline,
+        val playlists:
+            List<YouTubePlaylistInfo>,
+        val estimatedPlaylistItemsRequests: Int
+    )
 
     private fun chooseAccountBackupFolder() {
         val intent =

@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.28
-Version code: 62
+Version: 1.4.29
+Version code: 63
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -19,6 +19,7 @@ v1.4.25 PARTIALLY PHONE-TESTED — ACCENT CARD TESTED PATHS PASS
 v1.4.26 PARTIALLY PHONE-TESTED — SELECTIVE EXPORT PASS / BUG-005 FOUND
 v1.4.27 PARTIALLY PHONE-TESTED — BUG-005 EXACT-ID SEARCH GUARD PASS
 v1.4.28 PARTIALLY PHONE-TESTED — BULK MANIFEST IMPORT PATH PASS
+v1.4.29 NOT TESTED YET — INCREMENTAL ACCOUNT BACKUP
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -212,6 +213,19 @@ v1.4.28 phone QA confirmed:
 - folder without manifest.json produced a clear local error
 - current `top 3` workspace remained intact after the error
 - release scope = targeted manifest-import PASS, not full regression
+
+v1.4.29 focus:
+- choose an older account backup as a baseline
+- preserve baseline scope: ALL or SELECTED
+- estimate playlistItems.list before content scan
+- scan current playlist contents for reliable same-count change detection
+- fingerprint ordered exact videoId/title/channel content
+- classify NEW / UPDATED / UNCHANGED / MISSING / FAILED
+- write a new non-destructive schema-v3 delta folder
+- write YTM Projects only for NEW/UPDATED non-empty playlists
+- never modify/delete the baseline backup
+- no search.list and no remote playlist write API
+- delta-chain consolidated restore remains future work
 
 
 Known:

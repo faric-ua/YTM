@@ -1,5 +1,20 @@
 # Журнал змін (Changelog)
 
+## v1.4.29
+- Added non-destructive incremental/sync-style account backup.
+- Existing full/selective account exports can be used as baselines.
+- Prior schema-v3 sync manifests can become the next baseline without needing unchanged project files.
+- Sync preserves `ALL` vs `SELECTED` scope.
+- Added deterministic ordered playlist fingerprints based on exact videoId + selected title/channel.
+- Added `NEW / UPDATED / UNCHANGED / MISSING / FAILED` preview.
+- Only NEW/UPDATED non-empty playlists create new YTM Project files.
+- Added schema-v3 `INCREMENTAL_DELTA` manifest with scope/base/fingerprint metadata.
+- Baseline folders are never modified or deleted.
+- No `search.list` or remote playlist write API is used by the sync flow.
+- Delta-chain consolidated restore remains future work.
+- versionCode 63 / versionName 1.4.29.
+- v1.4.29 = NOT PHONE-TESTED YET.
+
 ## v1.4.28
 - Added local import of account-library bulk/selective export sessions through `manifest.json`.
 - Added Android folder selection for backup sessions and a catalog of available exported YTM Projects.

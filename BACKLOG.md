@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.28 — Bulk Export Manifest Import — PHONE QA PASS FOR TESTED PATH
+v1.4.29 — Incremental Account Backup
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -248,11 +248,29 @@ v1.4.28 — Bulk Export Manifest Import — PHONE QA PASS FOR TESTED PATH
 - [x] error smoke: folder without manifest fails clearly and preserves workspace
 - [x] preserve v1.4.28 real-phone evidence + QA closeout
 
-## Next
-After v1.4.28 QA closeout:
-- incremental/sync-style account backup.
+## v1.4.29 — Incremental Account Backup
+- [x] scope incremental backup as a non-destructive delta chain
+- [x] accept schema v1/v2 full/selective export as baseline
+- [x] accept schema v3 prior sync manifest as baseline
+- [x] preserve ALL vs SELECTED sync scope
+- [x] estimate playlistItems.list before scan
+- [x] use exact ordered content fingerprint instead of itemCount-only comparison
+- [x] classify NEW / UPDATED / UNCHANGED / MISSING / FAILED
+- [x] write new YTM Project files only for NEW/UPDATED non-empty playlists
+- [x] preserve old baseline folder untouched
+- [x] add schema-v3 `INCREMENTAL_DELTA` manifest
+- [x] keep search.list and remote write API out of sync path
+- [x] add static audit, release docs, QA plan, diagram and tutorial chapter 14
+- [ ] GitHub build
+- [ ] phone test: SELECTED(2) baseline preflight
+- [ ] phone test: unchanged scan preview
+- [ ] phone test: manifest-only delta for unchanged scope
+- [ ] phone test: old baseline still opens
+- [ ] phone test: delta regular-open boundary message
 
-Do not combine sync semantics into the manifest-import release.
+## Next
+After v1.4.29 targeted phone QA:
+- consolidated delta-chain restore/materialization.
 
 ## Future product plan — localization + exclusive skin
 - [x] seed `docs/design/exclusive/` with prototype references for exclusive styles/skins/avatars

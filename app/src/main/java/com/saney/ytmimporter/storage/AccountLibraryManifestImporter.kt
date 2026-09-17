@@ -35,7 +35,7 @@ object AccountLibraryManifestImporter {
         "ytm-importer-account-library-export"
 
     private const val MAX_SCHEMA_VERSION =
-        2
+        3
 
     fun readManifest(
         resolver: ContentResolver,
@@ -81,6 +81,29 @@ object AccountLibraryManifestImporter {
             schemaVersion in 1..MAX_SCHEMA_VERSION
         ) {
             "Непідтримувана версія manifest: $schemaVersion"
+        }
+
+        val backupMode =
+            if (schemaVersion >= 3) {
+                root
+                    .optString(
+                        "backupMode",
+                        "FULL"
+                    )
+                    .trim()
+                    .uppercase()
+                    .ifBlank {
+                        "FULL"
+                    }
+            } else {
+                "FULL"
+            }
+
+        require(
+            backupMode !=
+                "INCREMENTAL_DELTA"
+        ) {
+            "Це incremental delta backup. Використовуйте «Оновити backup (incremental)» як baseline; повне відновлення delta-ланцюжка ще не підтримується."
         }
 
         val items =

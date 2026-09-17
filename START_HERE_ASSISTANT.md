@@ -30,23 +30,22 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.28**
-- versionCode: **62**
-- release focus: **Bulk Export Manifest Import**
-- release status: **PARTIALLY PHONE-TESTED — PASS FOR BULK MANIFEST IMPORT PATH**
+- versionName: **1.4.29**
+- versionCode: **63**
+- release focus: **Incremental Account Backup**
+- release status: **NOT PHONE-TESTED YET**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
-v1.4.28 adds local reopening of account bulk/selective export sessions through
-their `manifest.json`. The tested path performs no YouTube API discovery work.
+v1.4.29 adds non-destructive incremental account backup on top of existing
+full/selective export manifests.
 
-Real-phone v1.4.28 QA confirmed:
+The sync path preserves the baseline scope (`ALL` or `SELECTED`), scans current
+playlist contents to build deterministic fingerprints, previews
+`NEW / UPDATED / UNCHANGED / MISSING / FAILED`, and writes a new schema-v3
+delta folder without modifying the older backup.
 
-`manifest v2 / SELECTED / 2 of 2 → top 3 exact 3/3 → Review 3/3 → repeat Search → search required 0 → new search.list 0`
-
-The invalid-folder smoke also confirmed that a missing `manifest.json` error does
-not damage the current workspace.
-
-The release remains only partially phone-tested overall.
+The current release is not phone-tested yet. Do not treat static audits or a
+successful build as phone QA.
 
 Current known items include:
 
@@ -219,9 +218,10 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. v1.4.28 Bulk Export Manifest Import is QA-closed for its targeted phone path;
-2. continue account-library backup evolution with incremental/sync-style work;
-3. continue the tutorial so the whole project can be recreated step by step.
+1. build and phone-test v1.4.29 Incremental Account Backup;
+2. verify unchanged SELECTED scope creates a manifest-only delta and leaves the baseline intact;
+3. then extend backup evolution toward consolidated delta-chain restore;
+4. continue the tutorial so the whole project can be recreated step by step.
 
 Future product requirements already recorded:
 
