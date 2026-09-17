@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.21 — Theme System Wave 1
+v1.4.22 — Visual Structure Polish
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -104,14 +104,31 @@ v1.4.21 — Theme System Wave 1
 - [x] Wave 1: main track cards
 - [x] add static theme audit
 - [x] release preflight passes
-- [ ] GitHub build
-- [ ] phone test: Neon Dark
-- [ ] phone test: Blue Dark
-- [ ] phone test: Green Dark
+- [x] GitHub build
+- [x] phone test: Neon Dark
+- [x] phone test: Blue Dark
+- [x] phone test: Green Dark
 - [ ] phone test: Import visual smoke
 - [ ] phone test: Review visual smoke
 - [ ] phone test: theme persistence after app restart
 - [ ] Wave 2: Destination / History / Queue / Service / Data
+
+## v1.4.22
+- [x] replace Home Unicode pseudo-icons with vector drawables
+- [x] add compact logo badge in header
+- [x] reduce decorative contour lines to two subtle strokes
+- [x] use dark READY/ATTENTION cards with semantic accent outlines/icons
+- [x] move current-playlist summary into a dedicated card
+- [x] keep all three theme palettes
+- [x] add v1.4.21 Home-theme phone evidence
+- [x] add static visual-structure audit
+- [ ] GitHub build
+- [ ] phone test: Home in Neon / Blue / Green
+- [ ] phone test: icons render correctly
+- [ ] phone test: current-playlist card
+- [ ] phone test: Import visual smoke
+- [ ] phone test: Review visual smoke
+- [ ] phone test: theme persistence
 
 ## Next
 Phone-test the v1.4.20 UI fix. After that, continue account-library work only if useful:

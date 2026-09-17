@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.21
-Version code: 55
+Version: 1.4.22
+Version code: 56
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -11,6 +11,8 @@ v1.4.17 PARTIALLY PHONE-TESTED — FAST_FLOW EXISTING-TARGET PASS
 v1.4.18 PARTIALLY PHONE-TESTED — G01 PASS
 v1.4.19 PARTIALLY PHONE-TESTED — BULK EXPORT PASS
 v1.4.20 PARTIALLY PHONE-TESTED — UI SMOKE PASS
+v1.4.21 PARTIALLY PHONE-TESTED — HOME THEMES PASS
+v1.4.22 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -72,6 +74,15 @@ v1.4.20 phone QA confirmed:
 - bulk-export folder picker opens PASS
 - BUG-003 in-place update recovery PASS: Step 2 briefly gray, then automatically green
 - BUG-004 still requires invalid-auth/401 phone retest
+
+v1.4.22 focus:
+- move Home closer to approved three-theme concept
+- real vector icons instead of Unicode pseudo-icons
+- compact accent logo in header
+- quiet two-stroke decorative contours
+- dark READY/ATTENTION cards with semantic icon/outline color
+- current playlist presented as its own card
+- no functional API/search/write changes
 
 Known:
 BUG-001/Q-001 OPEN

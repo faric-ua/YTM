@@ -1,0 +1,19 @@
+v1.4.21 Home theme evidence
+
+EVIDENCE_HOME_NEON_DARK.jpg
+- Neon Dark displayed on real phone.
+
+EVIDENCE_HOME_BLUE_DARK.jpg
+- Blue Dark displayed on real phone.
+
+EVIDENCE_HOME_GREEN_DARK.jpg
+- Green Dark displayed on real phone.
+
+Observed:
+- Home remained functional during theme switching.
+- Workspace remained visible.
+- all three palettes applied.
+
+Follow-up:
+- replace Unicode pseudo-icons with vector icons;
+- simplify contour strokes.

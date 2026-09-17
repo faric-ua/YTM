@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.22
+- Visual Structure Polish toward the approved Neon/Blue/Green concept.
+- Replaced Home Unicode pseudo-icons with vector drawables.
+- Added a compact theme-accent music-logo badge to the header.
+- Reduced decorative contours from four edge strokes to two quiet strokes.
+- READY and ATTENTION workflow steps now keep dark surfaces and communicate state with semantic outline/icon color instead of solid green/yellow blocks.
+- Moved current playlist summary/status into a dedicated card.
+- Recorded v1.4.21 Home theme-switch phone PASS for Neon/Blue/Green.
+- versionCode 56 / versionName 1.4.22.
+- v1.4.22 = NOT PHONE-TESTED YET.
+
 ## v1.4.21
 - Added Theme System Wave 1.
 - Added persistent Neon Dark, Blue Dark and Green Dark palettes.

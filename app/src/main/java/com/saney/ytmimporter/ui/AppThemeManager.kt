@@ -42,10 +42,15 @@ object AppThemeManager {
         val duplicate: Int
     )
 
-    private const val PREFS = "ytm_theme_prefs_v1"
-    private const val KEY_STYLE = "theme_style"
+    private const val PREFS =
+        "ytm_theme_prefs_v1"
 
-    fun currentStyle(context: Context): ThemeStyle {
+    private const val KEY_STYLE =
+        "theme_style"
+
+    fun currentStyle(
+        context: Context
+    ): ThemeStyle {
         val stored =
             context
                 .getSharedPreferences(
@@ -57,9 +62,12 @@ object AppThemeManager {
                     ThemeStyle.NEON_DARK.storageKey
                 )
 
-        return ThemeStyle.values().firstOrNull {
-            it.storageKey == stored
-        } ?: ThemeStyle.NEON_DARK
+        return ThemeStyle
+            .values()
+            .firstOrNull {
+                it.storageKey == stored
+            }
+            ?: ThemeStyle.NEON_DARK
     }
 
     fun setStyle(
@@ -72,11 +80,16 @@ object AppThemeManager {
                 Context.MODE_PRIVATE
             )
             .edit()
-            .putString(KEY_STYLE, style.storageKey)
+            .putString(
+                KEY_STYLE,
+                style.storageKey
+            )
             .apply()
     }
 
-    fun palette(context: Context): Palette =
+    fun palette(
+        context: Context
+    ): Palette =
         when (currentStyle(context)) {
             ThemeStyle.NEON_DARK ->
                 Palette(
@@ -139,11 +152,17 @@ object AppThemeManager {
                 )
         }
 
-    fun applyWindow(activity: Activity) {
-        val palette = palette(activity)
+    fun applyWindow(
+        activity: Activity
+    ) {
+        val palette =
+            palette(activity)
 
-        activity.window.statusBarColor = palette.background
-        activity.window.navigationBarColor = palette.background
+        activity.window.statusBarColor =
+            palette.background
+
+        activity.window.navigationBarColor =
+            palette.background
 
         WindowCompat
             .getInsetsController(
@@ -163,13 +182,19 @@ object AppThemeManager {
         accentStroke: Boolean = false,
         accentOverride: Int? = null
     ): Drawable {
-        val palette = palette(context)
+        val palette =
+            palette(context)
 
         return SketchRoundedDrawable(
-            density = context.resources.displayMetrics.density,
+            density =
+                context.resources
+                    .displayMetrics
+                    .density,
             fillColor = fill,
             borderColor = palette.border,
-            accentColor = accentOverride ?: palette.accent,
+            accentColor =
+                accentOverride
+                    ?: palette.accent,
             radiusDp = radiusDp,
             accentStroke = accentStroke
         )
@@ -197,16 +222,28 @@ object AppThemeManager {
             accentStroke = true
         )
 
+    fun accentCircleDrawable(
+        context: Context
+    ): Drawable =
+        surfaceDrawable(
+            context = context,
+            fill = palette(context).accentFill,
+            radiusDp = 999,
+            accentStroke = false
+        )
+
     fun stateButtonDrawable(
         context: Context,
         fillColor: Int,
-        radiusDp: Int = 12
+        radiusDp: Int = 12,
+        accentOverride: Int? = null
     ): Drawable =
         surfaceDrawable(
             context = context,
             fill = fillColor,
             radiusDp = radiusDp,
-            accentStroke = true
+            accentStroke = true,
+            accentOverride = accentOverride
         )
 
     private class SketchRoundedDrawable(
@@ -217,33 +254,58 @@ object AppThemeManager {
         radiusDp: Int,
         private val accentStroke: Boolean
     ) : Drawable() {
-        private val radius = radiusDp * density
-        private val borderWidth = max(1f, density)
-        private val accentWidth = max(1.5f, 1.8f * density)
+        private val radius =
+            radiusDp * density
+
+        private val borderWidth =
+            max(1f, density)
+
+        private val accentWidth =
+            max(1.2f, 1.35f * density)
 
         private val fillPaint =
-            Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                style = Paint.Style.FILL
-                color = fillColor
+            Paint(
+                Paint.ANTI_ALIAS_FLAG
+            ).apply {
+                style =
+                    Paint.Style.FILL
+                color =
+                    fillColor
             }
 
         private val borderPaint =
-            Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                style = Paint.Style.STROKE
-                strokeWidth = borderWidth
-                color = borderColor
+            Paint(
+                Paint.ANTI_ALIAS_FLAG
+            ).apply {
+                style =
+                    Paint.Style.STROKE
+                strokeWidth =
+                    borderWidth
+                color =
+                    borderColor
             }
 
         private val accentPaint =
-            Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                style = Paint.Style.STROKE
-                strokeCap = Paint.Cap.ROUND
-                strokeWidth = accentWidth
-                color = accentColor
+            Paint(
+                Paint.ANTI_ALIAS_FLAG
+            ).apply {
+                style =
+                    Paint.Style.STROKE
+                strokeCap =
+                    Paint.Cap.ROUND
+                strokeWidth =
+                    accentWidth
+                color =
+                    accentColor
+                alpha =
+                    218
             }
 
-        override fun draw(canvas: Canvas) {
-            val inset = borderWidth / 2f
+        override fun draw(
+            canvas: Canvas
+        ) {
+            val inset =
+                borderWidth / 2f
 
             val rect =
                 RectF(
@@ -271,66 +333,66 @@ object AppThemeManager {
                 return
             }
 
-            val width = rect.width()
-            val height = rect.height()
-            val horizontal =
-                max(radius * 1.15f, width * 0.28f)
-            val vertical =
-                max(radius * 0.95f, height * 0.30f)
+            val width =
+                rect.width()
 
+            val horizontal =
+                max(
+                    radius * 1.35f,
+                    width * 0.23f
+                )
+
+            // Two quiet contour strokes only:
+            // one near the top-left edge and one near the bottom-right edge.
             canvas.drawLine(
-                rect.left + radius * 0.65f,
+                rect.left + radius * 0.75f,
                 rect.top,
                 (rect.left + horizontal)
-                    .coerceAtMost(rect.right - radius),
+                    .coerceAtMost(
+                        rect.right - radius
+                    ),
                 rect.top,
-                accentPaint
-            )
-
-            canvas.drawLine(
-                rect.left,
-                rect.top + radius * 0.65f,
-                rect.left,
-                (rect.top + vertical)
-                    .coerceAtMost(rect.bottom - radius),
                 accentPaint
             )
 
             canvas.drawLine(
                 (rect.right - horizontal)
-                    .coerceAtLeast(rect.left + radius),
+                    .coerceAtLeast(
+                        rect.left + radius
+                    ),
                 rect.bottom,
-                rect.right - radius * 0.65f,
+                rect.right - radius * 0.75f,
                 rect.bottom,
-                accentPaint
-            )
-
-            canvas.drawLine(
-                rect.right,
-                (rect.bottom - vertical)
-                    .coerceAtLeast(rect.top + radius),
-                rect.right,
-                rect.bottom - radius * 0.65f,
                 accentPaint
             )
         }
 
-        override fun setAlpha(alpha: Int) {
+        override fun setAlpha(
+            alpha: Int
+        ) {
             fillPaint.alpha = alpha
             borderPaint.alpha = alpha
             accentPaint.alpha = alpha
             invalidateSelf()
         }
 
-        override fun setColorFilter(colorFilter: ColorFilter?) {
-            fillPaint.colorFilter = colorFilter
-            borderPaint.colorFilter = colorFilter
-            accentPaint.colorFilter = colorFilter
+        override fun setColorFilter(
+            colorFilter: ColorFilter?
+        ) {
+            fillPaint.colorFilter =
+                colorFilter
+            borderPaint.colorFilter =
+                colorFilter
+            accentPaint.colorFilter =
+                colorFilter
             invalidateSelf()
         }
 
-        @Deprecated("Deprecated in Java")
-        override fun getOpacity(): Int =
+        @Deprecated(
+            "Deprecated in Java"
+        )
+        override fun getOpacity():
+            Int =
             PixelFormat.TRANSLUCENT
     }
 }

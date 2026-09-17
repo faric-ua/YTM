@@ -1,0 +1,11 @@
+field,value
+release,1.4.21
+date,2026-09-17
+neon_dark_home,PASS
+blue_dark_home,PASS
+green_dark_home,PASS
+workspace_preserved_during_switch,PASS
+import_visual_smoke,NOT_TESTED
+review_visual_smoke,NOT_TESTED
+restart_persistence,NOT_TESTED
+follow_up,v1.4.22 vector icons + contour polish

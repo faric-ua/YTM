@@ -2,6 +2,7 @@ package com.saney.ytmimporter
 
 import android.app.Activity
 import android.content.ClipData
+import android.content.res.ColorStateList
 import android.content.ClipboardManager
 import android.content.Intent
 import android.graphics.Color
@@ -194,6 +195,28 @@ class MainActivity : Activity() {
             setPadding(dp(18), dp(14), dp(18), dp(10))
         }
 
+        val logoView =
+            ImageView(this).apply {
+                setImageResource(
+                    R.drawable.ic_ytm_music
+                )
+                imageTintList =
+                    ColorStateList.valueOf(
+                        Color.WHITE
+                    )
+                setPadding(
+                    dp(10),
+                    dp(10),
+                    dp(10),
+                    dp(10)
+                )
+                background =
+                    AppThemeManager
+                        .accentCircleDrawable(
+                            this@MainActivity
+                        )
+            }
+
         val titleBlock = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
         }
@@ -211,8 +234,19 @@ class MainActivity : Activity() {
             TextView(this).apply {
                 text = "Імпорт трекліста → YouTube Music"
                 textSize = 12.5f
-                setTextColor(Color.rgb(165, 167, 173))
+                setTextColor(palette.muted)
                 setPadding(0, dp(2), 0, 0)
+            }
+        )
+
+        header.addView(
+            logoView,
+            LinearLayout.LayoutParams(
+                dp(46),
+                dp(46)
+            ).apply {
+                marginEnd =
+                    dp(10)
             }
         )
 
@@ -260,24 +294,24 @@ class MainActivity : Activity() {
             TextView(this).apply {
                 text = "4 кроки до плейлиста"
                 textSize = 12f
-                setTextColor(Color.rgb(165, 167, 173))
+                setTextColor(palette.muted)
                 setTypeface(typeface, Typeface.BOLD)
                 setPadding(dp(2), 0, 0, dp(8))
             }
         )
 
         importButton =
-            button("⇩  1. Імпорт") {
+            button("1. Імпорт") {
                 openImportScreen()
             }
 
         accountButton =
-            button("⛓  2. Google / YTM") {
+            button("2. Google / YTM") {
                 showAccountDialog()
             }
 
         searchButton =
-            primaryButton("⌕  3. Знайти / перевірити") {
+            primaryButton("3. Знайти / перевірити") {
                 searchOrReview()
             }.apply {
                 isEnabled = false
@@ -285,7 +319,7 @@ class MainActivity : Activity() {
             }
 
         createButton =
-            primaryButton("☷  4. Створити / додати") {
+            primaryButton("4. Створити / додати") {
                 createPlaylist()
             }.apply {
                 isEnabled = false
@@ -326,22 +360,22 @@ class MainActivity : Activity() {
         }
 
         val historyButton =
-            compactButton("◷ Історія") {
+            compactButton("Історія") {
                 showHistory()
             }
 
         pendingButton =
-            compactButton("≡ Черга") {
+            compactButton("Черга") {
                 showPendingJobs()
             }
 
         quotaButton =
-            compactButton("▥ Квота") {
+            compactButton("Квота") {
                 showQuotaDialog()
             }
 
         val moreButton =
-            compactButton("••• Ще") {
+            compactButton("Ще") {
                 showMoreActions()
             }
 
@@ -367,22 +401,100 @@ class MainActivity : Activity() {
 
         root.addView(utilityRow)
 
+        val workspaceCard =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(14),
+                    dp(11),
+                    dp(14),
+                    dp(11)
+                )
+                background =
+                    AppThemeManager
+                        .surfaceDrawable(
+                            context =
+                                this@MainActivity,
+                            fill =
+                                palette.surface,
+                            radiusDp = 14,
+                            accentStroke = false
+                        )
+            }
+
+        workspaceCard.addView(
+            TextView(this).apply {
+                text =
+                    "Поточний плейлист"
+                textSize =
+                    11.5f
+                setTypeface(
+                    typeface,
+                    Typeface.BOLD
+                )
+                setTextColor(
+                    palette.muted
+                )
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    dp(4)
+                )
+            }
+        )
+
         summaryText = TextView(this).apply {
-            setPadding(dp(16), dp(5), dp(16), 0)
-            setTextColor(Color.WHITE)
+            setTextColor(
+                palette.text
+            )
             textSize = 15f
-            setTypeface(typeface, Typeface.BOLD)
-            text = "Плейлист ще не імпортовано"
+            setTypeface(
+                typeface,
+                Typeface.BOLD
+            )
+            text =
+                "Плейлист ще не імпортовано"
         }
-        root.addView(summaryText)
+
+        workspaceCard.addView(
+            summaryText
+        )
 
         statusText = TextView(this).apply {
-            setPadding(dp(16), dp(3), dp(16), dp(7))
-            setTextColor(Color.rgb(165, 167, 173))
+            setPadding(
+                0,
+                dp(3),
+                0,
+                0
+            )
+            setTextColor(
+                palette.muted
+            )
             textSize = 13f
-            text = "Почніть з «1. Імпорт»."
+            text =
+                "Почніть з «1. Імпорт»."
         }
-        root.addView(statusText)
+
+        workspaceCard.addView(
+            statusText
+        )
+
+        root.addView(
+            workspaceCard,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(8)
+                )
+            }
+        )
 
         progress =
             ProgressBar(
@@ -454,6 +566,16 @@ class MainActivity : Activity() {
             setTextColor(Color.WHITE)
             gravity = android.view.Gravity.CENTER
             maxLines = 2
+            applyButtonIcon(
+                button = this,
+                label = label,
+                tint =
+                    AppThemeManager
+                        .palette(
+                            this@MainActivity
+                        )
+                        .accent
+            )
             setPadding(dp(14), dp(10), dp(14), dp(10))
             UiChrome.autoSizeButton(
                 this,
@@ -482,6 +604,16 @@ class MainActivity : Activity() {
             setTextColor(Color.WHITE)
             gravity = android.view.Gravity.CENTER
             maxLines = 2
+            applyButtonIcon(
+                button = this,
+                label = label,
+                tint =
+                    AppThemeManager
+                        .palette(
+                            this@MainActivity
+                        )
+                        .accent
+            )
             setPadding(dp(14), dp(10), dp(14), dp(10))
             UiChrome.autoSizeButton(
                 this,
@@ -515,6 +647,83 @@ class MainActivity : Activity() {
             )
         }
 
+    private fun buttonIconRes(
+        label: String
+    ): Int =
+        when {
+            label.contains(
+                "Google / YTM"
+            ) ->
+                R.drawable.ic_ytm_link
+
+            label.contains(
+                "Знайти"
+            ) ->
+                R.drawable.ic_ytm_search
+
+            label.contains(
+                "Створити"
+            ) ->
+                R.drawable.ic_ytm_playlist_add
+
+            label.contains(
+                "Імпорт"
+            ) ->
+                R.drawable.ic_ytm_download
+
+            label.contains(
+                "Історія"
+            ) ->
+                R.drawable.ic_ytm_history
+
+            label.contains(
+                "Черга"
+            ) ->
+                R.drawable.ic_ytm_queue
+
+            label.contains(
+                "Квота"
+            ) ->
+                R.drawable.ic_ytm_quota
+
+            label.contains(
+                "Ще"
+            ) ->
+                R.drawable.ic_ytm_more
+
+            else ->
+                0
+        }
+
+    private fun applyButtonIcon(
+        button: Button,
+        label: String,
+        tint: Int
+    ) {
+        val icon =
+            buttonIconRes(label)
+
+        if (icon == 0) {
+            return
+        }
+
+        button
+            .setCompoundDrawablesRelativeWithIntrinsicBounds(
+                icon,
+                0,
+                0,
+                0
+            )
+
+        button.compoundDrawablePadding =
+            dp(8)
+
+        button.compoundDrawableTintList =
+            ColorStateList.valueOf(
+                tint
+            )
+    }
+
     private fun equalButtonsRow(
         first: Button,
         second: Button
@@ -526,7 +735,7 @@ class MainActivity : Activity() {
              * Do not baseline-align sibling buttons.
              *
              * Step 2 can auto-size to a slightly different text size after
-             * restoring "⛓  2. Google / YTM ✓". A horizontal LinearLayout with
+             * restoring "2. Google / YTM ✓". A horizontal LinearLayout with
              * baseline alignment enabled can then move one whole child down
              * to align text baselines, visually clipping/offsetting the green
              * button after configuration changes.
@@ -692,18 +901,44 @@ class MainActivity : Activity() {
         val palette =
             AppThemeManager.palette(this)
 
-        val color =
+        val accentColor =
             when (state) {
-                StepState.READY -> palette.successFill
-                StepState.ATTENTION -> palette.warningFill
-                StepState.REQUIRED -> palette.accentFill
+                StepState.READY ->
+                    palette.success
+
+                StepState.ATTENTION ->
+                    palette.warning
+
+                StepState.REQUIRED ->
+                    palette.accent
+            }
+
+        val fillColor =
+            when (state) {
+                StepState.READY,
+                StepState.ATTENTION ->
+                    palette.surfaceAlt
+
+                StepState.REQUIRED ->
+                    if (enabled) {
+                        palette.accentFill
+                    } else {
+                        palette.surfaceAlt
+                    }
             }
 
         button.background =
             AppThemeManager.stateButtonDrawable(
                 context = this,
-                fillColor = color,
-                radiusDp = 12
+                fillColor = fillColor,
+                radiusDp = 12,
+                accentOverride =
+                    accentColor
+            )
+
+        button.compoundDrawableTintList =
+            ColorStateList.valueOf(
+                accentColor
             )
 
         button.alpha =
@@ -1327,16 +1562,16 @@ class MainActivity : Activity() {
         accountButton.text =
             when {
                 restoringPriorAuthorization ->
-                    "⛓  2. Google / YTM …"
+                    "2. Google / YTM …"
 
                 accessToken.isNullOrBlank() ->
-                    "⛓  2. Google / YTM"
+                    "2. Google / YTM"
 
                 youtubeChannelInfo != null ->
-                    "⛓  2. Google / YTM ✓"
+                    "2. Google / YTM ✓"
 
                 else ->
-                    "⛓  2. Google / YTM …"
+                    "2. Google / YTM …"
             }
 
         updatePrimaryActions()

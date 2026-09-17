@@ -46,7 +46,9 @@ grep -Fq '| v1.4.19 | **PARTIALLY PHONE-TESTED — PASS FOR BULK EXPORT PATH** |
   || fail "v1.4.19 bulk-export phone-test PASS status missing"
 grep -Fq '| v1.4.20 | **PARTIALLY PHONE-TESTED — PASS FOR UI SMOKE** |' "$STATUS" \
   || fail "v1.4.20 UI-smoke PASS status missing"
-grep -Fq '| v1.4.21 | **NOT TESTED YET** |' "$STATUS" \
-  || fail "v1.4.21 must start NOT TESTED YET"
+grep -Fq '| v1.4.21 | **PARTIALLY PHONE-TESTED — PASS FOR HOME THEMES** |' "$STATUS" \
+  || fail "v1.4.21 Home-theme phone PASS status missing"
+grep -Fq '| v1.4.22 | **NOT TESTED YET** |' "$STATUS" \
+  || fail "v1.4.22 must start NOT TESTED YET"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"

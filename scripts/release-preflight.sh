@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.21/RELEASE.md"
-check_file "docs/v.1.4.21/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.22/RELEASE.md"
+check_file "docs/v.1.4.22/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -49,7 +49,7 @@ bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/search-coordinator-audit.sh
 bash scripts/playlist-write-coordinator-audit.sh
 bash scripts/destination-coordinator-audit.sh
-bash scripts/v1421-theme-wave1-audit.sh
+bash scripts/v1422-visual-structure-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh
@@ -78,6 +78,7 @@ check_file "scripts/v1417-auth-flow-audit.sh"
 check_file "scripts/v1418-account-library-import-audit.sh"
 check_file "scripts/v1419-account-library-export-audit.sh"
 check_file "scripts/v1420-import-button-layout-audit.sh"
+check_file "scripts/v1422-visual-structure-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
 check_file "qa/TEST_DATA.md"
@@ -223,11 +224,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 55' app/build.gradle.kts \
-  || fail "Expected versionCode = 55"
+grep -q 'versionCode = 56' app/build.gradle.kts \
+  || fail "Expected versionCode = 56"
 
-grep -q 'versionName = "1.4.21"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.21"'
+grep -q 'versionName = "1.4.22"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.22"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -381,6 +382,10 @@ grep -Fq '| v1.4.19 | **PARTIALLY PHONE-TESTED — PASS FOR BULK EXPORT PATH** |
   || fail "v1.4.19 bulk-export phone-test PASS status missing"
 grep -Fq '| v1.4.20 | **PARTIALLY PHONE-TESTED — PASS FOR UI SMOKE** |' RELEASE_TEST_STATUS.md \
   || fail "v1.4.20 UI-smoke PASS status missing"
+grep -Fq '| v1.4.21 | **PARTIALLY PHONE-TESTED — PASS FOR HOME THEMES** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.21 Home-theme PASS status missing"
+grep -Fq '| v1.4.22 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.22 must start NOT TESTED YET"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' qa/BUG_REGISTER.md \
   || fail "BUG-003 closed phone-retest status missing"
 echo "- BUG-003 in-place update recovery phone retest passed"
