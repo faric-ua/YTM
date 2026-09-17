@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.20 — Import account-action button layout fix
+v1.4.21 — Theme System Wave 1
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -90,6 +90,28 @@ v1.4.20 — Import account-action button layout fix
 - [x] GitHub build
 - [x] phone test: Import button layout screenshot
 - [x] phone smoke: bulk-export folder picker still opens
+
+## v1.4.21
+- [x] add persistent theme engine
+- [x] add Neon Dark
+- [x] add Blue Dark
+- [x] add Green Dark
+- [x] add theme selector under `Ще`
+- [x] add decorative theme-colored contour strokes
+- [x] Wave 1: Home
+- [x] Wave 1: Import
+- [x] Wave 1: Review
+- [x] Wave 1: main track cards
+- [x] add static theme audit
+- [x] release preflight passes
+- [ ] GitHub build
+- [ ] phone test: Neon Dark
+- [ ] phone test: Blue Dark
+- [ ] phone test: Green Dark
+- [ ] phone test: Import visual smoke
+- [ ] phone test: Review visual smoke
+- [ ] phone test: theme persistence after app restart
+- [ ] Wave 2: Destination / History / Queue / Service / Data
 
 ## Next
 Phone-test the v1.4.20 UI fix. After that, continue account-library work only if useful:

@@ -24,6 +24,8 @@ class TrackAdapter(
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        val palette = AppThemeManager.palette(context)
+
         val holder: Holder
         val view: LinearLayout
         if (convertView == null) {
@@ -35,21 +37,8 @@ class TrackAdapter(
                     GradientDrawable().apply {
                         shape = GradientDrawable.RECTANGLE
                         cornerRadius = dp(12).toFloat()
-                        setColor(
-                            Color.rgb(
-                                25,
-                                27,
-                                32
-                            )
-                        )
-                        setStroke(
-                            dp(1),
-                            Color.rgb(
-                                44,
-                                47,
-                                54
-                            )
-                        )
+                        setColor(palette.surface)
+                        setStroke(dp(1), palette.border)
                     }
             }
             val top = LinearLayout(context).apply {
@@ -57,7 +46,7 @@ class TrackAdapter(
                 gravity = Gravity.CENTER_VERTICAL
             }
             val title = TextView(context).apply {
-                setTextColor(Color.WHITE)
+                setTextColor(palette.text)
                 textSize = 16f
                 setTypeface(typeface, Typeface.BOLD)
                 maxLines = 2
@@ -70,7 +59,7 @@ class TrackAdapter(
             top.addView(title, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
             top.addView(status, LinearLayout.LayoutParams(dp(100), ViewGroup.LayoutParams.WRAP_CONTENT))
             val sub = TextView(context).apply {
-                setTextColor(Color.rgb(170, 172, 178))
+                setTextColor(palette.muted)
                 textSize = 14f
                 maxLines = 2
             }

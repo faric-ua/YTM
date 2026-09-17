@@ -1,4 +1,5 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -61,6 +62,8 @@ class ImportActivity : Activity() {
             savedInstanceState
         )
 
+        AppThemeManager.applyWindow(this)
+
         currentPlaylistStore =
             CurrentPlaylistStore(this)
 
@@ -103,12 +106,14 @@ class ImportActivity : Activity() {
     }
 
     private fun buildUi() {
+        val palette = AppThemeManager.palette(this)
+
         val root =
             LinearLayout(this).apply {
                 orientation =
                     LinearLayout.VERTICAL
                 setBackgroundColor(
-                    BACKGROUND
+                    palette.background
                 )
             }
 
@@ -1291,10 +1296,11 @@ class ImportActivity : Activity() {
                 dp(14)
             )
             background =
-                roundedBackground(
-                    color = SURFACE,
+                AppThemeManager.surfaceDrawable(
+                    context = this@ImportActivity,
+                    fill = AppThemeManager.palette(this@ImportActivity).surface,
                     radiusDp = 14,
-                    strokeColor = BORDER
+                    accentStroke = true
                 )
             layoutParams =
                 LinearLayout.LayoutParams(
@@ -1366,33 +1372,11 @@ class ImportActivity : Activity() {
                 maxSp = 14
             )
             background =
-                roundedBackground(
-                    color =
-                        if (primary) {
-                            Color.rgb(
-                                196,
-                                0,
-                                42
-                            )
-                        } else {
-                            Color.rgb(
-                                37,
-                                39,
-                                46
-                            )
-                        },
-                    radiusDp = 11,
-                    strokeColor =
-                        if (primary) {
-                            null
-                        } else {
-                            Color.rgb(
-                                63,
-                                66,
-                                76
-                            )
-                        }
-                )
+                if (primary) {
+                    AppThemeManager.accentButtonDrawable(this@ImportActivity, 11)
+                } else {
+                    AppThemeManager.neutralButtonDrawable(this@ImportActivity, 11)
+                }
             setOnClickListener {
                 action()
             }

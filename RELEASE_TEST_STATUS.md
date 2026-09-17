@@ -13,6 +13,7 @@
 | v1.4.18 | **PARTIALLY PHONE-TESTED — PASS FOR G01** | Account playlist picker/import, exact-videoId Review path, and YTM Project save/reopen passed on phone. Other regressions remain untested. |
 | v1.4.19 | **PARTIALLY PHONE-TESTED — PASS FOR BULK EXPORT PATH** | 21/21 playlists exported, manifest counts matched, and an exported project reopened with exact videoId preserved. Source before/after refresh was not separately phone-verified. |
 | v1.4.20 | **PARTIALLY PHONE-TESTED — PASS FOR UI SMOKE** | Import account-action layout passed; bulk-export folder picker still opens; BUG-003 in-place update recovery retest passed. |
+| v1.4.21 | **NOT TESTED YET** | Theme System Wave 1: Neon/Blue/Green palettes and themed Home/Import/Review surfaces. |
 
 Static audits and GitHub build do not equal phone testing.
 

@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.20/RELEASE.md"
-check_file "docs/v.1.4.20/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.21/RELEASE.md"
+check_file "docs/v.1.4.21/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -49,7 +49,7 @@ bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/search-coordinator-audit.sh
 bash scripts/playlist-write-coordinator-audit.sh
 bash scripts/destination-coordinator-audit.sh
-bash scripts/v1420-import-button-layout-audit.sh
+bash scripts/v1421-theme-wave1-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh
@@ -223,11 +223,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 54' app/build.gradle.kts \
-  || fail "Expected versionCode = 54"
+grep -q 'versionCode = 55' app/build.gradle.kts \
+  || fail "Expected versionCode = 55"
 
-grep -q 'versionName = "1.4.20"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.20"'
+grep -q 'versionName = "1.4.21"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.21"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

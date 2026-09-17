@@ -1,4 +1,5 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -59,6 +60,7 @@ class ReviewActivity : Activity() {
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
+        AppThemeManager.applyWindow(this)
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
@@ -164,9 +166,7 @@ class ReviewActivity : Activity() {
             LinearLayout(this).apply {
                 orientation =
                     LinearLayout.VERTICAL
-                setBackgroundColor(
-                    BACKGROUND
-                )
+                setBackgroundColor(AppThemeManager.palette(this@ReviewActivity).background)
             }
 
         root.addView(
@@ -215,9 +215,7 @@ class ReviewActivity : Activity() {
             LinearLayout(this).apply {
                 orientation =
                     LinearLayout.VERTICAL
-                setBackgroundColor(
-                    BACKGROUND
-                )
+                setBackgroundColor(AppThemeManager.palette(this@ReviewActivity).background)
             }
 
         root.addView(
@@ -320,7 +318,7 @@ class ReviewActivity : Activity() {
                 dividerHeight = dp(6)
                 clipToPadding = false
                 setPadding(dp(10), 0, dp(10), dp(14))
-                setBackgroundColor(BACKGROUND)
+                setBackgroundColor(AppThemeManager.palette(this@ReviewActivity).background)
             }
 
         val adapter = ReviewListAdapter(snapshot.playlist.tracks)
@@ -418,9 +416,7 @@ class ReviewActivity : Activity() {
             LinearLayout(this).apply {
                 orientation =
                     LinearLayout.VERTICAL
-                setBackgroundColor(
-                    BACKGROUND
-                )
+                setBackgroundColor(AppThemeManager.palette(this@ReviewActivity).background)
             }
 
         root.addView(

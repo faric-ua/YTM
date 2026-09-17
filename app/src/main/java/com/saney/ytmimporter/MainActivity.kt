@@ -34,6 +34,7 @@ import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
+import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.util.ErrorMessages
@@ -92,6 +93,7 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppThemeManager.applyWindow(this)
         val searchCache =
             SearchCache(this)
         quotaTracker =
@@ -179,9 +181,11 @@ class MainActivity : Activity() {
     }
 
     private fun buildUi() {
+        val palette = AppThemeManager.palette(this)
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.rgb(15, 16, 19))
+            setBackgroundColor(palette.background)
         }
 
         val header = LinearLayout(this).apply {
@@ -229,10 +233,11 @@ class MainActivity : Activity() {
                 gravity = android.view.Gravity.CENTER
                 setPadding(dp(10), dp(6), dp(10), dp(6))
                 background =
-                    roundedBackground(
-                        color = Color.rgb(31, 33, 39),
+                    AppThemeManager.surfaceDrawable(
+                        context = this@MainActivity,
+                        fill = palette.surfaceAlt,
                         radiusDp = 18,
-                        strokeColor = Color.rgb(55, 58, 66)
+                        accentStroke = false
                     )
             }
         )
@@ -243,10 +248,11 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(12), dp(12), dp(12), dp(12))
             background =
-                roundedBackground(
-                    color = Color.rgb(25, 27, 32),
+                AppThemeManager.surfaceDrawable(
+                    context = this@MainActivity,
+                    fill = palette.surface,
                     radiusDp = 16,
-                    strokeColor = Color.rgb(48, 51, 59)
+                    accentStroke = true
                 )
         }
 
@@ -261,17 +267,17 @@ class MainActivity : Activity() {
         )
 
         importButton =
-            button("1. Імпорт") {
+            button("⇩  1. Імпорт") {
                 openImportScreen()
             }
 
         accountButton =
-            button("2. Google / YTM") {
+            button("⛓  2. Google / YTM") {
                 showAccountDialog()
             }
 
         searchButton =
-            primaryButton("3. Знайти / перевірити") {
+            primaryButton("⌕  3. Знайти / перевірити") {
                 searchOrReview()
             }.apply {
                 isEnabled = false
@@ -279,7 +285,7 @@ class MainActivity : Activity() {
             }
 
         createButton =
-            primaryButton("4. Створити / додати") {
+            primaryButton("☷  4. Створити / додати") {
                 createPlaylist()
             }.apply {
                 isEnabled = false
@@ -320,22 +326,22 @@ class MainActivity : Activity() {
         }
 
         val historyButton =
-            compactButton("Історія") {
+            compactButton("◷ Історія") {
                 showHistory()
             }
 
         pendingButton =
-            compactButton("Черга") {
+            compactButton("≡ Черга") {
                 showPendingJobs()
             }
 
         quotaButton =
-            compactButton("Квота") {
+            compactButton("▥ Квота") {
                 showQuotaDialog()
             }
 
         val moreButton =
-            compactButton("Ще") {
+            compactButton("••• Ще") {
                 showMoreActions()
             }
 
@@ -400,7 +406,7 @@ class MainActivity : Activity() {
         listView = ListView(this).apply {
             divider = null
             dividerHeight = dp(1)
-            setBackgroundColor(Color.rgb(15, 16, 19))
+            setBackgroundColor(palette.background)
             clipToPadding = false
             setPadding(dp(8), 0, dp(8), dp(12))
         }
@@ -455,10 +461,9 @@ class MainActivity : Activity() {
                 maxSp = 15
             )
             background =
-                roundedBackground(
-                    color = Color.rgb(34, 36, 42),
-                    radiusDp = 12,
-                    strokeColor = Color.rgb(58, 61, 70)
+                AppThemeManager.neutralButtonDrawable(
+                    context = this@MainActivity,
+                    radiusDp = 12
                 )
             setOnClickListener {
                 action()
@@ -484,8 +489,8 @@ class MainActivity : Activity() {
                 maxSp = 15
             )
             background =
-                roundedBackground(
-                    color = Color.rgb(196, 0, 42),
+                AppThemeManager.accentButtonDrawable(
+                    context = this@MainActivity,
                     radiusDp = 12
                 )
             setOnClickListener {
@@ -521,7 +526,7 @@ class MainActivity : Activity() {
              * Do not baseline-align sibling buttons.
              *
              * Step 2 can auto-size to a slightly different text size after
-             * restoring "2. Google / YTM ✓". A horizontal LinearLayout with
+             * restoring "⛓  2. Google / YTM ✓". A horizontal LinearLayout with
              * baseline alignment enabled can then move one whole child down
              * to align text baselines, visually clipping/offsetting the green
              * button after configuration changes.
@@ -684,21 +689,20 @@ class MainActivity : Activity() {
         state: StepState,
         enabled: Boolean = true
     ) {
+        val palette =
+            AppThemeManager.palette(this)
+
         val color =
             when (state) {
-                StepState.READY ->
-                    Color.rgb(31, 122, 77)
-
-                StepState.ATTENTION ->
-                    Color.rgb(157, 105, 15)
-
-                StepState.REQUIRED ->
-                    Color.rgb(176, 0, 32)
+                StepState.READY -> palette.successFill
+                StepState.ATTENTION -> palette.warningFill
+                StepState.REQUIRED -> palette.accentFill
             }
 
         button.background =
-            roundedBackground(
-                color = color,
+            AppThemeManager.stateButtonDrawable(
+                context = this,
+                fillColor = color,
                 radiusDp = 12
             )
 
@@ -881,6 +885,9 @@ class MainActivity : Activity() {
             title = "Ще",
             subtitle = "Додаткові дії та сервісні інструменти.",
             actions = listOf(
+                UiChrome.MenuAction(
+                    "🎨 Тема — Neon / Blue / Green"
+                ) { showThemePicker() },
                 UiChrome.MenuAction(
                     "Поточний проект — review / save / share"
                 ) {
@@ -1320,16 +1327,16 @@ class MainActivity : Activity() {
         accountButton.text =
             when {
                 restoringPriorAuthorization ->
-                    "2. Google / YTM …"
+                    "⛓  2. Google / YTM …"
 
                 accessToken.isNullOrBlank() ->
-                    "2. Google / YTM"
+                    "⛓  2. Google / YTM"
 
                 youtubeChannelInfo != null ->
-                    "2. Google / YTM ✓"
+                    "⛓  2. Google / YTM ✓"
 
                 else ->
-                    "2. Google / YTM …"
+                    "⛓  2. Google / YTM …"
             }
 
         updatePrimaryActions()
@@ -2583,6 +2590,26 @@ class MainActivity : Activity() {
                 showQuickStartDialog()
             }
             .show()
+    }
+
+    private fun showThemePicker() {
+        val active = AppThemeManager.currentStyle(this)
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = "Тема оформлення",
+            subtitle = "Один інтерфейс — три палітри. Тема зберігається на пристрої.",
+            actions = AppThemeManager.ThemeStyle.values().map { style ->
+                UiChrome.MenuAction(
+                    label = (if (style == active) "✓ " else "") + style.marker + "  " + style.label,
+                    onClick = {
+                        if (style != active) {
+                            AppThemeManager.setStyle(this, style)
+                            recreate()
+                        }
+                    }
+                )
+            }
+        )
     }
 
     private fun showServiceTools() {

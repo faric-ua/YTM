@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.21
+- Added Theme System Wave 1.
+- Added persistent Neon Dark, Blue Dark and Green Dark palettes.
+- Added theme selector through `Ще → Тема`.
+- Added theme-colored decorative contour strokes inspired by hand-drawn automotive outlines.
+- Home, Import, Review and the main track list begin using the shared theme system.
+- Updated semantic READY state audit to use theme `successFill` instead of a hardcoded RGB value.
+- Existing auth/import/search/write behavior is intended to remain unchanged.
+- versionCode 55 / versionName 1.4.21.
+- v1.4.21 = NOT PHONE-TESTED YET.
+
 ## v1.4.20
 - Fixed clipped text on long Import action buttons by replacing fixed height with WRAP_CONTENT + minimum height.
 - Added controlled autosizing and comfortable vertical padding for Import action buttons.
