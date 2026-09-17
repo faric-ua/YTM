@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.23
-Version code: 57
+Version: 1.4.24
+Version code: 58
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -13,7 +13,8 @@ v1.4.19 PARTIALLY PHONE-TESTED — BULK EXPORT PASS
 v1.4.20 PARTIALLY PHONE-TESTED — UI SMOKE PASS
 v1.4.21 PARTIALLY PHONE-TESTED — HOME THEMES PASS
 v1.4.22 PARTIALLY PHONE-TESTED — HOME UI FIT ISSUE
-v1.4.23 NOT TESTED YET
+v1.4.23 PARTIALLY PHONE-TESTED — HOME FIT PASS
+v1.4.24 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -92,6 +93,14 @@ v1.4.23 focus:
 - workflow actions use 20dp icons and 9–13sp adaptive text
 - reduce icon/text and horizontal button padding
 - preserve current theme/state behavior and app functionality
+
+v1.4.24 focus:
+- Theme Wave 2
+- Import / Review / Destination / History / Queue / Data / Service
+- screen and system-bar background follows selected palette
+- legacy rounded surfaces map to theme surfaces/accent
+- semantic Review/History status colors use shared palette
+- functional auth/search/write behavior remains unchanged
 
 Known:
 BUG-001/Q-001 OPEN

@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.23/RELEASE.md"
-check_file "docs/v.1.4.23/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.24/RELEASE.md"
+check_file "docs/v.1.4.24/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -49,7 +49,7 @@ bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/search-coordinator-audit.sh
 bash scripts/playlist-write-coordinator-audit.sh
 bash scripts/destination-coordinator-audit.sh
-bash scripts/v1423-button-fit-audit.sh
+bash scripts/v1424-theme-wave2-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh
@@ -225,11 +225,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 57' app/build.gradle.kts \
-  || fail "Expected versionCode = 57"
+grep -q 'versionCode = 58' app/build.gradle.kts \
+  || fail "Expected versionCode = 58"
 
-grep -q 'versionName = "1.4.23"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.23"'
+grep -q 'versionName = "1.4.24"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.24"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -387,8 +387,10 @@ grep -Fq '| v1.4.21 | **PARTIALLY PHONE-TESTED — PASS FOR HOME THEMES** |' REL
   || fail "v1.4.21 Home-theme PASS status missing"
 grep -Fq '| v1.4.22 | **PARTIALLY PHONE-TESTED — UI FIT ISSUE FOUND** |' RELEASE_TEST_STATUS.md \
   || fail "v1.4.22 UI-fit phone status missing"
-grep -Fq '| v1.4.23 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
-  || fail "v1.4.23 must start NOT TESTED YET"
+grep -Fq '| v1.4.23 | **PARTIALLY PHONE-TESTED — PASS FOR HOME FIT** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.23 Home-fit PASS status missing"
+grep -Fq '| v1.4.24 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.24 must start NOT TESTED YET"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' qa/BUG_REGISTER.md \
   || fail "BUG-003 closed phone-retest status missing"
 echo "- BUG-003 in-place update recovery phone retest passed"

@@ -50,7 +50,9 @@ grep -Fq '| v1.4.21 | **PARTIALLY PHONE-TESTED — PASS FOR HOME THEMES** |' "$S
   || fail "v1.4.21 Home-theme phone PASS status missing"
 grep -Fq '| v1.4.22 | **PARTIALLY PHONE-TESTED — UI FIT ISSUE FOUND** |' "$STATUS" \
   || fail "v1.4.22 UI-fit phone status missing"
-grep -Fq '| v1.4.23 | **NOT TESTED YET** |' "$STATUS" \
-  || fail "v1.4.23 must start NOT TESTED YET"
+grep -Fq '| v1.4.23 | **PARTIALLY PHONE-TESTED — PASS FOR HOME FIT** |' "$STATUS" \
+  || fail "v1.4.23 Home-fit phone PASS status missing"
+grep -Fq '| v1.4.24 | **NOT TESTED YET** |' "$STATUS" \
+  || fail "v1.4.24 must start NOT TESTED YET"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"

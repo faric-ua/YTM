@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.24
+- Theme Wave 2.
+- Extended the selected Neon / Blue / Green palette to Destination, History, Pending Queue, Data and Service.
+- Finished theme mapping for remaining legacy rounded surfaces in Import and Review.
+- Service nested pages now refresh system-bar colors from the active theme.
+- Review and History status colors now use shared semantic palette colors.
+- Recorded v1.4.23 real-phone Home button-fit PASS.
+- No intended auth/search/write domain behavior changes.
+- versionCode 58 / versionName 1.4.24.
+- v1.4.24 = NOT PHONE-TESTED YET.
+
 ## v1.4.23
 - Button Fit + Home Polish based on real-phone v1.4.22 evidence.
 - Forced Home utility actions to a single line.

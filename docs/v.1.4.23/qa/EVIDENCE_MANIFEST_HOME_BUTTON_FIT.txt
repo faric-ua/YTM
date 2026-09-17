@@ -1,0 +1,11 @@
+v1.4.23 Home button-fit evidence
+
+EVIDENCE_HOME_BUTTON_FIT_PASS_BLUE.jpg
+- real-phone Blue Dark Home
+- utility row labels all stay on one line
+- workflow labels fit
+- vector icons visible
+- current-playlist card visible
+
+Result:
+PASS for tested Home button-fit path.

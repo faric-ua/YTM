@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.23 — Button Fit + Home Polish
+v1.4.24 — Theme Wave 2
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -141,11 +141,30 @@ v1.4.23 — Button Fit + Home Polish
 - [x] reduce workflow icon/text gap and side padding
 - [x] record v1.4.22 real-phone fit issue evidence
 - [x] add static button-fit audit
-- [ ] GitHub build
-- [ ] phone test: utility row all one line
-- [ ] phone test: top four actions fit
+- [x] GitHub build
+- [x] phone test: utility row all one line
+- [x] phone test: top four actions fit
 - [ ] phone test: Neon / Blue / Green geometry
 - [ ] navigation smoke: Import + Review
+
+- [x] Blue Dark Home fit PASS on real phone
+
+## v1.4.24
+- [x] apply selected theme to Destination
+- [x] apply selected theme to History
+- [x] apply selected theme to Pending Queue
+- [x] apply selected theme to Data / Backup
+- [x] apply selected theme to Service and nested pages
+- [x] finish themed legacy surfaces in Import / Review
+- [x] use shared semantic colors in Review / History
+- [x] record v1.4.23 Home-fit phone PASS
+- [x] add Theme Wave 2 audit
+- [ ] GitHub build
+- [ ] phone test: Import
+- [ ] phone test: Review
+- [ ] phone test: Destination
+- [ ] phone test: History / Queue / Data / Service
+- [ ] phone theme spot-check on one utility screen
 
 ## Next
 Phone-test v1.4.23 button fit. After the Home geometry is stable, continue the visual/theme rollout and account-library work only if useful:

@@ -15,7 +15,8 @@
 | v1.4.20 | **PARTIALLY PHONE-TESTED — PASS FOR UI SMOKE** | Import account-action layout passed; bulk-export folder picker still opens; BUG-003 in-place update recovery retest passed. |
 | v1.4.21 | **PARTIALLY PHONE-TESTED — PASS FOR HOME THEMES** | Neon, Blue and Green Home themes switched successfully on phone; Import/Review/persistence remain untested. |
 | v1.4.22 | **PARTIALLY PHONE-TESTED — UI FIT ISSUE FOUND** | Home launched with vector icons, compact logo, calmer contours and current-playlist card; `Історія` wrapped and top labels were tight. |
-| v1.4.23 | **NOT TESTED YET** | Button Fit + Home Polish: single-line utility actions, smaller vector icons and tighter adaptive workflow-button typography. |
+| v1.4.23 | **PARTIALLY PHONE-TESTED — PASS FOR HOME FIT** | Blue Dark Home: utility row stayed single-line, workflow labels fit, vector icons and current-playlist card remained readable. |
+| v1.4.24 | **NOT TESTED YET** | Theme Wave 2: extend selected palette to Import, Review, Destination, History, Queue, Data and Service. |
 
 Static audits and GitHub build do not equal phone testing.
 

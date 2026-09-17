@@ -1,4 +1,5 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -28,6 +29,7 @@ class DestinationActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppThemeManager.applyWindow(this)
 
         currentMode =
             intent.getStringExtra(EXTRA_MODE)
@@ -300,7 +302,7 @@ class DestinationActivity : Activity() {
             dividerHeight = dp(6)
             clipToPadding = false
             setPadding(dp(10), 0, dp(10), dp(14))
-            setBackgroundColor(BACKGROUND)
+            setBackgroundColor(AppThemeManager.palette(this@DestinationActivity).background)
         }
         root.addView(
             list,
@@ -796,7 +798,7 @@ class DestinationActivity : Activity() {
     private fun baseRoot(): LinearLayout =
         LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(BACKGROUND)
+            setBackgroundColor(AppThemeManager.palette(this@DestinationActivity).background)
         }
 
     private fun topBar(
@@ -963,16 +965,57 @@ class DestinationActivity : Activity() {
         color: Int,
         radiusDp: Int,
         strokeColor: Int? = null
-    ): GradientDrawable =
-        GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = dp(radiusDp).toFloat()
-            setColor(color)
+    ): android.graphics.drawable.Drawable {
+        val palette =
+            AppThemeManager.palette(this)
 
-            if (strokeColor != null) {
-                setStroke(dp(1), strokeColor)
+        val mappedFill =
+            when (color) {
+                Color.rgb(15, 16, 19) ->
+                    palette.background
+
+                Color.rgb(25, 27, 32) ->
+                    palette.surface
+
+                Color.rgb(31, 33, 39),
+                Color.rgb(37, 39, 46) ->
+                    palette.surfaceAlt
+
+                Color.rgb(196, 0, 42) ->
+                    palette.accentFill
+
+                Color.rgb(39, 25, 27),
+                Color.rgb(31, 29, 24) ->
+                    palette.surface
+
+                else ->
+                    color
             }
-        }
+
+        val accentOverride =
+            when (strokeColor) {
+                Color.rgb(95, 48, 52) ->
+                    palette.danger
+
+                Color.rgb(83, 68, 37) ->
+                    palette.warning
+
+                else ->
+                    null
+            }
+
+        val useAccentStroke =
+            color == Color.rgb(196, 0, 42) ||
+                accentOverride != null
+
+        return AppThemeManager.surfaceDrawable(
+            context = this,
+            fill = mappedFill,
+            radiusDp = radiusDp,
+            accentStroke = useAccentStroke,
+            accentOverride = accentOverride
+        )
+    }
 
     private fun dp(value: Int): Int =
         (

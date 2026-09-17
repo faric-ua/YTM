@@ -1,4 +1,4 @@
-YTM Importer v1.4.23 FULL — FILE MANIFEST
+YTM Importer v1.4.24 FULL — FILE MANIFEST
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 0739c7de5aa06eac  .github/workflows/build-apk.yml
@@ -7,19 +7,19 @@ YTM Importer v1.4.23 FULL — FILE MANIFEST
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
-7ecb2c64730b8e59  BACKLOG.md
-31e6c6e02eb64c1c  CHANGELOG.md
+b3e7521e7bc5e75b  BACKLOG.md
+0f59ea00d56efe75  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 4a40647ce0179615  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
-7883a40af8f225ab  PROJECT_STATUS.txt
+880a5d5895f7a688  PROJECT_STATUS.txt
 ce775606933d5b6f  PUBLIC_RELEASE_CHECKLIST.md
 f5a8d2cc1bdb6785  README.md
 48b7e9718ed807af  README_G01A.md
 7b00d1251f822b57  README_GUARD_FIX.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
-40e8aa7706f893a9  RELEASE_TEST_STATUS.md
+dc03b6752a2f1b07  RELEASE_TEST_STATUS.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
@@ -65,6 +65,7 @@ fe43f908c47e706c  TERMINAL_APPLY_v1.4.2.md
 3eac84a356c95816  TERMINAL_APPLY_v1.4.21.md
 ae928f8d570068c4  TERMINAL_APPLY_v1.4.22.md
 d20f31cda7a179ad  TERMINAL_APPLY_v1.4.23.md
+c5061973427d14e2  TERMINAL_APPLY_v1.4.24.md
 68b04fde9f139eac  TERMINAL_APPLY_v1.4.3.md
 1e5078ba6144a8d2  TERMINAL_APPLY_v1.4.4.md
 94d20f0440c00387  TERMINAL_APPLY_v1.4.5.md
@@ -74,17 +75,17 @@ fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 4cfb5c6b808fd1d7  TERMUX_COMMANDS.md
 9308a1e0b2b9c16f  YTM_ASSISTANT_WORKFLOW.md
-d4d13143ac39a55b  app/build.gradle.kts
+4249caee869bf3e6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 27d6378715cbab35  app/src/main/AndroidManifest.xml
-a5a13f70894cac26  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
-eb7087317541022a  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
-a52420036de211c9  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-55ac8770dfa5c9d1  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+d47dfb35bf692be4  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
+7dbee767cb80e0b7  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
+5a368aa88d99fd1f  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
+56ed7903832939fc  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 2b5016cddfe7036c  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-b977ec271b8ca3c1  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
-ee91ad1af641a9c5  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
-84765a48446d5d6c  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
+a2d1e7d540d19580  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
+007e3f56ebcd6779  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
+cfa80e3f6f796d74  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 b4b89fb7528c231b  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
 47387532dce64790  app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt
@@ -905,7 +906,15 @@ adbbfa85a38d542e  docs/v.1.4.22/qa/PHONE_TEST.md
 55c5ff5605f82e51  docs/v.1.4.23/REGRESSION_CHECKLIST.md
 74a6d04b91a775cb  docs/v.1.4.23/RELEASE.md
 93d7d63fb2291723  docs/v.1.4.23/diagrams/BUTTON_FIT_RULES.md
+e581a6054f7826c2  docs/v.1.4.23/qa/EVIDENCE_MANIFEST_HOME_BUTTON_FIT.txt
+da9b39ce30980572  docs/v.1.4.23/qa/HOME_BUTTON_FIT_PHONE_TEST.csv
 a9da5c0d7eb99147  docs/v.1.4.23/qa/PHONE_TEST.md
+dcc1269b85a08ee7  docs/v.1.4.23/qa/PHONE_TEST_HOME_BUTTON_FIT_2026-09-17.md
+efba26419fcf911d  docs/v.1.4.23/qa/evidence/EVIDENCE_HOME_BUTTON_FIT_PASS_BLUE.jpg
+e69633cc75ce2cdc  docs/v.1.4.24/REGRESSION_CHECKLIST.md
+b2901e707129c856  docs/v.1.4.24/RELEASE.md
+e2d06462ff392a20  docs/v.1.4.24/diagrams/THEME_WAVE2_SCOPE.md
+dce15fbc778f1c23  docs/v.1.4.24/qa/PHONE_TEST.md
 cfe983e51369f4ce  docs/v.1.4.3/REGRESSION_CHECKLIST.md
 134d0a0f8bc950e1  docs/v.1.4.3/RELEASE.md
 322116cf7e140e80  docs/v.1.4.3/diagrams/DIALOG_SYSTEM.md
@@ -964,6 +973,7 @@ f87d482e5aa750a9  scripts/apply-v1.4.19.py
 0338e1fbdba0aab0  scripts/apply-v1.4.20.py
 cf13cbd691cb54d3  scripts/apply-v1.4.21.py
 c118a655a3473059  scripts/apply-v1.4.23.py
+4f2f5c36388ecfe9  scripts/apply-v1.4.24.py
 a1c4b4a2f19a6a9b  scripts/auth-persistence-audit.sh
 c9f2616bb9b38084  scripts/button-layout-audit.sh
 aebf1b7e01c530bc  scripts/compact-review-audit.sh
@@ -976,9 +986,9 @@ f58573a1f289d980  scripts/destination-coordinator-audit.sh
 d0552e9ad9641729  scripts/mainactivity-audit.sh
 f6002f563634451e  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
-f8441e573a109b9a  scripts/qa-plan-audit.sh
+1cf2f54ddcabf9fa  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
-25bb27b962ae0f52  scripts/release-preflight.sh
+4636777ba4625e91  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d101c2a72335189a  scripts/rotation-layout-audit.sh
 978fa69e27c6b641  scripts/search-coordinator-audit.sh
@@ -991,4 +1001,5 @@ d668238c4ed09fb7  scripts/ui-chrome-audit.sh
 b1afcb3c5ebe2843  scripts/v1421-theme-wave1-audit.sh
 3d9e73d35a030e99  scripts/v1422-visual-structure-audit.sh
 aa9cbe1b73639e33  scripts/v1423-button-fit-audit.sh
+febc5d41f3838224  scripts/v1424-theme-wave2-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
