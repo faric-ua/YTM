@@ -50,6 +50,7 @@ bash scripts/search-coordinator-audit.sh
 bash scripts/playlist-write-coordinator-audit.sh
 bash scripts/destination-coordinator-audit.sh
 python -B scripts/v1426-apply-selftest.py
+bash scripts/v1426-qa-close-audit.sh
 bash scripts/v1426-selective-export-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh

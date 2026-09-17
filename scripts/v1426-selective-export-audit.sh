@@ -36,7 +36,7 @@ if grep -Eq 'createPlaylist|insertPlaylistItem|deletePlaylist' "$IMPORT"; then
   fail "ImportActivity account export must stay read-only"
 fi
 
-grep -Fq '| v1.4.26 | **NOT TESTED YET** |' "$STATUS" || fail "v1.4.26 must start NOT TESTED YET"
+grep -Fq '| v1.4.26 | **PARTIALLY PHONE-TESTED — PASS FOR SELECTIVE EXPORT PATH; BUG-005 FOUND** |' "$STATUS" || fail "v1.4.26 selective-export phone status missing"
 grep -Fq '## v1.4.26' "$BACKLOG" || fail "v1.4.26 backlog section missing"
 grep -Fq 'Yerin Exclusive hidden skin' "$BACKLOG" || fail "Yerin Exclusive future roadmap missing"
 grep -Fq 'Korean (`ko`) language' "$BACKLOG" || fail "Korean localization roadmap missing"

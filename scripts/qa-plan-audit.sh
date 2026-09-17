@@ -56,7 +56,9 @@ grep -Fq '| v1.4.24 | **PARTIALLY PHONE-TESTED — PASS WITH UI POLISH FINDINGS*
   || fail "v1.4.24 Wave 2 phone status missing"
 grep -Fq '| v1.4.25 | **PARTIALLY PHONE-TESTED — PASS FOR ACCENT CARD TESTED PATHS** |' "$STATUS" \
   || fail "v1.4.25 tested-path phone status missing"
-grep -Fq '| v1.4.26 | **NOT TESTED YET** |' "$STATUS" \
-  || fail "v1.4.26 must start NOT TESTED YET"
+grep -Fq '| v1.4.26 | **PARTIALLY PHONE-TESTED — PASS FOR SELECTIVE EXPORT PATH; BUG-005 FOUND** |' "$STATUS" \
+  || fail "v1.4.26 selective-export phone status missing"
+grep -Fq '| BUG-005 / Q-005 | OPEN — FOUND v1.4.26 |' "$BUG" \
+  || fail "BUG-005 phone finding missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"

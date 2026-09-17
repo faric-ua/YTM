@@ -8,6 +8,7 @@ v1.4.26 — Selective Account Export
 - BUG-002/Q-002 DEFERRED
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — RETEST v1.4.17
+- BUG-005/Q-005 redundant manual search for exact videoId tracks — OPEN, v1.4.27
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -199,15 +200,27 @@ v1.4.26 — Selective Account Export
 - [x] manifest schema v2 + `selectionMode`
 - [x] add static audit + phone-test plan
 - [x] add tutorial chapter `06_ACCOUNT_LIBRARY_EXPORT.md`
+- [x] GitHub build
+- [x] phone test: selective picker
+- [x] phone test: exactly 2-playlist export
+- [x] verify 2 projects + manifest
+- [x] verify manifest `selectionMode = SELECTED`
+- [x] reopen one exported project and verify exact videoId round trip
+
+## v1.4.27 — Exact-ID Search Guard
+- [ ] exclude tracks with exact/canonical videoId from ordinary search planning
+- [ ] when all tracks are exact, show 0 required searches / no quota work
+- [ ] preserve explicit manual candidate selections
+- [ ] keep an intentional future re-search path separate from normal search
+- [ ] add BUG-005 static regression audit
+- [ ] add release docs + phone-test plan
 - [ ] GitHub build
-- [ ] phone test: selective picker
-- [ ] phone test: exactly 2-playlist export
-- [ ] verify 2 projects + manifest
-- [ ] verify manifest `selectionMode = SELECTED`
-- [ ] reopen one exported project and verify exact videoId round trip
+- [ ] phone retest: reopen exact `top 3` project
+- [ ] phone retest: Search plan = 0 new search.list
+- [ ] confirm Review remains 3/3 ready
 
 ## Next
-Expand the tutorial alongside the next useful feature wave. Preserve v1.4.25 as the Accent Card System phone-evidence baseline, then continue account-library work only if useful:
+v1.4.27 — fix BUG-005 with an Exact-ID Search Guard before adding another account-library feature:
 - selective multi-playlist export;
 - import of a bulk-export manifest;
 - incremental/sync-style account backup.

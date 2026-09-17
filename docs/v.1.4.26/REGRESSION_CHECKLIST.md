@@ -9,22 +9,28 @@
 
 ## Selective export
 
-- [ ] `Вибрати плейлисти для експорту` action is visible;
-- [ ] playlist list is read-only;
-- [ ] multiple playlists can be selected;
+- [x] `Вибрати плейлисти для експорту` action is visible;
+- [x] playlist list is read-only; (static audit: no account write API in Import flow)
+- [x] multiple playlists can be selected;
 - [ ] previously selected items remain checked when picker is reopened;
 - [ ] zero selection does not open the folder picker;
 - [ ] confirmed selection survives Activity saved-instance-state restoration;
 - [ ] folder picker opens only after a non-empty selection;
-- [ ] only selected playlists are processed;
+- [x] only selected playlists are processed; (2 selected → 2 playlistItems requests → 2 project files)
 - [ ] empty selected playlists are recorded as skipped;
 - [ ] failures are recorded per playlist rather than aborting the whole session;
-- [ ] exact videoId is preserved in exported YTM Project files;
+- [x] exact videoId is preserved in exported YTM Project files; (round trip 3/3)
 - [ ] source playlist id/privacy are preserved;
-- [ ] manifest uses schemaVersion 2;
-- [ ] manifest uses `selectionMode = SELECTED`;
-- [ ] manifest playlist count equals the selected-session record count;
-- [ ] no YouTube/YTM write API is used.
+- [x] manifest uses schemaVersion 2;
+- [x] manifest uses `selectionMode = SELECTED`;
+- [x] manifest playlist count equals the selected-session record count; (2)
+- [x] no YouTube/YTM write API is used. (static audit)
+
+## Finding
+
+- [x] BUG-005 reproduced: manual Search proposes new `search.list` for exact-videoId tracks.
+- [x] redundant search was **not** executed during QA.
+- [ ] v1.4.27 retest: exact 3/3 project → manual Search requires 0 new search.list.
 
 ## Phone evidence target
 

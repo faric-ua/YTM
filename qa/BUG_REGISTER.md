@@ -6,6 +6,7 @@
 | BUG-002 / Q-002 | DEFERRED BY USER | P2 | Some custom dialogs visibly move into final top position after opening. | M-02 |
 | BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update verified: Step 2 briefly gray, then automatically green. | A-03, D-03 |
 | BUG-004 / Q-004 | RETEST v1.4.17 | P1 | Authorization can become invalid while Step 2 remains green/checked. | B-01 |
+| BUG-005 / Q-005 | OPEN — FOUND v1.4.26 | P2 | Manual Search plans new search.list requests for tracks that already have exact videoId. | v1.4.26 round-trip / manual Search |
 
 ## BUG-003 reproduction
 
@@ -49,3 +50,30 @@ Expected:
 
 v1.4.17 adds HTTP 401 invalidation.
 Status remains RETEST until verified on the phone.
+
+## BUG-005 reproduction
+
+Preconditions:
+- reopen/import a YTM Project with exact videoId already present;
+- phone evidence used `top 3`, exact videoId 3/3.
+
+Steps:
+1. Confirm Home/Review show all tracks ready.
+2. Open manual `Пошук`.
+3. Inspect the search plan.
+4. Do not press `Почати`.
+
+Actual:
+- search required for all 3 tracks;
+- 3 new `search.list` requests proposed.
+
+Expected:
+- exact-videoId tracks are excluded from search planning;
+- 3/3 exact tracks should require 0 new search.list requests.
+
+Impact:
+- can waste limited search quota if the user explicitly starts the redundant search;
+- no quota was wasted in the recorded reproduction because `Почати` was not pressed.
+
+Planned fix:
+- v1.4.27 Exact-ID Search Guard.

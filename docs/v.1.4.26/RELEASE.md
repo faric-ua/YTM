@@ -59,4 +59,37 @@ The `playlists` array still contains the per-playlist export records.
 
 ## Status
 
-**NOT PHONE-TESTED YET**
+**PARTIALLY PHONE-TESTED — PASS FOR SELECTIVE EXPORT PATH; BUG-005 FOUND**
+
+## Phone validation — 2026-09-17
+
+Confirmed on a real Android phone:
+
+- selective export action visible alongside existing account actions;
+- checkbox multi-select opened and exactly 2 playlists were selected;
+- export completed with 2 projects, 0 skipped, 0 failed;
+- `playlistItems.list = 2`;
+- session folder contained exactly 2 YTM Projects + `manifest.json`;
+- manifest used `schemaVersion = 2`;
+- manifest used `selectionMode = SELECTED`;
+- manifest `playlistCount = 2`;
+- exported `top 3` project reopened with exact videoId 3/3;
+- Review showed 3/3 ready.
+
+### Finding — BUG-005
+
+Manual `Пошук` on the restored exact project proposed three new `search.list`
+requests despite all three tracks already having exact videoId.
+
+The user did not press `Почати`, so no unnecessary quota was consumed.
+
+Planned fix: **v1.4.27 — Exact-ID Search Guard**.
+
+Not separately phone-verified in this run:
+
+- zero-selection guard;
+- selection restoration after Activity recreation;
+- export-all `selectionMode = ALL`;
+- selected-empty playlist skip behavior;
+- selected-playlist failure continuation;
+- older single-account-import regression.

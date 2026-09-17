@@ -122,3 +122,32 @@ Selective export не повинен викликати playlist insert/update/d
 
 Це короткий, але повний вертикальний тест:
 API → UI → storage → file → import → Review.
+
+## 8. Що знайшов реальний phone QA: quota invariant
+
+v1.4.26 пройшов основний selective-export round trip:
+
+`2 selected playlists → 2 projects + manifest → schema v2/SELECTED → re-import → exact videoId 3/3`
+
+Але після успішного re-import ручна кнопка `Пошук` показала план на три нові
+`search.list` запити.
+
+Це важлива різниця між двома твердженнями:
+
+1. **дані збережені правильно** — PASS;
+2. **усі наступні дії правильно використовують ці дані** — не обов'язково.
+
+Саме тому round-trip test не повинен закінчуватися на читанні файлу. Треба
+пройти наступну user action і перевірити, чи downstream logic поважає
+відновлений state.
+
+### Invariant для v1.4.27
+
+Якщо трек уже має canonical exact `videoId`, звичайний search planning не повинен
+витрачати quota на цей трек.
+
+Майбутня примусова заміна exact selection, якщо вона буде потрібна, повинна бути
+окремою свідомою дією користувача, а не побічним ефектом кнопки `Пошук`.
+
+Цей дефект записаний як **BUG-005 / Q-005** і стає навчальним прикладом:
+successful persistence не гарантує correct downstream behavior.

@@ -16,7 +16,7 @@ v1.4.22 PARTIALLY PHONE-TESTED — HOME UI FIT ISSUE
 v1.4.23 PARTIALLY PHONE-TESTED — HOME FIT PASS
 v1.4.24 PARTIALLY PHONE-TESTED — WAVE 2 PASS WITH UI POLISH FINDINGS
 v1.4.25 PARTIALLY PHONE-TESTED — ACCENT CARD TESTED PATHS PASS
-v1.4.26 NOT TESTED YET
+v1.4.26 PARTIALLY PHONE-TESTED — SELECTIVE EXPORT PASS / BUG-005 FOUND
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -149,11 +149,31 @@ Future product direction:
 - URL-only unlock is a feature gate, not secure authentication
 
 
+v1.4.26 phone QA confirmed:
+- selective-export action visible
+- exactly 2 playlists selected
+- export result: 2 selected / 2 projects / 0 skipped / 0 failed
+- playlistItems.list = 2 requests
+- export folder = 2 YTM Projects + manifest
+- manifest schemaVersion = 2
+- manifest selectionMode = SELECTED
+- manifest playlistCount = 2
+- round-trip `top 3` project exact videoId = 3/3
+- Review = 3/3 ready
+
+v1.4.26 phone QA finding:
+- BUG-005 / Q-005 OPEN
+- manual Search proposed 3 new search.list calls despite 3/3 exact videoId
+- user did not press Start, so redundant quota was not consumed
+- planned next release: v1.4.27 Exact-ID Search Guard
+
+
 Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 DEFERRED
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
 BUG-004/Q-004 RETEST v1.4.17
+BUG-005/Q-005 OPEN — redundant manual search for exact videoId tracks
 
 QA:
 root qa/ = current definitions/policy

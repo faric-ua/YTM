@@ -10,7 +10,8 @@
 - Added selective-export static audit, phone QA plan and tutorial chapter.
 - Added future product roadmap for Ukrainian/Korean/English localization and the hidden Yerin Exclusive skin.
 - versionCode 60 / versionName 1.4.26.
-- v1.4.26 = NOT PHONE-TESTED YET.
+- v1.4.26 phone QA: PASS for the selective-export path (2 selected → 2 projects + manifest → exact-videoId round trip 3/3).
+- BUG-005 found: manual Search still proposes new search.list requests for already-exact tracks; user did not execute the redundant search.
 
 ## v1.4.25
 - Added a consistent Accent Card System: large cards use two quiet theme-colored contour strokes.

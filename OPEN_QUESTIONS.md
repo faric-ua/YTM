@@ -104,3 +104,22 @@ install over authorized v1.4.13 → launch → Step 2 remains red.
 
 Related QA: A-03, D-03.
 Do not claim fixed until an in-place update test passes without pressing Step 2.
+
+## Q-005 — Manual Search should respect exact videoId
+
+Status: **OPEN — BUG-005, planned for v1.4.27.**
+
+Found during the v1.4.26 selective-export round-trip phone test.
+
+The re-imported `top 3` YTM Project correctly restored 3/3 exact videoId values,
+but opening manual `Пошук` still produced a plan for 3 new `search.list` calls.
+
+Decision for v1.4.27:
+
+- exact-videoId tracks must not be included in ordinary search planning;
+- if every track is exact, the UI should report that search is unnecessary
+  instead of offering quota-consuming work;
+- the user may still need an explicit future "re-search/replace" action if they
+  intentionally want to discard an exact selection.
+
+This separates "find missing matches" from "force a new search".
