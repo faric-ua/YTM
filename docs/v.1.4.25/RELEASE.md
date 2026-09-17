@@ -42,4 +42,24 @@ No intended auth/search/quota/write behavior changes.
 
 ## Status
 
-**NOT PHONE-TESTED YET**
+**PARTIALLY PHONE-TESTED — PASS FOR ACCENT CARD TESTED PATHS**
+
+## Phone validation — 2026-09-17
+
+Confirmed on a real Android phone:
+
+- Home workflow/current-playlist/main-track card accents;
+- Review large-card accents;
+- Destination Blue privacy radio tint;
+- History and Queue short search hints;
+- Data Blue + Neon large-card accents;
+- amber semantic `Безпека` strokes in both Blue and Neon;
+- Service Neon large-card accents.
+
+Not separately confirmed in this run:
+
+- v1.4.25 Import large-card screenshot;
+- non-empty Queue job card;
+- full functional regression of every search/write path.
+
+See `qa/TEST_RUN_2026-09-17.md` and the evidence manifest.

@@ -179,15 +179,17 @@ v1.4.25 — Accent Card System
 - [x] add clean/repeat apply self-test
 - [x] add assistant workflow package self-test rule
 - [x] add v1.4.25 static audit
-- [ ] GitHub build
-- [ ] phone test: Home large-card accents
-- [ ] phone test: Destination radio tint
-- [ ] phone test: History / Queue hints
-- [ ] phone test: Data semantic card colors
-- [ ] navigation smoke
+- [x] GitHub build
+- [x] phone test: Home large-card accents
+- [x] phone test: Destination radio tint
+- [x] phone test: History / Queue hints
+- [x] phone test: Data semantic card colors
+- [x] navigation smoke
+- [x] phone theme spot-check: Neon Data + Service
+- [x] tutorial foundation created from preserved release/QA history
 
 ## Next
-Phone-test v1.4.25 Accent Card System. After the card language is stable, continue the visual/theme rollout and account-library work only if useful:
+Expand the tutorial alongside the next useful feature wave. Preserve v1.4.25 as the Accent Card System phone-evidence baseline, then continue account-library work only if useful:
 - selective multi-playlist export;
 - import of a bulk-export manifest;
 - incremental/sync-style account backup.

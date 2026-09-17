@@ -15,7 +15,7 @@ v1.4.21 PARTIALLY PHONE-TESTED — HOME THEMES PASS
 v1.4.22 PARTIALLY PHONE-TESTED — HOME UI FIT ISSUE
 v1.4.23 PARTIALLY PHONE-TESTED — HOME FIT PASS
 v1.4.24 PARTIALLY PHONE-TESTED — WAVE 2 PASS WITH UI POLISH FINDINGS
-v1.4.25 NOT TESTED YET
+v1.4.25 PARTIALLY PHONE-TESTED — ACCENT CARD TESTED PATHS PASS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -111,6 +111,24 @@ v1.4.25 focus:
 - Destination privacy radio follows active theme
 - History/Queue search hints are shortened
 - package scripts must pass clean-apply + repeat/idempotence self-tests before delivery
+
+
+v1.4.25 phone QA confirmed:
+- Home workflow/current-playlist/main-track large-card accents PASS
+- Review large-card accents PASS
+- Destination Blue privacy radio tint PASS
+- History short hint + history card accents PASS
+- Queue short hint + empty state PASS
+- Data Blue + Neon card accents PASS
+- Security semantic amber strokes PASS in Blue + Neon
+- Service Neon card accents PASS
+- alternate-theme utility spot-check PASS (Neon Data + Service)
+
+v1.4.25 still not separately phone-verified:
+- Import large-card screenshot
+- non-empty Queue job card
+- full functional regression of every search/write path
+
 
 Known:
 BUG-001/Q-001 OPEN

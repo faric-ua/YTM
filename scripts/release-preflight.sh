@@ -394,8 +394,8 @@ grep -Fq '| v1.4.23 | **PARTIALLY PHONE-TESTED — PASS FOR HOME FIT** |' RELEAS
   || fail "v1.4.23 Home-fit PASS status missing"
 grep -Fq '| v1.4.24 | **PARTIALLY PHONE-TESTED — PASS WITH UI POLISH FINDINGS** |' RELEASE_TEST_STATUS.md \
   || fail "v1.4.24 Wave 2 phone status missing"
-grep -Fq '| v1.4.25 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
-  || fail "v1.4.25 must start NOT TESTED YET"
+grep -Fq '| v1.4.25 | **PARTIALLY PHONE-TESTED — PASS FOR ACCENT CARD TESTED PATHS** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.25 tested-path phone status missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' qa/BUG_REGISTER.md \
   || fail "BUG-003 closed phone-retest status missing"
 echo "- BUG-003 in-place update recovery phone retest passed"

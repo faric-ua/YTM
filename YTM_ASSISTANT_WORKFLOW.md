@@ -187,3 +187,23 @@ Before ChatGPT gives the user a new code-changing ZIP/apply script:
 8. Generated text artifacts (Markdown, CSV, TXT, scripts) must use LF line endings. CSV writers must explicitly use `lineterminator="\n"` or the generated file must be normalized before packaging. Before delivery, generated artifacts must pass `git diff --check` or an equivalent fixture check for CRLF/trailing-whitespace issues.
 
 Phone QA still remains necessary; these self-tests only prevent packaging/apply-script mistakes.
+
+## 15. Documentation as a learning asset
+
+Documentation is a first-class project output, not an afterthought.
+
+Keep two layers:
+
+1. **Historical/evidence layer** — release folders, QA runs, bug records, screenshots, manifests, changelog. Preserve what actually happened, including failures and untested areas.
+2. **Curated tutorial layer** — `docs/tutorial/`, which turns the real history into a step-by-step learning path.
+
+Rules:
+
+- document **why** a decision was made, not only what changed;
+- keep failed approaches and the guard that was added because of them;
+- never rewrite old QA evidence to make the project history look cleaner;
+- sanitize personal identifiers before storing screenshots;
+- tutorial chapters should point back to real code/releases whenever practical;
+- future development should gradually expand the tutorial so the whole approach can be reproduced from a clean starting point.
+
+The long-term goal is that the project can teach both the author and other developers how to recreate the development method step by step.

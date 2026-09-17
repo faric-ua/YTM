@@ -2,33 +2,39 @@
 
 ## Card accent system
 
-- [ ] Home workflow card retains two accent strokes.
-- [ ] Home current-playlist card now has two accent strokes.
-- [ ] main track cards have two accent strokes.
+- [x] Home workflow card retains two accent strokes.
+- [x] Home current-playlist card now has two accent strokes.
+- [x] main track cards have two accent strokes.
 - [ ] Import large cards have two accent strokes.
-- [ ] Review large cards have two accent strokes.
-- [ ] Destination large cards have two accent strokes.
-- [ ] History entry cards have two accent strokes.
+- [x] Review large cards have two accent strokes.
+- [x] Destination large cards have two accent strokes.
+- [x] History entry cards have two accent strokes.
 - [ ] Queue job cards have two accent strokes when present.
-- [ ] Service cards have two accent strokes.
-- [ ] Data cards have two accent strokes.
+- [x] Service cards have two accent strokes.
+- [x] Data cards have two accent strokes.
 
 ## Quiet controls
 
-- [ ] back buttons do not gain extra card strokes.
-- [ ] search fields do not gain extra card strokes.
-- [ ] compact Home utility buttons do not gain extra card strokes.
+- [x] back buttons do not gain extra card strokes.
+- [x] search fields do not gain extra card strokes.
+- [x] compact Home utility buttons do not gain extra card strokes.
 
 ## Semantic cards
 
-- [ ] `Безпека` remains amber.
-- [ ] warning/error/success accents keep semantic colors.
+- [x] `Безпека` remains amber.
+- [x] warning/error/success accents keep semantic colors.
 
 ## Polish
 
-- [ ] Destination selected privacy radio uses active theme accent.
-- [ ] History hint fits as `Пошук історії`.
-- [ ] Queue hint fits as `Пошук у черзі`.
+- [x] Destination selected privacy radio uses active theme accent.
+- [x] History hint fits as `Пошук історії`.
+- [x] Queue hint fits as `Пошук у черзі`.
+
+## Theme spot-check
+
+- [x] Blue Dark: Home / Review / Destination / History / Queue / Data.
+- [x] Neon Dark: Data / Service.
+- [ ] Green Dark utility-screen spot-check was not separately captured for v1.4.25.
 
 ## Functional smoke
 

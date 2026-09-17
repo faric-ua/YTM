@@ -80,8 +80,8 @@ grep -Fq 'python scripts/v1425-apply-selftest.py' \
 grep -Fq '| v1.4.24 | **PARTIALLY PHONE-TESTED — PASS WITH UI POLISH FINDINGS** |' "$STATUS" \
   || fail "v1.4.24 phone status missing"
 
-grep -Fq '| v1.4.25 | **NOT TESTED YET** |' "$STATUS" \
-  || fail "v1.4.25 NOT TESTED status missing"
+grep -Fq '| v1.4.25 | **PARTIALLY PHONE-TESTED — PASS FOR ACCENT CARD TESTED PATHS** |' "$STATUS" \
+  || fail "v1.4.25 tested-path phone status missing"
 
 test -f docs/v.1.4.24/qa/PHONE_TEST_THEME_WAVE2_2026-09-17.md \
   || fail "v1.4.24 phone report missing"

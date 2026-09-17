@@ -10,7 +10,8 @@
 - Recorded v1.4.24 Theme Wave 2 phone evidence and UI-polish findings.
 - Added clean-apply + repeat/idempotence package self-tests and workflow policy.
 - versionCode 59 / versionName 1.4.25.
-- v1.4.25 = NOT PHONE-TESTED YET.
+- v1.4.25 phone QA: PASS for tested Accent Card paths on Blue + Neon; Import and non-empty Queue card remain untested.
+- Added curated tutorial foundation under `docs/tutorial/`, built from preserved release/QA history.
 
 ## v1.4.24
 - Theme Wave 2.

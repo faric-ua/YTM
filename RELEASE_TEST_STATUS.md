@@ -17,7 +17,7 @@
 | v1.4.22 | **PARTIALLY PHONE-TESTED — UI FIT ISSUE FOUND** | Home launched with vector icons, compact logo, calmer contours and current-playlist card; `Історія` wrapped and top labels were tight. |
 | v1.4.23 | **PARTIALLY PHONE-TESTED — PASS FOR HOME FIT** | Blue Dark Home: utility row stayed single-line, workflow labels fit, vector icons and current-playlist card remained readable. |
 | v1.4.24 | **PARTIALLY PHONE-TESTED — PASS WITH UI POLISH FINDINGS** | Blue Dark Import/Review/History/Queue/Service/Data passed; Destination functional path passed. Findings: old privacy-radio tint and long History/Queue hints. Full alternate-theme Wave 2 regression not run. |
-| v1.4.25 | **NOT TESTED YET** | Accent Card System: consistent two-stroke accents on large cards, themed privacy radio and shorter search hints. |
+| v1.4.25 | **PARTIALLY PHONE-TESTED — PASS FOR ACCENT CARD TESTED PATHS** | Blue Home/Review/Destination/History/Queue/Data and Neon Data/Service visual paths passed. Privacy radio, short hints and amber Security semantics confirmed. Import and non-empty Queue card were not separately tested. |
 
 Static audits and GitHub build do not equal phone testing.
 
