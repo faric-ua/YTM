@@ -14,7 +14,8 @@
 | v1.4.19 | **PARTIALLY PHONE-TESTED — PASS FOR BULK EXPORT PATH** | 21/21 playlists exported, manifest counts matched, and an exported project reopened with exact videoId preserved. Source before/after refresh was not separately phone-verified. |
 | v1.4.20 | **PARTIALLY PHONE-TESTED — PASS FOR UI SMOKE** | Import account-action layout passed; bulk-export folder picker still opens; BUG-003 in-place update recovery retest passed. |
 | v1.4.21 | **PARTIALLY PHONE-TESTED — PASS FOR HOME THEMES** | Neon, Blue and Green Home themes switched successfully on phone; Import/Review/persistence remain untested. |
-| v1.4.22 | **NOT TESTED YET** | Visual Structure Polish: vector icons, compact logo header, calmer contour strokes, concept-style current-playlist card and non-solid READY states. |
+| v1.4.22 | **PARTIALLY PHONE-TESTED — UI FIT ISSUE FOUND** | Home launched with vector icons, compact logo, calmer contours and current-playlist card; `Історія` wrapped and top labels were tight. |
+| v1.4.23 | **NOT TESTED YET** | Button Fit + Home Polish: single-line utility actions, smaller vector icons and tighter adaptive workflow-button typography. |
 
 Static audits and GitHub build do not equal phone testing.
 

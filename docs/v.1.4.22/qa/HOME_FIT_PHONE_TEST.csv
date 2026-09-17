@@ -1,0 +1,11 @@
+field,value
+release,1.4.22
+date,2026-09-17
+install_launch,PASS
+vector_icons,PASS
+header_logo,PASS
+quiet_contours,PASS
+current_playlist_card,PASS
+utility_history_label_fit,FAIL_NON_BLOCKING
+top_action_label_fit,TIGHT
+next_fix,v1.4.23

@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.22 — Visual Structure Polish
+v1.4.23 — Button Fit + Home Polish
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -122,16 +122,33 @@ v1.4.22 — Visual Structure Polish
 - [x] keep all three theme palettes
 - [x] add v1.4.21 Home-theme phone evidence
 - [x] add static visual-structure audit
-- [ ] GitHub build
+- [x] GitHub build
 - [ ] phone test: Home in Neon / Blue / Green
-- [ ] phone test: icons render correctly
-- [ ] phone test: current-playlist card
+- [x] phone test: icons render correctly
+- [x] phone test: current-playlist card
 - [ ] phone test: Import visual smoke
 - [ ] phone test: Review visual smoke
 - [ ] phone test: theme persistence
+- [x] phone observation: utility text fit issue reproduced (`Історія` wraps; top labels tight)
+
+## v1.4.23
+- [x] force compact utility actions to one line
+- [x] shrink compact vector icons to 17dp
+- [x] reduce utility icon/text gap and horizontal padding
+- [x] use 8–11sp adaptive utility text
+- [x] shrink normal Home icons to 20dp
+- [x] use 9–13sp adaptive workflow text
+- [x] reduce workflow icon/text gap and side padding
+- [x] record v1.4.22 real-phone fit issue evidence
+- [x] add static button-fit audit
+- [ ] GitHub build
+- [ ] phone test: utility row all one line
+- [ ] phone test: top four actions fit
+- [ ] phone test: Neon / Blue / Green geometry
+- [ ] navigation smoke: Import + Review
 
 ## Next
-Phone-test the v1.4.20 UI fix. After that, continue account-library work only if useful:
+Phone-test v1.4.23 button fit. After the Home geometry is stable, continue the visual/theme rollout and account-library work only if useful:
 - selective multi-playlist export;
 - import of a bulk-export manifest;
 - incremental/sync-style account backup.

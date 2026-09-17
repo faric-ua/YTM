@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.22
-Version code: 56
+Version: 1.4.23
+Version code: 57
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -12,7 +12,8 @@ v1.4.18 PARTIALLY PHONE-TESTED — G01 PASS
 v1.4.19 PARTIALLY PHONE-TESTED — BULK EXPORT PASS
 v1.4.20 PARTIALLY PHONE-TESTED — UI SMOKE PASS
 v1.4.21 PARTIALLY PHONE-TESTED — HOME THEMES PASS
-v1.4.22 NOT TESTED YET
+v1.4.22 PARTIALLY PHONE-TESTED — HOME UI FIT ISSUE
+v1.4.23 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -83,6 +84,14 @@ v1.4.22 focus:
 - dark READY/ATTENTION cards with semantic icon/outline color
 - current playlist presented as its own card
 - no functional API/search/write changes
+
+v1.4.23 focus:
+- compact utility actions must stay on one line
+- shrink compact icons from 20dp to 17dp
+- shrink utility adaptive text range to 8–11sp
+- workflow actions use 20dp icons and 9–13sp adaptive text
+- reduce icon/text and horizontal button padding
+- preserve current theme/state behavior and app functionality
 
 Known:
 BUG-001/Q-001 OPEN

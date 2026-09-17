@@ -1,0 +1,13 @@
+v1.4.22 Home visual-smoke evidence
+
+EVIDENCE_HOME_BUTTON_FIT_ISSUE_GREEN.jpg
+- real-phone Home screen
+- compact vector icons visible
+- current-playlist card visible
+- calmer decorative contours visible
+- issue: `Історія` wraps to two lines
+- observation: top action labels are slightly tight
+
+Disposition:
+- non-blocking UI fit issue
+- fix in v1.4.23

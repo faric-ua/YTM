@@ -356,7 +356,7 @@ class MainActivity : Activity() {
             orientation = LinearLayout.HORIZONTAL
             isBaselineAligned = false
             gravity = android.view.Gravity.CENTER_VERTICAL
-            setPadding(dp(12), 0, dp(12), dp(8))
+            setPadding(dp(10), 0, dp(10), dp(8))
         }
 
         val historyButton =
@@ -393,7 +393,7 @@ class MainActivity : Activity() {
                     1f
                 ).apply {
                     if (index > 0) {
-                        marginStart = dp(6)
+                        marginStart = dp(5)
                     }
                 }
             )
@@ -576,11 +576,13 @@ class MainActivity : Activity() {
                         )
                         .accent
             )
-            setPadding(dp(14), dp(10), dp(14), dp(10))
+            setPadding(dp(9), dp(9), dp(9), dp(9))
+            compoundDrawablePadding =
+                dp(6)
             UiChrome.autoSizeButton(
                 this,
-                minSp = 11,
-                maxSp = 15
+                minSp = 9,
+                maxSp = 13
             )
             background =
                 AppThemeManager.neutralButtonDrawable(
@@ -614,11 +616,13 @@ class MainActivity : Activity() {
                         )
                         .accent
             )
-            setPadding(dp(14), dp(10), dp(14), dp(10))
+            setPadding(dp(9), dp(9), dp(9), dp(9))
+            compoundDrawablePadding =
+                dp(6)
             UiChrome.autoSizeButton(
                 this,
-                minSp = 11,
-                maxSp = 15
+                minSp = 9,
+                maxSp = 13
             )
             background =
                 AppThemeManager.accentButtonDrawable(
@@ -638,12 +642,27 @@ class MainActivity : Activity() {
             label = label,
             action = action
         ).apply {
-            textSize = 12f
-            setPadding(dp(9), dp(7), dp(9), dp(7))
+            textSize = 11f
+            maxLines = 1
+            minLines = 1
+            setSingleLine(true)
+            setHorizontallyScrolling(false)
+            setPadding(
+                dp(5),
+                dp(6),
+                dp(5),
+                dp(6)
+            )
+            compoundDrawablePadding =
+                dp(4)
+            resizeButtonStartIcon(
+                button = this,
+                sizeDp = 17
+            )
             UiChrome.autoSizeButton(
                 this,
-                minSp = 10,
-                maxSp = 13
+                minSp = 8,
+                maxSp = 11
             )
         }
 
@@ -715,13 +734,47 @@ class MainActivity : Activity() {
                 0
             )
 
+        resizeButtonStartIcon(
+            button = button,
+            sizeDp = 20
+        )
+
         button.compoundDrawablePadding =
-            dp(8)
+            dp(6)
 
         button.compoundDrawableTintList =
             ColorStateList.valueOf(
                 tint
             )
+    }
+
+    private fun resizeButtonStartIcon(
+        button: Button,
+        sizeDp: Int
+    ) {
+        val drawables =
+            button.compoundDrawablesRelative
+
+        val start =
+            drawables[0]
+                ?: return
+
+        val size =
+            dp(sizeDp)
+
+        start.setBounds(
+            0,
+            0,
+            size,
+            size
+        )
+
+        button.setCompoundDrawablesRelative(
+            start,
+            drawables[1],
+            drawables[2],
+            drawables[3]
+        )
     }
 
     private fun equalButtonsRow(
@@ -759,7 +812,7 @@ class MainActivity : Activity() {
                     dp(70),
                     1f
                 ).apply {
-                    marginStart = dp(8)
+                    marginStart = dp(6)
                 }
             )
         }

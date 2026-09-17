@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.23
+- Button Fit + Home Polish based on real-phone v1.4.22 evidence.
+- Forced Home utility actions to a single line.
+- Reduced compact utility icon size to 17dp and adaptive text to 8–11sp.
+- Reduced compact button horizontal padding and icon/text gap.
+- Reduced normal Home action icons to 20dp.
+- Tightened workflow-button typography to 9–13sp with reduced side padding.
+- Preserved existing theme/state semantics and functional flows.
+- versionCode 57 / versionName 1.4.23.
+- v1.4.23 = NOT PHONE-TESTED YET.
+
 ## v1.4.22
 - Visual Structure Polish toward the approved Neon/Blue/Green concept.
 - Replaced Home Unicode pseudo-icons with vector drawables.
