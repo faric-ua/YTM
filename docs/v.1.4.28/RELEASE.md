@@ -35,7 +35,7 @@ Incremental/sync-style backup remains future work.
 
 ## Status
 
-**NOT PHONE-TESTED YET**
+**PARTIALLY PHONE-TESTED — PASS FOR BULK MANIFEST IMPORT PATH**
 
 Primary phone test:
 
@@ -45,3 +45,19 @@ Primary phone test:
 - open `top 3`;
 - verify Home/Review remain exact 3/3;
 - repeat Search should still plan 0 new `search.list`.
+
+## Phone QA closeout — 2026-09-18
+
+Real-phone targeted QA passed:
+
+- manifest v2 / `SELECTED`;
+- 2/2 exported projects available;
+- `top 3` reopened with exact 3/3 and missing 0;
+- Review showed 3/3 ready;
+- repeat Search planned 0 tracks and 0 new `search.list`;
+- folder without `manifest.json` produced a clear error;
+- current workspace remained intact after that error.
+
+Evidence and the detailed run are preserved under `docs/v.1.4.28/qa/`.
+
+This is a targeted PASS, not a full release regression PASS.

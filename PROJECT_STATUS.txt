@@ -18,7 +18,7 @@ v1.4.24 PARTIALLY PHONE-TESTED — WAVE 2 PASS WITH UI POLISH FINDINGS
 v1.4.25 PARTIALLY PHONE-TESTED — ACCENT CARD TESTED PATHS PASS
 v1.4.26 PARTIALLY PHONE-TESTED — SELECTIVE EXPORT PASS / BUG-005 FOUND
 v1.4.27 PARTIALLY PHONE-TESTED — BUG-005 EXACT-ID SEARCH GUARD PASS
-v1.4.28 NOT TESTED YET — BULK EXPORT MANIFEST IMPORT
+v1.4.28 PARTIALLY PHONE-TESTED — BULK MANIFEST IMPORT PATH PASS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -200,6 +200,18 @@ v1.4.28 focus:
 - preserve exact videoId through existing PlaylistProjectCodec
 - perform zero YouTube API calls on the manifest-import path
 - incremental/sync-style backup remains future work
+
+v1.4.28 phone QA confirmed:
+- signed v1.4.28 installed on the real phone
+- manifest picker = schema v2 / SELECTED / available 2/2
+- `top 3` opened from manifest catalog
+- Home = 3 tracks / exact-ready 3 / missing-problem 0
+- Review = 3/3 ready
+- repeat Search plan = search required 0
+- repeat Search plan = new search.list 0
+- folder without manifest.json produced a clear local error
+- current `top 3` workspace remained intact after the error
+- release scope = targeted manifest-import PASS, not full regression
 
 
 Known:

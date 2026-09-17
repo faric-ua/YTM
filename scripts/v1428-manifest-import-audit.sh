@@ -87,8 +87,8 @@ grep -Fq 'versionCode: **62**' docs/v.1.4.28/RELEASE.md \
   || fail "v1.4.28 release versionCode missing"
 grep -Fq 'versionName: **1.4.28**' docs/v.1.4.28/RELEASE.md \
   || fail "v1.4.28 release versionName missing"
-grep -Fq '**NOT PHONE-TESTED YET**' docs/v.1.4.28/RELEASE.md \
-  || fail "v1.4.28 initial phone status missing"
+grep -Fq 'Bulk Export Manifest Import' docs/v.1.4.28/RELEASE.md \
+  || fail "v1.4.28 release identity missing"
 
 echo "PASS:"
 echo "- manifest folder picker"

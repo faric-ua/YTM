@@ -24,7 +24,7 @@ That file explains:
 - versionName: **1.4.28**
 - versionCode: **62**
 - focus: **Bulk Export Manifest Import**
-- status: **NOT PHONE-TESTED YET**
+- status: **PARTIALLY PHONE-TESTED — PASS FOR BULK MANIFEST IMPORT PATH**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 For exact current status, see:

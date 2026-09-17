@@ -73,6 +73,9 @@ do
     || fail "workflow lesson missing: $lesson"
 done
 
+grep -Fq 'Historical structural audits must not pin the current app version' docs/WORKFLOW_LESSONS.md \
+  || fail "v1.4.28 historical-audit lesson missing"
+
 grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"

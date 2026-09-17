@@ -114,3 +114,43 @@ This lesson became BUG-005 and tutorial chapter `11_SEARCH_AND_EXACT_VIDEO_ID.md
 `--check`, idempotence, deletion guards, leftover guards, immutable QA snapshots and evidence sanitization are not bureaucracy.
 
 They are what makes the phone-based ChatGPT development loop repeatable and safe.
+
+## 11. Shell continuation lost inside a generated Python fixture — v1.4.28 R1/R2
+
+The first v1.4.28 package encoded a shell line ending in `\` inside a Python
+multiline literal. Python treated the backslash as a line continuation, so the
+fixture no longer matched the real `qa-plan-audit.sh`.
+
+The package self-test passed its simplified fixture but real-repository
+`--check` failed.
+
+Guard:
+
+- do not anchor on shell continuation formatting when a stable single line is available;
+- fixtures for shell scripts must preserve the real byte/line shape;
+- include a realistic continuation-line fixture when patching shell audits.
+
+## 12. Audit semantic invariants, not one exact sentence — v1.4.28 R3
+
+`START_HERE_ASSISTANT.md` changed the wording from an exact BUG-005 sentence to
+`BUG-005 ... remains CLOSED`, while the underlying bug state stayed identical.
+
+A handoff audit compared the full old sentence and failed.
+
+Guard:
+
+- when wording may evolve, assert the identity and semantic state separately;
+- reserve exact full-sentence assertions for text that is itself the contract.
+
+## 13. Historical structural audits must not pin the current app version — v1.4.28 R4
+
+The v1.4.27 exact-ID structural audit still required the mutable current
+`app/build.gradle.kts` to remain versionCode 61 / versionName 1.4.27.
+
+That became invalid as soon as v1.4.28 legitimately advanced to code 62.
+
+Guard:
+
+- a historical structural audit may test that the old invariant still exists in current code;
+- it must not require the current app to keep the historical release number;
+- immutable historical phone status belongs in the release snapshot/QA-close audit.

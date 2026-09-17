@@ -33,18 +33,18 @@
 
 Use the previously verified v1.4.26 selective-export session:
 
-- [ ] select folder containing 2 projects + `manifest.json`;
-- [ ] picker reports schema v2 / `SELECTED`;
-- [ ] picker reports 2/2 available projects;
-- [ ] select `top 3`;
-- [ ] Home shows 3 tracks / exact 3 / missing 0;
-- [ ] Review shows 3/3 ready;
-- [ ] repeat Search plans `Пошук потрібен для: 0`;
-- [ ] repeat Search plans `Потрібно нових search.list: 0`.
+- [x] select folder containing 2 projects + `manifest.json`;
+- [x] picker reports schema v2 / `SELECTED`;
+- [x] picker reports 2/2 available projects;
+- [x] select `top 3`;
+- [x] Home shows 3 tracks / exact 3 / missing 0;
+- [x] Review shows 3/3 ready;
+- [x] repeat Search plans `Пошук потрібен для: 0`;
+- [x] repeat Search plans `Потрібно нових search.list: 0`.
 
 ## Error smoke
 
-- [ ] folder without `manifest.json` fails without damaging current workspace;
+- [x] folder without `manifest.json` fails without damaging current workspace;
 - [ ] missing one project file is reflected in missing-file count;
 - [ ] malformed or unsupported manifest fails without remote API work.
 

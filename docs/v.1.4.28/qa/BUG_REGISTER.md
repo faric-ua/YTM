@@ -13,3 +13,17 @@
 No existing bug is claimed fixed by this release.
 
 Primary risk is local manifest/folder parsing. Manifest import must not call YouTube APIs or mutate remote playlists.
+
+## Phone QA result — 2026-09-18
+
+The targeted manifest-import path passed on the real phone.
+
+No new bug was found during:
+
+- manifest v2/SELECTED catalog load;
+- `top 3` exact-ID restore;
+- Review 3/3;
+- repeat-search zero-quota planning;
+- missing-manifest error smoke with workspace preservation.
+
+BUG-002 remains deferred and BUG-005 remains closed.

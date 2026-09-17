@@ -33,17 +33,20 @@ Current application:
 - versionName: **1.4.28**
 - versionCode: **62**
 - release focus: **Bulk Export Manifest Import**
-- release status: **NOT PHONE-TESTED YET**
+- release status: **PARTIALLY PHONE-TESTED — PASS FOR BULK MANIFEST IMPORT PATH**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.28 adds local reopening of account bulk/selective export sessions through
-their `manifest.json`. It must not spend YouTube API quota.
+their `manifest.json`. The tested path performs no YouTube API discovery work.
 
-The decisive v1.4.27 exact-ID invariant remains a regression target:
+Real-phone v1.4.28 QA confirmed:
 
-`exact project → repeat Search → search required 0 → new search.list 0`
+`manifest v2 / SELECTED / 2 of 2 → top 3 exact 3/3 → Review 3/3 → repeat Search → search required 0 → new search.list 0`
 
-Do not reinterpret static audits/build success as phone QA.
+The invalid-folder smoke also confirmed that a missing `manifest.json` error does
+not damage the current workspace.
+
+The release remains only partially phone-tested overall.
 
 Current known items include:
 
@@ -216,10 +219,9 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. phone-test v1.4.28 Bulk Export Manifest Import;
-2. close its QA with real evidence;
-3. continue account-library backup evolution with incremental/sync-style work;
-4. continue the tutorial so the whole project can be recreated step by step.
+1. v1.4.28 Bulk Export Manifest Import is QA-closed for its targeted phone path;
+2. continue account-library backup evolution with incremental/sync-style work;
+3. continue the tutorial so the whole project can be recreated step by step.
 
 Future product requirements already recorded:
 

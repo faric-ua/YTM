@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.28
+- Added local import of account-library bulk/selective export sessions through `manifest.json`.
+- Added Android folder selection for backup sessions and a catalog of available exported YTM Projects.
+- Added schema v1/v2 validation, schema-v2 `selectionMode`, count validation, missing-file reporting, and manifest/project metadata cross-checks.
+- Reused `PlaylistProjectCodec` so exact `videoId` state survives restore without YouTube discovery API work.
+- Kept the manifest-import path local/read-only and opened one selected project at a time.
+- Added tutorial chapter 08, v1.4.28 static audit, release docs and phone QA plan.
+- versionCode 62 / versionName 1.4.28.
+- Real-phone targeted QA PASS: manifest v2/SELECTED 2/2 → `top 3` exact 3/3 → Review 3/3 → repeat Search 0 new `search.list`.
+- Error smoke PASS: folder without `manifest.json` failed clearly and left the current workspace intact.
+- Full release regression was not run.
+
 ## v1.4.27
 - Fixed BUG-005 by preserving canonical exact videoId selections during ordinary Review repeat-search.
 - Review repeat-search explicitly calls search with exact-selection preservation.

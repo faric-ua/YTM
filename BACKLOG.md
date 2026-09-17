@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.27 — Exact-ID Search Guard
+v1.4.28 — Bulk Export Manifest Import — PHONE QA PASS FOR TESTED PATH
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -241,13 +241,15 @@ v1.4.27 — Exact-ID Search Guard
 - [x] preserve exact videoId through `PlaylistProjectCodec`
 - [x] keep manifest import local-only with zero YouTube API work
 - [x] add static audit, release docs and tutorial chapter 08
-- [ ] GitHub build
-- [ ] phone test: selective-export manifest folder opens
-- [ ] phone test: `top 3` reopens exact 3/3
-- [ ] phone test: repeat Search remains 0 new `search.list`
+- [x] GitHub build
+- [x] phone test: selective-export manifest folder opens
+- [x] phone test: `top 3` reopens exact 3/3
+- [x] phone test: repeat Search remains 0 new `search.list`
+- [x] error smoke: folder without manifest fails clearly and preserves workspace
+- [x] preserve v1.4.28 real-phone evidence + QA closeout
 
 ## Next
-After v1.4.28 phone QA:
+After v1.4.28 QA closeout:
 - incremental/sync-style account backup.
 
 Do not combine sync semantics into the manifest-import release.
