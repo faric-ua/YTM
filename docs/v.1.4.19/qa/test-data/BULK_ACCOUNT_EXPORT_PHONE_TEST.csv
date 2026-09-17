@@ -1,0 +1,19 @@
+field,value,notes
+release,1.4.19,real-phone test
+phone_test_date,2026-09-17,manual device verification
+feature_commit,7e89cc7257a401c9a2be79c91d27d1812e9f5e19,bulk account export
+account_playlists_found,21,progress toast
+manifest_playlistCount,21,manifest.json
+manifest_exportedProjects,21,manifest.json
+manifest_skippedPlaylists,0,manifest.json
+manifest_failedPlaylists,0,manifest.json
+playlistItemsRequests,33,result dialog + manifest
+session_folder_objects,22,21 projects + manifest.json
+reopened_project_name,mylist,small exported project
+reopened_project_tracks,2,Home after import
+reopened_exact_video_ids,2,Home after import
+reopened_missing_video_ids,0,Home after import
+automatic_search_after_reopen,0,Review opened with exact tracks ready
+source_remote_before_after_refresh,not_verified,no separate remote before/after phone evidence
+ui_observation,bulk export button text clipped + buttons too close,non-blocking
+overall_result,PASS_FOR_TESTED_BULK_EXPORT_PATH,functional path passed

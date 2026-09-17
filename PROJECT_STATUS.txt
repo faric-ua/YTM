@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.19
-Version code: 53
+Version: 1.4.20
+Version code: 54
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -9,7 +9,8 @@ v1.4.15 NOT TESTED
 v1.4.16 PARTIALLY PHONE-TESTED
 v1.4.17 PARTIALLY PHONE-TESTED — FAST_FLOW EXISTING-TARGET PASS
 v1.4.18 PARTIALLY PHONE-TESTED — G01 PASS
-v1.4.19 NOT TESTED YET
+v1.4.19 PARTIALLY PHONE-TESTED — BULK EXPORT PASS
+v1.4.20 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -48,6 +49,23 @@ v1.4.18 phone QA confirmed:
 - Step 3 opens Review without automatic search.list PASS
 - YTM Project save/reopen preserves exact videoId 3/3 PASS
 - long playlist titles can hide count/privacy metadata: non-blocking UI observation
+
+v1.4.19 phone QA confirmed:
+- bulk export found 21 account playlists
+- 21 YTM Projects exported
+- skipped 0 / failed 0
+- playlistItems.list = 33 requests
+- export session contained 22 objects = 21 projects + manifest
+- manifest counts matched the result dialog
+- exported `mylist` reopened with 2/2 exact videoId and 0 missing
+- Review opened with both tracks ready
+- UI observation: bulk-export button text clipped and button spacing too tight
+
+v1.4.20 focus:
+- flexible Import action-button height
+- full two-line bulk-export label
+- 10dp spacing between the two account actions
+- short phone UI smoke
 
 Known:
 BUG-001/Q-001 OPEN

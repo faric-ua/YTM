@@ -1,4 +1,4 @@
-YTM Importer v1.4.19 FULL — FILE MANIFEST
+YTM Importer v1.4.20 FULL — FILE MANIFEST
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 0739c7de5aa06eac  .github/workflows/build-apk.yml
@@ -7,18 +7,19 @@ YTM Importer v1.4.19 FULL — FILE MANIFEST
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
-20e754bfb462b8b0  BACKLOG.md
-6d50be9209a78baa  CHANGELOG.md
+0471e26b20482a03  BACKLOG.md
+4ff0d671a65a7a05  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 4a40647ce0179615  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
-6262249fd0959a3e  PROJECT_STATUS.txt
+50d7669c532e3dda  PROJECT_STATUS.txt
 ce775606933d5b6f  PUBLIC_RELEASE_CHECKLIST.md
 fb63dabe40fbe0bb  README.md
 48b7e9718ed807af  README_G01A.md
+7b00d1251f822b57  README_GUARD_FIX.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
-e940471937682532  RELEASE_TEST_STATUS.md
+b5c43e039396f252  RELEASE_TEST_STATUS.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
@@ -60,6 +61,7 @@ d19c615aecdac5c7  TERMINAL_APPLY_v1.4.1.md
 dd641d66cdf2354a  TERMINAL_APPLY_v1.4.18.md
 05428838ad9ba292  TERMINAL_APPLY_v1.4.19.md
 fe43f908c47e706c  TERMINAL_APPLY_v1.4.2.md
+2cf3ef6a7f09b610  TERMINAL_APPLY_v1.4.20.md
 68b04fde9f139eac  TERMINAL_APPLY_v1.4.3.md
 1e5078ba6144a8d2  TERMINAL_APPLY_v1.4.4.md
 94d20f0440c00387  TERMINAL_APPLY_v1.4.5.md
@@ -69,13 +71,13 @@ fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 4cfb5c6b808fd1d7  TERMUX_COMMANDS.md
 9308a1e0b2b9c16f  YTM_ASSISTANT_WORKFLOW.md
-f6b671581bd93cf8  app/build.gradle.kts
+bd3bd0f911d86229  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 27d6378715cbab35  app/src/main/AndroidManifest.xml
 a5a13f70894cac26  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 eb7087317541022a  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 a52420036de211c9  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-f7184f49bcf0dbb8  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+9fa7dfd6627b5da8  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 34330128f42cf4fe  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 b977ec271b8ca3c1  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 03fcd6882b8fc96f  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
@@ -836,14 +838,33 @@ febe04653f57f8fd  docs/v.1.4.18/qa/evidence/EVIDENCE_03_REVIEW_EXACT_SELECTIONS.
 215af34fa7af810a  docs/v.1.4.18/qa/evidence/EVIDENCE_05_REOPENED_YTM_PROJECT_HOME.jpg
 ba045d73e03143c3  docs/v.1.4.18/qa/evidence/EVIDENCE_06_REOPENED_TRACK_DETAIL.jpg
 a5bae54ddb20e5ba  docs/v.1.4.18/qa/test-data/G01_ACCOUNT_IMPORT_PHONE_TEST.csv
-e6778d2bbefc33b8  docs/v.1.4.19/REGRESSION_CHECKLIST.md
+bcdca3e2083a6851  docs/v.1.4.19/REGRESSION_CHECKLIST.md
 c21418d8ccb6e249  docs/v.1.4.19/RELEASE.md
 6628a418334d1dba  docs/v.1.4.19/diagrams/BULK_ACCOUNT_EXPORT_FLOW.md
+4f7d3cf2b5d76384  docs/v.1.4.19/qa/ANALYSIS_BULK_ACCOUNT_EXPORT.md
+56a7456f1a8da203  docs/v.1.4.19/qa/EVIDENCE_MANIFEST_BULK_EXPORT.txt
 1e7cf03286163dba  docs/v.1.4.19/qa/PHONE_TEST_BULK_EXPORT.md
+1a2ff6c8a40f7326  docs/v.1.4.19/qa/PHONE_TEST_REPORT_BULK_ACCOUNT_EXPORT_2026-09-17.md
+dd15efa6fdd7e973  docs/v.1.4.19/qa/README_PHONE_TEST.md
+ec09ad9994ae8855  docs/v.1.4.19/qa/TEST_RUN_BULK_ACCOUNT_EXPORT_2026-09-17.md
+c4b7117455a5c803  docs/v.1.4.19/qa/UI_OBSERVATIONS_BULK_EXPORT.md
+be5ec7eb9a2fe1b7  docs/v.1.4.19/qa/evidence/EVIDENCE_01_IMPORT_UI_BUTTON_CLIPPING.jpg
+6b7dae64601232f1  docs/v.1.4.19/qa/evidence/EVIDENCE_02_EXPORT_PROGRESS_21_PLAYLISTS.jpg
+f2a886c8f433b752  docs/v.1.4.19/qa/evidence/EVIDENCE_03_EXPORT_RESULT_21_OF_21.jpg
+0c1446bce7e77d94  docs/v.1.4.19/qa/evidence/EVIDENCE_04_EXPORT_SESSION_FOLDER_22_OBJECTS.jpg
+a61b0793f81e3259  docs/v.1.4.19/qa/evidence/EVIDENCE_05_EXPORT_FOLDER_CONTENTS_SANITIZED.jpg
+816f2b38e0dc7e16  docs/v.1.4.19/qa/evidence/EVIDENCE_06_MANIFEST_SUMMARY_CROPPED.jpg
+4c18404be7617e75  docs/v.1.4.19/qa/evidence/EVIDENCE_07_REOPENED_EXPORTED_PROJECT_HOME.jpg
+b4ce59ca59ec0793  docs/v.1.4.19/qa/evidence/EVIDENCE_08_REOPENED_EXPORTED_PROJECT_REVIEW.jpg
+4acc1b0287d437e7  docs/v.1.4.19/qa/test-data/BULK_ACCOUNT_EXPORT_PHONE_TEST.csv
 855baae3acedb797  docs/v.1.4.2/REGRESSION_CHECKLIST.md
 541dce2a2aae6c9d  docs/v.1.4.2/RELEASE.md
 d3d8ec884ba49140  docs/v.1.4.2/diagrams/README.md
 d28f078821b6d9a2  docs/v.1.4.2/diagrams/UI_CHROME.md
+ec3ada31fc459c4b  docs/v.1.4.20/REGRESSION_CHECKLIST.md
+9493eb1f7e882d55  docs/v.1.4.20/RELEASE.md
+12ef0a4bc90f108b  docs/v.1.4.20/diagrams/IMPORT_ACCOUNT_ACTION_LAYOUT.md
+769f0ebd8be64773  docs/v.1.4.20/qa/UI_SMOKE.md
 cfe983e51369f4ce  docs/v.1.4.3/REGRESSION_CHECKLIST.md
 134d0a0f8bc950e1  docs/v.1.4.3/RELEASE.md
 322116cf7e140e80  docs/v.1.4.3/diagrams/DIALOG_SYSTEM.md
@@ -898,6 +919,7 @@ fd8d95078f07b968  scripts/apply-v1.4.18-g01a.py
 dba315eee2e93c44  scripts/apply-v1.4.18-qa-status-audit-fix.py
 eacb7a733c869894  scripts/apply-v1.4.18.py
 f87d482e5aa750a9  scripts/apply-v1.4.19.py
+0338e1fbdba0aab0  scripts/apply-v1.4.20.py
 a1c4b4a2f19a6a9b  scripts/auth-persistence-audit.sh
 1c191237a6305d73  scripts/button-layout-audit.sh
 aebf1b7e01c530bc  scripts/compact-review-audit.sh
@@ -910,9 +932,9 @@ f58573a1f289d980  scripts/destination-coordinator-audit.sh
 d0552e9ad9641729  scripts/mainactivity-audit.sh
 f6002f563634451e  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
-b9b9294972ea93aa  scripts/qa-plan-audit.sh
+fed78b515c4120ac  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
-5787be0d6a5b5fa1  scripts/release-preflight.sh
+33dddf9930763bd3  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d101c2a72335189a  scripts/rotation-layout-audit.sh
 978fa69e27c6b641  scripts/search-coordinator-audit.sh
@@ -921,4 +943,5 @@ d668238c4ed09fb7  scripts/ui-chrome-audit.sh
 972992f79e831a4b  scripts/v1417-auth-flow-audit.sh
 8809b63eb0115a67  scripts/v1418-account-library-import-audit.sh
 20e454770c223a1a  scripts/v1419-account-library-export-audit.sh
+5048b7783272b378  scripts/v1420-import-button-layout-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts

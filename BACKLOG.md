@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.19 — export all connected-account playlists to a device folder
+v1.4.20 — Import account-action button layout fix
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -74,15 +74,25 @@ v1.4.19 — export all connected-account playlists to a device folder
 - [x] write manifest.json with per-playlist status
 - [x] skip empty/no-accessible-track playlists but record them in manifest
 - [x] static audit + phone-test plan
-- [ ] GitHub build
-- [ ] phone test: choose export folder
-- [ ] phone test: export small account library
-- [ ] verify project-file count and manifest
-- [ ] reopen one exported YTM Project
+- [x] GitHub build
+- [x] phone test: choose export folder
+- [x] phone test: export account library (21 playlists)
+- [x] verify project-file count and manifest
+- [x] reopen one exported YTM Project
 - [ ] verify source playlists remain unchanged
 
+## v1.4.20
+- [x] replace fixed 54dp Import action height with WRAP_CONTENT + minimum height
+- [x] keep long account-action labels readable on up to two lines
+- [x] add 10dp spacing before bulk-export action
+- [x] add static UI-layout audit
+- [x] add release docs + phone UI-smoke plan
+- [ ] GitHub build
+- [ ] phone test: Import button layout screenshot
+- [ ] phone smoke: bulk-export folder picker still opens
+
 ## Next
-Phone-test v1.4.19 bulk account export, then decide whether to add:
+Phone-test the v1.4.20 UI fix. After that, continue account-library work only if useful:
 - selective multi-playlist export;
 - import of a bulk-export manifest;
 - incremental/sync-style account backup.

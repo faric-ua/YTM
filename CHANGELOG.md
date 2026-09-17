@@ -1,5 +1,13 @@
 # Журнал змін (Changelog)
 
+## v1.4.20
+- Fixed clipped text on long Import action buttons by replacing fixed height with WRAP_CONTENT + minimum height.
+- Added controlled autosizing and comfortable vertical padding for Import action buttons.
+- Added 10dp spacing between `Вибрати плейлист з YTM` and `Експортувати всі плейлисти в папку`.
+- Recorded v1.4.19 bulk-export phone test: 21/21 projects exported, manifest matched, round-trip project reopen passed.
+- versionCode 54 / versionName 1.4.20.
+- v1.4.20 = NOT PHONE-TESTED YET.
+
 ## v1.4.19
 - Added read-only bulk export of connected-account playlists to a user-selected device folder.
 - Android folder picker creates a timestamped export session folder.
@@ -9,7 +17,7 @@
 - Empty or no-accessible-track playlists are skipped as project files but remain documented in the manifest.
 - No remote playlist write API is used by the bulk export flow.
 - versionCode 53 / versionName 1.4.19.
-- v1.4.19 = NOT PHONE-TESTED YET.
+- v1.4.19 phone test PASS for tested bulk-export path: 21/21 projects exported, manifest counts matched, and one exported project reopened with exact videoId preserved.
 
 ## v1.4.18
 - G01: added read-only import of one playlist from the connected YouTube/YTM account.

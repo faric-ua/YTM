@@ -11,7 +11,8 @@
 
 | v1.4.17 | **PARTIALLY PHONE-TESTED — PASS FOR TESTED PATH** | FAST_FLOW existing-target duplicate flow, rotation state preservation and Added: 0 result passed. BUG-003/004 are not closed by this run. |
 | v1.4.18 | **PARTIALLY PHONE-TESTED — PASS FOR G01** | Account playlist picker/import, exact-videoId Review path, and YTM Project save/reopen passed on phone. Other regressions remain untested. |
-| v1.4.19 | **NOT TESTED YET** | Read-only bulk export of all account playlists to a chosen device folder. |
+| v1.4.19 | **PARTIALLY PHONE-TESTED — PASS FOR BULK EXPORT PATH** | 21/21 playlists exported, manifest counts matched, and an exported project reopened with exact videoId preserved. Source before/after refresh was not separately phone-verified. |
+| v1.4.20 | **NOT TESTED YET** | Import-screen account action button height/spacing fix; requires short phone UI smoke. |
 
 Static audits and GitHub build do not equal phone testing.
 

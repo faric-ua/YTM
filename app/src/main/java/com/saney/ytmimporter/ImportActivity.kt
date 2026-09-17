@@ -228,7 +228,8 @@ class ImportActivity : Activity() {
                     actionButton(
                         label =
                             "Експортувати всі плейлисти в папку",
-                        primary = false
+                        primary = false,
+                        topMarginDp = 10
                     ) {
                         chooseYtmExportFolder()
                     }
@@ -1341,6 +1342,7 @@ class ImportActivity : Activity() {
     private fun actionButton(
         label: String,
         primary: Boolean,
+        topMarginDp: Int = 0,
         action: () -> Unit
     ): Button =
         Button(this).apply {
@@ -1350,7 +1352,19 @@ class ImportActivity : Activity() {
             setTextColor(Color.WHITE)
             gravity = android.view.Gravity.CENTER
             maxLines = 2
-            setPadding(dp(16), dp(7), dp(16), dp(7))
+            minimumHeight = dp(58)
+            minHeight = dp(58)
+            setPadding(
+                dp(16),
+                dp(10),
+                dp(16),
+                dp(10)
+            )
+            UiChrome.autoSizeButton(
+                this,
+                minSp = 11,
+                maxSp = 14
+            )
             background =
                 roundedBackground(
                     color =
@@ -1385,8 +1399,11 @@ class ImportActivity : Activity() {
             layoutParams =
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(54)
-                )
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin =
+                        dp(topMarginDp)
+                }
         }
 
     private fun roundedBackground(

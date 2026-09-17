@@ -1,0 +1,33 @@
+v1.4.19 bulk-export phone evidence
+
+EVIDENCE_01_IMPORT_UI_BUTTON_CLIPPING.jpg
+- New bulk-export button visible.
+- Captures clipped two-line label and insufficient spacing.
+
+EVIDENCE_02_EXPORT_PROGRESS_21_PLAYLISTS.jpg
+- Progress toast: 21 playlists found.
+
+EVIDENCE_03_EXPORT_RESULT_21_OF_21.jpg
+- Result dialog: 21 total / 21 exported / 0 skipped / 0 errors / 33 requests.
+
+EVIDENCE_04_EXPORT_SESSION_FOLDER_22_OBJECTS.jpg
+- Timestamped session folder exists.
+- File manager reports 22 objects.
+
+EVIDENCE_05_EXPORT_FOLDER_CONTENTS_SANITIZED.jpg
+- Session-folder contents including manifest and project files.
+- Visible playlist-id suffix was blurred for repository evidence.
+
+EVIDENCE_06_MANIFEST_SUMMARY_CROPPED.jpg
+- Manifest summary with appVersion 1.4.19, counts 21/21/0/0, requests 33.
+- Cropped before per-playlist IDs.
+
+EVIDENCE_07_REOPENED_EXPORTED_PROJECT_HOME.jpg
+- Reopened `mylist`: 2 tracks, exact videoId 2, missing 0.
+
+EVIDENCE_08_REOPENED_EXPORTED_PROJECT_REVIEW.jpg
+- Review shows both reopened tracks ready.
+
+Privacy:
+- No account email or OAuth token is present.
+- Playlist-id evidence is removed/blurred where practical.

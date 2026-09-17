@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.19/RELEASE.md"
-check_file "docs/v.1.4.19/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.20/RELEASE.md"
+check_file "docs/v.1.4.20/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -49,7 +49,7 @@ bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/search-coordinator-audit.sh
 bash scripts/playlist-write-coordinator-audit.sh
 bash scripts/destination-coordinator-audit.sh
-bash scripts/v1419-account-library-export-audit.sh
+bash scripts/v1420-import-button-layout-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh
@@ -77,6 +77,7 @@ check_file "scripts/destination-coordinator-audit.sh"
 check_file "scripts/v1417-auth-flow-audit.sh"
 check_file "scripts/v1418-account-library-import-audit.sh"
 check_file "scripts/v1419-account-library-export-audit.sh"
+check_file "scripts/v1420-import-button-layout-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
 check_file "qa/TEST_DATA.md"
@@ -222,11 +223,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 53' app/build.gradle.kts \
-  || fail "Expected versionCode = 53"
+grep -q 'versionCode = 54' app/build.gradle.kts \
+  || fail "Expected versionCode = 54"
 
-grep -q 'versionName = "1.4.19"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.19"'
+grep -q 'versionName = "1.4.20"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.20"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -376,8 +377,10 @@ grep -Fq '| v1.4.17 | **PARTIALLY PHONE-TESTED — PASS FOR TESTED PATH** |' REL
   || fail "v1.4.17 tested-path status missing"
 grep -Fq '| v1.4.18 | **PARTIALLY PHONE-TESTED — PASS FOR G01** |' RELEASE_TEST_STATUS.md \
   || fail "v1.4.18 G01 phone-test PASS status missing"
-grep -Fq '| v1.4.19 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
-  || fail "v1.4.19 must start NOT TESTED YET"
+grep -Fq '| v1.4.19 | **PARTIALLY PHONE-TESTED — PASS FOR BULK EXPORT PATH** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.19 bulk-export phone-test PASS status missing"
+grep -Fq '| v1.4.20 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.20 must start NOT TESTED YET"
 grep -Fq 'BUG-003 / Q-003' qa/BUG_REGISTER.md \
   || fail "BUG-003 must stay documented"
 echo "- BUG-003 auth recovery failure preserved"
