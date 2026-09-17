@@ -19,7 +19,7 @@
 | v1.4.24 | **PARTIALLY PHONE-TESTED — PASS WITH UI POLISH FINDINGS** | Blue Dark Import/Review/History/Queue/Service/Data passed; Destination functional path passed. Findings: old privacy-radio tint and long History/Queue hints. Full alternate-theme Wave 2 regression not run. |
 | v1.4.25 | **PARTIALLY PHONE-TESTED — PASS FOR ACCENT CARD TESTED PATHS** | Blue Home/Review/Destination/History/Queue/Data and Neon Data/Service visual paths passed. Privacy radio, short hints and amber Security semantics confirmed. Import and non-empty Queue card were not separately tested. |
 | v1.4.26 | **PARTIALLY PHONE-TESTED — PASS FOR SELECTIVE EXPORT PATH; BUG-005 FOUND** | Two-playlist selective export passed: 2 projects + manifest, schema v2/SELECTED, exact-videoId round trip 3/3. Manual Search then proposed redundant search.list for exact tracks (BUG-005). |
-| v1.4.27 | **NOT TESTED YET** | Exact-ID Search Guard: ordinary repeat-search preserves canonical exact videoId tracks and avoids redundant search.list quota. |
+| v1.4.27 | **PARTIALLY PHONE-TESTED — PASS FOR BUG-005 EXACT-ID SEARCH GUARD** | Real-phone retest: `top 3` remained 3/3 exact and ready; repeat-search plan reported 0 tracks to search and 0 new `search.list`. Full release regression remains incomplete. |
 
 Static audits and GitHub build do not equal phone testing.
 

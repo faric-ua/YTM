@@ -34,6 +34,22 @@ Expected:
 - exact videoId remains 3/3;
 - Review remains 3/3 ready.
 
+## Actual phone run — 2026-09-17
+
+Observed:
+
+- v1.4.27 installed;
+- `top 3`: 3 tracks, 3 ready/exact, 0 missing/problem;
+- Review: 3/3 ready;
+- Destination: 3 ready to write, 0 require review;
+- repeat-search plan: 3 total / 0 search required / 0 new `search.list`.
+
+Verdict:
+
+**PASS FOR BUG-005 EXACT-ID SEARCH GUARD**
+
+The non-exact smoke below was not separately run during this targeted closeout.
+
 ## Перевірка 4 — non-exact smoke
 
 Only if convenient, import a small plain-text list with at least one track that

@@ -107,7 +107,7 @@ Do not claim fixed until an in-place update test passes without pressing Step 2.
 
 ## Q-005 — Manual Search should respect exact videoId
 
-Status: **FIX IMPLEMENTED v1.4.27 — PHONE RETEST REQUIRED.**
+Status: **CLOSED — PHONE RETEST PASS v1.4.27.**
 
 Found during the v1.4.26 selective-export round-trip phone test.
 
@@ -128,4 +128,12 @@ Implementation note for v1.4.27:
 
 - ordinary repeat-search preserves canonical exact selections;
 - exact 3/3 project should plan 0 new search.list;
-- BUG-005 remains open until real-phone retest passes.
+Phone retest result (2026-09-17):
+
+- `top 3` opened with exact/ready 3/3;
+- Review showed 3/3 ready;
+- ordinary repeat-search plan showed 0 tracks requiring search;
+- new `search.list` = 0;
+- BUG-005 / Q-005 is closed for this targeted path.
+
+A future explicit force-research/replace-exact action, if desired, remains a separate product decision rather than part of Q-005.

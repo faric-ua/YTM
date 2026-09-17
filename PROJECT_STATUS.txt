@@ -17,7 +17,7 @@ v1.4.23 PARTIALLY PHONE-TESTED — HOME FIT PASS
 v1.4.24 PARTIALLY PHONE-TESTED — WAVE 2 PASS WITH UI POLISH FINDINGS
 v1.4.25 PARTIALLY PHONE-TESTED — ACCENT CARD TESTED PATHS PASS
 v1.4.26 PARTIALLY PHONE-TESTED — SELECTIVE EXPORT PASS / BUG-005 FOUND
-v1.4.27 NOT TESTED YET
+v1.4.27 PARTIALLY PHONE-TESTED — BUG-005 EXACT-ID SEARCH GUARD PASS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -178,13 +178,22 @@ v1.4.27 focus:
 - manual selections remain protected
 - phone retest target: exact `top 3` 3/3 → 0 new search.list
 
+v1.4.27 phone QA confirmed:
+- signed v1.4.27 installed on the real phone
+- `top 3` = 3 tracks / 3 ready-exact / 0 missing-problem
+- Review = 3/3 ready
+- Destination summary = 3 ready to write / 0 require review
+- ordinary repeat-search plan = search required 0
+- ordinary repeat-search plan = new search.list 0
+- BUG-005/Q-005 closed for the tested path
+
 
 Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 DEFERRED
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
 BUG-004/Q-004 RETEST v1.4.17
-BUG-005/Q-005 FIX IMPLEMENTED v1.4.27 — PHONE RETEST REQUIRED
+BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27
 
 QA:
 root qa/ = current definitions/policy

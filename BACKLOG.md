@@ -8,7 +8,7 @@ v1.4.27 — Exact-ID Search Guard
 - BUG-002/Q-002 DEFERRED
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — RETEST v1.4.17
-- BUG-005/Q-005 redundant manual search for exact videoId tracks — FIX IMPLEMENTED v1.4.27, PHONE RETEST REQUIRED
+- BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -216,14 +216,19 @@ v1.4.27 — Exact-ID Search Guard
 - [x] clarify Review repeat-search quota message
 - [x] add BUG-005 static regression audit
 - [x] add release docs + phone-test plan
-- [ ] GitHub build
-- [ ] phone retest: reopen exact `top 3` project
-- [ ] phone retest: Search plan = 0 new search.list
-- [ ] confirm Review remains 3/3 ready
+- [x] GitHub build
+- [x] phone retest: reopen exact `top 3` project
+- [x] phone retest: Search plan = 0 new search.list
+- [x] confirm Review is 3/3 ready before repeat-search planning
 
 ## Next
-v1.4.27 — fix BUG-005 with an Exact-ID Search Guard before adding another account-library feature:
-- selective multi-playlist export;
+Project handoff / documentation hardening:
+- add a canonical `START_HERE_ASSISTANT.md` for a new ChatGPT node;
+- make README a real project entry point;
+- reconcile reusable Termux/Git rules with `YTM_ASSISTANT_WORKFLOW.md`;
+- document stable build-artifact folder convention.
+
+Then continue account-library work:
 - import of a bulk-export manifest;
 - incremental/sync-style account backup.
 

@@ -19,8 +19,6 @@ review = Path(
 coord = Path(
     "app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt"
 ).read_text(encoding="utf-8")
-status = Path("RELEASE_TEST_STATUS.md").read_text(encoding="utf-8")
-bug = Path("qa/BUG_REGISTER.md").read_text(encoding="utf-8")
 
 if 'versionCode = 61' not in build:
     fail("versionCode 61 missing")
@@ -63,15 +61,6 @@ if "Треки з точним videoId буде збережено без нов
 if "пройде всі треки через SearchCache / YouTube search" in review:
     fail("old all-tracks repeat-search wording still present")
 
-if '| v1.4.27 | **NOT TESTED YET** |' not in status:
-    fail("v1.4.27 must start NOT TESTED YET")
-
-if (
-    '| BUG-005 / Q-005 | FIX IMPLEMENTED v1.4.27 — PHONE RETEST REQUIRED |'
-    not in bug
-):
-    fail("BUG-005 fix-implemented status missing")
-
 required_files = [
     "docs/v.1.4.27/RELEASE.md",
     "docs/v.1.4.27/REGRESSION_CHECKLIST.md",
@@ -91,4 +80,4 @@ print("- ordinary searchAll exact-preserving default")
 print("- SearchCoordinator canonical exact predicate")
 print("- manual/project exact preserved states")
 print("- Review quota wording")
-print("- BUG-005 fix-implemented / phone-retest-required status")
+print("- phone QA status is checked by the separate immutable v1427 QA-close audit")

@@ -36,12 +36,17 @@ tracks that still need search are processed.
 
 ## Status
 
-**NOT PHONE-TESTED YET**
+**PARTIALLY PHONE-TESTED — PASS FOR BUG-005 EXACT-ID SEARCH GUARD**
 
-Phone retest target:
+Real-phone retest on 2026-09-17:
 
-- reopen/import the v1.4.26 `top 3` project;
-- verify exact videoId = 3/3;
-- press Review `↻ Пошук`;
-- expected search plan: **0 tracks to search / 0 new search.list**;
-- Review must remain 3/3 ready.
+- signed v1.4.27 installed;
+- `top 3` opened with 3 tracks and 3 ready/exact;
+- Review showed 3/3 ready;
+- Destination summary showed 3 ready to write / 0 requiring review;
+- Review `↻ Пошук` plan showed **0 tracks to search**;
+- plan showed **0 new `search.list`**.
+
+BUG-005 / Q-005 is closed for this targeted path.
+
+This is not a claim of full release regression coverage. Non-exact search smoke and other unrelated release-plan paths were not re-run in this closeout.

@@ -6,7 +6,7 @@
 | BUG-002 / Q-002 | DEFERRED BY USER | P2 | Some custom dialogs visibly move into final top position after opening. |
 | BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update passed. |
 | BUG-004 / Q-004 | RETEST v1.4.17 | P1 | Authorization can become invalid while Step 2 remains green/checked. |
-| BUG-005 / Q-005 | FIX IMPLEMENTED v1.4.27 — PHONE RETEST REQUIRED | P2 | Ordinary repeat-search must preserve exact videoId tracks and avoid redundant search.list quota. |
+| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Real-phone repeat-search plan preserved exact 3/3 and required 0 new search.list. |
 
 ## BUG-005 fix intent
 
@@ -22,5 +22,11 @@ v1.4.27 change:
 - ordinary Main searchAll defaults to preserve exact selections;
 - existing SearchCoordinator `PROJECT_EXACT` guard remains the domain rule.
 
-Do not mark BUG-005 closed until the real phone plan shows 0 new search.list for
-the 3/3 exact project.
+Phone retest result (2026-09-17):
+
+- Home: `top 3`, 3 tracks, 3 ready/exact, 0 missing/problem;
+- Review: 3/3 ready;
+- ordinary repeat-search plan: search required 0;
+- ordinary repeat-search plan: new `search.list` 0.
+
+BUG-005 / Q-005 is closed for this targeted v1.4.27 path.

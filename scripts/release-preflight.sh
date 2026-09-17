@@ -54,6 +54,7 @@ bash scripts/v1426-qa-close-audit.sh
 bash scripts/v1426-selective-export-audit.sh
 python -B scripts/v1427-apply-selftest.py
 python -B scripts/v1427-exact-id-search-audit.py
+bash scripts/v1427-qa-close-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh
@@ -89,6 +90,7 @@ check_file "scripts/v1425-apply-selftest.py"
 check_file "scripts/v1426-apply-selftest.py"
 check_file "scripts/v1427-apply-selftest.py"
 check_file "scripts/v1427-exact-id-search-audit.py"
+check_file "scripts/v1427-qa-close-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"

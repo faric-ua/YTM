@@ -58,9 +58,9 @@ grep -Fq '| v1.4.25 | **PARTIALLY PHONE-TESTED — PASS FOR ACCENT CARD TESTED P
   || fail "v1.4.25 tested-path phone status missing"
 grep -Fq '| v1.4.26 | **PARTIALLY PHONE-TESTED — PASS FOR SELECTIVE EXPORT PATH; BUG-005 FOUND** |' "$STATUS" \
   || fail "v1.4.26 selective-export phone status missing"
-grep -Fq '| v1.4.27 | **NOT TESTED YET** |' "$STATUS" \
-  || fail "v1.4.27 must start NOT TESTED YET"
-grep -Fq '| BUG-005 / Q-005 | FIX IMPLEMENTED v1.4.27 — PHONE RETEST REQUIRED |' "$BUG" \
-  || fail "BUG-005 v1.4.27 fix-implemented status missing"
+grep -Fq '| v1.4.27 | **PARTIALLY PHONE-TESTED — PASS FOR BUG-005 EXACT-ID SEARCH GUARD** |' "$STATUS" \
+  || fail "v1.4.27 BUG-005 phone PASS status missing"
+grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
+  || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"
