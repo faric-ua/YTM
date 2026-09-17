@@ -1629,7 +1629,7 @@ class ImportActivity : Activity() {
                         label =
                             "Скасувати",
                         tone =
-                            UiChrome.ActionTone.NEUTRAL,
+                            UiChrome.ActionTone.NORMAL,
                         onClick = {}
                     )
                 )
@@ -1858,7 +1858,7 @@ class ImportActivity : Activity() {
                         label =
                             "Скасувати",
                         tone =
-                            UiChrome.ActionTone.NEUTRAL,
+                            UiChrome.ActionTone.NORMAL,
                         onClick = {
                             pendingIncrementalBackupPlan =
                                 null

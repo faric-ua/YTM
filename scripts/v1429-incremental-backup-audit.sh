@@ -43,6 +43,12 @@ grep -Fq 'Зберегти delta' "$IMPORT" \
 grep -Fq 'writeIncrementalBackup' "$IMPORT" \
   || fail "delta write flow missing"
 
+if grep -Fq 'UiChrome.ActionTone.NEUTRAL' "$IMPORT"; then
+  fail "incremental dialogs use nonexistent ActionTone.NEUTRAL"
+fi
+grep -Fq 'UiChrome.ActionTone.NORMAL' "$IMPORT" \
+  || fail "incremental cancel actions must use ActionTone.NORMAL"
+
 for status in NEW UPDATED UNCHANGED MISSING FAILED
 do
   grep -Fq "\"$status\"" "$SYNC" \
