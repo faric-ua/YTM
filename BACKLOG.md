@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.25 — Accent Card System
+v1.4.26 — Selective Account Export
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -188,11 +188,43 @@ v1.4.25 — Accent Card System
 - [x] phone theme spot-check: Neon Data + Service
 - [x] tutorial foundation created from preserved release/QA history
 
+## v1.4.26
+- [x] add selective connected-account playlist export
+- [x] keep existing single-import and export-all flows
+- [x] multi-select picker for account playlists
+- [x] prevent empty selection from opening folder picker
+- [x] preserve confirmed selection through saved-instance state
+- [x] process playlistItems only for selected playlists
+- [x] preserve exact videoId/source playlist id/privacy
+- [x] manifest schema v2 + `selectionMode`
+- [x] add static audit + phone-test plan
+- [x] add tutorial chapter `06_ACCOUNT_LIBRARY_EXPORT.md`
+- [ ] GitHub build
+- [ ] phone test: selective picker
+- [ ] phone test: exactly 2-playlist export
+- [ ] verify 2 projects + manifest
+- [ ] verify manifest `selectionMode = SELECTED`
+- [ ] reopen one exported project and verify exact videoId round trip
+
 ## Next
 Expand the tutorial alongside the next useful feature wave. Preserve v1.4.25 as the Accent Card System phone-evidence baseline, then continue account-library work only if useful:
 - selective multi-playlist export;
 - import of a bulk-export manifest;
 - incremental/sync-style account backup.
+
+## Future product plan — localization + exclusive skin
+- [ ] Localization Wave: move user-facing strings to Android resources
+- [ ] Ukrainian (`uk`) language
+- [ ] Korean (`ko`) language
+- [ ] English (`en`) language
+- [ ] phone-test Korean text fit on primary screens/dialogs
+- [ ] Yerin Exclusive hidden skin
+- [ ] unlock Yerin skin by exact canonical public TikTok profile URL supplied later
+- [ ] do not store/guess the TikTok URL before it is explicitly provided
+- [ ] document that URL-only unlock is a hidden feature gate, not secure authentication
+- [ ] keep Yerin skin visual-only: no change to import/search/write semantics
+- [ ] tutorial chapter: internationalization
+- [ ] tutorial chapter: hidden feature/unlock mechanism
 
 ## Later bug-fix wave
 Fix every FAIL/BLOCKED case accumulated in BUG_REGISTER and release test runs,

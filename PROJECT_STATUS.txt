@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.25
-Version code: 59
+Version: 1.4.26
+Version code: 60
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -16,6 +16,7 @@ v1.4.22 PARTIALLY PHONE-TESTED — HOME UI FIT ISSUE
 v1.4.23 PARTIALLY PHONE-TESTED — HOME FIT PASS
 v1.4.24 PARTIALLY PHONE-TESTED — WAVE 2 PASS WITH UI POLISH FINDINGS
 v1.4.25 PARTIALLY PHONE-TESTED — ACCENT CARD TESTED PATHS PASS
+v1.4.26 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -128,6 +129,24 @@ v1.4.25 still not separately phone-verified:
 - Import large-card screenshot
 - non-empty Queue job card
 - full functional regression of every search/write path
+
+
+
+v1.4.26 focus:
+- read-only selective account-library export
+- multi-select several connected-account playlists
+- export only confirmed selection
+- preserve exact videoId/source playlist id/privacy
+- manifest schema v2 with selectionMode ALL/SELECTED
+- selection survives Activity saved-instance restoration
+- existing single-import and export-all flows remain
+- no remote playlist write API in account export
+
+Future product direction:
+- Ukrainian / Korean / English localization
+- hidden Yerin Exclusive visual skin
+- Yerin skin unlock uses exact canonical public TikTok profile URL supplied later
+- URL-only unlock is a feature gate, not secure authentication
 
 
 Known:

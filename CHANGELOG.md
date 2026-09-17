@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.26
+- Added read-only selective export of multiple connected-account playlists.
+- Added checkbox multi-select before Android folder selection.
+- Confirmed selection is preserved in Activity saved-instance state.
+- Selected export processes playlistItems only for the chosen playlists.
+- Existing export-all flow remains available.
+- Account export manifest schema advanced to v2 with `selectionMode = ALL | SELECTED`.
+- Added selective-export static audit, phone QA plan and tutorial chapter.
+- Added future product roadmap for Ukrainian/Korean/English localization and the hidden Yerin Exclusive skin.
+- versionCode 60 / versionName 1.4.26.
+- v1.4.26 = NOT PHONE-TESTED YET.
+
 ## v1.4.25
 - Added a consistent Accent Card System: large cards use two quiet theme-colored contour strokes.
 - Kept compact controls/search/back buttons visually quiet.

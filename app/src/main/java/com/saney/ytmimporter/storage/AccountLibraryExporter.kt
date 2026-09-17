@@ -101,7 +101,8 @@ object AccountLibraryExporter {
         resolver: ContentResolver,
         session: ExportSession,
         appVersion: String,
-        records: List<ExportRecord>
+        records: List<ExportRecord>,
+        selectionMode: String = "ALL"
     ): String {
         val items = JSONArray()
 
@@ -147,8 +148,12 @@ object AccountLibraryExporter {
                     "format",
                     "ytm-importer-account-library-export"
                 )
-                .put("schemaVersion", 1)
+                .put("schemaVersion", 2)
                 .put("appVersion", appVersion)
+                .put(
+                    "selectionMode",
+                    selectionMode
+                )
                 .put("exportedAt", System.currentTimeMillis())
                 .put("playlistCount", records.size)
                 .put("exportedProjects", exported)

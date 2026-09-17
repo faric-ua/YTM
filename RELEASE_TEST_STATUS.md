@@ -18,6 +18,7 @@
 | v1.4.23 | **PARTIALLY PHONE-TESTED — PASS FOR HOME FIT** | Blue Dark Home: utility row stayed single-line, workflow labels fit, vector icons and current-playlist card remained readable. |
 | v1.4.24 | **PARTIALLY PHONE-TESTED — PASS WITH UI POLISH FINDINGS** | Blue Dark Import/Review/History/Queue/Service/Data passed; Destination functional path passed. Findings: old privacy-radio tint and long History/Queue hints. Full alternate-theme Wave 2 regression not run. |
 | v1.4.25 | **PARTIALLY PHONE-TESTED — PASS FOR ACCENT CARD TESTED PATHS** | Blue Home/Review/Destination/History/Queue/Data and Neon Data/Service visual paths passed. Privacy radio, short hints and amber Security semantics confirmed. Import and non-empty Queue card were not separately tested. |
+| v1.4.26 | **NOT TESTED YET** | Selective Account Export: choose several connected-account playlists, export only the selection, manifest schema v2 with selectionMode. |
 
 Static audits and GitHub build do not equal phone testing.
 

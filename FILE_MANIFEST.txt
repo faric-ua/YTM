@@ -1,4 +1,4 @@
-YTM Importer v1.4.25 FULL — FILE MANIFEST
+YTM Importer v1.4.26 FULL — FILE MANIFEST
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 0739c7de5aa06eac  .github/workflows/build-apk.yml
@@ -7,19 +7,19 @@ YTM Importer v1.4.25 FULL — FILE MANIFEST
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
-32c502cef453f203  BACKLOG.md
-54a558b27d9d39e2  CHANGELOG.md
+4394795a1ecfc7fb  BACKLOG.md
+f87521e4d1ea2643  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 4a40647ce0179615  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
-f6d12f9fb558f97c  PROJECT_STATUS.txt
+1e9721ff74150ace  PROJECT_STATUS.txt
 ce775606933d5b6f  PUBLIC_RELEASE_CHECKLIST.md
 f5a8d2cc1bdb6785  README.md
 48b7e9718ed807af  README_G01A.md
 7b00d1251f822b57  README_GUARD_FIX.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
-eac06bcc19f653d9  RELEASE_TEST_STATUS.md
+3b931e98c8ad75ac  RELEASE_TEST_STATUS.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
@@ -67,6 +67,7 @@ ae928f8d570068c4  TERMINAL_APPLY_v1.4.22.md
 d20f31cda7a179ad  TERMINAL_APPLY_v1.4.23.md
 c5061973427d14e2  TERMINAL_APPLY_v1.4.24.md
 de641fc9d98aac34  TERMINAL_APPLY_v1.4.25.md
+2752f2c63f1f870a  TERMINAL_APPLY_v1.4.26.md
 68b04fde9f139eac  TERMINAL_APPLY_v1.4.3.md
 1e5078ba6144a8d2  TERMINAL_APPLY_v1.4.4.md
 94d20f0440c00387  TERMINAL_APPLY_v1.4.5.md
@@ -76,13 +77,13 @@ fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 4cfb5c6b808fd1d7  TERMUX_COMMANDS.md
 aac1dada6025f54b  YTM_ASSISTANT_WORKFLOW.md
-eeca19c008b7e5e1  app/build.gradle.kts
+21adfde3924b6fd9  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 27d6378715cbab35  app/src/main/AndroidManifest.xml
 651321f836af9236  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 6a4b4fcd5f443032  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 1ae0123d61c7496f  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-47ea8e20f8428841  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+f4306a00b8fb4342  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 92a09ffbe9e0ea6f  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 f4dc26fd0a49f24c  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 00aaec181370b25e  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
@@ -96,7 +97,7 @@ e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 32d5c420fc9d2cda  app/src/main/java/com/saney/ytmimporter/model/Track.kt
 249f69059120d001  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
 3898219531a0ecc0  app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
-b8b09a43b1bbfa34  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryExporter.kt
+520a65c9f50141a9  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryExporter.kt
 a8df82aa07ada08c  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
 9582bc554612c4c4  app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
 d8f0c56f39f3fb2f  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
@@ -143,8 +144,9 @@ bab4310bae2a420f  docs/tutorial/02_DEVELOPMENT_LOOP.md
 4cced9c8fd8ef46c  docs/tutorial/03_ARCHITECTURE_MAP.md
 21bfbd7db1e4983d  docs/tutorial/04_QA_AND_EVIDENCE.md
 75d01f957c22fa1f  docs/tutorial/05_FAILURES_AND_GUARDS.md
+1c9ba0ddc638ffe6  docs/tutorial/06_ACCOUNT_LIBRARY_EXPORT.md
 45a38d90e1550e4e  docs/tutorial/README.md
-26b2b82c3853b46e  docs/tutorial/ROADMAP.md
+1153812902465a26  docs/tutorial/ROADMAP.md
 fba063f3df84f31a  docs/v.0.10.0/RELEASE.md
 40eb6695cc102a64  docs/v.0.10.0/diagrams/ARCHITECTURE.md
 d36539446325c8a5  docs/v.0.10.0/diagrams/BEFORE_AFTER_v0.10.0.md
@@ -957,6 +959,11 @@ ccbc00a452dff957  docs/v.1.4.25/qa/evidence/EVIDENCE_05_DESTINATION_V1425_BLUE_R
 1419c4ca7039ba77  docs/v.1.4.25/qa/evidence/EVIDENCE_08_DATA_V1425_BLUE.jpg
 e821d04a7d7929a3  docs/v.1.4.25/qa/evidence/EVIDENCE_09_DATA_V1425_NEON.jpg
 31eed926916b97ec  docs/v.1.4.25/qa/evidence/EVIDENCE_10_SERVICE_V1425_NEON.jpg
+032c94332e6914fd  docs/v.1.4.26/REGRESSION_CHECKLIST.md
+84b41cdd23a4579d  docs/v.1.4.26/RELEASE.md
+433e4e6094e15be2  docs/v.1.4.26/diagrams/SELECTIVE_EXPORT_FLOW.md
+5e1f90c2507705b2  docs/v.1.4.26/qa/PACKAGE_SELFTEST.md
+6fee6127fe9a6653  docs/v.1.4.26/qa/PHONE_TEST.md
 cfe983e51369f4ce  docs/v.1.4.3/REGRESSION_CHECKLIST.md
 134d0a0f8bc950e1  docs/v.1.4.3/RELEASE.md
 322116cf7e140e80  docs/v.1.4.3/diagrams/DIALOG_SYSTEM.md
@@ -1018,6 +1025,7 @@ c118a655a3473059  scripts/apply-v1.4.23.py
 4f2f5c36388ecfe9  scripts/apply-v1.4.24.py
 f49f0deffbcce291  scripts/apply-v1.4.25-qa-close.py
 032336f956ba437a  scripts/apply-v1.4.25.py
+b6566325a0111b3a  scripts/apply-v1.4.26.py
 a1c4b4a2f19a6a9b  scripts/auth-persistence-audit.sh
 c9f2616bb9b38084  scripts/button-layout-audit.sh
 aebf1b7e01c530bc  scripts/compact-review-audit.sh
@@ -1030,9 +1038,9 @@ f58573a1f289d980  scripts/destination-coordinator-audit.sh
 d0552e9ad9641729  scripts/mainactivity-audit.sh
 f6002f563634451e  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
-f47cd6da19acfc39  scripts/qa-plan-audit.sh
+aa9c727e0a67552d  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
-167d29e9d002f31e  scripts/release-preflight.sh
+d954330ae56084d6  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d101c2a72335189a  scripts/rotation-layout-audit.sh
 978fa69e27c6b641  scripts/search-coordinator-audit.sh
@@ -1052,4 +1060,7 @@ b3d722ee664e99f6  scripts/v1425-qa-close-selftest.py
 026382b12c2c3465  scripts/v1425-qa-tutorial-audit.sh
 cb3166c070e39356  scripts/v1425_patchlib.py
 ed2c577986404e31  scripts/v1425_qa_patchlib.py
+d6cc07b88df1e5bd  scripts/v1426-apply-selftest.py
+9d9b8d49d292eb4e  scripts/v1426-selective-export-audit.sh
+e96fd064a942d563  scripts/v1426_patchlib.py
 3ef7b58ae9c2bd82  settings.gradle.kts
