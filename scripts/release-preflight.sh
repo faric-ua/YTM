@@ -373,8 +373,8 @@ echo "- global master QA plan is present"
 
 grep -Fq '| v1.4.17 | **PARTIALLY PHONE-TESTED — PASS FOR TESTED PATH** |' RELEASE_TEST_STATUS.md \
   || fail "v1.4.17 tested-path status missing"
-grep -Fq '| v1.4.18 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
-  || fail "v1.4.18 must start NOT TESTED YET"
+grep -Fq '| v1.4.18 | **PARTIALLY PHONE-TESTED — PASS FOR G01** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.18 G01 phone-test PASS status missing"
 grep -Fq 'BUG-003 / Q-003' qa/BUG_REGISTER.md \
   || fail "BUG-003 must stay documented"
 echo "- BUG-003 auth recovery failure preserved"

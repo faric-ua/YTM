@@ -58,11 +58,11 @@ v1.4.18 — YTM account library import/export, G01 one-playlist import
 - [x] G01 preserve exact selections so search.list is not required
 - [x] G01 static audit + phone-test plan
 - [ ] GitHub build
-- [ ] phone test: account playlist list/picker
-- [ ] phone test: import one playlist
-- [ ] phone test: Step 3 opens Review without search.list
-- [ ] phone test: save imported workspace as YTM Project
-- [ ] phone test: reopen saved YTM Project and preserve exact videoId
+- [x] phone test: account playlist list/picker
+- [x] phone test: import one playlist
+- [x] phone test: Step 3 opens Review without search.list
+- [x] phone test: save imported workspace as YTM Project
+- [x] phone test: reopen saved YTM Project and preserve exact videoId
 - [ ] next wave: export all account playlists to a chosen folder
 
 ## Next

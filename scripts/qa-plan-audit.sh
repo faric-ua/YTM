@@ -40,7 +40,7 @@ echo "- release status rules present"
 
 grep -Fq '| v1.4.17 | **PARTIALLY PHONE-TESTED — PASS FOR TESTED PATH** |' "$STATUS" \
   || fail "v1.4.17 tested-path status missing"
-grep -Fq '| v1.4.18 | **NOT TESTED YET** |' "$STATUS" \
-  || fail "v1.4.18 must start NOT TESTED YET"
+grep -Fq '| v1.4.18 | **PARTIALLY PHONE-TESTED — PASS FOR G01** |' "$STATUS" \
+  || fail "v1.4.18 G01 phone-test PASS status missing"
 grep -Fq 'BUG-003 / Q-003' "$BUG" \
   || fail "BUG-003 auth recovery regression missing"

@@ -1,0 +1,4 @@
+YTM v1.4.18 phone-QA update package
+
+Additive overlay only. Adds real-phone QA documents/evidence and a safe status-update script.
+Do not delete the existing v1.4.18 folder.

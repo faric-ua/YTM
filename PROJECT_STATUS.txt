@@ -8,7 +8,7 @@ v1.4.14 PARTIALLY PHONE-TESTED — FAIL (BUG-003)
 v1.4.15 NOT TESTED
 v1.4.16 PARTIALLY PHONE-TESTED
 v1.4.17 PARTIALLY PHONE-TESTED — FAST_FLOW EXISTING-TARGET PASS
-v1.4.18 NOT TESTED YET
+v1.4.18 PARTIALLY PHONE-TESTED — G01 PASS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -38,6 +38,15 @@ v1.4.18 G01 focus:
 - open the account playlist as current local workspace
 - preserve exact selections and avoid unnecessary search.list
 - phone-test local YTM Project save/reopen after account import
+
+v1.4.18 phone QA confirmed:
+- account playlist picker PASS
+- one-playlist import PASS (`top 3`, 3 tracks)
+- exact videoId 3/3 PASS
+- playlistItems.list = 1 request PASS
+- Step 3 opens Review without automatic search.list PASS
+- YTM Project save/reopen preserves exact videoId 3/3 PASS
+- long playlist titles can hide count/privacy metadata: non-blocking UI observation
 
 Known:
 BUG-001/Q-001 OPEN

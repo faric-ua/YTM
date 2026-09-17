@@ -1,0 +1,21 @@
+field,value,notes
+release,1.4.18,versionCode 52
+phone_test_date,2026-09-17,real-device manual test
+github_commit,28ad797b52df73595186e08e36d19a7a0afc4a22,feature commit
+github_actions_run,35167887857,Build Signed Android APK
+github_actions_run_number,59,workflow_dispatch
+github_actions_result,success,signed release build
+test_playlist,top 3,small account playlist selected
+test_playlist_visibility,private,shown in picker
+source_playlist_items,3,shown in picker
+playlistItems.list_requests,1,shown after import
+imported_tracks,3,local workspace
+exact_video_ids_after_account_import,3,all exact
+missing_video_ids_after_account_import,0,none missing
+automatic_search_list_after_step_3,0,Review opened directly
+manual_repeat_search_plan_search_list,3,after explicit repeat Search
+review_ready_tracks,3,all ready
+ytm_project_reopened_tracks,3,saved project reopened
+ytm_project_reopened_exact_video_ids,3,exact IDs preserved
+ytm_project_reopened_missing_video_ids,0,none missing
+overall_g01_result,PASS,tested vertical slice passed

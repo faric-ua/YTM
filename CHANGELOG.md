@@ -9,7 +9,7 @@
 - Added v1.4.18 G01 static audit, release docs and phone-test plan.
 - v1.4.17 FAST_FLOW existing-target duplicate/rotation path recorded as phone-tested PASS; unrelated auth cases remain open/retest.
 - versionCode 52 / versionName 1.4.18.
-- v1.4.18 G01 = NOT PHONE-TESTED YET.
+- v1.4.18 G01 phone test PASS: account picker/import, 3/3 exact videoId Review path, and YTM Project save/reopen verified on 2026-09-17.
 
 ## v1.4.17
 - Step 2 auth-ready state is invalidated after YouTube API HTTP 401.
