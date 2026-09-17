@@ -1,0 +1,11 @@
+v1.4.24 Theme Wave 2 evidence
+
+01 Import Blue — PASS.
+02 Review Blue — PASS.
+03 Destination Blue — functional PASS; privacy radio tint finding. Identity rows redacted.
+04 History Blue — PASS; clipped search hint finding.
+05 Queue Blue — PASS; clipped search hint finding.
+06 Service Blue — PASS.
+07 Data Blue — PASS; amber semantic Security-card accents approved.
+
+No screenshot is claimed to prove untested alternate-theme utility screens.

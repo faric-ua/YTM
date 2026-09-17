@@ -122,7 +122,7 @@ class PendingActivity : Activity() {
         val search =
             EditText(this).apply {
                 hint =
-                    "Пошук за плейлистом, джерелом або каналом"
+                    "Пошук у черзі"
                 setSingleLine(true)
                 textSize = 14f
                 setTextColor(Color.WHITE)
@@ -1121,7 +1121,8 @@ class PendingActivity : Activity() {
             }
 
         val useAccentStroke =
-            color == Color.rgb(196, 0, 42) ||
+            radiusDp >= 14 ||
+                color == Color.rgb(196, 0, 42) ||
                 accentOverride != null
 
         return AppThemeManager.surfaceDrawable(

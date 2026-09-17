@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.24/RELEASE.md"
-check_file "docs/v.1.4.24/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.25/RELEASE.md"
+check_file "docs/v.1.4.25/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -49,7 +49,8 @@ bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/search-coordinator-audit.sh
 bash scripts/playlist-write-coordinator-audit.sh
 bash scripts/destination-coordinator-audit.sh
-bash scripts/v1424-theme-wave2-audit.sh
+python scripts/v1425-apply-selftest.py
+bash scripts/v1425-accent-card-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh
@@ -80,6 +81,8 @@ check_file "scripts/v1419-account-library-export-audit.sh"
 check_file "scripts/v1420-import-button-layout-audit.sh"
 check_file "scripts/v1422-visual-structure-audit.sh"
 check_file "scripts/v1423-button-fit-audit.sh"
+check_file "scripts/v1425-accent-card-audit.sh"
+check_file "scripts/v1425-apply-selftest.py"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
 check_file "qa/TEST_DATA.md"
@@ -225,11 +228,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 58' app/build.gradle.kts \
-  || fail "Expected versionCode = 58"
+grep -q 'versionCode = 59' app/build.gradle.kts \
+  || fail "Expected versionCode = 59"
 
-grep -q 'versionName = "1.4.24"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.24"'
+grep -q 'versionName = "1.4.25"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.25"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -389,8 +392,10 @@ grep -Fq '| v1.4.22 | **PARTIALLY PHONE-TESTED — UI FIT ISSUE FOUND** |' RELEA
   || fail "v1.4.22 UI-fit phone status missing"
 grep -Fq '| v1.4.23 | **PARTIALLY PHONE-TESTED — PASS FOR HOME FIT** |' RELEASE_TEST_STATUS.md \
   || fail "v1.4.23 Home-fit PASS status missing"
-grep -Fq '| v1.4.24 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
-  || fail "v1.4.24 must start NOT TESTED YET"
+grep -Fq '| v1.4.24 | **PARTIALLY PHONE-TESTED — PASS WITH UI POLISH FINDINGS** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.24 Wave 2 phone status missing"
+grep -Fq '| v1.4.25 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.25 must start NOT TESTED YET"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' qa/BUG_REGISTER.md \
   || fail "BUG-003 closed phone-retest status missing"
 echo "- BUG-003 in-place update recovery phone retest passed"

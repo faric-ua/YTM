@@ -34,12 +34,11 @@ class TrackAdapter(
                 setPadding(dp(14), dp(10), dp(14), dp(10))
                 minimumHeight = dp(72)
                 background =
-                    GradientDrawable().apply {
-                        shape = GradientDrawable.RECTANGLE
-                        cornerRadius = dp(12).toFloat()
-                        setColor(palette.surface)
-                        setStroke(dp(1), palette.border)
-                    }
+                    AppThemeManager.largeCardDrawable(
+                        context = context,
+                        fill = palette.surface,
+                        radiusDp = 12
+                    )
             }
             val top = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL

@@ -16,7 +16,8 @@
 | v1.4.21 | **PARTIALLY PHONE-TESTED — PASS FOR HOME THEMES** | Neon, Blue and Green Home themes switched successfully on phone; Import/Review/persistence remain untested. |
 | v1.4.22 | **PARTIALLY PHONE-TESTED — UI FIT ISSUE FOUND** | Home launched with vector icons, compact logo, calmer contours and current-playlist card; `Історія` wrapped and top labels were tight. |
 | v1.4.23 | **PARTIALLY PHONE-TESTED — PASS FOR HOME FIT** | Blue Dark Home: utility row stayed single-line, workflow labels fit, vector icons and current-playlist card remained readable. |
-| v1.4.24 | **NOT TESTED YET** | Theme Wave 2: extend selected palette to Import, Review, Destination, History, Queue, Data and Service. |
+| v1.4.24 | **PARTIALLY PHONE-TESTED — PASS WITH UI POLISH FINDINGS** | Blue Dark Import/Review/History/Queue/Service/Data passed; Destination functional path passed. Findings: old privacy-radio tint and long History/Queue hints. Full alternate-theme Wave 2 regression not run. |
+| v1.4.25 | **NOT TESTED YET** | Accent Card System: consistent two-stroke accents on large cards, themed privacy radio and shorter search hints. |
 
 Static audits and GitHub build do not equal phone testing.
 

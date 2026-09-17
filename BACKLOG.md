@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.24 — Theme Wave 2
+v1.4.25 — Accent Card System
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -159,15 +159,35 @@ v1.4.24 — Theme Wave 2
 - [x] use shared semantic colors in Review / History
 - [x] record v1.4.23 Home-fit phone PASS
 - [x] add Theme Wave 2 audit
-- [ ] GitHub build
-- [ ] phone test: Import
-- [ ] phone test: Review
-- [ ] phone test: Destination
-- [ ] phone test: History / Queue / Data / Service
+- [x] GitHub build
+- [x] phone test: Import
+- [x] phone test: Review
+- [x] phone test: Destination
+- [x] phone test: History / Queue / Data / Service
 - [ ] phone theme spot-check on one utility screen
+- [x] phone findings: privacy-radio tint + long search hints moved to v1.4.25
+
+## v1.4.25
+- [x] add shared large-card accent drawable
+- [x] accent Home current-playlist card
+- [x] accent main track cards
+- [x] accent large cards across Import / Review / Destination / History / Queue / Data / Service
+- [x] keep small controls visually quiet
+- [x] theme Destination privacy radio
+- [x] shorten History / Queue search hints
+- [x] record v1.4.24 phone evidence + findings
+- [x] add clean/repeat apply self-test
+- [x] add assistant workflow package self-test rule
+- [x] add v1.4.25 static audit
+- [ ] GitHub build
+- [ ] phone test: Home large-card accents
+- [ ] phone test: Destination radio tint
+- [ ] phone test: History / Queue hints
+- [ ] phone test: Data semantic card colors
+- [ ] navigation smoke
 
 ## Next
-Phone-test v1.4.23 button fit. After the Home geometry is stable, continue the visual/theme rollout and account-library work only if useful:
+Phone-test v1.4.25 Accent Card System. After the card language is stable, continue the visual/theme rollout and account-library work only if useful:
 - selective multi-playlist export;
 - import of a bulk-export manifest;
 - incremental/sync-style account backup.

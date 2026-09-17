@@ -200,6 +200,20 @@ object AppThemeManager {
         )
     }
 
+    fun largeCardDrawable(
+        context: Context,
+        fill: Int = palette(context).surface,
+        radiusDp: Int = 14,
+        accentOverride: Int? = null
+    ): Drawable =
+        surfaceDrawable(
+            context = context,
+            fill = fill,
+            radiusDp = radiusDp,
+            accentStroke = true,
+            accentOverride = accentOverride
+        )
+
     fun neutralButtonDrawable(
         context: Context,
         radiusDp: Int = 12

@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.24
-Version code: 58
+Version: 1.4.25
+Version code: 59
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -14,7 +14,8 @@ v1.4.20 PARTIALLY PHONE-TESTED — UI SMOKE PASS
 v1.4.21 PARTIALLY PHONE-TESTED — HOME THEMES PASS
 v1.4.22 PARTIALLY PHONE-TESTED — HOME UI FIT ISSUE
 v1.4.23 PARTIALLY PHONE-TESTED — HOME FIT PASS
-v1.4.24 NOT TESTED YET
+v1.4.24 PARTIALLY PHONE-TESTED — WAVE 2 PASS WITH UI POLISH FINDINGS
+v1.4.25 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -101,6 +102,15 @@ v1.4.24 focus:
 - legacy rounded surfaces map to theme surfaces/accent
 - semantic Review/History status colors use shared palette
 - functional auth/search/write behavior remains unchanged
+
+v1.4.25 focus:
+- Accent Card System
+- large cards use the same two quiet contour strokes as the Home 4-step card
+- small buttons/search/back controls remain visually quiet
+- semantic cards keep semantic accent colors
+- Destination privacy radio follows active theme
+- History/Queue search hints are shortened
+- package scripts must pass clean-apply + repeat/idempotence self-tests before delivery
 
 Known:
 BUG-001/Q-001 OPEN

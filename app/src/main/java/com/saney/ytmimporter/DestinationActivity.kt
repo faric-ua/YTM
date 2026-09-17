@@ -792,6 +792,12 @@ class DestinationActivity : Activity() {
             tag = value
             textSize = 13f
             setTextColor(Color.WHITE)
+            buttonTintList =
+                android.content.res.ColorStateList.valueOf(
+                    AppThemeManager
+                        .palette(this@DestinationActivity)
+                        .accent
+                )
             setPadding(0, dp(4), 0, dp(4))
         }
 
@@ -1005,7 +1011,8 @@ class DestinationActivity : Activity() {
             }
 
         val useAccentStroke =
-            color == Color.rgb(196, 0, 42) ||
+            radiusDp >= 14 ||
+                color == Color.rgb(196, 0, 42) ||
                 accentOverride != null
 
         return AppThemeManager.surfaceDrawable(

@@ -853,7 +853,8 @@ class ServiceActivity : Activity() {
             }
 
         val useAccentStroke =
-            color == Color.rgb(196, 0, 42) ||
+            radiusDp >= 14 ||
+                color == Color.rgb(196, 0, 42) ||
                 accentOverride != null
 
         return AppThemeManager.surfaceDrawable(

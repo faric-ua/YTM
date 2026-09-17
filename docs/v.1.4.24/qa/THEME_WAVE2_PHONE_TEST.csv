@@ -1,0 +1,9 @@
+screen,result,finding
+Import,PASS,
+Review,PASS,
+Destination,FUNCTIONAL_PASS_VISUAL_FINDING,privacy radio old red tint
+History,PASS_WITH_UI_FINDING,search hint clipped
+Pending Queue,PASS_WITH_UI_FINDING,search hint clipped
+Service,PASS,
+Data / Backup,PASS,amber semantic-card accent approved
+Overall,PARTIAL_PASS,full alternate-theme regression not run

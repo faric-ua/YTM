@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.25
+- Added a consistent Accent Card System: large cards use two quiet theme-colored contour strokes.
+- Kept compact controls/search/back buttons visually quiet.
+- Added two-stroke accents to the Home current-playlist card and main track cards.
+- Large cards across Import, Review, Destination, History, Queue, Data and Service now follow the same accent rule.
+- Destination privacy radio now follows the active theme accent.
+- Shortened History/Queue search hints to avoid clipping.
+- Recorded v1.4.24 Theme Wave 2 phone evidence and UI-polish findings.
+- Added clean-apply + repeat/idempotence package self-tests and workflow policy.
+- versionCode 59 / versionName 1.4.25.
+- v1.4.25 = NOT PHONE-TESTED YET.
+
 ## v1.4.24
 - Theme Wave 2.
 - Extended the selected Neon / Blue / Green palette to Destination, History, Pending Queue, Data and Service.

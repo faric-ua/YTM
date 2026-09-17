@@ -413,13 +413,12 @@ class MainActivity : Activity() {
                 )
                 background =
                     AppThemeManager
-                        .surfaceDrawable(
+                        .largeCardDrawable(
                             context =
                                 this@MainActivity,
                             fill =
                                 palette.surface,
-                            radiusDp = 14,
-                            accentStroke = false
+                            radiusDp = 14
                         )
             }
 

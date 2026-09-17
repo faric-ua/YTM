@@ -172,3 +172,18 @@ If an apply script accidentally removes or modifies tracked historical files:
 6. Only then stage, commit, and push.
 
 This recovery rule takes priority over finishing the commit quickly.
+
+## 14. Package/apply self-test rule
+
+Before ChatGPT gives the user a new code-changing ZIP/apply script:
+
+1. Run a clean first-apply test against a fixture based on the current repository anchors.
+2. Run the same apply a second time and require idempotent PASS/SKIP behavior.
+3. Test duplicate-anchor and missing-anchor failure behavior.
+4. Reject patch definitions that accidentally contain literal `\\n` where real multiline newlines are required.
+5. Provide an apply script `--check` mode when practical so the phone can validate anchors before mutation.
+6. Do not ask the user to be the first execution environment for a newly generated patch script.
+7. Python apply/self-test helpers must not dirty the repository with `__pycache__` / `.pyc` files. Disable bytecode generation inside helper scripts or use `python -B`; the final leftover check must reject cache artifacts.
+8. Generated text artifacts (Markdown, CSV, TXT, scripts) must use LF line endings. CSV writers must explicitly use `lineterminator="\n"` or the generated file must be normalized before packaging. Before delivery, generated artifacts must pass `git diff --check` or an equivalent fixture check for CRLF/trailing-whitespace issues.
+
+Phone QA still remains necessary; these self-tests only prevent packaging/apply-script mistakes.

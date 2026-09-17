@@ -144,7 +144,7 @@ class HistoryActivity : Activity() {
         )
 
         val search = EditText(this).apply {
-            hint = "Пошук за назвою, джерелом або каналом"
+            hint = "Пошук історії"
             setSingleLine(true)
             textSize = 14f
             setTextColor(Color.WHITE)
@@ -1731,7 +1731,8 @@ class HistoryActivity : Activity() {
             }
 
         val useAccentStroke =
-            color == Color.rgb(196, 0, 42) ||
+            radiusDp >= 14 ||
+                color == Color.rgb(196, 0, 42) ||
                 accentOverride != null
 
         return AppThemeManager.surfaceDrawable(
