@@ -1,0 +1,11 @@
+v1.4.20 phone evidence
+
+EVIDENCE_01_IMPORT_BUTTON_LAYOUT_PASS.jpg
+- Real phone Import screen.
+- Both YouTube/YTM action buttons fully visible.
+- Bulk-export label fits on two lines.
+- Visible vertical spacing between the actions.
+
+Additional user-observed evidence (not represented by a static screenshot):
+- bulk-export action opens Android folder picker;
+- after in-place update Step 2 briefly gray, then automatically green, satisfying BUG-003 recovery expectation.

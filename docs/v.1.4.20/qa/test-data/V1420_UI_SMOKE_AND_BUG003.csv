@@ -1,0 +1,7 @@
+field,value,notes
+release,1.4.20,phone UI smoke
+phone_test_date,2026-09-17,real device
+ui_layout_result,PASS,both account actions fully visible
+bulk_export_folder_picker,PASS,Android folder picker opens
+bug003_in_place_update_retest,PASS,Step 2 briefly gray then automatically green after update
+bug004_retest,NOT_TESTED,still requires invalid-auth/401 phone scenario

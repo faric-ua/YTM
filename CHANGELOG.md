@@ -6,7 +6,7 @@
 - Added 10dp spacing between `Вибрати плейлист з YTM` and `Експортувати всі плейлисти в папку`.
 - Recorded v1.4.19 bulk-export phone test: 21/21 projects exported, manifest matched, round-trip project reopen passed.
 - versionCode 54 / versionName 1.4.20.
-- v1.4.20 = NOT PHONE-TESTED YET.
+- v1.4.20 phone UI smoke PASS: account action labels/spacing verified, bulk-export folder picker opens; BUG-003 in-place update recovery retest PASS.
 
 ## v1.4.19
 - Added read-only bulk export of connected-account playlists to a user-selected device folder.

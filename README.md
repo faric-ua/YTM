@@ -1,14 +1,9 @@
-# YTM Importer v1.4.16
-Cleanup Wave 5 — DestinationCoordinator.
+# v1.4.20 phone-QA closeout
 
-Destination playlist loading/selection, exact-videoId duplicate scan and duplicate write planning are now owned by `destination/DestinationCoordinator.kt`.
-`MainActivity` remains the authorization/UI/executor bridge; final writes remain in `write/PlaylistWriteCoordinator.kt`.
+This additive package records:
+- v1.4.20 Import button layout phone PASS;
+- bulk-export folder-picker smoke PASS;
+- BUG-003 in-place update recovery phone retest PASS / closed;
+- BUG-004 still open for invalid-auth/401 retest.
 
-Known:
-BUG-003 silent Google/YTM recovery after update is reproduced and deferred.
-
-QA:
-- current: `qa/`
-- release snapshot: `docs/v.1.4.16/qa/`
-
-Status: NOT TESTED YET.
+No app source code or version bump is included.

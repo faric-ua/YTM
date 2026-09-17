@@ -6,7 +6,7 @@ v1.4.20 — Import account-action button layout fix
 ## Known
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 DEFERRED
-- BUG-003/Q-003 auth recovery FAIL — RETEST v1.4.17
+- BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — RETEST v1.4.17
 
 ## v1.4.16
@@ -44,7 +44,7 @@ v1.4.20 — Import account-action button layout fix
 - [x] YTM account playlist import/export design
 - [ ] GitHub build
 - [ ] update-install phone test
-- [ ] BUG-003 retest
+- [x] BUG-003 retest — PASS on v1.4.20 in-place update
 - [ ] BUG-004 retest
 - [ ] Review → Destination phone test
 - [ ] existing playlist / duplicate smoke
@@ -87,9 +87,9 @@ v1.4.20 — Import account-action button layout fix
 - [x] add 10dp spacing before bulk-export action
 - [x] add static UI-layout audit
 - [x] add release docs + phone UI-smoke plan
-- [ ] GitHub build
-- [ ] phone test: Import button layout screenshot
-- [ ] phone smoke: bulk-export folder picker still opens
+- [x] GitHub build
+- [x] phone test: Import button layout screenshot
+- [x] phone smoke: bulk-export folder picker still opens
 
 ## Next
 Phone-test the v1.4.20 UI fix. After that, continue account-library work only if useful:

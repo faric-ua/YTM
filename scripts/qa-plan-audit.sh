@@ -44,7 +44,7 @@ grep -Fq '| v1.4.18 | **PARTIALLY PHONE-TESTED — PASS FOR G01** |' "$STATUS" \
   || fail "v1.4.18 G01 phone-test PASS status missing"
 grep -Fq '| v1.4.19 | **PARTIALLY PHONE-TESTED — PASS FOR BULK EXPORT PATH** |' "$STATUS" \
   || fail "v1.4.19 bulk-export phone-test PASS status missing"
-grep -Fq '| v1.4.20 | **NOT TESTED YET** |' "$STATUS" \
-  || fail "v1.4.20 must start NOT TESTED YET"
-grep -Fq 'BUG-003 / Q-003' "$BUG" \
-  || fail "BUG-003 auth recovery regression missing"
+grep -Fq '| v1.4.20 | **PARTIALLY PHONE-TESTED — PASS FOR UI SMOKE** |' "$STATUS" \
+  || fail "v1.4.20 UI-smoke PASS status missing"
+grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
+  || fail "BUG-003 closed phone-retest status missing"

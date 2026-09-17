@@ -4,7 +4,7 @@
 |---|---|---:|---|---|
 | BUG-001 / Q-001 | OPEN | P2 | Review wording / Project-save feedback questions remain. | F-06 |
 | BUG-002 / Q-002 | DEFERRED BY USER | P2 | Some custom dialogs visibly move into final top position after opening. | M-02 |
-| BUG-003 / Q-003 | DEFERRED FOR LATER FIX | P1 | Silent Google/YTM recovery after in-place update fails: Step 2 remains red. | A-03, D-03 |
+| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update verified: Step 2 briefly gray, then automatically green. | A-03, D-03 |
 | BUG-004 / Q-004 | RETEST v1.4.17 | P1 | Authorization can become invalid while Step 2 remains green/checked. | B-01 |
 
 ## BUG-003 reproduction
@@ -24,10 +24,11 @@ Actual:
 Expected:
 - previously granted account/session should recover automatically when Google permits it.
 
-Decision:
-- documented now;
-- fix later in dedicated bug-fix wave;
-- do not claim fixed without a successful in-place update phone test.
+Retest result:
+- successful in-place update phone test completed on v1.4.20;
+- Step 2 briefly showed gray while silent recovery ran;
+- Step 2 automatically returned to green without manual re-authorization;
+- BUG-003 is closed for this recovery scenario.
 
 ## Per-release rule
 

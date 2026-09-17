@@ -379,11 +379,11 @@ grep -Fq '| v1.4.18 | **PARTIALLY PHONE-TESTED — PASS FOR G01** |' RELEASE_TES
   || fail "v1.4.18 G01 phone-test PASS status missing"
 grep -Fq '| v1.4.19 | **PARTIALLY PHONE-TESTED — PASS FOR BULK EXPORT PATH** |' RELEASE_TEST_STATUS.md \
   || fail "v1.4.19 bulk-export phone-test PASS status missing"
-grep -Fq '| v1.4.20 | **NOT TESTED YET** |' RELEASE_TEST_STATUS.md \
-  || fail "v1.4.20 must start NOT TESTED YET"
-grep -Fq 'BUG-003 / Q-003' qa/BUG_REGISTER.md \
-  || fail "BUG-003 must stay documented"
-echo "- BUG-003 auth recovery failure preserved"
+grep -Fq '| v1.4.20 | **PARTIALLY PHONE-TESTED — PASS FOR UI SMOKE** |' RELEASE_TEST_STATUS.md \
+  || fail "v1.4.20 UI-smoke PASS status missing"
+grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' qa/BUG_REGISTER.md \
+  || fail "BUG-003 closed phone-retest status missing"
+echo "- BUG-003 in-place update recovery phone retest passed"
 echo "- PlaylistWriteCoordinator extracted"
 echo "- per-release QA snapshot included"
 

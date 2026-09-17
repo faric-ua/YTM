@@ -10,7 +10,7 @@ v1.4.16 PARTIALLY PHONE-TESTED
 v1.4.17 PARTIALLY PHONE-TESTED — FAST_FLOW EXISTING-TARGET PASS
 v1.4.18 PARTIALLY PHONE-TESTED — G01 PASS
 v1.4.19 PARTIALLY PHONE-TESTED — BULK EXPORT PASS
-v1.4.20 NOT TESTED YET
+v1.4.20 PARTIALLY PHONE-TESTED — UI SMOKE PASS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -67,10 +67,16 @@ v1.4.20 focus:
 - 10dp spacing between the two account actions
 - short phone UI smoke
 
+v1.4.20 phone QA confirmed:
+- Import account action layout PASS
+- bulk-export folder picker opens PASS
+- BUG-003 in-place update recovery PASS: Step 2 briefly gray, then automatically green
+- BUG-004 still requires invalid-auth/401 phone retest
+
 Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 DEFERRED
-BUG-003/Q-003 RETEST v1.4.17
+BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
 BUG-004/Q-004 RETEST v1.4.17
 
 QA:
