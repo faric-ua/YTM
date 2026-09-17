@@ -43,6 +43,7 @@ check_file "app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt"
 check_file "scripts/configuration-state-audit.sh"
 check_file "scripts/rotation-layout-audit.sh"
 check_file "scripts/dialog-animation-audit.sh"
+check_file "scripts/project-handoff-audit.sh"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
@@ -55,6 +56,7 @@ bash scripts/v1426-selective-export-audit.sh
 python -B scripts/v1427-apply-selftest.py
 python -B scripts/v1427-exact-id-search-audit.py
 bash scripts/v1427-qa-close-audit.sh
+bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh

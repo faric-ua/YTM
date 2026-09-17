@@ -221,16 +221,21 @@ v1.4.27 — Exact-ID Search Guard
 - [x] phone retest: Search plan = 0 new search.list
 - [x] confirm Review is 3/3 ready before repeat-search planning
 
-## Next
-Project handoff / documentation hardening:
-- add a canonical `START_HERE_ASSISTANT.md` for a new ChatGPT node;
-- make README a real project entry point;
-- reconcile reusable Termux/Git rules with `YTM_ASSISTANT_WORKFLOW.md`;
-- document stable build-artifact folder convention.
+## Project handoff / documentation hardening — COMPLETE
+- [x] add canonical `START_HERE_ASSISTANT.md` for a new ChatGPT node
+- [x] make README a real project entry point
+- [x] add assistant tool/source-of-truth map
+- [x] reconcile reusable Termux/Git rules with `YTM_ASSISTANT_WORKFLOW.md`
+- [x] document stable build-artifact folder convention
+- [x] preserve workflow lessons from real package/audit failures
+- [x] add project-handoff audit to release preflight
 
-Then continue account-library work:
+## Next
+Continue account-library work:
 - import of a bulk-export manifest;
 - incremental/sync-style account backup.
+
+Before choosing the next version number, read current status and scope the feature explicitly.
 
 ## Future product plan — localization + exclusive skin
 - [ ] Localization Wave: move user-facing strings to Android resources

@@ -1,399 +1,276 @@
 # YTM Importer — Termux / Git command guide
 
-Цей файл містить основні команди, які використовуються під час розробки, тестування,
-оновлення версій і відправки змін YTM Importer з телефона.
+This is the reusable command guide for the phone-based development workflow.
 
-> Основна робоча папка репозиторію:
->
-> `/storage/emulated/0/Documents/YTM`
->
-> У Termux зазвичай використовується коротка команда:
->
-> `ytm`
+Canonical collaboration/safety policy lives in `YTM_ASSISTANT_WORKFLOW.md`.
+New assistants start with `START_HERE_ASSISTANT.md`.
 
----
+## 1. Repository
 
-## 1. Перейти в репозиторій
+Typical repository location:
+
+`/storage/emulated/0/Documents/YTM`
+
+Short command normally used:
 
 ```bash
 ytm
 ```
 
-Перевірити поточну папку:
+Always inspect state before mutation:
 
 ```bash
-pwd
-```
-
-Показати файли:
-
-```bash
-ls -la
-```
-
----
-
-## 2. Перевірити стан Git
-
-```bash
-git status
-```
-
-Короткий список змін:
-
-```bash
+ytm
+git branch --show-current
 git status --short
 ```
 
-Статистика змінених файлів:
+## 2. Synchronize safely
+
+If the tree is clean:
 
 ```bash
-git diff --stat
+git fetch origin main
+git pull --ff-only origin main
 ```
 
-Переглянути самі зміни:
+For a package prepared against a specific base commit, verify:
 
 ```bash
-git diff
+git rev-parse HEAD
+git rev-parse origin/main
 ```
 
-Перевірити проблеми з пробілами/форматом diff:
+Stop if the package base no longer matches.
+
+## 3. Standard package application
+
+Packages should normally extract outside the repository.
+
+Pattern:
+
+```bash
+set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
+
+PKG="/sdcard/Download/PACKAGE.zip"
+TMP="$HOME/ytm-package-temp"
+
+rm -rf "$TMP"
+mkdir -p "$TMP"
+unzip -q "$PKG" -d "$TMP"
+
+# Run package self-test if supplied.
+# Run apply --check if supplied.
+# Copy only the intended overlay into the repository.
+# Apply the tested patch.
+# Remove the temporary directory.
+```
+
+Never delete historical `docs/v.*` or QA directories merely to apply an update.
+
+## 4. Core checks
 
 ```bash
 git diff --check
-```
-
----
-
-## 3. Отримати останні зміни з GitHub
-
-Перед початком нової роботи:
-
-```bash
-ytm
-git status
-git pull
-```
-
-Окремо завантажити інформацію без автоматичного merge:
-
-```bash
-git fetch origin
-```
-
----
-
-## 4. Типове застосування ZIP-пакета версії
-
-Приклад для версії `v1.4.17`:
-
-```bash
-ytm
-
-rm -rf "$HOME/ytm-v1417-temp"
-mkdir -p "$HOME/ytm-v1417-temp"
-
-unzip -o /sdcard/Download/YTM_Importer_v1.4.17_FULL.zip \
-  -d "$HOME/ytm-v1417-temp"
-
-cp -a "$HOME/ytm-v1417-temp/YTM_Importer_v1.4.17_FULL/." .
-
-rm -rf "$HOME/ytm-v1417-temp"
-
-python scripts/apply-v1.4.17.py
-```
-
-Назви ZIP, тимчасової папки та apply-script змінюються для кожної версії.
-
----
-
-## 5. Перевірка версії
-
-```bash
-grep -n 'versionCode\|versionName' app/build.gradle.kts
-```
-
----
-
-## 6. Запуск аудитів
-
-Для конкретної версії:
-
-```bash
-bash scripts/v1417-auth-flow-audit.sh
-```
-
-Глобальний QA-аудит:
-
-```bash
-bash scripts/qa-plan-audit.sh
-```
-
-Повний release preflight:
-
-```bash
-bash scripts/release-preflight.sh
-```
-
-Типова група перед commit:
-
-```bash
-bash scripts/v1417-auth-flow-audit.sh
-bash scripts/qa-plan-audit.sh
-bash scripts/release-preflight.sh
-
-git diff --check
-git status
+git status --short
 git diff --stat
 ```
 
----
-
-## 7. Додати зміни в commit
-
-Додати всі зміни:
+Release/QA scripts when relevant:
 
 ```bash
-git add -A
+bash scripts/qa-plan-audit.sh
+bash scripts/release-preflight.sh
 ```
 
-Перевірити, що саме буде закомічено:
+Use the release-specific audits supplied for the current work.
+
+## 5. Exact-path staging is the default
+
+For normal release/update packages, stage only the intended paths:
 
 ```bash
-git status
+git add   path/to/file1   path/to/file2
+```
+
+Then inspect:
+
+```bash
+git diff --cached --name-status
 git diff --cached --stat
+git diff --cached --check
 ```
 
-Переглянути повний staged diff:
+Deletion guard:
 
 ```bash
-git diff --cached
+git diff --cached --diff-filter=D --name-status
 ```
 
----
+Unexpected staged deletions must stop the commit.
 
-## 8. Commit
+### About `git add -A`
 
-Приклад:
+Do **not** use `git add -A` as the routine default.
+
+It is acceptable only when the entire working tree has already been intentionally audited and every change belongs in the same commit.
+
+## 6. Leftover guard
+
+After exact staging, release workflows should check that no intended change was accidentally omitted:
 
 ```bash
-git commit -m "YTM Importer v1.4.17: fix auth readiness and review destination flow"
+git diff --name-only
+git ls-files --others --exclude-standard
 ```
 
-Останній commit:
+If unexpected unstaged or untracked files remain, stop and inspect them.
+
+This guard caught a missing intended historical-audit file during v1.4.27.
+
+## 7. Commit and push
+
+ChatGPT supplies the exact commit message.
+
+Pattern:
 
 ```bash
-git log -1 --oneline
+git commit -m "exact message supplied for this change"
+git push origin main
+git fetch origin main
 ```
 
-Кілька останніх commit:
+Verify local and remote:
 
 ```bash
-git log --oneline -10
+git rev-parse HEAD
+git rev-parse origin/main
+git status --short
 ```
 
----
+Expected final working tree: clean.
 
-## 9. Push на GitHub
+## 8. Release preflight
+
+Current comprehensive check:
 
 ```bash
-git push
+bash scripts/release-preflight.sh
 ```
 
-Після push:
+A passing static preflight does not equal phone QA.
+
+## 9. GitHub Actions signed APK
+
+Workflow:
+
+`.github/workflows/build-apk.yml`
+
+Typical dispatch:
 
 ```bash
-git status
+gh workflow run build-apk.yml   --repo faric-ua/YTM   --ref main
 ```
 
-Очікуваний чистий стан:
+ChatGPT should provide the exact run-discovery/download block for the current release rather than asking the user to improvise polling.
 
-```text
-On branch main
-Your branch is up to date with 'origin/main'.
+## 10. Stable APK folder on Android
 
-nothing to commit, working tree clean
-```
+Every release uses:
 
----
+`/storage/emulated/0/Download/YTM-vX.Y.Z-build/`
 
-## 10. Remote / SSH
+Contents:
 
-Перевірити remote:
+- `YTM-Importer-vX.Y.Z-release.apk`
+- `YTM-Importer-vX.Y.Z-release.apk.sha256`
+
+Example:
 
 ```bash
-git remote -v
+VERSION="1.4.27"
+SRC="$HOME/ytm-v${VERSION}-build"
+DST="/storage/emulated/0/Download/YTM-v${VERSION}-build"
+APK="YTM-Importer-v${VERSION}-release.apk"
+
+mkdir -p "$DST"
+cp -f "$SRC/$APK" "$DST/$APK"
+cp -f "$SRC/$APK.sha256" "$DST/$APK.sha256"
+sync
+
+cd "$DST"
+sha256sum -c "$APK.sha256"
 ```
 
-Очікуваний SSH remote:
+Do not randomly switch to loose APK files in the root of `Download/`.
 
-```text
-git@github.com:Faric-ua/YTM.git
-```
+## 11. Open APK directly from Termux
 
-Змінити remote на SSH:
+If the file manager does not refresh immediately:
 
 ```bash
-git remote set-url origin git@github.com:Faric-ua/YTM.git
+termux-open --view   "/storage/emulated/0/Download/YTM-v1.4.27-build/YTM-Importer-v1.4.27-release.apk"
 ```
 
-Перевірити SSH GitHub:
+Adapt the version to the current release.
 
-```bash
-ssh -T git@github.com
-```
+## 12. Restore / unstage
 
----
-
-## 11. SSH-ключ
-
-Створити ключ:
-
-```bash
-ssh-keygen -t ed25519 -C "your-email@example.com"
-```
-
-Показати public key:
-
-```bash
-cat ~/.ssh/id_ed25519.pub
-```
-
-Сам файл `~/.ssh/id_ed25519` є приватним ключем — його не можна публікувати.
-
----
-
-## 12. Відновити один файл до версії Git
-
-Увага: незбережені зміни цього файла буде втрачено.
+Restore one tracked file to Git state:
 
 ```bash
 git restore path/to/file
 ```
 
-Наприклад:
-
-```bash
-git restore README.md
-```
-
----
-
-## 13. Прибрати файл зі staged, але залишити зміни
+Unstage without discarding the working-tree change:
 
 ```bash
 git restore --staged path/to/file
 ```
 
-Або все:
+Do not run destructive recovery commands until the exact state is understood.
+
+## 13. Search and inspect
 
 ```bash
-git restore --staged .
+grep -R "pattern" -n app scripts docs
+git diff -- path/to/file
+git diff --cached -- path/to/file
 ```
 
----
+## 14. FILE_MANIFEST.txt
 
-## 14. Перевірити конкретний файл
+When the release process requires it, regenerate only after the intended files are present.
 
-```bash
-git diff -- app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-```
-
-Staged-версія:
-
-```bash
-git diff --cached -- app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-```
-
----
-
-## 15. Пошук у коді
-
-```bash
-grep -R "текст_для_пошуку" -n app scripts docs
-```
-
-Приклад:
-
-```bash
-grep -R "versionName" -n app scripts
-```
-
----
-
-## 16. Перевірити файл або папку
-
-```bash
-ls -la docs/v.1.4.17
-```
-
-```bash
-find docs/v.1.4.17 -maxdepth 3 -type f | sort
-```
-
----
-
-## 17. Регенерація FILE_MANIFEST.txt
-
-Запускати після того, як усі файли версії вже додані в робочу папку:
+Pattern:
 
 ```bash
 {
-  echo "YTM Importer v1.4.17 FULL — FILE MANIFEST"
+  echo "YTM Importer CURRENT — FILE MANIFEST"
   echo
 
-  git ls-files --cached --others --exclude-standard |
-    sort |
-    grep -vx 'FILE_MANIFEST.txt' |
-    while IFS= read -r file; do
-      [ -f "$file" ] || continue
-      hash="$(sha256sum "$file" | cut -c1-16)"
-      printf '%s  %s\n' "$hash" "$file"
+  {
+    git ls-files
+    git ls-files --others --exclude-standard
+  } |
+    sort -u |
+    grep -v '^FILE_MANIFEST.txt$' |
+    grep -v '/__pycache__/' |
+    grep -v '\.pyc$' |
+    while IFS= read -r f
+    do
+      [ -f "$f" ] || continue
+      printf '%s  %s\n'         "$(sha256sum "$f" | cut -c1-16)"         "$f"
     done
 } > FILE_MANIFEST.txt
 ```
 
-Після цього:
+Run `git diff --check` afterward.
 
-```bash
-wc -l FILE_MANIFEST.txt
-head -20 FILE_MANIFEST.txt
-git diff --stat FILE_MANIFEST.txt
-```
+## 15. Commands that require extra caution
 
----
-
-## 18. Типовий повний цикл роботи
-
-```bash
-ytm
-git status
-git pull
-
-# застосувати пакет / внести зміни
-
-bash scripts/v1417-auth-flow-audit.sh
-bash scripts/qa-plan-audit.sh
-bash scripts/release-preflight.sh
-
-git diff --check
-git status
-git diff --stat
-
-git add -A
-git diff --cached --stat
-
-git commit -m "опис змін"
-git push
-
-git status
-```
-
----
-
-## 19. Важливі застереження
-
-Не виконувати без чіткого розуміння:
+Do not use these casually:
 
 ```bash
 git reset --hard
@@ -401,12 +278,12 @@ git clean -fd
 rm -rf
 ```
 
-Ці команди можуть безповоротно видалити локальні зміни або файли.
+Before any destructive operation, inspect `git status --short` and understand exactly what would be removed.
 
-Перед такими операціями завжди спочатку:
+## 16. Source of truth
 
-```bash
-git status
-```
+If this guide and an older release-specific command block differ:
 
-і, якщо потрібно, зробити копію важливих файлів.
+- use the current `YTM_ASSISTANT_WORKFLOW.md` for policy;
+- use the current package's exact block for the specific release;
+- keep historical release instructions as historical evidence, not current policy.

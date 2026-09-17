@@ -1,9 +1,55 @@
-# v1.4.20 phone-QA closeout
+# YTM Importer
 
-This additive package records:
-- v1.4.20 Import button layout phone PASS;
-- bulk-export folder-picker smoke PASS;
-- BUG-003 in-place update recovery phone retest PASS / closed;
-- BUG-004 still open for invalid-auth/401 retest.
+YTM Importer is an Android/Kotlin project for importing track lists, preserving exact YouTube video identifiers when available, reviewing matches, and creating/adding tracks in YouTube / YouTube Music workflows.
 
-No app source code or version bump is included.
+The repository is intentionally more than source code: it preserves release history, real-phone QA, evidence, failed approaches, safety checks, build automation, and a tutorial intended to make the project reproducible.
+
+## New ChatGPT node / project handoff
+
+**Start here: [`START_HERE_ASSISTANT.md`](START_HERE_ASSISTANT.md)**
+
+That file explains:
+
+- what the project is and why it exists;
+- current version and known issues;
+- ChatGPT/user responsibilities;
+- available tools;
+- package/Git/QA safety rules;
+- signed-APK workflow;
+- documentation structure;
+- the correct reading order for continuing development.
+
+## Current release
+
+- versionName: **1.4.27**
+- versionCode: **61**
+- focus: **Exact-ID Search Guard**
+- BUG-005 / Q-005: **CLOSED — PHONE RETEST PASS v1.4.27**
+
+For exact current status, see:
+
+- `PROJECT_STATUS.txt`
+- `BACKLOG.md`
+- `RELEASE_TEST_STATUS.md`
+- `qa/BUG_REGISTER.md`
+- `OPEN_QUESTIONS.md`
+
+## Workflow
+
+The default project loop is:
+
+`requirements → prepared change → package self-test → Termux apply/preflight → Git commit/push → signed GitHub Actions APK → real-phone QA → evidence/QA closeout → tutorial/history`
+
+Stable collaboration rules live in `YTM_ASSISTANT_WORKFLOW.md`.
+
+Reusable Termux/Git commands live in `TERMUX_COMMANDS.md`.
+
+## Documentation
+
+- `docs/v.*` — immutable historical release/QA evidence snapshots;
+- `docs/tutorial/` — curated step-by-step learning path;
+- `docs/ASSISTANT_TOOL_MAP.md` — tool/capability map;
+- `docs/WORKFLOW_LESSONS.md` — mistakes and guards learned from them;
+- `docs/BUILD_ARTIFACT_CONVENTION.md` — stable APK artifact layout.
+
+Do not delete historical QA/evidence merely to simplify the repository.

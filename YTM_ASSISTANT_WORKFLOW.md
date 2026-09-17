@@ -1,6 +1,6 @@
 # YTM Importer — Assistant Workflow Settings
 
-Version: 1.0  
+Version: 1.1
 Created: 2026-09-17  
 Purpose: persistent collaboration rules for ChatGPT + user while developing and testing YTM Importer.
 
@@ -207,3 +207,59 @@ Rules:
 - future development should gradually expand the tutorial so the whole approach can be reproduced from a clean starting point.
 
 The long-term goal is that the project can teach both the author and other developers how to recreate the development method step by step.
+
+## 16. New assistant handoff
+
+`START_HERE_ASSISTANT.md` is the canonical entry point for a new ChatGPT node/session.
+
+A new assistant should not depend on hidden conversation history. It should recover context from the repository in the reading order defined by `START_HERE_ASSISTANT.md`.
+
+If repository state and old conversation memory disagree, current repository state wins unless the user explicitly says otherwise.
+
+## 17. Tool/source-of-truth rule
+
+Use the source closest to the fact being checked:
+
+- repository state → GitHub/Git;
+- patch/package correctness → local fixture/self-test;
+- signed build → GitHub Actions;
+- real-device behavior → Android phone QA;
+- external changing facts → current public documentation/web sources.
+
+Detailed tool guidance lives in `docs/ASSISTANT_TOOL_MAP.md`.
+
+Do not claim a tool/capability was used if it is unavailable in the current session.
+
+## 18. Stable phone-side build artifact convention
+
+Every release should use:
+
+`/storage/emulated/0/Download/YTM-vX.Y.Z-build/`
+
+with:
+
+- `YTM-Importer-vX.Y.Z-release.apk`;
+- `YTM-Importer-vX.Y.Z-release.apk.sha256`.
+
+Do not randomly place a new release APK loose in the root of `Download/`.
+
+The full convention lives in `docs/BUILD_ARTIFACT_CONVENTION.md`.
+
+## 19. Workflow lessons are persistent project knowledge
+
+`docs/WORKFLOW_LESSONS.md` records real failures and the guard added because of them.
+
+When a workflow/package/audit mistake reveals a reusable lesson:
+
+1. fix the immediate problem;
+2. add a guard/self-test when practical;
+3. record the lesson in the repository;
+4. do not rely on chat memory alone.
+
+## 20. Documentation drift rule
+
+Current policy documents must not silently contradict one another.
+
+If `TERMUX_COMMANDS.md`, README, release instructions or another reusable guide conflicts with `YTM_ASSISTANT_WORKFLOW.md`, reconcile the current reusable documentation in a dedicated documentation change.
+
+Historical release snapshots remain historical and should not be rewritten merely to match newer policy.
