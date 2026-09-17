@@ -25,11 +25,13 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.27**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionName: **1.4.28**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **61**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionCode: **62**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
-grep -Fq 'BUG-005 / Q-005: **CLOSED — PHONE RETEST PASS v1.4.27**' START_HERE_ASSISTANT.md \
+grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
+  || fail "START_HERE BUG-005 identity missing"
+grep -Fq 'CLOSED — PHONE RETEST PASS v1.4.27' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 closed state missing"
 grep -Fq 'START_HERE_ASSISTANT.md' README.md \
   || fail "README does not point new assistants to START_HERE"
@@ -75,9 +77,9 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.27' PROJECT_STATUS.txt \
+grep -Fq 'Version: 1.4.28' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 61' PROJECT_STATUS.txt \
+grep -Fq 'Version code: 62' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"

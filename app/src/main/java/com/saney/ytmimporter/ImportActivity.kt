@@ -27,6 +27,9 @@ import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.parser.PlaylistParser
 import com.saney.ytmimporter.storage.AccountLibraryExporter
+import com.saney.ytmimporter.storage.AccountLibraryManifestEntry
+import com.saney.ytmimporter.storage.AccountLibraryManifestImport
+import com.saney.ytmimporter.storage.AccountLibraryManifestImporter
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
@@ -44,6 +47,9 @@ class ImportActivity : Activity() {
 
     private val selectiveExportFolderRequestCode =
         2303
+
+    private val manifestImportFolderRequestCode =
+        2404
 
     private var pendingSelectiveExport:
         List<YouTubePlaylistInfo> =
@@ -140,6 +146,13 @@ class ImportActivity : Activity() {
                     ?.data
                     ?.let(
                         ::exportSelectedYtmPlaylistsToFolder
+                    )
+
+            manifestImportFolderRequestCode ->
+                data
+                    ?.data
+                    ?.let(
+                        ::openAccountBackupFolder
                     )
         }
     }
@@ -287,6 +300,17 @@ class ImportActivity : Activity() {
                         topMarginDp = 8
                     ) {
                         chooseYtmExportFolder()
+                    }
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            "Відкрити backup / manifest.json",
+                        primary = false,
+                        topMarginDp = 8
+                    ) {
+                        chooseAccountBackupFolder()
                     }
                 )
             }
@@ -1382,6 +1406,191 @@ class ImportActivity : Activity() {
         val failedPlaylists: Int,
         val playlistItemsRequests: Int
     )
+
+
+    private fun chooseAccountBackupFolder() {
+        val intent =
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT_TREE
+            ).apply {
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            manifestImportFolderRequestCode
+        )
+    }
+
+    private fun openAccountBackupFolder(
+        treeUri: Uri
+    ) {
+        runCatching {
+            contentResolver
+                .takePersistableUriPermission(
+                    treeUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+        }
+
+        toast(
+            "Читаю manifest.json локально…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    AccountLibraryManifestImporter
+                        .readManifest(
+                            resolver =
+                                contentResolver,
+                            treeUri =
+                                treeUri
+                        )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        manifest ->
+
+                    showAccountBackupPicker(
+                        manifest
+                    )
+                }.onFailure { error ->
+                    toast(
+                        error.message
+                            ?: "Не вдалося прочитати backup manifest"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showAccountBackupPicker(
+        manifest:
+            AccountLibraryManifestImport
+    ) {
+        val missingNote =
+            if (
+                manifest.missingProjectFiles > 0
+            ) {
+                " • відсутніх файлів: " +
+                    manifest.missingProjectFiles
+            } else {
+                ""
+            }
+
+        val subtitle =
+            "manifest v${manifest.schemaVersion} • " +
+                "${manifest.selectionMode} • " +
+                "доступно ${manifest.entries.size}/" +
+                "${manifest.exportedProjects}" +
+                missingNote +
+                "\nЛокально: без YouTube API."
+
+        UiChrome.showMenuDialog(
+            activity = this,
+            title =
+                "Backup / manifest.json",
+            subtitle = subtitle,
+            actions =
+                manifest.entries.map {
+                        entry ->
+
+                    UiChrome.MenuAction(
+                        label =
+                            entry.title +
+                                "\n" +
+                                entry.exportedTrackCount +
+                                " треків • " +
+                                manifestPrivacyLabel(
+                                    entry.privacyStatus
+                                ),
+                        onClick = {
+                            loadAccountBackupProject(
+                                entry
+                            )
+                        }
+                    )
+                },
+            negativeLabel = "Скасувати"
+        )
+    }
+
+    private fun loadAccountBackupProject(
+        entry: AccountLibraryManifestEntry
+    ) {
+        toast(
+            "Відкриваю «${entry.title}»…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    AccountLibraryManifestImporter
+                        .loadProject(
+                            resolver =
+                                contentResolver,
+                            entry =
+                                entry
+                        )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        project ->
+
+                    finishProjectImport(
+                        project = project,
+                        fileName =
+                            entry.fileName
+                    )
+                }.onFailure { error ->
+                    toast(
+                        error.message
+                            ?: "Не вдалося відкрити YTM Project із backup"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun manifestPrivacyLabel(
+        privacyStatus: String
+    ): String =
+        when (
+            privacyStatus
+                .lowercase()
+        ) {
+            "public" ->
+                "публічний"
+
+            "unlisted" ->
+                "за посиланням"
+
+            "private" ->
+                "приватний"
+
+            else ->
+                "privacy: $privacyStatus"
+        }
 
     /**
      * Deliberately accepts any file type because some Android file providers

@@ -8,7 +8,7 @@
 
 - `06_ACCOUNT_LIBRARY_EXPORT.md` — one / all / selective account export, exact videoId, manifest;
 - `07_ANDROID_PROJECT_SETUP.md` — структура Android/Kotlin проєкту;
-- `08_IMPORT_AND_PROJECT_FORMAT.md` — імпорт та YTM Project;
+- `08_IMPORT_AND_PROJECT_FORMAT.md` — імпорт, YTM Project, bulk manifest import (v1.4.28);
 - `09_GOOGLE_YOUTUBE_AUTH.md` — авторизація, session state, recovery;
 - `10_YOUTUBE_API_AND_QUOTA.md` — API requests, quota, failure modes;
 - `11_SEARCH_AND_EXACT_VIDEO_ID.md` — пошук vs exact identifiers, BUG-005/v1.4.27 quota invariant;

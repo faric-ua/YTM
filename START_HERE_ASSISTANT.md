@@ -30,16 +30,20 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.27**
-- versionCode: **61**
-- release focus: **Exact-ID Search Guard**
-- BUG-005 / Q-005: **CLOSED — PHONE RETEST PASS v1.4.27**
+- versionName: **1.4.28**
+- versionCode: **62**
+- release focus: **Bulk Export Manifest Import**
+- release status: **NOT PHONE-TESTED YET**
+- BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
-The decisive v1.4.27 phone invariant passed:
+v1.4.28 adds local reopening of account bulk/selective export sessions through
+their `manifest.json`. It must not spend YouTube API quota.
 
-`top 3 exact 3/3 → Review → repeat Search → search required 0 → new search.list 0`
+The decisive v1.4.27 exact-ID invariant remains a regression target:
 
-The release is only partially phone-tested overall. Do not reinterpret a targeted PASS as a full regression PASS.
+`exact project → repeat Search → search required 0 → new search.list 0`
+
+Do not reinterpret static audits/build success as phone QA.
 
 Current known items include:
 
@@ -210,11 +214,12 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 ## 11. Current product direction
 
-Near-term repository direction after v1.4.27:
+Near-term repository direction:
 
-1. maintain this project handoff documentation;
-2. continue account-library work, including bulk-export manifest import / backup evolution;
-3. continue the tutorial so the whole project can be recreated step by step.
+1. phone-test v1.4.28 Bulk Export Manifest Import;
+2. close its QA with real evidence;
+3. continue account-library backup evolution with incremental/sync-style work;
+4. continue the tutorial so the whole project can be recreated step by step.
 
 Future product requirements already recorded:
 

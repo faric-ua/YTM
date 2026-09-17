@@ -20,6 +20,7 @@
 | v1.4.25 | **PARTIALLY PHONE-TESTED — PASS FOR ACCENT CARD TESTED PATHS** | Blue Home/Review/Destination/History/Queue/Data and Neon Data/Service visual paths passed. Privacy radio, short hints and amber Security semantics confirmed. Import and non-empty Queue card were not separately tested. |
 | v1.4.26 | **PARTIALLY PHONE-TESTED — PASS FOR SELECTIVE EXPORT PATH; BUG-005 FOUND** | Two-playlist selective export passed: 2 projects + manifest, schema v2/SELECTED, exact-videoId round trip 3/3. Manual Search then proposed redundant search.list for exact tracks (BUG-005). |
 | v1.4.27 | **PARTIALLY PHONE-TESTED — PASS FOR BUG-005 EXACT-ID SEARCH GUARD** | Real-phone retest: `top 3` remained 3/3 exact and ready; repeat-search plan reported 0 tracks to search and 0 new `search.list`. Full release regression remains incomplete. |
+| v1.4.28 | **NOT TESTED YET** | Bulk Export Manifest Import: select an account-export folder, validate manifest, choose one exported YTM Project locally, and preserve exact IDs without API work. |
 
 Static audits and GitHub build do not equal phone testing.
 

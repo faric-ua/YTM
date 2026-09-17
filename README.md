@@ -21,10 +21,11 @@ That file explains:
 
 ## Current release
 
-- versionName: **1.4.27**
-- versionCode: **61**
-- focus: **Exact-ID Search Guard**
-- BUG-005 / Q-005: **CLOSED — PHONE RETEST PASS v1.4.27**
+- versionName: **1.4.28**
+- versionCode: **62**
+- focus: **Bulk Export Manifest Import**
+- status: **NOT PHONE-TESTED YET**
+- BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 For exact current status, see:
 

@@ -9,7 +9,6 @@ from pathlib import Path
 def fail(message: str) -> None:
     raise SystemExit("FAIL: " + message)
 
-build = Path("app/build.gradle.kts").read_text(encoding="utf-8")
 main = Path(
     "app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 ).read_text(encoding="utf-8")
@@ -19,12 +18,6 @@ review = Path(
 coord = Path(
     "app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt"
 ).read_text(encoding="utf-8")
-
-if 'versionCode = 61' not in build:
-    fail("versionCode 61 missing")
-
-if 'versionName = "1.4.27"' not in build:
-    fail("versionName 1.4.27 missing")
 
 repeat_block = '                if (\n                    data.getBooleanExtra(\n                        ReviewActivity.EXTRA_REPEAT_SEARCH,\n                        false\n                    )\n                ) {\n                    searchAll(\n                        openReviewAfter = true,\n                        preserveExistingExact = true\n                    )\n                    return\n                }\n'
 if repeat_block not in main:
@@ -74,7 +67,7 @@ for rel in required_files:
         fail("missing file: " + rel)
 
 print("PASS:")
-print("- v1.4.27 version")
+print("- v1.4.27 exact-ID structural invariant is version-independent")
 print("- Review repeat-search exact preservation")
 print("- ordinary searchAll exact-preserving default")
 print("- SearchCoordinator canonical exact predicate")

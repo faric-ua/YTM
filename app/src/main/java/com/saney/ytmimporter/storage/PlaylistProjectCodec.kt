@@ -13,6 +13,7 @@ data class PlaylistProjectImport(
     val playlist: ImportedPlaylist,
     val sourceHistoryId: String?,
     val sourcePlaylistId: String?,
+    val sourcePrivacyStatus: String?,
     val sourceDestination: PendingDestination?,
     val exactSelectionCount: Int,
     val unresolvedCount: Int
@@ -400,6 +401,11 @@ object PlaylistProjectCodec {
                 nullableString(
                     playlistJson,
                     "sourcePlaylistId"
+                ),
+            sourcePrivacyStatus =
+                nullableString(
+                    playlistJson,
+                    "privacyStatus"
                 ),
             sourceDestination = destination,
             exactSelectionCount = exactSelectionCount,

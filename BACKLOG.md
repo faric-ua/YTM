@@ -230,12 +230,27 @@ v1.4.27 — Exact-ID Search Guard
 - [x] preserve workflow lessons from real package/audit failures
 - [x] add project-handoff audit to release preflight
 
+## v1.4.28 — Bulk Export Manifest Import
+- [x] scope manifest import as a local backup-session catalog
+- [x] choose account-export session folder with Android SAF
+- [x] parse/validate manifest schema v1/v2
+- [x] support schema-v2 `selectionMode`
+- [x] resolve only `EXPORTED` project files from the selected folder
+- [x] show available exported playlists and open one project at a time
+- [x] cross-check manifest/project playlistId and privacy metadata
+- [x] preserve exact videoId through `PlaylistProjectCodec`
+- [x] keep manifest import local-only with zero YouTube API work
+- [x] add static audit, release docs and tutorial chapter 08
+- [ ] GitHub build
+- [ ] phone test: selective-export manifest folder opens
+- [ ] phone test: `top 3` reopens exact 3/3
+- [ ] phone test: repeat Search remains 0 new `search.list`
+
 ## Next
-Continue account-library work:
-- import of a bulk-export manifest;
+After v1.4.28 phone QA:
 - incremental/sync-style account backup.
 
-Before choosing the next version number, read current status and scope the feature explicitly.
+Do not combine sync semantics into the manifest-import release.
 
 ## Future product plan — localization + exclusive skin
 - [x] seed `docs/design/exclusive/` with prototype references for exclusive styles/skins/avatars

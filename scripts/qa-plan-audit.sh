@@ -60,6 +60,8 @@ grep -Fq '| v1.4.26 | **PARTIALLY PHONE-TESTED — PASS FOR SELECTIVE EXPORT PAT
   || fail "v1.4.26 selective-export phone status missing"
 grep -Fq '| v1.4.27 | **PARTIALLY PHONE-TESTED — PASS FOR BUG-005 EXACT-ID SEARCH GUARD** |' "$STATUS" \
   || fail "v1.4.27 BUG-005 phone PASS status missing"
+grep -Fq '| v1.4.28 | **NOT TESTED YET** |' "$STATUS" \
+  || fail "v1.4.28 initial NOT TESTED status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \

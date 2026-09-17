@@ -16,8 +16,8 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
-check_file "docs/v.1.4.27/RELEASE.md"
-check_file "docs/v.1.4.27/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.28/RELEASE.md"
+check_file "docs/v.1.4.28/REGRESSION_CHECKLIST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -56,6 +56,7 @@ bash scripts/v1426-selective-export-audit.sh
 python -B scripts/v1427-apply-selftest.py
 python -B scripts/v1427-exact-id-search-audit.py
 bash scripts/v1427-qa-close-audit.sh
+bash scripts/v1428-manifest-import-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -71,6 +72,7 @@ bash scripts/configuration-state-audit.sh
 bash scripts/rotation-layout-audit.sh
 bash scripts/dialog-animation-audit.sh
 check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryManifestImporter.kt"
 check_file "OPEN_QUESTIONS.md"
 check_file "RELEASE_TEST_STATUS.md"
 check_file "docs/v.1.4.17/qa/BUG_REGISTER.md"
@@ -93,6 +95,7 @@ check_file "scripts/v1426-apply-selftest.py"
 check_file "scripts/v1427-apply-selftest.py"
 check_file "scripts/v1427-exact-id-search-audit.py"
 check_file "scripts/v1427-qa-close-audit.sh"
+check_file "scripts/v1428-manifest-import-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -239,11 +242,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 61' app/build.gradle.kts \
-  || fail "Expected versionCode = 61"
+grep -q 'versionCode = 62' app/build.gradle.kts \
+  || fail "Expected versionCode = 62"
 
-grep -q 'versionName = "1.4.27"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.27"'
+grep -q 'versionName = "1.4.28"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.28"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
