@@ -5,7 +5,7 @@ v1.4.27 — Exact-ID Search Guard
 
 ## Known
 - BUG-001/Q-001 OPEN
-- BUG-002/Q-002 DEFERRED
+- BUG-002/Q-002 DEFERRED — reproduced again on v1.4.27; video evidence preserved; non-blocking by user decision
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — RETEST v1.4.17
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
@@ -238,6 +238,9 @@ Continue account-library work:
 Before choosing the next version number, read current status and scope the feature explicitly.
 
 ## Future product plan — localization + exclusive skin
+- [x] seed `docs/design/exclusive/` with prototype references for exclusive styles/skins/avatars
+- [ ] refine/replace prototype images with higher-quality approved artwork over time
+- [ ] keep prototypes out of Android production resources until individually approved
 - [ ] Localization Wave: move user-facing strings to Android resources
 - [ ] Ukrainian (`uk`) language
 - [ ] Korean (`ko`) language

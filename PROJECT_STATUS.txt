@@ -148,6 +148,9 @@ Future product direction:
 - hidden Yerin Exclusive visual skin
 - Yerin skin unlock uses exact canonical public TikTok profile URL supplied later
 - URL-only unlock is a feature gate, not secure authentication
+- prototype design library: `docs/design/exclusive/`
+- current prototype library includes skin/style studies and avatar studies
+- prototypes are references only and are not Android production resources
 
 
 v1.4.26 phone QA confirmed:
@@ -190,7 +193,7 @@ v1.4.27 phone QA confirmed:
 
 Known:
 BUG-001/Q-001 OPEN
-BUG-002/Q-002 DEFERRED
+BUG-002/Q-002 DEFERRED — REPRODUCED v1.4.27 / VIDEO EVIDENCE PRESERVED
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
 BUG-004/Q-004 RETEST v1.4.17
 BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27

@@ -3,10 +3,26 @@
 | ID | Status | Severity | Description | Related tests |
 |---|---|---:|---|---|
 | BUG-001 / Q-001 | OPEN | P2 | Review wording / Project-save feedback questions remain. | F-06 |
-| BUG-002 / Q-002 | DEFERRED BY USER | P2 | Some custom dialogs visibly move into final top position after opening. | M-02 |
+| BUG-002 / Q-002 | DEFERRED BY USER — REPRODUCED v1.4.27 | P2 | Some custom dialogs visibly appear offset and then move/settle into their final position after opening. Fresh v1.4.27 video evidence is preserved; issue remains non-blocking by user decision. | M-02 |
 | BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update verified: Step 2 briefly gray, then automatically green. | A-03, D-03 |
 | BUG-004 / Q-004 | RETEST v1.4.17 | P1 | Authorization can become invalid while Step 2 remains green/checked. | B-01 |
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Ordinary repeat-search preserves canonical exact videoId tracks; real-phone search plan confirmed 0 redundant search.list for exact 3/3. | v1.4.26 repro → v1.4.27 PASS |
+
+## BUG-002 current evidence
+
+Real-phone reconfirmation on v1.4.27 (2026-09-17):
+
+- the custom dialog first appears offset from its final stable position;
+- it then visibly shifts/settles into the final position;
+- this is the same long-standing BUG-002 / Q-002 behavior, not a new v1.4.27 regression;
+- previous fix attempts did not fully solve it on the real device;
+- the user explicitly chose to defer it again and continue feature development.
+
+Evidence:
+`docs/issues/BUG-002/evidence/BUG002-dialog-entrance-motion-v1.4.27-2026-09-17.mp4`
+
+Current decision:
+**DEFERRED BY USER — DO NOT BLOCK THE ROADMAP.**
 
 ## BUG-003 reproduction
 

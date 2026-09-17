@@ -95,6 +95,19 @@ SearchCoordinator extraction does not change UiChrome. Q-002 remains DEFERRED BY
 
 Q-002 remains DEFERRED and is not reopened. This release changes auth recovery, result presentation and QA documentation.
 
+## v1.4.27 note — real-phone reconfirmation
+
+A fresh v1.4.27 phone recording reproduces the same entrance-motion problem:
+the dialog can be visible at an offset position and then shift/settle into its
+final position.
+
+Evidence is preserved under:
+
+`docs/issues/BUG-002/evidence/BUG002-dialog-entrance-motion-v1.4.27-2026-09-17.mp4`
+
+The user explicitly chose to keep Q-002 deferred and continue product work.
+This evidence does not reopen Q-002 and must not block the next feature release.
+
 ## Q-003 — Silent Google/YTM recovery after update
 
 Status: **DEFERRED FOR LATER FIX**

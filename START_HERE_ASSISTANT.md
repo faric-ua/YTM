@@ -44,7 +44,7 @@ The release is only partially phone-tested overall. Do not reinterpret a targete
 Current known items include:
 
 - BUG-001 / Q-001: OPEN;
-- BUG-002 / Q-002: DEFERRED BY USER;
+- BUG-002 / Q-002: DEFERRED BY USER — reproduced again on v1.4.27; evidence preserved;
 - BUG-003 / Q-003: CLOSED — PHONE RETEST PASS v1.4.20;
 - BUG-004 / Q-004: RETEST still required;
 - BUG-005 / Q-005: CLOSED — PHONE RETEST PASS v1.4.27.
@@ -67,6 +67,7 @@ Before changing the project, read in this order:
 10. `docs/BUILD_ARTIFACT_CONVENTION.md` — stable APK/download folder convention.
 11. Relevant current release folder under `docs/v.X.Y.Z/`.
 12. `docs/tutorial/ROADMAP.md` and the relevant tutorial chapter.
+13. If working on exclusive skins/avatars, read `docs/design/exclusive/README.md` and `ASSET_MANIFEST.md`.
 
 If these sources disagree, prefer the newest current root status/policy files over an older historical release snapshot.
 
