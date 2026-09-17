@@ -30,6 +30,10 @@ data class AccountLibraryManifestImport(
     val entries: List<AccountLibraryManifestEntry>
 )
 
+class IncrementalDeltaManifestException(
+    message: String
+) : IllegalArgumentException(message)
+
 object AccountLibraryManifestImporter {
     private const val FORMAT =
         "ytm-importer-account-library-export"
@@ -99,11 +103,13 @@ object AccountLibraryManifestImporter {
                 "FULL"
             }
 
-        require(
-            backupMode !=
+        if (
+            backupMode ==
                 "INCREMENTAL_DELTA"
         ) {
-            "Це incremental delta backup. Використовуйте «Оновити backup (incremental)» як baseline; повне відновлення delta-ланцюжка ще не підтримується."
+            throw IncrementalDeltaManifestException(
+                "Це incremental delta backup."
+            )
         }
 
         val items =

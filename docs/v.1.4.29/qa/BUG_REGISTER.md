@@ -7,6 +7,7 @@
 | BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update passed. |
 | BUG-004 / Q-004 | RETEST v1.4.17 | P1 | Authorization can become invalid while Step 2 remains green/checked. |
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Exact-ID repeat-search guard passed with 0 new `search.list`. |
+| BUG-006 / Q-006 | FIX IMPLEMENTED — RETEST v1.4.29 R2 | P2 | Delta-boundary explanation was truncated in a long Toast; R2 moves it to a readable scrollable dialog. |
 
 ## v1.4.29 note
 

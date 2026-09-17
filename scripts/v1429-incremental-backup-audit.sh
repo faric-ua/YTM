@@ -43,6 +43,15 @@ grep -Fq 'Зберегти delta' "$IMPORT" \
 grep -Fq 'writeIncrementalBackup' "$IMPORT" \
   || fail "delta write flow missing"
 
+grep -Fq 'IncrementalDeltaManifestException' "$IMPORT" \
+  || fail "typed incremental delta boundary handling missing"
+grep -Fq 'showIncrementalDeltaBoundary' "$IMPORT" \
+  || fail "readable incremental delta boundary dialog missing"
+grep -Fq '"Incremental delta backup"' "$IMPORT" \
+  || fail "delta boundary dialog title missing"
+grep -Fq 'UiChrome.showMessageDialog' "$IMPORT" \
+  || fail "delta boundary must use UiChrome message dialog"
+
 if grep -Fq 'UiChrome.ActionTone.NEUTRAL' "$IMPORT"; then
   fail "incremental dialogs use nonexistent ActionTone.NEUTRAL"
 fi
@@ -96,8 +105,12 @@ grep -Fq 'backupMode' "$MANIFEST" \
   || fail "manifest importer delta boundary missing"
 grep -Fq 'INCREMENTAL_DELTA' "$MANIFEST" \
   || fail "manifest importer incremental delta guard missing"
-grep -Fq 'повне відновлення delta-ланцюжка ще не підтримується' "$MANIFEST" \
-  || fail "clear delta restore boundary message missing"
+grep -Fq 'class IncrementalDeltaManifestException' "$MANIFEST" \
+  || fail "typed delta manifest exception missing"
+grep -Fq 'throw IncrementalDeltaManifestException' "$MANIFEST" \
+  || fail "delta manifest must throw typed boundary exception"
+grep -Fq 'Повне відновлення delta-ланцюжка ще не підтримується.' "$IMPORT" \
+  || fail "clear readable delta restore boundary message missing"
 
 if grep -Fq 'YouTubeApi' "$SYNC"; then
   fail "storage sync layer must not own YouTubeApi"

@@ -267,6 +267,9 @@ v1.4.29 — Incremental Account Backup
 - [ ] phone test: manifest-only delta for unchanged scope
 - [ ] phone test: old baseline still opens
 - [ ] phone test: delta regular-open boundary message
+- [x] detect BUG-006: delta boundary Toast text is truncated on phone
+- [x] R2 fix: show delta boundary in readable UiChrome dialog
+- [ ] phone retest BUG-006: full delta-boundary text visible
 
 ## Next
 After v1.4.29 targeted phone QA:

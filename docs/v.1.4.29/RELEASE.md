@@ -62,6 +62,12 @@ with:
 
 The regular v1.4.29 "Open backup / manifest.json" path does **not** pretend that a delta is a full self-contained restore. It reports that delta-chain restore is not yet supported and directs the user to use it as a future sync baseline.
 
+### R2 UI hardening
+
+Real-phone QA exposed one non-blocking UX defect: the delta-boundary explanation was shown as a long Toast and Android truncated the text.
+
+R2 routes the delta boundary through a typed manifest exception into a scrollable `UiChrome.showMessageDialog`, so the full explanation and `Закрити` action remain readable.
+
 ## Scope boundary
 
 v1.4.29 creates a safe incremental **delta chain**.

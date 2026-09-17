@@ -14,6 +14,8 @@
 - Delta-chain consolidated restore remains future work.
 - versionCode 63 / versionName 1.4.29.
 - v1.4.29 = NOT PHONE-TESTED YET.
+- R1 fixed invalid `UiChrome.ActionTone.NEUTRAL` build references.
+- R2 replaces the truncated incremental-delta Toast with a readable `UiChrome` message dialog.
 
 ## v1.4.28
 - Added local import of account-library bulk/selective export sessions through `manifest.json`.

@@ -36,6 +36,7 @@ import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.IncrementalBackupPlan
 import com.saney.ytmimporter.storage.IncrementalBackupRecord
 import com.saney.ytmimporter.storage.IncrementalBackupWriteResult
+import com.saney.ytmimporter.storage.IncrementalDeltaManifestException
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
 import com.saney.ytmimporter.youtube.YouTubeApi
@@ -2061,13 +2062,42 @@ class ImportActivity : Activity() {
                         manifest
                     )
                 }.onFailure { error ->
-                    toast(
-                        error.message
-                            ?: "Не вдалося прочитати backup manifest"
-                    )
+                    when (error) {
+                        is IncrementalDeltaManifestException ->
+                            showIncrementalDeltaBoundary()
+
+                        else ->
+                            toast(
+                                error.message
+                                    ?: "Не вдалося прочитати backup manifest"
+                            )
+                    }
                 }
             }
         }
+    }
+
+    private fun showIncrementalDeltaBoundary() {
+        UiChrome.showMessageDialog(
+            activity = this,
+            title =
+                "Incremental delta backup",
+            message =
+                "Це delta backup, а не повний export.\n\n" +
+                    "Повне відновлення delta-ланцюжка ще не підтримується.\n\n" +
+                    "Для наступного incremental backup виберіть цю папку через " +
+                    "«Оновити backup (incremental)».",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label =
+                            "Закрити",
+                        tone =
+                            UiChrome.ActionTone.ACCENT,
+                        onClick = {}
+                    )
+                )
+        )
     }
 
     private fun showAccountBackupPicker(

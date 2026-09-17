@@ -7,8 +7,8 @@ YTM Importer v1.4.29 FULL — FILE MANIFEST
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
-9f930a4dd89f94bc  BACKLOG.md
-a2eb06091aa08b5f  CHANGELOG.md
+f6d31201e2a226ec  BACKLOG.md
+bfb39749c4fe45d4  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 503b7f911c1ac04c  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -84,7 +84,7 @@ f14b25e716462c4e  app/build.gradle.kts
 651321f836af9236  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 6a4b4fcd5f443032  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 1ae0123d61c7496f  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-0bcc645d5aeb4224  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+5d3787ac56e07a0c  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 67141799b3184cca  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 f4dc26fd0a49f24c  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 425c1962df17dc4a  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
@@ -100,7 +100,7 @@ e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 69f61fe633c18f88  app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
 520a65c9f50141a9  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryExporter.kt
 7872f629b96f6ae9  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryIncrementalBackup.kt
-45519ef76ad4be31  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryManifestImporter.kt
+8b1bd44762ebc099  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryManifestImporter.kt
 a8df82aa07ada08c  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
 9582bc554612c4c4  app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
 d8f0c56f39f3fb2f  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
@@ -1036,10 +1036,10 @@ bfe0a8cbffc23308  docs/v.1.4.28/qa/evidence/EVIDENCE_02_HOME_TOP3_EXACT_3_OF_3.j
 8347af58bb84cecc  docs/v.1.4.28/qa/evidence/EVIDENCE_07_WORKSPACE_PRESERVED_AFTER_ERROR.jpg
 7635a99a20b53973  docs/v.1.4.28/qa/evidence/EVIDENCE_MANIFEST.md
 fc4ead6a3a3c7815  docs/v.1.4.29/REGRESSION_CHECKLIST.md
-0fbc8d43d33c83dc  docs/v.1.4.29/RELEASE.md
+82cd5e9f8d96524e  docs/v.1.4.29/RELEASE.md
 b6d77ef31e1c435a  docs/v.1.4.29/diagrams/INCREMENTAL_BACKUP_FLOW.md
-683ad00f5db2d0f4  docs/v.1.4.29/qa/BUG_REGISTER.md
-4fb58b0d5594b6d5  docs/v.1.4.29/qa/PHONE_TEST.md
+1bf12a87fe2dfaab  docs/v.1.4.29/qa/BUG_REGISTER.md
+d2808ee7ea085b53  docs/v.1.4.29/qa/PHONE_TEST.md
 cfe983e51369f4ce  docs/v.1.4.3/REGRESSION_CHECKLIST.md
 134d0a0f8bc950e1  docs/v.1.4.3/RELEASE.md
 322116cf7e140e80  docs/v.1.4.3/diagrams/DIALOG_SYSTEM.md
@@ -1151,5 +1151,5 @@ a251836bf6c7ae0c  scripts/v1427-exact-id-search-audit.py
 660cc18ba0c72641  scripts/v1427_patchlib.py
 1751b0e42a723c99  scripts/v1428-manifest-import-audit.sh
 17ce9342abf81f91  scripts/v1428-qa-close-audit.sh
-e829c332dcedf7db  scripts/v1429-incremental-backup-audit.sh
+4ae4f192a4921799  scripts/v1429-incremental-backup-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
