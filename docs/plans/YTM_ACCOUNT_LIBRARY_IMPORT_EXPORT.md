@@ -27,7 +27,18 @@ Implemented scope:
 - open it as the current local workspace;
 - keep the operation read-only against the source account.
 
-Still pending:
-- phone verification;
-- save/reopen verification as YTM Project;
-- export all account playlists to a chosen folder.
+G01 phone verification:
+- account picker/import PASS;
+- exact-videoId Review path PASS;
+- YTM Project save/reopen PASS.
+
+## v1.4.19 — bulk account export
+Implemented scope:
+- choose a device folder;
+- create a timestamped export session directory;
+- export one YTM Project per non-empty accessible account playlist;
+- preserve source playlist id/privacy and exact videoId values;
+- write `manifest.json` with success/skip/failure data;
+- keep the source account read-only.
+
+Phone verification is still required.

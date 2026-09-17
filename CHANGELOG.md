@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.19
+- Added read-only bulk export of connected-account playlists to a user-selected device folder.
+- Android folder picker creates a timestamped export session folder.
+- Each non-empty accessible playlist is saved as a YTM Project with exact videoId values.
+- Account exports preserve source playlist id and privacy metadata.
+- `manifest.json` records every account playlist, export status, file name, source/exported counts and request count.
+- Empty or no-accessible-track playlists are skipped as project files but remain documented in the manifest.
+- No remote playlist write API is used by the bulk export flow.
+- versionCode 53 / versionName 1.4.19.
+- v1.4.19 = NOT PHONE-TESTED YET.
+
 ## v1.4.18
 - G01: added read-only import of one playlist from the connected YouTube/YTM account.
 - Import screen can list account playlists, select one and load ordered playlist items.

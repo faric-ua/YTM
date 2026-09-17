@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.18
-Version code: 52
+Version: 1.4.19
+Version code: 53
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -9,6 +9,7 @@ v1.4.15 NOT TESTED
 v1.4.16 PARTIALLY PHONE-TESTED
 v1.4.17 PARTIALLY PHONE-TESTED — FAST_FLOW EXISTING-TARGET PASS
 v1.4.18 PARTIALLY PHONE-TESTED — G01 PASS
+v1.4.19 NOT TESTED YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -31,13 +32,13 @@ destination rotation smoke
 remaining release-plan cases or documented SKIP/BLOCKED decisions
 
 
-v1.4.18 G01 focus:
-- read-only list of playlists from connected YouTube/YTM account
-- select one playlist
-- load playlist items in account order with exact videoId
-- open the account playlist as current local workspace
-- preserve exact selections and avoid unnecessary search.list
-- phone-test local YTM Project save/reopen after account import
+v1.4.19 focus:
+- choose a device folder with Android's folder picker
+- read all connected-account playlists without modifying YouTube/YTM
+- export one YTM Project per non-empty accessible playlist
+- preserve source playlist id, privacy and exact videoId values
+- write manifest.json with success/skip/failure status per playlist
+- keep empty/inaccessible playlists documented in the manifest
 
 v1.4.18 phone QA confirmed:
 - account playlist picker PASS

@@ -68,6 +68,60 @@ object PlaylistProjectCodec {
             .toString(2)
     }
 
+    fun exportAccountPlaylist(
+        playlist: ImportedPlaylist,
+        sourcePlaylistId: String,
+        privacyStatus: String,
+        appVersion: String
+    ): String {
+        val tracks = JSONArray()
+
+        playlist.tracks
+            .forEachIndexed { index, track ->
+                tracks.put(
+                    workingTrackToJson(
+                        index = index,
+                        track = track
+                    )
+                )
+            }
+
+        val playlistJson =
+            JSONObject()
+                .put("name", playlist.name)
+                .put(
+                    "sourcePlaylistId",
+                    sourcePlaylistId
+                )
+                .put(
+                    "privacyStatus",
+                    privacyStatus
+                )
+                .put(
+                    "sourceDestination",
+                    JSONObject.NULL
+                )
+                .put(
+                    "tracks",
+                    tracks
+                )
+
+        return JSONObject()
+            .put("format", FORMAT)
+            .put("schemaVersion", SCHEMA_VERSION)
+            .put("appVersion", appVersion)
+            .put("exportedAt", System.currentTimeMillis())
+            .put("sourceHistoryId", JSONObject.NULL)
+            .put("sourceLabel", "YouTube/YTM account")
+            .put("scope", "account-playlist-export")
+            .put(
+                "note",
+                "Read-only local export of a playlist from the connected YouTube/YTM account."
+            )
+            .put("playlist", playlistJson)
+            .toString(2)
+    }
+
     fun exportHistoryEntry(
         entry: HistoryEntry,
         appVersion: String

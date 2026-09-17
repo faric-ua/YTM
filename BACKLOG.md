@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.18 — YTM account library import/export, G01 one-playlist import
+v1.4.19 — export all connected-account playlists to a device folder
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -57,18 +57,35 @@ v1.4.18 — YTM account library import/export, G01 one-playlist import
 - [x] G01 open imported account playlist as current local workspace
 - [x] G01 preserve exact selections so search.list is not required
 - [x] G01 static audit + phone-test plan
-- [ ] GitHub build
+- [x] GitHub build
 - [x] phone test: account playlist list/picker
 - [x] phone test: import one playlist
 - [x] phone test: Step 3 opens Review without search.list
 - [x] phone test: save imported workspace as YTM Project
 - [x] phone test: reopen saved YTM Project and preserve exact videoId
-- [ ] next wave: export all account playlists to a chosen folder
+- [x] next wave moved to v1.4.19: export all account playlists to a chosen folder
+
+## v1.4.19
+- [x] choose export destination with Android folder picker
+- [x] create timestamped export session folder
+- [x] list all playlists from connected account
+- [x] export one YTM Project per non-empty accessible playlist
+- [x] preserve source playlist id/privacy/exact videoId
+- [x] write manifest.json with per-playlist status
+- [x] skip empty/no-accessible-track playlists but record them in manifest
+- [x] static audit + phone-test plan
+- [ ] GitHub build
+- [ ] phone test: choose export folder
+- [ ] phone test: export small account library
+- [ ] verify project-file count and manifest
+- [ ] reopen one exported YTM Project
+- [ ] verify source playlists remain unchanged
 
 ## Next
-After G01 phone verification:
-continue YTM account library work — verify local-project reuse first,
-then add read-only export of all account playlists to a chosen device folder.
+Phone-test v1.4.19 bulk account export, then decide whether to add:
+- selective multi-playlist export;
+- import of a bulk-export manifest;
+- incremental/sync-style account backup.
 
 ## Later bug-fix wave
 Fix every FAIL/BLOCKED case accumulated in BUG_REGISTER and release test runs,

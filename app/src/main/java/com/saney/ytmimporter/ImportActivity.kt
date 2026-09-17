@@ -9,6 +9,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.DocumentsContract
 import android.provider.OpenableColumns
 import android.text.InputType
 import android.view.Gravity
@@ -24,6 +25,7 @@ import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.parser.PlaylistParser
+import com.saney.ytmimporter.storage.AccountLibraryExporter
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
@@ -33,6 +35,9 @@ import java.util.concurrent.Executors
 class ImportActivity : Activity() {
     private val fileRequestCode =
         2301
+
+    private val exportFolderRequestCode =
+        2302
 
     private val executor =
         Executors.newSingleThreadExecutor()
@@ -78,13 +83,22 @@ class ImportActivity : Activity() {
             data
         )
 
-        if (
-            requestCode == fileRequestCode &&
-            resultCode == RESULT_OK
-        ) {
-            data
-                ?.data
-                ?.let(::loadFile)
+        if (resultCode != RESULT_OK) {
+            return
+        }
+
+        when (requestCode) {
+            fileRequestCode ->
+                data
+                    ?.data
+                    ?.let(::loadFile)
+
+            exportFolderRequestCode ->
+                data
+                    ?.data
+                    ?.let(
+                        ::exportAllYtmPlaylistsToFolder
+                    )
         }
     }
 
@@ -207,6 +221,16 @@ class ImportActivity : Activity() {
                         primary = true
                     ) {
                         importFromYtmAccount()
+                    }
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            "Експортувати всі плейлисти в папку",
+                        primary = false
+                    ) {
+                        chooseYtmExportFolder()
                     }
                 )
             }
@@ -590,6 +614,342 @@ class ImportActivity : Activity() {
             }
         }
     }
+
+    private fun chooseYtmExportFolder() {
+        val token =
+            AuthSessionStore
+                .current()
+                .accessToken
+
+        if (token.isNullOrBlank()) {
+            toast(
+                "Спочатку підключіть Google/YTM у кроці 2 на головному екрані."
+            )
+            return
+        }
+
+        val intent =
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT_TREE
+            ).apply {
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+                )
+            }
+
+        startActivityForResult(
+            intent,
+            exportFolderRequestCode
+        )
+    }
+
+    private fun exportAllYtmPlaylistsToFolder(
+        treeUri: Uri
+    ) {
+        val token =
+            AuthSessionStore
+                .current()
+                .accessToken
+
+        if (token.isNullOrBlank()) {
+            toast(
+                "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
+            )
+            return
+        }
+
+        runCatching {
+            contentResolver
+                .takePersistableUriPermission(
+                    treeUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+        }
+
+        toast(
+            "Готую read-only експорт плейлистів…"
+        )
+
+        executor.execute {
+            val result =
+                runCatching {
+                    val playlists =
+                        api.listMyPlaylists(token)
+
+                    if (playlists.isEmpty()) {
+                        error(
+                            "У підключеному акаунті немає доступних плейлистів."
+                        )
+                    }
+
+                    runOnUiThread {
+                        if (
+                            !isFinishing &&
+                            !isDestroyed
+                        ) {
+                            toast(
+                                "Знайдено ${playlists.size} плейлистів. Експортую…"
+                            )
+                        }
+                    }
+
+                    val session =
+                        AccountLibraryExporter
+                            .createSessionFolder(
+                                resolver =
+                                    contentResolver,
+                                treeUri =
+                                    treeUri
+                            )
+
+                    val records =
+                        mutableListOf<
+                            AccountLibraryExporter.ExportRecord
+                        >()
+
+                    playlists.forEach {
+                            playlistInfo ->
+
+                        if (
+                            playlistInfo.itemCount <= 0
+                        ) {
+                            records +=
+                                AccountLibraryExporter.ExportRecord(
+                                    playlistId =
+                                        playlistInfo.id,
+                                    title =
+                                        playlistInfo.title,
+                                    privacyStatus =
+                                        playlistInfo.privacyStatus,
+                                    sourceItemCount =
+                                        playlistInfo.itemCount,
+                                    exportedTrackCount = 0,
+                                    playlistItemsRequests = 0,
+                                    status =
+                                        "SKIPPED_EMPTY",
+                                    fileName = null
+                                )
+
+                            return@forEach
+                        }
+
+                        runCatching {
+                            api.listPlaylistTracks(
+                                accessToken =
+                                    token,
+                                playlistId =
+                                    playlistInfo.id
+                            )
+                        }.onSuccess {
+                                loaded ->
+
+                            if (
+                                loaded.tracks.isEmpty()
+                            ) {
+                                records +=
+                                    AccountLibraryExporter.ExportRecord(
+                                        playlistId =
+                                            playlistInfo.id,
+                                        title =
+                                            playlistInfo.title,
+                                        privacyStatus =
+                                            playlistInfo.privacyStatus,
+                                        sourceItemCount =
+                                            playlistInfo.itemCount,
+                                        exportedTrackCount = 0,
+                                        playlistItemsRequests =
+                                            loaded.requestCount,
+                                        status =
+                                            "SKIPPED_NO_ACCESSIBLE_TRACKS",
+                                        fileName = null
+                                    )
+                            } else {
+                                val imported =
+                                    ImportedPlaylist(
+                                        name =
+                                            playlistInfo.title,
+                                        tracks =
+                                            loaded.tracks
+                                                .toMutableList()
+                                    )
+
+                                val fileName =
+                                    AccountLibraryExporter
+                                        .writePlaylistProject(
+                                            resolver =
+                                                contentResolver,
+                                            session =
+                                                session,
+                                            playlistInfo =
+                                                playlistInfo,
+                                            playlist =
+                                                imported,
+                                            appVersion =
+                                                BuildConfig.VERSION_NAME
+                                        )
+
+                                records +=
+                                    AccountLibraryExporter.ExportRecord(
+                                        playlistId =
+                                            playlistInfo.id,
+                                        title =
+                                            playlistInfo.title,
+                                        privacyStatus =
+                                            playlistInfo.privacyStatus,
+                                        sourceItemCount =
+                                            playlistInfo.itemCount,
+                                        exportedTrackCount =
+                                            imported.tracks.size,
+                                        playlistItemsRequests =
+                                            loaded.requestCount,
+                                        status =
+                                            "EXPORTED",
+                                        fileName =
+                                            fileName
+                                    )
+                            }
+                        }.onFailure {
+                                error ->
+
+                            records +=
+                                AccountLibraryExporter.ExportRecord(
+                                    playlistId =
+                                        playlistInfo.id,
+                                    title =
+                                        playlistInfo.title,
+                                    privacyStatus =
+                                        playlistInfo.privacyStatus,
+                                    sourceItemCount =
+                                        playlistInfo.itemCount,
+                                    exportedTrackCount = 0,
+                                    playlistItemsRequests = 0,
+                                    status =
+                                        "FAILED",
+                                    fileName = null,
+                                    error =
+                                        error.message
+                                            ?: error
+                                                .javaClass
+                                                .simpleName
+                                )
+                        }
+                    }
+
+                    val manifestFile =
+                        AccountLibraryExporter
+                            .writeManifest(
+                                resolver =
+                                    contentResolver,
+                                session =
+                                    session,
+                                appVersion =
+                                    BuildConfig.VERSION_NAME,
+                                records =
+                                    records
+                            )
+
+                    BulkExportResult(
+                        folderName =
+                            session.folderName,
+                        manifestFile =
+                            manifestFile,
+                        playlistCount =
+                            records.size,
+                        exportedProjects =
+                            records.count {
+                                it.status ==
+                                    "EXPORTED"
+                            },
+                        skippedPlaylists =
+                            records.count {
+                                it.status
+                                    .startsWith(
+                                        "SKIPPED"
+                                    )
+                            },
+                        failedPlaylists =
+                            records.count {
+                                it.status ==
+                                    "FAILED"
+                            },
+                        playlistItemsRequests =
+                            records.sumOf {
+                                it.playlistItemsRequests
+                            }
+                    )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@runOnUiThread
+                }
+
+                result.onSuccess {
+                        summary ->
+
+                    UiChrome.showMessageDialog(
+                        activity = this,
+                        title =
+                            "Експорт завершено",
+                        message =
+                            "Плейлистів акаунта: ${summary.playlistCount}\n" +
+                                "Збережено YTM Project: ${summary.exportedProjects}\n" +
+                                "Пропущено: ${summary.skippedPlaylists}\n" +
+                                "Помилок: ${summary.failedPlaylists}\n" +
+                                "playlistItems.list: ${summary.playlistItemsRequests} request(s)\n\n" +
+                                "Папка: ${summary.folderName}\n" +
+                                "Індекс: ${summary.manifestFile}",
+                        actions =
+                            listOf(
+                                UiChrome.DialogAction(
+                                    label =
+                                        "Закрити",
+                                    tone =
+                                        UiChrome.ActionTone.ACCENT,
+                                    onClick = {}
+                                )
+                            )
+                    )
+                }.onFailure { error ->
+                    UiChrome.showMessageDialog(
+                        activity = this,
+                        title =
+                            "Експорт не завершено",
+                        message =
+                            error.message
+                                ?: "Невідома помилка експорту",
+                        actions =
+                            listOf(
+                                UiChrome.DialogAction(
+                                    label =
+                                        "Закрити",
+                                    tone =
+                                        UiChrome.ActionTone.ACCENT,
+                                    onClick = {}
+                                )
+                            )
+                    )
+                }
+            }
+        }
+    }
+
+    private data class BulkExportResult(
+        val folderName: String,
+        val manifestFile: String,
+        val playlistCount: Int,
+        val exportedProjects: Int,
+        val skippedPlaylists: Int,
+        val failedPlaylists: Int,
+        val playlistItemsRequests: Int
+    )
 
     /**
      * Deliberately accepts any file type because some Android file providers
