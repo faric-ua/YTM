@@ -78,7 +78,15 @@ class ListSelectorActivity : Activity() {
                 ?: if (mode == Mode.MULTI) "Далі" else "Вибрати"
 
         val initial =
-            intent.getStringArrayListExtra(EXTRA_SELECTED_VALUES)
+            (
+                savedInstanceState
+                    ?.getStringArrayList(
+                        STATE_SELECTED_VALUES
+                    )
+                    ?: intent.getStringArrayListExtra(
+                        EXTRA_SELECTED_VALUES
+                    )
+            )
                 ?.toSet()
                 .orEmpty()
 
@@ -104,6 +112,26 @@ class ListSelectorActivity : Activity() {
         }
 
         render()
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        val selectedValues =
+            arrayListOf<String>()
+
+        selected.indices.forEach { index ->
+            if (selected[index]) {
+                selectedValues += values[index]
+            }
+        }
+
+        outState.putStringArrayList(
+            STATE_SELECTED_VALUES,
+            selectedValues
+        )
+
+        super.onSaveInstanceState(outState)
     }
 
     @Deprecated("Deprecated in Java")
@@ -544,6 +572,9 @@ class ListSelectorActivity : Activity() {
     companion object {
         const val EXTRA_SELECTED_VALUES =
             "selector_selected_values"
+
+        private const val STATE_SELECTED_VALUES =
+            "selector_state_selected_values"
 
         private const val EXTRA_TITLE =
             "selector_title"
