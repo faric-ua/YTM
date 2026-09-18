@@ -11,6 +11,7 @@ v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 - UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
 - UX-009 Theme State Contrast — OPEN; Neon Dark Home colors are locked as the accepted reference; Green Dark workflow states need higher-contrast/inverse treatment without changing Neon Dark
+- UX-010 Utility Screens — OPEN; Home `Квота` and `Ще` should navigate to dedicated full-screen pages like `Черга`; rename `Ще` to `Меню` unless product wording changes before implementation
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -479,3 +480,15 @@ including:
 - [ ] keep Neon Dark palette/state colors unchanged
 - [ ] spot-check Blue Dark before sharing state logic
 - [ ] real-phone portrait QA across Neon / Green / Blue
+
+
+## UX-010 — Utility Screens
+- [x] record product direction from real-phone v1.4.36 use
+- [ ] replace Home `Квота` modal with a dedicated full-screen quota page
+- [ ] replace Home `Ще` modal menu with a dedicated full-screen utility/menu page
+- [ ] use the same top-bar/back-navigation pattern as `Черга`
+- [ ] rename Home `Ще` to `Меню` (current proposed label)
+- [ ] keep page content scrollable independently from fixed navigation/header controls
+- [ ] keep destructive/escape actions immediately visible where applicable
+- [ ] phone QA: Home → Quota screen → Back
+- [ ] phone QA: Home → Menu screen → Back
