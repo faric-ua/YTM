@@ -1,5 +1,18 @@
 # Журнал змін (Changelog)
 
+## v1.4.38
+- Added reusable full-screen `ListSelectorActivity`.
+- Migrated YTM playlist import, selective export, delta-chain head and backup/manifest project selection out of tall modal dialogs.
+- Added fixed multi-select footer with selection count, `Далі` and `Скасувати`.
+- Preserved selector state across activity recreation.
+- Added reusable explicit destructive confirmation UI.
+- Standardized destructive confirmations for workspace, History, Queue and SearchCache.
+- Removed direct safety-snapshot deletion from the rollback-success dialog and moved it to a separately confirmed Data action.
+- Shortened Restore/storage action labels for phone-width fit.
+- Kept Neon Dark Home colors unchanged.
+- versionCode 72 / versionName 1.4.38.
+- v1.4.38 = NOT PHONE-TESTED YET.
+
 ## v1.4.37
 - Replaced long remembered-root dialogs with full-screen `StorageChooserActivity`.
 - Added fixed Back/title/`?` header and fixed bottom controls with a scroll-only middle root list.
