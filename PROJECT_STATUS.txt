@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.34
-Version code: 68
+Version: 1.4.35
+Version code: 69
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -25,6 +25,7 @@ v1.4.31 PARTIALLY PHONE-TESTED — BACKUP UI POLISH SMOKE PASS / BUG-004 RETEST 
 v1.4.32 PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / OTHER MODALS INCONSISTENT
 v1.4.33 NOT PHONE-TESTED — SUPERSEDED BY v1.4.34 BEFORE PHONE QA
 v1.4.34 PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUOTA MODAL PASS / REMAINING RETEST DEFERRED
+v1.4.35 NOT PHONE-TESTED YET — UX-008 PHASE 1 / SAVED SAF FOLDERS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -354,6 +355,17 @@ v1.4.34 phone QA deferred by user:
 - manual-link custom view
 - Menu modal
 - BUG-002 full closure
+
+
+v1.4.35 focus:
+- UX-008 Phase 1: reduce repeated entry into Android's ACTION_OPEN_DOCUMENT_TREE UI
+- inventory = 13 document-picker entry points total: 7 tree / 2 open-file / 4 create-file
+- seven folder flows now route through one YTM Importer remembered-root chooser
+- reuse Android persisted SAF tree permissions instead of inventing filesystem paths
+- remembered roots are filtered by READ vs READ_WRITE requirements
+- `Скасувати` stays inside YTM Importer; `Додати іншу папку…` is the explicit path into Android SAF
+- ACTION_OPEN_DOCUMENT / ACTION_CREATE_DOCUMENT remain unchanged for later UX-008 phases
+- no MANAGE_EXTERNAL_STORAGE / READ_EXTERNAL_STORAGE / WRITE_EXTERNAL_STORAGE
 
 
 Known:
