@@ -452,8 +452,9 @@ class ListSelectorActivity : Activity() {
         val palette =
             AppThemeManager.palette(this)
 
-        lateinit var checkBox:
-            CheckBox
+        var checkBox:
+            CheckBox? =
+            null
 
         fun setSelected(
             selected: Boolean
@@ -466,13 +467,16 @@ class ListSelectorActivity : Activity() {
                     item.value
             }
 
-            if (
-                ::checkBox.isInitialized &&
-                checkBox.isChecked !=
-                    selected
-            ) {
-                checkBox.isChecked =
-                    selected
+            checkBox?.let {
+                    view ->
+
+                if (
+                    view.isChecked !=
+                        selected
+                ) {
+                    view.isChecked =
+                        selected
+                }
             }
 
             updateSelectedCount()
@@ -530,7 +534,9 @@ class ListSelectorActivity : Activity() {
                 }
 
             addView(
-                checkBox,
+                requireNotNull(
+                    checkBox
+                ),
                 LinearLayout.LayoutParams(
                     dp(48),
                     dp(48)
