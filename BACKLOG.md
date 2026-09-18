@@ -10,6 +10,7 @@ v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
 - BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.31 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 - UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
+- UX-009 Theme State Contrast — OPEN; Neon Dark Home colors are locked as the accepted reference; Green Dark workflow states need higher-contrast/inverse treatment without changing Neon Dark
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -466,3 +467,14 @@ Fix every FAIL/BLOCKED case accumulated in BUG_REGISTER and release test runs,
 including:
 - BUG-003/Q-003 silent Google/YTM recovery after in-place update;
 - BUG-004/Q-004 stale green connected indicator after authorization becomes invalid.
+
+
+## UX-009 — Theme State Contrast
+- [x] record real-phone Neon Dark Home as the locked color reference
+- [x] record Green Dark real-phone contrast problem
+- [x] constrain fix to workflow/control state colors
+- [ ] design Green Dark inverse/high-contrast REQUIRED state
+- [ ] preserve READY / ATTENTION semantic distinction
+- [ ] keep Neon Dark palette/state colors unchanged
+- [ ] spot-check Blue Dark before sharing state logic
+- [ ] real-phone portrait QA across Neon / Green / Blue
