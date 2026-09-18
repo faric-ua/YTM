@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.37
+- Replaced long remembered-root dialogs with full-screen `StorageChooserActivity`.
+- Added fixed Back/title/`?` header and fixed bottom controls with a scroll-only middle root list.
+- Reused the chooser for Import folder operations and Data/Review/History/Service save destinations.
+- Centralized system tree/create-document picker entry inside the chooser.
+- Added dedicated full-screen `QuotaActivity`.
+- Renamed Home `Ще` to `Меню` and added dedicated `MenuActivity`.
+- Preserved Queue resume routing through MainActivity.
+- Kept Neon Dark Home colors unchanged; UX-009 remains open.
+- versionCode 71 / versionName 1.4.37.
+- v1.4.37 = NOT PHONE-TESTED YET.
+
 ## v1.4.36
 - Added UX-008 Phase 2A saved-file destination flow.
 - Data, Review, History and Service create-file actions now open an in-app save-destination menu first.
