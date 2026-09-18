@@ -30,6 +30,11 @@ TREE_COUNT="$(grep -o 'ACTION_OPEN_DOCUMENT_TREE' "$IMPORT" | wc -l | tr -d ' ')
 CHOOSER_COUNT="$(grep -o 'chooseSafTree(' "$IMPORT" | wc -l | tr -d ' ')"
 [ "$CHOOSER_COUNT" -eq 8 ] || fail "expected seven chooseSafTree call sites plus definition, found $CHOOSER_COUNT"
 
+LAUNCH_COUNT="$(grep -o 'launchSafTreePicker(' "$IMPORT" | wc -l | tr -d ' ')"
+[ "$LAUNCH_COUNT" -eq 2 ] || fail "system SAF launcher must only be called from explicit Add-folder action"
+grep -Fq 'Ще немає збереженої папки для цієї операції.' "$IMPORT" \
+  || fail "first-use in-app escape copy missing"
+
 for request in   selectiveExportFolderRequestCode   exportFolderRequestCode   incrementalBackupBaseRequestCode   incrementalBackupTargetRequestCode   deltaChainRootRequestCode   deltaChainTargetRequestCode   manifestImportFolderRequestCode
 do
   grep -Fq "$request" "$IMPORT" || fail "missing SAF request path: $request"
@@ -58,6 +63,6 @@ echo "- v1.4.35 / code 69"
 echo "- seven folder flows route through one in-app remembered-root chooser"
 echo "- Android system folder picker centralized to one launcher"
 echo "- persisted SAF roots filtered by read/write access"
-echo "- new-folder path remains available"
+echo "- explicit Add-folder path is the only route into system SAF"
 echo "- single-file import path retained"
 echo "- no broad filesystem permission"
