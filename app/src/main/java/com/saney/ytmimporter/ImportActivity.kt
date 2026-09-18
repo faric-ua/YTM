@@ -2176,31 +2176,34 @@ class ImportActivity : Activity() {
             return
         }
 
-        UiChrome.showMenuDialog(
-            activity = this,
-            title =
-                "Ланцюжок backup — виберіть кінцеву сесію",
-            subtitle =
-                "Знайдено ${heads.size} незалежних кінцевих delta-сесій",
-            actions =
-                heads.map {
-                        head ->
-
-                    UiChrome.MenuAction(
-                        label =
-                            "${head.folderName}\n${head.scopeMode}",
-                        onClick = {
-                            resolveDeltaChain(
-                                treeUri =
-                                    treeUri,
-                                head =
-                                    head
-                            )
-                        }
-                    )
-                },
-            negativeLabel =
-                "Скасувати"
+        startActivityForResult(
+            ListSelectorActivity.singleIntent(
+                activity = this,
+                title =
+                    "Кінцева delta-сесія",
+                subtitle =
+                    "Знайдено ${heads.size} незалежних кінцевих сесій.",
+                labels =
+                    heads.map { head ->
+                        "${head.folderName}\n${head.scopeMode}"
+                    },
+                values =
+                    heads.map { head ->
+                        encodeDeltaHeadSelection(
+                            treeUri = treeUri,
+                            head = head
+                        )
+                    },
+                helpTitle =
+                    "Що означає цей список?",
+                helpMessage =
+                    "Кожен пункт — кінцева delta-сесія окремого ланцюжка backup.\n\n" +
+                        "Виберіть той head, до стану якого потрібно зібрати новий повний backup. " +
+                        "Операція локальна і не змінює YouTube/YTM.",
+                confirmLabel =
+                    "Вибрати"
+            ),
+            deltaChainHeadSelectorRequestCode
         )
     }
 
@@ -2569,35 +2572,38 @@ class ImportActivity : Activity() {
                 "${manifest.selectionMode} • " +
                 "доступно ${manifest.entries.size}/" +
                 "${manifest.exportedProjects}" +
-                missingNote +
-                "\nЛокально: без YouTube API."
+                missingNote
 
-        UiChrome.showMenuDialog(
-            activity = this,
-            title =
-                "Backup / manifest.json",
-            subtitle = subtitle,
-            actions =
-                manifest.entries.map {
-                        entry ->
-
-                    UiChrome.MenuAction(
-                        label =
-                            entry.title +
-                                "\n" +
-                                entry.exportedTrackCount +
-                                " треків • " +
-                                manifestPrivacyLabel(
-                                    entry.privacyStatus
-                                ),
-                        onClick = {
-                            loadAccountBackupProject(
-                                entry
+        startActivityForResult(
+            ListSelectorActivity.singleIntent(
+                activity = this,
+                title =
+                    "Backup / manifest.json",
+                subtitle = subtitle,
+                labels =
+                    manifest.entries.map { entry ->
+                        entry.title +
+                            "\n" +
+                            entry.exportedTrackCount +
+                            " треків • " +
+                            manifestPrivacyLabel(
+                                entry.privacyStatus
                             )
-                        }
-                    )
-                },
-            negativeLabel = "Скасувати"
+                    },
+                values =
+                    manifest.entries.map(
+                        ::encodeManifestEntrySelection
+                    ),
+                helpTitle =
+                    "Що це за список?",
+                helpMessage =
+                    "Це YTM Project-файли, знайдені через manifest.json у вибраному backup.\n\n" +
+                        "Виберіть один плейлист, щоб відкрити його як локальний робочий список. " +
+                        "YouTube API для цього не використовується.",
+                confirmLabel =
+                    "Відкрити"
+            ),
+            manifestProjectSelectorRequestCode
         )
     }
 
