@@ -43,6 +43,7 @@ class DataActivity : Activity() {
 
     private lateinit var summaryText: TextView
     private lateinit var rollbackButton: Button
+    private lateinit var deleteSnapshotButton: Button
 
     private var pendingExportContent: String? = null
     private var pendingExportSuccessMessage: String? = null
@@ -193,7 +194,7 @@ class DataActivity : Activity() {
                 description =
                     "Відновлює локальні дані з YTM_Backup_*.json. " +
                         "Перед Restore автоматично створюється safety snapshot.",
-                buttonLabel = "Вибрати backup",
+                buttonLabel = "Вибрати файл",
                 primary = false,
                 action = ::chooseBackupForRestore
             )
@@ -245,13 +246,34 @@ class DataActivity : Activity() {
 
         rollbackButton =
             actionButton(
-                label = "Відкотити останній Restore",
+                label = "Відкотити",
                 primary = false
             ) {
                 confirmRestoreSafetySnapshot()
             }
 
-        rollbackCard.addView(rollbackButton)
+        rollbackCard.addView(
+            rollbackButton
+        )
+
+        deleteSnapshotButton =
+            dangerActionButton(
+                label =
+                    "Видалити знімок"
+            ) {
+                confirmDeleteSafetySnapshot()
+            }
+
+        rollbackCard.addView(
+            deleteSnapshotButton,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(54)
+            ).apply {
+                topMargin =
+                    dp(8)
+            }
+        )
 
         content.addView(
             rollbackCard,
@@ -414,13 +436,22 @@ class DataActivity : Activity() {
 
         rollbackButton.isEnabled =
             snapshotSummary != null
+        deleteSnapshotButton.isEnabled =
+            snapshotSummary != null
 
-        rollbackButton.alpha =
-            if (rollbackButton.isEnabled) {
+        val snapshotActionAlpha =
+            if (
+                snapshotSummary != null
+            ) {
                 1f
             } else {
                 0.5f
             }
+
+        rollbackButton.alpha =
+            snapshotActionAlpha
+        deleteSnapshotButton.alpha =
+            snapshotActionAlpha
     }
 
     private fun createFullBackup() {
@@ -487,7 +518,7 @@ class DataActivity : Activity() {
                 null
             )
             .setPositiveButton(
-                "Вибрати backup"
+                "Вибрати файл"
             ) { _, _ ->
                 val intent =
                     Intent(
@@ -620,7 +651,7 @@ class DataActivity : Activity() {
                 confirmRestoreSafetySnapshot()
             }
             .setPositiveButton(
-                "OK",
+                "Готово",
                 null
             )
             .show()
@@ -643,34 +674,28 @@ class DataActivity : Activity() {
 
         if (summary == null) {
             toast(
-                "Safety snapshot ще не створено. " +
+                "Резервний знімок ще не створено. " +
                     "Він з'явиться автоматично перед Restore."
             )
             return
         }
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Відкотити останній Restore?"
-            )
-            .setMessage(
-                "Буде повернуто локальний стан ДО останнього Restore.\n\n" +
-                    "Дата: ${formatDate(summary.exportedAt)}\n" +
+        UiChrome.showDestructiveConfirmDialog(
+            activity = this,
+            title =
+                "Відкотити останній Restore?",
+            message =
+                "Поточні локальні дані буде замінено станом ДО останнього Restore.\n\n" +
+                    "Дата знімка: ${formatDate(summary.exportedAt)}\n" +
                     "Версія: ${summary.appVersion}\n" +
                     "Груп: ${summary.preferenceGroups}\n" +
                     "Значень: ${summary.valueCount}\n\n" +
-                    "YouTube/YTM плейлисти в інтернеті не змінюються."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Відкотити"
-            ) { _, _ ->
-                restoreSafetySnapshotNow()
-            }
-            .show()
+                    "YouTube/YTM плейлисти в інтернеті не змінюються.",
+            confirmLabel =
+                "Так, відкотити"
+        ) {
+            restoreSafetySnapshotNow()
+        }
     }
 
     private fun restoreSafetySnapshotNow() {
@@ -690,27 +715,66 @@ class DataActivity : Activity() {
 
         refreshSummary()
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Відкат виконано")
-            .setMessage(
+        UiChrome.showMessageDialog(
+            activity = this,
+            title =
+                "Відкат виконано",
+            message =
                 "Локальний стан ДО останнього Restore повернуто.\n\n" +
                     "Груп: ${result.preferenceGroups}\n" +
-                    "Відновлено значень: ${result.restoredValues}."
-            )
-            .setNegativeButton(
-                "Видалити snapshot"
-            ) { _, _ ->
-                localBackupManager.clearSafetySnapshot()
-                refreshSummary()
-                toast(
-                    "Safety snapshot видалено"
+                    "Відновлено значень: ${result.restoredValues}.",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label =
+                            "Готово",
+                        tone =
+                            UiChrome.ActionTone.ACCENT
+                    ) {}
                 )
+        )
+    }
+
+    private fun confirmDeleteSafetySnapshot() {
+        val summary =
+            runCatching {
+                localBackupManager.inspectSafetySnapshot()
+            }.getOrElse { error ->
+                toast(
+                    "Резервний знімок пошкоджено: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return
             }
-            .setPositiveButton(
-                "OK",
-                null
+
+        if (summary == null) {
+            toast(
+                "Резервного знімка немає"
             )
-            .show()
+            return
+        }
+
+        UiChrome.showDestructiveConfirmDialog(
+            activity = this,
+            title =
+                "Видалити резервний знімок?",
+            message =
+                "Буде видалено знімок стану ДО останнього Restore.\n\n" +
+                    "Після цього відкотити останній Restore через цей знімок буде неможливо.\n\n" +
+                    "Дата знімка: ${formatDate(summary.exportedAt)}.",
+            confirmLabel =
+                "Так, видалити"
+        ) {
+            localBackupManager
+                .clearSafetySnapshot()
+            refreshSummary()
+            toast(
+                "Резервний знімок видалено"
+            )
+        }
     }
 
     private fun exportHistoryTxt() {
@@ -1474,6 +1538,45 @@ class DataActivity : Activity() {
                 action()
             }
         }
+
+    private fun dangerActionButton(
+        label: String,
+        action: () -> Unit
+    ): Button {
+        val palette =
+            AppThemeManager.palette(this)
+
+        return Button(this).apply {
+            text = label
+            isAllCaps = false
+            textSize = 13f
+            maxLines = 1
+            setTextColor(
+                palette.danger
+            )
+            setPadding(
+                dp(16),
+                dp(7),
+                dp(16),
+                dp(7)
+            )
+            background =
+                AppThemeManager
+                    .surfaceDrawable(
+                        context =
+                            this@DataActivity,
+                        fill =
+                            palette.surfaceAlt,
+                        radiusDp = 11,
+                        accentStroke = true,
+                        accentOverride =
+                            palette.danger
+                    )
+            setOnClickListener {
+                action()
+            }
+        }
+    }
 
     private fun topBar(
         title: String,
