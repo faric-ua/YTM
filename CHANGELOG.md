@@ -1,5 +1,14 @@
 # Журнал змін (Changelog)
 
+## v1.4.40
+- Added an in-app `Історія змін` page under `Про YTM Importer → Дізнатися більше`.
+- Release history is rendered from the repository root `CHANGELOG.md`, embedded automatically into Android assets at build time.
+- Added one release card per `##` changelog section with readable bullet formatting.
+- Back from release history returns to `Про YTM Importer`.
+- No network fetch, server dependency, analytics or new permission.
+- versionCode 76 / versionName 1.4.40.
+- v1.4.40 = NOT PHONE-TESTED YET.
+
 ## v1.4.39
 - Added native restore for `YTM_History_*.json`.
 - Added strict History-array validation and duplicate-id rejection.
