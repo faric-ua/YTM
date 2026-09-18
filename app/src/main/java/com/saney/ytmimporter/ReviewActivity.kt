@@ -30,6 +30,8 @@ import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
+import com.saney.ytmimporter.storage.SafTreeFileWriter
+import com.saney.ytmimporter.ui.SafFileSaveFlow
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -54,6 +56,9 @@ class ReviewActivity : Activity() {
 
     private val saveProjectRequestCode =
         3301
+
+    private val saveProjectFolderRequestCode =
+        3302
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -121,15 +126,24 @@ class ReviewActivity : Activity() {
             data
         )
 
-        if (
-            requestCode == saveProjectRequestCode &&
-            resultCode == RESULT_OK
-        ) {
-            data
-                ?.data
-                ?.let(
-                    ::writePendingProject
-                )
+        if (resultCode != RESULT_OK) {
+            return
+        }
+
+        when (requestCode) {
+            saveProjectRequestCode ->
+                data
+                    ?.data
+                    ?.let(
+                        ::writePendingProject
+                    )
+
+            saveProjectFolderRequestCode ->
+                data
+                    ?.data
+                    ?.let(
+                        ::writePendingProjectToTree
+                    )
         }
     }
 
@@ -960,30 +974,30 @@ class ReviewActivity : Activity() {
         pendingProjectSuggestedFileName =
             suggestedFileName
 
-        val intent =
-            Intent(
-                Intent.ACTION_CREATE_DOCUMENT
-            ).apply {
-                addCategory(
-                    Intent.CATEGORY_OPENABLE
-                )
-                type = "application/json"
-                putExtra(
-                    Intent.EXTRA_TITLE,
-                    suggestedFileName
-                )
-            }
-
         runCatching {
-            startActivityForResult(
-                intent,
-                saveProjectRequestCode
+            SafFileSaveFlow.show(
+                activity = this,
+                title =
+                    "Куди зберегти YTM Project?",
+                suggestedFileName =
+                    suggestedFileName,
+                mimeType =
+                    "application/json",
+                addFolderRequestCode =
+                    saveProjectFolderRequestCode,
+                createDocumentRequestCode =
+                    saveProjectRequestCode,
+                onRememberedRoot = {
+                    writePendingProjectToTree(
+                        it
+                    )
+                }
             )
         }.onFailure { error ->
             clearPendingProjectExport()
 
             toast(
-                "Не вдалося відкрити вибір файлу: " +
+                "Не вдалося відкрити вибір збереження: " +
                     (
                         error.message
                             ?: "невідома помилка"
@@ -1059,6 +1073,44 @@ class ReviewActivity : Activity() {
         }
     }
 
+    private fun writePendingProjectToTree(
+        treeUri: Uri
+    ) {
+        val content =
+            pendingProjectExport
+                ?: return
+
+        val fileName =
+            pendingProjectSuggestedFileName
+                ?: projectFileName()
+
+        runCatching {
+            SafTreeFileWriter.writeText(
+                context = this,
+                treeUri = treeUri,
+                preferredFileName =
+                    fileName,
+                mimeType =
+                    "application/json",
+                content = content
+            )
+        }.onSuccess { result ->
+            showProjectSaved(
+                result.fileName
+            )
+        }.onFailure { error ->
+            toast(
+                "Не вдалося зберегти Project: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+
+        clearPendingProjectExport()
+    }
+
     private fun writePendingProject(
         uri: Uri
     ) {
@@ -1082,29 +1134,9 @@ class ReviewActivity : Activity() {
                     "Android не відкрив файл для запису"
                 )
         }.onSuccess {
-            val projectName =
-                pendingProjectDisplayName
-                    ?: snapshot.playlist.name
-                        .trim()
-                        .ifBlank {
-                            "YTM Project"
-                        }
-
-            val savedFileName =
+            showProjectSaved(
                 queryDocumentName(uri)
                     ?: pendingProjectSuggestedFileName
-
-            toastLong(
-                buildString {
-                    append(
-                        "Project «$projectName» збережено"
-                    )
-
-                    if (!savedFileName.isNullOrBlank()) {
-                        append("\n")
-                        append(savedFileName)
-                    }
-                }
             )
         }.onFailure { error ->
             toast(
@@ -1117,6 +1149,33 @@ class ReviewActivity : Activity() {
         }
 
         clearPendingProjectExport()
+    }
+
+    private fun showProjectSaved(
+        savedFileName: String?
+    ) {
+        val projectName =
+            pendingProjectDisplayName
+                ?: snapshot.playlist.name
+                    .trim()
+                    .ifBlank {
+                        "YTM Project"
+                    }
+
+        toastLong(
+            buildString {
+                append(
+                    "Project «$projectName» збережено"
+                )
+
+                if (
+                    !savedFileName.isNullOrBlank()
+                ) {
+                    append("\n")
+                    append(savedFileName)
+                }
+            }
+        )
     }
 
     private fun queryDocumentName(
