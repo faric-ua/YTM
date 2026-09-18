@@ -7,7 +7,11 @@ SERVICE="$SRC/ServiceActivity.kt"
 UI="$SRC/ui/UiChrome.kt"
 
 grep -q 'private enum class Page' "$SERVICE" || fail "Service page state missing"
-grep -q 'if (page != Page.HOME)' "$SERVICE" || fail "Service back-stack guard missing"
+grep -Fq 'when (page)' "$SERVICE" || fail "Service back-stack dispatcher missing"
+grep -Fq 'Page.HOME ->' "$SERVICE" || fail "Service HOME back route missing"
+grep -Fq 'Page.CHANGELOG -> {' "$SERVICE" || fail "Service CHANGELOG back route missing"
+grep -Fq 'page = Page.ABOUT' "$SERVICE" || fail "Service CHANGELOG parent route missing"
+grep -Fq 'page = Page.HOME' "$SERVICE" || fail "Service subpage HOME back route missing"
 grep -q 'private fun buildQuickStart' "$SERVICE" || fail "Quick Start detail missing"
 grep -q 'private fun buildPrivacy' "$SERVICE" || fail "Privacy detail missing"
 grep -q 'private fun buildDiagnostics' "$SERVICE" || fail "Diagnostics detail missing"
@@ -23,6 +27,7 @@ grep -q 'data class DialogRecord' "$UI" || fail "DialogRecord template missing"
 
 echo 'PASS:'
 echo '- Service subpages stay inside ServiceActivity'
-echo '- Back returns to Service home instead of Main'
+echo '- Back uses explicit HOME / CHANGELOG / other-subpage routing'
+echo '- CHANGELOG Back returns to About; other subpages return to Service home'
 echo '- Diagnostics/SearchCache/About use structured screens'
 echo '- problem tracks use record tiles and stacked export actions'
