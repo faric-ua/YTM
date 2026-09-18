@@ -69,3 +69,25 @@ PASS: complete local state from immediately before History import returns.
 Try a random JSON file or a full `YTM_Backup_*.json` through the History JSON import action.
 
 PASS: it is rejected as an invalid History JSON format and no local data changes.
+
+## Real-phone partial result — file accepted
+
+Observed on phone with a real `YTM_History_*.json`:
+
+- file accepted by the native History import path: **PASS**;
+- confirmation opened: **PASS**;
+- current History shown as 3 records;
+- incoming restore shown as 3 records;
+- incoming track count shown as 9;
+- preservation copy for Queue/quota/SearchCache/current list was visible.
+
+UI finding:
+
+- confirm action `Відновити History` wrapped to two lines;
+- v1.4.40 shortens the action to `Відновити`.
+
+Not yet claimed:
+
+- actual History replacement;
+- Queue/quota/SearchCache/current-list preservation after confirmation;
+- rollback after History import.
