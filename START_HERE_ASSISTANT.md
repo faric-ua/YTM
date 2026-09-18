@@ -30,9 +30,9 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.38**
-- versionCode: **72**
-- release focus: **Full-screen Selectors + Safer Destructive Actions**
+- versionName: **1.4.38-R1**
+- versionCode: **73**
+- release focus: **v1.4.38-R1 — checkbox alignment + Restore rotation**
 - release status: **PARTIALLY PHONE-TESTED — SELECTORS/DESTRUCTIVE CONFIRMATIONS PASS; R1 CHECKBOX + BUG-008 ROTATION RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
@@ -318,3 +318,9 @@ Current UI follow-up:
 - dynamic long-list selectors in Import now use ListSelectorActivity
 - compact information/confirmation dialogs remain modal
 - UX-009 Green Dark state contrast remains open; Neon Dark stays color-locked
+
+
+v1.4.38-R1 is a targeted rebuild only:
+- fix selective-export checkbox visual alignment;
+- keep Restore confirmation after portrait/landscape rotation without reselecting the backup file;
+- do not claim any additional phone PASS from the R1 build until both checks are repeated.
