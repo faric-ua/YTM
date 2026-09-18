@@ -411,3 +411,11 @@ v1.4.36 phone finding — remembered-root long list:
 - Add-folder and Cancel are currently inside the same scroll content and require scrolling to the bottom = UX FAIL
 - required follow-up: full-screen YTM chooser with fixed header/footer, scrollable middle list, and `?` help modal
 - do not close UX-008 Phase 1/2A until the fixed-footer chooser is phone-tested
+
+UI FINDING — UX-010 UTILITY SCREENS
+- Home `Черга` already opens a dedicated Activity and is the navigation reference
+- user wants `Квота` to open the same kind of dedicated full-screen page instead of a modal
+- user wants `Ще` to become a dedicated full-screen utility/menu page instead of a modal list
+- proposed compact Home label for `Ще` = `Меню`
+- use shared back-button/top-bar behavior and scroll only page content where needed
+- implementation should follow the fixed-header/fixed-footer principle being introduced for long SAF lists
