@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.39 — Native History JSON Restore — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.40 — In-app Release History — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -17,6 +17,7 @@ v1.4.39 — Native History JSON Restore — IMPLEMENTED / PHONE RETEST NEEDED
 - UX-013 Mobile Action Copy Fit — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; long Restore/save labels shortened from real-phone evidence
 - UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
 - UX-015 History JSON Restore — IMPLEMENTED v1.4.39 / PHONE RETEST NEEDED; native History-only restore preserves Queue/quota/cache/current playlist and creates full safety snapshot
+- UX-016 In-app Release History — IMPLEMENTED v1.4.40 / PHONE RETEST NEEDED; About page opens release history generated from root CHANGELOG.md
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -659,3 +660,22 @@ including:
 - [ ] phone: rotation does not lose History file
 - [ ] phone: History replaced, other local groups preserved
 - [ ] phone: safety rollback restores pre-import state
+
+
+## v1.4.40 — In-app Release History
+- [x] bump versionCode 76 / versionName 1.4.40
+- [x] add About → Історія змін card
+- [x] add dedicated full-screen release-history page
+- [x] make root CHANGELOG.md the single source of truth
+- [x] copy root changelog into generated Android assets at build time
+- [x] render ## release sections as cards
+- [x] convert markdown list markers to readable bullets
+- [x] strip simple backtick/bold markers
+- [x] Back from release history returns to About
+- [x] add v1.4.40 docs + audit
+- [ ] signed APK
+- [ ] APK handoff to phone
+- [ ] phone: release-history card visible
+- [ ] phone: v1.4.40 appears first
+- [ ] phone: long release list scrolls cleanly
+- [ ] phone: Back returns to About
