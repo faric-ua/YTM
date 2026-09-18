@@ -396,6 +396,7 @@ v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
 - [x] Phase 2A: add reusable save folder and explicit system CREATE_DOCUMENT fallback
 - [x] Phase 2A: duplicate-safe numbered filenames + failed-write cleanup
 - [ ] Phase 2B: design the two `ACTION_OPEN_DOCUMENT` reuse/escape flows
+- [ ] Phase 2A-R1: dedicated full-screen remembered-root chooser with fixed bottom controls + `?` help
 - [ ] Phase 3: evaluate an in-app browser inside authorized roots
 
 ## v1.4.35 — Saved SAF Folders
@@ -409,8 +410,8 @@ v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
 - [x] add static SAF navigation audit
 - [x] GitHub signed build
 - [ ] phone: first-grant SAF path
-- [ ] phone: repeated folder action opens in-app root chooser
-- [ ] phone: `Скасувати` exits immediately without SAF
+- [x] phone: repeated folder action opens in-app root chooser
+- [ ] phone: `Скасувати` immediately accessible without scrolling — FAIL on v1.4.36 long root list
 - [ ] phone: remembered root reuse bypasses Android picker
 - [ ] phone: `Додати іншу папку…` still opens Android SAF
 - [ ] phone: read/write filtering smoke
