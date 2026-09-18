@@ -15,6 +15,8 @@ v1.4.38 — Full-screen Selectors + Safer Destructive Actions — IMPLEMENTED / 
 - UX-011 Full-screen List Selectors — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; four dynamic Import list families now use ListSelectorActivity
 - UX-012 Destructive Action Confirmation — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; explicit danger confirmations + separate safety-snapshot deletion flow
 - UX-013 Mobile Action Copy Fit — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; long Restore/save labels shortened from real-phone evidence
+- UX-014 Selector Checkbox Alignment — FIX IMPLEMENTED v1.4.38 R1 / PHONE RETEST NEEDED; multi-select checkbox moved into a dedicated centered touch column
+- UX-015 History JSON Restore — OPEN; `YTM_History_*.json` is an export array, not a full backup; add a native History-only restore/import path or clearer in-app conversion flow
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -589,3 +591,19 @@ including:
 - [ ] phone: delta-chain selector if test data has multiple heads
 - [ ] phone: danger confirmation accidental-tap resistance
 - [ ] phone: short mobile labels at portrait width
+
+
+## UX-014 — Selector Checkbox Alignment
+- [x] phone evidence: checkbox visually sits too close to the left edge relative to label
+- [x] replace compound CheckBox text row with a dedicated checkbox column + separate label
+- [x] make the whole row toggle the checkbox
+- [ ] phone retest on 783px portrait reference
+
+## UX-015 — History JSON Restore
+- [x] identify `YTM_History_*.json` as raw History export, not `ytm-importer-local-backup`
+- [x] verify the user-provided History JSON contains valid History records
+- [x] provide a History-only compatible backup conversion for immediate recovery
+- [ ] add native Data-screen History JSON restore/import flow
+- [ ] preserve Queue/quota/cache/current playlist during History-only import
+- [ ] create safety snapshot before native History-only import
+- [ ] phone QA History-only restore
