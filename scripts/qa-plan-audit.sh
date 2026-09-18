@@ -76,8 +76,8 @@ grep -Fq '| v1.4.34 | **PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUO
   || fail "v1.4.34 partial phone-test status missing"
 grep -Fq '| v1.4.35 | **NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA** |' "$STATUS" \
   || fail "v1.4.35 superseded phone-test status missing"
-grep -Fq '| v1.4.36 | **NOT PHONE-TESTED YET** |' "$STATUS" \
-  || fail "v1.4.36 pending phone-test status missing"
+grep -Fq '| v1.4.36 | **PARTIALLY PHONE-TESTED — IN-APP SAF ENTRY PASS / LONG-LIST FIXED-FOOTER FAIL** |' "$STATUS" \
+  || fail "v1.4.36 partial SAF phone-test status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
