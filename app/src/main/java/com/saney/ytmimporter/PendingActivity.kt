@@ -610,7 +610,7 @@ class PendingActivity : Activity() {
                 null
             )
             .setPositiveButton(
-                "Видалити"
+                "Так, видалити"
             ) { _, _ ->
                 pendingJobStore.remove(
                     job.id
