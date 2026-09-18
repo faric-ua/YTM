@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.38-R1 — Checkbox Alignment + Restore Rotation — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.38-R2 — Checkbox Visual Centering — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -15,7 +15,7 @@ v1.4.38-R1 — Checkbox Alignment + Restore Rotation — IMPLEMENTED / PHONE RET
 - UX-011 Full-screen List Selectors — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; four dynamic Import list families now use ListSelectorActivity
 - UX-012 Destructive Action Confirmation — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; explicit danger confirmations + separate safety-snapshot deletion flow
 - UX-013 Mobile Action Copy Fit — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; long Restore/save labels shortened from real-phone evidence
-- UX-014 Selector Checkbox Alignment — FIX IMPLEMENTED v1.4.38 R1 / PHONE RETEST NEEDED; multi-select checkbox moved into a dedicated centered touch column
+- UX-014 Selector Checkbox Alignment — R1 PHONE FAIL / R2 FIX IMPLEMENTED; visible CheckBox drawable now centered inside the 48dp touch column
 - UX-015 History JSON Restore — OPEN; `YTM_History_*.json` is an export array, not a full backup; add a native History-only restore/import path or clearer in-app conversion flow
 
 ## v1.4.16
@@ -621,6 +621,18 @@ including:
 - [x] add R1 static audit
 - [ ] signed R1 build
 - [ ] APK handoff to phone
-- [ ] phone: checkbox alignment
-- [ ] phone: Restore confirmation survives portrait → landscape
-- [ ] phone: Restore confirmation survives landscape → portrait
+- [x] R1 phone: checkbox alignment FAIL
+- [x] phone: Restore confirmation survives portrait → landscape
+- [x] phone: Restore confirmation survives landscape → portrait
+
+
+## v1.4.38-R2 — Checkbox Visual Centering
+- [x] versionName 1.4.38-R2 / versionCode 74
+- [x] preserve 48dp checkbox touch column
+- [x] wrap CheckBox in FrameLayout
+- [x] center visible checkbox with Gravity.CENTER
+- [x] preserve whole-row toggle behavior
+- [x] record BUG-008 R1 phone PASS
+- [ ] signed R2 build
+- [ ] APK handoff to phone
+- [ ] phone: checkbox visual balance on selective-export screen
