@@ -48,11 +48,11 @@ Rules:
 - display names are resolved through the tree document URI with a safe document-id fallback;
 - new grants are persisted through one helper.
 
-`ImportActivity` now contains one system `ACTION_OPEN_DOCUMENT_TREE` launcher. The seven folder workflows route through one in-app chooser first.
+`ImportActivity` now contains one system `ACTION_OPEN_DOCUMENT_TREE` launcher. The seven folder workflows always route through one in-app chooser first, even when no remembered root exists.
 
 ## Deliberately not solved yet
 
-Android's system picker is still used when the user explicitly chooses `Додати іншу папку…`, and YTM Importer still cannot control the Back-stack behavior inside that foreign system UI.
+Android's system picker is used only after the user explicitly chooses `Додати іншу папку…`, and YTM Importer still cannot control the Back-stack behavior inside that foreign system UI.
 
 A later UX-008 phase may add a DocumentFile-based in-app browser for browsing inside already authorized roots, plus a separate design for file open/create flows.
 
