@@ -1078,14 +1078,6 @@ class ImportActivity : Activity() {
                     access = access
                 )
 
-        if (roots.isEmpty()) {
-            launchSafTreePicker(
-                access = access,
-                requestCode = requestCode
-            )
-            return
-        }
-
         val actions =
             roots
                 .map { root ->
@@ -1126,8 +1118,13 @@ class ImportActivity : Activity() {
             activity = this,
             title = title,
             subtitle =
-                "Виберіть раніше дозволену папку. " +
-                    "Системний Android picker відкриється лише для нової папки.",
+                if (roots.isEmpty()) {
+                    "Ще немає збереженої папки для цієї операції. " +
+                        "Додайте нову або натисніть «Скасувати»."
+                } else {
+                    "Виберіть раніше дозволену папку. " +
+                        "Системний Android picker відкриється лише для нової папки."
+                },
             actions = actions,
             negativeLabel =
                 "Скасувати"
