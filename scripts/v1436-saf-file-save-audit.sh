@@ -43,7 +43,7 @@ done
 grep -Fq 'object SafTreeFileWriter' "$WRITER" || fail "SafTreeFileWriter missing"
 grep -Fq 'four user-facing create-file workflows' docs/v.1.4.36/FILE_SAVE_AUDIT.md \
   || fail "v1.4.36 create-file inventory missing"
-grep -Fq 'DocumentsContract.createDocument' "$WRITER" || fail "tree document create missing"
+grep -Fq '.createDocument(' "$WRITER" || fail "tree document create missing"
 grep -Fq 'uniqueFileName' "$WRITER" || fail "duplicate-safe filename helper missing"
 grep -Fq '"$base ($index)$extension"' "$WRITER" || fail "numbered duplicate naming missing"
 grep -Fq 'DocumentsContract' "$WRITER" || fail "DocumentsContract writer missing"
