@@ -1,5 +1,14 @@
 # Журнал змін (Changelog)
 
+## v1.4.34
+- Replaced the typographic `‹` back glyph with one shared 24dp vector arrow.
+- Added `UiChrome.backButton(...)` and routed Import / Data / History / Review / Service / Pending / Destination through it.
+- Standardized the back-button touch target to 48×48dp and removed per-screen baseline/padding hacks.
+- Carries the v1.4.33 unified stable modal pipeline forward for the pending representative phone retest.
+- Recorded UX-008 for future SAF/File Picker Escape work; no broad filesystem permission is introduced.
+- versionCode 68 / versionName 1.4.34.
+- v1.4.34 = NOT PHONE-TESTED YET.
+
 ## v1.4.33
 - Analyzed all modal-window paths after the v1.4.32 partial phone result.
 - Found 22 direct UiChrome modal calls and 22 legacy `UiChrome.alertBuilder` calls.

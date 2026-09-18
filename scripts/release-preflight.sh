@@ -30,6 +30,10 @@ check_file "docs/v.1.4.33/RELEASE.md"
 check_file "docs/v.1.4.33/REGRESSION_CHECKLIST.md"
 check_file "docs/v.1.4.33/qa/PHONE_TEST.md"
 check_file "docs/v.1.4.33/qa/BUG_REGISTER.md"
+check_file "docs/v.1.4.34/RELEASE.md"
+check_file "docs/v.1.4.34/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.34/qa/PHONE_TEST.md"
+check_file "docs/v.1.4.34/qa/BUG_REGISTER.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -79,6 +83,7 @@ bash scripts/v1430-delta-status-qa-close-audit.sh
 bash scripts/v1431-auth-ui-audit.sh
 bash scripts/v1432-dialog-first-frame-audit.sh
 bash scripts/v1433-dialog-unification-audit.sh
+bash scripts/v1434-back-navigation-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -132,6 +137,7 @@ check_file "scripts/v1430-delta-status-qa-close-audit.sh"
 check_file "scripts/v1431-auth-ui-audit.sh"
 check_file "scripts/v1432-dialog-first-frame-audit.sh"
 check_file "scripts/v1433-dialog-unification-audit.sh"
+check_file "scripts/v1434-back-navigation-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -278,11 +284,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 67' app/build.gradle.kts \
-  || fail "Expected versionCode = 67"
+grep -q 'versionCode = 68' app/build.gradle.kts \
+  || fail "Expected versionCode = 68"
 
-grep -q 'versionName = "1.4.33"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.33"'
+grep -q 'versionName = "1.4.34"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.34"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

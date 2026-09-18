@@ -1438,32 +1438,13 @@ class HistoryActivity : Activity() {
             )
 
             addView(
-                Button(
-                    this@HistoryActivity
-                ).apply {
-                    text = "‹"
-                    isAllCaps = false
-                    textSize = 26f
-                    setTextColor(Color.WHITE)
-                    setPadding(
-                        0,
-                        0,
-                        0,
-                        dp(2)
-                    )
-                    background =
-                        roundedBackground(
-                            color = SURFACE,
-                            radiusDp = 12,
-                            strokeColor = BORDER
-                        )
-                    setOnClickListener {
-                        onBack()
-                    }
-                },
+                UiChrome.backButton(
+                    activity = this@HistoryActivity,
+                    onClick = { onBack() }
+                ),
                 LinearLayout.LayoutParams(
-                    dp(46),
-                    dp(46)
+                    dp(48),
+                    dp(48)
                 )
             )
 

@@ -63,7 +63,7 @@ Phone-video analysis identified the remaining custom-dialog movement as AlertDia
 
 ## Q-002 — Custom dialog entrance motion on real device
 
-Status: **FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.33.**
+Status: **FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34.**
 
 Observed on the real phone through v1.4.11: some custom UiChrome dialogs can
 still show a short visual movement while opening instead of appearing
@@ -128,6 +128,10 @@ Implementation is present in v1.4.32; phone retest remains authoritative.
 ## v1.4.33 note — full modal unification
 
 v1.4.32 phone QA passed for the incremental backup preflight but still showed inconsistent entrance behavior on `Квота` and other modal windows. Repository inventory found 22 direct UiChrome modal calls plus 22 legacy `UiChrome.alertBuilder(...)` calls. v1.4.33 makes the builder a compatibility facade over the same stable custom Dialog engine and requires a representative full-modal phone retest.
+
+## v1.4.34 note — carried forward with back-navigation fix
+
+v1.4.33 was superseded before phone QA by v1.4.34. The modal engine is unchanged; the same representative real-phone retest is required on v1.4.34.
 
 
 ## Q-003 — Silent Google/YTM recovery after update

@@ -485,15 +485,14 @@ class ServiceActivity : Activity() {
             setPadding(dp(10), dp(8), dp(10), dp(10))
 
             addView(
-                Button(this@ServiceActivity).apply {
-                    text = "‹"
-                    isAllCaps = false
-                    textSize = 26f
-                    setTextColor(Color.WHITE)
-                    background = roundedBackground(SURFACE, 12, BORDER)
-                    setOnClickListener { onBackPressed() }
-                },
-                LinearLayout.LayoutParams(dp(46), dp(46))
+                UiChrome.backButton(
+                    activity = this@ServiceActivity,
+                    onClick = { onBackPressed() }
+                ),
+                LinearLayout.LayoutParams(
+                    dp(48),
+                    dp(48)
+                )
             )
 
             addView(

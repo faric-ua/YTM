@@ -3038,26 +3038,13 @@ class ImportActivity : Activity() {
             )
 
             addView(
-                Button(
-                    this@ImportActivity
-                ).apply {
-                    text = "‹"
-                    isAllCaps = false
-                    textSize = 26f
-                    setTextColor(Color.WHITE)
-                    background =
-                        roundedBackground(
-                            color = SURFACE,
-                            radiusDp = 12,
-                            strokeColor = BORDER
-                        )
-                    setOnClickListener {
-                        finish()
-                    }
-                },
+                UiChrome.backButton(
+                    activity = this@ImportActivity,
+                    onClick = { finish() }
+                ),
                 LinearLayout.LayoutParams(
-                    dp(46),
-                    dp(46)
+                    dp(48),
+                    dp(48)
                 )
             )
 

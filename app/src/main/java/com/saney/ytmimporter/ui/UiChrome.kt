@@ -17,6 +17,7 @@ import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -190,6 +191,34 @@ object UiChrome {
 
     fun alertBuilder(activity: Activity): StableAlertBuilder =
         StableAlertBuilder(activity)
+
+    fun backButton(
+        activity: Activity,
+        onClick: () -> Unit
+    ): ImageButton =
+        ImageButton(activity).apply {
+            contentDescription = "Назад"
+            setImageResource(R.drawable.ic_arrow_back_24)
+            imageTintList =
+                android.content.res.ColorStateList.valueOf(
+                    AppThemeManager.palette(activity).text
+                )
+            scaleType =
+                android.widget.ImageView.ScaleType.CENTER
+            setPadding(0, 0, 0, 0)
+            minimumWidth = 0
+            minimumHeight = 0
+            background =
+                AppThemeManager.surfaceDrawable(
+                    context = activity,
+                    fill = AppThemeManager.palette(activity).surface,
+                    radiusDp = 12,
+                    accentStroke = false
+                )
+            setOnClickListener {
+                onClick()
+            }
+        }
 
     private fun customDialog(
         activity: Activity
