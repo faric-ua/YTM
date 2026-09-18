@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.37**
-- versionCode: **71**
-- release focus: **Full-screen Storage + Utility UI**
-- release status: **PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS; LONG-LIST SELECTOR MIGRATION OPEN**
+- versionName: **1.4.38**
+- versionCode: **72**
+- release focus: **Full-screen Selectors + Safer Destructive Actions**
+- release status: **NOT PHONE-TESTED YET — v1.4.38 PHONE QA NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -76,6 +76,8 @@ v1.4.36 implements UX-008 Phase 2A for the four create-file workflows. Data expo
 Real-phone v1.4.36 testing confirmed the in-app remembered-root chooser appears before Android SAF. A long-list UX failure was found: when many persisted roots exist, Add-folder and Cancel scroll off-screen with the list. The required follow-up is a dedicated full-screen YTM chooser with fixed header/footer, scrollable middle content, and a `?` help modal.
 
 v1.4.37 implements that follow-up with `StorageChooserActivity`. It is reused by Import folder-tree flows and file-save destinations, keeps system picker entry explicit, and returns to the YTM chooser when the user backs out of Android's picker. The same release moves Quota and the renamed `Меню` utility entry to dedicated full-screen pages while preserving the existing Queue result bridge.
+
+v1.4.38 migrates the remaining dynamic Import selectors to reusable `ListSelectorActivity`: YTM playlist import, selective export, delta-chain head and backup/manifest project. It also adds explicit danger confirmations, removes direct safety-snapshot deletion from the rollback-success dialog, and shortens Restore/storage button copy for phone-width fit.
 
 The release remains only partially phone-tested overall.
 
@@ -252,12 +254,13 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-test v1.4.37 full-screen storage, Quota, and Menu navigation;
-2. implement UX-008 Phase 2B for the two open-file flows after v1.4.36 evidence;
-3. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
-4. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
-5. then establish the localization resource foundation for Ukrainian / Korean / English;
-6. then build the visual skin foundation without changing import/search/write semantics.
+1. build and phone-test v1.4.38 full-screen selectors, destructive confirmations, and shortened mobile action copy;
+2. finish the remaining v1.4.37 Quota/Menu/storage behavior smoke while testing v1.4.38;
+3. implement UX-008 Phase 2B for the two open-file flows after the current UI pass;
+4. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
+5. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
+6. then establish the localization resource foundation for Ukrainian / Korean / English;
+7. then build the visual skin foundation without changing import/search/write semantics.
 
 Future product requirements already recorded:
 
@@ -311,6 +314,7 @@ The goal is that a new assistant can become productive from the repository itsel
 
 
 Current UI follow-up:
-- UX-011: v1.4.37 full-screen storage chooser pattern passed on phone
-- migrate dynamic long-list selectors in Import (YTM playlist import, selective export, delta-chain head, backup/manifest project) to dedicated full-screen selectors
+- UX-011 implementation is now in v1.4.38; phone-test all four selector families
+- UX-012 implementation is now in v1.4.38; verify destructive confirmations and safety-snapshot deletion
+- UX-013 implementation is now in v1.4.38; verify one-line mobile action labels
 - keep compact information/confirmation dialogs as modals
