@@ -53,6 +53,7 @@ class MainActivity : Activity() {
     private val importScreenRequestCode = 1301
     private val reviewScreenRequestCode = 1302
     private val destinationScreenRequestCode = 1401
+    private val menuScreenRequestCode = 1501
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
@@ -373,12 +374,12 @@ class MainActivity : Activity() {
 
         quotaButton =
             compactButton("Квота") {
-                showQuotaDialog()
+                openQuotaScreen()
             }
 
         val moreButton =
-            compactButton("Ще") {
-                showMoreActions()
+            compactButton("Меню") {
+                openMenuScreen()
             }
 
         listOf(
@@ -708,7 +709,10 @@ class MainActivity : Activity() {
 
             label.contains(
                 "Ще"
-            ) ->
+            ) ||
+                label.contains(
+                    "Меню"
+                ) ->
                 R.drawable.ic_ytm_more
 
             else ->
@@ -1346,6 +1350,10 @@ class MainActivity : Activity() {
                 handleDestinationResult(data)
             }
 
+            menuScreenRequestCode -> {
+                handleMenuScreenResult(data)
+            }
+
             authRequestCode -> {
                 try {
                     val result =
@@ -1361,6 +1369,58 @@ class MainActivity : Activity() {
                     toast("Авторизація не вдалася: ${e.statusCode}")
                 }
             }
+        }
+    }
+
+    private fun openQuotaScreen() {
+        startActivity(
+            Intent(
+                this,
+                QuotaActivity::class.java
+            )
+        )
+    }
+
+    private fun openMenuScreen() {
+        startActivityForResult(
+            Intent(
+                this,
+                MenuActivity::class.java
+            ),
+            menuScreenRequestCode
+        )
+    }
+
+    private fun handleMenuScreenResult(
+        data: Intent
+    ) {
+        when (
+            data.getStringExtra(
+                MenuActivity.EXTRA_ACTION
+            )
+        ) {
+            MenuActivity.ACTION_THEME ->
+                showThemePicker()
+
+            MenuActivity.ACTION_PROJECT ->
+                openReviewScreen()
+
+            MenuActivity.ACTION_REPLACEMENTS ->
+                showReplacementLog()
+
+            MenuActivity.ACTION_OPEN_YTM ->
+                openInYtm()
+
+            MenuActivity.ACTION_DATA ->
+                startActivity(
+                    Intent(
+                        this,
+                        DataActivity::class.java
+                    )
+                )
+
+            MenuActivity.ACTION_SERVICE ->
+                showServiceTools()
         }
     }
 
