@@ -16,6 +16,7 @@ check_file() {
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
+check_file "TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt"
 check_file "docs/v.1.4.30/RELEASE.md"
 check_file "docs/v.1.4.30/REGRESSION_CHECKLIST.md"
 check_file "docs/v.1.4.31/RELEASE.md"
