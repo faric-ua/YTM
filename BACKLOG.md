@@ -1,11 +1,11 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.31 — Auth Invalid-State Sync + Backup UI Polish — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.32 — Dialog First-Frame Fix — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
-- BUG-002/Q-002 DEFERRED — reproduced again on v1.4.27; video evidence preserved; non-blocking by user decision
+- BUG-002/Q-002 FIX IMPLEMENTED v1.4.32 — real-phone no-jump retest required
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.31 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
@@ -310,7 +310,7 @@ v1.4.31 — Auth Invalid-State Sync + Backup UI Polish — IMPLEMENTED / PHONE R
 - [x] v1.4.31 implementation: UI localization cleanup for backup/delta dialogs
 - [x] v1.4.31 implementation: clarify backup destination-parent selection
 - [ ] phone retest BUG-004 after a real/reproduced HTTP 401
-- [ ] phone smoke v1.4.31 backup dialog copy/button fit
+- [x] phone smoke v1.4.31 backup preflight copy/button fit — PASS
 
 ## v1.4.31 — Auth Invalid-State Sync + Backup UI Polish
 - [x] bump versionCode 65 / versionName 1.4.31
@@ -331,9 +331,26 @@ v1.4.31 — Auth Invalid-State Sync + Backup UI Polish — IMPLEMENTED / PHONE R
 - [ ] phone smoke localized backup dialogs
 
 
+## v1.4.32 — Dialog First-Frame Fix
+- [x] user reopened BUG-002 after v1.4.31 phone reconfirmation
+- [x] bump versionCode 66 / versionName 1.4.32
+- [x] dedicated Dialog for UiChrome custom Menu/Message/Record surfaces
+- [x] configure Window before `show()`
+- [x] remove post-show geometry correction
+- [x] pre-draw reveal after safe insets
+- [x] update dialog bounds/animation audits
+- [x] add v1.4.32 focused static audit and QA docs
+- [ ] GitHub signed build
+- [ ] phone retest: incremental backup preflight opens with no visible jump
+- [ ] phone spot-check: one short Message dialog opens with no visible jump
+- [ ] phone spot-check: one Menu dialog opens with no visible jump
+- [ ] close BUG-002 only from real-phone evidence
+
+
 ## Next
-After v1.4.31 build/phone retest:
-- close BUG-004 only if a real/reproduced HTTP 401 clears Step 2 on phone;
+After v1.4.32 build/phone retest:
+- close BUG-002 only if the dialog is stable from the first visible frame;
+- keep BUG-004 phone retest pending until a real/reproduced HTTP 401 occurs;
 - then continue with the localization resource foundation.
 
 ## Future product plan — localization + exclusive skin

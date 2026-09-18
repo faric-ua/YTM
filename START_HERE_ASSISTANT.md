@@ -30,9 +30,9 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.31**
-- versionCode: **65**
-- release focus: **BUG-004 Auth Invalid-State Sync + Backup UI Polish**
+- versionName: **1.4.32**
+- versionCode: **66**
+- release focus: **BUG-002 Dialog First-Frame Fix**
 - release status: **NOT PHONE-TESTED YET — FIX IMPLEMENTED / RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
@@ -63,12 +63,14 @@ Phone scan/chain materialization evidence and the local state validator passed a
 
 v1.4.31 implements the BUG-004 repair across ImportActivity/MainActivity: a real YouTube API HTTP 401 clears shared/persistent auth state, account backup scans abort instead of recording misleading normal FAILED records, and Home Step 2 resynchronizes when the user returns. The same release also shortens `Перевірити зміни` to `Перевірити`, cleans mixed-language backup dialog prose, and corrects the obsolete delta-chain warning. Phone retest is still required before BUG-004 can close.
 
+The v1.4.31 phone UI smoke passed for the shortened incremental preflight copy, but the same long-standing dialog entrance jump was visible again. The user explicitly reopened BUG-002. v1.4.32 changes the shared UiChrome first-frame architecture to a dedicated Dialog configured before `show()`, with hidden safe-inset layout revealed at pre-draw. Phone no-jump evidence is still required before BUG-002 closes.
+
 The release remains only partially phone-tested overall.
 
 Current known items include:
 
 - BUG-001 / Q-001: OPEN;
-- BUG-002 / Q-002: DEFERRED BY USER — reproduced again on v1.4.27; evidence preserved;
+- BUG-002 / Q-002: FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.32;
 - BUG-003 / Q-003: CLOSED — PHONE RETEST PASS v1.4.20;
 - BUG-004 / Q-004: FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31;
 - BUG-005 / Q-005: CLOSED — PHONE RETEST PASS v1.4.27;
@@ -238,10 +240,11 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-retest v1.4.31 BUG-004 handling plus backup-dialog polish;
-2. close BUG-004 only from real/reproduced phone 401 evidence;
-3. establish the localization resource foundation for Ukrainian / Korean / English;
-4. then build the visual skin foundation without changing import/search/write semantics.
+1. build and phone-retest v1.4.32 dialog first-frame stability;
+2. close BUG-002 only from real-phone no-jump evidence;
+3. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
+4. establish the localization resource foundation for Ukrainian / Korean / English;
+5. then build the visual skin foundation without changing import/search/write semantics.
 
 Future product requirements already recorded:
 

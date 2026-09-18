@@ -33,3 +33,7 @@ This requires a real or intentionally reproduced HTTP 401; do not fake PASS from
 
 Expected status before evidence:
 **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31**.
+
+## 2026-09-18 UI smoke result
+
+PASS for the incremental preflight copy/button fit: `Перевірити` is one line and `Основа` / `Режим` / `у режимі` are visible. The same check reconfirmed BUG-002 entrance motion, so it was reopened for v1.4.32. BUG-004 remains pending because a fresh real HTTP 401 was not available yet.

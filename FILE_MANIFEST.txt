@@ -1,4 +1,4 @@
-YTM Importer v1.4.31 FULL — FILE MANIFEST
+YTM Importer v1.4.32 FULL — FILE MANIFEST
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 0739c7de5aa06eac  .github/workflows/build-apk.yml
@@ -7,20 +7,20 @@ YTM Importer v1.4.31 FULL — FILE MANIFEST
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
-c17c9fc58b51e87c  BACKLOG.md
-e75a34040d8c479f  CHANGELOG.md
+9c3c8b367d7b8f31  BACKLOG.md
+23ab3b88607f4200  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
-503b7f911c1ac04c  OPEN_QUESTIONS.md
+e1a5b72c8b1c48d2  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
-9319587b33b40f7b  PROJECT_STATUS.txt
+d6b87e4315f59e4a  PROJECT_STATUS.txt
 ce775606933d5b6f  PUBLIC_RELEASE_CHECKLIST.md
 235637db324518ac  README.md
 48b7e9718ed807af  README_G01A.md
 7b00d1251f822b57  README_GUARD_FIX.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
-06c829f2b5515903  RELEASE_TEST_STATUS.md
-dafb9611f95befa0  START_HERE_ASSISTANT.md
+a92e8f506c63cccc  RELEASE_TEST_STATUS.md
+3e336f26440b0ace  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
@@ -78,7 +78,7 @@ fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 c75f45f28e9e62b4  TERMUX_COMMANDS.md
 d82aae793cbd99c4  YTM_ASSISTANT_WORKFLOW.md
-4fd30cdf69f560a6  app/build.gradle.kts
+1fd8bc65c88cf83e  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 27d6378715cbab35  app/src/main/AndroidManifest.xml
 651321f836af9236  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
@@ -111,7 +111,7 @@ d8f0c56f39f3fb2f  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupMan
 1ee13fa92a322d93  app/src/main/java/com/saney/ytmimporter/storage/QuotaTracker.kt
 dd764f64c2e7db77  app/src/main/java/com/saney/ytmimporter/ui/AppThemeManager.kt
 d3343b4bd89cf956  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-5b873c436c003640  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+211d25eee8adb3ac  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 c0102f86d465b27c  app/src/main/java/com/saney/ytmimporter/util/ErrorMessages.kt
 543cdd1ec3bc4a58  app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt
 49ea39322f16188f  app/src/main/java/com/saney/ytmimporter/youtube/MatchScorer.kt
@@ -1101,7 +1101,12 @@ d853e46a9fd434b9  docs/v.1.4.30/qa/evidence/EVIDENCE_08_BUG007_R1_BUTTON_WRAP.jp
 17c4ec362ecec84c  docs/v.1.4.31/REGRESSION_CHECKLIST.md
 4a16d759cdf471a1  docs/v.1.4.31/RELEASE.md
 63c409f828aaf61a  docs/v.1.4.31/qa/BUG_REGISTER.md
-504d56376265a036  docs/v.1.4.31/qa/PHONE_TEST.md
+fb6c9e1a2b1e136e  docs/v.1.4.31/qa/PHONE_TEST.md
+0f96185ed9a1d584  docs/v.1.4.31/qa/evidence/EVIDENCE_01_INCREMENTAL_UI_POLISH_PASS.jpg
+cf67845154b82f46  docs/v.1.4.32/REGRESSION_CHECKLIST.md
+6701cb21e9d38283  docs/v.1.4.32/RELEASE.md
+8762919c5ad70662  docs/v.1.4.32/qa/BUG_REGISTER.md
+13b326602ce13e4f  docs/v.1.4.32/qa/PHONE_TEST.md
 34d29ff1ab04898f  docs/v.1.4.4/REGRESSION_CHECKLIST.md
 cd2362465bf4e6de  docs/v.1.4.4/RELEASE.md
 5f809adb076532f4  docs/v.1.4.4/diagrams/ADAPTIVE_BUTTONS.md
@@ -1136,7 +1141,7 @@ d8d981601292bcf3  docs/v.1.4.8/diagrams/DIALOG_SAFE_VIEWPORT.md
 4b4c4a110300298e  docs/v.1.4.9/diagrams/DIALOG_FIRST_FRAME.md
 463352aea3df25d4  docs/v.1.4.9/diagrams/README.md
 d5f372c6d46ad7c8  gradle.properties
-2135bd295fc74ffc  qa/BUG_REGISTER.md
+dd75756d95562850  qa/BUG_REGISTER.md
 607a79dbdf7d4a75  qa/MASTER_TEST_PLAN.md
 084a4e801c888158  qa/TEST_DATA.md
 e73ddc7565ea4b94  qa/TEST_EVIDENCE_POLICY.md
@@ -1167,17 +1172,17 @@ c9f2616bb9b38084  scripts/button-layout-audit.sh
 aebf1b7e01c530bc  scripts/compact-review-audit.sh
 b70878d4bcd0b2b8  scripts/configuration-state-audit.sh
 f58573a1f289d980  scripts/destination-coordinator-audit.sh
-916a1c9510072f64  scripts/dialog-animation-audit.sh
-056da497e83bdb69  scripts/dialog-bounds-audit.sh
+4bb3352fbb29cbc2  scripts/dialog-animation-audit.sh
+8be4f3d99b85e16e  scripts/dialog-bounds-audit.sh
 49fb8470416bbbc9  scripts/dialog-style-audit.sh
 62193ffaa1f110da  scripts/download-latest-apk.sh
 d0552e9ad9641729  scripts/mainactivity-audit.sh
 f6002f563634451e  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
-0c658d94da00b5ff  scripts/project-handoff-audit.sh
-f776ea5003ec2d9f  scripts/qa-plan-audit.sh
+450ebc0f6ef985fb  scripts/project-handoff-audit.sh
+dbfa273a78819425  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
-40de3cc679c14b1e  scripts/release-preflight.sh
+c5fb49a4d2ce0a5e  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d101c2a72335189a  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1216,5 +1221,6 @@ e8b3243088624b9d  scripts/v1429-qa-close-audit.sh
 e5dae7df782ff20a  scripts/v1430-delta-status-qa-selftest.py
 3a3387c9b3726800  scripts/v1430-delta-status-qa.py
 6871b268d4eda2b3  scripts/v1430-qa-close-audit.sh
-f4ff67e2cd990495  scripts/v1431-auth-ui-audit.sh
+ad6757108c8388a2  scripts/v1431-auth-ui-audit.sh
+2279d1e904953ce6  scripts/v1432-dialog-first-frame-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts

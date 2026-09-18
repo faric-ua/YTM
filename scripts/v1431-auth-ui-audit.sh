@@ -22,8 +22,10 @@ do
   test -f "$f" || fail "missing v1.4.31 file: $f"
 done
 
-grep -Fq 'versionCode = 65' "$GRADLE" || fail "versionCode 65"
-grep -Fq 'versionName = "1.4.31"' "$GRADLE" || fail "versionName 1.4.31"
+grep -Fq 'versionCode: **65**' docs/v.1.4.31/RELEASE.md \
+  || fail "v1.4.31 release snapshot versionCode missing"
+grep -Fq 'versionName: **1.4.31**' docs/v.1.4.31/RELEASE.md \
+  || fail "v1.4.31 release snapshot versionName missing"
 
 grep -Fq 'syncAuthorizationInvalidationFromMemory()' "$MAIN" \
   || fail "Main onResume auth sync missing"

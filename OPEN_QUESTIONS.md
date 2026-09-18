@@ -63,7 +63,7 @@ Phone-video analysis identified the remaining custom-dialog movement as AlertDia
 
 ## Q-002 — Custom dialog entrance motion on real device
 
-Status: **DEFERRED BY USER — does not block the roadmap.**
+Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.32.**
 
 Observed on the real phone through v1.4.11: some custom UiChrome dialogs can
 still show a short visual movement while opening instead of appearing
@@ -76,11 +76,21 @@ Attempts already made in v1.4.8–v1.4.11 included:
 - `Gravity.TOP`;
 - disabling the custom dialog Window animation.
 
-The user explicitly chose to stop spending time on this issue for now and
-continue with YTM development.
+The issue was deferred for several releases, then explicitly reopened by
+the user after the same jump was visible again on the v1.4.31 incremental
+backup preflight.
 
-Do not reopen or block a release on Q-002 unless the user explicitly asks to
-return to it.
+v1.4.32 changes the shared UiChrome custom-dialog architecture instead of
+patching one individual dialog:
+
+- dedicated `Dialog` owns custom content directly;
+- full-screen transparent Window geometry is configured before `show()`;
+- no `setOnShowListener` geometry correction remains;
+- safe insets are applied while content is hidden;
+- the first visible frame is gated by `OnPreDrawListener`.
+
+Do not mark Q-002 closed until the same real-phone dialog opens without a
+visible position jump.
 
 ## v1.4.12 note
 
@@ -107,6 +117,14 @@ Evidence is preserved under:
 
 The user explicitly chose to keep Q-002 deferred and continue product work.
 This evidence does not reopen Q-002 and must not block the next feature release.
+
+## v1.4.32 note — user reopened Q-002
+
+The v1.4.31 phone observation reconfirmed the entrance jump on the incremental
+backup preflight. The user asked to address it now.
+
+Implementation is present in v1.4.32; phone retest remains authoritative.
+
 
 ## Q-003 — Silent Google/YTM recovery after update
 

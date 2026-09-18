@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.31
-Version code: 65
+Version: 1.4.32
+Version code: 66
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -21,7 +21,8 @@ v1.4.27 PARTIALLY PHONE-TESTED — BUG-005 EXACT-ID SEARCH GUARD PASS
 v1.4.28 PARTIALLY PHONE-TESTED — BULK MANIFEST IMPORT PATH PASS
 v1.4.29 PARTIALLY PHONE-TESTED — INCREMENTAL BACKUP PATH PASS
 v1.4.30 PARTIALLY PHONE-TESTED — CONSOLIDATED DELTA-CHAIN + NEW/UPDATED/MISSING TARGETED PATH PASS
-v1.4.31 NOT PHONE-TESTED YET — BUG-004 FIX + BACKUP UI POLISH
+v1.4.31 PARTIALLY PHONE-TESTED — BACKUP UI POLISH SMOKE PASS / BUG-004 RETEST PENDING
+v1.4.32 NOT PHONE-TESTED YET — BUG-002 DIALOG FIRST-FRAME FIX
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -307,9 +308,19 @@ v1.4.31 focus:
 - clarify that new backup sessions should be saved to a common parent folder
 
 
+v1.4.32 focus:
+- reopen BUG-002/Q-002 after v1.4.31 phone reconfirmation
+- use dedicated full-screen transparent Dialog windows for UiChrome custom dialogs
+- configure size/gravity/animation/inset mode before `show()`
+- apply safe insets while content remains hidden
+- reveal only on first pre-draw after final inset padding
+- shared fix covers Menu / Message / Record dialogs
+- preserve v1.4.31 auth fixes unchanged
+
+
 Known:
 BUG-001/Q-001 OPEN
-BUG-002/Q-002 DEFERRED — REPRODUCED v1.4.27 / VIDEO EVIDENCE PRESERVED
+BUG-002/Q-002 FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.32
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
 BUG-004/Q-004 FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31
 BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27

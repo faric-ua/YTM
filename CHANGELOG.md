@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.32
+- Reopened BUG-002 / Q-002 after the entrance-position jump was visible again on v1.4.31.
+- UiChrome custom Menu/Message/Record dialogs now use a dedicated `Dialog` instead of an AlertDialog custom-view panel.
+- The transparent full-screen Window is configured before `show()`; there is no post-show geometry correction.
+- Safe system-bar/cutout insets are applied while dialog content remains hidden.
+- Content becomes visible on first pre-draw after final inset padding.
+- v1.4.31 backup preflight UI polish was phone-smoked: `Перевірити`, `Основа`, `Режим`.
+- BUG-004 remains phone-retest pending.
+- versionCode 66 / versionName 1.4.32.
+- v1.4.32 = NOT PHONE-TESTED YET.
+
 ## v1.4.31
 - Fixed BUG-004 propagation gap between ImportActivity and MainActivity.
 - ImportActivity now recognizes YouTube API HTTP 401 and clears shared auth state plus the non-secret prior-authorization marker.

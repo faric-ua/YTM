@@ -37,15 +37,36 @@ fi
 grep -A12 'val outer =' "$UI" | grep -q 'alpha = 0f' \
   || fail "custom dialog provisional content is visible"
 
-grep -A40 'setOnApplyWindowInsetsListener' "$UI" | grep -q 'view.alpha = 1f' \
-  || fail "custom dialog is not revealed after final insets"
+grep -q 'private fun customDialog' "$UI" \
+  || fail "dedicated custom Dialog factory missing"
+
+CUSTOM_DIALOG_COUNT="$(
+  grep -F 'val dialog = customDialog(activity)' "$UI" |
+    wc -l |
+    tr -d ' '
+)"
+[ "$CUSTOM_DIALOG_COUNT" = "3" ] \
+  || fail "expected 3 UiChrome custom dialog entry points, found $CUSTOM_DIALOG_COUNT"
+
+grep -q 'dialog.setContentView' "$UI" \
+  || fail "custom Dialog does not own content directly"
+if grep -q 'dialog.setView(outer)' "$UI"; then fail "AlertDialog setView path returned"; fi
+if grep -q 'dialog.setOnShowListener' "$UI"; then fail "post-show window reconfiguration returned"; fi
+
+grep -A65 'setOnApplyWindowInsetsListener' "$UI" |
+  grep -q 'ViewTreeObserver.OnPreDrawListener' \
+  || fail "first visible frame is not pre-draw gated"
 
 grep -q 'fun configureWindow()' "$UI" \
   || fail "dialog window configuration helper missing"
-
-grep -A45 'fun configureWindow()' "$UI" |
+grep -A55 'fun configureWindow()' "$UI" |
   grep -q 'setWindowAnimations(0)' \
   || fail "custom dialog WindowManager animation is not disabled"
+
+CONFIG_LINE="$(grep -n '^[[:space:]]*configureWindow()$' "$UI" | tail -n 1 | cut -d: -f1)"
+SHOW_LINE="$(grep -n '^[[:space:]]*dialog.show()$' "$UI" | tail -n 1 | cut -d: -f1)"
+[ -n "$CONFIG_LINE" ] && [ -n "$SHOW_LINE" ] || fail "configure/show ordering markers missing"
+[ "$CONFIG_LINE" -lt "$SHOW_LINE" ] || fail "Dialog Window is not configured before show()"
 
 CUSTOM_CALLS="$(
   grep -R -h -E \
@@ -64,5 +85,7 @@ echo "- tall custom dialogs start at the visible top and remain scrollable"
 echo "- custom dialogs use one stable top anchor regardless of content height"
 echo "- provisional custom-dialog frame is hidden until final insets"
 echo "- card layout is TOP anchored"
-echo "- WindowManager animation is disabled, preventing whole-window motion"
+echo "- dedicated Dialog Window is fully configured before show()"
+echo "- first visible content draw is gated until safe insets are applied"
+echo "- WindowManager animation remains disabled"
 echo "- shared fix covers $CUSTOM_CALLS Menu/Message/Record dialog call sites"

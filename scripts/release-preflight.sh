@@ -22,6 +22,10 @@ check_file "docs/v.1.4.31/RELEASE.md"
 check_file "docs/v.1.4.31/REGRESSION_CHECKLIST.md"
 check_file "docs/v.1.4.31/qa/PHONE_TEST.md"
 check_file "docs/v.1.4.31/qa/BUG_REGISTER.md"
+check_file "docs/v.1.4.32/RELEASE.md"
+check_file "docs/v.1.4.32/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.32/qa/PHONE_TEST.md"
+check_file "docs/v.1.4.32/qa/BUG_REGISTER.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
@@ -69,6 +73,7 @@ bash scripts/v1430-qa-close-audit.sh
 python -B scripts/v1430-delta-status-qa-selftest.py
 bash scripts/v1430-delta-status-qa-close-audit.sh
 bash scripts/v1431-auth-ui-audit.sh
+bash scripts/v1432-dialog-first-frame-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -120,6 +125,7 @@ check_file "scripts/v1430-delta-status-qa.py"
 check_file "scripts/v1430-delta-status-qa-selftest.py"
 check_file "scripts/v1430-delta-status-qa-close-audit.sh"
 check_file "scripts/v1431-auth-ui-audit.sh"
+check_file "scripts/v1432-dialog-first-frame-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -179,7 +185,7 @@ grep -q 'Q-001' OPEN_QUESTIONS.md \
   || fail "Deferred UX question Q-001 is not documented"
 
 grep -q 'Q-002' OPEN_QUESTIONS.md \
-  || fail "Deferred dialog-motion issue Q-002 is not documented"
+  || fail "Dialog-motion issue Q-002 is not documented"
 
 grep -Fq '| v1.4.12 | **NOT TESTED** |' RELEASE_TEST_STATUS.md \
   || fail "v1.4.12 must remain explicitly marked NOT TESTED"
@@ -266,11 +272,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 65' app/build.gradle.kts \
-  || fail "Expected versionCode = 65"
+grep -q 'versionCode = 66' app/build.gradle.kts \
+  || fail "Expected versionCode = 66"
 
-grep -q 'versionName = "1.4.31"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.31"'
+grep -q 'versionName = "1.4.32"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.32"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -400,13 +406,13 @@ echo "- horizontal action rows ignore child text baselines"
 echo "- Step 2 keeps the same vertical bounds after rotation"
 echo "- custom dialogs are top anchored without center-to-top relayout"
 
-echo "- custom AlertDialog WindowManager animation disabled"
-echo "- first visible custom-dialog frame should remain at the final TOP anchor"
+echo "- custom Dialog Window is configured before show()"
+echo "- first visible custom-dialog frame is pre-draw gated at the final TOP anchor"
 
 echo "- Cleanup wave 2: legacy MainActivity UI flows removed"
 echo "- dedicated Import/Review/History/Data/Pending/Service screens retained"
 echo "- original permissive file picker retained in ImportActivity"
-echo "- Q-002 dialog motion deferred by user and not a release blocker"
+echo "- Q-002 dialog first-frame fix implemented; phone retest still required"
 
 echo "- v1.4.12 explicitly marked NOT TESTED"
 echo "- SearchCoordinator owns track-search domain orchestration"

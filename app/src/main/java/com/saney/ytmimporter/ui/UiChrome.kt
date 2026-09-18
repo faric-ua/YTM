@@ -2,6 +2,7 @@ package com.saney.ytmimporter.ui
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
@@ -11,6 +12,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -59,6 +61,16 @@ object UiChrome {
             R.style.YtmAlertDialogTheme
         )
 
+    private fun customDialog(
+        activity: Activity
+    ): Dialog =
+        Dialog(
+            activity,
+            R.style.YtmAlertDialogTheme
+        ).apply {
+            setCanceledOnTouchOutside(true)
+        }
+
     fun applyScreenInsets(
         activity: Activity,
         root: View,
@@ -101,7 +113,7 @@ object UiChrome {
         subtitle: String? = null,
         onNegative: (() -> Unit)? = null
     ) {
-        val dialog = alertBuilder(activity).create()
+        val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
         addDialogHeader(
@@ -160,7 +172,7 @@ object UiChrome {
         subtitle: String? = null,
         actionLayout: DialogActionLayout = DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
     ) {
-        val dialog = alertBuilder(activity).create()
+        val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
         addDialogHeader(
@@ -219,7 +231,7 @@ object UiChrome {
         subtitle: String? = null,
         actionLayout: DialogActionLayout = DialogActionLayout.AUTO
     ) {
-        val dialog = alertBuilder(activity).create()
+        val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
         addDialogHeader(
@@ -275,7 +287,7 @@ object UiChrome {
 
     private fun addDialogActions(
         activity: Activity,
-        dialog: AlertDialog,
+        dialog: Dialog,
         card: LinearLayout,
         actions: List<DialogAction>,
         actionLayout: DialogActionLayout
@@ -608,7 +620,7 @@ object UiChrome {
 
     private fun showCustomDialog(
         activity: Activity,
-        dialog: AlertDialog,
+        dialog: Dialog,
         card: LinearLayout
     ) {
         val horizontalInset =
@@ -679,22 +691,23 @@ object UiChrome {
             val window = dialog.window ?: return
 
             /*
-             * Phone-video regression showed that the remaining lower/center
-             * -> top movement is not the card layout anymore. The whole
-             * AlertDialog Window is still animated by the inherited Material
-             * dialog Window animation.
+             * BUG-002 first-frame rule:
+             * configure the dedicated Dialog Window before it is attached to
+             * WindowManager. There must be no post-show geometry correction.
              *
-             * Custom UiChrome dialogs already use a full-screen transparent
-             * Window and position the card themselves, so system dialog
-             * translation/scale is both unnecessary and visually wrong.
-             *
-             * Disable WindowManager enter/exit animation before show().
+             * The custom Dialog is full-screen and transparent; UiChrome
+             * positions the card inside the safe viewport itself.
              */
             window.setWindowAnimations(0)
             window.attributes =
                 window.attributes.apply {
                     windowAnimations = 0
                 }
+
+            window.setGravity(
+                Gravity.TOP or
+                    Gravity.CENTER_HORIZONTAL
+            )
 
             WindowCompat.setDecorFitsSystemWindows(
                 window,
@@ -713,52 +726,83 @@ object UiChrome {
             )
         }
 
-        dialog.setView(outer)
+        var revealScheduled =
+            false
 
-        // Best effort before the first rendered frame.
-        configureWindow()
+        dialog.setContentView(
+            outer
+        )
 
-        dialog.setOnShowListener {
-            configureWindow()
-
-            ViewCompat.setOnApplyWindowInsetsListener(
-                outer
-            ) { view, insets ->
-                val safeInsets =
-                    insets.getInsets(
-                        WindowInsetsCompat.Type.systemBars() or
-                            WindowInsetsCompat.Type.displayCutout()
-                    )
-
-                view.setPadding(
-                    horizontalInset,
-                    maxOf(
-                        minimumVerticalInset,
-                        safeInsets.top +
-                            dp(activity, 8)
-                    ),
-                    horizontalInset,
-                    maxOf(
-                        minimumVerticalInset,
-                        safeInsets.bottom +
-                            dp(activity, 8)
-                    )
+        ViewCompat.setOnApplyWindowInsetsListener(
+            outer
+        ) { view, insets ->
+            val safeInsets =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or
+                        WindowInsetsCompat.Type.displayCutout()
                 )
 
-                // First visible frame is already in its final safe position.
-                if (view.alpha == 0f) {
-                    view.alpha = 1f
-                }
+            view.setPadding(
+                horizontalInset,
+                maxOf(
+                    minimumVerticalInset,
+                    safeInsets.top +
+                        dp(activity, 8)
+                ),
+                horizontalInset,
+                maxOf(
+                    minimumVerticalInset,
+                    safeInsets.bottom +
+                        dp(activity, 8)
+                )
+            )
 
-                insets
+            if (
+                view.alpha == 0f &&
+                !revealScheduled
+            ) {
+                revealScheduled =
+                    true
+
+                view.viewTreeObserver
+                    .addOnPreDrawListener(
+                        object :
+                            ViewTreeObserver.OnPreDrawListener {
+                            override fun onPreDraw(): Boolean {
+                                if (
+                                    view.viewTreeObserver.isAlive
+                                ) {
+                                    view.viewTreeObserver
+                                        .removeOnPreDrawListener(
+                                            this
+                                        )
+                                }
+
+                                view.alpha =
+                                    1f
+
+                                return true
+                            }
+                        }
+                    )
             }
 
-            ViewCompat.requestApplyInsets(
-                outer
-            )
+            insets
         }
 
+        /*
+         * Configure the real Window before show().
+         * Dialog owns its content directly, so there is no AlertController
+         * panel that first attaches with centered/wrap-content geometry and
+         * then gets resized after the first visible frame.
+         */
+        configureWindow()
+
         dialog.show()
+
+        ViewCompat.requestApplyInsets(
+            outer
+        )
     }
 
     private fun menuButton(
