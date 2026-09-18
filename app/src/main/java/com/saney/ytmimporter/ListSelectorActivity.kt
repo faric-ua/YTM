@@ -98,8 +98,15 @@ class ListSelectorActivity : Activity() {
                 .orEmpty()
 
         selectedIds +=
-            intent.getStringArrayListExtra(
-                EXTRA_SELECTED_IDS
+            (
+                savedInstanceState
+                    ?.getStringArrayList(
+                        STATE_SELECTED_IDS
+                    )
+                    ?: intent
+                        .getStringArrayListExtra(
+                            EXTRA_SELECTED_IDS
+                        )
             )
                 .orEmpty()
 
@@ -119,6 +126,21 @@ class ListSelectorActivity : Activity() {
         }
 
         render()
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putStringArrayList(
+            STATE_SELECTED_IDS,
+            ArrayList(
+                selectedIds
+            )
+        )
+
+        super.onSaveInstanceState(
+            outState
+        )
     }
 
     @Deprecated("Deprecated in Java")
@@ -696,6 +718,9 @@ class ListSelectorActivity : Activity() {
     companion object {
         const val EXTRA_RESULT_IDS =
             "selector_result_ids"
+
+        private const val STATE_SELECTED_IDS =
+            "selector_state_selected_ids"
 
         private const val EXTRA_TITLE =
             "selector_title"
