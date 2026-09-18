@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.30 — Consolidated Delta-Chain Restore
+v1.4.30 — Consolidated Delta-Chain Restore — PHONE QA PASS FOR TESTED PATH
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -284,20 +284,21 @@ v1.4.30 — Consolidated Delta-Chain Restore
 - [x] keep source sessions read-only
 - [x] keep YouTube API out of chain materialization
 - [x] add static audit, release docs, QA plan, diagram and tutorial update
-- [ ] GitHub build
-- [ ] phone test: common-parent chain discovery
-- [ ] phone test: SELECTED(2) chain preview
-- [ ] phone test: consolidated folder writes 2 projects + manifest
-- [ ] phone test: consolidated normal-open = manifest v3 / SELECTED / 2 of 2
-- [ ] phone test: `top 3` remains exact 3/3
-- [ ] phone test: repeat Search remains 0 new `search.list`
-- [ ] phone test: source baseline + delta remain intact
+- [x] GitHub build
+- [x] phone test: common-parent chain discovery
+- [x] phone test: SELECTED(2) chain preview
+- [x] phone test: consolidated folder writes 2 projects + manifest
+- [x] phone test: consolidated normal-open = manifest v3 / SELECTED / 2 of 2
+- [x] phone test: `top 3` remains exact 3/3
+- [x] phone test v1.4.30: repeat Search remains 0 new `search.list`
+- [x] phone test: source chain re-resolves and old baseline remains intact/openable
 - [x] detect BUG-007: long backup folder names are awkward in phone file browser
 - [x] detect BUG-007: `Матеріалізувати` action wraps poorly
 - [x] R1: timestamp-first short names for new Export / Sync / Full sessions
 - [x] R1: `Створити backup` action label
 - [x] phone retest BUG-007 naming: `YYMMDD-HHMMSS-YTM-Full` visible in portrait
-- [ ] phone retest BUG-007 button: `Створити` / `Скасувати` single-line and equal height
+- [x] phone retest BUG-007 button: `Створити` / `Скасувати` single-line and equal height
+- [x] preserve v1.4.30 phone evidence + QA closeout
 
 ## Next
 After v1.4.30 targeted phone QA:

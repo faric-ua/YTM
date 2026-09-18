@@ -30,13 +30,13 @@
 
 ## Materialization
 
-- [ ] output folder starts `YTM-Importer-Account-Consolidated-`;
+- [x] output folder uses timestamp-first `YYMMDD-HHMMSS-YTM-Full`;
 - [ ] output manifest schema = 3;
 - [ ] `backupMode = CONSOLIDATED_FULL`;
 - [ ] final non-empty playlists get YTM Project files;
 - [ ] empty playlists use `SKIPPED_EMPTY`;
-- [ ] source folders are not modified;
-- [ ] consolidated manifest opens through normal backup picker;
+- [x] source folders remain readable/re-resolvable after materialization;
+- [x] consolidated manifest opens through normal backup picker;
 - [ ] consolidated backup can be read as an incremental baseline.
 
 ## API boundary
@@ -55,18 +55,18 @@ Use the existing real-phone chain from v1.4.29:
 
 Expected:
 
-- [ ] select their common parent folder;
-- [ ] one chain head is found;
-- [ ] preview reports chain length 2;
-- [ ] scope = `SELECTED (2)`;
-- [ ] final playlists = 2;
-- [ ] YTM Project sources = 2;
-- [ ] MISSING events = 0;
-- [ ] materialization writes 2 YTM Project files + `manifest.json`;
-- [ ] normal manifest picker opens consolidated folder as v3 / SELECTED / 2 of 2;
-- [ ] `top 3` opens exact 3/3;
-- [ ] repeat Search still plans 0 new `search.list`;
-- [ ] old baseline and old delta still exist and open as before.
+- [x] select their common parent folder;
+- [x] one chain head is found;
+- [x] preview reports chain length 2;
+- [x] scope = `SELECTED (2)`;
+- [x] final playlists = 2;
+- [x] YTM Project sources = 2;
+- [x] MISSING events = 0;
+- [x] materialization writes 2 YTM Project files + `manifest.json`;
+- [x] normal manifest picker opens consolidated folder as v3 / SELECTED / 2 of 2;
+- [x] `top 3` opens exact 3/3;
+- [x] repeat Search still plans 0 new `search.list`;
+- [x] source chain re-resolves after materialization and old baseline still opens v2 / SELECTED / 2 of 2.
 
 ## Not a full release regression
 

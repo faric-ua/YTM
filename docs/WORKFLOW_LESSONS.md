@@ -182,3 +182,30 @@ Guard:
 - on a clean fixture, every intended patch operation must change the target file;
 - a first-apply `SKIP already applied` is a selftest failure;
 - keep patch operations independent when possible instead of chaining one anchor from another generated payload.
+
+## 16. Mobile file names should expose the differentiator first — v1.4.30 R1
+
+A technically descriptive filename can still be poor mobile UX. Long names such
+as `YTM-Importer-Account-Consolidated-...` hid the timestamp in portrait file
+browsing, forcing landscape inspection.
+
+Guard:
+
+- put the timestamp or other human differentiator first;
+- keep generated backup-session names short;
+- keep legacy names readable for compatibility;
+- do not make restore logic depend on cosmetic filename prefixes.
+
+## 17. Two-action dialogs need real-phone line-fit evidence — v1.4.30 R1/R2
+
+Replacing `Матеріалізувати` with `Створити backup` improved wording but did not
+solve phone layout: the new label still wrapped, making the left action taller
+than `Скасувати`.
+
+R2 used the context-aware one-word `Створити`.
+
+Guard:
+
+- for paired dialog actions, prefer labels that remain one line on narrow phones;
+- equal semantic weight should normally have equal visual height;
+- phone evidence overrides assumptions made from source text length alone.

@@ -125,8 +125,8 @@ grep -Fq 'versionCode: **64**' docs/v.1.4.30/RELEASE.md \
   || fail "v1.4.30 release versionCode missing"
 grep -Fq 'versionName: **1.4.30**' docs/v.1.4.30/RELEASE.md \
   || fail "v1.4.30 release versionName missing"
-grep -Fq '**NOT PHONE-TESTED YET**' docs/v.1.4.30/RELEASE.md \
-  || fail "v1.4.30 initial phone status missing"
+grep -Fq '# YTM Importer v1.4.30 — Consolidated Delta-Chain Restore' docs/v.1.4.30/RELEASE.md \
+  || fail "v1.4.30 release identity missing"
 
 echo "PASS:"
 echo "- local backup-session discovery"

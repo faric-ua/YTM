@@ -24,7 +24,7 @@ That file explains:
 - versionName: **1.4.30**
 - versionCode: **64**
 - focus: **Consolidated Delta-Chain Restore**
-- status: **NOT PHONE-TESTED YET**
+- status: **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 For exact current status, see:

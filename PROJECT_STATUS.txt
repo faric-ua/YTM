@@ -20,7 +20,7 @@ v1.4.26 PARTIALLY PHONE-TESTED — SELECTIVE EXPORT PASS / BUG-005 FOUND
 v1.4.27 PARTIALLY PHONE-TESTED — BUG-005 EXACT-ID SEARCH GUARD PASS
 v1.4.28 PARTIALLY PHONE-TESTED — BULK MANIFEST IMPORT PATH PASS
 v1.4.29 PARTIALLY PHONE-TESTED — INCREMENTAL BACKUP PATH PASS
-v1.4.30 NOT TESTED YET — CONSOLIDATED DELTA-CHAIN RESTORE
+v1.4.30 PARTIALLY PHONE-TESTED — CONSOLIDATED DELTA-CHAIN PATH PASS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -257,6 +257,28 @@ v1.4.30 focus:
 - YouTube API = 0 for chain restore/materialization
 - consolidated output opens through normal manifest import and can be a future incremental baseline
 
+v1.4.30 phone QA confirmed:
+- signed v1.4.30 installed and exercised on the real phone
+- common-parent chain discovery PASS
+- Base = old selective export; Head = old incremental sync
+- chain length = 2
+- scope = SELECTED (2)
+- final playlists = 2
+- YTM Project sources = 2
+- empty playlists = 0
+- MISSING events = 0
+- chain preview reports YouTube API = 0
+- consolidated output = 2 YTM Project files + manifest.json
+- normal open = manifest v3 / SELECTED / available 2/2
+- `top 3` = exact/ready 3/3
+- Review = 3/3 ready
+- repeat Search = search required 0 / new search.list 0
+- original baseline still opens as manifest v2 / SELECTED / available 2/2
+- R1 timestamp-first `260918-030755-YTM-Full` name is readable in portrait
+- BUG-007 R1 two-word action still wrapped
+- R2 `Створити` / `Скасувати` actions are single-line and equal-height
+- release scope = targeted consolidated-chain PASS, not full regression
+
 
 Known:
 BUG-001/Q-001 OPEN
@@ -265,6 +287,7 @@ BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
 BUG-004/Q-004 RETEST v1.4.17
 BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27
 BUG-006/Q-006 CLOSED — PHONE RETEST PASS v1.4.29 R2
+BUG-007/Q-007 CLOSED — PHONE RETEST PASS v1.4.30 R2
 
 QA:
 root qa/ = current definitions/policy

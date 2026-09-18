@@ -17,6 +17,10 @@
 - R1 mobile UX: newly created account backup folders use timestamp-first short names (`YYMMDD-HHMMSS-YTM-Export`, `-YTM-Sync`, `-YTM-Full`).
 - R1 mobile UX: consolidated preview action shortened from `Матеріалізувати` to `Створити backup`.
 - R2 phone-fit follow-up: `Створити backup` still wrapped on the real phone, so the action is now one-word `Створити` to keep both preview buttons single-line and equal-height.
+- v1.4.30 phone QA: **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH**.
+- Targeted chain round trip passed: SELECTED(2) + unchanged delta → consolidated v3/2-of-2 → top 3 exact 3/3 → 0 new `search.list`.
+- Source baseline remained intact/openable after materialization.
+- BUG-007 / Q-007 closed after R2 phone retest; timestamp-first naming and equal-height preview actions passed.
 - Old `YTM-Importer-Account-*` folders remain compatible; chain resolution continues to use manifest links rather than filename prefixes.
 
 ## v1.4.29

@@ -33,7 +33,7 @@ Current application:
 - versionName: **1.4.30**
 - versionCode: **64**
 - release focus: **Consolidated Delta-Chain Restore**
-- release status: **NOT PHONE-TESTED YET**
+- release status: **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -47,7 +47,15 @@ The materializer preserves `ALL` / `SELECTED` scope and exact YTM Project
 identities. Source backup folders are read-only inputs and YouTube API usage is
 zero.
 
-The current release is not phone-tested yet.
+Real-phone v1.4.30 QA confirmed the targeted consolidated-chain path:
+
+`baseline SELECTED(2) + unchanged delta → chain length 2 → consolidated v3 / 2 of 2 → top 3 exact 3/3 → repeat Search new search.list 0`
+
+The original baseline still reopened 2/2 after materialization.
+
+BUG-007 / Q-007 is also closed on phone: timestamp-first backup naming is readable in portrait, and the R2 `Створити` / `Скасувати` preview actions are single-line and equal-height.
+
+The release remains only partially phone-tested overall.
 
 Current known items include:
 
@@ -56,7 +64,8 @@ Current known items include:
 - BUG-003 / Q-003: CLOSED — PHONE RETEST PASS v1.4.20;
 - BUG-004 / Q-004: RETEST still required;
 - BUG-005 / Q-005: CLOSED — PHONE RETEST PASS v1.4.27;
-- BUG-006 / Q-006: CLOSED — PHONE RETEST PASS v1.4.29 R2.
+- BUG-006 / Q-006: CLOSED — PHONE RETEST PASS v1.4.29 R2;
+- BUG-007 / Q-007: CLOSED — PHONE RETEST PASS v1.4.30 R2.
 
 For the freshest exact status, always read `PROJECT_STATUS.txt`, `BACKLOG.md`, `RELEASE_TEST_STATUS.md`, `qa/BUG_REGISTER.md`, and `OPEN_QUESTIONS.md`.
 
@@ -221,10 +230,10 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-test v1.4.30 Consolidated Delta-Chain Restore;
-2. verify the existing SELECTED(2) baseline + unchanged delta materializes to a self-contained 2-project backup;
-3. verify the consolidated backup opens normally and preserves exact-ID search guard behavior;
-4. add changed/new/missing incremental scenarios in a later focused QA wave.
+1. v1.4.30 Consolidated Delta-Chain Restore is QA-closed for the tested SELECTED(2) unchanged-delta path;
+2. run focused real NEW / UPDATED / MISSING incremental-chain scenarios;
+3. establish the localization resource foundation for Ukrainian / Korean / English;
+4. then build the visual skin foundation without changing import/search/write semantics.
 
 Future product requirements already recorded:
 

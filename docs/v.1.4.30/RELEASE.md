@@ -80,6 +80,27 @@ R1 shortened the preview action to `Створити backup`, but real-phone ret
 
 R2 shortens the action again to the one-word `Створити`, keeping the meaning from the surrounding `Backup chain — preview` context while allowing both action buttons to remain single-line and visually balanced.
 
+## Phone QA closeout — 2026-09-18
+
+Targeted real-phone QA passed:
+
+- existing selective baseline + unchanged delta resolved as chain length 2;
+- scope = `SELECTED (2)`;
+- final state = 2 playlists / 2 YTM Project sources / 0 empty / 0 MISSING;
+- chain preview reports YouTube API = 0;
+- consolidated output wrote 2 YTM Project files + `manifest.json`;
+- ordinary backup open = manifest v3 / SELECTED / available 2/2;
+- `top 3` restored exact 3/3 and Review 3/3 ready;
+- repeat Search planned 0 new `search.list`;
+- original baseline still reopened as manifest v2 / SELECTED / available 2/2;
+- R1 timestamp-first short filename passed in portrait;
+- BUG-007 R1 button wrap reproduced;
+- R2 one-word `Створити` / `Скасувати` equal-height phone retest passed.
+
+**BUG-007 / Q-007 CLOSED — PHONE RETEST PASS v1.4.30 R2.**
+
+This is a targeted consolidated-chain PASS, not a full release regression PASS.
+
 ## API boundary
 
 The complete chain scan, replay and materialization is local filesystem work.
@@ -95,4 +116,4 @@ Remote playlist writes: **0**.
 
 ## Status
 
-**NOT PHONE-TESTED YET**
+**PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH**
