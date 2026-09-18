@@ -1216,6 +1216,9 @@ class ServiceActivity : Activity() {
     }
 
     companion object {
+        private const val CHANGELOG_ASSET =
+            "CHANGELOG.md"
+
         const val EXTRA_GOOGLE_CONNECTED = "service_google_connected"
         const val EXTRA_GOOGLE_EMAIL = "service_google_email"
         const val EXTRA_CHANNEL_TITLE = "service_channel_title"
