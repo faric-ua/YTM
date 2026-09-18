@@ -167,3 +167,16 @@ R2 root-cause correction:
 - the actual `CheckBox` is `WRAP_CONTENT` and centered with `Gravity.CENTER`.
 
 BUG-008 is closed by the R1 phone PASS. R2 requires only the checkbox visual retest.
+
+
+## R2 phone result — checkbox PASS
+
+Selective-export checkbox visual alignment: **PASS**.
+
+The visible checkbox square is centered/balanced within the left touch column and no longer sits too close to the card edge.
+
+Evidence:
+- 783×1536 screenshot
+- SHA-256 `b86f70c820d6d2332b124a67cf77fa0c2c9f5ade5a581f4f3406d9666ca1c85d`
+
+UX-014 is closed for the tested phone path.
