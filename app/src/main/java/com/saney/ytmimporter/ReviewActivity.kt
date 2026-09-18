@@ -1348,7 +1348,7 @@ class ReviewActivity : Activity() {
                 dp(8)
             )
 
-                        addView(
+            addView(
                 UiChrome.backButton(
                     activity = this@ReviewActivity,
                     onClick = { onBack() }
