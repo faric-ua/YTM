@@ -484,7 +484,7 @@ class ServiceActivity : Activity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(10), dp(8), dp(10), dp(10))
 
-                        addView(
+            addView(
                 UiChrome.backButton(
                     activity = this@ServiceActivity,
                     onClick = { onBackPressed() }
