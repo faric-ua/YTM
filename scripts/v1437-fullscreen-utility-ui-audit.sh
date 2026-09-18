@@ -76,6 +76,12 @@ grep -Fq 'MenuActivity.ACTION_SERVICE' "$MAIN" || fail "Service action bridge mi
 
 grep -Fq 'openQuotaScreen()' "$MAIN" || fail "Home Quota full-screen navigation missing"
 grep -Fq 'openMenuScreen()' "$MAIN" || fail "Home Menu full-screen navigation missing"
+if grep -Fq 'private fun showQuotaDialog()' "$MAIN"; then
+  fail "superseded Home quota modal still present"
+fi
+if grep -Fq 'private fun showMoreActions()' "$MAIN"; then
+  fail "superseded Home More modal still present"
+fi
 
 for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
 do
