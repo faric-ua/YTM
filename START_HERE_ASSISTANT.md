@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.38-R2**
-- versionCode: **74**
-- release focus: **v1.4.38-R2 — checkbox visual centering**
-- release status: **R1 ROTATION PASS / CHECKBOX FAIL; R2 CHECKBOX PHONE RETEST NEEDED**
+- versionName: **1.4.39**
+- versionCode: **75**
+- release focus: **UX-015 — native History JSON restore**
+- release status: **NOT PHONE-TESTED YET — v1.4.39 HISTORY RESTORE QA NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -254,7 +254,7 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-test v1.4.38 full-screen selectors, destructive confirmations and mobile copy;
+1. build and phone-test v1.4.39 native History JSON restore;
 2. keep the v1.4.37 storage / Quota / Menu follow-up checks in the combined phone pass;
 3. implement UX-008 Phase 2B for the two generic open-file flows after v1.4.38 evidence;
 4. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
@@ -331,3 +331,12 @@ v1.4.38-R2 is a checkbox-only follow-up:
 - R1 checkbox visual alignment failed;
 - R2 centers the visible CheckBox drawable inside the existing 48dp touch column using a FrameLayout wrapper;
 - phone acceptance needs only the selective-export checkbox visual check.
+
+
+v1.4.39 adds a native History-only restore path:
+- `YTM_History_*.json` exported by the app can now be imported directly;
+- only History is replaced;
+- Queue/quota/SearchCache/current playlist are preserved;
+- a full safety snapshot is created before the History change;
+- confirmation survives rotation without selecting the file again;
+- UX-015 is implemented and needs phone QA.
