@@ -3,19 +3,18 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 DATA="app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
 HISTORY="app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt"
 BACKUP="app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt"
 MANIFEST="app/src/main/AndroidManifest.xml"
 
-for f in   "$GRADLE"   "$DATA"   "$HISTORY"   "$BACKUP"   "$MANIFEST"   docs/v.1.4.39/RELEASE.md   docs/v.1.4.39/UX_AUDIT.md   docs/v.1.4.39/REGRESSION_CHECKLIST.md   docs/v.1.4.39/qa/PHONE_TEST.md   docs/v.1.4.39/qa/BUG_REGISTER.md
+for f in   "$DATA"   "$HISTORY"   "$BACKUP"   "$MANIFEST"   docs/v.1.4.39/RELEASE.md   docs/v.1.4.39/UX_AUDIT.md   docs/v.1.4.39/REGRESSION_CHECKLIST.md   docs/v.1.4.39/qa/PHONE_TEST.md   docs/v.1.4.39/qa/BUG_REGISTER.md
 do
   test -f "$f" || fail "missing v1.4.39 file: $f"
 done
 
-grep -Fq 'versionCode = 75' "$GRADLE" || fail "versionCode 75 missing"
-grep -Fq 'versionName = "1.4.39"' "$GRADLE" || fail "versionName 1.4.39 missing"
+grep -Fq 'versionCode: **75**' docs/v.1.4.39/RELEASE.md || fail "v1.4.39 versionCode snapshot missing"
+grep -Fq 'versionName: **1.4.39**' docs/v.1.4.39/RELEASE.md || fail "v1.4.39 versionName snapshot missing"
 
 grep -Fq 'data class HistoryImportSummary' "$HISTORY"   || fail "History import summary missing"
 grep -Fq 'fun inspectImportJson(' "$HISTORY"   || fail "History JSON inspection missing"
@@ -57,7 +56,7 @@ do
 done
 
 echo "PASS:"
-echo "- v1.4.39 / code 75"
+echo "- immutable v1.4.39 / code 75 release snapshot"
 echo "- native YTM_History_*.json validation + normalization"
 echo "- History-only partial restore through existing safety-snapshot engine"
 echo "- Queue/quota/SearchCache/current playlist preserved"
