@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.38 — Full-screen Selectors + Safer Destructive Actions — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.38-R2 — Checkbox Visual Centering — PHONE RETEST PASS
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -15,7 +15,7 @@ v1.4.38 — Full-screen Selectors + Safer Destructive Actions — IMPLEMENTED / 
 - UX-011 Full-screen List Selectors — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; four dynamic Import list families now use ListSelectorActivity
 - UX-012 Destructive Action Confirmation — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; explicit danger confirmations + separate safety-snapshot deletion flow
 - UX-013 Mobile Action Copy Fit — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; long Restore/save labels shortened from real-phone evidence
-- UX-014 Selector Checkbox Alignment — FIX IMPLEMENTED v1.4.38 R1 / PHONE RETEST NEEDED; multi-select checkbox moved into a dedicated centered touch column
+- UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
 - UX-015 History JSON Restore — OPEN; `YTM_History_*.json` is an export array, not a full backup; add a native History-only restore/import path or clearer in-app conversion flow
 
 ## v1.4.16
@@ -597,7 +597,7 @@ including:
 - [x] phone evidence: checkbox visually sits too close to the left edge relative to label
 - [x] replace compound CheckBox text row with a dedicated checkbox column + separate label
 - [x] make the whole row toggle the checkbox
-- [ ] phone retest on 783px portrait reference
+- [x] phone retest on 783px portrait reference — PASS
 
 ## UX-015 — History JSON Restore
 - [x] identify `YTM_History_*.json` as raw History export, not `ytm-importer-local-backup`
@@ -607,3 +607,32 @@ including:
 - [ ] preserve Queue/quota/cache/current playlist during History-only import
 - [ ] create safety snapshot before native History-only import
 - [ ] phone QA History-only restore
+
+
+## v1.4.38-R1 — Checkbox Alignment + Restore Rotation
+- [x] isolate R1 from v1.4.38 feature scope
+- [x] versionName 1.4.38-R1 / versionCode 73
+- [x] center selective-export checkbox in fixed touch column
+- [x] keep whole row tappable
+- [x] cache validated pending Restore backup
+- [x] save pending Restore confirmation state across recreation
+- [x] rebuild Restore confirmation after rotation
+- [x] clear pending cache on Cancel / Restore
+- [x] add R1 static audit
+- [ ] signed R1 build
+- [ ] APK handoff to phone
+- [x] R1 phone: checkbox alignment FAIL
+- [x] phone: Restore confirmation survives portrait → landscape
+- [x] phone: Restore confirmation survives landscape → portrait
+
+
+## v1.4.38-R2 — Checkbox Visual Centering
+- [x] versionName 1.4.38-R2 / versionCode 74
+- [x] preserve 48dp checkbox touch column
+- [x] wrap CheckBox in FrameLayout
+- [x] center visible checkbox with Gravity.CENTER
+- [x] preserve whole-row toggle behavior
+- [x] record BUG-008 R1 phone PASS
+- [ ] signed R2 build
+- [ ] APK handoff to phone
+- [x] phone: checkbox visual balance on selective-export screen — PASS

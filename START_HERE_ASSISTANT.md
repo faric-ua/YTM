@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.38**
-- versionCode: **72**
-- release focus: **Full-screen Selectors + Safer Destructive Actions**
-- release status: **PARTIALLY PHONE-TESTED — SELECTORS/DESTRUCTIVE CONFIRMATIONS PASS; R1 CHECKBOX + BUG-008 ROTATION RETEST NEEDED**
+- versionName: **1.4.38-R2**
+- versionCode: **74**
+- release focus: **v1.4.38-R2 — checkbox visual centering**
+- release status: **R1 ROTATION PASS / CHECKBOX FAIL; R2 CHECKBOX PHONE RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -318,3 +318,16 @@ Current UI follow-up:
 - dynamic long-list selectors in Import now use ListSelectorActivity
 - compact information/confirmation dialogs remain modal
 - UX-009 Green Dark state contrast remains open; Neon Dark stays color-locked
+
+
+v1.4.38-R1 is a targeted rebuild only:
+- fix selective-export checkbox visual alignment;
+- keep Restore confirmation after portrait/landscape rotation without reselecting the backup file;
+- do not claim any additional phone PASS from the R1 build until both checks are repeated.
+
+
+v1.4.38-R2 is a checkbox-only follow-up:
+- R1 Restore rotation test passed and BUG-008 is closed;
+- R1 checkbox visual alignment failed;
+- R2 centers the visible CheckBox drawable inside the existing 48dp touch column using a FrameLayout wrapper;
+- phone acceptance needs only the selective-export checkbox visual check.
