@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.36
-Version code: 70
+Version: 1.4.37
+Version code: 71
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -379,6 +379,19 @@ v1.4.36 focus:
 - two ACTION_OPEN_DOCUMENT flows remain Phase 2B
 - no broad storage permission
 
+
+
+v1.4.37 focus:
+- replace long remembered-root modal with StorageChooserActivity
+- fixed Back/title/? header
+- scroll only remembered-root content
+- fixed Add/System Save/Cancel footer
+- use same full-screen chooser for Import tree flows and Data/Review/History/Service save flows
+- Quota now opens dedicated QuotaActivity
+- Home `Ще` renamed to `Меню` and opens MenuActivity
+- preserve Pending Queue resume bridge through MainActivity
+- keep Neon Dark Home colors unchanged; UX-009 remains separate
+- no broad filesystem permission
 
 Known:
 BUG-001/Q-001 OPEN
