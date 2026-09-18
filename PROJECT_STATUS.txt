@@ -363,7 +363,7 @@ v1.4.35 focus:
 - seven folder flows now route through one YTM Importer remembered-root chooser
 - reuse Android persisted SAF tree permissions instead of inventing filesystem paths
 - remembered roots are filtered by READ vs READ_WRITE requirements
-- `Скасувати` stays inside YTM Importer; `Додати іншу папку…` is the explicit path into Android SAF
+- `Скасувати` stays inside YTM Importer even before the first grant; `Додати іншу папку…` is the only explicit path into Android SAF
 - ACTION_OPEN_DOCUMENT / ACTION_CREATE_DOCUMENT remain unchanged for later UX-008 phases
 - no MANAGE_EXTERNAL_STORAGE / READ_EXTERNAL_STORAGE / WRITE_EXTERNAL_STORAGE
 
