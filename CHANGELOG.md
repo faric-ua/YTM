@@ -1,5 +1,18 @@
 # Журнал змін (Changelog)
 
+## v1.4.38
+- Added reusable full-screen `ListSelectorActivity` for dynamic selectable collections.
+- Migrated YTM account playlist import, selective export, delta-chain head selection and backup/manifest project selection out of tall modal dialogs.
+- Added fixed selector header/help, selection summary, scroll-only item list and fixed Confirm/Cancel footer.
+- Added explicit danger-confirmation helper for destructive local actions.
+- Strengthened workspace, History, Pending Queue and SearchCache deletion/clear confirmations.
+- Moved safety-snapshot deletion out of rollback-success and into a separate confirmed Data action.
+- Shortened phone-problematic labels: `Вибрати файл`, `Готово`, `Додати папку…`, `Зберегти як…`, `Відкотити Restore`.
+- Kept both generic `ACTION_OPEN_DOCUMENT` flows for UX-008 Phase 2B.
+- Kept Neon Dark Home colors unchanged.
+- versionCode 72 / versionName 1.4.38.
+- v1.4.38 = NOT PHONE-TESTED YET.
+
 ## v1.4.37
 - Replaced long remembered-root dialogs with full-screen `StorageChooserActivity`.
 - Added fixed Back/title/`?` header and fixed bottom controls with a scroll-only middle root list.
