@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.37 — Full-screen Storage + Utility UI — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -397,7 +397,7 @@ v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
 - [x] Phase 2A: add reusable save folder and explicit system CREATE_DOCUMENT fallback
 - [x] Phase 2A: duplicate-safe numbered filenames + failed-write cleanup
 - [ ] Phase 2B: design the two `ACTION_OPEN_DOCUMENT` reuse/escape flows
-- [ ] Phase 2A-R1: dedicated full-screen remembered-root chooser with fixed bottom controls + `?` help
+- [x] Phase 2A-R1: dedicated full-screen remembered-root chooser with fixed bottom controls + `?` help
 - [ ] Phase 3: evaluate an in-app browser inside authorized roots
 
 ## v1.4.35 — Saved SAF Folders
@@ -492,3 +492,29 @@ including:
 - [ ] keep destructive/escape actions immediately visible where applicable
 - [ ] phone QA: Home → Quota screen → Back
 - [ ] phone QA: Home → Menu screen → Back
+
+
+## v1.4.37 — Full-screen Storage + Utility UI
+- [x] bump versionCode 71 / versionName 1.4.37
+- [x] add `StorageChooserActivity`
+- [x] fixed Back/title/`?` header
+- [x] independently scrollable remembered-root list
+- [x] fixed Add / System Save / Cancel footer
+- [x] route seven Import folder flows through the full-screen chooser
+- [x] route Data / Review / History / Service saves through the same chooser
+- [x] keep one centralized ACTION_OPEN_DOCUMENT_TREE path
+- [x] keep one centralized ACTION_CREATE_DOCUMENT path
+- [x] add `QuotaActivity`
+- [x] preserve Queue resume bridge through MainActivity
+- [x] add `MenuActivity`
+- [x] rename Home `Ще` → `Меню`
+- [x] keep Neon Dark Home colors unchanged
+- [x] add static audit + QA docs
+- [ ] GitHub signed build
+- [ ] APK handoff to phone
+- [ ] phone: long root list fixed footer visible without scrolling
+- [ ] phone: `?` help
+- [ ] phone: Android picker Back returns to chooser
+- [ ] phone: save mode full-screen chooser
+- [ ] phone: Quota dedicated screen
+- [ ] phone: Menu dedicated screen + navigation smoke
