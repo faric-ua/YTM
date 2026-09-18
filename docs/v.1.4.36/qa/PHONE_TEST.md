@@ -60,3 +60,13 @@ Repeat enough to confirm the first-screen behavior for:
 - Data Restore JSON picker still opens.
 
 Do not close all UX-008 from this release. File-open behavior remains Phase 2B.
+
+
+## Visual observation — UX-009
+
+During v1.4.36 phone use, the user supplied Home screenshots in Neon Dark and Green Dark.
+
+- Neon Dark color/state treatment is accepted and must not change.
+- Green Dark has insufficient state separation because surfaces, READY accents and REQUIRED accent/fill are all in a closely related green range.
+- This is recorded as UX-009 and is not a blocker for the current UX-008 file-picker/save-destination QA.
+- Do not mark UX-009 fixed from static code changes; require later real-phone theme comparison.
