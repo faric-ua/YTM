@@ -81,11 +81,19 @@ class ServiceActivity : Activity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (page != Page.HOME) {
-            page = Page.HOME
-            buildUi()
-        } else {
-            super.onBackPressed()
+        when (page) {
+            Page.HOME ->
+                super.onBackPressed()
+
+            Page.CHANGELOG -> {
+                page = Page.ABOUT
+                buildUi()
+            }
+
+            else -> {
+                page = Page.HOME
+                buildUi()
+            }
         }
     }
 
@@ -133,6 +141,7 @@ class ServiceActivity : Activity() {
             Page.DIAGNOSTICS -> buildDiagnostics()
             Page.SEARCH_CACHE -> buildSearchCache()
             Page.ABOUT -> buildAbout()
+            Page.CHANGELOG -> buildChangelog()
         }
     }
 
@@ -462,9 +471,196 @@ class ServiceActivity : Activity() {
                 "Локальні дані, OAuth і backup"
             ) { open(Page.PRIVACY) }
         )
+        content.addView(
+            serviceCard(
+                "Історія змін",
+                "Що змінювалося у кожному релізі"
+            ) { open(Page.CHANGELOG) }
+        )
 
         setScreen(root, content)
     }
+
+    private fun buildChangelog() {
+        val root =
+            screenRoot()
+
+        root.addView(
+            topBar(
+                "Історія змін"
+            )
+        )
+
+        val content =
+            contentColumn()
+
+        content.addView(
+            infoCard(
+                "YTM Importer ${BuildConfig.VERSION_NAME}",
+                "Найновіші релізи показані першими. " +
+                    "Історія змін вбудовується у застосунок з CHANGELOG.md під час build."
+            )
+        )
+
+        val releases =
+            loadReleaseHistory()
+
+        if (releases.isEmpty()) {
+            content.addView(
+                infoCard(
+                    "Немає даних",
+                    "Не вдалося прочитати вбудовану історію змін."
+                )
+            )
+        } else {
+            releases.forEach { release ->
+                content.addView(
+                    infoCard(
+                        title =
+                            release.title,
+                        body =
+                            release.body
+                    )
+                )
+            }
+        }
+
+        setScreen(
+            root,
+            content
+        )
+    }
+
+    private fun loadReleaseHistory():
+        List<ReleaseNote> {
+        val raw =
+            runCatching {
+                assets
+                    .open(
+                        CHANGELOG_ASSET
+                    )
+                    .bufferedReader(
+                        Charsets.UTF_8
+                    )
+                    .use {
+                        it.readText()
+                    }
+            }.getOrElse {
+                return emptyList()
+            }
+
+        val releases =
+            mutableListOf<ReleaseNote>()
+
+        var title:
+            String? =
+            null
+
+        val body =
+            mutableListOf<String>()
+
+        fun flush() {
+            val releaseTitle =
+                title
+                    ?: return
+
+            val releaseBody =
+                body
+                    .joinToString(
+                        "\n"
+                    )
+                    .trim()
+                    .ifBlank {
+                        "Без окремого опису."
+                    }
+
+            releases +=
+                ReleaseNote(
+                    title =
+                        releaseTitle,
+                    body =
+                        releaseBody
+                )
+
+            body.clear()
+        }
+
+        raw
+            .lineSequence()
+            .forEach { sourceLine ->
+                val line =
+                    sourceLine
+                        .trimEnd()
+
+                when {
+                    line.startsWith(
+                        "## "
+                    ) -> {
+                        flush()
+
+                        title =
+                            line
+                                .removePrefix(
+                                    "## "
+                                )
+                                .trim()
+                    }
+
+                    title == null -> {
+                        // Ignore the document H1 before
+                        // the first release section.
+                    }
+
+                    line.startsWith(
+                        "- "
+                    ) -> {
+                        body +=
+                            "• " +
+                                cleanReleaseMarkdown(
+                                    line.removePrefix(
+                                        "- "
+                                    )
+                                )
+                    }
+
+                    line.isBlank() -> {
+                        if (
+                            body.isNotEmpty() &&
+                                body.last()
+                                    .isNotBlank()
+                        ) {
+                            body += ""
+                        }
+                    }
+
+                    else -> {
+                        body +=
+                            cleanReleaseMarkdown(
+                                line
+                            )
+                    }
+                }
+            }
+
+        flush()
+
+        return releases
+    }
+
+    private fun cleanReleaseMarkdown(
+        value: String
+    ): String =
+        value
+            .replace(
+                "`",
+                ""
+            )
+            .replace(
+                "**",
+                ""
+            )
+            .trim()
+
 
     private fun open(value: Page) {
         page = value
@@ -1004,13 +1200,19 @@ class ServiceActivity : Activity() {
     private fun dp(value: Int): Int =
         (value * resources.displayMetrics.density).toInt()
 
+    private data class ReleaseNote(
+        val title: String,
+        val body: String
+    )
+
     private enum class Page {
         HOME,
         QUICK_START,
         PRIVACY,
         DIAGNOSTICS,
         SEARCH_CACHE,
-        ABOUT
+        ABOUT,
+        CHANGELOG
     }
 
     companion object {
