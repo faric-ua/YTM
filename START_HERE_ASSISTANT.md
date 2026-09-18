@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.39**
-- versionCode: **75**
-- release focus: **UX-015 — native History JSON restore**
-- release status: **NOT PHONE-TESTED YET — v1.4.39 HISTORY RESTORE QA NEEDED**
+- versionName: **1.4.40**
+- versionCode: **76**
+- release focus: **UX-016 — in-app release history**
+- release status: **NOT PHONE-TESTED YET — v1.4.40 RELEASE HISTORY QA NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -254,7 +254,7 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-test v1.4.39 native History JSON restore;
+1. build and phone-test v1.4.40 in-app release history together with pending v1.4.39 History JSON restore;
 2. keep the v1.4.37 storage / Quota / Menu follow-up checks in the combined phone pass;
 3. implement UX-008 Phase 2B for the two generic open-file flows after v1.4.38 evidence;
 4. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
@@ -340,3 +340,12 @@ v1.4.39 adds a native History-only restore path:
 - a full safety snapshot is created before the History change;
 - confirmation survives rotation without selecting the file again;
 - UX-015 is implemented and needs phone QA.
+
+
+v1.4.40 adds an in-app release history:
+- path: Меню → Сервіс → Про YTM Importer → Історія змін;
+- root CHANGELOG.md is copied into app assets during build;
+- no second hand-maintained changelog exists;
+- release sections render as cards, newest first;
+- Back from History returns to About;
+- UX-016 is implemented and needs phone QA.
