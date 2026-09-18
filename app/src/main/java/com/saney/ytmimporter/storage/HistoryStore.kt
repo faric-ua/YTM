@@ -117,18 +117,31 @@ class HistoryStore(context: Context) {
     fun normalizeImportJson(
         raw: String
     ): String {
-        val entries =
+        val parsed =
             parseImportEntries(raw)
+
+        require(parsed.isNotEmpty()) {
+            "History JSON порожній"
+        }
+
+        require(
+            parsed
+                .map { it.id }
+                .toSet()
+                .size ==
+                parsed.size
+        ) {
+            "History JSON містить дублікати id"
+        }
+
+        val entries =
+            parsed
                 .sortedByDescending {
                     it.updatedAt
                 }
                 .take(
                     MAX_HISTORY_ENTRIES
                 )
-
-        require(entries.isNotEmpty()) {
-            "History JSON порожній"
-        }
 
         val array =
             JSONArray()
