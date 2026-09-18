@@ -46,7 +46,7 @@ PASS:
 
 ## E. Restore
 
-Confirm `Відновити History`.
+Confirm `Відновити`.
 
 PASS:
 
