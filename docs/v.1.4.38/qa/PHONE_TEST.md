@@ -46,6 +46,7 @@ Check at least:
 - one History record;
 - clear-all History;
 - one Pending Queue job;
+- expired SearchCache deletion;
 - safety snapshot deletion.
 
 PASS:
@@ -64,7 +65,7 @@ PASS:
 
 - rollback-success dialog contains `Готово`;
 - it does not expose direct snapshot deletion;
-- Data screen has a separate snapshot delete action;
+- Data screen has a separate `Видалити знімок` action;
 - deleting the snapshot requires a dedicated warning.
 
 ## G. Mobile copy
