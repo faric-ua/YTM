@@ -2,6 +2,11 @@ import java.util.Properties
 import org.gradle.api.tasks.Copy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+
 val generatedChangelogAssetsDir =
     layout.buildDirectory.dir(
         "generated/changelogAssets"
@@ -18,11 +23,6 @@ val generateChangelogAsset by tasks.registering(
     into(
         generatedChangelogAssetsDir
     )
-}
-
-plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 
 android {
