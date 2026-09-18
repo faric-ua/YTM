@@ -20,6 +20,11 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
+            android:name=".ListSelectorActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".StorageChooserActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />

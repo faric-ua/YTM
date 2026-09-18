@@ -75,6 +75,18 @@ class ImportActivity : Activity() {
     private val deltaChainTargetRequestCode =
         2408
 
+    private val ytmPlaylistSelectorRequestCode =
+        2501
+
+    private val selectiveExportSelectorRequestCode =
+        2502
+
+    private val deltaChainHeadSelectorRequestCode =
+        2503
+
+    private val manifestProjectSelectorRequestCode =
+        2504
+
     private var pendingDeltaChainPlan:
         DeltaChainPlan? =
         null
@@ -271,6 +283,18 @@ class ImportActivity : Activity() {
                     ?.let(
                         ::materializeDeltaChain
                     )
+
+            ytmPlaylistSelectorRequestCode ->
+                handleYtmPlaylistSelection(data)
+
+            selectiveExportSelectorRequestCode ->
+                handleSelectiveExportSelection(data)
+
+            deltaChainHeadSelectorRequestCode ->
+                handleDeltaChainHeadSelection(data)
+
+            manifestProjectSelectorRequestCode ->
+                handleManifestProjectSelection(data)
         }
     }
 
@@ -702,8 +726,7 @@ class ImportActivity : Activity() {
                     }
 
                     showYtmPlaylistPicker(
-                        token = token,
-                        playlists = playlists
+                        playlists
                     )
                 }.onFailure { error ->
                     if (
@@ -724,56 +747,34 @@ class ImportActivity : Activity() {
     }
 
     private fun showYtmPlaylistPicker(
-        token: String,
         playlists: List<YouTubePlaylistInfo>
     ) {
-        val labels =
-            playlists.map { playlist ->
-                buildString {
-                    append(playlist.title)
-                    append("\n")
-                    append(playlist.itemCount)
-                    append(" треків • ")
-                    append(
-                        when (
-                            playlist.privacyStatus
-                        ) {
-                            "public" ->
-                                "публічний"
-
-                            "unlisted" ->
-                                "за посиланням"
-
-                            else ->
-                                "приватний"
-                        }
-                    )
-                }
-            }
-
-        UiChrome.showMenuDialog(
-            activity = this,
-            title =
-                "Вибрати плейлист YouTube/YTM",
-            subtitle =
-                "Read-only: виберіть плейлист для локального імпорту.",
-            actions =
-                playlists.mapIndexed {
-                        index,
-                        playlist ->
-
-                    UiChrome.MenuAction(
-                        label = labels[index],
-                        onClick = {
-                            loadYtmPlaylist(
-                                token = token,
-                                playlistInfo =
-                                    playlist
-                            )
-                        }
-                    )
-                },
-            negativeLabel = "Скасувати"
+        startActivityForResult(
+            ListSelectorActivity.singleIntent(
+                activity = this,
+                title =
+                    "Вибрати плейлист YouTube/YTM",
+                subtitle =
+                    "Read-only імпорт: виберіть один плейлист.",
+                labels =
+                    playlists.map(
+                        ::playlistSelectorLabel
+                    ),
+                values =
+                    playlists.map(
+                        ::encodePlaylistSelection
+                    ),
+                helpTitle =
+                    "Що буде імпортовано?",
+                helpMessage =
+                    "Цей список показує плейлисти підключеного Google/YTM акаунта.\n\n" +
+                        "YTM Importer лише читає вибраний плейлист і завантажує його треки " +
+                        "у локальний робочий список із точними videoId. " +
+                        "Плейлист у YouTube/YTM не змінюється.",
+                confirmLabel =
+                    "Вибрати"
+            ),
+            ytmPlaylistSelectorRequestCode
         )
     }
 
@@ -915,119 +916,53 @@ class ImportActivity : Activity() {
     private fun showSelectiveYtmExportPicker(
         playlists: List<YouTubePlaylistInfo>
     ) {
-        val previousSelection =
-            pendingSelectiveExport
+        val values =
+            playlists.map(
+                ::encodePlaylistSelection
+            )
 
         val selectedIds =
-            previousSelection
+            pendingSelectiveExport
                 .mapTo(
                     linkedSetOf()
                 ) {
                     it.id
                 }
 
-        val labels =
+        val initialValues =
             playlists
-                .map { playlist ->
-                    buildString {
-                        append(playlist.title)
-                        append("\n")
-                        append(playlist.itemCount)
-                        append(" треків • ")
-                        append(
-                            when (
-                                playlist.privacyStatus
-                            ) {
-                                "public" ->
-                                    "публічний"
-
-                                "unlisted" ->
-                                    "за посиланням"
-
-                                else ->
-                                    "приватний"
-                            }
-                        )
-                    }
+                .filter {
+                    it.id in selectedIds
                 }
-                .toTypedArray()
+                .map(
+                    ::encodePlaylistSelection
+                )
 
-        val checked =
-            BooleanArray(playlists.size) {
-                    index ->
-
-                playlists[index].id in
-                    selectedIds
-            }
-
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Вибрати плейлисти для експорту"
-            )
-            .setMultiChoiceItems(
-                labels,
-                checked
-            ) {
-                    _,
-                    which,
-                    isChecked ->
-
-                checked[which] =
-                    isChecked
-
-                val id =
-                    playlists[which].id
-
-                if (isChecked) {
-                    selectedIds += id
-                } else {
-                    selectedIds -= id
-                }
-
-                pendingSelectiveExport =
-                    playlists.filter {
-                        it.id in selectedIds
-                    }
-            }
-            .setNegativeButton(
-                "Скасувати"
-            ) {
-                    _,
-                    _ ->
-
-                pendingSelectiveExport =
-                    previousSelection
-            }
-            .setPositiveButton(
-                "Далі"
-            ) {
-                    _,
-                    _ ->
-
-                val selected =
-                    playlists
-                        .filterIndexed {
-                                index,
-                                _ ->
-
-                            checked[index]
-                        }
-
-                if (selected.isEmpty()) {
-                    pendingSelectiveExport =
-                        previousSelection
-
-                    toast(
-                        "Виберіть хоча б один плейлист."
-                    )
-                } else {
-                    pendingSelectiveExport =
-                        selected
-
-                    chooseSelectiveYtmExportFolder()
-                }
-            }
-            .show()
+        startActivityForResult(
+            ListSelectorActivity.multiIntent(
+                activity = this,
+                title =
+                    "Плейлисти для експорту",
+                subtitle =
+                    "Виберіть один або кілька плейлистів.",
+                labels =
+                    playlists.map(
+                        ::playlistSelectorLabel
+                    ),
+                values = values,
+                selectedValues =
+                    initialValues,
+                helpTitle =
+                    "Що буде експортовано?",
+                helpMessage =
+                    "Вибрані плейлисти будуть прочитані з підключеного акаунта " +
+                        "і збережені локально як YTM Project-файли разом із manifest.json.\n\n" +
+                        "Експорт не змінює плейлисти в YouTube/YTM.",
+                confirmLabel =
+                    "Далі"
+            ),
+            selectiveExportSelectorRequestCode
+        )
     }
 
     private fun chooseSelectiveYtmExportFolder() {
@@ -1074,6 +1009,309 @@ class ImportActivity : Activity() {
             requestCode
         )
     }
+
+    private fun selectorValues(
+        data: Intent?
+    ): List<String> =
+        data
+            ?.getStringArrayListExtra(
+                ListSelectorActivity.EXTRA_SELECTED_VALUES
+            )
+            ?.toList()
+            .orEmpty()
+
+    private fun handleYtmPlaylistSelection(
+        data: Intent?
+    ) {
+        val playlist =
+            selectorValues(data)
+                .firstOrNull()
+                ?.let(
+                    ::decodePlaylistSelection
+                )
+                ?: return
+
+        val token =
+            AuthSessionStore
+                .current()
+                .accessToken
+
+        if (token.isNullOrBlank()) {
+            toast(
+                "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
+            )
+            return
+        }
+
+        loadYtmPlaylist(
+            token = token,
+            playlistInfo = playlist
+        )
+    }
+
+    private fun handleSelectiveExportSelection(
+        data: Intent?
+    ) {
+        val selected =
+            selectorValues(data)
+                .mapNotNull(
+                    ::decodePlaylistSelection
+                )
+
+        if (selected.isEmpty()) {
+            toast(
+                "Виберіть хоча б один плейлист."
+            )
+            return
+        }
+
+        pendingSelectiveExport =
+            selected
+
+        chooseSelectiveYtmExportFolder()
+    }
+
+    private fun handleDeltaChainHeadSelection(
+        data: Intent?
+    ) {
+        val decoded =
+            selectorValues(data)
+                .firstOrNull()
+                ?.let(
+                    ::decodeDeltaHeadSelection
+                )
+                ?: return
+
+        resolveDeltaChain(
+            treeUri = decoded.first,
+            head = decoded.second
+        )
+    }
+
+    private fun handleManifestProjectSelection(
+        data: Intent?
+    ) {
+        val entry =
+            selectorValues(data)
+                .firstOrNull()
+                ?.let(
+                    ::decodeManifestEntrySelection
+                )
+                ?: return
+
+        loadAccountBackupProject(entry)
+    }
+
+    private fun playlistSelectorLabel(
+        playlist: YouTubePlaylistInfo
+    ): String =
+        buildString {
+            append(playlist.title)
+            append("\n")
+            append(playlist.itemCount)
+            append(" треків • ")
+            append(
+                when (
+                    playlist.privacyStatus
+                ) {
+                    "public" ->
+                        "публічний"
+
+                    "unlisted" ->
+                        "за посиланням"
+
+                    else ->
+                        "приватний"
+                }
+            )
+        }
+
+    private fun encodePlaylistSelection(
+        playlist: YouTubePlaylistInfo
+    ): String =
+        JSONObject()
+            .put(
+                "id",
+                playlist.id
+            )
+            .put(
+                "title",
+                playlist.title
+            )
+            .put(
+                "privacyStatus",
+                playlist.privacyStatus
+            )
+            .put(
+                "itemCount",
+                playlist.itemCount
+            )
+            .toString()
+
+    private fun decodePlaylistSelection(
+        raw: String
+    ): YouTubePlaylistInfo? =
+        runCatching {
+            val item =
+                JSONObject(raw)
+
+            YouTubePlaylistInfo(
+                id =
+                    item.getString("id"),
+                title =
+                    item.getString("title"),
+                privacyStatus =
+                    item.getString(
+                        "privacyStatus"
+                    ),
+                itemCount =
+                    item.getLong(
+                        "itemCount"
+                    )
+            )
+        }.getOrNull()
+
+    private fun encodeDeltaHeadSelection(
+        treeUri: Uri,
+        head: DeltaChainHead
+    ): String =
+        JSONObject()
+            .put(
+                "treeUri",
+                treeUri.toString()
+            )
+            .put(
+                "folderName",
+                head.folderName
+            )
+            .put(
+                "baseSessionName",
+                head.baseSessionName
+            )
+            .put(
+                "scopeMode",
+                head.scopeMode
+            )
+            .put(
+                "exportedAt",
+                head.exportedAt
+            )
+            .toString()
+
+    private fun decodeDeltaHeadSelection(
+        raw: String
+    ): Pair<Uri, DeltaChainHead>? =
+        runCatching {
+            val item =
+                JSONObject(raw)
+
+            Uri.parse(
+                item.getString(
+                    "treeUri"
+                )
+            ) to
+                DeltaChainHead(
+                    folderName =
+                        item.getString(
+                            "folderName"
+                        ),
+                    baseSessionName =
+                        item.getString(
+                            "baseSessionName"
+                        ),
+                    scopeMode =
+                        item.getString(
+                            "scopeMode"
+                        ),
+                    exportedAt =
+                        item.getLong(
+                            "exportedAt"
+                        )
+                )
+        }.getOrNull()
+
+    private fun encodeManifestEntrySelection(
+        entry: AccountLibraryManifestEntry
+    ): String =
+        JSONObject()
+            .put(
+                "playlistId",
+                entry.playlistId
+            )
+            .put(
+                "title",
+                entry.title
+            )
+            .put(
+                "privacyStatus",
+                entry.privacyStatus
+            )
+            .put(
+                "sourceItemCount",
+                entry.sourceItemCount
+            )
+            .put(
+                "exportedTrackCount",
+                entry.exportedTrackCount
+            )
+            .put(
+                "playlistItemsRequests",
+                entry.playlistItemsRequests
+            )
+            .put(
+                "fileName",
+                entry.fileName
+            )
+            .put(
+                "projectUri",
+                entry.projectUri.toString()
+            )
+            .toString()
+
+    private fun decodeManifestEntrySelection(
+        raw: String
+    ): AccountLibraryManifestEntry? =
+        runCatching {
+            val item =
+                JSONObject(raw)
+
+            AccountLibraryManifestEntry(
+                playlistId =
+                    item.getString(
+                        "playlistId"
+                    ),
+                title =
+                    item.getString(
+                        "title"
+                    ),
+                privacyStatus =
+                    item.getString(
+                        "privacyStatus"
+                    ),
+                sourceItemCount =
+                    item.getLong(
+                        "sourceItemCount"
+                    ),
+                exportedTrackCount =
+                    item.getInt(
+                        "exportedTrackCount"
+                    ),
+                playlistItemsRequests =
+                    item.getInt(
+                        "playlistItemsRequests"
+                    ),
+                fileName =
+                    item.getString(
+                        "fileName"
+                    ),
+                projectUri =
+                    Uri.parse(
+                        item.getString(
+                            "projectUri"
+                        )
+                    )
+            )
+        }.getOrNull()
 
     private fun encodeSelectiveExportState(
         playlists: List<YouTubePlaylistInfo>
@@ -2239,31 +2477,34 @@ class ImportActivity : Activity() {
             return
         }
 
-        UiChrome.showMenuDialog(
-            activity = this,
-            title =
-                "Ланцюжок backup — виберіть кінцеву сесію",
-            subtitle =
-                "Знайдено ${heads.size} незалежних кінцевих delta-сесій",
-            actions =
-                heads.map {
-                        head ->
-
-                    UiChrome.MenuAction(
-                        label =
-                            "${head.folderName}\n${head.scopeMode}",
-                        onClick = {
-                            resolveDeltaChain(
-                                treeUri =
-                                    treeUri,
-                                head =
-                                    head
-                            )
-                        }
-                    )
-                },
-            negativeLabel =
-                "Скасувати"
+        startActivityForResult(
+            ListSelectorActivity.singleIntent(
+                activity = this,
+                title =
+                    "Кінцева delta-сесія",
+                subtitle =
+                    "Знайдено ${heads.size} незалежних кінцевих сесій.",
+                labels =
+                    heads.map { head ->
+                        "${head.folderName}\n${head.scopeMode}"
+                    },
+                values =
+                    heads.map { head ->
+                        encodeDeltaHeadSelection(
+                            treeUri = treeUri,
+                            head = head
+                        )
+                    },
+                helpTitle =
+                    "Що означає цей список?",
+                helpMessage =
+                    "Кожен пункт — кінцева delta-сесія окремого ланцюжка backup.\n\n" +
+                        "Виберіть той head, до стану якого потрібно зібрати новий повний backup. " +
+                        "Операція локальна і не змінює YouTube/YTM.",
+                confirmLabel =
+                    "Вибрати"
+            ),
+            deltaChainHeadSelectorRequestCode
         )
     }
 
@@ -2632,35 +2873,38 @@ class ImportActivity : Activity() {
                 "${manifest.selectionMode} • " +
                 "доступно ${manifest.entries.size}/" +
                 "${manifest.exportedProjects}" +
-                missingNote +
-                "\nЛокально: без YouTube API."
+                missingNote
 
-        UiChrome.showMenuDialog(
-            activity = this,
-            title =
-                "Backup / manifest.json",
-            subtitle = subtitle,
-            actions =
-                manifest.entries.map {
-                        entry ->
-
-                    UiChrome.MenuAction(
-                        label =
-                            entry.title +
-                                "\n" +
-                                entry.exportedTrackCount +
-                                " треків • " +
-                                manifestPrivacyLabel(
-                                    entry.privacyStatus
-                                ),
-                        onClick = {
-                            loadAccountBackupProject(
-                                entry
+        startActivityForResult(
+            ListSelectorActivity.singleIntent(
+                activity = this,
+                title =
+                    "Backup / manifest.json",
+                subtitle = subtitle,
+                labels =
+                    manifest.entries.map { entry ->
+                        entry.title +
+                            "\n" +
+                            entry.exportedTrackCount +
+                            " треків • " +
+                            manifestPrivacyLabel(
+                                entry.privacyStatus
                             )
-                        }
-                    )
-                },
-            negativeLabel = "Скасувати"
+                    },
+                values =
+                    manifest.entries.map(
+                        ::encodeManifestEntrySelection
+                    ),
+                helpTitle =
+                    "Що це за список?",
+                helpMessage =
+                    "Це YTM Project-файли, знайдені через manifest.json у вибраному backup.\n\n" +
+                        "Виберіть один плейлист, щоб відкрити його як локальний робочий список. " +
+                        "YouTube API для цього не використовується.",
+                confirmLabel =
+                    "Відкрити"
+            ),
+            manifestProjectSelectorRequestCode
         )
     }
 
@@ -2931,35 +3175,30 @@ class ImportActivity : Activity() {
     private fun confirmClearWorkspace(
         playlistName: String
     ) {
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Очистити поточний список?"
-            )
-            .setMessage(
-                "Автозбережений робочий список «$playlistName» буде видалено з пристрою.\n\n" +
-                    "YTM Project-файли та плейлисти в YouTube/YTM не змінюються."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Очистити"
-            ) { _, _ ->
-                currentPlaylistStore.clear()
+        UiChrome.showDangerConfirmDialog(
+            activity = this,
+            title =
+                "Очистити поточний список?",
+            message =
+                "Буде видалено тільки автозбережений локальний робочий список " +
+                    "«$playlistName».\n\n" +
+                    "YTM Project-файли та плейлисти в YouTube/YTM не змінюються.",
+            confirmLabel =
+                "Так, очистити"
+        ) {
+            currentPlaylistStore.clear()
 
-                setResult(
-                    RESULT_OK,
-                    Intent()
-                        .putExtra(
-                            EXTRA_CLEAR_WORKSPACE,
-                            true
-                        )
-                )
+            setResult(
+                RESULT_OK,
+                Intent()
+                    .putExtra(
+                        EXTRA_CLEAR_WORKSPACE,
+                        true
+                    )
+            )
 
-                finish()
-            }
-            .show()
+            finish()
+        }
     }
 
     private fun queryFileName(

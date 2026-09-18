@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.37 — Full-screen Storage + Utility UI — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.38-R2 — Checkbox Visual Centering — PHONE RETEST PASS
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -11,10 +11,12 @@ v1.4.37 — Full-screen Storage + Utility UI — IMPLEMENTED / PHONE RETEST NEED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 - UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
 - UX-009 Theme State Contrast — OPEN; Neon Dark Home colors are locked as the accepted reference; Green Dark workflow states need higher-contrast/inverse treatment without changing Neon Dark
-- UX-010 Utility Screens — OPEN; Home `Квота` and `Ще` should navigate to dedicated full-screen pages like `Черга`; rename `Ще` to `Меню` unless product wording changes before implementation
-- UX-011 Full-screen List Selectors — OPEN; dynamic long lists in Import must migrate from tall modal dialogs to dedicated full-screen selectors with fixed header/footer
-- UX-012 Destructive Action Confirmation — OPEN; destructive local actions need unmistakable confirmation hierarchy; safety-snapshot deletion currently has no second confirmation
-- UX-013 Mobile Action Copy Fit — OPEN; action labels must stay short, explicit, and single-line on phone-sized buttons
+- UX-010 Utility Screens — IMPLEMENTED v1.4.37 / PHONE RETEST NEEDED; `Квота` and `Меню` use dedicated full-screen pages
+- UX-011 Full-screen List Selectors — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; four dynamic Import list families now use ListSelectorActivity
+- UX-012 Destructive Action Confirmation — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; explicit danger confirmations + separate safety-snapshot deletion flow
+- UX-013 Mobile Action Copy Fit — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; long Restore/save labels shortened from real-phone evidence
+- UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
+- UX-015 History JSON Restore — OPEN; `YTM_History_*.json` is an export array, not a full backup; add a native History-only restore/import path or clearer in-app conversion flow
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -513,12 +515,12 @@ including:
 - [x] rename Home `Ще` → `Меню`
 - [x] keep Neon Dark Home colors unchanged
 - [x] add static audit + QA docs
-- [ ] GitHub signed build
-- [ ] APK handoff to phone
-- [ ] phone: long root list fixed footer visible without scrolling
-- [ ] phone: `?` help
+- [x] GitHub signed build
+- [x] APK handoff to phone
+- [x] phone: long root list fixed footer visible without scrolling
+- [x] phone: `?` help
 - [ ] phone: Android picker Back returns to chooser
-- [ ] phone: save mode full-screen chooser
+- [x] phone: save mode full-screen chooser layout visible
 - [ ] phone: Quota dedicated screen
 - [ ] phone: Menu dedicated screen + navigation smoke
 
@@ -528,13 +530,13 @@ including:
 - [x] identify old selective-export multi-choice dialog
 - [x] identify old YTM playlist import menu dialog
 - [x] audit additional dynamic Import list dialogs
-- [ ] migrate YTM playlist import picker to full-screen single-select
-- [ ] migrate selective-export picker to full-screen multi-select with fixed `Далі` / `Скасувати`
-- [ ] migrate delta-chain head picker to full-screen single-select when multiple heads exist
-- [ ] migrate backup / manifest project picker to full-screen single-select
-- [ ] keep list content as the only scrollable region
-- [ ] keep Back/help/action controls fixed
-- [ ] do not convert short informational/confirmation modals unnecessarily
+- [x] migrate YTM playlist import picker to full-screen single-select
+- [x] migrate selective-export picker to full-screen multi-select with fixed `Далі` / `Скасувати`
+- [x] migrate delta-chain head picker to full-screen single-select when multiple heads exist
+- [x] migrate backup / manifest project picker to full-screen single-select
+- [x] keep list content as the only scrollable region
+- [x] keep Back/help/action controls fixed
+- [x] do not convert short informational/confirmation modals unnecessarily
 - [ ] phone QA all four selector families
 
 
@@ -545,21 +547,92 @@ including:
 - [x] confirm History clear-all already has a confirmation dialog
 - [x] confirm Pending Queue delete already has a confirmation dialog
 - [x] confirm SearchCache clear-all already has a confirmation dialog
-- [ ] add reusable destructive confirmation pattern with explicit danger styling
-- [ ] change destructive buttons to unambiguous labels such as `Так, видалити запис`
-- [ ] add stronger target text (what exactly will be deleted / what will stay)
-- [ ] require a dedicated confirmation before deleting Restore safety snapshot
-- [ ] use stronger two-step confirmation for bulk/irreversible actions only
+- [x] add reusable destructive confirmation pattern with explicit danger styling
+- [x] change destructive buttons to explicit `Так, видалити` / `Так, очистити`
+- [x] add stronger target text (what exactly will be deleted / what will stay)
+- [x] require a dedicated confirmation before deleting Restore safety snapshot
+- [x] use stronger explicit confirmation for bulk/irreversible actions without adding friction to non-destructive actions
 - [ ] phone QA accidental-tap resistance
 
 
 ## UX-013 — Mobile Action Copy Fit
 - [x] record v1.4.37 phone evidence for wrapped/clipped action labels
-- [ ] Restore confirm: `Вибрати backup` → `Вибрати файл`
-- [ ] Restore success: `OK` → `Готово`
-- [ ] Save chooser: `Додати папку для швидкого збереження…` → `Додати папку…`
-- [ ] Save chooser: `Системне збереження / змінити ім’я…` → `Зберегти як…`
-- [ ] Rollback success: remove direct `Видалити snapshot` action from the success dialog
-- [ ] move snapshot deletion to a dedicated Data action with explicit destructive confirmation
-- [ ] static audit: critical action labels must not rely on two-line wrapping
+- [x] Restore confirm: `Вибрати backup` → `Вибрати файл`
+- [x] Restore success: `OK` → `Готово`
+- [x] Save chooser: `Додати папку для швидкого збереження…` → `Додати папку…`
+- [x] Save chooser: `Системне збереження / змінити ім’я…` → `Зберегти як…`
+- [x] Rollback success: remove direct `Видалити snapshot` action from the success dialog
+- [x] move snapshot deletion to a dedicated Data action with explicit destructive confirmation
+- [x] static audit: critical action labels must not rely on the old long copy
 - [ ] real-phone QA at 783px portrait reference width
+
+
+## v1.4.38 — Full-screen Selectors + Safer Destructive Actions
+- [x] bump versionCode 72 / versionName 1.4.38
+- [x] add reusable `ListSelectorActivity`
+- [x] register selector Activity
+- [x] YTM account playlist import → full-screen single-select
+- [x] selective account export → full-screen multi-select
+- [x] delta-chain head selection → full-screen single-select
+- [x] backup/manifest project selection → full-screen single-select
+- [x] fixed selector Back/title/help + selection summary
+- [x] scroll-only item list + fixed Confirm/Cancel footer
+- [x] add `UiChrome.showDangerConfirmDialog`
+- [x] migrate workspace / History / Queue / SearchCache destructive confirmations
+- [x] separate safety-snapshot deletion from rollback-success dialog
+- [x] add dedicated confirmed snapshot-delete action to Data
+- [x] shorten Restore/save/rollback action copy
+- [x] add v1.4.38 docs + static audit
+- [ ] GitHub signed build
+- [ ] APK handoff to phone
+- [ ] phone: single-select YTM import
+- [ ] phone: multi-select export
+- [ ] phone: backup/manifest selector
+- [ ] phone: delta-chain selector if test data has multiple heads
+- [ ] phone: danger confirmation accidental-tap resistance
+- [ ] phone: short mobile labels at portrait width
+
+
+## UX-014 — Selector Checkbox Alignment
+- [x] phone evidence: checkbox visually sits too close to the left edge relative to label
+- [x] replace compound CheckBox text row with a dedicated checkbox column + separate label
+- [x] make the whole row toggle the checkbox
+- [x] phone retest on 783px portrait reference — PASS
+
+## UX-015 — History JSON Restore
+- [x] identify `YTM_History_*.json` as raw History export, not `ytm-importer-local-backup`
+- [x] verify the user-provided History JSON contains valid History records
+- [x] provide a History-only compatible backup conversion for immediate recovery
+- [ ] add native Data-screen History JSON restore/import flow
+- [ ] preserve Queue/quota/cache/current playlist during History-only import
+- [ ] create safety snapshot before native History-only import
+- [ ] phone QA History-only restore
+
+
+## v1.4.38-R1 — Checkbox Alignment + Restore Rotation
+- [x] isolate R1 from v1.4.38 feature scope
+- [x] versionName 1.4.38-R1 / versionCode 73
+- [x] center selective-export checkbox in fixed touch column
+- [x] keep whole row tappable
+- [x] cache validated pending Restore backup
+- [x] save pending Restore confirmation state across recreation
+- [x] rebuild Restore confirmation after rotation
+- [x] clear pending cache on Cancel / Restore
+- [x] add R1 static audit
+- [ ] signed R1 build
+- [ ] APK handoff to phone
+- [x] R1 phone: checkbox alignment FAIL
+- [x] phone: Restore confirmation survives portrait → landscape
+- [x] phone: Restore confirmation survives landscape → portrait
+
+
+## v1.4.38-R2 — Checkbox Visual Centering
+- [x] versionName 1.4.38-R2 / versionCode 74
+- [x] preserve 48dp checkbox touch column
+- [x] wrap CheckBox in FrameLayout
+- [x] center visible checkbox with Gravity.CENTER
+- [x] preserve whole-row toggle behavior
+- [x] record BUG-008 R1 phone PASS
+- [ ] signed R2 build
+- [ ] APK handoff to phone
+- [x] phone: checkbox visual balance on selective-export screen — PASS

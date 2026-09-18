@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.37**
-- versionCode: **71**
-- release focus: **Full-screen Storage + Utility UI**
-- release status: **PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS; LONG-LIST SELECTOR MIGRATION OPEN**
+- versionName: **1.4.38-R2**
+- versionCode: **74**
+- release focus: **v1.4.38-R2 — checkbox visual centering**
+- release status: **R1 ROTATION PASS / CHECKBOX FAIL; R2 CHECKBOX PHONE RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -76,6 +76,8 @@ v1.4.36 implements UX-008 Phase 2A for the four create-file workflows. Data expo
 Real-phone v1.4.36 testing confirmed the in-app remembered-root chooser appears before Android SAF. A long-list UX failure was found: when many persisted roots exist, Add-folder and Cancel scroll off-screen with the list. The required follow-up is a dedicated full-screen YTM chooser with fixed header/footer, scrollable middle content, and a `?` help modal.
 
 v1.4.37 implements that follow-up with `StorageChooserActivity`. It is reused by Import folder-tree flows and file-save destinations, keeps system picker entry explicit, and returns to the YTM chooser when the user backs out of Android's picker. The same release moves Quota and the renamed `Меню` utility entry to dedicated full-screen pages while preserving the existing Queue result bridge.
+
+v1.4.38 extends the accepted full-screen pattern to the four remaining dynamic Import selectors: account playlist import, selective export, delta-chain head selection and backup/manifest project selection. The same release standardizes destructive local actions through an explicit danger-confirmation helper, moves safety-snapshot deletion out of the rollback-success dialog, and shortens phone-problematic action labels.
 
 The release remains only partially phone-tested overall.
 
@@ -252,12 +254,13 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-test v1.4.37 full-screen storage, Quota, and Menu navigation;
-2. implement UX-008 Phase 2B for the two open-file flows after v1.4.36 evidence;
-3. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
-4. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
-5. then establish the localization resource foundation for Ukrainian / Korean / English;
-6. then build the visual skin foundation without changing import/search/write semantics.
+1. build and phone-test v1.4.38 full-screen selectors, destructive confirmations and mobile copy;
+2. keep the v1.4.37 storage / Quota / Menu follow-up checks in the combined phone pass;
+3. implement UX-008 Phase 2B for the two generic open-file flows after v1.4.38 evidence;
+4. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
+5. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
+6. then establish the localization resource foundation for Ukrainian / Korean / English;
+7. then build the visual skin foundation without changing import/search/write semantics.
 
 Future product requirements already recorded:
 
@@ -311,6 +314,20 @@ The goal is that a new assistant can become productive from the repository itsel
 
 
 Current UI follow-up:
-- UX-011: v1.4.37 full-screen storage chooser pattern passed on phone
-- migrate dynamic long-list selectors in Import (YTM playlist import, selective export, delta-chain head, backup/manifest project) to dedicated full-screen selectors
-- keep compact information/confirmation dialogs as modals
+- UX-011 / UX-012 / UX-013 implemented in v1.4.38; phone evidence still required
+- dynamic long-list selectors in Import now use ListSelectorActivity
+- compact information/confirmation dialogs remain modal
+- UX-009 Green Dark state contrast remains open; Neon Dark stays color-locked
+
+
+v1.4.38-R1 is a targeted rebuild only:
+- fix selective-export checkbox visual alignment;
+- keep Restore confirmation after portrait/landscape rotation without reselecting the backup file;
+- do not claim any additional phone PASS from the R1 build until both checks are repeated.
+
+
+v1.4.38-R2 is a checkbox-only follow-up:
+- R1 Restore rotation test passed and BUG-008 is closed;
+- R1 checkbox visual alignment failed;
+- R2 centers the visible CheckBox drawable inside the existing 48dp touch column using a FrameLayout wrapper;
+- phone acceptance needs only the selective-export checkbox visual check.

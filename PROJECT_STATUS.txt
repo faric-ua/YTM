@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.37
-Version code: 71
+Version: 1.4.38-R2
+Version code: 74
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -26,7 +26,11 @@ v1.4.32 PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / OTHER MODALS INC
 v1.4.33 NOT PHONE-TESTED — SUPERSEDED BY v1.4.34 BEFORE PHONE QA
 v1.4.34 PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUOTA MODAL PASS / REMAINING RETEST DEFERRED
 v1.4.35 NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA
-v1.4.36 NOT PHONE-TESTED YET — UX-008 PHASE 2A / SAVED FILE DESTINATIONS
+v1.4.36 PARTIALLY PHONE-TESTED — IN-APP SAF ENTRY PASS / LONG-LIST FIXED-FOOTER FAIL
+v1.4.37 PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS / LONG-LIST SELECTORS FOUND
+v1.4.38 NOT PHONE-TESTED YET — FULL-SCREEN SELECTORS + DESTRUCTIVE SAFETY + MOBILE COPY
+v1.4.38-R1 PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX FAIL
+v1.4.38-R2 PHONE RETEST PASS — CHECKBOX VISUAL CENTERING
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -393,6 +397,19 @@ v1.4.37 focus:
 - keep Neon Dark Home colors unchanged; UX-009 remains separate
 - no broad filesystem permission
 
+
+v1.4.38 focus:
+- UX-011: four dynamic Import collection pickers use ListSelectorActivity
+- single-select: YTM account playlist, delta-chain head, backup/manifest project
+- multi-select: selective account export
+- fixed selector header/summary/scroll/footer + optional help
+- UX-012: destructive local actions use explicit danger confirmation
+- snapshot deletion moved out of rollback-success dialog into separate confirmed Data action
+- UX-013: short mobile labels: Вибрати файл / Готово / Додати папку… / Зберегти як… / Відкотити Restore
+- two generic ACTION_OPEN_DOCUMENT paths remain for UX-008 Phase 2B
+- Neon Dark Home color reference remains locked
+- no broad filesystem permission
+
 Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34
@@ -459,3 +476,39 @@ UI FINDING — UX-013 MOBILE ACTION COPY FIT
 - generic `OK` should become `Готово` on Restore success
 - post-rollback `Видалити snapshot` should not remain beside the success action; move deletion to a dedicated confirmed destructive flow
 - target rule: primary action buttons should communicate one action and fit on one line on the phone reference width
+
+
+v1.4.38 R1 phone follow-up:
+- full-screen selector architecture passes the main phone checks
+- selective-export checkbox alignment needs a visual R1 correction; checkbox now has a dedicated centered touch column
+- destructive confirmations for History clear, History single-delete and safety-snapshot delete are readable and explicit
+- BUG-008 reproduced: rotating the full-backup Restore confirmation loses the selected file context
+- BUG-008 R1 fix caches the pending validated backup in app cache and recreates the confirmation after rotation
+- user-provided `YTM_History_*.json` is a History export array, not a full LocalBackupManager backup; track native History-only restore as UX-015
+- root `TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt` documents the safe Download ZIP organizer command
+
+
+v1.4.38-R1 focus:
+- targeted test build only; no feature expansion
+- multi-select checkbox centered in dedicated fixed-width column
+- Restore confirmation rebuilt after Activity recreation/rotation
+- validated pending backup cached locally instead of placed in Bundle
+- Cancel / Restore clears pending cached backup
+- phone acceptance requires only these two regressions to pass
+
+
+v1.4.38-R2 phone follow-up:
+- R1 screenshot still shows visible checkbox square too close to the card's left edge
+- root cause: CheckBox button drawable is start-aligned inside the 48dp CheckBox view
+- R2 wraps CheckBox in a 48dp FrameLayout and centers the actual WRAP_CONTENT checkbox child
+- R1 Restore rotation retest passed; BUG-008 is closed
+- R2 needs only checkbox visual phone acceptance
+- R1 phone screenshot evidence: 783×1536, SHA-256 00963abcc4c37ce876aa933e9a2a2c34fb5c9150e565350dd367e39447c9dada
+
+
+v1.4.38-R2 phone result:
+- selective-export checkbox visual alignment PASS
+- visible square now balanced between card edge and playlist text
+- UX-014 closed for the tested phone path
+- evidence: 783×1536, SHA-256 b86f70c820d6d2332b124a67cf77fa0c2c9f5ade5a581f4f3406d9666ca1c85d
+- BUG-008 Restore rotation remains CLOSED from R1

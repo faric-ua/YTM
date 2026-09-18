@@ -1,0 +1,54 @@
+YTM Importer — organize ZIP archives from Android Download
+========================================================
+
+Purpose
+-------
+Move every .zip file that is directly in:
+
+/storage/emulated/0/Download
+
+into:
+
+/storage/emulated/0/Download/YTM project data/zip data
+
+Files already inside subfolders are not touched.
+Existing destination files are not overwritten.
+
+Recommended Termux command
+--------------------------
+
+DOWNLOAD="/storage/emulated/0/Download"
+DEST="$DOWNLOAD/YTM project data/zip data"
+
+mkdir -p "$DEST"
+
+find "$DOWNLOAD" -maxdepth 1 -type f -iname '*.zip' -print0 |
+while IFS= read -r -d '' file; do
+  name="$(basename "$file")"
+  target="$DEST/$name"
+
+  if [ -e "$target" ]; then
+    echo "SKIP (already exists): $name"
+  else
+    echo "MOVE: $name"
+    mv -- "$file" "$DEST/"
+  fi
+done
+
+echo
+echo "=== ZIP DATA ==="
+ls -lh "$DEST"
+
+Dry-run only
+------------
+
+To see which ZIP files would be moved without changing anything:
+
+find "/storage/emulated/0/Download" -maxdepth 1 -type f -iname '*.zip' -print
+
+Notes
+-----
+- Run from Termux.
+- Termux must already have storage access (termux-setup-storage if needed).
+- This command intentionally moves ZIP files only.
+- APK, JSON, TXT, images, folders and existing nested ZIP files are left where they are.
