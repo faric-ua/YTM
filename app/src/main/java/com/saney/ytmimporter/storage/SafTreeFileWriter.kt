@@ -60,20 +60,32 @@ object SafTreeFileWriter {
                     "Android не створив файл у вибраній папці"
                 )
 
-        resolver
-            .openOutputStream(
-                documentUri,
-                "w"
-            )
-            ?.bufferedWriter(
-                Charsets.UTF_8
-            )
-            ?.use { writer ->
-                writer.write(content)
+        try {
+            resolver
+                .openOutputStream(
+                    documentUri,
+                    "w"
+                )
+                ?.bufferedWriter(
+                    Charsets.UTF_8
+                )
+                ?.use { writer ->
+                    writer.write(content)
+                }
+                ?: error(
+                    "Android не відкрив створений файл для запису"
+                )
+        } catch (error: Throwable) {
+            runCatching {
+                DocumentsContract
+                    .deleteDocument(
+                        resolver,
+                        documentUri
+                    )
             }
-            ?: error(
-                "Android не відкрив створений файл для запису"
-            )
+
+            throw error
+        }
 
         return Result(
             uri = documentUri,
@@ -174,24 +186,24 @@ object SafTreeFileWriter {
                     null
                 )
                 ?.use { cursor ->
-                    buildSet {
-                        val index =
-                            cursor.getColumnIndex(
-                                DocumentsContract
-                                    .Document
-                                    .COLUMN_DISPLAY_NAME
-                            )
+                    val index =
+                        cursor.getColumnIndex(
+                            DocumentsContract
+                                .Document
+                                .COLUMN_DISPLAY_NAME
+                        )
 
-                        if (index < 0) {
-                            return@use
-                        }
-
-                        while (
-                            cursor.moveToNext()
-                        ) {
-                            cursor
-                                .getString(index)
-                                ?.let(::add)
+                    if (index < 0) {
+                        emptySet()
+                    } else {
+                        buildSet {
+                            while (
+                                cursor.moveToNext()
+                            ) {
+                                cursor
+                                    .getString(index)
+                                    ?.let(::add)
+                            }
                         }
                     }
                 }
