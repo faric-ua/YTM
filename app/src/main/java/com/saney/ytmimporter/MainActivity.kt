@@ -54,6 +54,7 @@ class MainActivity : Activity() {
     private val reviewScreenRequestCode = 1302
     private val destinationScreenRequestCode = 1401
     private val menuScreenRequestCode = 1501
+    private val quotaScreenRequestCode = 1502
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
@@ -1354,6 +1355,17 @@ class MainActivity : Activity() {
                 handleMenuScreenResult(data)
             }
 
+            quotaScreenRequestCode -> {
+                if (
+                    data.getStringExtra(
+                        QuotaActivity.EXTRA_ACTION
+                    ) ==
+                        QuotaActivity.ACTION_OPEN_QUEUE
+                ) {
+                    showPendingJobs()
+                }
+            }
+
             authRequestCode -> {
                 try {
                     val result =
@@ -1373,11 +1385,12 @@ class MainActivity : Activity() {
     }
 
     private fun openQuotaScreen() {
-        startActivity(
+        startActivityForResult(
             Intent(
                 this,
                 QuotaActivity::class.java
-            )
+            ),
+            quotaScreenRequestCode
         )
     }
 
