@@ -13,6 +13,7 @@ v1.4.37 — Full-screen Storage + Utility UI — IMPLEMENTED / PHONE RETEST NEED
 - UX-009 Theme State Contrast — OPEN; Neon Dark Home colors are locked as the accepted reference; Green Dark workflow states need higher-contrast/inverse treatment without changing Neon Dark
 - UX-010 Utility Screens — OPEN; Home `Квота` and `Ще` should navigate to dedicated full-screen pages like `Черга`; rename `Ще` to `Меню` unless product wording changes before implementation
 - UX-011 Full-screen List Selectors — OPEN; dynamic long lists in Import must migrate from tall modal dialogs to dedicated full-screen selectors with fixed header/footer
+- UX-012 Destructive Action Confirmation — OPEN; destructive local actions need unmistakable confirmation hierarchy; safety-snapshot deletion currently has no second confirmation
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -534,3 +535,18 @@ including:
 - [ ] keep Back/help/action controls fixed
 - [ ] do not convert short informational/confirmation modals unnecessarily
 - [ ] phone QA all four selector families
+
+
+## UX-012 — Destructive Action Confirmation
+- [x] audit current History / Queue / SearchCache / Restore destructive paths
+- [x] identify direct `Видалити snapshot` action after Restore with no dedicated confirmation
+- [x] confirm History single-entry delete already has a confirmation dialog
+- [x] confirm History clear-all already has a confirmation dialog
+- [x] confirm Pending Queue delete already has a confirmation dialog
+- [x] confirm SearchCache clear-all already has a confirmation dialog
+- [ ] add reusable destructive confirmation pattern with explicit danger styling
+- [ ] change destructive buttons to unambiguous labels such as `Так, видалити запис`
+- [ ] add stronger target text (what exactly will be deleted / what will stay)
+- [ ] require a dedicated confirmation before deleting Restore safety snapshot
+- [ ] use stronger two-step confirmation for bulk/irreversible actions only
+- [ ] phone QA accidental-tap resistance
