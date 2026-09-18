@@ -30,7 +30,7 @@
 | v1.4.35 | **NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA** | UX-008 Phase 1 implemented remembered SAF tree roots and explicit in-app cancel before Android folder picker; development continued into file-save Phase 2A before phone QA. |
 | v1.4.36 | **PARTIALLY PHONE-TESTED — IN-APP SAF ENTRY PASS / LONG-LIST FIXED-FOOTER FAIL** | Signed APK installed. Import remembered-root chooser appears before Android SAF, but with many persisted roots its Add-folder and Cancel controls scroll off-screen; dedicated full-screen fixed-footer chooser required. File-save Phase 2A functional cases remain pending. |
 | v1.4.37 | **PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS; LEGACY LONG-LIST SELECTORS FOUND** | Full-screen storage chooser fixes the v1.4.36 long-list control problem and SAF help opens correctly. Old playlist-selection dialogs remain and are tracked as UX-011. Quota/Menu and remaining storage behavior cases still need phone checks. |
-| v1.4.38 | **PARTIALLY PHONE-TESTED — SELECTORS + DESTRUCTIVE CONFIRMATIONS PASS; R1 CHECKBOX/ROTATION RETEST NEEDED** | Main full-screen selector and danger-confirmation cases passed on phone. R1 fixes checkbox alignment and BUG-008 Restore-confirmation loss on rotation. History JSON export/restore mismatch tracked as UX-015. |
+| v1.4.38 | **PARTIALLY PHONE-TESTED — SELECTORS + DESTRUCTIVE CONFIRMATIONS PASS; BUG-008 CLOSED; CHECKBOX R2 RETEST NEEDED** | Main selector/danger-confirmation paths passed. Restore rotation fix passed in R1. Checkbox alignment failed R1 and moves to R2. History JSON restore mismatch remains UX-015. |
 
 Static audits and GitHub build do not equal phone testing.
 
@@ -41,4 +41,5 @@ v1.4.16 phone evidence:
 - `docs/v.1.4.16/qa/UI_SCREENSHOT_ANALYSIS_G07_2026-09-16.md`
 - `docs/v.1.4.16/qa/AUTH_STALE_SESSION_EVIDENCE_2026-09-16.md`
 
-| v1.4.38-R1 | **NOT PHONE-TESTED YET** | Targeted rebuild: checkbox alignment polish + Restore confirmation persistence across rotation. |
+| v1.4.38-R1 | **PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX ALIGNMENT FAIL** | BUG-008 is closed: Restore confirmation survives rotation without reselecting the file. Checkbox visual alignment remains off and is superseded by R2. |
+| v1.4.38-R2 | **NOT PHONE-TESTED YET** | Targeted checkbox-only rebuild: visible CheckBox drawable centered inside the existing 48dp touch column. |
