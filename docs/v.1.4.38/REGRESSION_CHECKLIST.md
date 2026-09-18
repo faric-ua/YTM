@@ -27,9 +27,10 @@
 - [ ] delete one History entry shows danger confirmation
 - [ ] clear all History shows stronger bulk warning
 - [ ] delete Pending job shows danger confirmation
-- [ ] clear SearchCache shows danger confirmation
+- [ ] delete expired SearchCache records shows danger confirmation
+- [ ] clear all SearchCache shows danger confirmation
 - [ ] snapshot delete is not present in rollback-success dialog
-- [ ] Data screen exposes separate snapshot delete action
+- [ ] Data screen exposes separate `Видалити знімок` action
 - [ ] snapshot delete requires explicit danger confirmation
 - [ ] Cancel leaves data unchanged
 
