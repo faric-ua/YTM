@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.38 — Full-screen Selectors + Safer Destructive Actions — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.38-R1 — Checkbox Alignment + Restore Rotation — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -607,3 +607,20 @@ including:
 - [ ] preserve Queue/quota/cache/current playlist during History-only import
 - [ ] create safety snapshot before native History-only import
 - [ ] phone QA History-only restore
+
+
+## v1.4.38-R1 — Checkbox Alignment + Restore Rotation
+- [x] isolate R1 from v1.4.38 feature scope
+- [x] versionName 1.4.38-R1 / versionCode 73
+- [x] center selective-export checkbox in fixed touch column
+- [x] keep whole row tappable
+- [x] cache validated pending Restore backup
+- [x] save pending Restore confirmation state across recreation
+- [x] rebuild Restore confirmation after rotation
+- [x] clear pending cache on Cancel / Restore
+- [x] add R1 static audit
+- [ ] signed R1 build
+- [ ] APK handoff to phone
+- [ ] phone: checkbox alignment
+- [ ] phone: Restore confirmation survives portrait → landscape
+- [ ] phone: Restore confirmation survives landscape → portrait
