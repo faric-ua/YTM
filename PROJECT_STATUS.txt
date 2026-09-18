@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.35
-Version code: 69
+Version: 1.4.36
+Version code: 70
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -25,7 +25,8 @@ v1.4.31 PARTIALLY PHONE-TESTED — BACKUP UI POLISH SMOKE PASS / BUG-004 RETEST 
 v1.4.32 PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / OTHER MODALS INCONSISTENT
 v1.4.33 NOT PHONE-TESTED — SUPERSEDED BY v1.4.34 BEFORE PHONE QA
 v1.4.34 PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUOTA MODAL PASS / REMAINING RETEST DEFERRED
-v1.4.35 NOT PHONE-TESTED YET — UX-008 PHASE 1 / SAVED SAF FOLDERS
+v1.4.35 NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA
+v1.4.36 NOT PHONE-TESTED YET — UX-008 PHASE 2A / SAVED FILE DESTINATIONS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -364,8 +365,19 @@ v1.4.35 focus:
 - reuse Android persisted SAF tree permissions instead of inventing filesystem paths
 - remembered roots are filtered by READ vs READ_WRITE requirements
 - `Скасувати` stays inside YTM Importer even before the first grant; `Додати іншу папку…` is the only explicit path into Android SAF
-- ACTION_OPEN_DOCUMENT / ACTION_CREATE_DOCUMENT remain unchanged for later UX-008 phases
+- v1.4.35 was not phone-tested before v1.4.36 work began
 - no MANAGE_EXTERNAL_STORAGE / READ_EXTERNAL_STORAGE / WRITE_EXTERNAL_STORAGE
+
+v1.4.36 focus:
+- UX-008 Phase 2A: all four create-file operations show an in-app save-destination menu first
+- reuse persisted READ_WRITE SAF roots for direct saves
+- add a reusable folder through one shared ACTION_OPEN_DOCUMENT_TREE launcher
+- retain one explicit system ACTION_CREATE_DOCUMENT fallback for alternate location/name
+- Data / Review / History / Service no longer launch ACTION_CREATE_DOCUMENT directly
+- duplicate direct saves get numbered filenames instead of destructive overwrite
+- failed direct writes delete the newly-created empty document when possible
+- two ACTION_OPEN_DOCUMENT flows remain Phase 2B
+- no broad storage permission
 
 
 Known:
