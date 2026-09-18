@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.38-R2 — Checkbox Visual Centering — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.38-R2 — Checkbox Visual Centering — PHONE RETEST PASS
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -15,7 +15,7 @@ v1.4.38-R2 — Checkbox Visual Centering — IMPLEMENTED / PHONE RETEST NEEDED
 - UX-011 Full-screen List Selectors — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; four dynamic Import list families now use ListSelectorActivity
 - UX-012 Destructive Action Confirmation — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; explicit danger confirmations + separate safety-snapshot deletion flow
 - UX-013 Mobile Action Copy Fit — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; long Restore/save labels shortened from real-phone evidence
-- UX-014 Selector Checkbox Alignment — R1 PHONE FAIL / R2 FIX IMPLEMENTED; visible CheckBox drawable now centered inside the 48dp touch column
+- UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
 - UX-015 History JSON Restore — OPEN; `YTM_History_*.json` is an export array, not a full backup; add a native History-only restore/import path or clearer in-app conversion flow
 
 ## v1.4.16
@@ -597,7 +597,7 @@ including:
 - [x] phone evidence: checkbox visually sits too close to the left edge relative to label
 - [x] replace compound CheckBox text row with a dedicated checkbox column + separate label
 - [x] make the whole row toggle the checkbox
-- [ ] phone retest on 783px portrait reference
+- [x] phone retest on 783px portrait reference — PASS
 
 ## UX-015 — History JSON Restore
 - [x] identify `YTM_History_*.json` as raw History export, not `ytm-importer-local-backup`
@@ -635,4 +635,4 @@ including:
 - [x] record BUG-008 R1 phone PASS
 - [ ] signed R2 build
 - [ ] APK handoff to phone
-- [ ] phone: checkbox visual balance on selective-export screen
+- [x] phone: checkbox visual balance on selective-export screen — PASS
