@@ -6,19 +6,19 @@ fail() {
   exit 1
 }
 
-BUILD="app/build.gradle.kts"
 IMPORT="app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 API="app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt"
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 PLAN="docs/plans/YTM_ACCOUNT_LIBRARY_IMPORT_EXPORT.md"
 
-grep -q 'versionCode = 52' "$BUILD" || fail "versionCode 52 missing"
-grep -q 'versionName = "1.4.18"' "$BUILD" || fail "versionName 1.4.18 missing"
+grep -Fq 'versionCode: **52**' docs/v.1.4.18/RELEASE.md || fail "v1.4.18 versionCode snapshot missing"
+grep -Fq 'versionName: **1.4.18**' docs/v.1.4.18/RELEASE.md || fail "v1.4.18 versionName snapshot missing"
 
 grep -q 'AuthSessionStore' "$IMPORT" || fail "AuthSessionStore bridge missing"
 grep -Fq 'Імпорт із YouTube/YTM' "$IMPORT" || fail "account import section missing"
 grep -Fq 'Вибрати плейлист з YTM' "$IMPORT" || fail "playlist picker CTA missing"
-grep -q 'UiChrome.showMenuDialog' "$IMPORT" || fail "styled playlist picker missing"
+grep -Fq 'showYtmPlaylistPicker' "$IMPORT" || fail "playlist picker bridge missing"
+grep -Fq 'ListSelectorActivity.singleIntent' "$IMPORT" || fail "current full-screen playlist selector missing"
 if grep -q '\.setItems(' "$IMPORT"; then
   fail "raw AlertDialog.setItems remains in ImportActivity"
 fi
