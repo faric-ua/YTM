@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail(){ echo "FAIL: $1" >&2; exit 1; }
+
+GRADLE="app/build.gradle.kts"
+SELECTOR="app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt"
+DATA="app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
+R1="docs/v.1.4.38/R1.md"
+
+for f in "$GRADLE" "$SELECTOR" "$DATA" "$R1"; do
+  test -f "$f" || fail "missing R1 file: $f"
+done
+
+grep -Fq 'versionCode = 73' "$GRADLE" || fail "R1 versionCode 73 missing"
+grep -Fq 'versionName = "1.4.38-R1"' "$GRADLE" || fail "R1 versionName missing"
+
+grep -Fq 'private fun multiChoiceView(index: Int): LinearLayout' "$SELECTOR"   || fail "R1 multi-select row container missing"
+grep -Fq 'Gravity.CENTER' "$SELECTOR"   || fail "R1 checkbox centering guard missing"
+grep -Fq 'LinearLayout.LayoutParams(' "$SELECTOR"   || fail "R1 checkbox/text column layout missing"
+
+grep -Fq 'override fun onSaveInstanceState' "$DATA"   || fail "R1 Data saved-state path missing"
+grep -Fq 'STATE_RESTORE_CONFIRMATION_PENDING' "$DATA"   || fail "R1 Restore pending-state key missing"
+grep -Fq 'PENDING_RESTORE_CACHE_FILE' "$DATA"   || fail "R1 Restore cache file missing"
+grep -Fq 'restorePendingBackupConfirmation()' "$DATA"   || fail "R1 Restore confirmation recreation missing"
+grep -Fq 'clearPendingRestoreConfirmation()' "$DATA"   || fail "R1 pending Restore cleanup missing"
+
+grep -Fq 'two targeted phone regressions only' "$R1"   || fail "R1 scope note missing"
+
+echo "PASS:"
+echo "- v1.4.38-R1 / code 73"
+echo "- checkbox fixed-column centering guard"
+echo "- Restore confirmation rotation persistence guard"
+echo "- targeted R1 scope documented"
