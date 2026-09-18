@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.38-R1
-Version code: 73
+Version: 1.4.38-R2
+Version code: 74
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -29,7 +29,8 @@ v1.4.35 NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA
 v1.4.36 PARTIALLY PHONE-TESTED — IN-APP SAF ENTRY PASS / LONG-LIST FIXED-FOOTER FAIL
 v1.4.37 PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS / LONG-LIST SELECTORS FOUND
 v1.4.38 NOT PHONE-TESTED YET — FULL-SCREEN SELECTORS + DESTRUCTIVE SAFETY + MOBILE COPY
-v1.4.38-R1 NOT PHONE-TESTED YET — CHECKBOX ALIGNMENT + RESTORE ROTATION
+v1.4.38-R1 PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX FAIL
+v1.4.38-R2 NOT PHONE-TESTED YET — CHECKBOX VISUAL CENTERING
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -494,3 +495,12 @@ v1.4.38-R1 focus:
 - validated pending backup cached locally instead of placed in Bundle
 - Cancel / Restore clears pending cached backup
 - phone acceptance requires only these two regressions to pass
+
+
+v1.4.38-R2 phone follow-up:
+- R1 screenshot still shows visible checkbox square too close to the card's left edge
+- root cause: CheckBox button drawable is start-aligned inside the 48dp CheckBox view
+- R2 wraps CheckBox in a 48dp FrameLayout and centers the actual WRAP_CONTENT checkbox child
+- R1 Restore rotation retest passed; BUG-008 is closed
+- R2 needs only checkbox visual phone acceptance
+- R1 phone screenshot evidence: 783×1536, SHA-256 00963abcc4c37ce876aa933e9a2a2c34fb5c9150e565350dd367e39447c9dada
