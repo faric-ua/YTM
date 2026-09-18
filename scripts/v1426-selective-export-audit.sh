@@ -18,7 +18,8 @@ ROADMAP="docs/tutorial/ROADMAP.md"
 
 grep -Fq '"Вибрати плейлисти для експорту"' "$IMPORT" || fail "selective export action missing"
 grep -q 'selectiveExportFolderRequestCode' "$IMPORT" || fail "selective folder request code missing"
-grep -q 'setMultiChoiceItems' "$IMPORT" || fail "multi-select picker missing"
+grep -Fq 'ListSelectorActivity.multiIntent(' "$IMPORT" || fail "full-screen multi-select picker missing"
+grep -q 'selectiveExportSelectorRequestCode' "$IMPORT" || fail "selective selector request code missing"
 grep -q 'pendingSelectiveExport' "$IMPORT" || fail "selective selection state missing"
 grep -q 'override fun onSaveInstanceState' "$IMPORT" || fail "saved-instance-state handling missing"
 grep -q 'STATE_SELECTIVE_EXPORT' "$IMPORT" || fail "selective state key missing"
@@ -53,7 +54,7 @@ test -f docs/tutorial/06_ACCOUNT_LIBRARY_EXPORT.md || fail "tutorial chapter 06 
 
 echo "PASS:"
 echo "- v1.4.26 selective account export guards"
-echo "- saved multi-selection"
+echo "- saved multi-selection through current full-screen selector"
 echo "- selected-only playlist processing"
 echo "- ALL export mode retained"
 echo "- manifest schema v2 + selectionMode"
