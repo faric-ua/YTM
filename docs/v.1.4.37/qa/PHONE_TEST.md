@@ -147,3 +147,28 @@ Required follow-up:
 - use explicit danger action labels such as `Так, видалити запис`;
 - require a separate confirmation before deleting a Restore safety snapshot;
 - reserve stronger/two-step confirmation for bulk or irreversible actions.
+
+## Real-phone finding — action label fit
+
+Four v1.4.37 screenshots exposed action-copy problems:
+
+1. Restore confirmation: `Вибрати backup` wraps to two lines.
+2. Restore result: generic `OK` is less descriptive than the surrounding actions.
+3. Save chooser: `Додати папку для швидкого збереження…` and `Системне збереження / змінити ім’я…` wrap/clamp in the fixed footer.
+4. Rollback result: `Видалити snapshot` wraps and also exposes a destructive action too directly beside a success acknowledgement.
+
+Planned copy/interaction correction:
+
+- `Вибрати backup` → `Вибрати файл`;
+- `OK` → `Готово`;
+- `Додати папку для швидкого збереження…` → `Додати папку…`;
+- `Системне збереження / змінити ім’я…` → `Зберегти як…`;
+- remove direct snapshot deletion from the rollback-success dialog;
+- expose snapshot deletion separately with an explicit destructive confirmation.
+
+Evidence fingerprints supplied in chat:
+
+- Restore confirmation: 783×1536, SHA-256 `bdf3c981fcc5214b6208fefab86a2313e304daa771f45c234985f8d6ab3a0809`
+- Restore success: 783×1536, SHA-256 `8afedb434975d177b35c0af6ca7711150d744b6a1bb80f3aaac9f8c882ec9bf6`
+- Save chooser footer: 783×1536, SHA-256 `a143e7d83f597ad96768daad2ffb8a0ca5a8b46ed598476bec44671ebbd02f53`
+- Rollback result: 783×1536, SHA-256 `16ed291aead76b07e2f96913089df8da8b0d2de599754bd21e0f4decb5c7ff04`
