@@ -3,8 +3,11 @@
 ## A. First grant
 
 1. Use a folder action for which no suitable persisted root is available.
-2. Confirm Android's normal folder picker opens.
-3. Pick a folder and finish the operation or return after the grant.
+2. Confirm YTM Importer first shows its own folder menu.
+3. Confirm `Скасувати` closes that menu without entering Android SAF.
+4. Open the action again and tap `Додати іншу папку…`.
+5. Confirm Android's normal folder picker opens.
+6. Pick a folder and finish the operation or return after the grant.
 
 Expected: the new root becomes a persisted SAF permission.
 
