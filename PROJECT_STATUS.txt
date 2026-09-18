@@ -443,3 +443,11 @@ UI FINDING — UX-011 FULL-SCREEN LIST SELECTORS
 - code audit adds delta-chain head picker + backup/manifest project picker as the same long-list class
 - next migration rule: dynamic/long selectable collections use dedicated full-screen selectors
 - short info / warning / confirmation content may remain modal
+
+
+UI FINDING — UX-012 DESTRUCTIVE CONFIRMATION
+- user reported an accidental/unclear deletion during v1.4.37 use
+- code audit: History record delete, History clear-all, Pending Queue delete and SearchCache clear-all already ask for confirmation
+- weak spot: post-Restore `Видалити snapshot` deletes the safety snapshot directly from the result dialog with no dedicated second confirmation
+- follow-up: standardize destructive confirmations with explicit red danger action + exact target wording
+- bulk/irreversible destructive actions should use stronger confirmation than ordinary single-item removal
