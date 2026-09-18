@@ -83,3 +83,63 @@ PASS: critical actions are readable without awkward wrapping/clipping.
 ## H. Theme guard
 
 Neon Dark Home must still match the locked reference. UX-009 Green Dark contrast remains separate.
+
+
+## Real-phone result — first v1.4.38 pass
+
+User result:
+
+1. Home / utility navigation smoke — PASS.
+2. Full-screen YTM single-select — PASS.
+3. Full-screen selective-export multi-select — FUNCTIONAL PASS; checkbox visual alignment needs R1 polish.
+4. Backup / manifest full-screen selector — PASS.
+5. Destructive History confirmation — PASS.
+6. Data / Restore / short-copy safety flow — PASS for the tested actions.
+
+Phone evidence supplied in chat:
+
+- selective-export selector: SHA-256 `793f06d77c13da313f8197610865cdf93762fcbed7ff90b1b5d31ddcfcf2999e`
+- clear-all History danger confirmation: SHA-256 `9427527d66d11ea060edc7543b2761fa582dd39661c8fcadbbe7a97d07d7f799`
+- single History record danger confirmation: SHA-256 `be894a46dba00f030df9e430ac0b04cdbb46260823b87ffbd881a9a96c48783a`
+- safety-snapshot danger confirmation: SHA-256 `063b5a1d90663e1301807b01853f8a4bd5850d70a6f2e16565e7d91c02df86c3`
+
+### R1 finding — checkbox alignment
+
+The multi-select checkbox is functional but visually sits too close to the card's left edge relative to the start of the text.
+
+R1 implementation:
+- checkbox moved into its own centered fixed touch column;
+- label rendered separately;
+- tapping the whole row still toggles selection.
+
+Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED.**
+
+### BUG-008 — Restore confirmation lost on rotation
+
+Reproduced on v1.4.38:
+
+- choose a valid full backup;
+- wait for the information/confirmation dialog;
+- rotate the phone;
+- dialog disappears and the backup must be found again.
+
+R1 implementation:
+- validated pending backup copied into app cache;
+- pending confirmation flag saved in instance state;
+- after recreation, the same cached backup is inspected again and the confirmation is recreated;
+- Cancel / Restore clears the temporary cache file.
+
+Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.38 R1.**
+
+### History JSON format finding
+
+The user supplied `YTM_History_20260915_045457.json`.
+
+It is a raw History export array, not a full `ytm-importer-local-backup`, so the full Restore path correctly rejects it.
+
+Immediate recovery path:
+- convert it into a History-only backup wrapper;
+- restore that wrapper through the existing full Restore UI;
+- because only `history_store_v1` is present, Queue/quota/SearchCache/current playlist are not overwritten.
+
+Track a native History JSON restore/import UX as UX-015.
