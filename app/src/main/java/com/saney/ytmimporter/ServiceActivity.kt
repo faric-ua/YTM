@@ -385,10 +385,12 @@ class ServiceActivity : Activity() {
 
         content.addView(sectionTitle("Дії"))
         content.addView(
-            fullActionButton("Видалити прострочені записи") {
-                val removed = searchCache.clearExpired()
-                toast("Видалено записів SearchCache: $removed")
-                buildUi()
+            fullActionButton(
+                label =
+                    "Видалити прострочені записи",
+                danger = true
+            ) {
+                confirmDeleteExpiredSearchCache()
             }
         )
         content.addView(
@@ -670,22 +672,67 @@ class ServiceActivity : Activity() {
                 ).apply { bottomMargin = dp(8) }
         }
 
-    private fun confirmClearSearchCache() {
-        UiChrome.alertBuilder(this)
-            .setTitle("Очистити весь SearchCache?")
-            .setMessage(
-                "Усі кешовані результати пошуку буде видалено.\n\n" +
-                    "History і плейлисти не зміняться, але наступний пошук " +
-                    "цих треків знову звернеться до YouTube API."
+    private fun confirmDeleteExpiredSearchCache() {
+        val expired =
+            searchCache.stats()
+                .expiredEntries
+
+        if (expired <= 0) {
+            toast(
+                "Прострочених записів немає"
             )
-            .setNegativeButton("Скасувати", null)
-            .setPositiveButton("Очистити") { _, _ ->
-                val before = searchCache.stats().totalEntries
-                searchCache.clear()
-                toast("SearchCache очищено: $before записів")
-                buildUi()
-            }
-            .show()
+            return
+        }
+
+        UiChrome.showDestructiveConfirmDialog(
+            activity = this,
+            title =
+                "Видалити прострочений кеш?",
+            message =
+                "Буде видалено $expired прострочених записів SearchCache.\n\n" +
+                    "History, Queue та плейлисти YouTube/YTM не зміняться.",
+            confirmLabel =
+                "Так, видалити"
+        ) {
+            val removed =
+                searchCache.clearExpired()
+
+            toast(
+                "Видалено записів SearchCache: $removed"
+            )
+            buildUi()
+        }
+    }
+
+    private fun confirmClearSearchCache() {
+        val before =
+            searchCache.stats()
+                .totalEntries
+
+        if (before <= 0) {
+            toast(
+                "SearchCache вже порожній"
+            )
+            return
+        }
+
+        UiChrome.showDestructiveConfirmDialog(
+            activity = this,
+            title =
+                "Очистити весь SearchCache?",
+            message =
+                "Буде видалено $before кешованих результатів пошуку.\n\n" +
+                    "History і плейлисти не зміняться, але наступний пошук " +
+                    "цих треків знову звернеться до YouTube API.",
+            confirmLabel =
+                "Так, очистити"
+        ) {
+            searchCache.clear()
+            toast(
+                "SearchCache очищено: $before записів"
+            )
+            buildUi()
+        }
     }
 
     private fun saveDiagnostics() {
