@@ -70,3 +70,39 @@ During v1.4.36 phone use, the user supplied Home screenshots in Neon Dark and Gr
 - Green Dark has insufficient state separation because surfaces, READY accents and REQUIRED accent/fill are all in a closely related green range.
 - This is recorded as UX-009 and is not a blocker for the current UX-008 file-picker/save-destination QA.
 - Do not mark UX-009 fixed from static code changes; require later real-phone theme comparison.
+## Real-phone finding — long remembered-root list
+
+Evidence date: 2026-09-18.
+
+The signed v1.4.36 APK was installed and the remembered-folder flow was opened from Import.
+
+Confirmed:
+
+- YTM Importer now appears before Android SAF, so the system picker is no longer entered automatically;
+- previously authorized roots are listed correctly;
+- both read-only and read/write grants are visible as expected.
+
+Usability failure:
+
+- when many remembered roots exist, `Додати іншу папку…` and `Скасувати` are appended after the root list;
+- the whole dialog scrolls, so the user must scroll to the bottom before the escape/control actions become visible;
+- this does not satisfy the intended "immediate escape" UX even though the actions technically exist.
+
+User-requested correction:
+
+- replace this long menu with a dedicated full-screen YTM Importer chooser;
+- keep the header and bottom control area fixed;
+- only the root/content area in the middle should scroll;
+- keep `Додати іншу папку…` and `Скасувати` always visible at the bottom;
+- add a `?` help icon in the header;
+- the help icon opens a modal explaining what the remembered-root list is, what read vs read/write means, and why Android may show many previously granted folders;
+- the same fixed-footer pattern should be reusable by save-destination flows.
+
+Evidence fingerprint supplied in chat:
+
+- dimensions: `783×1536`
+- SHA-256: `4a1bcd0e92b568d73b5997f17c4663fc8ad01c603c9823e0a89e2c03f99a8f39`
+
+Result for the current v1.4.36 folder chooser:
+
+**PARTIAL PASS / UX FAIL ON LONG LIST — dedicated fixed-footer chooser required.**
