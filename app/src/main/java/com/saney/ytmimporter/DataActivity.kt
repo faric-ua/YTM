@@ -102,7 +102,17 @@ class DataActivity : Activity() {
 
             saveExportFolderRequestCode -> {
                 val uri = data?.data ?: return
-                writePendingExportToTree(uri)
+
+                if (
+                    data.getStringExtra(
+                        StorageChooserActivity.EXTRA_RESULT_KIND
+                    ) ==
+                        StorageChooserActivity.RESULT_DOCUMENT
+                ) {
+                    writePendingExport(uri)
+                } else {
+                    writePendingExportToTree(uri)
+                }
             }
         }
     }
@@ -1063,15 +1073,8 @@ class DataActivity : Activity() {
                     fileName,
                 mimeType =
                     mimeType,
-                addFolderRequestCode =
-                    saveExportFolderRequestCode,
-                createDocumentRequestCode =
-                    saveExportRequestCode,
-                onRememberedRoot = {
-                    writePendingExportToTree(
-                        it
-                    )
-                }
+                requestCode =
+                    saveExportFolderRequestCode
             )
         }.onFailure { error ->
             clearPendingExport()
