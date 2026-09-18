@@ -1012,6 +1012,309 @@ class ImportActivity : Activity() {
         )
     }
 
+    private fun selectorValues(
+        data: Intent?
+    ): List<String> =
+        data
+            ?.getStringArrayListExtra(
+                ListSelectorActivity.EXTRA_SELECTED_VALUES
+            )
+            ?.toList()
+            .orEmpty()
+
+    private fun handleYtmPlaylistSelection(
+        data: Intent?
+    ) {
+        val playlist =
+            selectorValues(data)
+                .firstOrNull()
+                ?.let(
+                    ::decodePlaylistSelection
+                )
+                ?: return
+
+        val token =
+            AuthSessionStore
+                .current()
+                .accessToken
+
+        if (token.isNullOrBlank()) {
+            toast(
+                "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
+            )
+            return
+        }
+
+        loadYtmPlaylist(
+            token = token,
+            playlistInfo = playlist
+        )
+    }
+
+    private fun handleSelectiveExportSelection(
+        data: Intent?
+    ) {
+        val selected =
+            selectorValues(data)
+                .mapNotNull(
+                    ::decodePlaylistSelection
+                )
+
+        if (selected.isEmpty()) {
+            toast(
+                "Виберіть хоча б один плейлист."
+            )
+            return
+        }
+
+        pendingSelectiveExport =
+            selected
+
+        chooseSelectiveYtmExportFolder()
+    }
+
+    private fun handleDeltaChainHeadSelection(
+        data: Intent?
+    ) {
+        val decoded =
+            selectorValues(data)
+                .firstOrNull()
+                ?.let(
+                    ::decodeDeltaHeadSelection
+                )
+                ?: return
+
+        resolveDeltaChain(
+            treeUri = decoded.first,
+            head = decoded.second
+        )
+    }
+
+    private fun handleManifestProjectSelection(
+        data: Intent?
+    ) {
+        val entry =
+            selectorValues(data)
+                .firstOrNull()
+                ?.let(
+                    ::decodeManifestEntrySelection
+                )
+                ?: return
+
+        loadAccountBackupProject(entry)
+    }
+
+    private fun playlistSelectorLabel(
+        playlist: YouTubePlaylistInfo
+    ): String =
+        buildString {
+            append(playlist.title)
+            append("\n")
+            append(playlist.itemCount)
+            append(" треків • ")
+            append(
+                when (
+                    playlist.privacyStatus
+                ) {
+                    "public" ->
+                        "публічний"
+
+                    "unlisted" ->
+                        "за посиланням"
+
+                    else ->
+                        "приватний"
+                }
+            )
+        }
+
+    private fun encodePlaylistSelection(
+        playlist: YouTubePlaylistInfo
+    ): String =
+        JSONObject()
+            .put(
+                "id",
+                playlist.id
+            )
+            .put(
+                "title",
+                playlist.title
+            )
+            .put(
+                "privacyStatus",
+                playlist.privacyStatus
+            )
+            .put(
+                "itemCount",
+                playlist.itemCount
+            )
+            .toString()
+
+    private fun decodePlaylistSelection(
+        raw: String
+    ): YouTubePlaylistInfo? =
+        runCatching {
+            val item =
+                JSONObject(raw)
+
+            YouTubePlaylistInfo(
+                id =
+                    item.getString("id"),
+                title =
+                    item.getString("title"),
+                privacyStatus =
+                    item.getString(
+                        "privacyStatus"
+                    ),
+                itemCount =
+                    item.getLong(
+                        "itemCount"
+                    )
+            )
+        }.getOrNull()
+
+    private fun encodeDeltaHeadSelection(
+        treeUri: Uri,
+        head: DeltaChainHead
+    ): String =
+        JSONObject()
+            .put(
+                "treeUri",
+                treeUri.toString()
+            )
+            .put(
+                "folderName",
+                head.folderName
+            )
+            .put(
+                "baseSessionName",
+                head.baseSessionName
+            )
+            .put(
+                "scopeMode",
+                head.scopeMode
+            )
+            .put(
+                "exportedAt",
+                head.exportedAt
+            )
+            .toString()
+
+    private fun decodeDeltaHeadSelection(
+        raw: String
+    ): Pair<Uri, DeltaChainHead>? =
+        runCatching {
+            val item =
+                JSONObject(raw)
+
+            Uri.parse(
+                item.getString(
+                    "treeUri"
+                )
+            ) to
+                DeltaChainHead(
+                    folderName =
+                        item.getString(
+                            "folderName"
+                        ),
+                    baseSessionName =
+                        item.getString(
+                            "baseSessionName"
+                        ),
+                    scopeMode =
+                        item.getString(
+                            "scopeMode"
+                        ),
+                    exportedAt =
+                        item.getLong(
+                            "exportedAt"
+                        )
+                )
+        }.getOrNull()
+
+    private fun encodeManifestEntrySelection(
+        entry: AccountLibraryManifestEntry
+    ): String =
+        JSONObject()
+            .put(
+                "playlistId",
+                entry.playlistId
+            )
+            .put(
+                "title",
+                entry.title
+            )
+            .put(
+                "privacyStatus",
+                entry.privacyStatus
+            )
+            .put(
+                "sourceItemCount",
+                entry.sourceItemCount
+            )
+            .put(
+                "exportedTrackCount",
+                entry.exportedTrackCount
+            )
+            .put(
+                "playlistItemsRequests",
+                entry.playlistItemsRequests
+            )
+            .put(
+                "fileName",
+                entry.fileName
+            )
+            .put(
+                "projectUri",
+                entry.projectUri.toString()
+            )
+            .toString()
+
+    private fun decodeManifestEntrySelection(
+        raw: String
+    ): AccountLibraryManifestEntry? =
+        runCatching {
+            val item =
+                JSONObject(raw)
+
+            AccountLibraryManifestEntry(
+                playlistId =
+                    item.getString(
+                        "playlistId"
+                    ),
+                title =
+                    item.getString(
+                        "title"
+                    ),
+                privacyStatus =
+                    item.getString(
+                        "privacyStatus"
+                    ),
+                sourceItemCount =
+                    item.getLong(
+                        "sourceItemCount"
+                    ),
+                exportedTrackCount =
+                    item.getInt(
+                        "exportedTrackCount"
+                    ),
+                playlistItemsRequests =
+                    item.getInt(
+                        "playlistItemsRequests"
+                    ),
+                fileName =
+                    item.getString(
+                        "fileName"
+                    ),
+                projectUri =
+                    Uri.parse(
+                        item.getString(
+                            "projectUri"
+                        )
+                    )
+            )
+        }.getOrNull()
+
     private fun encodeSelectiveExportState(
         playlists: List<YouTubePlaylistInfo>
     ): String =
