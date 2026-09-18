@@ -7,7 +7,7 @@ v1.4.30 — Consolidated Delta-Chain Restore — PHONE QA PASS FOR TESTED PATH
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 DEFERRED — reproduced again on v1.4.27; video evidence preserved; non-blocking by user decision
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
-- BUG-004/Q-004 stale green authorization state — RETEST v1.4.17
+- BUG-004/Q-004 stale green authorization state — OPEN, REPRODUCED v1.4.30
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 
 ## v1.4.16
@@ -46,7 +46,7 @@ v1.4.30 — Consolidated Delta-Chain Restore — PHONE QA PASS FOR TESTED PATH
 - [ ] GitHub build
 - [ ] update-install phone test
 - [x] BUG-003 retest — PASS on v1.4.20 in-place update
-- [ ] BUG-004 retest
+- [x] BUG-004 retest — FAIL / REPRODUCED v1.4.30; fix required
 - [ ] Review → Destination phone test
 - [ ] existing playlist / duplicate smoke
 - [ ] rotation smoke
@@ -299,10 +299,21 @@ v1.4.30 — Consolidated Delta-Chain Restore — PHONE QA PASS FOR TESTED PATH
 - [x] phone retest BUG-007 naming: `YYMMDD-HHMMSS-YTM-Full` visible in portrait
 - [x] phone retest BUG-007 button: `Створити` / `Скасувати` single-line and equal height
 - [x] preserve v1.4.30 phone evidence + QA closeout
+- [x] focused real NEW / UPDATED / MISSING incremental chain tests
+- [x] NEW: 21 → 22; chain length 2; offline validator PASS
+- [x] UPDATED: reordered same 2 tracks; UPDATED=1; chain length 3; offline validator PASS
+- [x] MISSING: 22 → 21; MISSING=1; chain length 4; offline validator PASS
+- [x] preserve delta-status follow-up screenshots and closeout report
+- [x] reproduce BUG-004 on v1.4.30 with real HTTP 401 + stale green Step 2
+- [ ] fix BUG-004 stale-ready auth state / 401 handling
+- [ ] UI polish: `Перевірити зміни` → `Перевірити`
+- [ ] UI localization cleanup for backup/delta dialogs
+- [ ] guard/clarify backup destination-parent selection
 
 ## Next
-After v1.4.30 targeted phone QA:
-- focused real NEW / UPDATED / MISSING incremental chain tests.
+After v1.4.30 delta-status QA closeout:
+- fix BUG-004 and the small backup-dialog UX/localization findings;
+- then continue with the localization resource foundation.
 
 ## Future product plan — localization + exclusive skin
 - [x] seed `docs/design/exclusive/` with prototype references for exclusive styles/skins/avatars

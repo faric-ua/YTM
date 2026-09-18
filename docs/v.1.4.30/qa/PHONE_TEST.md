@@ -95,3 +95,18 @@
 - consolidated full: `YYMMDD-HHMMSS-YTM-Full`.
 
 Для R1 достатньо реально перевірити новий `YTM-Full`; Export/Sync генератори покриваються статичним аудитом і можуть бути phone-smoke під час наступної природної операції.
+
+## Follow-up — real NEW / UPDATED / MISSING
+
+Completed on 2026-09-18 with a fresh ALL baseline.
+
+- baseline: 21 playlists / 21 projects / FAILED 0;
+- NEW: NEW 1, UNCHANGED 21 → chain 2 → consolidated 22;
+- UPDATED: UPDATED 1, UNCHANGED 21 → chain 3 → consolidated 22;
+- MISSING: MISSING 1, UNCHANGED 21 → chain 4 → consolidated 21;
+- chain materialization UI reported YouTube API 0 for all three stages;
+- offline validator passed NEW / UPDATED / MISSING.
+
+Phone evidence and the exact scope limits are recorded under `DELTA_STATUS_FOLLOWUP/`.
+
+BUG-004 was reproduced during this run and remains open.

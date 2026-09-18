@@ -62,6 +62,8 @@ bash scripts/v1429-incremental-backup-audit.sh
 bash scripts/v1429-qa-close-audit.sh
 bash scripts/v1430-delta-chain-audit.sh
 bash scripts/v1430-qa-close-audit.sh
+python -B scripts/v1430-delta-status-qa-selftest.py
+bash scripts/v1430-delta-status-qa-close-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -109,6 +111,9 @@ check_file "scripts/v1429-incremental-backup-audit.sh"
 check_file "scripts/v1429-qa-close-audit.sh"
 check_file "scripts/v1430-delta-chain-audit.sh"
 check_file "scripts/v1430-qa-close-audit.sh"
+check_file "scripts/v1430-delta-status-qa.py"
+check_file "scripts/v1430-delta-status-qa-selftest.py"
+check_file "scripts/v1430-delta-status-qa-close-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"

@@ -20,7 +20,7 @@ v1.4.26 PARTIALLY PHONE-TESTED — SELECTIVE EXPORT PASS / BUG-005 FOUND
 v1.4.27 PARTIALLY PHONE-TESTED — BUG-005 EXACT-ID SEARCH GUARD PASS
 v1.4.28 PARTIALLY PHONE-TESTED — BULK MANIFEST IMPORT PATH PASS
 v1.4.29 PARTIALLY PHONE-TESTED — INCREMENTAL BACKUP PATH PASS
-v1.4.30 PARTIALLY PHONE-TESTED — CONSOLIDATED DELTA-CHAIN PATH PASS
+v1.4.30 PARTIALLY PHONE-TESTED — CONSOLIDATED DELTA-CHAIN + NEW/UPDATED/MISSING TARGETED PATH PASS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -279,12 +279,26 @@ v1.4.30 phone QA confirmed:
 - R2 `Створити` / `Скасувати` actions are single-line and equal-height
 - release scope = targeted consolidated-chain PASS, not full regression
 
+v1.4.30 delta-status follow-up confirmed:
+- fresh ALL baseline = 21 playlists / 21 projects / FAILED 0
+- NEW scan = 1 / UPDATED 0 / UNCHANGED 21 / MISSING 0 / FAILED 0
+- NEW chain length 2 → consolidated 22 playlists / 22 projects / API 0
+- UPDATED scan = 0 / 1 / 21 / 0 / 0
+- UPDATED chain length 3 → consolidated 22 playlists / 22 projects / API 0
+- MISSING scan = 0 / 0 / 21 / 1 / 0
+- MISSING chain length 4 → consolidated 21 playlists / 21 projects / applied MISSING 1 / API 0
+- offline validator PASS for NEW / UPDATED / MISSING
+- state transition = 21 → 22 → 22 → 21
+- BUG-004 reproduced: real HTTP 401 while Step 2 remained green/checked; reauthorization required
+- UI follow-up: shorten `Перевірити зміни`; localize mixed backup-dialog language; clarify destination parent
+- normal-open/exact-search phone checks were not repeated for every F1/F2/F3
+
 
 Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 DEFERRED — REPRODUCED v1.4.27 / VIDEO EVIDENCE PRESERVED
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
-BUG-004/Q-004 RETEST v1.4.17
+BUG-004/Q-004 OPEN — REPRODUCED v1.4.30
 BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27
 BUG-006/Q-006 CLOSED — PHONE RETEST PASS v1.4.29 R2
 BUG-007/Q-007 CLOSED — PHONE RETEST PASS v1.4.30 R2

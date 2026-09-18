@@ -55,6 +55,12 @@ The original baseline still reopened 2/2 after materialization.
 
 BUG-007 / Q-007 is also closed on phone: timestamp-first backup naming is readable in portrait, and the R2 `Створити` / `Скасувати` preview actions are single-line and equal-height.
 
+A later focused ALL-scope follow-up also exercised real NEW → UPDATED → MISSING:
+
+`21 baseline → NEW → 22 → UPDATED → 22 → MISSING → 21`
+
+Phone scan/chain materialization evidence and the local state validator passed all three stages. During the same run BUG-004 was reproduced by real HTTP 401 responses while Step 2 could remain green/checked.
+
 The release remains only partially phone-tested overall.
 
 Current known items include:
@@ -62,7 +68,7 @@ Current known items include:
 - BUG-001 / Q-001: OPEN;
 - BUG-002 / Q-002: DEFERRED BY USER — reproduced again on v1.4.27; evidence preserved;
 - BUG-003 / Q-003: CLOSED — PHONE RETEST PASS v1.4.20;
-- BUG-004 / Q-004: RETEST still required;
+- BUG-004 / Q-004: OPEN — REPRODUCED v1.4.30;
 - BUG-005 / Q-005: CLOSED — PHONE RETEST PASS v1.4.27;
 - BUG-006 / Q-006: CLOSED — PHONE RETEST PASS v1.4.29 R2;
 - BUG-007 / Q-007: CLOSED — PHONE RETEST PASS v1.4.30 R2.
@@ -230,8 +236,8 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. v1.4.30 Consolidated Delta-Chain Restore is QA-closed for the tested SELECTED(2) unchanged-delta path;
-2. run focused real NEW / UPDATED / MISSING incremental-chain scenarios;
+1. v1.4.30 consolidated restore has targeted phone coverage for SELECTED(2)/UNCHANGED and ALL-scope NEW/UPDATED/MISSING;
+2. fix BUG-004 stale-ready auth handling after HTTP 401 and the small backup-dialog UX/localization findings;
 3. establish the localization resource foundation for Ukrainian / Korean / English;
 4. then build the visual skin foundation without changing import/search/write semantics.
 

@@ -5,7 +5,7 @@
 | BUG-001 / Q-001 | OPEN | P2 | Review wording / Project-save feedback questions remain. | F-06 |
 | BUG-002 / Q-002 | DEFERRED BY USER — REPRODUCED v1.4.27 | P2 | Some custom dialogs visibly appear offset and then move/settle into their final position after opening. Fresh v1.4.27 video evidence is preserved; issue remains non-blocking by user decision. | M-02 |
 | BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update verified: Step 2 briefly gray, then automatically green. | A-03, D-03 |
-| BUG-004 / Q-004 | RETEST v1.4.17 | P1 | Authorization can become invalid while Step 2 remains green/checked. | B-01 |
+| BUG-004 / Q-004 | OPEN — REPRODUCED v1.4.30 | P1 | Real HTTP 401 can occur while Step 2 remains green/checked and connected; reproduced again during v1.4.30 delta-status QA. | B-01; v1.4.30 delta-status follow-up |
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Ordinary repeat-search preserves canonical exact videoId tracks; real-phone search plan confirmed 0 redundant search.list for exact 3/3. | v1.4.26 repro → v1.4.27 PASS |
 | BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 | P2 | Incremental-delta boundary explanation was truncated as a Toast; R2 replaced it with a readable UiChrome dialog and phone retest passed. | v1.4.29 repro → v1.4.29 R2 PASS |
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
@@ -66,8 +66,15 @@ Expected:
 - Step 2 immediately stops showing green/ready;
 - imported playlist and search selections remain intact.
 
-v1.4.17 adds HTTP 401 invalidation.
-Status remains RETEST until verified on the phone.
+v1.4.17 added HTTP 401 invalidation, but v1.4.30 phone QA reproduced the stale-ready state again.
+
+v1.4.30 evidence:
+- account API returned a real HTTP 401 invalid-authentication response;
+- Home still showed green/checked `2. Google / YTM ✓` and connected status after the 401;
+- the user had to reauthorize before backup API reads worked again;
+- another 401 occurred later in the same delta-status QA wave.
+
+Status: **OPEN — REPRODUCED v1.4.30.**
 
 ## BUG-005 reproduction
 

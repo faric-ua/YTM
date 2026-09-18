@@ -88,6 +88,8 @@ grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt
   || fail "PROJECT_STATUS BUG-005 state drift"
 grep -Fq 'BUG-007/Q-007 CLOSED — PHONE RETEST PASS v1.4.30 R2' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-007 state drift"
+grep -Fq 'BUG-004/Q-004 OPEN — REPRODUCED v1.4.30' PROJECT_STATUS.txt \
+  || fail "PROJECT_STATUS BUG-004 reproduced state drift"
 
 grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"

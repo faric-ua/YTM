@@ -22,7 +22,7 @@
 | v1.4.27 | **PARTIALLY PHONE-TESTED — PASS FOR BUG-005 EXACT-ID SEARCH GUARD** | Real-phone retest: `top 3` remained 3/3 exact and ready; repeat-search plan reported 0 tracks to search and 0 new `search.list`. Full release regression remains incomplete. |
 | v1.4.28 | **PARTIALLY PHONE-TESTED — PASS FOR BULK MANIFEST IMPORT PATH** | Real-phone QA: manifest v2/SELECTED opened 2/2 projects; `top 3` restored exact 3/3; Review 3/3 ready; repeat Search planned 0 new `search.list`; missing-manifest error left the current workspace intact. |
 | v1.4.29 | **PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH** | Real-phone QA: SELECTED(2) baseline preflight passed; unchanged scan = UNCHANGED 2; delta wrote manifest.json with 0 new YTM Project files; old baseline still reopened 2/2; BUG-006 truncated boundary Toast fixed and phone-retested in R2. |
-| v1.4.30 | **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH** | Real-phone QA: SELECTED(2) baseline+unchanged delta resolved as chain length 2; consolidated output wrote 2 YTM Projects + manifest; normal open = v3/SELECTED/2 of 2; `top 3` exact 3/3; repeat Search planned 0 new `search.list`; source baseline remained intact; BUG-007 naming/button UX closed in R2. |
+| v1.4.30 | **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH** | Initial SELECTED(2)/UNCHANGED path passed including normal-open/exact-ID checks. Follow-up ALL run also passed real NEW→UPDATED→MISSING classification and chain materialization (21→22→22→21) with offline state validation; BUG-004 stale-green auth state was reproduced by real HTTP 401 and remains open. |
 
 Static audits and GitHub build do not equal phone testing.
 

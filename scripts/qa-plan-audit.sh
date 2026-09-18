@@ -72,5 +72,7 @@ grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" 
   || fail "BUG-006 v1.4.29 R2 closed phone-retest status missing"
 grep -Fq '| BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 |' "$BUG" \
   || fail "BUG-007 v1.4.30 R2 closed phone-retest status missing"
+grep -Fq '| BUG-004 / Q-004 | OPEN — REPRODUCED v1.4.30 |' "$BUG" \
+  || fail "BUG-004 v1.4.30 reproduced status missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"

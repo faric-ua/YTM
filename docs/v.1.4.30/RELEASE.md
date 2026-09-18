@@ -101,6 +101,28 @@ Targeted real-phone QA passed:
 
 This is a targeted consolidated-chain PASS, not a full release regression PASS.
 
+## Delta-status phone follow-up — 2026-09-18
+
+A fresh `ALL` baseline was used to exercise real `NEW`, `UPDATED` and `MISSING` states.
+
+Observed state transition:
+
+`21 baseline → NEW → 22 → UPDATED → 22 → MISSING → 21`
+
+Phone scan/materialization evidence passed:
+
+- NEW: 1 / 0 / 21 / 0 / 0; chain 2; consolidated 22/22; API 0;
+- UPDATED: 0 / 1 / 21 / 0 / 0; chain 3; consolidated 22/22; API 0;
+- MISSING: 0 / 0 / 21 / 1 / 0; chain 4; consolidated 21/21; applied MISSING 1; API 0.
+
+The local QA validator passed all three stages and verified the linked-session logical state.
+
+Scope limit: normal-open/exact-search phone checks were not repeated for every F1/F2/F3; the earlier SELECTED(2) normal-open/exact-ID evidence remains valid.
+
+During this follow-up BUG-004 / Q-004 was reproduced with real HTTP 401 responses while Step 2 could remain green/checked. BUG-004 remains open.
+
+Non-blocking UI findings: shorten `Перевірити зміни`, localize mixed-language backup dialogs, and make destination-parent selection clearer.
+
 ## API boundary
 
 The complete chain scan, replay and materialization is local filesystem work.
