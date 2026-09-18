@@ -20,8 +20,8 @@ do
   test -f "$f" || fail "missing v1.4.38 file: $f"
 done
 
-grep -Fq 'versionCode = 72' "$GRADLE" || fail "versionCode 72 missing"
-grep -Fq 'versionName = "1.4.38"' "$GRADLE" || fail "versionName 1.4.38 missing"
+grep -Fq 'versionCode: **72**' docs/v.1.4.38/RELEASE.md || fail "v1.4.38 versionCode snapshot missing"
+grep -Fq 'versionName: **1.4.38**' docs/v.1.4.38/RELEASE.md || fail "v1.4.38 versionName snapshot missing"
 
 grep -Fq 'android:name=".ListSelectorActivity"' "$MANIFEST"   || fail "ListSelectorActivity missing from manifest"
 grep -Fq 'class ListSelectorActivity' "$SELECTOR"   || fail "ListSelectorActivity missing"
@@ -95,7 +95,7 @@ done
 grep -Fq 'Neon Dark Home colors unchanged' docs/v.1.4.38/REGRESSION_CHECKLIST.md   || fail "Neon Dark color-lock guard missing"
 
 echo "PASS:"
-echo "- v1.4.38 / code 72"
+echo "- immutable v1.4.38 / code 72 release snapshot"
 echo "- four dynamic Import list families use ListSelectorActivity"
 echo "- fixed header/summary/scroll/footer selector architecture"
 echo "- legacy Import long-list menu/multi-choice dialogs removed"
