@@ -68,16 +68,18 @@ grep -Fq '| v1.4.30 | **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-C
   || fail "v1.4.30 consolidated-chain phone PASS status missing"
 grep -Fq '| v1.4.31 | **PARTIALLY PHONE-TESTED — BACKUP UI POLISH SMOKE PASS** |' "$STATUS" \
   || fail "v1.4.31 backup UI smoke status missing"
-grep -Fq '| v1.4.32 | **NOT PHONE-TESTED YET** |' "$STATUS" \
-  || fail "v1.4.32 pending phone-test status missing"
+grep -Fq '| v1.4.32 | **PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / MODAL INCONSISTENCY REMAINS** |' "$STATUS" \
+  || fail "v1.4.32 partial modal phone status missing"
+grep -Fq '| v1.4.33 | **NOT PHONE-TESTED YET** |' "$STATUS" \
+  || fail "v1.4.33 pending phone-test status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
   || fail "BUG-006 v1.4.29 R2 closed phone-retest status missing"
 grep -Fq '| BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 |' "$BUG" \
   || fail "BUG-007 v1.4.30 R2 closed phone-retest status missing"
-grep -Fq '| BUG-002 / Q-002 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.32 |' "$BUG" \
-  || fail "BUG-002 v1.4.32 fix status missing"
+grep -Fq '| BUG-002 / Q-002 | FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.33 |' "$BUG" \
+  || fail "BUG-002 v1.4.33 unified fix status missing"
 grep -Fq '| BUG-004 / Q-004 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31 |' "$BUG" \
   || fail "BUG-004 v1.4.31 fix status missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \

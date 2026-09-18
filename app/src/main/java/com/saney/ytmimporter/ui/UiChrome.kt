@@ -1,9 +1,10 @@
 package com.saney.ytmimporter.ui
 
 import android.app.Activity
-import android.app.AlertDialog
+// Native platform alert builder intentionally not used.
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -53,13 +55,141 @@ object UiChrome {
         val onClick: () -> Unit
     )
 
-    fun alertBuilder(
-        context: Context
-    ): AlertDialog.Builder =
-        AlertDialog.Builder(
-            context,
-            R.style.YtmAlertDialogTheme
-        )
+    private data class LegacyDialogAction(
+        val label: String,
+        val listener: DialogInterface.OnClickListener?
+    )
+
+    class StableAlertBuilder internal constructor(
+        private val activity: Activity
+    ) {
+        private var title: CharSequence = ""
+        private var message: CharSequence = ""
+        private var contentView: View? = null
+
+        private var choiceItems: Array<out CharSequence>? = null
+        private var choiceChecked: BooleanArray? = null
+        private var choiceListener: DialogInterface.OnMultiChoiceClickListener? = null
+
+        private var positiveAction: LegacyDialogAction? = null
+        private var negativeAction: LegacyDialogAction? = null
+        private var neutralAction: LegacyDialogAction? = null
+
+        fun setTitle(value: CharSequence): StableAlertBuilder =
+            apply { title = value }
+
+        fun setMessage(value: CharSequence): StableAlertBuilder =
+            apply { message = value }
+
+        fun setView(view: View): StableAlertBuilder =
+            apply { contentView = view }
+
+        fun setMultiChoiceItems(
+            items: Array<out CharSequence>,
+            checkedItems: BooleanArray?,
+            listener: DialogInterface.OnMultiChoiceClickListener?
+        ): StableAlertBuilder =
+            apply {
+                choiceItems = items
+                choiceChecked = checkedItems?.copyOf() ?: BooleanArray(items.size)
+                choiceListener = listener
+            }
+
+        fun setPositiveButton(
+            label: CharSequence,
+            listener: DialogInterface.OnClickListener?
+        ): StableAlertBuilder =
+            apply {
+                positiveAction = LegacyDialogAction(label.toString(), listener)
+            }
+
+        fun setNegativeButton(
+            label: CharSequence,
+            listener: DialogInterface.OnClickListener?
+        ): StableAlertBuilder =
+            apply {
+                negativeAction = LegacyDialogAction(label.toString(), listener)
+            }
+
+        fun setNeutralButton(
+            label: CharSequence,
+            listener: DialogInterface.OnClickListener?
+        ): StableAlertBuilder =
+            apply {
+                neutralAction = LegacyDialogAction(label.toString(), listener)
+            }
+
+        fun show(): Dialog {
+            lateinit var shownDialog: Dialog
+
+            fun mappedAction(
+                source: LegacyDialogAction?,
+                which: Int,
+                tone: ActionTone
+            ): DialogAction? =
+                source?.let { stored ->
+                    DialogAction(
+                        label = stored.label,
+                        tone = tone
+                    ) {
+                        stored.listener?.onClick(shownDialog, which)
+                    }
+                }
+
+            val positiveTone =
+                if (positiveAction?.label in setOf("Видалити", "Очистити", "Відкотити")) {
+                    ActionTone.DANGER
+                } else {
+                    ActionTone.ACCENT
+                }
+
+            val actions =
+                listOfNotNull(
+                    mappedAction(positiveAction, DialogInterface.BUTTON_POSITIVE, positiveTone),
+                    mappedAction(neutralAction, DialogInterface.BUTTON_NEUTRAL, ActionTone.NORMAL),
+                    mappedAction(negativeAction, DialogInterface.BUTTON_NEGATIVE, ActionTone.NORMAL)
+                )
+
+            val choices = choiceItems
+
+            shownDialog =
+                when {
+                    choices != null ->
+                        UiChrome.showMultiChoiceDialog(
+                            activity = activity,
+                            title = title.toString(),
+                            items = choices.map { it.toString() },
+                            checked = choiceChecked?.copyOf() ?: BooleanArray(choices.size),
+                            onCheckedChange = { index, isChecked ->
+                                choiceListener?.onClick(shownDialog, index, isChecked)
+                            },
+                            actions = actions
+                        )
+
+                    contentView != null ->
+                        UiChrome.showContentDialog(
+                            activity = activity,
+                            title = title.toString(),
+                            message = message.toString(),
+                            content = requireNotNull(contentView),
+                            actions = actions
+                        )
+
+                    else ->
+                        UiChrome.showMessageDialog(
+                            activity = activity,
+                            title = title.toString(),
+                            message = message.toString(),
+                            actions = actions
+                        )
+                }
+
+            return shownDialog
+        }
+    }
+
+    fun alertBuilder(activity: Activity): StableAlertBuilder =
+        StableAlertBuilder(activity)
 
     private fun customDialog(
         activity: Activity
@@ -230,7 +360,7 @@ object UiChrome {
         actions: List<DialogAction>,
         subtitle: String? = null,
         actionLayout: DialogActionLayout = DialogActionLayout.AUTO
-    ) {
+    ): Dialog {
         val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
@@ -265,7 +395,150 @@ object UiChrome {
             actionLayout = actionLayout
         )
 
-        showCustomDialog(
+        return showCustomDialog(
+            activity = activity,
+            dialog = dialog,
+            card = card
+        )
+    }
+
+    fun showContentDialog(
+        activity: Activity,
+        title: String,
+        message: String,
+        content: View,
+        actions: List<DialogAction>,
+        subtitle: String? = null,
+        actionLayout: DialogActionLayout = DialogActionLayout.AUTO
+    ): Dialog {
+        val dialog = customDialog(activity)
+        val card = dialogCard(activity)
+
+        addDialogHeader(
+            activity = activity,
+            card = card,
+            title = title,
+            subtitle = subtitle
+        )
+
+        if (message.isNotBlank()) {
+            card.addView(
+                TextView(activity).apply {
+                    text = message
+                    textSize = 15f
+                    setTextColor(Color.rgb(230, 231, 234))
+                    setTextIsSelectable(true)
+                    setLineSpacing(0f, 1.08f)
+                    setPadding(0, dp(context, 6), 0, dp(context, 12))
+                }
+            )
+        }
+
+        card.addView(
+            content,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dp(activity, 16)
+            }
+        )
+
+        addDialogActions(
+            activity = activity,
+            dialog = dialog,
+            card = card,
+            actions = actions,
+            actionLayout = actionLayout
+        )
+
+        return showCustomDialog(
+            activity = activity,
+            dialog = dialog,
+            card = card
+        )
+    }
+
+    fun showMultiChoiceDialog(
+        activity: Activity,
+        title: String,
+        items: List<String>,
+        checked: BooleanArray,
+        onCheckedChange: (index: Int, isChecked: Boolean) -> Unit,
+        actions: List<DialogAction>,
+        subtitle: String? = null,
+        actionLayout: DialogActionLayout = DialogActionLayout.AUTO
+    ): Dialog {
+        require(items.size == checked.size)
+
+        val dialog = customDialog(activity)
+        val card = dialogCard(activity)
+
+        addDialogHeader(
+            activity = activity,
+            card = card,
+            title = title,
+            subtitle = subtitle
+        )
+
+        val choices = LinearLayout(activity).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+
+        items.forEachIndexed { index, label ->
+            choices.addView(
+                CheckBox(activity).apply {
+                    text = label
+                    textSize = 14f
+                    setTextColor(Color.WHITE)
+                    setPadding(
+                        dp(context, 12),
+                        dp(context, 9),
+                        dp(context, 12),
+                        dp(context, 9)
+                    )
+                    background = roundedBackground(
+                        context = context,
+                        color = ROW_SURFACE,
+                        radiusDp = 12,
+                        strokeColor = BORDER
+                    )
+                    isChecked = checked[index]
+                    setOnCheckedChangeListener { _, value ->
+                        checked[index] = value
+                        onCheckedChange(index, value)
+                    }
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    if (index > 0) {
+                        topMargin = dp(activity, 8)
+                    }
+                }
+            )
+        }
+
+        card.addView(
+            choices,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dp(activity, 16)
+            }
+        )
+
+        addDialogActions(
+            activity = activity,
+            dialog = dialog,
+            card = card,
+            actions = actions,
+            actionLayout = actionLayout
+        )
+
+        return showCustomDialog(
             activity = activity,
             dialog = dialog,
             card = card
@@ -622,7 +895,7 @@ object UiChrome {
         activity: Activity,
         dialog: Dialog,
         card: LinearLayout
-    ) {
+    ): Dialog {
         val horizontalInset =
             dp(activity, 18)
 
@@ -726,83 +999,105 @@ object UiChrome {
             )
         }
 
-        var revealScheduled =
-            false
+        var insetsApplied = false
+        var stablePreDraws = 0
+        var lastGeometry: String? = null
 
-        dialog.setContentView(
-            outer
-        )
+        dialog.setContentView(outer)
 
-        ViewCompat.setOnApplyWindowInsetsListener(
-            outer
-        ) { view, insets ->
-            val safeInsets =
-                insets.getInsets(
-                    WindowInsetsCompat.Type.systemBars() or
-                        WindowInsetsCompat.Type.displayCutout()
-                )
+        fun hideDecor() {
+            dialog.window?.decorView?.alpha = 0f
+        }
+
+        fun revealAfterStableGeometry() {
+            val decor = dialog.window?.decorView ?: return
+
+            decor.viewTreeObserver.addOnPreDrawListener(
+                object : ViewTreeObserver.OnPreDrawListener {
+                    override fun onPreDraw(): Boolean {
+                        if (!insetsApplied) {
+                            return true
+                        }
+
+                        val geometry = listOf(
+                            outer.measuredWidth,
+                            outer.measuredHeight,
+                            outer.paddingLeft,
+                            outer.paddingTop,
+                            outer.paddingRight,
+                            outer.paddingBottom,
+                            card.measuredWidth,
+                            card.measuredHeight
+                        ).joinToString(":")
+
+                        if (
+                            outer.measuredWidth <= 0 ||
+                            outer.measuredHeight <= 0 ||
+                            card.measuredWidth <= 0 ||
+                            card.measuredHeight <= 0
+                        ) {
+                            stablePreDraws = 0
+                            return true
+                        }
+
+                        if (geometry == lastGeometry) {
+                            stablePreDraws += 1
+                        } else {
+                            lastGeometry = geometry
+                            stablePreDraws = 0
+                        }
+
+                        if (stablePreDraws >= 1) {
+                            if (decor.viewTreeObserver.isAlive) {
+                                decor.viewTreeObserver.removeOnPreDrawListener(this)
+                            }
+                            outer.alpha = 1f
+                            decor.alpha = 1f
+                        }
+
+                        return true
+                    }
+                }
+            )
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(outer) { view, insets ->
+            val safeInsets = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                    WindowInsetsCompat.Type.displayCutout()
+            )
 
             view.setPadding(
                 horizontalInset,
-                maxOf(
-                    minimumVerticalInset,
-                    safeInsets.top +
-                        dp(activity, 8)
-                ),
+                maxOf(minimumVerticalInset, safeInsets.top + dp(activity, 8)),
                 horizontalInset,
-                maxOf(
-                    minimumVerticalInset,
-                    safeInsets.bottom +
-                        dp(activity, 8)
-                )
+                maxOf(minimumVerticalInset, safeInsets.bottom + dp(activity, 8))
             )
 
-            if (
-                view.alpha == 0f &&
-                !revealScheduled
-            ) {
-                revealScheduled =
-                    true
-
-                view.viewTreeObserver
-                    .addOnPreDrawListener(
-                        object :
-                            ViewTreeObserver.OnPreDrawListener {
-                            override fun onPreDraw(): Boolean {
-                                if (
-                                    view.viewTreeObserver.isAlive
-                                ) {
-                                    view.viewTreeObserver
-                                        .removeOnPreDrawListener(
-                                            this
-                                        )
-                                }
-
-                                view.alpha =
-                                    1f
-
-                                return true
-                            }
-                        }
-                    )
-            }
-
+            insetsApplied = true
+            stablePreDraws = 0
+            lastGeometry = null
+            view.requestLayout()
             insets
         }
 
         /*
-         * Configure the real Window before show().
-         * Dialog owns its content directly, so there is no AlertController
-         * panel that first attaches with centered/wrap-content geometry and
-         * then gets resized after the first visible frame.
+         * Some Android builds normalize Dialog Window attributes at attach.
+         * Configure both before and immediately after show(), but keep the
+         * entire decor invisible through that attach-time normalization.
          */
+        hideDecor()
         configureWindow()
 
         dialog.show()
 
-        ViewCompat.requestApplyInsets(
-            outer
-        )
+        hideDecor()
+        configureWindow()
+        revealAfterStableGeometry()
+
+        ViewCompat.requestApplyInsets(outer)
+
+        return dialog
     }
 
     private fun menuButton(

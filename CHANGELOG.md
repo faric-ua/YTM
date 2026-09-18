@@ -1,5 +1,15 @@
 # Журнал змін (Changelog)
 
+## v1.4.33
+- Analyzed all modal-window paths after the v1.4.32 partial phone result.
+- Found 22 direct UiChrome modal calls and 22 legacy `UiChrome.alertBuilder` calls.
+- Replaced runtime native `AlertDialog.Builder` behavior with `StableAlertBuilder`.
+- Added stable custom-view and multi-choice dialog variants.
+- The whole attached Dialog decor stays invisible through attach-time Window normalization.
+- Reveal waits for safe insets and repeated stable geometry.
+- versionCode 67 / versionName 1.4.33.
+- v1.4.33 = NOT PHONE-TESTED YET.
+
 ## v1.4.32
 - Reopened BUG-002 / Q-002 after the entrance-position jump was visible again on v1.4.31.
 - UiChrome custom Menu/Message/Record dialogs now use a dedicated `Dialog` instead of an AlertDialog custom-view panel.

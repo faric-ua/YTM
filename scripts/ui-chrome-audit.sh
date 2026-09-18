@@ -14,6 +14,9 @@ done
 grep -q 'object UiChrome' "$UI_FILE" || fail "UiChrome object missing"
 grep -q 'fun applyScreenInsets' "$UI_FILE" || fail "applyScreenInsets missing"
 grep -q 'fun showMenuDialog' "$UI_FILE" || fail "showMenuDialog missing"
+grep -q 'fun showContentDialog' "$UI_FILE" || fail "showContentDialog missing"
+grep -q 'fun showMultiChoiceDialog' "$UI_FILE" || fail "showMultiChoiceDialog missing"
+grep -q 'class StableAlertBuilder' "$UI_FILE" || fail "StableAlertBuilder missing"
 
 grep -q 'UiChrome.applyScreenInsets(this, root)' "$MAIN" || fail "MainActivity missing screen insets"
 grep -q 'UiChrome.applyScreenInsets(this, root)' "$REVIEW" || fail "ReviewActivity missing screen insets"
@@ -24,3 +27,5 @@ echo 'PASS:'
 echo '- UiChrome utility present'
 echo '- top/bottom insets applied to key screens'
 echo '- styled menu dialog used for More/Import/Project actions'
+echo '- content + multi-choice dialogs share stable pipeline'
+echo '- legacy builder syntax is compatibility-only, not native AlertDialog'

@@ -1,11 +1,11 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.32 — Dialog First-Frame Fix — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.33 — Unified Stable Modal Pipeline — IMPLEMENTED / FULL MODAL PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
-- BUG-002/Q-002 FIX IMPLEMENTED v1.4.32 — real-phone no-jump retest required
+- BUG-002/Q-002 v1.4.32 partial PASS; v1.4.33 unified modal fix implemented — representative phone retest required
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.31 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
@@ -347,9 +347,24 @@ v1.4.32 — Dialog First-Frame Fix — IMPLEMENTED / PHONE RETEST NEEDED
 - [ ] close BUG-002 only from real-phone evidence
 
 
+## v1.4.33 — Unified Stable Modal Pipeline
+- [x] inventory 22 direct UiChrome + 22 legacy builder modal paths
+- [x] replace runtime native AlertDialog.Builder behavior with StableAlertBuilder
+- [x] stable custom-view and multi-choice support
+- [x] whole attached decor hidden during Window normalization
+- [x] reveal after repeated stable geometry
+- [x] decouple v1.4.32 historical audit from current UiChrome
+- [ ] GitHub signed build
+- [ ] phone: incremental preflight
+- [ ] phone: quota modal
+- [ ] phone: legacy message/confirm
+- [ ] phone: selective-export multi-choice
+- [ ] phone: manual-link custom view
+- [ ] close BUG-002 only after representative modal categories pass
+
 ## Next
-After v1.4.32 build/phone retest:
-- close BUG-002 only if the dialog is stable from the first visible frame;
+After v1.4.33 build/phone retest:
+- close BUG-002 only if representative modal categories are stable from the first visible frame;
 - keep BUG-004 phone retest pending until a real/reproduced HTTP 401 occurs;
 - then continue with the localization resource foundation.
 

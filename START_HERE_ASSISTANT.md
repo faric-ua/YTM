@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.32**
-- versionCode: **66**
-- release focus: **BUG-002 Dialog First-Frame Fix**
-- release status: **NOT PHONE-TESTED YET — FIX IMPLEMENTED / RETEST NEEDED**
+- versionName: **1.4.33**
+- versionCode: **67**
+- release focus: **BUG-002 Unified Stable Modal Pipeline**
+- release status: **NOT PHONE-TESTED YET — FULL MODAL RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -65,12 +65,14 @@ v1.4.31 implements the BUG-004 repair across ImportActivity/MainActivity: a real
 
 The v1.4.31 phone UI smoke passed for the shortened incremental preflight copy, but the same long-standing dialog entrance jump was visible again. The user explicitly reopened BUG-002. v1.4.32 changes the shared UiChrome first-frame architecture to a dedicated Dialog configured before `show()`, with hidden safe-inset layout revealed at pre-draw. Phone no-jump evidence is still required before BUG-002 closes.
 
+The v1.4.32 phone retest passed on the incremental backup preflight but quota and other modal windows still behaved inconsistently. Analysis found 22 direct UiChrome modal calls plus 22 `UiChrome.alertBuilder(...)` calls. v1.4.33 makes the builder a compatibility facade over the same stable custom Dialog engine, adds custom-view and multi-choice stable variants, and keeps the attached decor hidden until safe insets and geometry are stable.
+
 The release remains only partially phone-tested overall.
 
 Current known items include:
 
 - BUG-001 / Q-001: OPEN;
-- BUG-002 / Q-002: FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.32;
+- BUG-002 / Q-002: FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.33;
 - BUG-003 / Q-003: CLOSED — PHONE RETEST PASS v1.4.20;
 - BUG-004 / Q-004: FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31;
 - BUG-005 / Q-005: CLOSED — PHONE RETEST PASS v1.4.27;
@@ -240,8 +242,8 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-retest v1.4.32 dialog first-frame stability;
-2. close BUG-002 only from real-phone no-jump evidence;
+1. build and phone-retest v1.4.33 across representative modal categories;
+2. close BUG-002 only if direct, builder-message, custom-view and multi-choice dialogs are stable;
 3. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
 4. establish the localization resource foundation for Ukrainian / Korean / English;
 5. then build the visual skin foundation without changing import/search/write semantics.

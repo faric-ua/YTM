@@ -24,7 +24,8 @@
 | v1.4.29 | **PARTIALLY PHONE-TESTED — PASS FOR INCREMENTAL BACKUP PATH** | Real-phone QA: SELECTED(2) baseline preflight passed; unchanged scan = UNCHANGED 2; delta wrote manifest.json with 0 new YTM Project files; old baseline still reopened 2/2; BUG-006 truncated boundary Toast fixed and phone-retested in R2. |
 | v1.4.30 | **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH** | Initial SELECTED(2)/UNCHANGED path passed including normal-open/exact-ID checks. Follow-up ALL run also passed real NEW→UPDATED→MISSING classification and chain materialization (21→22→22→21) with offline state validation; BUG-004 stale-green auth state was reproduced by real HTTP 401 and remains open. |
 | v1.4.31 | **PARTIALLY PHONE-TESTED — BACKUP UI POLISH SMOKE PASS** | Incremental preflight shows `Перевірити`, `Основа`, `Режим`; BUG-004 real-401 retest remains pending. |
-| v1.4.32 | **NOT PHONE-TESTED YET** | BUG-002 shared dialog first-frame architecture fix implemented; signed build and no-jump phone retest pending. |
+| v1.4.32 | **PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / MODAL INCONSISTENCY REMAINS** | Incremental backup preflight opens correctly, but quota and other modal windows still behave inconsistently; BUG-002 remains open. |
+| v1.4.33 | **NOT PHONE-TESTED YET** | Unified stable modal pipeline implemented across direct UiChrome and legacy builder paths; representative phone retest pending. |
 
 Static audits and GitHub build do not equal phone testing.
 
