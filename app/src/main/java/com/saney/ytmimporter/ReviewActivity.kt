@@ -1348,29 +1348,14 @@ class ReviewActivity : Activity() {
                 dp(8)
             )
 
-            addView(
-                Button(
-                    this@ReviewActivity
-                ).apply {
-                    text = "‹"
-                    isAllCaps = false
-                    textSize = 26f
-                    setTextColor(
-                        Color.WHITE
-                    )
-                    background =
-                        roundedBackground(
-                            color = SURFACE,
-                            radiusDp = 12,
-                            strokeColor = BORDER
-                        )
-                    setOnClickListener {
-                        onBack()
-                    }
-                },
+                        addView(
+                UiChrome.backButton(
+                    activity = this@ReviewActivity,
+                    onClick = { onBack() }
+                ),
                 LinearLayout.LayoutParams(
-                    dp(46),
-                    dp(46)
+                    dp(48),
+                    dp(48)
                 )
             )
 
