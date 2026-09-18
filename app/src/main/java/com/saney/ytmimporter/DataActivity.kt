@@ -49,6 +49,7 @@ class DataActivity : Activity() {
     private var pendingExportSuccessMessage: String? = null
     private var pendingExportFileName: String? = null
     private var pendingExportMimeType: String? = null
+    private var restoreConfirmationPending = false
 
     private val saveExportRequestCode = 4201
     private val restoreBackupRequestCode = 4202
@@ -65,6 +66,29 @@ class DataActivity : Activity() {
         localBackupManager = LocalBackupManager(this)
 
         buildUi()
+
+        if (
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_RESTORE_CONFIRMATION_PENDING,
+                    false
+                ) ==
+                true
+        ) {
+            restoreConfirmationPending = true
+            restorePendingBackupConfirmation()
+        }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putBoolean(
+            STATE_RESTORE_CONFIRMATION_PENDING,
+            restoreConfirmationPending
+        )
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -590,38 +614,142 @@ class DataActivity : Activity() {
                 return
             }
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Підтвердити Restore")
-            .setMessage(
-                "Backup YTM Importer\n\n" +
-                    "Schema: ${summary.schemaVersion}\n" +
-                    "Версія застосунку: ${summary.appVersion}\n" +
-                    "Дата: ${formatDate(summary.exportedAt)}\n" +
-                    "Груп даних: ${summary.preferenceGroups}\n" +
-                    "Значень: ${summary.valueCount}\n" +
-                    "Integrity: " +
-                    if (summary.integrityProtected) {
-                        if (summary.integrityVerified) {
-                            "SHA-256 ✓\n\n"
-                        } else {
-                            "SHA-256 ?\n\n"
-                        }
-                    } else {
-                        "legacy backup без checksum\n\n"
-                    } +
-                    "Перед Restore буде автоматично створено " +
-                    "safety snapshot поточного стану."
+        runCatching {
+            pendingRestoreCacheFile()
+                .writeText(
+                    raw,
+                    Charsets.UTF_8
+                )
+        }.getOrElse { error ->
+            toast(
+                "Не вдалося підготувати Restore: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
             )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Відновити"
-            ) { _, _ ->
-                restoreBackupNow(raw)
+            return
+        }
+
+        restoreConfirmationPending = true
+
+        showRestoreConfirmation(
+            raw = raw,
+            summary = summary
+        )
+    }
+
+    private fun restorePendingBackupConfirmation() {
+        val raw =
+            runCatching {
+                pendingRestoreCacheFile()
+                    .takeIf {
+                        it.isFile
+                    }
+                    ?.readText(
+                        Charsets.UTF_8
+                    )
+                    ?: error(
+                        "Тимчасовий backup для підтвердження втрачено"
+                    )
+            }.getOrElse { error ->
+                clearPendingRestoreConfirmation()
+                toast(
+                    error.message
+                        ?: "Restore потрібно вибрати ще раз"
+                )
+                return
             }
-            .show()
+
+        val summary =
+            runCatching {
+                localBackupManager.inspectBackup(raw)
+            }.getOrElse { error ->
+                clearPendingRestoreConfirmation()
+                toast(
+                    "Backup більше не доступний: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return
+            }
+
+        showRestoreConfirmation(
+            raw = raw,
+            summary = summary
+        )
+    }
+
+    private fun showRestoreConfirmation(
+        raw: String,
+        summary:
+            com.saney.ytmimporter.storage.BackupSummary
+    ) {
+        val dialog =
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Підтвердити Restore"
+                )
+                .setMessage(
+                    "Backup YTM Importer\n\n" +
+                        "Schema: ${summary.schemaVersion}\n" +
+                        "Версія застосунку: ${summary.appVersion}\n" +
+                        "Дата: ${formatDate(summary.exportedAt)}\n" +
+                        "Груп даних: ${summary.preferenceGroups}\n" +
+                        "Значень: ${summary.valueCount}\n" +
+                        "Integrity: " +
+                        if (
+                            summary.integrityProtected
+                        ) {
+                            if (
+                                summary.integrityVerified
+                            ) {
+                                "SHA-256 ✓\n\n"
+                            } else {
+                                "SHA-256 ?\n\n"
+                            }
+                        } else {
+                            "legacy backup без checksum\n\n"
+                        } +
+                        "Перед Restore буде автоматично створено " +
+                        "safety snapshot поточного стану."
+                )
+                .setNegativeButton(
+                    "Скасувати"
+                ) { _, _ ->
+                    clearPendingRestoreConfirmation()
+                }
+                .setPositiveButton(
+                    "Відновити"
+                ) { _, _ ->
+                    clearPendingRestoreConfirmation()
+                    restoreBackupNow(raw)
+                }
+                .show()
+
+        dialog.setOnCancelListener {
+            if (!isChangingConfigurations) {
+                clearPendingRestoreConfirmation()
+            }
+        }
+    }
+
+    private fun pendingRestoreCacheFile():
+        File =
+        File(
+            cacheDir,
+            PENDING_RESTORE_CACHE_FILE
+        )
+
+    private fun clearPendingRestoreConfirmation() {
+        restoreConfirmationPending = false
+
+        runCatching {
+            pendingRestoreCacheFile()
+                .delete()
+        }
     }
 
     private fun restoreBackupNow(
@@ -1754,5 +1882,13 @@ class DataActivity : Activity() {
                 167,
                 173
             )
+    }
+
+    companion object {
+        private const val STATE_RESTORE_CONFIRMATION_PENDING =
+            "restore_confirmation_pending"
+
+        private const val PENDING_RESTORE_CACHE_FILE =
+            "pending_restore_confirmation_v1.json"
     }
 }
