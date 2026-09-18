@@ -13,7 +13,7 @@ SERVICE="$SRC/ServiceActivity.kt"
 GRADLE="app/build.gradle.kts"
 MANIFEST="app/src/main/AndroidManifest.xml"
 
-for f in   "$FLOW"   "$WRITER"   "$DATA"   "$REVIEW"   "$HISTORY"   "$SERVICE"   "$GRADLE"   "$MANIFEST"   docs/v.1.4.36/RELEASE.md   docs/v.1.4.36/REGRESSION_CHECKLIST.md   docs/v.1.4.36/qa/PHONE_TEST.md   docs/v.1.4.36/qa/BUG_REGISTER.md
+for f in   "$FLOW"   "$WRITER"   "$DATA"   "$REVIEW"   "$HISTORY"   "$SERVICE"   "$GRADLE"   "$MANIFEST"   docs/v.1.4.36/RELEASE.md   docs/v.1.4.36/FILE_SAVE_AUDIT.md   docs/v.1.4.36/REGRESSION_CHECKLIST.md   docs/v.1.4.36/qa/PHONE_TEST.md   docs/v.1.4.36/qa/BUG_REGISTER.md
 do
   test -f "$f" || fail "missing v1.4.36 file: $f"
 done
