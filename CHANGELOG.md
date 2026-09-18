@@ -1,5 +1,14 @@
 # Журнал змін (Changelog)
 
+## v1.4.38-R1
+- Targeted R1 test build only.
+- Centered selective-export checkbox inside a dedicated fixed-width touch column.
+- Preserved whole-row multi-select tapping.
+- Persisted pending Restore confirmation across Activity recreation/rotation using a validated cache copy.
+- Cancel / Restore clears the temporary pending-backup cache.
+- versionCode 73 / versionName 1.4.38-R1.
+- Phone acceptance limited to checkbox alignment + Restore rotation.
+
 ## v1.4.38
 - Added reusable full-screen `ListSelectorActivity` for dynamic selectable collections.
 - Migrated YTM account playlist import, selective export, delta-chain head selection and backup/manifest project selection out of tall modal dialogs.
