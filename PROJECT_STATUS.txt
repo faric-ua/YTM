@@ -30,7 +30,7 @@ v1.4.36 PARTIALLY PHONE-TESTED — IN-APP SAF ENTRY PASS / LONG-LIST FIXED-FOOTE
 v1.4.37 PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS / LONG-LIST SELECTORS FOUND
 v1.4.38 NOT PHONE-TESTED YET — FULL-SCREEN SELECTORS + DESTRUCTIVE SAFETY + MOBILE COPY
 v1.4.38-R1 PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX FAIL
-v1.4.38-R2 NOT PHONE-TESTED YET — CHECKBOX VISUAL CENTERING
+v1.4.38-R2 PHONE RETEST PASS — CHECKBOX VISUAL CENTERING
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -504,3 +504,11 @@ v1.4.38-R2 phone follow-up:
 - R1 Restore rotation retest passed; BUG-008 is closed
 - R2 needs only checkbox visual phone acceptance
 - R1 phone screenshot evidence: 783×1536, SHA-256 00963abcc4c37ce876aa933e9a2a2c34fb5c9150e565350dd367e39447c9dada
+
+
+v1.4.38-R2 phone result:
+- selective-export checkbox visual alignment PASS
+- visible square now balanced between card edge and playlist text
+- UX-014 closed for the tested phone path
+- evidence: 783×1536, SHA-256 b86f70c820d6d2332b124a67cf77fa0c2c9f5ade5a581f4f3406d9666ca1c85d
+- BUG-008 Restore rotation remains CLOSED from R1
