@@ -25,6 +25,12 @@
             android:screenOrientation="unspecified" />
 
         <activity
+            android:name=".ListSelectorActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+
+        <activity
             android:name=".QuotaActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />
