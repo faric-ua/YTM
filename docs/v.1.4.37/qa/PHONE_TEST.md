@@ -77,3 +77,50 @@ Compare Neon Dark Home with the accepted v1.4.36 reference.
 PASS: no color changes were introduced by this release.
 
 UX-009 Green Dark contrast remains a separate open item.
+
+
+## Real-phone result — storage chooser layout
+
+Evidence date: 2026-09-18.
+
+PASS for the redesigned storage chooser:
+
+- full-screen `Папка для експорту` screen opens;
+- Back and `?` are fixed in the header;
+- remembered folders occupy the scrollable middle;
+- `Додати іншу папку…` and `Скасувати` are visible at the bottom without scrolling;
+- long remembered-root content no longer pushes escape controls off-screen;
+- `?` opens the explanatory SAF help modal successfully.
+
+Evidence supplied in chat:
+
+- old v1.4.36 long-list modal: 783×1536, SHA-256 `4a1bcd0e92b568d73b5997f17c4663fc8ad01c603c9823e0a89e2c03f99a8f39`
+- new v1.4.37 full-screen storage chooser: 783×1536, SHA-256 `9d7944f8bbb726faa1e58cee1a91e7f0f7dcaa5aa8f9b64c9c4f856c7fb78aa5`
+- v1.4.37 SAF help modal: 783×1536, SHA-256 `16fb51405fffe7604614d3c6cbc081404ceedc9ae6f31adce57776b1979dbc04`
+
+Classification:
+
+**PASS for the fixed-header/fixed-footer storage layout and SAF help entry.**
+
+Remaining storage behavior checks such as system-picker Back round-trip and direct save remain separate phone cases.
+
+## Real-phone finding — legacy long-list selectors still remain
+
+Two old long-list dialog patterns were visible during v1.4.37 phone use:
+
+1. `Вибрати плейлисти для експорту` — multi-select checkbox dialog;
+2. `Вибрати плейлист YouTube/YTM` — single-select long menu dialog.
+
+Evidence supplied in chat:
+
+- selective-export multi-choice dialog: 783×1536, SHA-256 `37978d32e01ef648087579c7d2465a8b869dcf45faef759877db35d846ccefac`
+- YTM playlist import picker: 783×1536, SHA-256 `34eb7158caca95d4a413d74e2559e747d9099bc07e28dd362935f3dd09f6a450`
+
+Repository audit found two additional dynamic long-list menu candidates in Import:
+
+3. delta-chain head/session picker;
+4. backup / manifest project picker.
+
+These should follow the same full-screen list-selection architecture rather than remain tall modal dialogs.
+
+Short informational/confirmation dialogs are not part of this migration; modal is still appropriate when content is compact and the action set is small.
