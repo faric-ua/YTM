@@ -35,6 +35,9 @@ for f in "${SCREENS[@]}"; do
   if grep -Fq 'text = "‹"' "$f"; then
     fail "typographic back glyph remains: $f"
   fi
+  BLOCK="$(grep -A10 -F 'UiChrome.backButton(' "$f")"
+  DP48="$(printf '%s\n' "$BLOCK" | grep -F 'dp(48)' | wc -l | tr -d ' ')"
+  [ "$DP48" -ge 2 ] || fail "48dp back touch target missing: $f"
 done
 
 COUNT="$(grep -h -F 'UiChrome.backButton(' "${SCREENS[@]}" | wc -l | tr -d ' ')"
