@@ -817,20 +817,15 @@ class DestinationActivity : Activity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(10), dp(8), dp(10), dp(8))
 
-            addView(
-                Button(this@DestinationActivity).apply {
-                    text = "‹"
-                    isAllCaps = false
-                    textSize = 26f
-                    setTextColor(Color.WHITE)
-                    background = roundedBackground(
-                        color = SURFACE,
-                        radiusDp = 12,
-                        strokeColor = BORDER
-                    )
-                    setOnClickListener { onBack() }
-                },
-                LinearLayout.LayoutParams(dp(46), dp(46))
+                        addView(
+                UiChrome.backButton(
+                    activity = this@DestinationActivity,
+                    onClick = { onBack() }
+                ),
+                LinearLayout.LayoutParams(
+                    dp(48),
+                    dp(48)
+                )
             )
 
             addView(
