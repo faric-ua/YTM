@@ -143,3 +143,27 @@ Immediate recovery path:
 - because only `history_store_v1` is present, Queue/quota/SearchCache/current playlist are not overwritten.
 
 Track a native History JSON restore/import UX as UX-015.
+
+
+## R1 phone result — rotation PASS / checkbox FAIL
+
+R1 real-phone result:
+
+- Restore confirmation survives rotation without choosing the backup file again: **PASS**.
+- selective-export checkbox visual alignment: **FAIL**.
+
+The R1 screenshot still shows the visible checkbox square too close to the card's left edge and too much empty space between the square and playlist text.
+
+Evidence:
+
+- 783×1536 screenshot;
+- SHA-256 `00963abcc4c37ce876aa933e9a2a2c34fb5c9150e565350dd367e39447c9dada`.
+
+R2 root-cause correction:
+
+- the 48dp touch column is retained;
+- the Android `CheckBox` no longer fills that column directly;
+- a `FrameLayout` owns the 48dp column;
+- the actual `CheckBox` is `WRAP_CONTENT` and centered with `Gravity.CENTER`.
+
+BUG-008 is closed by the R1 phone PASS. R2 requires only the checkbox visual retest.
