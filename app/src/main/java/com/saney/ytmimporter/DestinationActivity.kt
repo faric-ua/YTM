@@ -817,7 +817,7 @@ class DestinationActivity : Activity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(10), dp(8), dp(10), dp(8))
 
-                        addView(
+            addView(
                 UiChrome.backButton(
                     activity = this@DestinationActivity,
                     onClick = { onBack() }
