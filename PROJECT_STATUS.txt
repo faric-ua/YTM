@@ -432,3 +432,14 @@ UI FINDING — UX-010 UTILITY SCREENS
 - proposed compact Home label for `Ще` = `Меню`
 - use shared back-button/top-bar behavior and scroll only page content where needed
 - implementation should follow the fixed-header/fixed-footer principle being introduced for long SAF lists
+
+
+UI FINDING — UX-011 FULL-SCREEN LIST SELECTORS
+- v1.4.37 full-screen StorageChooserActivity layout is accepted on phone
+- fixed header + scroll-only middle + fixed footer solves the long-list escape problem
+- SAF help modal is accepted
+- old dynamic list dialogs still remain in Import
+- confirmed visible on phone: selective YTM export multi-choice + YTM account playlist single-select
+- code audit adds delta-chain head picker + backup/manifest project picker as the same long-list class
+- next migration rule: dynamic/long selectable collections use dedicated full-screen selectors
+- short info / warning / confirmation content may remain modal
