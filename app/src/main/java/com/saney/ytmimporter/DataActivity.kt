@@ -752,7 +752,16 @@ class DataActivity : Activity() {
             runCatching {
                 localBackupManager
                     .inspectSafetySnapshot()
-            }.getOrNull()
+            }.getOrElse { error ->
+                toast(
+                    "Safety snapshot пошкоджено: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return
+            }
 
         if (summary == null) {
             toast(
