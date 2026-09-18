@@ -451,3 +451,11 @@ UI FINDING — UX-012 DESTRUCTIVE CONFIRMATION
 - weak spot: post-Restore `Видалити snapshot` deletes the safety snapshot directly from the result dialog with no dedicated second confirmation
 - follow-up: standardize destructive confirmations with explicit red danger action + exact target wording
 - bulk/irreversible destructive actions should use stronger confirmation than ordinary single-item removal
+
+UI FINDING — UX-013 MOBILE ACTION COPY FIT
+- v1.4.37 phone screenshots show several action labels wrapping/clipping on narrow buttons
+- Restore picker action should be shortened from `Вибрати backup` to `Вибрати файл`
+- save chooser footer should use `Додати папку…` and `Зберегти як…`
+- generic `OK` should become `Готово` on Restore success
+- post-rollback `Видалити snapshot` should not remain beside the success action; move deletion to a dedicated confirmed destructive flow
+- target rule: primary action buttons should communicate one action and fit on one line on the phone reference width
