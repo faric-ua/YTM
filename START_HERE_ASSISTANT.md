@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.36**
-- versionCode: **70**
-- release focus: **UX-008 Phase 2A — Saved File Destinations**
-- release status: **PARTIALLY PHONE-TESTED — SAF ENTRY PASS / LONG-LIST FIXED-FOOTER FAIL**
+- versionName: **1.4.37**
+- versionCode: **71**
+- release focus: **Full-screen Storage + Utility UI**
+- release status: **NOT PHONE-TESTED YET — v1.4.37 PHONE QA NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -74,6 +74,8 @@ v1.4.35 implements UX-008 Phase 1 for folder-tree operations. The repository aud
 v1.4.36 implements UX-008 Phase 2A for the four create-file workflows. Data exports, Review Project saves, History Project saves and Service Diagnostics now show one shared in-app save-destination menu before any system file UI. Existing READ_WRITE SAF roots can receive the generated file directly; the user can add a reusable folder or explicitly choose the centralized system `ACTION_CREATE_DOCUMENT` fallback to change location/name. Direct writes avoid destructive overwrite with numbered filenames and attempt to remove a newly-created empty document if writing fails. The two open-file flows remain Phase 2B.
 
 Real-phone v1.4.36 testing confirmed the in-app remembered-root chooser appears before Android SAF. A long-list UX failure was found: when many persisted roots exist, Add-folder and Cancel scroll off-screen with the list. The required follow-up is a dedicated full-screen YTM chooser with fixed header/footer, scrollable middle content, and a `?` help modal.
+
+v1.4.37 implements that follow-up with `StorageChooserActivity`. It is reused by Import folder-tree flows and file-save destinations, keeps system picker entry explicit, and returns to the YTM chooser when the user backs out of Android's picker. The same release moves Quota and the renamed `Меню` utility entry to dedicated full-screen pages while preserving the existing Queue result bridge.
 
 The release remains only partially phone-tested overall.
 
@@ -250,7 +252,7 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. implement the fixed-footer full-screen remembered-root chooser found during v1.4.36 phone QA, then retest UX-008;
+1. build and phone-test v1.4.37 full-screen storage, Quota, and Menu navigation;
 2. implement UX-008 Phase 2B for the two open-file flows after v1.4.36 evidence;
 3. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
 4. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
