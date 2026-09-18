@@ -73,6 +73,18 @@ Do not delete old prototypes merely because a refined version arrives. Keep them
 
 ## Adding future prototypes
 
+
+### Incoming / raw references
+
+Fresh user-supplied reference files may first be stored under
+`skins/prototypes/incoming/` using their original upload names.
+
+Files in `incoming/` are still tracked design-history references, not Android
+production resources. They must be listed in `ASSET_MANIFEST.md`. After visual
+review they may be renamed/classified more precisely without losing the original
+upload name recorded in the manifest.
+
+
 Append new files under the matching `prototypes/` folder and update `ASSET_MANIFEST.md`.
 
 Use descriptive filenames instead of opaque upload names.
