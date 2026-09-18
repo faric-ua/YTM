@@ -108,7 +108,17 @@ class ServiceActivity : Activity() {
 
             saveDiagnosticsFolderRequestCode -> {
                 val uri = data?.data ?: return
-                writeDiagnosticsToTree(uri)
+
+                if (
+                    data.getStringExtra(
+                        StorageChooserActivity.EXTRA_RESULT_KIND
+                    ) ==
+                        StorageChooserActivity.RESULT_DOCUMENT
+                ) {
+                    writeDiagnostics(uri)
+                } else {
+                    writeDiagnosticsToTree(uri)
+                }
             }
         }
     }
@@ -696,15 +706,8 @@ class ServiceActivity : Activity() {
                     fileName,
                 mimeType =
                     "text/plain",
-                addFolderRequestCode =
-                    saveDiagnosticsFolderRequestCode,
-                createDocumentRequestCode =
-                    saveDiagnosticsRequestCode,
-                onRememberedRoot = {
-                    writeDiagnosticsToTree(
-                        it
-                    )
-                }
+                requestCode =
+                    saveDiagnosticsFolderRequestCode
             )
         }.onFailure { error ->
             clearPendingDiagnostics()
