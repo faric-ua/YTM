@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.37
-Version code: 71
+Version: 1.4.38
+Version code: 72
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -390,6 +390,19 @@ v1.4.37 focus:
 - Quota now opens dedicated QuotaActivity
 - Home `Ще` renamed to `Меню` and opens MenuActivity
 - preserve Pending Queue resume bridge through MainActivity
+- keep Neon Dark Home colors unchanged; UX-009 remains separate
+- no broad filesystem permission
+
+
+v1.4.38 focus:
+- UX-011: replace remaining dynamic Import list dialogs with ListSelectorActivity
+- single-select: YTM account playlist, delta-chain head, backup/manifest project
+- multi-select: selective export with fixed Далі / Скасувати footer
+- UX-012: shared explicit destructive-confirmation pattern
+- remove direct safety-snapshot deletion from rollback-success dialog
+- add separate confirmed snapshot deletion action in Data
+- UX-013: shorten Restore/storage button copy for one-line phone fit
+- preserve selector state across recreation
 - keep Neon Dark Home colors unchanged; UX-009 remains separate
 - no broad filesystem permission
 
