@@ -43,6 +43,7 @@ import com.saney.ytmimporter.storage.IncrementalBackupWriteResult
 import com.saney.ytmimporter.storage.IncrementalDeltaManifestException
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
+import com.saney.ytmimporter.storage.SafTreeAccess
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
 import java.util.concurrent.Executors
@@ -1049,21 +1050,119 @@ class ImportActivity : Activity() {
             return
         }
 
+        chooseSafTree(
+            title =
+                "Папка для вибраного експорту",
+            access =
+                SafTreeAccess.Access.READ_WRITE,
+            requestCode =
+                selectiveExportFolderRequestCode,
+            onExisting = {
+                exportSelectedYtmPlaylistsToFolder(
+                    it
+                )
+            }
+        )
+    }
+
+    private fun chooseSafTree(
+        title: String,
+        access: SafTreeAccess.Access,
+        requestCode: Int,
+        onExisting: (Uri) -> Unit
+    ) {
+        val roots =
+            SafTreeAccess
+                .persistedRoots(
+                    context = this,
+                    access = access
+                )
+
+        if (roots.isEmpty()) {
+            launchSafTreePicker(
+                access = access,
+                requestCode = requestCode
+            )
+            return
+        }
+
+        val actions =
+            roots
+                .map { root ->
+                    UiChrome.MenuAction(
+                        label =
+                            buildString {
+                                append(root.label)
+                                append("\n")
+                                append(
+                                    if (
+                                        root.canWrite
+                                    ) {
+                                        "Дозволено читання і запис"
+                                    } else {
+                                        "Дозволено читання"
+                                    }
+                                )
+                            },
+                        onClick = {
+                            onExisting(
+                                root.uri
+                            )
+                        }
+                    )
+                } +
+                UiChrome.MenuAction(
+                    label =
+                        "Додати іншу папку…",
+                    onClick = {
+                        launchSafTreePicker(
+                            access = access,
+                            requestCode = requestCode
+                        )
+                    }
+                )
+
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = title,
+            subtitle =
+                "Виберіть раніше дозволену папку. " +
+                    "Системний Android picker відкриється лише для нової папки.",
+            actions = actions,
+            negativeLabel =
+                "Скасувати"
+        )
+    }
+
+    private fun launchSafTreePicker(
+        access: SafTreeAccess.Access,
+        requestCode: Int
+    ) {
+        val permissionFlags =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+                Intent.FLAG_GRANT_PREFIX_URI_PERMISSION or
+                if (
+                    access ==
+                        SafTreeAccess.Access.READ_WRITE
+                ) {
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                } else {
+                    0
+                }
+
         val intent =
             Intent(
                 Intent.ACTION_OPEN_DOCUMENT_TREE
             ).apply {
                 addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+                    permissionFlags
                 )
             }
 
         startActivityForResult(
             intent,
-            selectiveExportFolderRequestCode
+            requestCode
         )
     }
 
@@ -1151,21 +1250,18 @@ class ImportActivity : Activity() {
             return
         }
 
-        val intent =
-            Intent(
-                Intent.ACTION_OPEN_DOCUMENT_TREE
-            ).apply {
-                addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+        chooseSafTree(
+            title =
+                "Папка для експорту",
+            access =
+                SafTreeAccess.Access.READ_WRITE,
+            requestCode =
+                exportFolderRequestCode,
+            onExisting = {
+                exportAllYtmPlaylistsToFolder(
+                    it
                 )
             }
-
-        startActivityForResult(
-            intent,
-            exportFolderRequestCode
         )
     }
 
@@ -1283,12 +1379,12 @@ class ImportActivity : Activity() {
         treeUri: Uri
     ) {
         runCatching {
-            contentResolver
-                .takePersistableUriPermission(
-                    treeUri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
+            SafTreeAccess.persist(
+                context = this,
+                treeUri = treeUri,
+                access =
+                    SafTreeAccess.Access.READ_WRITE
+            )
         }
     }
 
@@ -1600,19 +1696,18 @@ class ImportActivity : Activity() {
             return
         }
 
-        val intent =
-            Intent(
-                Intent.ACTION_OPEN_DOCUMENT_TREE
-            ).apply {
-                addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+        chooseSafTree(
+            title =
+                "Основа incremental backup",
+            access =
+                SafTreeAccess.Access.READ,
+            requestCode =
+                incrementalBackupBaseRequestCode,
+            onExisting = {
+                prepareIncrementalBackup(
+                    it
                 )
             }
-
-        startActivityForResult(
-            intent,
-            incrementalBackupBaseRequestCode
         )
     }
 
@@ -1635,11 +1730,12 @@ class ImportActivity : Activity() {
             null
 
         runCatching {
-            contentResolver
-                .takePersistableUriPermission(
-                    baseTreeUri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
+            SafTreeAccess.persist(
+                context = this,
+                treeUri = baseTreeUri,
+                access =
+                    SafTreeAccess.Access.READ
+            )
         }
 
         toast(
@@ -2043,21 +2139,18 @@ class ImportActivity : Activity() {
             return
         }
 
-        val intent =
-            Intent(
-                Intent.ACTION_OPEN_DOCUMENT_TREE
-            ).apply {
-                addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+        chooseSafTree(
+            title =
+                "Куди зберегти incremental backup",
+            access =
+                SafTreeAccess.Access.READ_WRITE,
+            requestCode =
+                incrementalBackupTargetRequestCode,
+            onExisting = {
+                writeIncrementalBackup(
+                    it
                 )
             }
-
-        startActivityForResult(
-            intent,
-            incrementalBackupTargetRequestCode
         )
     }
 
@@ -2168,19 +2261,18 @@ class ImportActivity : Activity() {
 
 
     private fun chooseDeltaChainRoot() {
-        val intent =
-            Intent(
-                Intent.ACTION_OPEN_DOCUMENT_TREE
-            ).apply {
-                addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+        chooseSafTree(
+            title =
+                "Папка з backup-ланцюжком",
+            access =
+                SafTreeAccess.Access.READ,
+            requestCode =
+                deltaChainRootRequestCode,
+            onExisting = {
+                prepareDeltaChainRoot(
+                    it
                 )
             }
-
-        startActivityForResult(
-            intent,
-            deltaChainRootRequestCode
         )
     }
 
@@ -2191,11 +2283,12 @@ class ImportActivity : Activity() {
             null
 
         runCatching {
-            contentResolver
-                .takePersistableUriPermission(
-                    treeUri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
+            SafTreeAccess.persist(
+                context = this,
+                treeUri = treeUri,
+                access =
+                    SafTreeAccess.Access.READ
+            )
         }
 
         toast(
@@ -2417,21 +2510,18 @@ class ImportActivity : Activity() {
             return
         }
 
-        val intent =
-            Intent(
-                Intent.ACTION_OPEN_DOCUMENT_TREE
-            ).apply {
-                addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+        chooseSafTree(
+            title =
+                "Куди зберегти повний backup",
+            access =
+                SafTreeAccess.Access.READ_WRITE,
+            requestCode =
+                deltaChainTargetRequestCode,
+            onExisting = {
+                materializeDeltaChain(
+                    it
                 )
             }
-
-        startActivityForResult(
-            intent,
-            deltaChainTargetRequestCode
         )
     }
 
@@ -2546,19 +2636,18 @@ class ImportActivity : Activity() {
     }
 
     private fun chooseAccountBackupFolder() {
-        val intent =
-            Intent(
-                Intent.ACTION_OPEN_DOCUMENT_TREE
-            ).apply {
-                addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+        chooseSafTree(
+            title =
+                "Відкрити backup",
+            access =
+                SafTreeAccess.Access.READ,
+            requestCode =
+                manifestImportFolderRequestCode,
+            onExisting = {
+                openAccountBackupFolder(
+                    it
                 )
             }
-
-        startActivityForResult(
-            intent,
-            manifestImportFolderRequestCode
         )
     }
 
@@ -2566,11 +2655,12 @@ class ImportActivity : Activity() {
         treeUri: Uri
     ) {
         runCatching {
-            contentResolver
-                .takePersistableUriPermission(
-                    treeUri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
+            SafTreeAccess.persist(
+                context = this,
+                treeUri = treeUri,
+                access =
+                    SafTreeAccess.Access.READ
+            )
         }
 
         toast(
