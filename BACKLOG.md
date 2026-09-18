@@ -386,7 +386,7 @@ v1.4.35 — Saved SAF Folders — IMPLEMENTED / PHONE RETEST NEEDED
 - [x] centralize persisted tree URI permission handling
 - [x] discover already authorized SAF tree roots from Android persisted permissions
 - [x] show an in-app choice for previously authorized roots with `Скасувати`
-- [x] use Android folder picker only when `Додати іншу папку…` is chosen or no suitable root exists
+- [x] use Android folder picker only after `Додати іншу папку…` is chosen; even first use has an in-app cancel step
 - [x] separate READ vs READ_WRITE remembered roots
 - [x] keep broad filesystem permissions out
 - [ ] phone-test v1.4.35 remembered-root flow
