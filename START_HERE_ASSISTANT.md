@@ -33,7 +33,7 @@ Current application:
 - versionName: **1.4.37**
 - versionCode: **71**
 - release focus: **Full-screen Storage + Utility UI**
-- release status: **NOT PHONE-TESTED YET — v1.4.37 PHONE QA NEEDED**
+- release status: **PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS; LONG-LIST SELECTOR MIGRATION OPEN**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -308,3 +308,9 @@ When entering a fresh chat/node:
 6. if repository access is unavailable, say so and ask for the minimum missing evidence instead of guessing.
 
 The goal is that a new assistant can become productive from the repository itself, not from hidden conversation history.
+
+
+Current UI follow-up:
+- UX-011: v1.4.37 full-screen storage chooser pattern passed on phone
+- migrate dynamic long-list selectors in Import (YTM playlist import, selective export, delta-chain head, backup/manifest project) to dedicated full-screen selectors
+- keep compact information/confirmation dialogs as modals
