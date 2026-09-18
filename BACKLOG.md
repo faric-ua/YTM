@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.35 — Saved SAF Folders — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -9,7 +9,7 @@ v1.4.35 — Saved SAF Folders — IMPLEMENTED / PHONE RETEST NEEDED
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.31 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
-- UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 implemented in v1.4.35: reuse persisted SAF tree roots in-app before opening Android's picker
+- UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -389,9 +389,13 @@ v1.4.35 — Saved SAF Folders — IMPLEMENTED / PHONE RETEST NEEDED
 - [x] use Android folder picker only after `Додати іншу папку…` is chosen; even first use has an in-app cancel step
 - [x] separate READ vs READ_WRITE remembered roots
 - [x] keep broad filesystem permissions out
-- [ ] phone-test v1.4.35 remembered-root flow
-- [ ] Phase 2: design file-level `ACTION_OPEN_DOCUMENT` reuse/escape behavior
-- [ ] Phase 3: evaluate a DocumentFile-based in-app browser inside authorized roots
+- [ ] phone-test v1.4.35 remembered-root flow — deferred / superseded into v1.4.36 combined QA
+- [x] Phase 2A: route all four `ACTION_CREATE_DOCUMENT` save flows through an in-app destination chooser
+- [x] Phase 2A: direct-save text/JSON into remembered READ_WRITE roots
+- [x] Phase 2A: add reusable save folder and explicit system CREATE_DOCUMENT fallback
+- [x] Phase 2A: duplicate-safe numbered filenames + failed-write cleanup
+- [ ] Phase 2B: design the two `ACTION_OPEN_DOCUMENT` reuse/escape flows
+- [ ] Phase 3: evaluate an in-app browser inside authorized roots
 
 ## v1.4.35 — Saved SAF Folders
 - [x] bump versionCode 69 / versionName 1.4.35
@@ -402,7 +406,7 @@ v1.4.35 — Saved SAF Folders — IMPLEMENTED / PHONE RETEST NEEDED
 - [x] preserve read-only vs read/write permission boundaries
 - [x] document 13 picker entry points and Phase 1 scope
 - [x] add static SAF navigation audit
-- [ ] GitHub signed build
+- [x] GitHub signed build
 - [ ] phone: first-grant SAF path
 - [ ] phone: repeated folder action opens in-app root chooser
 - [ ] phone: `Скасувати` exits immediately without SAF
@@ -411,9 +415,32 @@ v1.4.35 — Saved SAF Folders — IMPLEMENTED / PHONE RETEST NEEDED
 - [ ] phone: read/write filtering smoke
 - [ ] regression: one file-open + one create-document path
 
+## v1.4.36 — Saved File Destinations
+- [x] bump versionCode 70 / versionName 1.4.36
+- [x] add shared `SafFileSaveFlow`
+- [x] add `SafTreeFileWriter`
+- [x] Data exports use in-app save destination first
+- [x] Review Project save uses in-app save destination first
+- [x] History Project save uses in-app save destination first
+- [x] Service Diagnostics save uses in-app save destination first
+- [x] centralize system `ACTION_CREATE_DOCUMENT` fallback
+- [x] direct save to remembered write roots
+- [x] reusable add-folder path
+- [x] duplicate-safe numbered filenames
+- [x] clean up newly-created file on failed direct write
+- [x] add static v1.4.36 audit + QA docs
+- [ ] GitHub signed build
+- [ ] phone: cancel before any system file UI
+- [ ] phone: remembered-root direct save
+- [ ] phone: add reusable save folder
+- [ ] phone: system save / rename fallback
+- [ ] phone: duplicate-name safety
+- [ ] regression: both open-file flows
+
 ## Next
-After v1.4.35 phone retest:
-- close BUG-002 only if representative modal categories are stable from the first visible frame;
+After v1.4.36 phone retest:
+- implement UX-008 Phase 2B for the two open-file flows;
+- keep the deferred v1.4.34 BUG-002 modal cases pending until the user resumes that QA;
 - keep BUG-004 phone retest pending until a real/reproduced HTTP 401 occurs;
 - then continue with the localization resource foundation.
 
