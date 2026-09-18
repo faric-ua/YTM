@@ -1882,13 +1882,12 @@ class DataActivity : Activity() {
                 167,
                 173
             )
-    }
 
-    companion object {
         private const val STATE_RESTORE_CONFIRMATION_PENDING =
             "restore_confirmation_pending"
 
         private const val PENDING_RESTORE_CACHE_FILE =
             "pending_restore_confirmation_v1.json"
     }
+
 }
