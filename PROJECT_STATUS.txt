@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.38
-Version code: 72
+Version: 1.4.38-R1
+Version code: 73
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -29,6 +29,7 @@ v1.4.35 NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA
 v1.4.36 PARTIALLY PHONE-TESTED — IN-APP SAF ENTRY PASS / LONG-LIST FIXED-FOOTER FAIL
 v1.4.37 PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS / LONG-LIST SELECTORS FOUND
 v1.4.38 NOT PHONE-TESTED YET — FULL-SCREEN SELECTORS + DESTRUCTIVE SAFETY + MOBILE COPY
+v1.4.38-R1 NOT PHONE-TESTED YET — CHECKBOX ALIGNMENT + RESTORE ROTATION
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -484,3 +485,12 @@ v1.4.38 R1 phone follow-up:
 - BUG-008 R1 fix caches the pending validated backup in app cache and recreates the confirmation after rotation
 - user-provided `YTM_History_*.json` is a History export array, not a full LocalBackupManager backup; track native History-only restore as UX-015
 - root `TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt` documents the safe Download ZIP organizer command
+
+
+v1.4.38-R1 focus:
+- targeted test build only; no feature expansion
+- multi-select checkbox centered in dedicated fixed-width column
+- Restore confirmation rebuilt after Activity recreation/rotation
+- validated pending backup cached locally instead of placed in Bundle
+- Cancel / Restore clears pending cached backup
+- phone acceptance requires only these two regressions to pass
