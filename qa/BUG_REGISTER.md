@@ -5,7 +5,7 @@
 | BUG-001 / Q-001 | OPEN | P2 | Review wording / Project-save feedback questions remain. | F-06 |
 | BUG-002 / Q-002 | DEFERRED BY USER — REPRODUCED v1.4.27 | P2 | Some custom dialogs visibly appear offset and then move/settle into their final position after opening. Fresh v1.4.27 video evidence is preserved; issue remains non-blocking by user decision. | M-02 |
 | BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update verified: Step 2 briefly gray, then automatically green. | A-03, D-03 |
-| BUG-004 / Q-004 | OPEN — REPRODUCED v1.4.30 | P1 | Real HTTP 401 can occur while Step 2 remains green/checked and connected; reproduced again during v1.4.30 delta-status QA. | B-01; v1.4.30 delta-status follow-up |
+| BUG-004 / Q-004 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31 | P1 | v1.4.31 propagates ImportActivity HTTP 401 invalidation into shared auth state and Main Step 2; real-phone 401 retest still required before closure. | B-01; v1.4.30 repro → v1.4.31 fix |
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Ordinary repeat-search preserves canonical exact videoId tracks; real-phone search plan confirmed 0 redundant search.list for exact 3/3. | v1.4.26 repro → v1.4.27 PASS |
 | BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 | P2 | Incremental-delta boundary explanation was truncated as a Toast; R2 replaced it with a readable UiChrome dialog and phone retest passed. | v1.4.29 repro → v1.4.29 R2 PASS |
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
@@ -74,7 +74,14 @@ v1.4.30 evidence:
 - the user had to reauthorize before backup API reads worked again;
 - another 401 occurred later in the same delta-status QA wave.
 
-Status: **OPEN — REPRODUCED v1.4.30.**
+Implemented in v1.4.31:
+- ImportActivity recognizes YouTube API HTTP 401 and clears process-memory auth plus the prior-auth marker;
+- account export/incremental per-playlist loops rethrow 401 instead of converting it into ordinary FAILED playlist records;
+- MainActivity syncs a cleared shared session on resume so Step 2 cannot remain green after returning from Import;
+- the local working playlist is not cleared;
+- the 401 dialog offers a direct return to Step 2.
+
+Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31.**
 
 ## BUG-005 reproduction
 

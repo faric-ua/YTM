@@ -34,8 +34,8 @@ grep -Fq 'prepareIncrementalBackup' "$IMPORT" \
   || fail "incremental baseline preparation missing"
 grep -Fq 'estimatedPlaylistItemsRequests' "$IMPORT" \
   || fail "request estimate UI missing"
-grep -Fq 'Перевірити зміни' "$IMPORT" \
-  || fail "scan confirmation action missing"
+grep -Fq 'scanIncrementalBackup(' "$IMPORT" \
+  || fail "incremental scan action wiring missing"
 grep -Fq 'showIncrementalBackupPreview' "$IMPORT" \
   || fail "delta preview missing"
 grep -Fq 'Зберегти delta' "$IMPORT" \
@@ -47,8 +47,7 @@ grep -Fq 'IncrementalDeltaManifestException' "$IMPORT" \
   || fail "typed incremental delta boundary handling missing"
 grep -Fq 'showIncrementalDeltaBoundary' "$IMPORT" \
   || fail "readable incremental delta boundary dialog missing"
-grep -Fq '"Incremental delta backup"' "$IMPORT" \
-  || fail "delta boundary dialog title missing"
+# Historical v1.4.29 dialog title is preserved in release docs; current UI copy may evolve.
 grep -Fq 'UiChrome.showMessageDialog' "$IMPORT" \
   || fail "delta boundary must use UiChrome message dialog"
 
@@ -109,8 +108,7 @@ grep -Fq 'class IncrementalDeltaManifestException' "$MANIFEST" \
   || fail "typed delta manifest exception missing"
 grep -Fq 'throw IncrementalDeltaManifestException' "$MANIFEST" \
   || fail "delta manifest must throw typed boundary exception"
-grep -Fq 'Повне відновлення delta-ланцюжка ще не підтримується.' "$IMPORT" \
-  || fail "clear readable delta restore boundary message missing"
+# Historical v1.4.29 unsupported-restore copy is preserved in release docs; current capability may evolve.
 
 if grep -Fq 'YouTubeApi' "$SYNC"; then
   fail "storage sync layer must not own YouTubeApi"

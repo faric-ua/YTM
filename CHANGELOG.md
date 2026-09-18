@@ -1,5 +1,19 @@
 # Журнал змін (Changelog)
 
+## v1.4.31
+- Fixed BUG-004 propagation gap between ImportActivity and MainActivity.
+- ImportActivity now recognizes YouTube API HTTP 401 and clears shared auth state plus the non-secret prior-authorization marker.
+- Bulk account export and incremental playlist scans abort on 401 instead of treating invalid auth as an ordinary per-playlist FAILED record.
+- MainActivity re-checks the shared auth store on resume, so Step 2 cannot remain green after Import invalidates the session.
+- Local current-playlist/search workspace is preserved when authorization is invalidated.
+- 401 recovery dialog now offers a direct return to Step 2.
+- Shortened `Перевірити зміни` to `Перевірити`.
+- Cleaned mixed Ukrainian/English prose in incremental/delta-chain dialogs while retaining technical names such as YTM Project, ALL/SELECTED, MISSING and API endpoint names.
+- Corrected the obsolete message that said full delta-chain restore was unsupported.
+- Added explicit guidance to save new backup sessions into the common parent folder.
+- versionCode 65 / versionName 1.4.31.
+- v1.4.31 = NOT PHONE-TESTED YET; BUG-004 remains open until a real/reproduced 401 phone retest passes.
+
 ## v1.4.30
 - Added local consolidated delta-chain restore/materialization.
 - Scans a common parent folder for full/selective and incremental backup sessions.

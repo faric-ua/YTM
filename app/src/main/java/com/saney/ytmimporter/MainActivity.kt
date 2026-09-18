@@ -161,6 +161,8 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
 
+        syncAuthorizationInvalidationFromMemory()
+
         if (::adapter.isInitialized) {
             reloadCurrentWorkspace()
         }
@@ -1401,6 +1403,28 @@ class MainActivity : Activity() {
         youtubeChannelInfo = snapshot.youtubeChannelInfo
     }
 
+    private fun syncAuthorizationInvalidationFromMemory() {
+        val shared =
+            AuthSessionStore.current()
+
+        if (
+            !accessToken.isNullOrBlank() &&
+            shared.accessToken.isNullOrBlank()
+        ) {
+            accessToken = null
+            googleAccountInfo = null
+            youtubeChannelInfo = null
+            restoringPriorAuthorization = false
+            pendingAfterAuth = null
+
+            updateAccountPanel()
+            status(
+                "Авторизація Google/YTM завершилась. " +
+                    "Натисніть «2. Google / YTM» і підключіть акаунт знову."
+            )
+        }
+    }
+
     private fun syncAuthSessionToMemory() {
         AuthSessionStore.update(
             accessToken = accessToken,
@@ -1588,7 +1612,22 @@ class MainActivity : Activity() {
             val channelResult =
                 runCatching { api.getMyYouTubeChannel(token) }
 
+            val authFailure =
+                listOfNotNull(
+                    googleResult.exceptionOrNull(),
+                    channelResult.exceptionOrNull()
+                ).firstOrNull {
+                    isAuthorizationFailure(it)
+                }
+
             runOnUiThread {
+                if (authFailure != null) {
+                    invalidateAuthorizationIfNeeded(
+                        authFailure
+                    )
+                    return@runOnUiThread
+                }
+
                 googleAccountInfo = googleResult.getOrNull()
                 youtubeChannelInfo = channelResult.getOrNull()
                 syncAuthSessionToMemory()
@@ -1659,6 +1698,7 @@ class MainActivity : Activity() {
         restoringPriorAuthorization = false
         pendingAfterAuth = null
         AuthSessionStore.clear()
+        persistentAuthStateStore.clear()
 
         updateAccountPanel()
         status(

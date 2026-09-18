@@ -1,13 +1,13 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.30 — Consolidated Delta-Chain Restore — PHONE QA PASS FOR TESTED PATH
+v1.4.31 — Auth Invalid-State Sync + Backup UI Polish — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 DEFERRED — reproduced again on v1.4.27; video evidence preserved; non-blocking by user decision
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
-- BUG-004/Q-004 stale green authorization state — OPEN, REPRODUCED v1.4.30
+- BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.31 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 
 ## v1.4.16
@@ -305,14 +305,35 @@ v1.4.30 — Consolidated Delta-Chain Restore — PHONE QA PASS FOR TESTED PATH
 - [x] MISSING: 22 → 21; MISSING=1; chain length 4; offline validator PASS
 - [x] preserve delta-status follow-up screenshots and closeout report
 - [x] reproduce BUG-004 on v1.4.30 with real HTTP 401 + stale green Step 2
-- [ ] fix BUG-004 stale-ready auth state / 401 handling
-- [ ] UI polish: `Перевірити зміни` → `Перевірити`
-- [ ] UI localization cleanup for backup/delta dialogs
-- [ ] guard/clarify backup destination-parent selection
+- [x] v1.4.31 implementation: fix BUG-004 stale-ready auth state / 401 handling
+- [x] v1.4.31 implementation: `Перевірити зміни` → `Перевірити`
+- [x] v1.4.31 implementation: UI localization cleanup for backup/delta dialogs
+- [x] v1.4.31 implementation: clarify backup destination-parent selection
+- [ ] phone retest BUG-004 after a real/reproduced HTTP 401
+- [ ] phone smoke v1.4.31 backup dialog copy/button fit
+
+## v1.4.31 — Auth Invalid-State Sync + Backup UI Polish
+- [x] bump versionCode 65 / versionName 1.4.31
+- [x] ImportActivity detects YouTubeApiException HTTP 401
+- [x] 401 clears AuthSessionStore and PersistentAuthStateStore marker
+- [x] bulk export aborts on 401 instead of writing a normal FAILED record
+- [x] incremental scan aborts on 401 instead of writing a normal FAILED record
+- [x] MainActivity notices shared-session invalidation on resume
+- [x] local workspace remains untouched by auth invalidation
+- [x] add direct "До кроку 2" recovery action
+- [x] `Перевірити` single-line action
+- [x] backup/delta/chain dialog language cleanup
+- [x] obsolete delta-chain warning corrected
+- [x] destination-parent guidance added
+- [x] static audit + release docs
+- [ ] GitHub signed build
+- [ ] phone retest BUG-004
+- [ ] phone smoke localized backup dialogs
+
 
 ## Next
-After v1.4.30 delta-status QA closeout:
-- fix BUG-004 and the small backup-dialog UX/localization findings;
+After v1.4.31 build/phone retest:
+- close BUG-004 only if a real/reproduced HTTP 401 clears Step 2 on phone;
 - then continue with the localization resource foundation.
 
 ## Future product plan — localization + exclusive skin

@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.30**
-- versionCode: **64**
-- release focus: **Consolidated Delta-Chain Restore**
-- release status: **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH**
+- versionName: **1.4.31**
+- versionCode: **65**
+- release focus: **BUG-004 Auth Invalid-State Sync + Backup UI Polish**
+- release status: **NOT PHONE-TESTED YET — FIX IMPLEMENTED / RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -61,6 +61,8 @@ A later focused ALL-scope follow-up also exercised real NEW → UPDATED → MISS
 
 Phone scan/chain materialization evidence and the local state validator passed all three stages. During the same run BUG-004 was reproduced by real HTTP 401 responses while Step 2 could remain green/checked.
 
+v1.4.31 implements the BUG-004 repair across ImportActivity/MainActivity: a real YouTube API HTTP 401 clears shared/persistent auth state, account backup scans abort instead of recording misleading normal FAILED records, and Home Step 2 resynchronizes when the user returns. The same release also shortens `Перевірити зміни` to `Перевірити`, cleans mixed-language backup dialog prose, and corrects the obsolete delta-chain warning. Phone retest is still required before BUG-004 can close.
+
 The release remains only partially phone-tested overall.
 
 Current known items include:
@@ -68,7 +70,7 @@ Current known items include:
 - BUG-001 / Q-001: OPEN;
 - BUG-002 / Q-002: DEFERRED BY USER — reproduced again on v1.4.27; evidence preserved;
 - BUG-003 / Q-003: CLOSED — PHONE RETEST PASS v1.4.20;
-- BUG-004 / Q-004: OPEN — REPRODUCED v1.4.30;
+- BUG-004 / Q-004: FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31;
 - BUG-005 / Q-005: CLOSED — PHONE RETEST PASS v1.4.27;
 - BUG-006 / Q-006: CLOSED — PHONE RETEST PASS v1.4.29 R2;
 - BUG-007 / Q-007: CLOSED — PHONE RETEST PASS v1.4.30 R2.
@@ -236,8 +238,8 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. v1.4.30 consolidated restore has targeted phone coverage for SELECTED(2)/UNCHANGED and ALL-scope NEW/UPDATED/MISSING;
-2. fix BUG-004 stale-ready auth handling after HTTP 401 and the small backup-dialog UX/localization findings;
+1. build and phone-retest v1.4.31 BUG-004 handling plus backup-dialog polish;
+2. close BUG-004 only from real/reproduced phone 401 evidence;
 3. establish the localization resource foundation for Ukrainian / Korean / English;
 4. then build the visual skin foundation without changing import/search/write semantics.
 

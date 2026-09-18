@@ -30,8 +30,8 @@ grep -Fq 'deltaChainRootRequestCode' "$IMPORT" \
   || fail "delta-chain root request code missing"
 grep -Fq 'deltaChainTargetRequestCode' "$IMPORT" \
   || fail "delta-chain target request code missing"
-grep -Fq 'Зібрати повний backup з chain' "$IMPORT" \
-  || fail "delta-chain UI action missing"
+grep -Fq 'chooseDeltaChainRoot()' "$IMPORT" \
+  || fail "delta-chain UI action wiring missing"
 grep -Fq 'prepareDeltaChainRoot' "$IMPORT" \
   || fail "delta-chain root scan missing"
 grep -Fq 'showDeltaChainHeadPicker' "$IMPORT" \

@@ -25,9 +25,9 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.30**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionName: **1.4.31**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **64**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionCode: **65**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
 grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 identity missing"
@@ -80,16 +80,16 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.30' PROJECT_STATUS.txt \
+grep -Fq 'Version: 1.4.31' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 64' PROJECT_STATUS.txt \
+grep -Fq 'Version code: 65' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"
 grep -Fq 'BUG-007/Q-007 CLOSED — PHONE RETEST PASS v1.4.30 R2' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-007 state drift"
-grep -Fq 'BUG-004/Q-004 OPEN — REPRODUCED v1.4.30' PROJECT_STATUS.txt \
-  || fail "PROJECT_STATUS BUG-004 reproduced state drift"
+grep -Fq 'BUG-004/Q-004 FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31' PROJECT_STATUS.txt \
+  || fail "PROJECT_STATUS BUG-004 fix state drift"
 
 grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"

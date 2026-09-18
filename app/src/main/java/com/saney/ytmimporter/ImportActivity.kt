@@ -22,6 +22,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.auth.PersistentAuthStateStore
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
@@ -44,6 +45,7 @@ import com.saney.ytmimporter.storage.IncrementalDeltaManifestException
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
 import com.saney.ytmimporter.youtube.YouTubeApi
+import com.saney.ytmimporter.youtube.YouTubeApiException
 import java.util.concurrent.Executors
 import org.json.JSONArray
 import org.json.JSONObject
@@ -141,6 +143,63 @@ class ImportActivity : Activity() {
     override fun onDestroy() {
         executor.shutdownNow()
         super.onDestroy()
+    }
+
+    private fun isAuthorizationFailure(
+        error: Throwable
+    ): Boolean {
+        var current: Throwable? =
+            error
+
+        while (current != null) {
+            if (
+                current is YouTubeApiException &&
+                current.httpCode == 401
+            ) {
+                return true
+            }
+
+            current =
+                current.cause
+        }
+
+        return false
+    }
+
+    private fun invalidateAuthorizationIfNeeded(
+        error: Throwable
+    ): Boolean {
+        if (!isAuthorizationFailure(error)) {
+            return false
+        }
+
+        AuthSessionStore.clear()
+        PersistentAuthStateStore(this)
+            .clear()
+
+        UiChrome.showMessageDialog(
+            activity = this,
+            title =
+                "Сесію Google/YTM завершено",
+            message =
+                "Google відхилив поточну авторизацію (HTTP 401).\n\n" +
+                    "Стан підключення скинуто. Локальний робочий список не видалено.\n\n" +
+                    "Поверніться до кроку 2 і підключіть Google/YTM знову.",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label =
+                            "До кроку 2",
+                        tone =
+                            UiChrome.ActionTone.ACCENT,
+                        onClick = {
+                            finish()
+                        }
+                    )
+                )
+        )
+
+        return true
     }
 
     override fun onActivityResult(
@@ -386,7 +445,7 @@ class ImportActivity : Activity() {
                 addView(
                     actionButton(
                         label =
-                            "Зібрати повний backup з chain",
+                            "Зібрати повний backup з ланцюжка",
                         primary = false,
                         topMarginDp = 8
                     ) {
@@ -647,6 +706,14 @@ class ImportActivity : Activity() {
                         playlists = playlists
                     )
                 }.onFailure { error ->
+                    if (
+                        invalidateAuthorizationIfNeeded(
+                            error
+                        )
+                    ) {
+                        return@onFailure
+                    }
+
                     toast(
                         error.message
                             ?: "Не вдалося завантажити список плейлистів"
@@ -766,6 +833,14 @@ class ImportActivity : Activity() {
                                 "playlistItems.list: ${loaded.requestCount} request(s)."
                     )
                 }.onFailure { error ->
+                    if (
+                        invalidateAuthorizationIfNeeded(
+                            error
+                        )
+                    ) {
+                        return@onFailure
+                    }
+
                     toast(
                         error.message
                             ?: "Не вдалося завантажити плейлист"
@@ -820,6 +895,14 @@ class ImportActivity : Activity() {
                         playlists
                     )
                 }.onFailure { error ->
+                    if (
+                        invalidateAuthorizationIfNeeded(
+                            error
+                        )
+                    ) {
+                        return@onFailure
+                    }
+
                     toast(
                         error.message
                             ?: "Не вдалося завантажити список плейлистів"
@@ -1334,6 +1417,14 @@ class ImportActivity : Activity() {
             }.onFailure {
                     error ->
 
+                if (
+                    isAuthorizationFailure(
+                        error
+                    )
+                ) {
+                    throw error
+                }
+
                 records +=
                     AccountLibraryExporter.ExportRecord(
                         playlistId =
@@ -1454,6 +1545,14 @@ class ImportActivity : Activity() {
                         )
                 )
             }.onFailure { error ->
+                if (
+                    invalidateAuthorizationIfNeeded(
+                        error
+                    )
+                ) {
+                    return@onFailure
+                }
+
                 UiChrome.showMessageDialog(
                     activity = this,
                     title =
@@ -1614,6 +1713,14 @@ class ImportActivity : Activity() {
                 }.onFailure {
                         error ->
 
+                    if (
+                        invalidateAuthorizationIfNeeded(
+                            error
+                        )
+                    ) {
+                        return@onFailure
+                    }
+
                     toast(
                         error.message
                             ?: "Не вдалося підготувати incremental backup"
@@ -1641,11 +1748,11 @@ class ImportActivity : Activity() {
         UiChrome.showMessageDialog(
             activity = this,
             title =
-                "Incremental backup — перевірка",
+                "Інкрементальний backup — перевірка",
             message =
-                "Baseline: ${preflight.baseline.folderName}\n" +
-                    "Scope: $scopeText\n" +
-                    "Поточних плейлистів у scope: ${preflight.playlists.size}\n" +
+                "Основа: ${preflight.baseline.folderName}\n" +
+                    "Режим: $scopeText\n" +
+                    "Поточних плейлистів у режимі: ${preflight.playlists.size}\n" +
                     "Оцінка playlistItems.list: ${preflight.estimatedPlaylistItemsRequests} request(s)\n\n" +
                     "Щоб надійно знайти зміни навіть при тій самій кількості треків, " +
                     "застосунок прочитає вміст кожного непорожнього плейлиста у scope.\n\n" +
@@ -1654,7 +1761,7 @@ class ImportActivity : Activity() {
                 listOf(
                     UiChrome.DialogAction(
                         label =
-                            "Перевірити зміни",
+                            "Перевірити",
                         tone =
                             UiChrome.ActionTone.ACCENT,
                         onClick = {
@@ -1791,6 +1898,14 @@ class ImportActivity : Activity() {
                         }.onFailure {
                                 error ->
 
+                            if (
+                                isAuthorizationFailure(
+                                    error
+                                )
+                            ) {
+                                throw error
+                            }
+
                             requests += 1
 
                             records +=
@@ -1858,6 +1973,14 @@ class ImportActivity : Activity() {
                     pendingIncrementalBackupPlan =
                         null
 
+                    if (
+                        invalidateAuthorizationIfNeeded(
+                            error
+                        )
+                    ) {
+                        return@onFailure
+                    }
+
                     toast(
                         error.message
                             ?: "Не вдалося просканувати backup"
@@ -1873,16 +1996,18 @@ class ImportActivity : Activity() {
         UiChrome.showMessageDialog(
             activity = this,
             title =
-                "Incremental backup — preview",
+                "Інкрементальний backup — попередній перегляд",
             message =
                 "Нові: ${plan.newCount}\n" +
                     "Змінені: ${plan.updatedCount}\n" +
                     "Без змін: ${plan.unchangedCount}\n" +
-                    "Зникли / недоступні в scope: ${plan.missingCount}\n" +
+                    "Зникли / недоступні в режимі: ${plan.missingCount}\n" +
                     "Помилки читання: ${plan.failedCount}\n" +
                     "playlistItems.list: ${plan.playlistItemsRequests} request(s)\n\n" +
                     "Буде створено нову delta-папку. " +
-                    "Старий backup не змінюється і не видаляється.",
+                    "Старий backup не змінюється і не видаляється.\n\n" +
+                    "Для збереження виберіть спільну батьківську папку, " +
+                    "а не саму папку baseline або delta.",
             actions =
                 listOf(
                     UiChrome.DialogAction(
@@ -1914,7 +2039,7 @@ class ImportActivity : Activity() {
                 null
         ) {
             toast(
-                "План incremental backup втрачено. Повторіть перевірку."
+                "План інкрементального backup втрачено. Повторіть перевірку."
             )
             return
         }
@@ -1945,7 +2070,7 @@ class ImportActivity : Activity() {
 
         if (plan == null) {
             toast(
-                "План incremental backup втрачено. Повторіть перевірку."
+                "План інкрементального backup втрачено. Повторіть перевірку."
             )
             return
         }
@@ -1955,7 +2080,7 @@ class ImportActivity : Activity() {
         )
 
         toast(
-            "Записую incremental delta локально…"
+            "Записую інкрементальну delta локально…"
         )
 
         executor.execute {
@@ -1996,7 +2121,7 @@ class ImportActivity : Activity() {
 
                     toast(
                         error.message
-                            ?: "Не вдалося записати incremental backup"
+                            ?: "Не вдалося записати інкрементальний backup"
                     )
                 }
             }
@@ -2009,9 +2134,9 @@ class ImportActivity : Activity() {
         UiChrome.showMessageDialog(
             activity = this,
             title =
-                "Incremental backup збережено",
+                "Інкрементальний backup збережено",
             message =
-                "Плейлистів у поточному scope: ${summary.currentPlaylistCount}\n" +
+                "Плейлистів у поточному режимі: ${summary.currentPlaylistCount}\n" +
                     "Нові: ${summary.newCount}\n" +
                     "Змінені: ${summary.updatedCount}\n" +
                     "Без змін: ${summary.unchangedCount}\n" +
@@ -2019,7 +2144,7 @@ class ImportActivity : Activity() {
                     "Помилки: ${summary.failedCount}\n" +
                     "Нових YTM Project файлів: ${summary.writtenProjects}\n" +
                     "playlistItems.list: ${summary.playlistItemsRequests} request(s)\n\n" +
-                    "Delta-папка: ${summary.folderName}\n" +
+                    "Папка delta: ${summary.folderName}\n" +
                     "Індекс: ${summary.manifestFile}\n\n" +
                     "Старий backup не змінено.",
             actions =
@@ -2075,7 +2200,7 @@ class ImportActivity : Activity() {
         }
 
         toast(
-            "Сканую backup sessions локально…"
+            "Сканую локальні backup-сесії…"
         )
 
         executor.execute {
@@ -2110,7 +2235,7 @@ class ImportActivity : Activity() {
 
                     toast(
                         error.message
-                            ?: "Не вдалося знайти backup chain"
+                            ?: "Не вдалося знайти ланцюжок backup"
                     )
                 }
             }
@@ -2136,9 +2261,9 @@ class ImportActivity : Activity() {
         UiChrome.showMenuDialog(
             activity = this,
             title =
-                "Backup chain — виберіть head",
+                "Ланцюжок backup — виберіть кінцеву сесію",
             subtitle =
-                "Знайдено ${heads.size} незалежних delta heads",
+                "Знайдено ${heads.size} незалежних кінцевих delta-сесій",
             actions =
                 heads.map {
                         head ->
@@ -2166,7 +2291,7 @@ class ImportActivity : Activity() {
         head: DeltaChainHead
     ) {
         toast(
-            "Відновлюю logical state із backup chain…"
+            "Відновлюю логічний стан із ланцюжка backup…"
         )
 
         executor.execute {
@@ -2209,10 +2334,10 @@ class ImportActivity : Activity() {
                     UiChrome.showMessageDialog(
                         activity = this,
                         title =
-                            "Backup chain — помилка",
+                            "Ланцюжок backup — помилка",
                         message =
                             error.message
-                                ?: "Не вдалося відновити chain",
+                                ?: "Не вдалося відновити ланцюжок",
                         actions =
                             listOf(
                                 UiChrome.DialogAction(
@@ -2245,18 +2370,18 @@ class ImportActivity : Activity() {
         UiChrome.showMessageDialog(
             activity = this,
             title =
-                "Backup chain — preview",
+                "Ланцюжок backup — попередній перегляд",
             message =
-                "Base: ${plan.baseFolderName}\n" +
-                    "Head: ${plan.headFolderName}\n" +
-                    "Ланок у chain: ${plan.chainLength}\n" +
-                    "Scope: $scopeText\n\n" +
-                    "Плейлистів у фінальному state: ${plan.playlistCount}\n" +
-                    "YTM Project джерел: ${plan.projectCount}\n" +
+                "Основа: ${plan.baseFolderName}\n" +
+                    "Кінцева сесія: ${plan.headFolderName}\n" +
+                    "Ланок у ланцюжку: ${plan.chainLength}\n" +
+                    "Режим: $scopeText\n\n" +
+                    "Плейлистів у фінальному стані: ${plan.playlistCount}\n" +
+                    "Джерел YTM Project: ${plan.projectCount}\n" +
                     "Порожніх плейлистів: ${plan.emptyCount}\n" +
-                    "MISSING подій застосовано: ${plan.missingEvents}\n\n" +
+                    "Застосовано подій MISSING: ${plan.missingEvents}\n\n" +
                     "Локально: YouTube API = 0.\n" +
-                    "Source backup folders не змінюються.",
+                    "Вихідні папки backup не змінюються.",
             actions =
                 listOf(
                     UiChrome.DialogAction(
@@ -2288,7 +2413,7 @@ class ImportActivity : Activity() {
                 null
         ) {
             toast(
-                "План backup chain втрачено. Повторіть сканування."
+                "План ланцюжка backup втрачено. Повторіть сканування."
             )
             return
         }
@@ -2319,7 +2444,7 @@ class ImportActivity : Activity() {
 
         if (plan == null) {
             toast(
-                "План backup chain втрачено. Повторіть сканування."
+                "План ланцюжка backup втрачено. Повторіть сканування."
             )
             return
         }
@@ -2329,7 +2454,7 @@ class ImportActivity : Activity() {
         )
 
         toast(
-            "Створюю consolidated backup локально…"
+            "Створюю зведений backup локально…"
         )
 
         executor.execute {
@@ -2371,10 +2496,10 @@ class ImportActivity : Activity() {
                     UiChrome.showMessageDialog(
                         activity = this,
                         title =
-                            "Consolidated backup — помилка",
+                            "Зведений backup — помилка",
                         message =
                             error.message
-                                ?: "Не вдалося матеріалізувати backup chain",
+                                ?: "Не вдалося створити зведений backup із ланцюжка",
                         actions =
                             listOf(
                                 UiChrome.DialogAction(
@@ -2397,17 +2522,17 @@ class ImportActivity : Activity() {
         UiChrome.showMessageDialog(
             activity = this,
             title =
-                "Consolidated backup збережено",
+                "Зведений backup збережено",
             message =
-                "Ланок у source chain: ${summary.chainLength}\n" +
+                "Ланок у вихідному ланцюжку: ${summary.chainLength}\n" +
                     "Фінальних плейлистів: ${summary.playlistCount}\n" +
                     "YTM Project файлів: ${summary.exportedProjects}\n" +
                     "Порожніх плейлистів: ${summary.emptyPlaylists}\n\n" +
                     "Папка: ${summary.folderName}\n" +
                     "Індекс: ${summary.manifestFile}\n\n" +
-                    "Це self-contained full backup. " +
+                    "Це самодостатній повний backup. " +
                     "Його можна відкрити через «Відкрити backup / manifest.json» " +
-                    "або використати як baseline для наступного incremental backup.",
+                    "або використати як основу для наступного інкрементального backup.",
             actions =
                 listOf(
                     UiChrome.DialogAction(
@@ -2499,11 +2624,13 @@ class ImportActivity : Activity() {
         UiChrome.showMessageDialog(
             activity = this,
             title =
-                "Incremental delta backup",
+                "Інкрементальний delta backup",
             message =
                 "Це delta backup, а не повний export.\n\n" +
-                    "Повне відновлення delta-ланцюжка ще не підтримується.\n\n" +
-                    "Для наступного incremental backup виберіть цю папку через " +
+                    "Щоб отримати повний стан, скористайтеся " +
+                    "«Зібрати повний backup з ланцюжка» і виберіть " +
+                    "спільну батьківську папку.\n\n" +
+                    "Для наступного інкрементального backup виберіть цю папку через " +
                     "«Оновити backup (incremental)».",
             actions =
                 listOf(

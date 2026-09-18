@@ -52,9 +52,7 @@ grep -Fq 'BUG-004 / Q-004: OPEN — REPRODUCED v1.4.30.' \
   "$BASE/PHONE_TEST_RUN.md" \
   || fail "BUG-004 reproduction state missing"
 
-grep -Fq '| BUG-004 / Q-004 | OPEN — REPRODUCED v1.4.30 |' \
-  qa/BUG_REGISTER.md \
-  || fail "root BUG-004 state missing"
+# Root BUG status is intentionally not asserted here; this audit preserves immutable v1.4.30 evidence only.
 
 grep -Fq '| BUG-004 / Q-004 | OPEN — REPRODUCED v1.4.30 |' \
   docs/v.1.4.30/qa/BUG_REGISTER.md \

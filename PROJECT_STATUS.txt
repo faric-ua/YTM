@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.30
-Version code: 64
+Version: 1.4.31
+Version code: 65
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -21,6 +21,7 @@ v1.4.27 PARTIALLY PHONE-TESTED — BUG-005 EXACT-ID SEARCH GUARD PASS
 v1.4.28 PARTIALLY PHONE-TESTED — BULK MANIFEST IMPORT PATH PASS
 v1.4.29 PARTIALLY PHONE-TESTED — INCREMENTAL BACKUP PATH PASS
 v1.4.30 PARTIALLY PHONE-TESTED — CONSOLIDATED DELTA-CHAIN + NEW/UPDATED/MISSING TARGETED PATH PASS
+v1.4.31 NOT PHONE-TESTED YET — BUG-004 FIX + BACKUP UI POLISH
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -294,11 +295,23 @@ v1.4.30 delta-status follow-up confirmed:
 - normal-open/exact-search phone checks were not repeated for every F1/F2/F3
 
 
+v1.4.31 focus:
+- invalidate stale Google/YTM authorization across ImportActivity after HTTP 401
+- abort bulk/incremental account reads on 401 instead of recording ordinary FAILED playlist records
+- clear both process-memory auth and the non-secret prior-auth marker
+- sync MainActivity Step 2 from the shared auth store when returning from Import
+- preserve the local working playlist while auth is reset
+- shorten `Перевірити зміни` to `Перевірити`
+- localize backup/delta/chain dialog prose while retaining technical API/format terms
+- replace the obsolete "delta restore not supported" message
+- clarify that new backup sessions should be saved to a common parent folder
+
+
 Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 DEFERRED — REPRODUCED v1.4.27 / VIDEO EVIDENCE PRESERVED
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
-BUG-004/Q-004 OPEN — REPRODUCED v1.4.30
+BUG-004/Q-004 FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31
 BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27
 BUG-006/Q-006 CLOSED — PHONE RETEST PASS v1.4.29 R2
 BUG-007/Q-007 CLOSED — PHONE RETEST PASS v1.4.30 R2
