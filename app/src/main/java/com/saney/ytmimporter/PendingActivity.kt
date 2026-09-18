@@ -595,34 +595,28 @@ class PendingActivity : Activity() {
     private fun confirmDelete(
         job: PendingJob
     ) {
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Видалити із черги?"
-            )
-            .setMessage(
+        UiChrome.showDestructiveConfirmDialog(
+            activity = this,
+            title =
+                "Видалити із черги?",
+            message =
                 "Буде видалено тільки локальне завдання " +
                     "«${job.playlistName}».\n\n" +
                     "Треки, які вже були додані в YouTube/YTM, " +
-                    "не видаляються."
+                    "не видаляються.",
+            confirmLabel =
+                "Так, видалити"
+        ) {
+            pendingJobStore.remove(
+                job.id
             )
-            .setNegativeButton(
-                "Скасувати",
-                null
+
+            toast(
+                "Завдання видалено з черги"
             )
-            .setPositiveButton(
-                "Видалити"
-            ) { _, _ ->
-                pendingJobStore.remove(
-                    job.id
-                )
 
-                toast(
-                    "Завдання видалено з черги"
-                )
-
-                showListScreen()
-            }
-            .show()
+            showListScreen()
+        }
     }
 
     private fun openPlaylistInYtm(
