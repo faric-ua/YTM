@@ -679,7 +679,7 @@ class ServiceActivity : Activity() {
                     "цих треків знову звернеться до YouTube API."
             )
             .setNegativeButton("Скасувати", null)
-            .setPositiveButton("Очистити") { _, _ ->
+            .setPositiveButton("Так, очистити") { _, _ ->
                 val before = searchCache.stats().totalEntries
                 searchCache.clear()
                 toast("SearchCache очищено: $before записів")
