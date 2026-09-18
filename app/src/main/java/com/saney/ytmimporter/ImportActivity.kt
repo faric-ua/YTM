@@ -3177,35 +3177,30 @@ class ImportActivity : Activity() {
     private fun confirmClearWorkspace(
         playlistName: String
     ) {
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Очистити поточний список?"
-            )
-            .setMessage(
-                "Автозбережений робочий список «$playlistName» буде видалено з пристрою.\n\n" +
-                    "YTM Project-файли та плейлисти в YouTube/YTM не змінюються."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Очистити"
-            ) { _, _ ->
-                currentPlaylistStore.clear()
+        UiChrome.showDangerConfirmDialog(
+            activity = this,
+            title =
+                "Очистити поточний список?",
+            message =
+                "Буде видалено тільки автозбережений локальний робочий список " +
+                    "«$playlistName».\n\n" +
+                    "YTM Project-файли та плейлисти в YouTube/YTM не змінюються.",
+            confirmLabel =
+                "Так, очистити"
+        ) {
+            currentPlaylistStore.clear()
 
-                setResult(
-                    RESULT_OK,
-                    Intent()
-                        .putExtra(
-                            EXTRA_CLEAR_WORKSPACE,
-                            true
-                        )
-                )
+            setResult(
+                RESULT_OK,
+                Intent()
+                    .putExtra(
+                        EXTRA_CLEAR_WORKSPACE,
+                        true
+                    )
+            )
 
-                finish()
-            }
-            .show()
+            finish()
+        }
     }
 
     private fun queryFileName(
