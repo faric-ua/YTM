@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.38
+- Added reusable full-screen ListSelectorActivity.
+- Migrated YTM playlist import, selective export, delta-chain head and backup/manifest project selection away from tall list dialogs.
+- Added fixed multi-select Next/Cancel controls and saved selection state.
+- Strengthened History, Queue and SearchCache destructive confirmation wording.
+- Removed direct safety-snapshot deletion from rollback-success dialog.
+- Added separate Data-screen snapshot deletion with dedicated confirmation.
+- Shortened mobile actions: Вибрати файл / Готово / Додати папку… / Зберегти як….
+- Extended UiChrome danger detection to longer destructive labels.
+- versionCode 72 / versionName 1.4.38.
+- v1.4.38 = NOT PHONE-TESTED YET.
+
 ## v1.4.37
 - Replaced long remembered-root dialogs with full-screen `StorageChooserActivity`.
 - Added fixed Back/title/`?` header and fixed bottom controls with a scroll-only middle root list.
