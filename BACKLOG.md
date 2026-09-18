@@ -358,9 +358,9 @@ v1.4.34 — Back Navigation Alignment + Unified Modal Retest — IMPLEMENTED / P
 - [ ] GitHub signed build
 - [ ] phone: incremental preflight
 - [ ] phone: quota modal
-- [ ] phone: legacy message/confirm
-- [ ] phone: selective-export multi-choice
-- [ ] phone: manual-link custom view
+- [ ] phone: legacy message/confirm — deferred by user
+- [ ] phone: selective-export multi-choice — deferred by user
+- [ ] phone: manual-link custom view — deferred by user
 - [ ] close BUG-002 only after representative modal categories pass
 
 ## v1.4.34 — Back Navigation Alignment + Unified Modal Retest
@@ -371,11 +371,11 @@ v1.4.34 — Back Navigation Alignment + Unified Modal Retest — IMPLEMENTED / P
 - [x] remove per-screen manual back-glyph baseline compensation
 - [x] add v1.4.34 static back-navigation audit
 - [x] carry v1.4.33 unified stable modal pipeline forward unchanged
-- [ ] GitHub signed build
-- [ ] phone: verify back arrow is visually centered on Import
-- [ ] phone: spot-check back arrow on at least two other secondary screens
-- [ ] phone: incremental preflight modal
-- [ ] phone: quota modal
+- [x] GitHub signed build
+- [x] phone: verify back arrow is visually centered on Import
+- [x] phone: spot-check back arrow on at least two other secondary screens (Review + Data)
+- [ ] phone: incremental preflight modal — deferred by user
+- [x] phone: quota modal — PASS
 - [ ] phone: legacy message/confirm
 - [ ] phone: selective-export multi-choice
 - [ ] phone: manual-link custom view

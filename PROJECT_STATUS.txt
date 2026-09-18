@@ -24,7 +24,7 @@ v1.4.30 PARTIALLY PHONE-TESTED — CONSOLIDATED DELTA-CHAIN + NEW/UPDATED/MISSIN
 v1.4.31 PARTIALLY PHONE-TESTED — BACKUP UI POLISH SMOKE PASS / BUG-004 RETEST PENDING
 v1.4.32 PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / OTHER MODALS INCONSISTENT
 v1.4.33 NOT PHONE-TESTED — SUPERSEDED BY v1.4.34 BEFORE PHONE QA
-v1.4.34 NOT PHONE-TESTED YET — BACK NAVIGATION ALIGNMENT + UNIFIED MODAL RETEST
+v1.4.34 PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUOTA MODAL PASS / REMAINING RETEST DEFERRED
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -335,6 +335,26 @@ v1.4.34 focus:
 - keep v1.4.33 stable modal architecture unchanged
 - phone-retake BUG-002 representative modal categories
 - UX-008 File Picker Escape recorded for a later dedicated SAF-navigation wave
+
+
+v1.4.34 phone QA confirmed:
+- signed APK built and checksum-verified
+- Import back arrow visually centered
+- Review back arrow visually centered
+- Data back arrow visually centered
+- shared vector geometry therefore passed Import + two-secondary-screen spot-check
+- Quota API modal opened at its final visible position with no second settle/jump in the supplied short recording
+- targeted quota-modal BUG-002 result = PASS
+
+v1.4.34 phone QA deferred by user:
+- back-navigation functional check on every sampled screen
+- incremental backup preflight
+- legacy builder message/confirm
+- selective-export multi-choice
+- manual-link custom view
+- Menu modal
+- BUG-002 full closure
+
 
 Known:
 BUG-001/Q-001 OPEN
