@@ -75,6 +75,18 @@ class ImportActivity : Activity() {
     private val deltaChainTargetRequestCode =
         2408
 
+    private val ytmPlaylistSelectorRequestCode =
+        2410
+
+    private val selectiveExportSelectorRequestCode =
+        2411
+
+    private val deltaChainHeadSelectorRequestCode =
+        2412
+
+    private val manifestProjectSelectorRequestCode =
+        2413
+
     private var pendingDeltaChainPlan:
         DeltaChainPlan? =
         null
@@ -86,6 +98,30 @@ class ImportActivity : Activity() {
     private var pendingSelectiveExport:
         List<YouTubePlaylistInfo> =
         emptyList()
+
+    private var pendingSelectiveExportCatalog:
+        List<YouTubePlaylistInfo> =
+        emptyList()
+
+    private var pendingYtmImportToken:
+        String? =
+        null
+
+    private var pendingYtmImportPlaylists:
+        List<YouTubePlaylistInfo> =
+        emptyList()
+
+    private var pendingDeltaChainTreeUri:
+        Uri? =
+        null
+
+    private var pendingDeltaChainHeads:
+        List<DeltaChainHead> =
+        emptyList()
+
+    private var pendingManifestImport:
+        AccountLibraryManifestImport? =
+        null
 
     private val executor =
         Executors.newSingleThreadExecutor()
@@ -122,6 +158,53 @@ class ImportActivity : Activity() {
                     )
             )
 
+        pendingSelectiveExportCatalog =
+            decodeSelectiveExportState(
+                savedInstanceState
+                    ?.getString(
+                        STATE_SELECTIVE_EXPORT_CATALOG
+                    )
+            )
+
+        pendingYtmImportToken =
+            savedInstanceState
+                ?.getString(
+                    STATE_YTM_IMPORT_TOKEN
+                )
+
+        pendingYtmImportPlaylists =
+            decodeSelectiveExportState(
+                savedInstanceState
+                    ?.getString(
+                        STATE_YTM_IMPORT_PLAYLISTS
+                    )
+            )
+
+        pendingDeltaChainTreeUri =
+            savedInstanceState
+                ?.getString(
+                    STATE_DELTA_CHAIN_TREE_URI
+                )
+                ?.let(
+                    Uri::parse
+                )
+
+        pendingDeltaChainHeads =
+            decodeDeltaHeadsState(
+                savedInstanceState
+                    ?.getString(
+                        STATE_DELTA_CHAIN_HEADS
+                    )
+            )
+
+        pendingManifestImport =
+            decodeManifestState(
+                savedInstanceState
+                    ?.getString(
+                        STATE_MANIFEST_IMPORT
+                    )
+            )
+
         buildUi()
     }
 
@@ -132,6 +215,45 @@ class ImportActivity : Activity() {
             STATE_SELECTIVE_EXPORT,
             encodeSelectiveExportState(
                 pendingSelectiveExport
+            )
+        )
+
+        outState.putString(
+            STATE_SELECTIVE_EXPORT_CATALOG,
+            encodeSelectiveExportState(
+                pendingSelectiveExportCatalog
+            )
+        )
+
+        outState.putString(
+            STATE_YTM_IMPORT_TOKEN,
+            pendingYtmImportToken
+        )
+
+        outState.putString(
+            STATE_YTM_IMPORT_PLAYLISTS,
+            encodeSelectiveExportState(
+                pendingYtmImportPlaylists
+            )
+        )
+
+        outState.putString(
+            STATE_DELTA_CHAIN_TREE_URI,
+            pendingDeltaChainTreeUri
+                ?.toString()
+        )
+
+        outState.putString(
+            STATE_DELTA_CHAIN_HEADS,
+            encodeDeltaHeadsState(
+                pendingDeltaChainHeads
+            )
+        )
+
+        outState.putString(
+            STATE_MANIFEST_IMPORT,
+            encodeManifestState(
+                pendingManifestImport
             )
         )
 
@@ -218,6 +340,139 @@ class ImportActivity : Activity() {
         }
 
         when (requestCode) {
+            ytmPlaylistSelectorRequestCode -> {
+                val selectedId =
+                    data
+                        ?.getStringArrayListExtra(
+                            ListSelectorActivity.EXTRA_RESULT_IDS
+                        )
+                        ?.firstOrNull()
+                        ?: return
+
+                val token =
+                    pendingYtmImportToken
+                        ?: return toast(
+                            "Сесію вибору втрачено. Відкрийте список плейлистів ще раз."
+                        )
+
+                val playlist =
+                    pendingYtmImportPlaylists
+                        .firstOrNull {
+                            it.id ==
+                                selectedId
+                        }
+                        ?: return toast(
+                            "Не вдалося знайти вибраний плейлист."
+                        )
+
+                pendingYtmImportToken =
+                    null
+                pendingYtmImportPlaylists =
+                    emptyList()
+
+                loadYtmPlaylist(
+                    token = token,
+                    playlistInfo =
+                        playlist
+                )
+            }
+
+            selectiveExportSelectorRequestCode -> {
+                val selectedIds =
+                    data
+                        ?.getStringArrayListExtra(
+                            ListSelectorActivity.EXTRA_RESULT_IDS
+                        )
+                        ?.toSet()
+                        .orEmpty()
+
+                val selected =
+                    pendingSelectiveExportCatalog
+                        .filter {
+                            it.id in
+                                selectedIds
+                        }
+
+                if (selected.isEmpty()) {
+                    toast(
+                        "Виберіть хоча б один плейлист."
+                    )
+                    return
+                }
+
+                pendingSelectiveExport =
+                    selected
+                pendingSelectiveExportCatalog =
+                    emptyList()
+
+                chooseSelectiveYtmExportFolder()
+            }
+
+            deltaChainHeadSelectorRequestCode -> {
+                val selectedFolder =
+                    data
+                        ?.getStringArrayListExtra(
+                            ListSelectorActivity.EXTRA_RESULT_IDS
+                        )
+                        ?.firstOrNull()
+                        ?: return
+
+                val treeUri =
+                    pendingDeltaChainTreeUri
+                        ?: return toast(
+                            "Папку backup втрачено. Відкрийте ланцюжок ще раз."
+                        )
+
+                val head =
+                    pendingDeltaChainHeads
+                        .firstOrNull {
+                            it.folderName ==
+                                selectedFolder
+                        }
+                        ?: return toast(
+                            "Не вдалося знайти вибрану delta-сесію."
+                        )
+
+                pendingDeltaChainTreeUri =
+                    null
+                pendingDeltaChainHeads =
+                    emptyList()
+
+                resolveDeltaChain(
+                    treeUri =
+                        treeUri,
+                    head = head
+                )
+            }
+
+            manifestProjectSelectorRequestCode -> {
+                val selectedFile =
+                    data
+                        ?.getStringArrayListExtra(
+                            ListSelectorActivity.EXTRA_RESULT_IDS
+                        )
+                        ?.firstOrNull()
+                        ?: return
+
+                val entry =
+                    pendingManifestImport
+                        ?.entries
+                        ?.firstOrNull {
+                            it.fileName ==
+                                selectedFile
+                        }
+                        ?: return toast(
+                            "Не вдалося знайти вибраний YTM Project у backup."
+                        )
+
+                pendingManifestImport =
+                    null
+
+                loadAccountBackupProject(
+                    entry
+                )
+            }
+
             fileRequestCode ->
                 data
                     ?.data
