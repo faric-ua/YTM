@@ -278,12 +278,14 @@ class QuotaActivity : Activity() {
                     label = "Черга",
                     primary = true
                 ) {
-                    startActivity(
-                        Intent(
-                            this@QuotaActivity,
-                            PendingActivity::class.java
+                    setResult(
+                        RESULT_OK,
+                        Intent().putExtra(
+                            EXTRA_ACTION,
+                            ACTION_OPEN_QUEUE
                         )
                     )
+                    finish()
                 },
                 LinearLayout.LayoutParams(
                     0,
@@ -483,4 +485,11 @@ class QuotaActivity : Activity() {
                     .displayMetrics
                     .density
         ).toInt()
+
+    companion object {
+        const val EXTRA_ACTION =
+            "quota_action"
+        const val ACTION_OPEN_QUEUE =
+            "OPEN_QUEUE"
+    }
 }
