@@ -1056,21 +1056,14 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ_WRITE,
             requestCode =
-                selectiveExportFolderRequestCode,
-            onExisting = {
-                exportSelectedYtmPlaylistsToFolder(
-                    it
-                )
-            }
+                selectiveExportFolderRequestCode
         )
     }
 
-    @Suppress("UNUSED_PARAMETER")
     private fun chooseSafTree(
         title: String,
         access: SafTreeAccess.Access,
-        requestCode: Int,
-        onExisting: (Uri) -> Unit
+        requestCode: Int
     ) {
         startActivityForResult(
             StorageChooserActivity.treeIntent(
@@ -1172,12 +1165,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ_WRITE,
             requestCode =
-                exportFolderRequestCode,
-            onExisting = {
-                exportAllYtmPlaylistsToFolder(
-                    it
-                )
-            }
+                exportFolderRequestCode
         )
     }
 
@@ -1618,12 +1606,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ,
             requestCode =
-                incrementalBackupBaseRequestCode,
-            onExisting = {
-                prepareIncrementalBackup(
-                    it
-                )
-            }
+                incrementalBackupBaseRequestCode
         )
     }
 
@@ -2061,12 +2044,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ_WRITE,
             requestCode =
-                incrementalBackupTargetRequestCode,
-            onExisting = {
-                writeIncrementalBackup(
-                    it
-                )
-            }
+                incrementalBackupTargetRequestCode
         )
     }
 
@@ -2183,12 +2161,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ,
             requestCode =
-                deltaChainRootRequestCode,
-            onExisting = {
-                prepareDeltaChainRoot(
-                    it
-                )
-            }
+                deltaChainRootRequestCode
         )
     }
 
@@ -2432,12 +2405,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ_WRITE,
             requestCode =
-                deltaChainTargetRequestCode,
-            onExisting = {
-                materializeDeltaChain(
-                    it
-                )
-            }
+                deltaChainTargetRequestCode
         )
     }
 
@@ -2558,12 +2526,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ,
             requestCode =
-                manifestImportFolderRequestCode,
-            onExisting = {
-                openAccountBackupFolder(
-                    it
-                )
-            }
+                manifestImportFolderRequestCode
         )
     }
 
