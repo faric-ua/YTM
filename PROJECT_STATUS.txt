@@ -393,3 +393,13 @@ QA:
 root qa/ = current definitions/policy
 docs/v.X.Y.Z/qa/ = immutable release snapshot + actual phone-test evidence
 docs/v.X.Y.Z/diagrams/ = architecture and test-flow diagrams
+
+
+UI FINDING — UX-009 THEME STATE CONTRAST
+- real-phone v1.4.36 Neon Dark Home is the accepted COLOR-LOCKED reference
+- do not alter Neon Dark Home colors while fixing other themes
+- Green Dark Home currently overuses the same green family for surfaces, READY and REQUIRED state controls
+- planned direction: inverse/high-contrast REQUIRED treatment for Green Dark controls only
+- ATTENTION stays yellow/amber; READY stays semantic green
+- Blue Dark must be spot-checked before any shared state-color abstraction
+- reference/acceptance details: docs/design/THEME_STATE_REFERENCE.md
