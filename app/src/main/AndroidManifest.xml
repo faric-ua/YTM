@@ -20,6 +20,21 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity
+            android:name=".StorageChooserActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
+            android:name=".QuotaActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
+            android:name=".MenuActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".ServiceActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />
