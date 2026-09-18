@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.37
-Version code: 71
+Version: 1.4.38
+Version code: 72
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -27,6 +27,8 @@ v1.4.33 NOT PHONE-TESTED — SUPERSEDED BY v1.4.34 BEFORE PHONE QA
 v1.4.34 PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUOTA MODAL PASS / REMAINING RETEST DEFERRED
 v1.4.35 NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA
 v1.4.36 NOT PHONE-TESTED YET — UX-008 PHASE 2A / SAVED FILE DESTINATIONS
+v1.4.37 PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS / LONG-LIST SELECTORS FOUND
+v1.4.38 NOT PHONE-TESTED YET — FULL-SCREEN SELECTORS + DESTRUCTIVE SAFETY + MOBILE COPY
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -391,6 +393,19 @@ v1.4.37 focus:
 - Home `Ще` renamed to `Меню` and opens MenuActivity
 - preserve Pending Queue resume bridge through MainActivity
 - keep Neon Dark Home colors unchanged; UX-009 remains separate
+- no broad filesystem permission
+
+
+v1.4.38 focus:
+- UX-011: four dynamic Import collection pickers use ListSelectorActivity
+- single-select: YTM account playlist, delta-chain head, backup/manifest project
+- multi-select: selective account export
+- fixed selector header/summary/scroll/footer + optional help
+- UX-012: destructive local actions use explicit danger confirmation
+- snapshot deletion moved out of rollback-success dialog into separate confirmed Data action
+- UX-013: short mobile labels: Вибрати файл / Готово / Додати папку… / Зберегти як… / Відкотити Restore
+- two generic ACTION_OPEN_DOCUMENT paths remain for UX-008 Phase 2B
+- Neon Dark Home color reference remains locked
 - no broad filesystem permission
 
 Known:
