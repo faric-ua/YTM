@@ -1315,6 +1315,288 @@ class ImportActivity : Activity() {
         )
     }
 
+    private fun encodeDeltaHeadsState(
+        heads: List<DeltaChainHead>
+    ): String =
+        JSONArray().apply {
+            heads.forEach {
+                    head ->
+
+                put(
+                    JSONObject()
+                        .put(
+                            "folderName",
+                            head.folderName
+                        )
+                        .put(
+                            "baseSessionName",
+                            head.baseSessionName
+                        )
+                        .put(
+                            "scopeMode",
+                            head.scopeMode
+                        )
+                        .put(
+                            "exportedAt",
+                            head.exportedAt
+                        )
+                )
+            }
+        }.toString()
+
+    private fun decodeDeltaHeadsState(
+        raw: String?
+    ): List<DeltaChainHead> {
+        if (raw.isNullOrBlank()) {
+            return emptyList()
+        }
+
+        return runCatching {
+            val array =
+                JSONArray(raw)
+
+            buildList {
+                for (
+                    index in
+                    0 until array.length()
+                ) {
+                    val item =
+                        array.getJSONObject(
+                            index
+                        )
+
+                    add(
+                        DeltaChainHead(
+                            folderName =
+                                item.getString(
+                                    "folderName"
+                                ),
+                            baseSessionName =
+                                item.getString(
+                                    "baseSessionName"
+                                ),
+                            scopeMode =
+                                item.getString(
+                                    "scopeMode"
+                                ),
+                            exportedAt =
+                                item.getLong(
+                                    "exportedAt"
+                                )
+                        )
+                    )
+                }
+            }
+        }.getOrDefault(
+            emptyList()
+        )
+    }
+
+    private fun encodeManifestState(
+        manifest:
+            AccountLibraryManifestImport?
+    ): String {
+        if (manifest == null) {
+            return ""
+        }
+
+        return JSONObject()
+            .put(
+                "schemaVersion",
+                manifest.schemaVersion
+            )
+            .put(
+                "appVersion",
+                manifest.appVersion
+            )
+            .put(
+                "selectionMode",
+                manifest.selectionMode
+            )
+            .put(
+                "exportedAt",
+                manifest.exportedAt
+            )
+            .put(
+                "playlistCount",
+                manifest.playlistCount
+            )
+            .put(
+                "exportedProjects",
+                manifest.exportedProjects
+            )
+            .put(
+                "skippedPlaylists",
+                manifest.skippedPlaylists
+            )
+            .put(
+                "failedPlaylists",
+                manifest.failedPlaylists
+            )
+            .put(
+                "missingProjectFiles",
+                manifest.missingProjectFiles
+            )
+            .put(
+                "entries",
+                JSONArray().apply {
+                    manifest.entries.forEach {
+                            entry ->
+
+                        put(
+                            JSONObject()
+                                .put(
+                                    "playlistId",
+                                    entry.playlistId
+                                )
+                                .put(
+                                    "title",
+                                    entry.title
+                                )
+                                .put(
+                                    "privacyStatus",
+                                    entry.privacyStatus
+                                )
+                                .put(
+                                    "sourceItemCount",
+                                    entry.sourceItemCount
+                                )
+                                .put(
+                                    "exportedTrackCount",
+                                    entry.exportedTrackCount
+                                )
+                                .put(
+                                    "playlistItemsRequests",
+                                    entry.playlistItemsRequests
+                                )
+                                .put(
+                                    "fileName",
+                                    entry.fileName
+                                )
+                                .put(
+                                    "projectUri",
+                                    entry.projectUri
+                                        .toString()
+                                )
+                        )
+                    }
+                }
+            )
+            .toString()
+    }
+
+    private fun decodeManifestState(
+        raw: String?
+    ): AccountLibraryManifestImport? {
+        if (raw.isNullOrBlank()) {
+            return null
+        }
+
+        return runCatching {
+            val root =
+                JSONObject(raw)
+
+            val entriesArray =
+                root.getJSONArray(
+                    "entries"
+                )
+
+            val entries =
+                buildList {
+                    for (
+                        index in
+                        0 until entriesArray.length()
+                    ) {
+                        val item =
+                            entriesArray
+                                .getJSONObject(
+                                    index
+                                )
+
+                        add(
+                            AccountLibraryManifestEntry(
+                                playlistId =
+                                    item.getString(
+                                        "playlistId"
+                                    ),
+                                title =
+                                    item.getString(
+                                        "title"
+                                    ),
+                                privacyStatus =
+                                    item.getString(
+                                        "privacyStatus"
+                                    ),
+                                sourceItemCount =
+                                    item.getLong(
+                                        "sourceItemCount"
+                                    ),
+                                exportedTrackCount =
+                                    item.getInt(
+                                        "exportedTrackCount"
+                                    ),
+                                playlistItemsRequests =
+                                    item.getInt(
+                                        "playlistItemsRequests"
+                                    ),
+                                fileName =
+                                    item.getString(
+                                        "fileName"
+                                    ),
+                                projectUri =
+                                    Uri.parse(
+                                        item.getString(
+                                            "projectUri"
+                                        )
+                                    )
+                            )
+                        )
+                    }
+                }
+
+            AccountLibraryManifestImport(
+                schemaVersion =
+                    root.getInt(
+                        "schemaVersion"
+                    ),
+                appVersion =
+                    root.getString(
+                        "appVersion"
+                    ),
+                selectionMode =
+                    root.getString(
+                        "selectionMode"
+                    ),
+                exportedAt =
+                    root.getLong(
+                        "exportedAt"
+                    ),
+                playlistCount =
+                    root.getInt(
+                        "playlistCount"
+                    ),
+                exportedProjects =
+                    root.getInt(
+                        "exportedProjects"
+                    ),
+                skippedPlaylists =
+                    root.getInt(
+                        "skippedPlaylists"
+                    ),
+                failedPlaylists =
+                    root.getInt(
+                        "failedPlaylists"
+                    ),
+                missingProjectFiles =
+                    root.getInt(
+                        "missingProjectFiles"
+                    ),
+                entries =
+                    entries
+            )
+        }.getOrNull()
+    }
+
     private fun chooseYtmExportFolder() {
         val token =
             AuthSessionStore
@@ -3410,6 +3692,24 @@ class ImportActivity : Activity() {
     companion object {
         private const val STATE_SELECTIVE_EXPORT =
             "selective_export_playlists"
+
+        private const val STATE_SELECTIVE_EXPORT_CATALOG =
+            "selective_export_catalog"
+
+        private const val STATE_YTM_IMPORT_TOKEN =
+            "ytm_import_token"
+
+        private const val STATE_YTM_IMPORT_PLAYLISTS =
+            "ytm_import_playlists"
+
+        private const val STATE_DELTA_CHAIN_TREE_URI =
+            "delta_chain_tree_uri"
+
+        private const val STATE_DELTA_CHAIN_HEADS =
+            "delta_chain_heads"
+
+        private const val STATE_MANIFEST_IMPORT =
+            "manifest_import"
 
         const val EXTRA_IMPORT_MESSAGE =
             "import_message"
