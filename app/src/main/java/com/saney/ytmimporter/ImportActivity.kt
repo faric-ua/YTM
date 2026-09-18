@@ -75,6 +75,18 @@ class ImportActivity : Activity() {
     private val deltaChainTargetRequestCode =
         2408
 
+    private val ytmPlaylistSelectorRequestCode =
+        2501
+
+    private val selectiveExportSelectorRequestCode =
+        2502
+
+    private val deltaChainHeadSelectorRequestCode =
+        2503
+
+    private val manifestProjectSelectorRequestCode =
+        2504
+
     private var pendingDeltaChainPlan:
         DeltaChainPlan? =
         null
@@ -271,6 +283,18 @@ class ImportActivity : Activity() {
                     ?.let(
                         ::materializeDeltaChain
                     )
+
+            ytmPlaylistSelectorRequestCode ->
+                handleYtmPlaylistSelection(data)
+
+            selectiveExportSelectorRequestCode ->
+                handleSelectiveExportSelection(data)
+
+            deltaChainHeadSelectorRequestCode ->
+                handleDeltaChainHeadSelection(data)
+
+            manifestProjectSelectorRequestCode ->
+                handleManifestProjectSelection(data)
         }
     }
 
