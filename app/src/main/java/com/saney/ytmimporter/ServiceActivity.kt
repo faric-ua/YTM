@@ -23,6 +23,8 @@ import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
+import com.saney.ytmimporter.storage.SafTreeFileWriter
+import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.youtube.SearchCache
 import java.io.File
@@ -39,7 +41,10 @@ class ServiceActivity : Activity() {
 
     private var page: Page = Page.HOME
     private var pendingExportContent: String? = null
+    private var pendingExportFileName: String? = null
+
     private val saveDiagnosticsRequestCode = 6101
+    private val saveDiagnosticsFolderRequestCode = 6102
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,12 +96,20 @@ class ServiceActivity : Activity() {
     ) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (
-            requestCode == saveDiagnosticsRequestCode &&
-            resultCode == RESULT_OK
-        ) {
-            val uri = data?.data ?: return
-            writeDiagnostics(uri)
+        if (resultCode != RESULT_OK) {
+            return
+        }
+
+        when (requestCode) {
+            saveDiagnosticsRequestCode -> {
+                val uri = data?.data ?: return
+                writeDiagnostics(uri)
+            }
+
+            saveDiagnosticsFolderRequestCode -> {
+                val uri = data?.data ?: return
+                writeDiagnosticsToTree(uri)
+            }
         }
     }
 
@@ -666,16 +679,83 @@ class ServiceActivity : Activity() {
     }
 
     private fun saveDiagnostics() {
-        pendingExportContent = buildDiagnosticsText()
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "text/plain"
-            putExtra(
-                Intent.EXTRA_TITLE,
-                "YTM_Diagnostics_${exportTimestamp()}.txt"
+        val fileName =
+            "YTM_Diagnostics_${exportTimestamp()}.txt"
+
+        pendingExportContent =
+            buildDiagnosticsText()
+        pendingExportFileName =
+            fileName
+
+        runCatching {
+            SafFileSaveFlow.show(
+                activity = this,
+                title =
+                    "Куди зберегти Diagnostics?",
+                suggestedFileName =
+                    fileName,
+                mimeType =
+                    "text/plain",
+                addFolderRequestCode =
+                    saveDiagnosticsFolderRequestCode,
+                createDocumentRequestCode =
+                    saveDiagnosticsRequestCode,
+                onRememberedRoot = {
+                    writeDiagnosticsToTree(
+                        it
+                    )
+                }
+            )
+        }.onFailure { error ->
+            clearPendingDiagnostics()
+
+            toast(
+                "Не вдалося відкрити вибір збереження: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
             )
         }
-        startActivityForResult(intent, saveDiagnosticsRequestCode)
+    }
+
+    private fun writeDiagnosticsToTree(
+        treeUri: Uri
+    ) {
+        val content =
+            pendingExportContent
+                ?: return
+
+        val fileName =
+            pendingExportFileName
+                ?: return
+
+        runCatching {
+            SafTreeFileWriter.writeText(
+                context = this,
+                treeUri = treeUri,
+                preferredFileName =
+                    fileName,
+                mimeType =
+                    "text/plain",
+                content = content
+            )
+        }.onSuccess { result ->
+            toast(
+                "Diagnostics TXT збережено: " +
+                    result.fileName
+            )
+        }.onFailure { error ->
+            toast(
+                "Помилка запису: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+
+        clearPendingDiagnostics()
     }
 
     private fun writeDiagnostics(uri: Uri) {
@@ -690,7 +770,12 @@ class ServiceActivity : Activity() {
         }.onFailure { error ->
             toast("Помилка запису: ${error.message ?: "невідома помилка"}")
         }
+        clearPendingDiagnostics()
+    }
+
+    private fun clearPendingDiagnostics() {
         pendingExportContent = null
+        pendingExportFileName = null
     }
 
     private fun shareDiagnostics() {
