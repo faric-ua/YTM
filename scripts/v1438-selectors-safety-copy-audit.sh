@@ -61,8 +61,9 @@ grep -Fq '"Так, видалити"' "$HISTORY"   || fail "History explicit del
 grep -Fq '"Так, очистити"' "$HISTORY"   || fail "History bulk clear copy missing"
 grep -Fq '"Так, видалити"' "$PENDING"   || fail "Pending explicit delete copy missing"
 grep -Fq '"Так, очистити"' "$SERVICE"   || fail "SearchCache explicit clear copy missing"
+grep -Fq 'confirmClearExpiredSearchCache' "$SERVICE"   || fail "expired SearchCache delete confirmation missing"
 
-grep -Fq 'label = "Видалити snapshot"' "$DATA"   || fail "separate snapshot delete action missing"
+grep -Fq 'label = "Видалити знімок"' "$DATA"   || fail "separate snapshot delete action missing"
 grep -Fq 'confirmDeleteSafetySnapshot()' "$DATA"   || fail "snapshot delete confirmation route missing"
 if grep -A35 -F 'private fun restoreSafetySnapshotNow()' "$DATA" | grep -Fq 'setNegativeButton'; then
   fail "rollback-success dialog still exposes a side/destructive action"
