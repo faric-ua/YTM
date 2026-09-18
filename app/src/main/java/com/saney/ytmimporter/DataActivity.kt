@@ -784,7 +784,7 @@ class DataActivity : Activity() {
                     clearPendingHistoryImportConfirmation()
                 }
                 .setPositiveButton(
-                    "Відновити History"
+                    "Відновити"
                 ) { _, _ ->
                     clearPendingHistoryImportConfirmation()
                     restoreHistoryJsonNow(
