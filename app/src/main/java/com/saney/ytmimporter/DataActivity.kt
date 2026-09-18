@@ -194,7 +194,7 @@ class DataActivity : Activity() {
                 description =
                     "Відновлює локальні дані з YTM_Backup_*.json. " +
                         "Перед Restore автоматично створюється safety snapshot.",
-                buttonLabel = "Вибрати backup",
+                buttonLabel = "Вибрати файл",
                 primary = false,
                 action = ::chooseBackupForRestore
             )
@@ -246,7 +246,7 @@ class DataActivity : Activity() {
 
         rollbackButton =
             actionButton(
-                label = "Відкотити останній Restore",
+                label = "Відкотити",
                 primary = false
             ) {
                 confirmRestoreSafetySnapshot()
