@@ -209,3 +209,21 @@ Guard:
 - for paired dialog actions, prefer labels that remain one line on narrow phones;
 - equal semantic weight should normally have equal visual height;
 - phone evidence overrides assumptions made from source text length alone.
+
+
+## 18. Repository version is not phone-installed version — v1.4.35/v1.4.36
+
+Development advanced through v1.4.35 and into v1.4.36 while the phone still had v1.4.34 installed. Signed builds existed, but the normal APK handoff/download step was not given at the right time.
+
+This created an avoidable mismatch between three different states:
+
+- repository version;
+- signed GitHub Actions build version;
+- actually installed/tested phone version.
+
+Guard:
+
+- track those three states separately;
+- after every successful signed build, hand off the APK + checksum using the stable versioned Download folder;
+- do not start treating the next release as the user's current app;
+- before advancing again, receive install confirmation or explicitly record that the user chose to skip/defer that build.
