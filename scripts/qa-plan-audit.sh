@@ -72,8 +72,10 @@ grep -Fq '| v1.4.32 | **PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / 
   || fail "v1.4.32 partial modal phone status missing"
 grep -Fq '| v1.4.33 | **NOT PHONE-TESTED** |' "$STATUS" \
   || fail "v1.4.33 superseded phone-test status missing"
-grep -Fq '| v1.4.34 | **NOT PHONE-TESTED YET** |' "$STATUS" \
-  || fail "v1.4.34 pending phone-test status missing"
+grep -Fq '| v1.4.34 | **PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUOTA MODAL PASS** |' "$STATUS" \
+  || fail "v1.4.34 partial phone-test status missing"
+grep -Fq '| v1.4.35 | **NOT PHONE-TESTED YET** |' "$STATUS" \
+  || fail "v1.4.35 pending phone-test status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
