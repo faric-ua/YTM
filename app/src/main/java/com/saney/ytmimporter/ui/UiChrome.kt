@@ -431,6 +431,38 @@ object UiChrome {
         )
     }
 
+    fun showDestructiveConfirmDialog(
+        activity: Activity,
+        title: String,
+        message: String,
+        confirmLabel: String,
+        onConfirm: () -> Unit
+    ): Dialog =
+        showMessageDialog(
+            activity = activity,
+            title = title,
+            message = message,
+            actions =
+                listOf(
+                    DialogAction(
+                        label = "Скасувати",
+                        tone =
+                            ActionTone.NORMAL,
+                        onClick = {}
+                    ),
+                    DialogAction(
+                        label =
+                            confirmLabel,
+                        tone =
+                            ActionTone.DANGER,
+                        onClick =
+                            onConfirm
+                    )
+                ),
+            actionLayout =
+                DialogActionLayout.AUTO
+        )
+
     fun showContentDialog(
         activity: Activity,
         title: String,
