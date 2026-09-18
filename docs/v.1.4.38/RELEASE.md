@@ -39,6 +39,7 @@ Covered paths:
 - delete one History record;
 - clear all History;
 - delete a Pending Queue job;
+- delete expired SearchCache records;
 - clear all SearchCache;
 - delete Restore safety snapshot.
 
@@ -48,7 +49,7 @@ Danger confirmations use explicit copy such as `Так, видалити` / `Т�
 
 The post-rollback success dialog no longer exposes `Видалити snapshot` directly.
 
-Snapshot deletion is now a separate action on the Data screen and requires its own destructive confirmation.
+Snapshot deletion is now a separate `Видалити знімок` action on the Data screen and requires its own destructive confirmation.
 
 ## Mobile action copy
 
