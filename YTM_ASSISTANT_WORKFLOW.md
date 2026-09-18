@@ -263,3 +263,19 @@ Current policy documents must not silently contradict one another.
 If `TERMUX_COMMANDS.md`, README, release instructions or another reusable guide conflicts with `YTM_ASSISTANT_WORKFLOW.md`, reconcile the current reusable documentation in a dedicated documentation change.
 
 Historical release snapshots remain historical and should not be rewritten merely to match newer policy.
+
+## 21. APK handoff gate
+
+Do not silently advance multiple release versions while the user is still running an older APK.
+
+For every version that reaches a successful signed GitHub Actions build:
+
+1. retrieve the signed APK artifact and its SHA-256 file;
+2. hand the actual APK files to the user in chat when the current toolset allows it, not only shell download commands;
+3. state clearly which version is installed/tested versus only implemented/built;
+4. before beginning the next release version, either:
+   - receive confirmation that the current APK was installed / intentionally skipped, or
+   - explicitly record that the user chose to defer installation/testing;
+5. never describe an uninstalled build as the user's current app version.
+
+Repository version, signed-build version, and phone-installed version are three separate states and must be tracked separately.

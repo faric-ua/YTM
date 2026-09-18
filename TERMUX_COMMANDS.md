@@ -170,10 +170,65 @@ Workflow:
 Typical dispatch:
 
 ```bash
-gh workflow run build-apk.yml   --repo faric-ua/YTM   --ref main
+gh workflow run build-apk.yml \
+  --repo faric-ua/YTM \
+  --ref main
 ```
 
-ChatGPT should provide the exact run-discovery/download block for the current release rather than asking the user to improvise polling.
+ChatGPT must provide the exact current release values. The normal phone-side handoff is not "build exists somewhere in Actions"; it is a complete download/verify/copy flow.
+
+Canonical pattern after a successful signed build:
+
+```bash
+set -euo pipefail
+
+VERSION="X.Y.Z"
+REF="main"
+ARTIFACT="YTM-Importer-v${VERSION}-Release"
+TMP="$HOME/ytm-v${VERSION}-artifact"
+PHONE_DIR="/storage/emulated/0/Download/YTM-v${VERSION}-build"
+
+rm -rf "$TMP"
+mkdir -p "$TMP"
+mkdir -p "$PHONE_DIR"
+
+RUN_ID="$(
+  gh run list \
+    --workflow build-apk.yml \
+    --branch "$REF" \
+    --status success \
+    --limit 1 \
+    --json databaseId \
+    --jq '.[0].databaseId'
+)"
+
+test -n "$RUN_ID"
+
+gh run download "$RUN_ID" \
+  -n "$ARTIFACT" \
+  -D "$TMP"
+
+APK="$TMP/YTM-Importer-v${VERSION}-release.apk"
+SHA="$TMP/YTM-Importer-v${VERSION}-release.apk.sha256"
+
+test -f "$APK"
+test -f "$SHA"
+
+cd "$TMP"
+sha256sum -c "YTM-Importer-v${VERSION}-release.apk.sha256"
+
+cp -f "$APK" "$SHA" "$PHONE_DIR/"
+sync
+
+echo "READY: $PHONE_DIR"
+ls -lh "$PHONE_DIR"
+```
+
+`gh run download` downloads and extracts the GitHub Actions artifact into `$TMP`; a separate manual unzip step is normally unnecessary.
+
+For a feature-branch build, `REF` must be that exact branch, not `main`.
+
+Do not advance to another release merely because the repository version was bumped. First hand off the signed APK or explicitly record that installation/testing was deferred.
 
 ## 10. Stable APK folder on Android
 

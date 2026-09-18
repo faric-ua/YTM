@@ -26,6 +26,8 @@ import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.LocalBackupManager
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
+import com.saney.ytmimporter.storage.SafTreeFileWriter
+import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.youtube.SearchCache
 import java.io.File
 import java.text.SimpleDateFormat
@@ -44,9 +46,12 @@ class DataActivity : Activity() {
 
     private var pendingExportContent: String? = null
     private var pendingExportSuccessMessage: String? = null
+    private var pendingExportFileName: String? = null
+    private var pendingExportMimeType: String? = null
 
     private val saveExportRequestCode = 4201
     private val restoreBackupRequestCode = 4202
+    private val saveExportFolderRequestCode = 4203
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +98,11 @@ class DataActivity : Activity() {
             restoreBackupRequestCode -> {
                 val uri = data?.data ?: return
                 prepareRestoreBackup(uri)
+            }
+
+            saveExportFolderRequestCode -> {
+                val uri = data?.data ?: return
+                writePendingExportToTree(uri)
             }
         }
     }
@@ -1036,41 +1046,93 @@ class DataActivity : Activity() {
         content: String,
         successMessage: String
     ) {
-        pendingExportContent = content
+        pendingExportContent =
+            content
         pendingExportSuccessMessage =
             successMessage
-
-        val intent =
-            Intent(
-                Intent.ACTION_CREATE_DOCUMENT
-            ).apply {
-                addCategory(
-                    Intent.CATEGORY_OPENABLE
-                )
-                type = mimeType
-                putExtra(
-                    Intent.EXTRA_TITLE,
-                    fileName
-                )
-            }
+        pendingExportFileName =
+            fileName
+        pendingExportMimeType =
+            mimeType
 
         runCatching {
-            startActivityForResult(
-                intent,
-                saveExportRequestCode
+            SafFileSaveFlow.show(
+                activity = this,
+                title = "Куди зберегти файл?",
+                suggestedFileName =
+                    fileName,
+                mimeType =
+                    mimeType,
+                addFolderRequestCode =
+                    saveExportFolderRequestCode,
+                createDocumentRequestCode =
+                    saveExportRequestCode,
+                onRememberedRoot = {
+                    writePendingExportToTree(
+                        it
+                    )
+                }
             )
         }.onFailure { error ->
-            pendingExportContent = null
-            pendingExportSuccessMessage = null
+            clearPendingExport()
 
             toast(
-                "Не вдалося відкрити вибір файлу: " +
+                "Не вдалося відкрити вибір збереження: " +
                     (
                         error.message
                             ?: "невідома помилка"
                     )
             )
         }
+    }
+
+    private fun writePendingExportToTree(
+        treeUri: Uri
+    ) {
+        val content =
+            pendingExportContent
+                ?: return toast(
+                    "Немає підготовлених даних для експорту"
+                )
+
+        val fileName =
+            pendingExportFileName
+                ?: return toast(
+                    "Втрачено ім’я файла"
+                )
+
+        val mimeType =
+            pendingExportMimeType
+                ?: "text/plain"
+
+        runCatching {
+            SafTreeFileWriter.writeText(
+                context = this,
+                treeUri = treeUri,
+                preferredFileName =
+                    fileName,
+                mimeType =
+                    mimeType,
+                content = content
+            )
+        }.onSuccess { result ->
+            toast(
+                (pendingExportSuccessMessage
+                    ?: "Файл збережено") +
+                    ": " +
+                    result.fileName
+            )
+        }.onFailure { error ->
+            toast(
+                "Помилка запису файлу: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+
+        clearPendingExport()
     }
 
     private fun writePendingExport(
@@ -1112,8 +1174,14 @@ class DataActivity : Activity() {
             )
         }
 
+        clearPendingExport()
+    }
+
+    private fun clearPendingExport() {
         pendingExportContent = null
         pendingExportSuccessMessage = null
+        pendingExportFileName = null
+        pendingExportMimeType = null
     }
 
     private fun shareTextFile(

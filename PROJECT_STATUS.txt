@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.35
-Version code: 69
+Version: 1.4.36
+Version code: 70
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -25,7 +25,8 @@ v1.4.31 PARTIALLY PHONE-TESTED — BACKUP UI POLISH SMOKE PASS / BUG-004 RETEST 
 v1.4.32 PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / OTHER MODALS INCONSISTENT
 v1.4.33 NOT PHONE-TESTED — SUPERSEDED BY v1.4.34 BEFORE PHONE QA
 v1.4.34 PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUOTA MODAL PASS / REMAINING RETEST DEFERRED
-v1.4.35 NOT PHONE-TESTED YET — UX-008 PHASE 1 / SAVED SAF FOLDERS
+v1.4.35 NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA
+v1.4.36 NOT PHONE-TESTED YET — UX-008 PHASE 2A / SAVED FILE DESTINATIONS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -364,8 +365,19 @@ v1.4.35 focus:
 - reuse Android persisted SAF tree permissions instead of inventing filesystem paths
 - remembered roots are filtered by READ vs READ_WRITE requirements
 - `Скасувати` stays inside YTM Importer even before the first grant; `Додати іншу папку…` is the only explicit path into Android SAF
-- ACTION_OPEN_DOCUMENT / ACTION_CREATE_DOCUMENT remain unchanged for later UX-008 phases
+- v1.4.35 was not phone-tested before v1.4.36 work began
 - no MANAGE_EXTERNAL_STORAGE / READ_EXTERNAL_STORAGE / WRITE_EXTERNAL_STORAGE
+
+v1.4.36 focus:
+- UX-008 Phase 2A: all four create-file operations show an in-app save-destination menu first
+- reuse persisted READ_WRITE SAF roots for direct saves
+- add a reusable folder through one shared ACTION_OPEN_DOCUMENT_TREE launcher
+- retain one explicit system ACTION_CREATE_DOCUMENT fallback for alternate location/name
+- Data / Review / History / Service no longer launch ACTION_CREATE_DOCUMENT directly
+- duplicate direct saves get numbered filenames instead of destructive overwrite
+- failed direct writes delete the newly-created empty document when possible
+- two ACTION_OPEN_DOCUMENT flows remain Phase 2B
+- no broad storage permission
 
 
 Known:
@@ -381,3 +393,29 @@ QA:
 root qa/ = current definitions/policy
 docs/v.X.Y.Z/qa/ = immutable release snapshot + actual phone-test evidence
 docs/v.X.Y.Z/diagrams/ = architecture and test-flow diagrams
+
+
+UI FINDING — UX-009 THEME STATE CONTRAST
+- real-phone v1.4.36 Neon Dark Home is the accepted COLOR-LOCKED reference
+- do not alter Neon Dark Home colors while fixing other themes
+- Green Dark Home currently overuses the same green family for surfaces, READY and REQUIRED state controls
+- planned direction: inverse/high-contrast REQUIRED treatment for Green Dark controls only
+- ATTENTION stays yellow/amber; READY stays semantic green
+- Blue Dark must be spot-checked before any shared state-color abstraction
+- reference/acceptance details: docs/design/THEME_STATE_REFERENCE.md
+
+v1.4.36 phone finding — remembered-root long list:
+- signed v1.4.36 installed on phone
+- in-app remembered-root chooser appears before Android SAF = PASS
+- many persisted roots make the chooser very tall
+- Add-folder and Cancel are currently inside the same scroll content and require scrolling to the bottom = UX FAIL
+- required follow-up: full-screen YTM chooser with fixed header/footer, scrollable middle list, and `?` help modal
+- do not close UX-008 Phase 1/2A until the fixed-footer chooser is phone-tested
+
+UI FINDING — UX-010 UTILITY SCREENS
+- Home `Черга` already opens a dedicated Activity and is the navigation reference
+- user wants `Квота` to open the same kind of dedicated full-screen page instead of a modal
+- user wants `Ще` to become a dedicated full-screen utility/menu page instead of a modal list
+- proposed compact Home label for `Ще` = `Меню`
+- use shared back-button/top-bar behavior and scroll only page content where needed
+- implementation should follow the fixed-header/fixed-footer principle being introduced for long SAF lists

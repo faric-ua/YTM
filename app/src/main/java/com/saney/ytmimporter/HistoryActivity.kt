@@ -34,6 +34,8 @@ import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
+import com.saney.ytmimporter.storage.SafTreeFileWriter
+import com.saney.ytmimporter.ui.SafFileSaveFlow
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -46,8 +48,11 @@ class HistoryActivity : Activity() {
     private var currentEntryId: String? = null
     private var pendingExportContent: String? = null
     private var pendingExportSuccessMessage: String? = null
+    private var pendingExportFileName: String? = null
+    private var pendingExportMimeType: String? = null
 
     private val saveExportRequestCode = 3201
+    private val saveExportFolderRequestCode = 3202
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,12 +104,20 @@ class HistoryActivity : Activity() {
             data
         )
 
-        if (
-            requestCode == saveExportRequestCode &&
-            resultCode == RESULT_OK
-        ) {
-            val uri = data?.data ?: return
-            writePendingExport(uri)
+        if (resultCode != RESULT_OK) {
+            return
+        }
+
+        when (requestCode) {
+            saveExportRequestCode -> {
+                val uri = data?.data ?: return
+                writePendingExport(uri)
+            }
+
+            saveExportFolderRequestCode -> {
+                val uri = data?.data ?: return
+                writePendingExportToTree(uri)
+            }
         }
     }
 
@@ -756,34 +769,44 @@ class HistoryActivity : Activity() {
                 appVersion = BuildConfig.VERSION_NAME
             )
 
-        pendingExportContent = content
-        pendingExportSuccessMessage = "YTM Project збережено"
+        val fileName =
+            historyProjectFileName(
+                entry
+            )
 
-        val intent =
-            Intent(
-                Intent.ACTION_CREATE_DOCUMENT
-            ).apply {
-                addCategory(
-                    Intent.CATEGORY_OPENABLE
-                )
-                type = "application/json"
-                putExtra(
-                    Intent.EXTRA_TITLE,
-                    historyProjectFileName(entry)
-                )
-            }
+        pendingExportContent =
+            content
+        pendingExportSuccessMessage =
+            "YTM Project збережено"
+        pendingExportFileName =
+            fileName
+        pendingExportMimeType =
+            "application/json"
 
         runCatching {
-            startActivityForResult(
-                intent,
-                saveExportRequestCode
+            SafFileSaveFlow.show(
+                activity = this,
+                title =
+                    "Куди зберегти YTM Project?",
+                suggestedFileName =
+                    fileName,
+                mimeType =
+                    "application/json",
+                addFolderRequestCode =
+                    saveExportFolderRequestCode,
+                createDocumentRequestCode =
+                    saveExportRequestCode,
+                onRememberedRoot = {
+                    writePendingExportToTree(
+                        it
+                    )
+                }
             )
         }.onFailure { error ->
-            pendingExportContent = null
-            pendingExportSuccessMessage = null
+            clearPendingExport()
 
             toast(
-                "Не вдалося відкрити вибір файлу: " +
+                "Не вдалося відкрити вибір збереження: " +
                     (
                         error.message
                             ?: "невідома помилка"
@@ -807,6 +830,51 @@ class HistoryActivity : Activity() {
             content = content,
             chooserTitle = "Поділитися YTM Project"
         )
+    }
+
+    private fun writePendingExportToTree(
+        treeUri: Uri
+    ) {
+        val content =
+            pendingExportContent
+                ?: return
+
+        val fileName =
+            pendingExportFileName
+                ?: return
+
+        val mimeType =
+            pendingExportMimeType
+                ?: "application/json"
+
+        runCatching {
+            SafTreeFileWriter.writeText(
+                context = this,
+                treeUri = treeUri,
+                preferredFileName =
+                    fileName,
+                mimeType =
+                    mimeType,
+                content = content
+            )
+        }.onSuccess { result ->
+            toast(
+                (pendingExportSuccessMessage
+                    ?: "Файл збережено") +
+                    ": " +
+                    result.fileName
+            )
+        }.onFailure { error ->
+            toast(
+                "Не вдалося записати файл: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+
+        clearPendingExport()
     }
 
     private fun writePendingExport(
@@ -843,8 +911,14 @@ class HistoryActivity : Activity() {
             )
         }
 
+        clearPendingExport()
+    }
+
+    private fun clearPendingExport() {
         pendingExportContent = null
         pendingExportSuccessMessage = null
+        pendingExportFileName = null
+        pendingExportMimeType = null
     }
 
     private fun shareTextFile(
