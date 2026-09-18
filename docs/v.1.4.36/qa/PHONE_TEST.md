@@ -106,3 +106,14 @@ Evidence fingerprint supplied in chat:
 Result for the current v1.4.36 folder chooser:
 
 **PARTIAL PASS / UX FAIL ON LONG LIST — dedicated fixed-footer chooser required.**
+
+## Navigation observation — UX-010
+
+During v1.4.36 phone review, the user requested that Home utility actions become more consistent:
+
+- `Черга` is the preferred reference because it opens a dedicated full-screen page;
+- `Квота` should stop opening a modal and instead open its own full-screen page;
+- `Ще` should stop opening a long modal menu and instead open a dedicated utility/menu page;
+- current proposed replacement label for `Ще` is `Меню`.
+
+This is a follow-up navigation design item, not a PASS/FAIL claim for the current v1.4.36 SAF work.
