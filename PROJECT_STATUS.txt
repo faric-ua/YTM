@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.39
-Version code: 75
+Version: 1.4.40
+Version code: 76
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -32,6 +32,7 @@ v1.4.38 NOT PHONE-TESTED YET — FULL-SCREEN SELECTORS + DESTRUCTIVE SAFETY + MO
 v1.4.38-R1 PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX FAIL
 v1.4.38-R2 PHONE RETEST PASS — CHECKBOX VISUAL CENTERING
 v1.4.39 NOT PHONE-TESTED YET — NATIVE HISTORY JSON RESTORE
+v1.4.40 NOT PHONE-TESTED YET — IN-APP RELEASE HISTORY
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -524,3 +525,14 @@ v1.4.39 focus:
 - History import confirmation survives Activity recreation/rotation
 - DataActivity retains one centralized ACTION_OPEN_DOCUMENT launcher
 - no broad filesystem permission
+
+
+v1.4.40 focus:
+- UX-016 in-app Release History
+- About → Дізнатися більше → Історія змін
+- dedicated full-screen changelog page
+- root CHANGELOG.md is the single source of truth
+- Gradle copies CHANGELOG.md into generated Android assets before build
+- ServiceActivity parses ## release sections into readable cards
+- Back from History returns to About
+- no network fetch, server dependency or new permission
