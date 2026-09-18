@@ -80,12 +80,14 @@ grep -Fq '| v1.4.36 | **PARTIALLY PHONE-TESTED — IN-APP SAF ENTRY PASS / LONG-
   || fail "v1.4.36 partial SAF phone-test status missing"
 grep -Fq '| v1.4.37 | **PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS; LEGACY LONG-LIST SELECTORS FOUND** |' "$STATUS" \
   || fail "v1.4.37 partial phone-test status missing"
-grep -Fq '| v1.4.38 | **PARTIALLY PHONE-TESTED — SELECTORS + DESTRUCTIVE CONFIRMATIONS PASS; BUG-008 CLOSED; CHECKBOX R2 RETEST NEEDED** |' "$STATUS" \
+grep -Fq '| v1.4.38 | **PARTIALLY PHONE-TESTED — SELECTORS + DESTRUCTIVE CONFIRMATIONS PASS; BUG-008 CLOSED; UX-014 CLOSED** |' "$STATUS" \
   || fail "v1.4.38 partial phone-test status missing"
 grep -Fq '| v1.4.38-R1 | **PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX ALIGNMENT FAIL** |' "$STATUS" \
   || fail "v1.4.38-R1 partial phone-test status missing"
-grep -Fq '| v1.4.38-R2 | **NOT PHONE-TESTED YET** |' "$STATUS" \
-  || fail "v1.4.38-R2 pending phone-test status missing"
+grep -Fq '| v1.4.38-R2 | **PHONE RETEST PASS — CHECKBOX ALIGNMENT** |' "$STATUS" \
+  || fail "v1.4.38-R2 checkbox phone PASS status missing"
+grep -Fq '| v1.4.39 | **NOT PHONE-TESTED YET** |' "$STATUS" \
+  || fail "v1.4.39 pending phone-test status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
