@@ -124,3 +124,26 @@ Repository audit found two additional dynamic long-list menu candidates in Impor
 These should follow the same full-screen list-selection architecture rather than remain tall modal dialogs.
 
 Short informational/confirmation dialogs are not part of this migration; modal is still appropriate when content is compact and the action set is small.
+
+
+## Real-phone finding — destructive action clarity
+
+The user reported that a deletion happened without it being sufficiently obvious what was being deleted.
+
+Code audit result:
+
+- individual History delete already has a confirmation dialog;
+- clear-all History already has a confirmation dialog;
+- Pending Queue delete already has a confirmation dialog;
+- SearchCache clear-all already has a confirmation dialog;
+- Restore completion exposes `Видалити snapshot` directly and currently deletes the safety snapshot without a dedicated second confirmation.
+
+Track as UX-012.
+
+Required follow-up:
+
+- make destructive actions visually unmistakable;
+- use exact target names in confirmation copy;
+- use explicit danger action labels such as `Так, видалити запис`;
+- require a separate confirmation before deleting a Restore safety snapshot;
+- reserve stronger/two-step confirmation for bulk or irreversible actions.
