@@ -6,16 +6,15 @@ fail(){ echo "FAIL: $1" >&2; exit 1; }
 SRC="app/src/main/java/com/saney/ytmimporter"
 IMPORT="$SRC/ImportActivity.kt"
 SAF="$SRC/storage/SafTreeAccess.kt"
-GRADLE="app/build.gradle.kts"
 MANIFEST="app/src/main/AndroidManifest.xml"
 
-for f in   "$IMPORT"   "$SAF"   "$GRADLE"   "$MANIFEST"   docs/v.1.4.35/RELEASE.md   docs/v.1.4.35/SAF_AUDIT.md   docs/v.1.4.35/REGRESSION_CHECKLIST.md   docs/v.1.4.35/qa/PHONE_TEST.md   docs/v.1.4.35/qa/BUG_REGISTER.md
+for f in   "$IMPORT"   "$SAF"   "$MANIFEST"   docs/v.1.4.35/RELEASE.md   docs/v.1.4.35/SAF_AUDIT.md   docs/v.1.4.35/REGRESSION_CHECKLIST.md   docs/v.1.4.35/qa/PHONE_TEST.md   docs/v.1.4.35/qa/BUG_REGISTER.md
 do
   test -f "$f" || fail "missing v1.4.35 file: $f"
 done
 
-grep -Fq 'versionCode = 69' "$GRADLE" || fail "versionCode 69 missing"
-grep -Fq 'versionName = "1.4.35"' "$GRADLE" || fail "versionName 1.4.35 missing"
+grep -Fq 'versionName: **1.4.35**' docs/v.1.4.35/RELEASE.md || fail "v1.4.35 versionName snapshot missing"
+grep -Fq 'versionCode: **69**' docs/v.1.4.35/RELEASE.md || fail "v1.4.35 versionCode snapshot missing"
 
 grep -Fq 'object SafTreeAccess' "$SAF" || fail "SafTreeAccess missing"
 grep -Fq 'persistedUriPermissions' "$SAF" || fail "persisted SAF catalog missing"
@@ -59,7 +58,7 @@ grep -Fq 'Open single document — 2' docs/v.1.4.35/SAF_AUDIT.md   || fail "open
 grep -Fq 'Create single document — 4' docs/v.1.4.35/SAF_AUDIT.md   || fail "create-document inventory missing"
 
 echo "PASS:"
-echo "- v1.4.35 / code 69"
+echo "- immutable v1.4.35 release snapshot present"
 echo "- seven folder flows route through one in-app remembered-root chooser"
 echo "- Android system folder picker centralized to one launcher"
 echo "- persisted SAF roots filtered by read/write access"
