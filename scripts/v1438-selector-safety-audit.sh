@@ -62,9 +62,8 @@ grep -Fq 'confirmDeleteSafetySnapshot()' "$DATA"   || fail "snapshot-delete conf
 grep -Fq '"Так, видалити"' "$DATA"   || fail "snapshot explicit destructive confirmation missing"
 grep -Fq '"Так, відкотити"' "$DATA"   || fail "rollback explicit confirmation missing"
 
-if grep -A45 -F 'private fun restoreSafetySnapshotNow' "$DATA" |
-   grep -Fq '"Видалити snapshot"'; then
-  fail "direct snapshot deletion still remains in rollback-success dialog"
+if grep -Fq '"Видалити snapshot"' "$DATA"; then
+  fail "direct snapshot deletion still remains in DataActivity"
 fi
 
 grep -Fq '"Так, видалити"' "$HISTORY"   || fail "History explicit delete confirmation missing"
