@@ -80,8 +80,8 @@ DIRECT_CALLS="$(
 COMPAT_CALLS="$(grep -R -h -F 'UiChrome.alertBuilder(' "$SRC" | wc -l | tr -d ' ')"
 CUSTOM_CALLS="$(expr "$DIRECT_CALLS" + "$COMPAT_CALLS")"
 
-[ "$CUSTOM_CALLS" -ge 44 ] \
-  || fail "unexpectedly few unified modal call sites: $CUSTOM_CALLS"
+[ "$CUSTOM_CALLS" -gt 0 ] \
+  || fail "no unified modal call sites remain"
 
 echo "PASS:"
 echo "- custom dialog viewport handles system bars + display cutouts"
@@ -93,4 +93,5 @@ echo "- pre-show Window configuration retained"
 echo "- attached Window normalization happens while whole decor is invisible"
 echo "- reveal waits for repeated stable geometry after safe insets"
 echo "- WindowManager animation remains disabled"
-echo "- shared fix covers $CUSTOM_CALLS unified modal call sites"
+echo "- shared fix covers current $CUSTOM_CALLS unified modal call sites"
+echo "- full-screen list/utility migrations may reduce modal count without regressing dialog bounds"

@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.37
-Version code: 71
+Version: 1.4.38
+Version code: 72
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -26,7 +26,9 @@ v1.4.32 PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / OTHER MODALS INC
 v1.4.33 NOT PHONE-TESTED — SUPERSEDED BY v1.4.34 BEFORE PHONE QA
 v1.4.34 PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUOTA MODAL PASS / REMAINING RETEST DEFERRED
 v1.4.35 NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA
-v1.4.36 NOT PHONE-TESTED YET — UX-008 PHASE 2A / SAVED FILE DESTINATIONS
+v1.4.36 PARTIALLY PHONE-TESTED — IN-APP SAF ENTRY PASS / LONG-LIST FIXED-FOOTER FAIL
+v1.4.37 PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS / LEGACY LONG-LIST SELECTORS FOUND
+v1.4.38 NOT PHONE-TESTED YET — FULL-SCREEN SELECTORS + SAFER DESTRUCTIVE ACTIONS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -391,6 +393,17 @@ v1.4.37 focus:
 - Home `Ще` renamed to `Меню` and opens MenuActivity
 - preserve Pending Queue resume bridge through MainActivity
 - keep Neon Dark Home colors unchanged; UX-009 remains separate
+- no broad filesystem permission
+
+
+v1.4.38 focus:
+- UX-011: replace remaining long dynamic Import selection dialogs with ListSelectorActivity
+- single-select: YTM playlist import / delta-chain head / backup manifest project
+- multi-select: selective account export with fixed Next/Cancel controls
+- UX-012: explicit destructive confirmation copy and separate safety-snapshot deletion flow
+- UX-013: shorten mobile action labels so critical buttons fit cleanly on phone
+- keep Neon Dark Home color reference unchanged
+- keep ACTION_OPEN_DOCUMENT file-open flows unchanged for later UX-008 Phase 2B
 - no broad filesystem permission
 
 Known:

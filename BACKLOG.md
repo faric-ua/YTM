@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.37 — Full-screen Storage + Utility UI — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.38 — Full-screen Selectors + Safety — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -12,9 +12,9 @@ v1.4.37 — Full-screen Storage + Utility UI — IMPLEMENTED / PHONE RETEST NEED
 - UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
 - UX-009 Theme State Contrast — OPEN; Neon Dark Home colors are locked as the accepted reference; Green Dark workflow states need higher-contrast/inverse treatment without changing Neon Dark
 - UX-010 Utility Screens — OPEN; Home `Квота` and `Ще` should navigate to dedicated full-screen pages like `Черга`; rename `Ще` to `Меню` unless product wording changes before implementation
-- UX-011 Full-screen List Selectors — OPEN; dynamic long lists in Import must migrate from tall modal dialogs to dedicated full-screen selectors with fixed header/footer
-- UX-012 Destructive Action Confirmation — OPEN; destructive local actions need unmistakable confirmation hierarchy; safety-snapshot deletion currently has no second confirmation
-- UX-013 Mobile Action Copy Fit — OPEN; action labels must stay short, explicit, and single-line on phone-sized buttons
+- UX-011 Full-screen List Selectors — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED
+- UX-012 Destructive Action Confirmation — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED
+- UX-013 Mobile Action Copy Fit — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -528,13 +528,13 @@ including:
 - [x] identify old selective-export multi-choice dialog
 - [x] identify old YTM playlist import menu dialog
 - [x] audit additional dynamic Import list dialogs
-- [ ] migrate YTM playlist import picker to full-screen single-select
-- [ ] migrate selective-export picker to full-screen multi-select with fixed `Далі` / `Скасувати`
-- [ ] migrate delta-chain head picker to full-screen single-select when multiple heads exist
-- [ ] migrate backup / manifest project picker to full-screen single-select
-- [ ] keep list content as the only scrollable region
-- [ ] keep Back/help/action controls fixed
-- [ ] do not convert short informational/confirmation modals unnecessarily
+- [x] migrate YTM playlist import picker to full-screen single-select
+- [x] migrate selective-export picker to full-screen multi-select with fixed `Далі` / `Скасувати`
+- [x] migrate delta-chain head picker to full-screen single-select when multiple heads exist
+- [x] migrate backup / manifest project picker to full-screen single-select
+- [x] keep list content as the only scrollable region
+- [x] keep Back/help/action controls fixed
+- [x] do not convert short informational/confirmation modals unnecessarily
 - [ ] phone QA all four selector families
 
 
@@ -545,21 +545,46 @@ including:
 - [x] confirm History clear-all already has a confirmation dialog
 - [x] confirm Pending Queue delete already has a confirmation dialog
 - [x] confirm SearchCache clear-all already has a confirmation dialog
-- [ ] add reusable destructive confirmation pattern with explicit danger styling
-- [ ] change destructive buttons to unambiguous labels such as `Так, видалити запис`
-- [ ] add stronger target text (what exactly will be deleted / what will stay)
-- [ ] require a dedicated confirmation before deleting Restore safety snapshot
+- [x] add reusable destructive confirmation pattern with explicit danger styling
+- [x] change destructive buttons to unambiguous labels such as `Так, видалити` / `Так, очистити`
+- [x] add stronger target text for safety snapshot deletion
+- [x] require a dedicated confirmation before deleting Restore safety snapshot
 - [ ] use stronger two-step confirmation for bulk/irreversible actions only
 - [ ] phone QA accidental-tap resistance
 
 
 ## UX-013 — Mobile Action Copy Fit
 - [x] record v1.4.37 phone evidence for wrapped/clipped action labels
-- [ ] Restore confirm: `Вибрати backup` → `Вибрати файл`
-- [ ] Restore success: `OK` → `Готово`
-- [ ] Save chooser: `Додати папку для швидкого збереження…` → `Додати папку…`
-- [ ] Save chooser: `Системне збереження / змінити ім’я…` → `Зберегти як…`
-- [ ] Rollback success: remove direct `Видалити snapshot` action from the success dialog
-- [ ] move snapshot deletion to a dedicated Data action with explicit destructive confirmation
+- [x] Restore confirm: `Вибрати backup` → `Вибрати файл`
+- [x] Restore success: `OK` → `Готово`
+- [x] Save chooser: `Додати папку для швидкого збереження…` → `Додати папку…`
+- [x] Save chooser: `Системне збереження / змінити ім’я…` → `Зберегти як…`
+- [x] Rollback success: remove direct `Видалити snapshot` action from the success dialog
+- [x] move snapshot deletion to a dedicated Data action with explicit destructive confirmation
 - [ ] static audit: critical action labels must not rely on two-line wrapping
 - [ ] real-phone QA at 783px portrait reference width
+
+
+## v1.4.38 — Full-screen Selectors + Safety
+- [x] bump versionCode 72 / versionName 1.4.38
+- [x] add reusable `ListSelectorActivity`
+- [x] migrate YTM playlist import to full-screen single-select
+- [x] migrate selective export to full-screen multi-select
+- [x] migrate delta-chain head selection
+- [x] migrate backup / manifest project selection
+- [x] preserve selective export selection state
+- [x] shorten save chooser mobile labels
+- [x] shorten Restore mobile labels
+- [x] remove direct snapshot deletion from rollback success
+- [x] add separate Data-screen snapshot delete action
+- [x] add explicit snapshot-delete confirmation
+- [x] strengthen History / Queue / SearchCache destructive confirmation wording
+- [x] extend UiChrome danger detection for longer destructive labels
+- [x] add v1.4.38 docs + static audit
+- [ ] GitHub signed build
+- [ ] APK handoff
+- [ ] phone: YTM single-select
+- [ ] phone: selective export multi-select
+- [ ] phone: manifest/delta selectors
+- [ ] phone: destructive confirmation smoke
+- [ ] phone: mobile action copy fit

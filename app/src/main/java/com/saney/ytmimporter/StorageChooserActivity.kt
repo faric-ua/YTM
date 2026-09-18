@@ -342,7 +342,7 @@ class StorageChooserActivity : Activity() {
             footerButton(
                 label =
                     if (mode == Mode.SAVE) {
-                        "Додати папку для швидкого збереження…"
+                        "Додати папку…"
                     } else {
                         "Додати іншу папку…"
                     },
@@ -356,7 +356,7 @@ class StorageChooserActivity : Activity() {
             root.addView(
                 footerButton(
                     label =
-                        "Системне збереження / змінити ім’я…",
+                        "Зберегти як…",
                     primary = false
                 ) {
                     openSystemCreateDocument()

@@ -43,6 +43,7 @@ class DataActivity : Activity() {
 
     private lateinit var summaryText: TextView
     private lateinit var rollbackButton: Button
+    private lateinit var snapshotDeleteButton: Button
 
     private var pendingExportContent: String? = null
     private var pendingExportSuccessMessage: String? = null
@@ -193,7 +194,7 @@ class DataActivity : Activity() {
                 description =
                     "Відновлює локальні дані з YTM_Backup_*.json. " +
                         "Перед Restore автоматично створюється safety snapshot.",
-                buttonLabel = "Вибрати backup",
+                buttonLabel = "Вибрати файл",
                 primary = false,
                 action = ::chooseBackupForRestore
             )
@@ -245,13 +246,40 @@ class DataActivity : Activity() {
 
         rollbackButton =
             actionButton(
-                label = "Відкотити останній Restore",
+                label = "Відкотити",
                 primary = false
             ) {
                 confirmRestoreSafetySnapshot()
             }
 
         rollbackCard.addView(rollbackButton)
+
+        snapshotDeleteButton =
+            actionButton(
+                label = "Видалити знімок",
+                primary = false
+            ) {
+                confirmDeleteSafetySnapshot()
+            }.apply {
+                setTextColor(
+                    AppThemeManager
+                        .palette(
+                            this@DataActivity
+                        )
+                        .danger
+                )
+            }
+
+        rollbackCard.addView(
+            snapshotDeleteButton,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin =
+                    dp(8)
+            }
+        )
 
         content.addView(
             rollbackCard,
@@ -421,6 +449,19 @@ class DataActivity : Activity() {
             } else {
                 0.5f
             }
+
+        snapshotDeleteButton.isEnabled =
+            snapshotSummary != null
+
+        snapshotDeleteButton.alpha =
+            if (
+                snapshotDeleteButton
+                    .isEnabled
+            ) {
+                1f
+            } else {
+                0.5f
+            }
     }
 
     private fun createFullBackup() {
@@ -487,7 +528,7 @@ class DataActivity : Activity() {
                 null
             )
             .setPositiveButton(
-                "Вибрати backup"
+                "Вибрати файл"
             ) { _, _ ->
                 val intent =
                     Intent(
@@ -620,7 +661,7 @@ class DataActivity : Activity() {
                 confirmRestoreSafetySnapshot()
             }
             .setPositiveButton(
-                "OK",
+                "Готово",
                 null
             )
             .show()
@@ -666,7 +707,7 @@ class DataActivity : Activity() {
                 null
             )
             .setPositiveButton(
-                "Відкотити"
+                "Так, відкотити"
             ) { _, _ ->
                 restoreSafetySnapshotNow()
             }
@@ -695,21 +736,65 @@ class DataActivity : Activity() {
             .setMessage(
                 "Локальний стан ДО останнього Restore повернуто.\n\n" +
                     "Груп: ${result.preferenceGroups}\n" +
-                    "Відновлено значень: ${result.restoredValues}."
+                    "Відновлено значень: ${result.restoredValues}.\n\n" +
+                    "Safety snapshot залишено. За потреби його можна окремо видалити " +
+                    "на екрані «Дані та резервні копії»."
             )
-            .setNegativeButton(
-                "Видалити snapshot"
-            ) { _, _ ->
-                localBackupManager.clearSafetySnapshot()
-                refreshSummary()
-                toast(
-                    "Safety snapshot видалено"
-                )
-            }
             .setPositiveButton(
-                "OK",
+                "Готово",
                 null
             )
+            .show()
+    }
+
+    private fun confirmDeleteSafetySnapshot() {
+        val summary =
+            runCatching {
+                localBackupManager
+                    .inspectSafetySnapshot()
+            }.getOrElse { error ->
+                toast(
+                    "Safety snapshot пошкоджено: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return
+            }
+
+        if (summary == null) {
+            toast(
+                "Safety snapshot уже відсутній"
+            )
+            refreshSummary()
+            return
+        }
+
+        UiChrome.alertBuilder(this)
+            .setTitle(
+                "Видалити резервний знімок?"
+            )
+            .setMessage(
+                "Буде назавжди видалено safety snapshot стану ДО останнього Restore.\n\n" +
+                    "Після цього відкотити останній Restore через цей snapshot буде неможливо.\n\n" +
+                    "Дата snapshot: ${formatDate(summary.exportedAt)}\n\n" +
+                    "Поточні локальні дані та YouTube/YTM плейлисти не видаляються."
+            )
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Так, видалити"
+            ) { _, _ ->
+                localBackupManager
+                    .clearSafetySnapshot()
+                refreshSummary()
+                toast(
+                    "Резервний знімок видалено"
+                )
+            }
             .show()
     }
 

@@ -137,8 +137,22 @@ object UiChrome {
                     }
                 }
 
+            val positiveLabel =
+                positiveAction
+                    ?.label
+                    ?.lowercase()
+                    .orEmpty()
+
             val positiveTone =
-                if (positiveAction?.label in setOf("Видалити", "Очистити", "Відкотити")) {
+                if (
+                    listOf(
+                        "видал",
+                        "очист",
+                        "відкот"
+                    ).any {
+                        it in positiveLabel
+                    }
+                ) {
                     ActionTone.DANGER
                 } else {
                     ActionTone.ACCENT
