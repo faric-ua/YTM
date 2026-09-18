@@ -726,8 +726,7 @@ class ImportActivity : Activity() {
                     }
 
                     showYtmPlaylistPicker(
-                        token = token,
-                        playlists = playlists
+                        playlists
                     )
                 }.onFailure { error ->
                     if (
@@ -748,7 +747,6 @@ class ImportActivity : Activity() {
     }
 
     private fun showYtmPlaylistPicker(
-        token: String,
         playlists: List<YouTubePlaylistInfo>
     ) {
         startActivityForResult(
