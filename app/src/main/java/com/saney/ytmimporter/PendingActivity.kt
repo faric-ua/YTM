@@ -837,7 +837,7 @@ class PendingActivity : Activity() {
                 dp(8)
             )
 
-                        addView(
+            addView(
                 UiChrome.backButton(
                     activity = this@PendingActivity,
                     onClick = { onBack() }
