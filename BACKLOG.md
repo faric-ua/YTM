@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.37 — Full-screen Storage + Utility UI — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -12,6 +12,9 @@ v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
 - UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
 - UX-009 Theme State Contrast — OPEN; Neon Dark Home colors are locked as the accepted reference; Green Dark workflow states need higher-contrast/inverse treatment without changing Neon Dark
 - UX-010 Utility Screens — OPEN; Home `Квота` and `Ще` should navigate to dedicated full-screen pages like `Черга`; rename `Ще` to `Меню` unless product wording changes before implementation
+- UX-011 Full-screen List Selectors — OPEN; dynamic long lists in Import must migrate from tall modal dialogs to dedicated full-screen selectors with fixed header/footer
+- UX-012 Destructive Action Confirmation — OPEN; destructive local actions need unmistakable confirmation hierarchy; safety-snapshot deletion currently has no second confirmation
+- UX-013 Mobile Action Copy Fit — OPEN; action labels must stay short, explicit, and single-line on phone-sized buttons
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -397,7 +400,7 @@ v1.4.36 — Saved File Destinations — IMPLEMENTED / PHONE RETEST NEEDED
 - [x] Phase 2A: add reusable save folder and explicit system CREATE_DOCUMENT fallback
 - [x] Phase 2A: duplicate-safe numbered filenames + failed-write cleanup
 - [ ] Phase 2B: design the two `ACTION_OPEN_DOCUMENT` reuse/escape flows
-- [ ] Phase 2A-R1: dedicated full-screen remembered-root chooser with fixed bottom controls + `?` help
+- [x] Phase 2A-R1: dedicated full-screen remembered-root chooser with fixed bottom controls + `?` help
 - [ ] Phase 3: evaluate an in-app browser inside authorized roots
 
 ## v1.4.35 — Saved SAF Folders
@@ -484,11 +487,79 @@ including:
 
 ## UX-010 — Utility Screens
 - [x] record product direction from real-phone v1.4.36 use
-- [ ] replace Home `Квота` modal with a dedicated full-screen quota page
-- [ ] replace Home `Ще` modal menu with a dedicated full-screen utility/menu page
-- [ ] use the same top-bar/back-navigation pattern as `Черга`
-- [ ] rename Home `Ще` to `Меню` (current proposed label)
-- [ ] keep page content scrollable independently from fixed navigation/header controls
+- [x] replace Home `Квота` modal with a dedicated full-screen quota page
+- [x] replace Home `Ще` modal menu with a dedicated full-screen utility/menu page
+- [x] use the same top-bar/back-navigation pattern as `Черга`
+- [x] rename Home `Ще` to `Меню`
+- [x] keep page content scrollable independently from fixed navigation/header controls
 - [ ] keep destructive/escape actions immediately visible where applicable
 - [ ] phone QA: Home → Quota screen → Back
 - [ ] phone QA: Home → Menu screen → Back
+
+
+## v1.4.37 — Full-screen Storage + Utility UI
+- [x] bump versionCode 71 / versionName 1.4.37
+- [x] add `StorageChooserActivity`
+- [x] fixed Back/title/`?` header
+- [x] independently scrollable remembered-root list
+- [x] fixed Add / System Save / Cancel footer
+- [x] route seven Import folder flows through the full-screen chooser
+- [x] route Data / Review / History / Service saves through the same chooser
+- [x] keep one centralized ACTION_OPEN_DOCUMENT_TREE path
+- [x] keep one centralized ACTION_CREATE_DOCUMENT path
+- [x] add `QuotaActivity`
+- [x] preserve Queue resume bridge through MainActivity
+- [x] add `MenuActivity`
+- [x] rename Home `Ще` → `Меню`
+- [x] keep Neon Dark Home colors unchanged
+- [x] add static audit + QA docs
+- [ ] GitHub signed build
+- [ ] APK handoff to phone
+- [ ] phone: long root list fixed footer visible without scrolling
+- [ ] phone: `?` help
+- [ ] phone: Android picker Back returns to chooser
+- [ ] phone: save mode full-screen chooser
+- [ ] phone: Quota dedicated screen
+- [ ] phone: Menu dedicated screen + navigation smoke
+
+
+## UX-011 — Full-screen List Selectors
+- [x] real-phone evidence: storage chooser full-screen pattern accepted
+- [x] identify old selective-export multi-choice dialog
+- [x] identify old YTM playlist import menu dialog
+- [x] audit additional dynamic Import list dialogs
+- [ ] migrate YTM playlist import picker to full-screen single-select
+- [ ] migrate selective-export picker to full-screen multi-select with fixed `Далі` / `Скасувати`
+- [ ] migrate delta-chain head picker to full-screen single-select when multiple heads exist
+- [ ] migrate backup / manifest project picker to full-screen single-select
+- [ ] keep list content as the only scrollable region
+- [ ] keep Back/help/action controls fixed
+- [ ] do not convert short informational/confirmation modals unnecessarily
+- [ ] phone QA all four selector families
+
+
+## UX-012 — Destructive Action Confirmation
+- [x] audit current History / Queue / SearchCache / Restore destructive paths
+- [x] identify direct `Видалити snapshot` action after Restore with no dedicated confirmation
+- [x] confirm History single-entry delete already has a confirmation dialog
+- [x] confirm History clear-all already has a confirmation dialog
+- [x] confirm Pending Queue delete already has a confirmation dialog
+- [x] confirm SearchCache clear-all already has a confirmation dialog
+- [ ] add reusable destructive confirmation pattern with explicit danger styling
+- [ ] change destructive buttons to unambiguous labels such as `Так, видалити запис`
+- [ ] add stronger target text (what exactly will be deleted / what will stay)
+- [ ] require a dedicated confirmation before deleting Restore safety snapshot
+- [ ] use stronger two-step confirmation for bulk/irreversible actions only
+- [ ] phone QA accidental-tap resistance
+
+
+## UX-013 — Mobile Action Copy Fit
+- [x] record v1.4.37 phone evidence for wrapped/clipped action labels
+- [ ] Restore confirm: `Вибрати backup` → `Вибрати файл`
+- [ ] Restore success: `OK` → `Готово`
+- [ ] Save chooser: `Додати папку для швидкого збереження…` → `Додати папку…`
+- [ ] Save chooser: `Системне збереження / змінити ім’я…` → `Зберегти як…`
+- [ ] Rollback success: remove direct `Видалити snapshot` action from the success dialog
+- [ ] move snapshot deletion to a dedicated Data action with explicit destructive confirmation
+- [ ] static audit: critical action labels must not rely on two-line wrapping
+- [ ] real-phone QA at 783px portrait reference width

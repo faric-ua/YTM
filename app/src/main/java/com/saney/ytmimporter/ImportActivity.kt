@@ -1056,109 +1056,21 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ_WRITE,
             requestCode =
-                selectiveExportFolderRequestCode,
-            onExisting = {
-                exportSelectedYtmPlaylistsToFolder(
-                    it
-                )
-            }
+                selectiveExportFolderRequestCode
         )
     }
 
     private fun chooseSafTree(
         title: String,
         access: SafTreeAccess.Access,
-        requestCode: Int,
-        onExisting: (Uri) -> Unit
-    ) {
-        val roots =
-            SafTreeAccess
-                .persistedRoots(
-                    context = this,
-                    access = access
-                )
-
-        val actions =
-            roots
-                .map { root ->
-                    UiChrome.MenuAction(
-                        label =
-                            buildString {
-                                append(root.label)
-                                append("\n")
-                                append(
-                                    if (
-                                        root.canWrite
-                                    ) {
-                                        "Дозволено читання і запис"
-                                    } else {
-                                        "Дозволено читання"
-                                    }
-                                )
-                            },
-                        onClick = {
-                            onExisting(
-                                root.uri
-                            )
-                        }
-                    )
-                } +
-                UiChrome.MenuAction(
-                    label =
-                        "Додати іншу папку…",
-                    onClick = {
-                        launchSafTreePicker(
-                            access = access,
-                            requestCode = requestCode
-                        )
-                    }
-                )
-
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = title,
-            subtitle =
-                if (roots.isEmpty()) {
-                    "Ще немає збереженої папки для цієї операції. " +
-                        "Додайте нову або натисніть «Скасувати»."
-                } else {
-                    "Виберіть раніше дозволену папку. " +
-                        "Системний Android picker відкриється лише для нової папки."
-                },
-            actions = actions,
-            negativeLabel =
-                "Скасувати"
-        )
-    }
-
-    private fun launchSafTreePicker(
-        access: SafTreeAccess.Access,
         requestCode: Int
     ) {
-        val permissionFlags =
-            Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
-                Intent.FLAG_GRANT_PREFIX_URI_PERMISSION or
-                if (
-                    access ==
-                        SafTreeAccess.Access.READ_WRITE
-                ) {
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                } else {
-                    0
-                }
-
-        val intent =
-            Intent(
-                Intent.ACTION_OPEN_DOCUMENT_TREE
-            ).apply {
-                addFlags(
-                    permissionFlags
-                )
-            }
-
         startActivityForResult(
-            intent,
+            StorageChooserActivity.treeIntent(
+                activity = this,
+                title = title,
+                access = access
+            ),
             requestCode
         )
     }
@@ -1253,12 +1165,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ_WRITE,
             requestCode =
-                exportFolderRequestCode,
-            onExisting = {
-                exportAllYtmPlaylistsToFolder(
-                    it
-                )
-            }
+                exportFolderRequestCode
         )
     }
 
@@ -1699,12 +1606,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ,
             requestCode =
-                incrementalBackupBaseRequestCode,
-            onExisting = {
-                prepareIncrementalBackup(
-                    it
-                )
-            }
+                incrementalBackupBaseRequestCode
         )
     }
 
@@ -2142,12 +2044,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ_WRITE,
             requestCode =
-                incrementalBackupTargetRequestCode,
-            onExisting = {
-                writeIncrementalBackup(
-                    it
-                )
-            }
+                incrementalBackupTargetRequestCode
         )
     }
 
@@ -2264,12 +2161,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ,
             requestCode =
-                deltaChainRootRequestCode,
-            onExisting = {
-                prepareDeltaChainRoot(
-                    it
-                )
-            }
+                deltaChainRootRequestCode
         )
     }
 
@@ -2513,12 +2405,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ_WRITE,
             requestCode =
-                deltaChainTargetRequestCode,
-            onExisting = {
-                materializeDeltaChain(
-                    it
-                )
-            }
+                deltaChainTargetRequestCode
         )
     }
 
@@ -2639,12 +2526,7 @@ class ImportActivity : Activity() {
             access =
                 SafTreeAccess.Access.READ,
             requestCode =
-                manifestImportFolderRequestCode,
-            onExisting = {
-                openAccountBackupFolder(
-                    it
-                )
-            }
+                manifestImportFolderRequestCode
         )
     }
 

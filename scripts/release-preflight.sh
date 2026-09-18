@@ -44,8 +44,16 @@ check_file "docs/v.1.4.36/FILE_SAVE_AUDIT.md"
 check_file "docs/v.1.4.36/REGRESSION_CHECKLIST.md"
 check_file "docs/v.1.4.36/qa/PHONE_TEST.md"
 check_file "docs/v.1.4.36/qa/BUG_REGISTER.md"
+check_file "docs/v.1.4.37/RELEASE.md"
+check_file "docs/v.1.4.37/UX_AUDIT.md"
+check_file "docs/v.1.4.37/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.37/qa/PHONE_TEST.md"
+check_file "docs/v.1.4.37/qa/BUG_REGISTER.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt"
 
 check_file "app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
 
@@ -96,6 +104,7 @@ bash scripts/v1433-dialog-unification-audit.sh
 bash scripts/v1434-back-navigation-audit.sh
 bash scripts/v1435-saf-navigation-audit.sh
 bash scripts/v1436-saf-file-save-audit.sh
+bash scripts/v1437-fullscreen-utility-ui-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -155,6 +164,7 @@ check_file "scripts/v1433-dialog-unification-audit.sh"
 check_file "scripts/v1434-back-navigation-audit.sh"
 check_file "scripts/v1435-saf-navigation-audit.sh"
 check_file "scripts/v1436-saf-file-save-audit.sh"
+check_file "scripts/v1437-fullscreen-utility-ui-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -301,11 +311,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 70' app/build.gradle.kts \
-  || fail "Expected versionCode = 70"
+grep -q 'versionCode = 71' app/build.gradle.kts \
+  || fail "Expected versionCode = 71"
 
-grep -q 'versionName = "1.4.36"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.36"'
+grep -q 'versionName = "1.4.37"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.37"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

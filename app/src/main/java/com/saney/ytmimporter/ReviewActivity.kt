@@ -138,12 +138,23 @@ class ReviewActivity : Activity() {
                         ::writePendingProject
                     )
 
-            saveProjectFolderRequestCode ->
-                data
-                    ?.data
-                    ?.let(
-                        ::writePendingProjectToTree
-                    )
+            saveProjectFolderRequestCode -> {
+                val uri =
+                    data
+                        ?.data
+                        ?: return
+
+                if (
+                    data.getStringExtra(
+                        StorageChooserActivity.EXTRA_RESULT_KIND
+                    ) ==
+                        StorageChooserActivity.RESULT_DOCUMENT
+                ) {
+                    writePendingProject(uri)
+                } else {
+                    writePendingProjectToTree(uri)
+                }
+            }
         }
     }
 
@@ -983,15 +994,8 @@ class ReviewActivity : Activity() {
                     suggestedFileName,
                 mimeType =
                     "application/json",
-                addFolderRequestCode =
-                    saveProjectFolderRequestCode,
-                createDocumentRequestCode =
-                    saveProjectRequestCode,
-                onRememberedRoot = {
-                    writePendingProjectToTree(
-                        it
-                    )
-                }
+                requestCode =
+                    saveProjectFolderRequestCode
             )
         }.onFailure { error ->
             clearPendingProjectExport()
