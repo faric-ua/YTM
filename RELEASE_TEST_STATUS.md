@@ -43,5 +43,5 @@ v1.4.16 phone evidence:
 
 | v1.4.38-R1 | **PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX ALIGNMENT FAIL** | BUG-008 is closed: Restore confirmation survives rotation without reselecting the file. Checkbox visual alignment remains off and is superseded by R2. |
 | v1.4.38-R2 | **PHONE RETEST PASS — CHECKBOX ALIGNMENT** | Selective-export checkbox is visually balanced in the fixed touch column on phone. R1 Restore rotation PASS remains valid. |
-| v1.4.39 | **NOT PHONE-TESTED YET** | UX-015 native History JSON restore: validates YTM_History_*.json, replaces only History through the safety-snapshot engine, preserves Queue/quota/SearchCache/current playlist, and preserves confirmation across rotation. |
+| v1.4.39 | **PARTIALLY PHONE-TESTED — HISTORY FILE ACCEPTED / CONFIRMATION PASS; FINAL RESTORE STILL PENDING** | Real YTM_History_*.json was accepted and confirmation correctly showed current 3 / restore 3 / 9 tracks. The confirm label wrapped as `Відновити History`; v1.4.40 shortens it to `Відновити`. Actual restore + preservation/rollback checks remain pending. |
 | v1.4.40 | **NOT PHONE-TESTED YET** | About → `Історія змін`: root CHANGELOG.md is embedded at build time and rendered as an in-app full-screen release history. |
