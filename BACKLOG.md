@@ -513,12 +513,12 @@ including:
 - [x] rename Home `Ще` → `Меню`
 - [x] keep Neon Dark Home colors unchanged
 - [x] add static audit + QA docs
-- [ ] GitHub signed build
-- [ ] APK handoff to phone
-- [ ] phone: long root list fixed footer visible without scrolling
-- [ ] phone: `?` help
+- [x] GitHub signed build
+- [x] APK handoff to phone
+- [x] phone: long root list fixed footer visible without scrolling
+- [x] phone: `?` help
 - [ ] phone: Android picker Back returns to chooser
-- [ ] phone: save mode full-screen chooser
+- [x] phone: save mode full-screen chooser layout visible
 - [ ] phone: Quota dedicated screen
 - [ ] phone: Menu dedicated screen + navigation smoke
 
