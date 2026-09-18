@@ -33,7 +33,7 @@ Current application:
 - versionName: **1.4.36**
 - versionCode: **70**
 - release focus: **UX-008 Phase 2A — Saved File Destinations**
-- release status: **NOT PHONE-TESTED YET — SAVED FILE DESTINATION RETEST NEEDED**
+- release status: **PARTIALLY PHONE-TESTED — SAF ENTRY PASS / LONG-LIST FIXED-FOOTER FAIL**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -72,6 +72,8 @@ v1.4.34 standardizes secondary-screen back navigation after real-phone evidence 
 v1.4.35 implements UX-008 Phase 1 for folder-tree operations. The repository audit found 13 document-picker entry points: 7 folder trees, 2 open-document flows and 4 create-document flows. The seven `ACTION_OPEN_DOCUMENT_TREE` paths now first offer Android-persisted SAF roots inside YTM Importer, with explicit `Скасувати` and `Додати іншу папку…` actions. Android's system picker is entered only after the user explicitly chooses `Додати іншу папку…`; even with no remembered root, the YTM Importer menu appears first so `Скасувати` remains available. File-level open/create flows remain later phases, and no broad filesystem permission is added.
 
 v1.4.36 implements UX-008 Phase 2A for the four create-file workflows. Data exports, Review Project saves, History Project saves and Service Diagnostics now show one shared in-app save-destination menu before any system file UI. Existing READ_WRITE SAF roots can receive the generated file directly; the user can add a reusable folder or explicitly choose the centralized system `ACTION_CREATE_DOCUMENT` fallback to change location/name. Direct writes avoid destructive overwrite with numbered filenames and attempt to remove a newly-created empty document if writing fails. The two open-file flows remain Phase 2B.
+
+Real-phone v1.4.36 testing confirmed the in-app remembered-root chooser appears before Android SAF. A long-list UX failure was found: when many persisted roots exist, Add-folder and Cancel scroll off-screen with the list. The required follow-up is a dedicated full-screen YTM chooser with fixed header/footer, scrollable middle content, and a `?` help modal.
 
 The release remains only partially phone-tested overall.
 
@@ -248,7 +250,7 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-retest v1.4.36 for remembered save destinations, direct save, add-folder and explicit system fallback;
+1. implement the fixed-footer full-screen remembered-root chooser found during v1.4.36 phone QA, then retest UX-008;
 2. implement UX-008 Phase 2B for the two open-file flows after v1.4.36 evidence;
 3. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
 4. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
