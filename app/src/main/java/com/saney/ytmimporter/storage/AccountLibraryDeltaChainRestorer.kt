@@ -1232,13 +1232,8 @@ object AccountLibraryDeltaChainRestorer {
                 )
 
         val folderName =
-            "YTM-Importer-Account-Consolidated-" +
-                SimpleDateFormat(
-                    "yyyyMMdd-HHmmss",
-                    Locale.US
-                ).format(
-                    Date()
-                )
+            AccountBackupNaming
+                .consolidatedFolderName()
 
         val folderUri =
             DocumentsContract

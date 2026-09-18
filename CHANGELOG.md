@@ -14,6 +14,9 @@
 - YouTube API usage for materialization is 0.
 - versionCode 64 / versionName 1.4.30.
 - v1.4.30 = NOT PHONE-TESTED YET.
+- R1 mobile UX: newly created account backup folders use timestamp-first short names (`YYMMDD-HHMMSS-YTM-Export`, `-YTM-Sync`, `-YTM-Full`).
+- R1 mobile UX: consolidated preview action shortened from `Матеріалізувати` to `Створити backup`.
+- Old `YTM-Importer-Account-*` folders remain compatible; chain resolution continues to use manifest links rather than filename prefixes.
 
 ## v1.4.29
 - Added non-destructive incremental/sync-style account backup.

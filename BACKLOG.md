@@ -292,6 +292,11 @@ v1.4.30 — Consolidated Delta-Chain Restore
 - [ ] phone test: `top 3` remains exact 3/3
 - [ ] phone test: repeat Search remains 0 new `search.list`
 - [ ] phone test: source baseline + delta remain intact
+- [x] detect BUG-007: long backup folder names are awkward in phone file browser
+- [x] detect BUG-007: `Матеріалізувати` action wraps poorly
+- [x] R1: timestamp-first short names for new Export / Sync / Full sessions
+- [x] R1: `Створити backup` action label
+- [ ] phone retest BUG-007: button fit + short new Full folder name
 
 ## Next
 After v1.4.30 targeted phone QA:

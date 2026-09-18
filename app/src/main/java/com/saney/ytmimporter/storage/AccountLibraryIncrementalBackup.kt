@@ -759,13 +759,8 @@ object AccountLibraryIncrementalBackup {
                 )
 
         val folderName =
-            "YTM-Importer-Account-Sync-" +
-                SimpleDateFormat(
-                    "yyyyMMdd-HHmmss",
-                    Locale.US
-                ).format(
-                    Date()
-                )
+            AccountBackupNaming
+                .syncFolderName()
 
         val folderUri =
             DocumentsContract

@@ -79,6 +79,7 @@ check_file "app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore
 check_file "app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryManifestImporter.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryIncrementalBackup.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryDeltaChainRestorer.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/storage/AccountBackupNaming.kt"
 check_file "OPEN_QUESTIONS.md"
 check_file "RELEASE_TEST_STATUS.md"
 check_file "docs/v.1.4.17/qa/BUG_REGISTER.md"

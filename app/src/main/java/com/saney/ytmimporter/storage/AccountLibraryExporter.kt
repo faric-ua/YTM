@@ -43,11 +43,8 @@ object AccountLibraryExporter {
             )
 
         val folderName =
-            "YTM-Importer-Account-Export-" +
-                SimpleDateFormat(
-                    "yyyyMMdd-HHmmss",
-                    Locale.US
-                ).format(Date())
+            AccountBackupNaming
+                .exportFolderName()
 
         val folderUri =
             DocumentsContract.createDocument(

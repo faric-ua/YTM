@@ -30,13 +30,15 @@
 
 ## Перевірка 3 — materialize
 
-Натисни `Матеріалізувати`.
+Натисни `Створити backup`.
+
+Текст кнопки має вміщатися без некрасивого переносу.
 
 Вибери папку-батько для результату.
 
 Очікуємо:
 
-- нову `YTM-Importer-Account-Consolidated-*` папку;
+- нову коротку timestamp-first папку `YYMMDD-HHMMSS-YTM-Full`;
 - 2 YTM Project файли;
 - `manifest.json`;
 - source chain не змінено.
@@ -81,3 +83,15 @@
 Переконайся, що старі baseline + delta папки все ще на місці.
 
 Достатньо повторно відкрити старий baseline або delta boundary, якщо щось виглядає підозріло.
+
+## R1 mobile naming smoke
+
+Старі довгі `YTM-Importer-Account-*` папки не перейменовуються і мають залишатися сумісними.
+
+Для нових backup-сесій очікуємо короткі назви з датою/часом на початку:
+
+- Export: `YYMMDD-HHMMSS-YTM-Export`;
+- Sync: `YYMMDD-HHMMSS-YTM-Sync`;
+- consolidated full: `YYMMDD-HHMMSS-YTM-Full`.
+
+Для R1 достатньо реально перевірити новий `YTM-Full`; Export/Sync генератори покриваються статичним аудитом і можуть бути phone-smoke під час наступної природної операції.

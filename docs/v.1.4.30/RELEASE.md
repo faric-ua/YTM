@@ -61,6 +61,23 @@ The regular v1.4.28+ manifest importer can open the consolidated backup directly
 
 The consolidated backup can also become the baseline for a later incremental backup.
 
+## R1 mobile backup UX
+
+Real-phone QA showed two usability problems on a narrow phone screen:
+
+- old generated folder names put the distinguishing timestamp at the far right, forcing horizontal/landscape inspection in Android file browsing;
+- the technical action `Матеріалізувати` wrapped awkwardly inside the preview button.
+
+R1 changes **newly created** account-backup folder names to timestamp-first mobile forms:
+
+- `YYMMDD-HHMMSS-YTM-Export`;
+- `YYMMDD-HHMMSS-YTM-Sync`;
+- `YYMMDD-HHMMSS-YTM-Full`.
+
+Old `YTM-Importer-Account-*` folders remain fully supported. Chain resolution is based on manifest metadata / `baseSessionName`, not on a required filename prefix, so old and new naming can coexist in one chain.
+
+The preview action is shortened to `Створити backup`.
+
 ## API boundary
 
 The complete chain scan, replay and materialization is local filesystem work.

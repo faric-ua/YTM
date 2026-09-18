@@ -7,8 +7,8 @@ YTM Importer v1.4.30 FULL — FILE MANIFEST
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
-b9a42dbcf2d06294  BACKLOG.md
-7b239a9feed03088  CHANGELOG.md
+cce043ab05a06237  BACKLOG.md
+09d9905627f2f01d  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 503b7f911c1ac04c  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -84,7 +84,7 @@ d82aae793cbd99c4  YTM_ASSISTANT_WORKFLOW.md
 651321f836af9236  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 6a4b4fcd5f443032  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 1ae0123d61c7496f  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-be7d82908a65bccc  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+cbb087dce865e55d  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 67141799b3184cca  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 f4dc26fd0a49f24c  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 425c1962df17dc4a  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
@@ -98,9 +98,10 @@ e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 32d5c420fc9d2cda  app/src/main/java/com/saney/ytmimporter/model/Track.kt
 249f69059120d001  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
 69f61fe633c18f88  app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
-25de8eada195dd32  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryDeltaChainRestorer.kt
-520a65c9f50141a9  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryExporter.kt
-7872f629b96f6ae9  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryIncrementalBackup.kt
+fe547e95ea63aab3  app/src/main/java/com/saney/ytmimporter/storage/AccountBackupNaming.kt
+571054e025251aa9  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryDeltaChainRestorer.kt
+8a3b55c3187da55a  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryExporter.kt
+c606025da7de4466  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryIncrementalBackup.kt
 8b1bd44762ebc099  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryManifestImporter.kt
 a8df82aa07ada08c  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
 9582bc554612c4c4  app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
@@ -1057,10 +1058,10 @@ cfe983e51369f4ce  docs/v.1.4.3/REGRESSION_CHECKLIST.md
 322116cf7e140e80  docs/v.1.4.3/diagrams/DIALOG_SYSTEM.md
 42915a80b3bcbd50  docs/v.1.4.3/diagrams/README.md
 ece37b475c4e2f79  docs/v.1.4.30/REGRESSION_CHECKLIST.md
-df1bf6d2d0c37df8  docs/v.1.4.30/RELEASE.md
+e7d23848acdceebf  docs/v.1.4.30/RELEASE.md
 688028c414808a25  docs/v.1.4.30/diagrams/DELTA_CHAIN_FLOW.md
-0e16a57d70ed0130  docs/v.1.4.30/qa/BUG_REGISTER.md
-4e7ec10751171173  docs/v.1.4.30/qa/PHONE_TEST.md
+f690454f2168e631  docs/v.1.4.30/qa/BUG_REGISTER.md
+55e39d5dde1fd1f4  docs/v.1.4.30/qa/PHONE_TEST.md
 34d29ff1ab04898f  docs/v.1.4.4/REGRESSION_CHECKLIST.md
 cd2362465bf4e6de  docs/v.1.4.4/RELEASE.md
 5f809adb076532f4  docs/v.1.4.4/diagrams/ADAPTIVE_BUTTONS.md
@@ -1095,7 +1096,7 @@ d8d981601292bcf3  docs/v.1.4.8/diagrams/DIALOG_SAFE_VIEWPORT.md
 4b4c4a110300298e  docs/v.1.4.9/diagrams/DIALOG_FIRST_FRAME.md
 463352aea3df25d4  docs/v.1.4.9/diagrams/README.md
 d5f372c6d46ad7c8  gradle.properties
-daddc039b87981ce  qa/BUG_REGISTER.md
+a0922a7f0b5bb6ff  qa/BUG_REGISTER.md
 607a79dbdf7d4a75  qa/MASTER_TEST_PLAN.md
 084a4e801c888158  qa/TEST_DATA.md
 e73ddc7565ea4b94  qa/TEST_EVIDENCE_POLICY.md
@@ -1136,7 +1137,7 @@ dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
 dba7d57ce9d0d5c1  scripts/project-handoff-audit.sh
 c33a21ee18d8c436  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
-f6dd9322c33f00f4  scripts/release-preflight.sh
+549903569769f7c0  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d101c2a72335189a  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1170,5 +1171,5 @@ a251836bf6c7ae0c  scripts/v1427-exact-id-search-audit.py
 17ce9342abf81f91  scripts/v1428-qa-close-audit.sh
 8380e9a770bf8ac3  scripts/v1429-incremental-backup-audit.sh
 e8b3243088624b9d  scripts/v1429-qa-close-audit.sh
-00339bf567f190f3  scripts/v1430-delta-chain-audit.sh
+9fe85fb7303714b4  scripts/v1430-delta-chain-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts

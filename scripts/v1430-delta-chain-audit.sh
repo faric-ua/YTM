@@ -8,10 +8,14 @@ fail() {
 
 IMPORT="app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 CHAIN="app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryDeltaChainRestorer.kt"
+NAMING="app/src/main/java/com/saney/ytmimporter/storage/AccountBackupNaming.kt"
+EXPORTER="app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryExporter.kt"
+SYNC="app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryIncrementalBackup.kt"
 
 for f in \
   "$IMPORT" \
   "$CHAIN" \
+  "$NAMING" \
   docs/v.1.4.30/RELEASE.md \
   docs/v.1.4.30/REGRESSION_CHECKLIST.md \
   docs/v.1.4.30/qa/PHONE_TEST.md \
@@ -34,8 +38,11 @@ grep -Fq 'showDeltaChainHeadPicker' "$IMPORT" \
   || fail "delta-chain head picker missing"
 grep -Fq 'showDeltaChainPreview' "$IMPORT" \
   || fail "delta-chain preview missing"
-grep -Fq 'Матеріалізувати' "$IMPORT" \
-  || fail "materialize action missing"
+grep -Fq 'Створити backup' "$IMPORT" \
+  || fail "mobile-friendly create-backup action missing"
+if grep -Fq 'label =' "$IMPORT" && grep -Fq '"Матеріалізувати"' "$IMPORT"; then
+  fail "long technical materialize label still present"
+fi
 grep -Fq 'materializeDeltaChain' "$IMPORT" \
   || fail "materialize result flow missing"
 grep -Fq 'YouTube API = 0' "$IMPORT" \
@@ -64,8 +71,20 @@ grep -Fq 'playlistId manifest/project не збігається' "$CHAIN" \
 grep -Fq 'privacyStatus manifest/project не збігається' "$CHAIN" \
   || fail "privacyStatus cross-check missing"
 
-grep -Fq 'YTM-Importer-Account-Consolidated-' "$CHAIN" \
-  || fail "consolidated folder prefix missing"
+grep -Fq '"yyMMdd-HHmmss"' "$NAMING" \
+  || fail "mobile-first timestamp format missing"
+grep -Fq '"${timestamp(date)}-YTM-Export"' "$NAMING" \
+  || fail "short export folder name missing"
+grep -Fq '"${timestamp(date)}-YTM-Sync"' "$NAMING" \
+  || fail "short sync folder name missing"
+grep -Fq '"${timestamp(date)}-YTM-Full"' "$NAMING" \
+  || fail "short consolidated folder name missing"
+grep -Fq 'exportFolderName' "$EXPORTER" \
+  || fail "exporter does not use centralized mobile naming"
+grep -Fq 'syncFolderName' "$SYNC" \
+  || fail "incremental backup does not use centralized mobile naming"
+grep -Fq 'consolidatedFolderName' "$CHAIN" \
+  || fail "delta-chain materializer does not use centralized mobile naming"
 grep -Fq 'CONSOLIDATED_FULL' "$CHAIN" \
   || fail "consolidated backupMode missing"
 grep -Fq '"schemaVersion",' "$CHAIN" \
@@ -108,6 +127,8 @@ grep -Fq '**NOT PHONE-TESTED YET**' docs/v.1.4.30/RELEASE.md \
 
 echo "PASS:"
 echo "- local backup-session discovery"
+echo "- mobile-first timestamp-first backup folder names"
+echo "- short consolidated action label"
 echo "- delta head selection"
 echo "- baseSessionName chain traversal + cycle guard"
 echo "- ALL / SELECTED scope preservation"
