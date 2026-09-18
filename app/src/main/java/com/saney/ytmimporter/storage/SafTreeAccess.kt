@@ -146,7 +146,9 @@ object SafTreeAccess {
 
         val fallback =
             treeDocumentId
-                ?.let(Uri::decode)
+                ?.let {
+                    Uri.decode(it)
+                }
                 ?.substringAfterLast(':')
                 ?.substringAfterLast('/')
                 ?.trim()
