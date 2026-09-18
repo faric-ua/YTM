@@ -246,7 +246,7 @@ class DataActivity : Activity() {
 
         rollbackButton =
             actionButton(
-                label = "Відкотити останній Restore",
+                label = "Відкотити Restore",
                 primary = false
             ) {
                 confirmRestoreSafetySnapshot()
@@ -261,6 +261,18 @@ class DataActivity : Activity() {
             ) {
                 confirmDeleteSafetySnapshot()
             }
+
+        val palette =
+            AppThemeManager.palette(this)
+
+        snapshotDeleteButton.background =
+            roundedBackground(
+                color =
+                    palette.dangerFill,
+                radiusDp = 11,
+                strokeColor =
+                    palette.danger
+            )
 
         rollbackCard.addView(
             snapshotDeleteButton,
