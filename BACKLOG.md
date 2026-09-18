@@ -12,6 +12,7 @@ v1.4.37 — Full-screen Storage + Utility UI — IMPLEMENTED / PHONE RETEST NEED
 - UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
 - UX-009 Theme State Contrast — OPEN; Neon Dark Home colors are locked as the accepted reference; Green Dark workflow states need higher-contrast/inverse treatment without changing Neon Dark
 - UX-010 Utility Screens — OPEN; Home `Квота` and `Ще` should navigate to dedicated full-screen pages like `Черга`; rename `Ще` to `Меню` unless product wording changes before implementation
+- UX-011 Full-screen List Selectors — OPEN; dynamic long lists in Import must migrate from tall modal dialogs to dedicated full-screen selectors with fixed header/footer
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -518,3 +519,18 @@ including:
 - [ ] phone: save mode full-screen chooser
 - [ ] phone: Quota dedicated screen
 - [ ] phone: Menu dedicated screen + navigation smoke
+
+
+## UX-011 — Full-screen List Selectors
+- [x] real-phone evidence: storage chooser full-screen pattern accepted
+- [x] identify old selective-export multi-choice dialog
+- [x] identify old YTM playlist import menu dialog
+- [x] audit additional dynamic Import list dialogs
+- [ ] migrate YTM playlist import picker to full-screen single-select
+- [ ] migrate selective-export picker to full-screen multi-select with fixed `Далі` / `Скасувати`
+- [ ] migrate delta-chain head picker to full-screen single-select when multiple heads exist
+- [ ] migrate backup / manifest project picker to full-screen single-select
+- [ ] keep list content as the only scrollable region
+- [ ] keep Back/help/action controls fixed
+- [ ] do not convert short informational/confirmation modals unnecessarily
+- [ ] phone QA all four selector families
