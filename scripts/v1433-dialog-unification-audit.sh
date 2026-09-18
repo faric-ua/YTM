@@ -3,10 +3,9 @@ set -euo pipefail
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 SRC="app/src/main/java/com/saney/ytmimporter"
 UI="$SRC/ui/UiChrome.kt"
-GRADLE="app/build.gradle.kts"
-for f in "$UI" "$GRADLE" docs/v.1.4.33/RELEASE.md docs/v.1.4.33/REGRESSION_CHECKLIST.md docs/v.1.4.33/qa/PHONE_TEST.md docs/v.1.4.33/qa/BUG_REGISTER.md; do test -f "$f" || fail "missing v1.4.33 file: $f"; done
-grep -Fq 'versionCode = 67' "$GRADLE" || fail "versionCode 67 missing"
-grep -Fq 'versionName = "1.4.33"' "$GRADLE" || fail "versionName 1.4.33 missing"
+for f in "$UI" docs/v.1.4.33/RELEASE.md docs/v.1.4.33/REGRESSION_CHECKLIST.md docs/v.1.4.33/qa/PHONE_TEST.md docs/v.1.4.33/qa/BUG_REGISTER.md; do test -f "$f" || fail "missing v1.4.33 file: $f"; done
+grep -Fq 'versionName: **1.4.33**' docs/v.1.4.33/RELEASE.md || fail "v1.4.33 versionName snapshot missing"
+grep -Fq 'versionCode: **67**' docs/v.1.4.33/RELEASE.md || fail "v1.4.33 versionCode snapshot missing"
 grep -Fq 'class StableAlertBuilder' "$UI" || fail "StableAlertBuilder missing"
 grep -Fq 'fun showContentDialog' "$UI" || fail "content dialog missing"
 grep -Fq 'fun showMultiChoiceDialog' "$UI" || fail "multi-choice dialog missing"
@@ -25,7 +24,7 @@ POST="$(grep -n '^[[:space:]]*configureWindow()$' "$UI" | tail -n1 | cut -d: -f1
 [ "$PRE" -lt "$SHOW" ] || fail "pre-show config missing"
 [ "$POST" -gt "$SHOW" ] || fail "hidden post-show normalization missing"
 echo "PASS:"
-echo "- v1.4.33 / code 67"
+echo "- immutable v1.4.33 release snapshot present"
 echo "- native AlertDialog.Builder runtime path removed"
 echo "- StableAlertBuilder compatibility facade active"
 echo "- unified modal coverage: $TOTAL call sites"
