@@ -29,6 +29,7 @@
 | v1.4.34 | **PARTIALLY PHONE-TESTED — BACK BUTTON VISUAL PASS / QUOTA MODAL PASS** | Import + Review + Data vector back arrows are visually centered on phone. Quota modal first-frame stability passed a short real-phone recording. Remaining navigation/modal categories were deferred by the user; BUG-002 remains open. |
 | v1.4.35 | **NOT PHONE-TESTED — SUPERSEDED BY v1.4.36 BEFORE PHONE QA** | UX-008 Phase 1 implemented remembered SAF tree roots and explicit in-app cancel before Android folder picker; development continued into file-save Phase 2A before phone QA. |
 | v1.4.36 | **PARTIALLY PHONE-TESTED — IN-APP SAF ENTRY PASS / LONG-LIST FIXED-FOOTER FAIL** | Signed APK installed. Import remembered-root chooser appears before Android SAF, but with many persisted roots its Add-folder and Cancel controls scroll off-screen; dedicated full-screen fixed-footer chooser required. File-save Phase 2A functional cases remain pending. |
+| v1.4.37 | **NOT PHONE-TESTED YET** | Full-screen fixed-header/fixed-footer storage chooser, dedicated Quota page, and `Ще` → `Меню` dedicated utility page implemented after v1.4.36 long-list phone finding. |
 
 Static audits and GitHub build do not equal phone testing.
 
