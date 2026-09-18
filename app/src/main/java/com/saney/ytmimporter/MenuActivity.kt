@@ -1,0 +1,282 @@
+package com.saney.ytmimporter
+
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Typeface
+import android.os.Bundle
+import android.view.Gravity
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
+import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.UiChrome
+
+class MenuActivity : Activity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AppThemeManager.applyWindow(this)
+        render()
+    }
+
+    private fun render() {
+        val palette =
+            AppThemeManager.palette(this)
+
+        val root =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setBackgroundColor(
+                    palette.background
+                )
+            }
+
+        root.addView(
+            topBar()
+        )
+
+        root.addView(
+            TextView(this).apply {
+                text =
+                    "Додаткові дії та сервісні інструменти."
+                textSize = 13f
+                setTextColor(
+                    palette.muted
+                )
+                setPadding(
+                    dp(18),
+                    0,
+                    dp(18),
+                    dp(10)
+                )
+            }
+        )
+
+        val scroll =
+            ScrollView(this).apply {
+                isFillViewport = true
+            }
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(18)
+                )
+            }
+
+        addAction(
+            content = content,
+            title = "Тема",
+            subtitle = "Neon / Blue / Green",
+            action = ACTION_THEME
+        )
+
+        addAction(
+            content = content,
+            title = "Поточний проєкт",
+            subtitle = "Перевірити, зберегти або поділитися",
+            action = ACTION_PROJECT
+        )
+
+        addAction(
+            content = content,
+            title = "Заміни",
+            subtitle = "Перевірити ручні заміни",
+            action = ACTION_REPLACEMENTS
+        )
+
+        addAction(
+            content = content,
+            title = "Відкрити останній плейлист у YTM",
+            subtitle = "Перейти до останнього створеного або відкритого плейлиста",
+            action = ACTION_OPEN_YTM
+        )
+
+        addAction(
+            content = content,
+            title = "Дані",
+            subtitle = "Export / backup / restore",
+            action = ACTION_DATA
+        )
+
+        addAction(
+            content = content,
+            title = "Сервіс",
+            subtitle = "Допомога / diagnostics / cache",
+            action = ACTION_SERVICE
+        )
+
+        scroll.addView(content)
+
+        root.addView(
+            scroll,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        setContentView(root)
+        UiChrome.applyScreenInsets(
+            this,
+            root
+        )
+    }
+
+    private fun topBar():
+        LinearLayout {
+        val palette =
+            AppThemeManager.palette(this)
+
+        return LinearLayout(this).apply {
+            orientation =
+                LinearLayout.HORIZONTAL
+            gravity =
+                Gravity.CENTER_VERTICAL
+            setPadding(
+                dp(10),
+                dp(8),
+                dp(10),
+                dp(8)
+            )
+
+            addView(
+                UiChrome.backButton(
+                    activity =
+                        this@MenuActivity,
+                    onClick = {
+                        finish()
+                    }
+                ),
+                LinearLayout.LayoutParams(
+                    dp(48),
+                    dp(48)
+                )
+            )
+
+            addView(
+                TextView(
+                    this@MenuActivity
+                ).apply {
+                    text = "Меню"
+                    textSize = 20f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.text
+                    )
+                    setPadding(
+                        dp(12),
+                        0,
+                        0,
+                        0
+                    )
+                },
+                LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            )
+        }
+    }
+
+    private fun addAction(
+        content: LinearLayout,
+        title: String,
+        subtitle: String,
+        action: String
+    ) {
+        val palette =
+            AppThemeManager.palette(this)
+
+        val button =
+            Button(this).apply {
+                text =
+                    "$title\n$subtitle"
+                isAllCaps = false
+                textSize = 15f
+                gravity =
+                    Gravity.START or
+                        Gravity.CENTER_VERTICAL
+                setTextColor(
+                    palette.text
+                )
+                setPadding(
+                    dp(16),
+                    dp(12),
+                    dp(16),
+                    dp(12)
+                )
+                minimumHeight =
+                    dp(76)
+                background =
+                    AppThemeManager
+                        .surfaceDrawable(
+                            context =
+                                this@MenuActivity,
+                            fill =
+                                palette.surfaceAlt,
+                            radiusDp = 12,
+                            accentStroke = false
+                        )
+                setOnClickListener {
+                    setResult(
+                        RESULT_OK,
+                        Intent().putExtra(
+                            EXTRA_ACTION,
+                            action
+                        )
+                    )
+                    finish()
+                }
+            }
+
+        content.addView(
+            button,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin =
+                    dp(9)
+            }
+        )
+    }
+
+    private fun dp(value: Int): Int =
+        (
+            value *
+                resources
+                    .displayMetrics
+                    .density
+        ).toInt()
+
+    companion object {
+        const val EXTRA_ACTION =
+            "menu_action"
+
+        const val ACTION_THEME =
+            "THEME"
+        const val ACTION_PROJECT =
+            "PROJECT"
+        const val ACTION_REPLACEMENTS =
+            "REPLACEMENTS"
+        const val ACTION_OPEN_YTM =
+            "OPEN_YTM"
+        const val ACTION_DATA =
+            "DATA"
+        const val ACTION_SERVICE =
+            "SERVICE"
+    }
+}
