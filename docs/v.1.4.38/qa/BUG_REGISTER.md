@@ -9,6 +9,7 @@
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Ordinary repeat-search preserves canonical exact videoId tracks; real-phone search plan confirmed 0 redundant search.list for exact 3/3. | v1.4.26 repro → v1.4.27 PASS |
 | BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 | P2 | Incremental-delta boundary explanation was truncated as a Toast; R2 replaced it with a readable UiChrome dialog and phone retest passed. | v1.4.29 repro → v1.4.29 R2 PASS |
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
+| BUG-008 / Q-008 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.38 R1 | P2 | After choosing a full backup, rotating while the Restore confirmation is open dismisses it and forces the user to select the file again. R1 caches the pending backup in app cache and restores the confirmation after Activity recreation. | v1.4.38 phone repro → R1 rotation-state fix |
 
 ## BUG-002 current evidence
 
@@ -137,3 +138,34 @@ Phone retest result (2026-09-17):
 - ordinary repeat-search plan showed search required 0;
 - ordinary repeat-search plan showed new `search.list` 0;
 - BUG-005 / Q-005 closed for the tested path.
+
+
+## BUG-008 reproduction
+
+Preconditions:
+- v1.4.38;
+- open Data → Restore;
+- select a valid `YTM_Backup_*.json`.
+
+Steps:
+1. Wait for the `Підтвердити Restore` dialog that shows schema/version/date/group information.
+2. Rotate the phone before pressing Restore or Cancel.
+
+Actual on v1.4.38:
+- the confirmation disappears;
+- the selected file context is lost;
+- the user must reopen the picker and find the backup again.
+
+Expected:
+- pending Restore confirmation survives Activity recreation;
+- the same already-validated backup information is shown again;
+- no second system file selection is required.
+
+Implemented in v1.4.38 R1:
+- validated pending backup raw data is copied to app cache;
+- only a small pending-state flag is stored in instance state;
+- after rotation, DataActivity re-reads the cached pending backup and recreates the confirmation;
+- explicit Cancel / Restore clears the temporary cached file;
+- the backup itself is not placed into the Android saved-state Bundle.
+
+Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.38 R1.**
