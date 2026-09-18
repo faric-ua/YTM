@@ -33,7 +33,7 @@ Current application:
 - versionName: **1.4.38**
 - versionCode: **72**
 - release focus: **Full-screen Selectors + Safer Destructive Actions**
-- release status: **NOT PHONE-TESTED YET — v1.4.38 SELECTOR/SAFETY/COPY QA NEEDED**
+- release status: **PARTIALLY PHONE-TESTED — SELECTORS/DESTRUCTIVE CONFIRMATIONS PASS; R1 CHECKBOX + BUG-008 ROTATION RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
