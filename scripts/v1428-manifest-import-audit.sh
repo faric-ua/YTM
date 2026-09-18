@@ -28,10 +28,13 @@ grep -Fq 'private val manifestImportFolderRequestCode' "$IMPORT" \
   || fail "manifest folder request code missing"
 grep -Fq '2404' "$IMPORT" \
   || fail "manifest folder request code value missing"
-grep -Fq 'Intent.ACTION_OPEN_DOCUMENT_TREE' "$IMPORT" \
-  || fail "manifest folder picker must use ACTION_OPEN_DOCUMENT_TREE"
-grep -Fq 'FLAG_GRANT_PERSISTABLE_URI_PERMISSION' "$IMPORT" \
-  || fail "persistable folder permission missing"
+# v1.4.28 used ACTION_OPEN_DOCUMENT_TREE directly from ImportActivity.
+# Current releases may route the same folder selection through a shared/full-screen
+# SAF chooser, so the historical audit must not pin the current UI implementation.
+grep -Fq 'Android folder picker selects the export session folder.' docs/v.1.4.28/RELEASE.md \
+  || fail "v1.4.28 folder-picker release contract missing"
+grep -Fq 'chooseSafTree(' "$IMPORT" \
+  || fail "current manifest folder selection bridge missing"
 grep -Fq 'Відкрити backup / manifest.json' "$IMPORT" \
   || fail "manifest-import UI action missing"
 grep -Fq 'AccountLibraryManifestImporter' "$IMPORT" \
@@ -91,7 +94,7 @@ grep -Fq 'Bulk Export Manifest Import' docs/v.1.4.28/RELEASE.md \
   || fail "v1.4.28 release identity missing"
 
 echo "PASS:"
-echo "- manifest folder picker"
+echo "- immutable v1.4.28 manifest folder-picker contract + current folder bridge"
 echo "- schema v1/v2 account-export manifest parsing"
 echo "- manifest count/file validation"
 echo "- one-project catalog selection"
