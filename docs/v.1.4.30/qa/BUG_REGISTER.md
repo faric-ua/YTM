@@ -8,7 +8,7 @@
 | BUG-004 / Q-004 | RETEST v1.4.17 | P1 | Authorization can become invalid while Step 2 remains green/checked. |
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Exact-ID repeat-search guard passed with 0 new `search.list`. |
 | BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 | P2 | Delta-boundary Toast truncation fixed with readable dialog. |
-| BUG-007 / Q-007 | FIX IMPLEMENTED — RETEST v1.4.30 R1 | P3 | Backup folder names are too long for phone file browsing and `Матеріалізувати` wraps poorly; R1 uses timestamp-first short names and `Створити backup`. |
+| BUG-007 / Q-007 | R2 FIX IMPLEMENTED — RETEST NEEDED | P3 | R1 short folder names passed, but `Створити backup` still wrapped and made dialog actions different heights; R2 uses one-word `Створити`. |
 
 ## v1.4.30 note
 

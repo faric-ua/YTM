@@ -8,7 +8,7 @@
 | BUG-004 / Q-004 | RETEST v1.4.17 | P1 | Authorization can become invalid while Step 2 remains green/checked. | B-01 |
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Ordinary repeat-search preserves canonical exact videoId tracks; real-phone search plan confirmed 0 redundant search.list for exact 3/3. | v1.4.26 repro → v1.4.27 PASS |
 | BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 | P2 | Incremental-delta boundary explanation was truncated as a Toast; R2 replaced it with a readable UiChrome dialog and phone retest passed. | v1.4.29 repro → v1.4.29 R2 PASS |
-| BUG-007 / Q-007 | FIX IMPLEMENTED — RETEST v1.4.30 R1 | P3 | Long backup folder names hide the timestamp in phone file browsing; consolidated preview action also wraps. R1 introduces timestamp-first short names and `Створити backup`. | v1.4.30 phone repro → R1 retest pending |
+| BUG-007 / Q-007 | R2 FIX IMPLEMENTED — RETEST NEEDED | P3 | Timestamp-first folder naming passed on phone. R1 `Створити backup` still wrapped and made action buttons unequal in height; R2 uses one-word `Створити`. | v1.4.30 phone repro → R1 naming PASS → R2 button retest pending |
 
 ## BUG-002 current evidence
 

@@ -296,7 +296,8 @@ v1.4.30 — Consolidated Delta-Chain Restore
 - [x] detect BUG-007: `Матеріалізувати` action wraps poorly
 - [x] R1: timestamp-first short names for new Export / Sync / Full sessions
 - [x] R1: `Створити backup` action label
-- [ ] phone retest BUG-007: button fit + short new Full folder name
+- [x] phone retest BUG-007 naming: `YYMMDD-HHMMSS-YTM-Full` visible in portrait
+- [ ] phone retest BUG-007 button: `Створити` / `Скасувати` single-line and equal height
 
 ## Next
 After v1.4.30 targeted phone QA:

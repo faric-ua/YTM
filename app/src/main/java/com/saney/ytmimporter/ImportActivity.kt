@@ -2261,7 +2261,7 @@ class ImportActivity : Activity() {
                 listOf(
                     UiChrome.DialogAction(
                         label =
-                            "Створити backup",
+                            "Створити",
                         tone =
                             UiChrome.ActionTone.ACCENT,
                         onClick = {

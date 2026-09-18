@@ -76,7 +76,9 @@ R1 changes **newly created** account-backup folder names to timestamp-first mobi
 
 Old `YTM-Importer-Account-*` folders remain fully supported. Chain resolution is based on manifest metadata / `baseSessionName`, not on a required filename prefix, so old and new naming can coexist in one chain.
 
-The preview action is shortened to `Створити backup`.
+R1 shortened the preview action to `Створити backup`, but real-phone retest still showed it wrapping to two lines and making the two dialog buttons different heights.
+
+R2 shortens the action again to the one-word `Створити`, keeping the meaning from the surrounding `Backup chain — preview` context while allowing both action buttons to remain single-line and visually balanced.
 
 ## API boundary
 

@@ -16,6 +16,7 @@
 - v1.4.30 = NOT PHONE-TESTED YET.
 - R1 mobile UX: newly created account backup folders use timestamp-first short names (`YYMMDD-HHMMSS-YTM-Export`, `-YTM-Sync`, `-YTM-Full`).
 - R1 mobile UX: consolidated preview action shortened from `Матеріалізувати` to `Створити backup`.
+- R2 phone-fit follow-up: `Створити backup` still wrapped on the real phone, so the action is now one-word `Створити` to keep both preview buttons single-line and equal-height.
 - Old `YTM-Importer-Account-*` folders remain compatible; chain resolution continues to use manifest links rather than filename prefixes.
 
 ## v1.4.29

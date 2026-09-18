@@ -7,8 +7,8 @@ YTM Importer v1.4.30 FULL — FILE MANIFEST
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
-cce043ab05a06237  BACKLOG.md
-09d9905627f2f01d  CHANGELOG.md
+1ee39a8a639f49d8  BACKLOG.md
+908d01e3c0be5d02  CHANGELOG.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 503b7f911c1ac04c  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -84,7 +84,7 @@ d82aae793cbd99c4  YTM_ASSISTANT_WORKFLOW.md
 651321f836af9236  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 6a4b4fcd5f443032  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 1ae0123d61c7496f  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-cbb087dce865e55d  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+3731ec2f27a47f47  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 67141799b3184cca  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 f4dc26fd0a49f24c  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 425c1962df17dc4a  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
@@ -1058,10 +1058,10 @@ cfe983e51369f4ce  docs/v.1.4.3/REGRESSION_CHECKLIST.md
 322116cf7e140e80  docs/v.1.4.3/diagrams/DIALOG_SYSTEM.md
 42915a80b3bcbd50  docs/v.1.4.3/diagrams/README.md
 ece37b475c4e2f79  docs/v.1.4.30/REGRESSION_CHECKLIST.md
-e7d23848acdceebf  docs/v.1.4.30/RELEASE.md
+cbd767824347bd9b  docs/v.1.4.30/RELEASE.md
 688028c414808a25  docs/v.1.4.30/diagrams/DELTA_CHAIN_FLOW.md
-f690454f2168e631  docs/v.1.4.30/qa/BUG_REGISTER.md
-55e39d5dde1fd1f4  docs/v.1.4.30/qa/PHONE_TEST.md
+aa090a86897be2ab  docs/v.1.4.30/qa/BUG_REGISTER.md
+8447295b56252f2d  docs/v.1.4.30/qa/PHONE_TEST.md
 34d29ff1ab04898f  docs/v.1.4.4/REGRESSION_CHECKLIST.md
 cd2362465bf4e6de  docs/v.1.4.4/RELEASE.md
 5f809adb076532f4  docs/v.1.4.4/diagrams/ADAPTIVE_BUTTONS.md
@@ -1096,7 +1096,7 @@ d8d981601292bcf3  docs/v.1.4.8/diagrams/DIALOG_SAFE_VIEWPORT.md
 4b4c4a110300298e  docs/v.1.4.9/diagrams/DIALOG_FIRST_FRAME.md
 463352aea3df25d4  docs/v.1.4.9/diagrams/README.md
 d5f372c6d46ad7c8  gradle.properties
-a0922a7f0b5bb6ff  qa/BUG_REGISTER.md
+6d59adf688b4bf26  qa/BUG_REGISTER.md
 607a79dbdf7d4a75  qa/MASTER_TEST_PLAN.md
 084a4e801c888158  qa/TEST_DATA.md
 e73ddc7565ea4b94  qa/TEST_EVIDENCE_POLICY.md
@@ -1171,5 +1171,5 @@ a251836bf6c7ae0c  scripts/v1427-exact-id-search-audit.py
 17ce9342abf81f91  scripts/v1428-qa-close-audit.sh
 8380e9a770bf8ac3  scripts/v1429-incremental-backup-audit.sh
 e8b3243088624b9d  scripts/v1429-qa-close-audit.sh
-9fe85fb7303714b4  scripts/v1430-delta-chain-audit.sh
+40a0562502058b45  scripts/v1430-delta-chain-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts

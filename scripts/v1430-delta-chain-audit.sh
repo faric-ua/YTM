@@ -38,8 +38,11 @@ grep -Fq 'showDeltaChainHeadPicker' "$IMPORT" \
   || fail "delta-chain head picker missing"
 grep -Fq 'showDeltaChainPreview' "$IMPORT" \
   || fail "delta-chain preview missing"
-grep -Fq 'Створити backup' "$IMPORT" \
-  || fail "mobile-friendly create-backup action missing"
+grep -Fq '"Створити"' "$IMPORT" \
+  || fail "single-line mobile create action missing"
+if grep -Fq '"Створити backup"' "$IMPORT"; then
+  fail "two-word create action still present and can wrap"
+fi
 if grep -Fq 'label =' "$IMPORT" && grep -Fq '"Матеріалізувати"' "$IMPORT"; then
   fail "long technical materialize label still present"
 fi
