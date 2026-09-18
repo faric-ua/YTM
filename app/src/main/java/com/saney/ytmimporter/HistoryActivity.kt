@@ -1437,7 +1437,7 @@ class HistoryActivity : Activity() {
                 dp(8)
             )
 
-                        addView(
+            addView(
                 UiChrome.backButton(
                     activity = this@HistoryActivity,
                     onClick = { onBack() }
