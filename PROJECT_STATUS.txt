@@ -403,3 +403,11 @@ UI FINDING — UX-009 THEME STATE CONTRAST
 - ATTENTION stays yellow/amber; READY stays semantic green
 - Blue Dark must be spot-checked before any shared state-color abstraction
 - reference/acceptance details: docs/design/THEME_STATE_REFERENCE.md
+
+v1.4.36 phone finding — remembered-root long list:
+- signed v1.4.36 installed on phone
+- in-app remembered-root chooser appears before Android SAF = PASS
+- many persisted roots make the chooser very tall
+- Add-folder and Cancel are currently inside the same scroll content and require scrolling to the bottom = UX FAIL
+- required follow-up: full-screen YTM chooser with fixed header/footer, scrollable middle list, and `?` help modal
+- do not close UX-008 Phase 1/2A until the fixed-footer chooser is phone-tested
