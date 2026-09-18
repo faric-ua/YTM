@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.35**
-- versionCode: **69**
-- release focus: **UX-008 Phase 1 — Saved SAF Folders**
-- release status: **NOT PHONE-TESTED YET — SAVED SAF FOLDER FLOW RETEST NEEDED**
+- versionName: **1.4.36**
+- versionCode: **70**
+- release focus: **UX-008 Phase 2A — Saved File Destinations**
+- release status: **NOT PHONE-TESTED YET — SAVED FILE DESTINATION RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -70,6 +70,8 @@ The v1.4.32 phone retest passed on the incremental backup preflight but quota an
 v1.4.34 standardizes secondary-screen back navigation after real-phone evidence showed the typographic `‹` glyph was visually off-center. Seven screens now use one 24dp vector arrow through `UiChrome.backButton(...)` with a 48×48dp touch target. Phone QA confirmed centered arrows on Import, Review and Data, and the Quota modal passed a first-frame no-jump recording. The remaining BUG-002 modal categories were explicitly deferred by the user, so BUG-002 stays open.
 
 v1.4.35 implements UX-008 Phase 1 for folder-tree operations. The repository audit found 13 document-picker entry points: 7 folder trees, 2 open-document flows and 4 create-document flows. The seven `ACTION_OPEN_DOCUMENT_TREE` paths now first offer Android-persisted SAF roots inside YTM Importer, with explicit `Скасувати` and `Додати іншу папку…` actions. Android's system picker is entered only after the user explicitly chooses `Додати іншу папку…`; even with no remembered root, the YTM Importer menu appears first so `Скасувати` remains available. File-level open/create flows remain later phases, and no broad filesystem permission is added.
+
+v1.4.36 implements UX-008 Phase 2A for the four create-file workflows. Data exports, Review Project saves, History Project saves and Service Diagnostics now show one shared in-app save-destination menu before any system file UI. Existing READ_WRITE SAF roots can receive the generated file directly; the user can add a reusable folder or explicitly choose the centralized system `ACTION_CREATE_DOCUMENT` fallback to change location/name. Direct writes avoid destructive overwrite with numbered filenames and attempt to remove a newly-created empty document if writing fails. The two open-file flows remain Phase 2B.
 
 The release remains only partially phone-tested overall.
 
@@ -246,12 +248,12 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-retest v1.4.35 for remembered SAF folder reuse and immediate in-app cancel;
-2. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
-3. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
-4. continue UX-008 file-level/in-root browsing only after Phase 1 phone evidence;
+1. build and phone-retest v1.4.36 for remembered save destinations, direct save, add-folder and explicit system fallback;
+2. implement UX-008 Phase 2B for the two open-file flows after v1.4.36 evidence;
+3. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
+4. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
 5. then establish the localization resource foundation for Ukrainian / Korean / English;
-5. then build the visual skin foundation without changing import/search/write semantics.
+6. then build the visual skin foundation without changing import/search/write semantics.
 
 Future product requirements already recorded:
 
