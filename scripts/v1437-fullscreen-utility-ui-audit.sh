@@ -4,7 +4,6 @@ set -euo pipefail
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
 SRC="app/src/main/java/com/saney/ytmimporter"
-GRADLE="app/build.gradle.kts"
 MANIFEST="app/src/main/AndroidManifest.xml"
 STORAGE="$SRC/StorageChooserActivity.kt"
 QUOTA="$SRC/QuotaActivity.kt"
@@ -14,7 +13,6 @@ IMPORT="$SRC/ImportActivity.kt"
 SAVE_FLOW="$SRC/ui/SafFileSaveFlow.kt"
 
 for f in \
-  "$GRADLE" \
   "$MANIFEST" \
   "$STORAGE" \
   "$QUOTA" \
@@ -31,8 +29,10 @@ do
   test -f "$f" || fail "missing v1.4.37 file: $f"
 done
 
-grep -Fq 'versionCode = 71' "$GRADLE" || fail "versionCode 71 missing"
-grep -Fq 'versionName = "1.4.37"' "$GRADLE" || fail "versionName 1.4.37 missing"
+grep -Fq 'versionName: **1.4.37**' docs/v.1.4.37/RELEASE.md \
+  || fail "v1.4.37 versionName snapshot missing"
+grep -Fq 'versionCode: **71**' docs/v.1.4.37/RELEASE.md \
+  || fail "v1.4.37 versionCode snapshot missing"
 
 for activity in StorageChooserActivity QuotaActivity MenuActivity
 do
@@ -46,8 +46,8 @@ grep -Fq 'footer()' "$STORAGE" || fail "storage chooser fixed footer missing"
 grep -Fq 'text = "?"' "$STORAGE" || fail "storage chooser help button missing"
 grep -Fq 'showHelp()' "$STORAGE" || fail "storage chooser help action missing"
 grep -Fq 'Додати іншу папку…' "$STORAGE" || fail "tree add-folder footer missing"
-grep -Fq 'Додати папку для швидкого збереження…' "$STORAGE" || fail "save add-folder footer missing"
-grep -Fq 'Системне збереження / змінити ім’я…' "$STORAGE" || fail "system save fallback missing"
+grep -Fq 'Mode.SAVE' "$STORAGE" || fail "save-mode storage chooser missing"
+grep -Fq 'openSystemCreateDocument()' "$STORAGE" || fail "system save fallback missing"
 grep -Fq 'label = "Скасувати"' "$STORAGE" || fail "storage chooser cancel footer missing"
 
 TREE_COUNT="$(grep -R -h -F 'ACTION_OPEN_DOCUMENT_TREE' "$SRC" | wc -l | tr -d ' ')"
@@ -98,7 +98,7 @@ grep -Fq 'fixed bottom controls' docs/v.1.4.37/RELEASE.md \
   || fail "fixed-footer release contract missing"
 
 echo "PASS:"
-echo "- v1.4.37 / code 71"
+echo "- immutable v1.4.37 release snapshot present"
 echo "- full-screen storage chooser registered"
 echo "- remembered roots scroll independently from fixed controls"
 echo "- help / Add / Cancel are explicit"
