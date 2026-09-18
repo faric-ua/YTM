@@ -435,36 +435,105 @@ class ListSelectorActivity : Activity() {
         }
     }
 
-    private fun multiChoiceView(index: Int): CheckBox {
+    private fun multiChoiceView(index: Int): LinearLayout {
         val palette =
             AppThemeManager.palette(this)
 
-        return CheckBox(this).apply {
-            text = labels[index]
-            isChecked = selected[index]
-            textSize = 15f
-            gravity =
-                Gravity.START or Gravity.CENTER_VERTICAL
-            setTextColor(palette.text)
-            setPadding(
-                dp(14),
-                dp(10),
-                dp(14),
-                dp(10)
-            )
-            minimumHeight = dp(72)
-            background =
-                AppThemeManager.surfaceDrawable(
-                    context = this@ListSelectorActivity,
-                    fill = palette.surfaceAlt,
-                    radiusDp = 12,
-                    accentStroke = false
+        val row =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.HORIZONTAL
+                gravity =
+                    Gravity.CENTER_VERTICAL
+                minimumHeight =
+                    dp(72)
+                background =
+                    AppThemeManager.surfaceDrawable(
+                        context =
+                            this@ListSelectorActivity,
+                        fill =
+                            palette.surfaceAlt,
+                        radiusDp = 12,
+                        accentStroke = false
+                    )
+                setPadding(
+                    dp(6),
+                    dp(8),
+                    dp(14),
+                    dp(8)
                 )
-            setOnCheckedChangeListener { _, value ->
-                selected[index] = value
-                refreshSelectionState()
             }
+
+        val checkBox =
+            CheckBox(this).apply {
+                text = ""
+                isChecked =
+                    selected[index]
+                gravity =
+                    Gravity.CENTER
+                minWidth = 0
+                minimumWidth = 0
+                minHeight = 0
+                minimumHeight = 0
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    0
+                )
+                setOnCheckedChangeListener {
+                        _,
+                        value ->
+                    selected[index] =
+                        value
+                    refreshSelectionState()
+                }
+            }
+
+        row.addView(
+            checkBox,
+            LinearLayout.LayoutParams(
+                dp(48),
+                dp(48)
+            )
+        )
+
+        row.addView(
+            TextView(this).apply {
+                text =
+                    labels[index]
+                textSize =
+                    15f
+                gravity =
+                    Gravity.START or
+                        Gravity.CENTER_VERTICAL
+                setTextColor(
+                    palette.text
+                )
+                setPadding(
+                    dp(8),
+                    0,
+                    0,
+                    0
+                )
+                setOnClickListener {
+                    checkBox.isChecked =
+                        !checkBox.isChecked
+                }
+            },
+            LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        )
+
+        row.setOnClickListener {
+            checkBox.isChecked =
+                !checkBox.isChecked
         }
+
+        return row
     }
 
     private fun refreshSelectionState() {
