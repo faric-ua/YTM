@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -490,8 +491,20 @@ class ListSelectorActivity : Activity() {
                 }
             }
 
+        val checkColumn =
+            FrameLayout(this).apply {
+                addView(
+                    checkBox,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        Gravity.CENTER
+                    )
+                )
+            }
+
         row.addView(
-            checkBox,
+            checkColumn,
             LinearLayout.LayoutParams(
                 dp(48),
                 dp(48)
