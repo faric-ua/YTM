@@ -1050,31 +1050,25 @@ class HistoryActivity : Activity() {
     private fun confirmDeleteHistoryEntry(
         entry: HistoryEntry
     ) {
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Видалити запис?"
-            )
-            .setMessage(
+        UiChrome.showDestructiveConfirmDialog(
+            activity = this,
+            title =
+                "Видалити запис?",
+            message =
                 "Буде видалено тільки локальний History-запис " +
                     "«${entry.playlistName}».\n\n" +
-                    "Плейлист у YouTube/YTM не зміниться."
+                    "Плейлист у YouTube/YTM не зміниться.",
+            confirmLabel =
+                "Так, видалити"
+        ) {
+            historyStore.remove(
+                entry.id
             )
-            .setNegativeButton(
-                "Скасувати",
-                null
+            toast(
+                "Запис видалено"
             )
-            .setPositiveButton(
-                "Видалити"
-            ) { _, _ ->
-                historyStore.remove(
-                    entry.id
-                )
-                toast(
-                    "Запис видалено"
-                )
-                showListScreen()
-            }
-            .show()
+            showListScreen()
+        }
     }
 
     private fun confirmClearHistory() {
@@ -1088,28 +1082,22 @@ class HistoryActivity : Activity() {
             return
         }
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Очистити всю історію?"
-            )
-            .setMessage(
+        UiChrome.showDestructiveConfirmDialog(
+            activity = this,
+            title =
+                "Очистити всю історію?",
+            message =
                 "Буде видалено ${entries.size} локальних записів.\n\n" +
-                    "Плейлисти YouTube/YTM і Pending Queue не змінюються."
+                    "Плейлисти YouTube/YTM і Pending Queue не змінюються.",
+            confirmLabel =
+                "Так, очистити все"
+        ) {
+            historyStore.clear()
+            toast(
+                "Історію очищено"
             )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Очистити"
-            ) { _, _ ->
-                historyStore.clear()
-                toast(
-                    "Історію очищено"
-                )
-                showListScreen()
-            }
-            .show()
+            showListScreen()
+        }
     }
 
     private fun buildHistorySummary(
