@@ -14,6 +14,7 @@ v1.4.37 — Full-screen Storage + Utility UI — IMPLEMENTED / PHONE RETEST NEED
 - UX-010 Utility Screens — OPEN; Home `Квота` and `Ще` should navigate to dedicated full-screen pages like `Черга`; rename `Ще` to `Меню` unless product wording changes before implementation
 - UX-011 Full-screen List Selectors — OPEN; dynamic long lists in Import must migrate from tall modal dialogs to dedicated full-screen selectors with fixed header/footer
 - UX-012 Destructive Action Confirmation — OPEN; destructive local actions need unmistakable confirmation hierarchy; safety-snapshot deletion currently has no second confirmation
+- UX-013 Mobile Action Copy Fit — OPEN; action labels must stay short, explicit, and single-line on phone-sized buttons
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -550,3 +551,15 @@ including:
 - [ ] require a dedicated confirmation before deleting Restore safety snapshot
 - [ ] use stronger two-step confirmation for bulk/irreversible actions only
 - [ ] phone QA accidental-tap resistance
+
+
+## UX-013 — Mobile Action Copy Fit
+- [x] record v1.4.37 phone evidence for wrapped/clipped action labels
+- [ ] Restore confirm: `Вибрати backup` → `Вибрати файл`
+- [ ] Restore success: `OK` → `Готово`
+- [ ] Save chooser: `Додати папку для швидкого збереження…` → `Додати папку…`
+- [ ] Save chooser: `Системне збереження / змінити ім’я…` → `Зберегти як…`
+- [ ] Rollback success: remove direct `Видалити snapshot` action from the success dialog
+- [ ] move snapshot deletion to a dedicated Data action with explicit destructive confirmation
+- [ ] static audit: critical action labels must not rely on two-line wrapping
+- [ ] real-phone QA at 783px portrait reference width
