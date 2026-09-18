@@ -15,7 +15,7 @@ SERVICE="$SRC/ServiceActivity.kt"
 UI="$SRC/ui/UiChrome.kt"
 STORAGE="$SRC/StorageChooserActivity.kt"
 
-for f in   "$GRADLE"   "$MANIFEST"   "$SELECTOR"   "$IMPORT"   "$DATA"   "$HISTORY"   "$PENDING"   "$SERVICE"   "$UI"   "$STORAGE"   docs/v.1.4.38/RELEASE.md   docs/v.1.4.38/UX_AUDIT.md   docs/v.1.4.38/REGRESSION_CHECKLIST.md   docs/v.1.4.38/qa/PHONE_TEST.md   docs/v.1.4.38/qa/BUG_REGISTER.md
+for f in   TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt   "$GRADLE"   "$MANIFEST"   "$SELECTOR"   "$IMPORT"   "$DATA"   "$HISTORY"   "$PENDING"   "$SERVICE"   "$UI"   "$STORAGE"   docs/v.1.4.38/RELEASE.md   docs/v.1.4.38/UX_AUDIT.md   docs/v.1.4.38/REGRESSION_CHECKLIST.md   docs/v.1.4.38/qa/PHONE_TEST.md   docs/v.1.4.38/qa/BUG_REGISTER.md
 do
   test -f "$f" || fail "missing v1.4.38 file: $f"
 done
@@ -32,6 +32,7 @@ grep -Fq 'text = "?"' "$SELECTOR"   || fail "selector help button missing"
 grep -Fq 'label = "Скасувати"' "$SELECTOR"   || fail "selector cancel footer missing"
 grep -Fq 'Mode.SINGLE' "$SELECTOR"   || fail "single-select mode missing"
 grep -Fq 'Mode.MULTI' "$SELECTOR"   || fail "multi-select mode missing"
+grep -Fq 'private fun multiChoiceView(index: Int): LinearLayout' "$SELECTOR"   || fail "multi-select dedicated checkbox column missing"
 
 SINGLE_CALLS="$(grep -F 'ListSelectorActivity.singleIntent(' "$IMPORT" | wc -l | tr -d ' ')"
 MULTI_CALLS="$(grep -F 'ListSelectorActivity.multiIntent(' "$IMPORT" | wc -l | tr -d ' ')"
@@ -65,6 +66,10 @@ grep -Fq 'confirmClearExpiredSearchCache' "$SERVICE"   || fail "expired SearchCa
 
 grep -Fq 'label = "Видалити знімок"' "$DATA"   || fail "separate snapshot delete action missing"
 grep -Fq 'confirmDeleteSafetySnapshot()' "$DATA"   || fail "snapshot delete confirmation route missing"
+grep -Fq 'STATE_RESTORE_CONFIRMATION_PENDING' "$DATA"   || fail "Restore rotation saved-state guard missing"
+grep -Fq 'PENDING_RESTORE_CACHE_FILE' "$DATA"   || fail "pending Restore cache file guard missing"
+grep -Fq 'restorePendingBackupConfirmation()' "$DATA"   || fail "Restore confirmation recreation path missing"
+grep -Fq 'dialog.setOnCancelListener' "$DATA"   || fail "Restore pending-cache cancel cleanup missing"
 if grep -A35 -F 'private fun restoreSafetySnapshotNow()' "$DATA" | grep -Fq 'setNegativeButton'; then
   fail "rollback-success dialog still exposes a side/destructive action"
 fi
@@ -97,6 +102,7 @@ echo "- legacy Import long-list menu/multi-choice dialogs removed"
 echo "- destructive local mutations use explicit danger confirmation"
 echo "- safety snapshot deletion separated from rollback success"
 echo "- short mobile action copy present"
+echo "- R1 checkbox centering + Restore rotation persistence guarded"
 echo "- both generic open-document regression paths remain"
 echo "- no broad filesystem permission"
 echo "- Neon Dark color lock retained"
