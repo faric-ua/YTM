@@ -256,7 +256,7 @@ class DataActivity : Activity() {
 
         snapshotDeleteButton =
             actionButton(
-                label = "Видалити snapshot",
+                label = "Видалити знімок",
                 primary = false
             ) {
                 confirmDeleteSafetySnapshot()
@@ -738,7 +738,7 @@ class DataActivity : Activity() {
                 "Локальний стан ДО останнього Restore повернуто.\n\n" +
                     "Груп: ${result.preferenceGroups}\n" +
                     "Відновлено значень: ${result.restoredValues}.\n\n" +
-                    "Safety snapshot залишено. За потреби його можна видалити " +
+                    "Резервний знімок залишено. За потреби його можна видалити " +
                     "окремою кнопкою на екрані «Дані та резервні копії»."
             )
             .setPositiveButton(
@@ -756,7 +756,7 @@ class DataActivity : Activity() {
 
         if (summary == null) {
             toast(
-                "Safety snapshot уже відсутній"
+                "Резервний знімок уже відсутній"
             )
             refreshSummary()
             return
@@ -765,7 +765,7 @@ class DataActivity : Activity() {
         UiChrome.showDangerConfirmDialog(
             activity = this,
             title =
-                "Видалити safety snapshot?",
+                "Видалити резервний знімок?",
             message =
                 "Буде безповоротно видалено локальний знімок стану ДО останнього Restore.\n\n" +
                     "Дата: ${formatDate(summary.exportedAt)}\n" +
@@ -778,7 +778,7 @@ class DataActivity : Activity() {
             localBackupManager.clearSafetySnapshot()
             refreshSummary()
             toast(
-                "Safety snapshot видалено"
+                "Резервний знімок видалено"
             )
         }
     }
