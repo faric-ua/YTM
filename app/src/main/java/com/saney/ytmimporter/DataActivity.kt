@@ -43,6 +43,7 @@ class DataActivity : Activity() {
 
     private lateinit var summaryText: TextView
     private lateinit var rollbackButton: Button
+    private lateinit var snapshotDeleteButton: Button
 
     private var pendingExportContent: String? = null
     private var pendingExportSuccessMessage: String? = null
@@ -253,6 +254,25 @@ class DataActivity : Activity() {
 
         rollbackCard.addView(rollbackButton)
 
+        snapshotDeleteButton =
+            actionButton(
+                label = "Видалити snapshot",
+                primary = false
+            ) {
+                confirmDeleteSafetySnapshot()
+            }
+
+        rollbackCard.addView(
+            snapshotDeleteButton,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin =
+                    dp(8)
+            }
+        )
+
         content.addView(
             rollbackCard,
             cardParams()
@@ -421,6 +441,16 @@ class DataActivity : Activity() {
             } else {
                 0.5f
             }
+
+        snapshotDeleteButton.isEnabled =
+            snapshotSummary != null
+
+        snapshotDeleteButton.alpha =
+            if (snapshotDeleteButton.isEnabled) {
+                1f
+            } else {
+                0.5f
+            }
     }
 
     private fun createFullBackup() {
@@ -487,7 +517,7 @@ class DataActivity : Activity() {
                 null
             )
             .setPositiveButton(
-                "Вибрати backup"
+                "Вибрати файл"
             ) { _, _ ->
                 val intent =
                     Intent(
@@ -620,7 +650,7 @@ class DataActivity : Activity() {
                 confirmRestoreSafetySnapshot()
             }
             .setPositiveButton(
-                "OK",
+                "Готово",
                 null
             )
             .show()
@@ -695,22 +725,50 @@ class DataActivity : Activity() {
             .setMessage(
                 "Локальний стан ДО останнього Restore повернуто.\n\n" +
                     "Груп: ${result.preferenceGroups}\n" +
-                    "Відновлено значень: ${result.restoredValues}."
+                    "Відновлено значень: ${result.restoredValues}.\n\n" +
+                    "Safety snapshot залишено. За потреби його можна видалити " +
+                    "окремою кнопкою на екрані «Дані та резервні копії»."
             )
-            .setNegativeButton(
-                "Видалити snapshot"
-            ) { _, _ ->
-                localBackupManager.clearSafetySnapshot()
-                refreshSummary()
-                toast(
-                    "Safety snapshot видалено"
-                )
-            }
             .setPositiveButton(
-                "OK",
+                "Готово",
                 null
             )
             .show()
+    }
+
+    private fun confirmDeleteSafetySnapshot() {
+        val summary =
+            runCatching {
+                localBackupManager.inspectSafetySnapshot()
+            }.getOrNull()
+
+        if (summary == null) {
+            toast(
+                "Safety snapshot уже відсутній"
+            )
+            refreshSummary()
+            return
+        }
+
+        UiChrome.showDangerConfirmDialog(
+            activity = this,
+            title =
+                "Видалити safety snapshot?",
+            message =
+                "Буде безповоротно видалено локальний знімок стану ДО останнього Restore.\n\n" +
+                    "Дата: ${formatDate(summary.exportedAt)}\n" +
+                    "Версія: ${summary.appVersion}\n" +
+                    "Значень: ${summary.valueCount}\n\n" +
+                    "Після цього відкотити останній Restore через цей snapshot буде неможливо.",
+            confirmLabel =
+                "Так, видалити"
+        ) {
+            localBackupManager.clearSafetySnapshot()
+            refreshSummary()
+            toast(
+                "Safety snapshot видалено"
+            )
+        }
     }
 
     private fun exportHistoryTxt() {
