@@ -1,6 +1,7 @@
 # Журнал змін (Changelog)
 
 ## v1.4.40
+- Shortened the History restore confirmation action to `Відновити` for phone-width buttons.
 - Added an in-app `Історія змін` page under `Про YTM Importer → Дізнатися більше`.
 - Release history is rendered from the repository root `CHANGELOG.md`, embedded automatically into Android assets at build time.
 - Added one release card per `##` changelog section with readable bullet formatting.
