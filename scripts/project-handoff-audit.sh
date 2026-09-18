@@ -25,9 +25,9 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.34**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionName: **1.4.35**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **68**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionCode: **69**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
 grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 identity missing"
@@ -80,9 +80,9 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.34' PROJECT_STATUS.txt \
+grep -Fq 'Version: 1.4.35' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 68' PROJECT_STATUS.txt \
+grep -Fq 'Version code: 69' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"
@@ -95,6 +95,10 @@ grep -Fq 'BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.
 
 grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
+grep -Fq 'v1.4.35 — Saved SAF Folders' BACKLOG.md \
+  || fail "BACKLOG current v1.4.35 release missing"
+grep -Fq 'UX-008 Phase 1' START_HERE_ASSISTANT.md \
+  || fail "START_HERE UX-008 Phase 1 handoff missing"
 
 echo "PASS:"
 echo "- canonical START_HERE entry point"

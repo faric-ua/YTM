@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.34 — Back Navigation Alignment + Unified Modal Retest — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.35 — Saved SAF Folders — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -9,7 +9,7 @@ v1.4.34 — Back Navigation Alignment + Unified Modal Retest — IMPLEMENTED / P
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.31 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
-- UX-008 File Picker Escape / Unified SAF Navigation — OPEN; first grant via Android SAF, reuse persisted roots in-app
+- UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 implemented in v1.4.35: reuse persisted SAF tree roots in-app before opening Android's picker
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -382,16 +382,37 @@ v1.4.34 — Back Navigation Alignment + Unified Modal Retest — IMPLEMENTED / P
 - [ ] close BUG-002 only after representative modal categories pass
 
 ## UX-008 — File Picker Escape / Unified SAF Navigation
-- [ ] inventory every `ACTION_OPEN_DOCUMENT_TREE` / `ACTION_OPEN_DOCUMENT` / create-document entry point
-- [ ] centralize persisted URI permission handling
-- [ ] remember authorized root folders
-- [ ] show an in-app choice for previously authorized roots with a clear Cancel/Exit action
-- [ ] use Android SAF only when access to a new root is required
-- [ ] evaluate a DocumentFile-based in-app browser as a later phase
-- [ ] do not request broad filesystem permissions
+- [x] audit every active folder/file document-picker entry point (13 total)
+- [x] centralize persisted tree URI permission handling
+- [x] discover already authorized SAF tree roots from Android persisted permissions
+- [x] show an in-app choice for previously authorized roots with `Скасувати`
+- [x] use Android folder picker only after `Додати іншу папку…` is chosen; even first use has an in-app cancel step
+- [x] separate READ vs READ_WRITE remembered roots
+- [x] keep broad filesystem permissions out
+- [ ] phone-test v1.4.35 remembered-root flow
+- [ ] Phase 2: design file-level `ACTION_OPEN_DOCUMENT` reuse/escape behavior
+- [ ] Phase 3: evaluate a DocumentFile-based in-app browser inside authorized roots
+
+## v1.4.35 — Saved SAF Folders
+- [x] bump versionCode 69 / versionName 1.4.35
+- [x] add `SafTreeAccess` persisted-root catalog
+- [x] centralize seven `ACTION_OPEN_DOCUMENT_TREE` flows behind one launcher
+- [x] offer remembered roots inside YTM Importer before entering Android SAF
+- [x] add `Додати іншу папку…` and `Скасувати`
+- [x] preserve read-only vs read/write permission boundaries
+- [x] document 13 picker entry points and Phase 1 scope
+- [x] add static SAF navigation audit
+- [ ] GitHub signed build
+- [ ] phone: first-grant SAF path
+- [ ] phone: repeated folder action opens in-app root chooser
+- [ ] phone: `Скасувати` exits immediately without SAF
+- [ ] phone: remembered root reuse bypasses Android picker
+- [ ] phone: `Додати іншу папку…` still opens Android SAF
+- [ ] phone: read/write filtering smoke
+- [ ] regression: one file-open + one create-document path
 
 ## Next
-After v1.4.34 build/phone retest:
+After v1.4.35 phone retest:
 - close BUG-002 only if representative modal categories are stable from the first visible frame;
 - keep BUG-004 phone retest pending until a real/reproduced HTTP 401 occurs;
 - then continue with the localization resource foundation.

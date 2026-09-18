@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.35
+- Added UX-008 Phase 1 remembered SAF folder navigation.
+- Audited 13 active Android document-picker entry points: 7 folder-tree, 2 open-document, 4 create-document.
+- Added `SafTreeAccess` backed by Android persisted URI permissions.
+- Seven Import folder operations now show an in-app remembered-root chooser before Android `ACTION_OPEN_DOCUMENT_TREE`.
+- Added explicit `Скасувати` and `Додати іншу папку…` paths.
+- Preserved READ vs READ_WRITE permission boundaries.
+- Kept file-level open/create flows unchanged for later UX-008 phases.
+- Added no broad filesystem permissions.
+- versionCode 69 / versionName 1.4.35.
+- v1.4.35 = NOT PHONE-TESTED YET.
+
 ## v1.4.34
 - Replaced the typographic `‹` back glyph with one shared 24dp vector arrow.
 - Added `UiChrome.backButton(...)` and routed Import / Data / History / Review / Service / Pending / Destination through it.

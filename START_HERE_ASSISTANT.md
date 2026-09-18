@@ -30,10 +30,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.34**
-- versionCode: **68**
-- release focus: **Back Navigation Alignment + BUG-002 Unified Modal Retest**
-- release status: **NOT PHONE-TESTED YET — BACK BUTTON + FULL MODAL RETEST NEEDED**
+- versionName: **1.4.35**
+- versionCode: **69**
+- release focus: **UX-008 Phase 1 — Saved SAF Folders**
+- release status: **NOT PHONE-TESTED YET — SAVED SAF FOLDER FLOW RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -67,7 +67,9 @@ The v1.4.31 phone UI smoke passed for the shortened incremental preflight copy, 
 
 The v1.4.32 phone retest passed on the incremental backup preflight but quota and other modal windows still behaved inconsistently. Analysis found 22 direct UiChrome modal calls plus 22 `UiChrome.alertBuilder(...)` calls. v1.4.33 makes the builder a compatibility facade over the same stable custom Dialog engine, adds custom-view and multi-choice stable variants, and keeps the attached decor hidden until safe insets and geometry are stable.
 
-v1.4.34 standardizes secondary-screen back navigation after real-phone evidence showed the typographic `‹` glyph was visually off-center. Seven screens now use one 24dp vector arrow through `UiChrome.backButton(...)` with a 48×48dp touch target. The v1.4.33 modal implementation is carried forward unchanged and is still awaiting representative phone QA. UX-008 records the separate future File Picker Escape / Unified SAF Navigation work.
+v1.4.34 standardizes secondary-screen back navigation after real-phone evidence showed the typographic `‹` glyph was visually off-center. Seven screens now use one 24dp vector arrow through `UiChrome.backButton(...)` with a 48×48dp touch target. Phone QA confirmed centered arrows on Import, Review and Data, and the Quota modal passed a first-frame no-jump recording. The remaining BUG-002 modal categories were explicitly deferred by the user, so BUG-002 stays open.
+
+v1.4.35 implements UX-008 Phase 1 for folder-tree operations. The repository audit found 13 document-picker entry points: 7 folder trees, 2 open-document flows and 4 create-document flows. The seven `ACTION_OPEN_DOCUMENT_TREE` paths now first offer Android-persisted SAF roots inside YTM Importer, with explicit `Скасувати` and `Додати іншу папку…` actions. Android's system picker is entered only after the user explicitly chooses `Додати іншу папку…`; even with no remembered root, the YTM Importer menu appears first so `Скасувати` remains available. File-level open/create flows remain later phases, and no broad filesystem permission is added.
 
 The release remains only partially phone-tested overall.
 
@@ -244,10 +246,11 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-retest v1.4.34 for centered back navigation plus representative modal categories;
-2. close BUG-002 only if direct, builder-message, custom-view and multi-choice dialogs are stable;
+1. build and phone-retest v1.4.35 for remembered SAF folder reuse and immediate in-app cancel;
+2. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
 3. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
-4. establish the localization resource foundation for Ukrainian / Korean / English;
+4. continue UX-008 file-level/in-root browsing only after Phase 1 phone evidence;
+5. then establish the localization resource foundation for Ukrainian / Korean / English;
 5. then build the visual skin foundation without changing import/search/write semantics.
 
 Future product requirements already recorded:
