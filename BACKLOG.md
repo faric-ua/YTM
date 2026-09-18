@@ -1,14 +1,15 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.33 — Unified Stable Modal Pipeline — IMPLEMENTED / FULL MODAL PHONE RETEST NEEDED
+v1.4.34 — Back Navigation Alignment + Unified Modal Retest — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
-- BUG-002/Q-002 v1.4.32 partial PASS; v1.4.33 unified modal fix implemented — representative phone retest required
+- BUG-002/Q-002 v1.4.32 partial PASS; v1.4.33 unified modal fix carried into v1.4.34 — representative phone retest required
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.31 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
+- UX-008 File Picker Escape / Unified SAF Navigation — OPEN; first grant via Android SAF, reuse persisted roots in-app
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -362,8 +363,35 @@ v1.4.33 — Unified Stable Modal Pipeline — IMPLEMENTED / FULL MODAL PHONE RET
 - [ ] phone: manual-link custom view
 - [ ] close BUG-002 only after representative modal categories pass
 
+## v1.4.34 — Back Navigation Alignment + Unified Modal Retest
+- [x] replace Unicode `‹` back glyph with shared vector arrow
+- [x] add `UiChrome.backButton(...)`
+- [x] standardize 48×48dp back touch target
+- [x] route Import / Data / History / Review / Service / Pending / Destination through shared back control
+- [x] remove per-screen manual back-glyph baseline compensation
+- [x] add v1.4.34 static back-navigation audit
+- [x] carry v1.4.33 unified stable modal pipeline forward unchanged
+- [ ] GitHub signed build
+- [ ] phone: verify back arrow is visually centered on Import
+- [ ] phone: spot-check back arrow on at least two other secondary screens
+- [ ] phone: incremental preflight modal
+- [ ] phone: quota modal
+- [ ] phone: legacy message/confirm
+- [ ] phone: selective-export multi-choice
+- [ ] phone: manual-link custom view
+- [ ] close BUG-002 only after representative modal categories pass
+
+## UX-008 — File Picker Escape / Unified SAF Navigation
+- [ ] inventory every `ACTION_OPEN_DOCUMENT_TREE` / `ACTION_OPEN_DOCUMENT` / create-document entry point
+- [ ] centralize persisted URI permission handling
+- [ ] remember authorized root folders
+- [ ] show an in-app choice for previously authorized roots with a clear Cancel/Exit action
+- [ ] use Android SAF only when access to a new root is required
+- [ ] evaluate a DocumentFile-based in-app browser as a later phase
+- [ ] do not request broad filesystem permissions
+
 ## Next
-After v1.4.33 build/phone retest:
+After v1.4.34 build/phone retest:
 - close BUG-002 only if representative modal categories are stable from the first visible frame;
 - keep BUG-004 phone retest pending until a real/reproduced HTTP 401 occurs;
 - then continue with the localization resource foundation.
