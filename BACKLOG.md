@@ -484,11 +484,11 @@ including:
 
 ## UX-010 — Utility Screens
 - [x] record product direction from real-phone v1.4.36 use
-- [ ] replace Home `Квота` modal with a dedicated full-screen quota page
-- [ ] replace Home `Ще` modal menu with a dedicated full-screen utility/menu page
-- [ ] use the same top-bar/back-navigation pattern as `Черга`
-- [ ] rename Home `Ще` to `Меню` (current proposed label)
-- [ ] keep page content scrollable independently from fixed navigation/header controls
+- [x] replace Home `Квота` modal with a dedicated full-screen quota page
+- [x] replace Home `Ще` modal menu with a dedicated full-screen utility/menu page
+- [x] use the same top-bar/back-navigation pattern as `Черга`
+- [x] rename Home `Ще` to `Меню`
+- [x] keep page content scrollable independently from fixed navigation/header controls
 - [ ] keep destructive/escape actions immediately visible where applicable
 - [ ] phone QA: Home → Quota screen → Back
 - [ ] phone QA: Home → Menu screen → Back
