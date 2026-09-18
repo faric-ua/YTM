@@ -25,7 +25,8 @@
 | v1.4.30 | **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH** | Initial SELECTED(2)/UNCHANGED path passed including normal-open/exact-ID checks. Follow-up ALL run also passed real NEW→UPDATED→MISSING classification and chain materialization (21→22→22→21) with offline state validation; BUG-004 stale-green auth state was reproduced by real HTTP 401 and remains open. |
 | v1.4.31 | **PARTIALLY PHONE-TESTED — BACKUP UI POLISH SMOKE PASS** | Incremental preflight shows `Перевірити`, `Основа`, `Режим`; BUG-004 real-401 retest remains pending. |
 | v1.4.32 | **PARTIALLY PHONE-TESTED — INCREMENTAL PREFLIGHT PASS / MODAL INCONSISTENCY REMAINS** | Incremental backup preflight opens correctly, but quota and other modal windows still behave inconsistently; BUG-002 remains open. |
-| v1.4.33 | **NOT PHONE-TESTED YET** | Unified stable modal pipeline implemented across direct UiChrome and legacy builder paths; representative phone retest pending. |
+| v1.4.33 | **NOT PHONE-TESTED** | Unified stable modal pipeline implemented across direct UiChrome and legacy builder paths; superseded before phone QA by v1.4.34 UI fix. |
+| v1.4.34 | **NOT PHONE-TESTED YET** | Shared vector back-navigation alignment fix across seven secondary screens; v1.4.33 unified modal pipeline carried forward; combined phone retest pending. |
 
 Static audits and GitHub build do not equal phone testing.
 
