@@ -671,21 +671,30 @@ class ServiceActivity : Activity() {
         }
 
     private fun confirmClearSearchCache() {
-        UiChrome.alertBuilder(this)
-            .setTitle("Очистити весь SearchCache?")
-            .setMessage(
+        UiChrome.showDangerConfirmDialog(
+            activity = this,
+            title =
+                "Очистити весь SearchCache?",
+            message =
                 "Усі кешовані результати пошуку буде видалено.\n\n" +
                     "History і плейлисти не зміняться, але наступний пошук " +
-                    "цих треків знову звернеться до YouTube API."
+                    "цих треків знову звернеться до YouTube API.",
+            confirmLabel =
+                "Так, очистити"
+        ) {
+            val before =
+                searchCache
+                    .stats()
+                    .totalEntries
+
+            searchCache.clear()
+
+            toast(
+                "SearchCache очищено: $before записів"
             )
-            .setNegativeButton("Скасувати", null)
-            .setPositiveButton("Очистити") { _, _ ->
-                val before = searchCache.stats().totalEntries
-                searchCache.clear()
-                toast("SearchCache очищено: $before записів")
-                buildUi()
-            }
-            .show()
+
+            buildUi()
+        }
     }
 
     private fun saveDiagnostics() {
