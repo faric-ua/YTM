@@ -474,3 +474,13 @@ UI FINDING — UX-013 MOBILE ACTION COPY FIT
 - generic `OK` should become `Готово` on Restore success
 - post-rollback `Видалити snapshot` should not remain beside the success action; move deletion to a dedicated confirmed destructive flow
 - target rule: primary action buttons should communicate one action and fit on one line on the phone reference width
+
+
+v1.4.38 R1 phone follow-up:
+- full-screen selector architecture passes the main phone checks
+- selective-export checkbox alignment needs a visual R1 correction; checkbox now has a dedicated centered touch column
+- destructive confirmations for History clear, History single-delete and safety-snapshot delete are readable and explicit
+- BUG-008 reproduced: rotating the full-backup Restore confirmation loses the selected file context
+- BUG-008 R1 fix caches the pending validated backup in app cache and recreates the confirmation after rotation
+- user-provided `YTM_History_*.json` is a History export array, not a full LocalBackupManager backup; track native History-only restore as UX-015
+- root `TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt` documents the safe Download ZIP organizer command
