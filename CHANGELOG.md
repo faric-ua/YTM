@@ -1,5 +1,18 @@
 # Журнал змін (Changelog)
 
+## v1.4.36
+- Added UX-008 Phase 2A saved-file destination flow.
+- Data, Review, History and Service create-file actions now open an in-app save-destination menu first.
+- Added direct save into remembered READ_WRITE SAF roots.
+- Added reusable save-folder grant path.
+- Centralized `ACTION_CREATE_DOCUMENT` into one explicit system fallback.
+- Added duplicate-safe numbered filenames for direct saves.
+- Failed direct writes attempt to remove the newly-created incomplete document.
+- Kept the two `ACTION_OPEN_DOCUMENT` flows for Phase 2B.
+- Added no broad filesystem permissions.
+- versionCode 70 / versionName 1.4.36.
+- v1.4.36 = NOT PHONE-TESTED YET.
+
 ## v1.4.35
 - Added UX-008 Phase 1 remembered SAF folder navigation.
 - Audited 13 active Android document-picker entry points: 7 folder-tree, 2 open-document, 4 create-document.
