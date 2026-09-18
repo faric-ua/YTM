@@ -751,53 +751,32 @@ class ImportActivity : Activity() {
         token: String,
         playlists: List<YouTubePlaylistInfo>
     ) {
-        val labels =
-            playlists.map { playlist ->
-                buildString {
-                    append(playlist.title)
-                    append("\n")
-                    append(playlist.itemCount)
-                    append(" треків • ")
-                    append(
-                        when (
-                            playlist.privacyStatus
-                        ) {
-                            "public" ->
-                                "публічний"
-
-                            "unlisted" ->
-                                "за посиланням"
-
-                            else ->
-                                "приватний"
-                        }
-                    )
-                }
-            }
-
-        UiChrome.showMenuDialog(
-            activity = this,
-            title =
-                "Вибрати плейлист YouTube/YTM",
-            subtitle =
-                "Read-only: виберіть плейлист для локального імпорту.",
-            actions =
-                playlists.mapIndexed {
-                        index,
-                        playlist ->
-
-                    UiChrome.MenuAction(
-                        label = labels[index],
-                        onClick = {
-                            loadYtmPlaylist(
-                                token = token,
-                                playlistInfo =
-                                    playlist
-                            )
-                        }
-                    )
-                },
-            negativeLabel = "Скасувати"
+        startActivityForResult(
+            ListSelectorActivity.singleIntent(
+                activity = this,
+                title =
+                    "Вибрати плейлист YouTube/YTM",
+                subtitle =
+                    "Read-only імпорт: виберіть один плейлист.",
+                labels =
+                    playlists.map(
+                        ::playlistSelectorLabel
+                    ),
+                values =
+                    playlists.map(
+                        ::encodePlaylistSelection
+                    ),
+                helpTitle =
+                    "Що буде імпортовано?",
+                helpMessage =
+                    "Цей список показує плейлисти підключеного Google/YTM акаунта.\n\n" +
+                        "YTM Importer лише читає вибраний плейлист і завантажує його треки " +
+                        "у локальний робочий список із точними videoId. " +
+                        "Плейлист у YouTube/YTM не змінюється.",
+                confirmLabel =
+                    "Вибрати"
+            ),
+            ytmPlaylistSelectorRequestCode
         )
     }
 
@@ -939,119 +918,53 @@ class ImportActivity : Activity() {
     private fun showSelectiveYtmExportPicker(
         playlists: List<YouTubePlaylistInfo>
     ) {
-        val previousSelection =
-            pendingSelectiveExport
+        val values =
+            playlists.map(
+                ::encodePlaylistSelection
+            )
 
         val selectedIds =
-            previousSelection
+            pendingSelectiveExport
                 .mapTo(
                     linkedSetOf()
                 ) {
                     it.id
                 }
 
-        val labels =
+        val initialValues =
             playlists
-                .map { playlist ->
-                    buildString {
-                        append(playlist.title)
-                        append("\n")
-                        append(playlist.itemCount)
-                        append(" треків • ")
-                        append(
-                            when (
-                                playlist.privacyStatus
-                            ) {
-                                "public" ->
-                                    "публічний"
-
-                                "unlisted" ->
-                                    "за посиланням"
-
-                                else ->
-                                    "приватний"
-                            }
-                        )
-                    }
+                .filter {
+                    it.id in selectedIds
                 }
-                .toTypedArray()
+                .map(
+                    ::encodePlaylistSelection
+                )
 
-        val checked =
-            BooleanArray(playlists.size) {
-                    index ->
-
-                playlists[index].id in
-                    selectedIds
-            }
-
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Вибрати плейлисти для експорту"
-            )
-            .setMultiChoiceItems(
-                labels,
-                checked
-            ) {
-                    _,
-                    which,
-                    isChecked ->
-
-                checked[which] =
-                    isChecked
-
-                val id =
-                    playlists[which].id
-
-                if (isChecked) {
-                    selectedIds += id
-                } else {
-                    selectedIds -= id
-                }
-
-                pendingSelectiveExport =
-                    playlists.filter {
-                        it.id in selectedIds
-                    }
-            }
-            .setNegativeButton(
-                "Скасувати"
-            ) {
-                    _,
-                    _ ->
-
-                pendingSelectiveExport =
-                    previousSelection
-            }
-            .setPositiveButton(
-                "Далі"
-            ) {
-                    _,
-                    _ ->
-
-                val selected =
-                    playlists
-                        .filterIndexed {
-                                index,
-                                _ ->
-
-                            checked[index]
-                        }
-
-                if (selected.isEmpty()) {
-                    pendingSelectiveExport =
-                        previousSelection
-
-                    toast(
-                        "Виберіть хоча б один плейлист."
-                    )
-                } else {
-                    pendingSelectiveExport =
-                        selected
-
-                    chooseSelectiveYtmExportFolder()
-                }
-            }
-            .show()
+        startActivityForResult(
+            ListSelectorActivity.multiIntent(
+                activity = this,
+                title =
+                    "Плейлисти для експорту",
+                subtitle =
+                    "Виберіть один або кілька плейлистів.",
+                labels =
+                    playlists.map(
+                        ::playlistSelectorLabel
+                    ),
+                values = values,
+                selectedValues =
+                    initialValues,
+                helpTitle =
+                    "Що буде експортовано?",
+                helpMessage =
+                    "Вибрані плейлисти будуть прочитані з підключеного акаунта " +
+                        "і збережені локально як YTM Project-файли разом із manifest.json.\n\n" +
+                        "Експорт не змінює плейлисти в YouTube/YTM.",
+                confirmLabel =
+                    "Далі"
+            ),
+            selectiveExportSelectorRequestCode
+        )
     }
 
     private fun chooseSelectiveYtmExportFolder() {
