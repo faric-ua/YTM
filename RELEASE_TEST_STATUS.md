@@ -40,3 +40,5 @@ v1.4.16 phone evidence:
 - `docs/v.1.4.16/qa/UI_SCREENSHOT_ANALYSIS_2026-09-16.md`
 - `docs/v.1.4.16/qa/UI_SCREENSHOT_ANALYSIS_G07_2026-09-16.md`
 - `docs/v.1.4.16/qa/AUTH_STALE_SESSION_EVIDENCE_2026-09-16.md`
+
+| v1.4.38-R1 | **NOT PHONE-TESTED YET** | Targeted rebuild: checkbox alignment polish + Restore confirmation persistence across rotation. |
