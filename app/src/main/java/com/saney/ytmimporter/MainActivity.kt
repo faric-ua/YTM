@@ -1173,49 +1173,6 @@ class MainActivity : Activity() {
         updatePrimaryActions()
     }
 
-    private fun showMoreActions() {
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = "Ще",
-            subtitle = "Додаткові дії та сервісні інструменти.",
-            actions = listOf(
-                UiChrome.MenuAction(
-                    "🎨 Тема — Neon / Blue / Green"
-                ) { showThemePicker() },
-                UiChrome.MenuAction(
-                    "Поточний проект — review / save / share"
-                ) {
-                    openReviewScreen()
-                },
-                UiChrome.MenuAction(
-                    "Заміни — перевірити ручні заміни"
-                ) {
-                    showReplacementLog()
-                },
-                UiChrome.MenuAction(
-                    "Відкрити останній плейлист у YTM"
-                ) {
-                    openInYtm()
-                },
-                UiChrome.MenuAction(
-                    "Дані — export / backup / restore"
-                ) {
-                    startActivity(
-                        Intent(
-                            this,
-                            DataActivity::class.java
-                        )
-                    )
-                },
-                UiChrome.MenuAction(
-                    "Сервіс — допомога / diagnostics / cache"
-                ) {
-                    showServiceTools()
-                }
-            )
-        )
-    }
-
     /**
      * Deliberately accepts any file type because some Android file providers
      * expose CSV files with unexpected MIME types.
@@ -2824,50 +2781,6 @@ class MainActivity : Activity() {
             warning
     }
 
-    private fun showQuotaDialog() {
-        val quota = quotaTracker.snapshot()
-        val jobs = pendingJobStore.getAll()
-
-        val message =
-            "Search Queries (пошук):\n" +
-                "${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT} використано\n" +
-                "≈ ${quota.searchRemaining} залишилось\n\n" +
-                "General quota (загальна квота):\n" +
-                "${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT} використано\n" +
-                "≈ ${quota.generalRemaining} залишилось\n\n" +
-                "Попадань у кеш сьогодні: ${quota.cacheHits}\n" +
-                "Недороблених завдань: ${jobs.size}\n" +
-                "День квоти Google: ${quota.dayKey} (Pacific Time)\n\n" +
-                "Це локальна оцінка тільки для операцій, які цей застосунок " +
-                "зафіксував на цьому телефоні. Точний стан знаходиться в " +
-                "Google Cloud Console." +
-                if (!quota.lastQuotaError.isNullOrBlank()) {
-                    "\n\nОстання quota error (помилка квоти):\n" +
-                        quota.lastQuotaError
-                } else {
-                    ""
-                }
-
-        UiChrome.showMessageDialog(
-            activity = this,
-            title = "Квота API (локальна оцінка)",
-            message = message,
-            actions = listOf(
-                UiChrome.DialogAction("Google Cloud") {
-                    openGoogleCloudQuota()
-                },
-                UiChrome.DialogAction("Черга") {
-                    showPendingJobs()
-                },
-                UiChrome.DialogAction(
-                    label = "Закрити",
-                    tone = UiChrome.ActionTone.ACCENT
-                ) {}
-            ),
-            actionLayout = UiChrome.DialogActionLayout.PRIMARY_TOP
-        )
-    }
-
     private fun updateQuotaPanel() {
         if (!::quotaButton.isInitialized) return
 
@@ -3037,25 +2950,6 @@ class MainActivity : Activity() {
                 )
             }
         )
-    }
-
-    private fun openGoogleCloudQuota() {
-        val url =
-            "https://console.cloud.google.com/apis/api/" +
-                "youtube.googleapis.com/quotas"
-
-        runCatching {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(url)
-                )
-            )
-        }.onFailure {
-            toast(
-                "Не вдалося відкрити Google Cloud Console"
-            )
-        }
     }
 
     private fun maskedEmail(
