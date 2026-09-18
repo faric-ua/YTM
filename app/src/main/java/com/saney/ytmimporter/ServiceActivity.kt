@@ -385,10 +385,13 @@ class ServiceActivity : Activity() {
 
         content.addView(sectionTitle("Дії"))
         content.addView(
-            fullActionButton("Видалити прострочені записи") {
-                val removed = searchCache.clearExpired()
-                toast("Видалено записів SearchCache: $removed")
-                buildUi()
+            fullActionButton(
+                label = "Видалити прострочені записи",
+                danger = true
+            ) {
+                confirmClearExpiredSearchCache(
+                    stats.expiredEntries
+                )
             }
         )
         content.addView(
@@ -669,6 +672,38 @@ class ServiceActivity : Activity() {
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { bottomMargin = dp(8) }
         }
+
+    private fun confirmClearExpiredSearchCache(
+        expiredCount: Int
+    ) {
+        if (expiredCount <= 0) {
+            toast(
+                "Прострочених записів немає"
+            )
+            return
+        }
+
+        UiChrome.showDangerConfirmDialog(
+            activity = this,
+            title =
+                "Видалити прострочені записи?",
+            message =
+                "Буде видалено $expiredCount прострочених записів SearchCache.\n\n" +
+                    "History, Pending Queue та плейлисти YouTube/YTM не змінюються. " +
+                    "Якщо ці треки знадобляться знову, пошук повторно витрачатиме quota.",
+            confirmLabel =
+                "Так, видалити"
+        ) {
+            val removed =
+                searchCache.clearExpired()
+
+            toast(
+                "Видалено записів SearchCache: $removed"
+            )
+
+            buildUi()
+        }
+    }
 
     private fun confirmClearSearchCache() {
         UiChrome.showDangerConfirmDialog(
