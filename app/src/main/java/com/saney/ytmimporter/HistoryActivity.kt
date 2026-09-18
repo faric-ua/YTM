@@ -1064,7 +1064,7 @@ class HistoryActivity : Activity() {
                 null
             )
             .setPositiveButton(
-                "Видалити"
+                "Так, видалити"
             ) { _, _ ->
                 historyStore.remove(
                     entry.id
@@ -1101,7 +1101,7 @@ class HistoryActivity : Activity() {
                 null
             )
             .setPositiveButton(
-                "Очистити"
+                "Так, очистити"
             ) { _, _ ->
                 historyStore.clear()
                 toast(
