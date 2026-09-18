@@ -1420,7 +1420,7 @@ class DataActivity : Activity() {
                 dp(8)
             )
 
-                        addView(
+            addView(
                 UiChrome.backButton(
                     activity = this@DataActivity,
                     onClick = { onBack() }
