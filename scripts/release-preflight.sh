@@ -57,6 +57,11 @@ check_file "docs/v.1.4.38/qa/PHONE_TEST.md"
 check_file "docs/v.1.4.38/qa/BUG_REGISTER.md"
 check_file "docs/v.1.4.38/R1.md"
 check_file "docs/v.1.4.38/R2.md"
+check_file "docs/v.1.4.39/RELEASE.md"
+check_file "docs/v.1.4.39/UX_AUDIT.md"
+check_file "docs/v.1.4.39/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.39/qa/PHONE_TEST.md"
+check_file "docs/v.1.4.39/qa/BUG_REGISTER.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
@@ -117,6 +122,7 @@ bash scripts/v1437-fullscreen-utility-ui-audit.sh
 bash scripts/v1438-selectors-safety-copy-audit.sh
 bash scripts/v1438-r1-audit.sh
 bash scripts/v1438-r2-audit.sh
+bash scripts/v1439-history-json-restore-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -180,6 +186,7 @@ check_file "scripts/v1437-fullscreen-utility-ui-audit.sh"
 check_file "scripts/v1438-selectors-safety-copy-audit.sh"
 check_file "scripts/v1438-r1-audit.sh"
 check_file "scripts/v1438-r2-audit.sh"
+check_file "scripts/v1439-history-json-restore-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -326,11 +333,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 74' app/build.gradle.kts \
-  || fail "Expected versionCode = 74"
+grep -q 'versionCode = 75' app/build.gradle.kts \
+  || fail "Expected versionCode = 75"
 
-grep -q 'versionName = "1.4.38-R2"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.38-R2"'
+grep -q 'versionName = "1.4.39"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.39"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
