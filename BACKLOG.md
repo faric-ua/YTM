@@ -42,7 +42,7 @@ v1.4.47 — UX-019 Phase 2 Playlist Hub + Clean Home — IMPLEMENTED / STATIC + 
 - [x] keep OAuth token hidden/non-persistent
 - [x] dedicated v1.4.47 audit + QA docs
 - [x] full release preflight
-- [ ] signed GitHub Actions APK
+- [x] signed GitHub Actions APK
 - [ ] phone: Home account-card details
 - [ ] phone: Home → Playlist Hub
 - [ ] phone: Tracks / YTM Project / Search / Destination bridge smoke
