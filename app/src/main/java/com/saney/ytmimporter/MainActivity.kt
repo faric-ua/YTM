@@ -1664,10 +1664,18 @@ class MainActivity : Activity() {
                 updateAccountPanel()
                 updateQuotaPanel()
 
+                val recoveredTracks =
+                    recoverPersistedAuthorizationFailures()
+
                 val channel = youtubeChannelInfo
                 status(
                     if (channel != null) {
-                        "Підключено YouTube/YTM: ${channel.title}"
+                        "Підключено YouTube/YTM: ${channel.title}" +
+                            if (recoveredTracks > 0) {
+                                " • відновлено треків після auth-помилки: $recoveredTracks"
+                            } else {
+                                ""
+                            }
                     } else {
                         "Google підключено, але YouTube канал не вдалося визначити."
                     }
@@ -1676,6 +1684,49 @@ class MainActivity : Activity() {
                 after?.invoke()
             }
         }
+    }
+
+    private fun recoverPersistedAuthorizationFailures(): Int {
+        val current =
+            playlist
+                ?: return 0
+
+        var recovered = 0
+
+        current.tracks.forEach { track ->
+            val legacyAuthFailure =
+                track.status == TrackStatus.FAILED &&
+                    track.error
+                        .orEmpty()
+                        .contains(
+                            "Авторизація Google більше не дійсна",
+                            ignoreCase = true
+                        )
+
+            if (!legacyAuthFailure) {
+                return@forEach
+            }
+
+            track.status =
+                when {
+                    track.selectedVideoId.isNullOrBlank() ->
+                        TrackStatus.NEW
+
+                    track.candidates.isEmpty() ->
+                        TrackStatus.MATCHED
+
+                    else ->
+                        TrackStatus.REVIEW
+                }
+            track.error = null
+            recovered += 1
+        }
+
+        if (recovered > 0) {
+            updateSummary()
+        }
+
+        return recovered
     }
 
     private fun updateAccountPanel() {
