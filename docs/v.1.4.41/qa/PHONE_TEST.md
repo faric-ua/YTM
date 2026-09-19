@@ -112,3 +112,42 @@ Expected:
 - correct human playlist title.
 
 Do not spend quota only to prove UI items already covered elsewhere.
+
+
+## Phone evidence — 2026-09-19
+
+Current release statement:
+
+**v1.4.41 has broad real-phone coverage, but this is not an exhaustive full-app regression claim.**
+Many major workflows have been exercised across recent releases and some v1.4.41 paths
+are now directly confirmed, while the still-pending cases below remain explicitly open.
+
+Confirmed on v1.4.41:
+
+- signed APK installed on the real phone;
+- header visibly shows v1.4.41;
+- existing local House Dance workspace survived the update;
+- BUG-009 portrait account modal PASS:
+  - account/profile details readable;
+  - copy reads `Плейлисти створюватимуться в цьому YouTube/YTM профілі.`;
+  - `Змінити` is on the left;
+  - `Закрити` is on the right;
+  - `Змінити` remains single-line;
+- existing-playlist destination list renders with search + playlist count + rows;
+- **no footer buttons on the existing-playlist list are intentional**:
+  - it is a single-select screen;
+  - tapping a playlist row immediately selects that playlist;
+  - the next screen performs duplicate scan / confirmation before any write;
+  - the top-left Back arrow returns without selecting.
+
+Not yet promoted to PASS:
+
+- account-modal rotation smoke;
+- representative destructive confirmation ordering;
+- BUG-004 real/reproduced 401 invalidation/re-login path;
+- BUG-010 quota-preserving full Restore / rollback;
+- UX-017 fallback-only filename normalization;
+- optional v1.4.41 House Dance end-to-end write smoke.
+
+The raw account screenshot contains personal account identifiers and is not committed
+to repository evidence without redaction.
