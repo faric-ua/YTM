@@ -255,26 +255,17 @@ class StorageChooserActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@StorageChooserActivity
+                UiChrome.emphasizedTitle(
+                    activity = this@StorageChooserActivity,
+                    label = titleText.take(56),
+                    maxLines = 2
                 ).apply {
-                    text =
-                        titleText.take(56)
-                    textSize = 20f
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
-                    setTextColor(
-                        palette.text
-                    )
                     setPadding(
                         dp(12),
                         0,
                         dp(8),
                         0
                     )
-                    maxLines = 2
                 },
                 LinearLayout.LayoutParams(
                     0,
