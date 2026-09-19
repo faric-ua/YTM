@@ -21,7 +21,7 @@ do
   grep -Fq "$label" "$MAIN" || fail "Home label missing: $label"
 done
 
-grep -Fq 'separate theme-aware' "$RELEASE" ||
+grep -Fq 'theme-aware accent/info card' "$RELEASE" ||
   fail "historical v1.4.46 status/info-card evidence missing"
 
 grep -Fq '### A — Portrait hierarchy: PASS' "$PHONE" ||
