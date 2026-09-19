@@ -16,9 +16,9 @@ Current release candidate:
 - versionCode: **77**
 - active branch: `feat/v1.4.41-auth-ui-consistency`
 - base branch: `main`
-- status: **IMPLEMENTED / NOT PHONE-TESTED YET**
-- signed v1.4.41 APK: **not built yet**
-- immediate next gate: **release preflight → signed GitHub Actions APK → targeted phone QA**
+- status: **PARTIALLY PHONE-TESTED — BROAD REAL-PHONE COVERAGE, NOT EXHAUSTIVE**
+- signed v1.4.41 APK: **built and installed on the real phone**
+- immediate next gate: **continue targeted v1.4.41 phone QA; do not claim exhaustive regression**
 - active PR: **#12 — v1.4.41: auth/search recovery and UI consistency** → `main`
 - code baseline prepared for build: `541dc90093f69785e46a66f643ae11b404c8a51e`; later commits may be documentation/handoff-only, so always read the live branch HEAD before build and verify this baseline is an ancestor
 - PR #12 mergeability: **mergeable / no branch conflict**
@@ -137,6 +137,24 @@ After install, begin with the zero/low-cost visual checks before spending YouTub
 3. then BUG-010 quota-preserving Restore;
 4. then UX-017 playlist-title fallback;
 5. BUG-004 real 401 retest only when a genuine/reproducible invalid-auth condition is available.
+
+### Phone evidence already confirmed on v1.4.41
+
+- v1.4.41 is installed on the real phone and visible in the header.
+- Existing local workspace survived the update.
+- BUG-009 portrait account modal PASS:
+  - `Змінити` is single-line on the left;
+  - `Закрити` is on the right;
+  - profile explanatory copy is readable.
+- Existing-target playlist list renders on phone.
+- That existing-target list intentionally has **no bottom action buttons**:
+  tapping a playlist row is the selection action; the next destination screen performs
+  duplicate/confirmation handling before a write. Back returns without selection.
+- This is broad accumulated phone coverage, **not** proof that every path/corner case
+  has been retested on v1.4.41.
+
+Pending targeted evidence remains BUG-004 real 401, BUG-010 quota Restore/rollback,
+UX-017 fallback-title normalization, and additional UX-018 modal spot checks.
 
 ## 5. Exact v1.4.41 phone QA after signed build
 
