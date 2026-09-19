@@ -17,8 +17,8 @@ Latest merged release:
 Current release candidate:
 - versionName: **1.4.44-R1**
 - versionCode: **84**
-- active branch: `fix/v1.4.44-r1-action-copy-close-style`
-- active PR: **#16 — v1.4.44-R1: fix landscape action copy and modal Close style** → `feat/v1.4.44-adaptive-actions`
+- active branch: `feat/v1.4.44-adaptive-actions`
+- active PR: **#15 — v1.4.44: adaptive landscape action layout** → `fix/v1.4.43-auth-freshness`; PR #16 merged into this branch
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
 - status: **PHONE RETEST PASS — UX-021 CLOSED**
 - installed phone APK: **v1.4.44-R1**
@@ -188,11 +188,10 @@ v1.4.44-R1:
 
 ## 7. Exact next execution step
 
-1. Run one final documentation/preflight sync on the v1.4.44-R1 branch.
-2. Merge PR #16 into the v1.4.44 branch after the sync passes.
-3. Keep PR #15 stacked on v1.4.43 PR #14 while BUG-013 stale-token acceptance remains deferred.
-4. Start the next UI release for UX-022 Unified Window Title Emphasis.
-5. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
+1. PR #16 is merged; v1.4.44-R1 phone PASS is preserved on the v1.4.44 branch.
+2. Keep PR #15 stacked on v1.4.43 PR #14 while BUG-013 stale-token acceptance remains deferred.
+3. Start the next UI release for UX-022 Unified Window Title Emphasis from the current v1.4.44 branch head.
+4. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
