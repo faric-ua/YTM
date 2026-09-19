@@ -10,19 +10,19 @@ Repository: `faric-ua/YTM`
 
 Current corrective release candidate:
 
-- versionName: **1.4.41-R1**
-- versionCode: **78**
+- versionName: **1.4.41-R2**
+- versionCode: **79**
 - active branch: `feat/v1.4.41-auth-ui-consistency`
 - base branch: `main`
 - active PR: **#12**
-- status: **NOT PHONE-TESTED YET — TARGETED CORRECTIVE BUILD**
-- installed phone APK: **v1.4.41** (does not contain the latest R1 fixes)
-- immediate next gate: **preflight → signed v1.4.41-R1 APK → two targeted phone retests**
+- status: **NOT PHONE-TESTED YET — STACKED FILENAME CORRECTIVE BUILD**
+- installed phone APK: **v1.4.41-R1**
+- immediate next gate: **preflight → signed v1.4.41-R2 APK → one targeted filename retest**
 - merge rule: do not merge PR #12 until the R1 corrective phone checks are recorded.
 
 Stable phone build folder:
 
-`/storage/emulated/0/Download/YTM-v1.4.41-R1-build/`
+`/storage/emulated/0/Download/YTM-v1.4.41-R2-build/`
 
 Always fetch the live branch HEAD before build/merge.
 
@@ -52,7 +52,7 @@ Still pending from v1.4.41:
 - BUG-004 real/reproduced HTTP 401 phone retest when naturally available;
 - populated-History Restore / `Відкотити` proof remains separately inconclusive from v1.4.39.
 
-## 3. Findings that created v1.4.41-R1
+## 3. Corrective phone findings and status
 
 ### BUG-011 — Account modal disappears on rotation
 
@@ -101,6 +101,20 @@ Explicit title inside TXT/CSV remains authoritative.
 Status:
 **FOLLOW-UP FIX IMPLEMENTED — R1 PHONE RETEST NEEDED.**
 
+### UX-017 R1 stacked-suffix finding
+
+R1 phone result:
+- simple `YTM-1`: PASS;
+- stacked `YTM-1 (1)`: FAIL;
+- observed title: `House Dance Hit 2000 Vol.1 YTM-1 (1)`.
+
+R2 implementation:
+- filename cleanup now accepts repeated duplicate-copy suffix tokens after the YTM marker;
+- examples covered: `YTM-1 (1)`, `YTM (1) (2)`, `YTM_1 (1)`.
+
+Status:
+**FIX IMPLEMENTED — R2 PHONE RETEST NEEDED.**
+
 ## 4. Exact next execution step
 
 User should run one Termux block that:
@@ -112,55 +126,32 @@ User should run one Termux block that:
 5. dispatches `.github/workflows/build-apk.yml`;
 6. waits for the signed build;
 7. downloads artifact:
-   `YTM-Importer-v1.4.41-R1-Release`;
+   `YTM-Importer-v1.4.41-R2-Release`;
 8. stores it under:
-   `/storage/emulated/0/Download/YTM-v1.4.41-R1-build/`;
+   `/storage/emulated/0/Download/YTM-v1.4.41-R2-build/`;
 9. verifies:
-   `YTM-Importer-v1.4.41-R1-release.apk.sha256`;
-10. installs over v1.4.41 **without clearing app data**.
+   `YTM-Importer-v1.4.41-R2-release.apk.sha256`;
+10. installs over v1.4.41-R1 **without clearing app data**.
 
-Do not manually edit phone-side project files if preflight fails; return the exact FAIL output.
+If preflight fails, return the exact FAIL output rather than editing phone-side code.
 
-## 5. R1 phone QA — only two required corrective checks
-
-### Test A — BUG-011 rotation
-
-Path:
-`Home → 2. Google / YTM → Account`
-
-Steps:
-1. open Account modal in portrait;
-2. rotate to landscape;
-3. confirm the Account modal remains/reappears;
-4. rotate back to portrait;
-5. confirm it remains/reappears again;
-6. verify `Змінити` left / `Закрити` right.
-
-PASS:
-- modal survives both rotations;
-- no need to reopen Step 2 manually;
-- account details remain readable.
-
-### Test B — UX-017 duplicate filename
+## 5. R2 phone QA — one required corrective check
 
 Path:
 `Home → 1. Імпорт → імпортувати файл`
 
-Use a fallback-only TXT with no explicit title and filename such as:
+Use the same fallback-only duplicate file that on R1 produced:
 
-`House_Dance_Hit_2000_Vol1_YTM-1.txt`
+`House Dance Hit 2000 Vol.1 YTM-1 (1)`
 
-PASS title:
+PASS:
+- playlist title becomes exactly `House Dance Hit 2000 Vol.1`;
+- no `YTM-1 (1)` remains;
+- no Search API call is needed.
 
-`House Dance Hit 2000 Vol.1`
-
-No Search API call is needed.
-
-Optional extra spot checks if convenient:
-- same content named `..._YTM_1.txt`;
-- same content named `..._YTM (1).txt`.
-
-Do not spend YouTube Search quota for R1 acceptance.
+R1 evidence remains valid:
+- BUG-011 rotation PASS / closed;
+- simple `YTM-1` filename PASS.
 
 ## 6. Historical v1.4.41 scope
 
@@ -231,3 +222,12 @@ Import-file sorting request:
   `lastModified` newest-first, with the system picker retained as fallback;
 - Android SAF does not reliably expose true creation time across providers, so
   `lastModified` is the stable practical sort key.
+
+
+UX-020 Import File Recent-First Selector:
+- current path `Home → 1. Імпорт → імпортувати файл` uses Android `ACTION_OPEN_DOCUMENT`;
+- the app cannot force sort order inside that external system picker;
+- planned in-app selector should sort by document `lastModified` descending so fresh files appear first;
+- retain Android system picker as fallback;
+- true creation time is not reliably exposed by all Android SAF providers;
+- coordinate this with UX-008 Phase 2B.
