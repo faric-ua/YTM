@@ -19,8 +19,8 @@ Current release candidate:
 - versionCode: **82**
 - active branch: `fix/v1.4.43-auth-freshness`
 - active PR: **#14 — v1.4.43: refresh auth before remote YouTube actions** → `main`
-- status: **IMPLEMENTED / NOT PHONE-TESTED YET**
-- installed phone APK: **v1.4.42-R1**
+- status: **PARTIALLY PHONE-TESTED — startup silent auth refresh observed; stale-token acceptance DEFERRED**
+- installed phone APK: **v1.4.43**
 - focus: **BUG-013 auth freshness**
 
 Stable build folder after signed build:
@@ -85,6 +85,14 @@ On write-time 401:
 - UI states that unfinished work remains in `Черга`.
 
 ## 4. v1.4.43 phone acceptance
+
+Current phone result:
+- v1.4.43 installed over the prior build without clearing app data;
+- on app launch, Step 2 automatically refreshed/recovered authorization;
+- because that refresh occurs immediately, the old stale-token condition cannot be forced on demand right now;
+- primary BUG-013 stale-token acceptance is **DEFERRED until a naturally aged/invalid session occurs**;
+- do not mark BUG-013 closed from the startup observation alone.
+
 
 ### Test 1 — primary stale-green scenario
 
@@ -158,14 +166,10 @@ If a natural write-time 401 occurs:
 
 ## 7. Exact next execution step
 
-1. Finish v1.4.43 docs/audits/guards.
-2. Compare branch to `main`; no accidental deletions.
-3. PR #14 is open.
-4. Run full Termux `scripts/release-preflight.sh`.
-5. Build signed v1.4.43 APK from exact live head.
-6. Install over v1.4.42-R1 without clearing data.
-7. Run the targeted BUG-013 phone tests only.
-8. Record evidence before merge.
+1. Keep PR #14 open; do not claim BUG-013 closed yet.
+2. Re-run the stale-token destination test later when the session naturally ages or Google invalidates it.
+3. Continue product work with **UX-021 Adaptive Landscape Action Layout** as the next active implementation target.
+4. Keep UX-022 title emphasis separate after UX-021.
 
 ## 8. Working contract
 
