@@ -65,9 +65,8 @@ grep -Fq '## v1.4.41' CHANGELOG.md || fail "v1.4.41 changelog entry missing"
 grep -Eq '^\| v1\.4\.41 \| \*\*PARTIALLY PHONE-TESTED — .+\*\* \|' RELEASE_TEST_STATUS.md || fail "v1.4.41 partial phone-test status missing"
 grep -F '| v1.4.41 |' RELEASE_TEST_STATUS.md | grep -Fq 'NOT EXHAUSTIVE' || fail "v1.4.41 non-exhaustive QA qualifier missing"
 
-for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE; do
-  if grep -Fq "$permission" "$MANIFEST"; then fail "broad storage permission introduced: $permission"; fi
-done
+# v1.4.41 is a historical behavior audit. Storage permission policy is
+# intentionally not pinned to the live manifest because v1.4.42-R1 changes it.
 
 echo "PASS:"
 echo "- historical v1.4.41 / code 77 evidence"
@@ -78,4 +77,4 @@ echo "- full Restore preserves live quota tracker"
 echo "- imported filename fallback is human-readable"
 echo "- horizontal modal action sides are standardized"
 echo "- v1.4.41 release/QA docs present"
-echo "- no broad filesystem permission"
+echo "- historical v1.4.41 audit is decoupled from current storage-permission policy"
