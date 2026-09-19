@@ -1,5 +1,12 @@
 # Журнал змін (Changelog)
 
+## v1.4.41-R1
+- Corrective build for two real-phone findings from v1.4.41.
+- BUG-011: preserve/recreate the Account modal across Activity recreation when the phone rotates.
+- UX-017: filename fallback now strips common duplicate-download suffix forms after the service marker, including `YTM-1`, `YTM_1`, and `YTM (1)`.
+- Existing explicit in-file playlist titles remain authoritative.
+- versionCode 78 / versionName 1.4.41-R1.
+- v1.4.41-R1 = NOT PHONE-TESTED YET; acceptance is limited to the two targeted corrective paths.
 ## v1.4.41
 - Fixed BUG-004 on the Search path: the first YouTube HTTP 401 now stops search and invalidates shared Google/YTM authorization instead of turning every remaining track into a repeated auth failure.
 - Search-path authorization failure is treated as a session problem, not a track problem: the current track returns to retryable NEW state and Review is not opened automatically.
