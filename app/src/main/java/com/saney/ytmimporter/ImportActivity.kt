@@ -2974,15 +2974,37 @@ class ImportActivity : Activity() {
         }
 
     /**
-     * Deliberately accepts any file type because some Android file providers
-     * expose CSV files with unexpected MIME types.
+     * Opens the YTM Importer recent-file selector first.
+     *
+     * The system picker remains available from the selector as a fallback.
+     * We still use */* there because some Android providers expose CSV/TXT/JSON
+     * files with unexpected MIME types.
      */
     private fun chooseFile() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
-        }
-        startActivityForResult(intent, fileRequestCode)
+        startActivityForResult(
+            Intent(
+                this,
+                RecentFileChooserActivity::class.java
+            ).apply {
+                putExtra(
+                    RecentFileChooserActivity.EXTRA_TITLE,
+                    "Імпорт файла"
+                )
+                putExtra(
+                    RecentFileChooserActivity.EXTRA_MIME_TYPE,
+                    "*/*"
+                )
+                putExtra(
+                    RecentFileChooserActivity.EXTRA_ALLOWED_EXTENSIONS,
+                    arrayOf(
+                        "txt",
+                        "csv",
+                        "json"
+                    )
+                )
+            },
+            fileRequestCode
+        )
     }
 
     private fun loadFile(
