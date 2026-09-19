@@ -361,7 +361,7 @@ class MainActivity : Activity() {
                 textSize = 12f
                 setTextColor(palette.muted)
                 setTypeface(typeface, Typeface.BOLD)
-                setPadding(dp(2), 0, 0, dp(8))
+                setPadding(dp(2), 0, 0, dp(5))
             }
         )
 
