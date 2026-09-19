@@ -18,7 +18,7 @@ Current release candidate:
 - versionName: **1.4.47**
 - versionCode: **87**
 - active branch: `feat/v1.4.47-playlist-hub`
-- active PR: **not created yet**; v1.4.47 is stacked on v1.4.46 PR #18 head
+- active PR: **#19 — v1.4.47: Playlist Hub + Clean Home** → `feat/v1.4.46-home-layout-phase1`
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
 - status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED**
 - installed phone APK: **v1.4.46**
