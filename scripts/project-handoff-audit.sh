@@ -46,7 +46,7 @@ grep -Fq 'v1.4.39 History JSON phone QA' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF v1.4.39 QA resume state missing"
 grep -Fq 'v1.4.40 Release History phone QA' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF v1.4.40 QA resume state missing"
-grep -Fq 'Exact next phone test' CURRENT_HANDOFF.md \
+grep -Fq 'Exact next step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
 if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
