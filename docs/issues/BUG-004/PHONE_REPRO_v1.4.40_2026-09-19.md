@@ -28,15 +28,40 @@ Historical context:
 
 The local 9-track workspace remained intact.
 
-## Re-login observation
+## Re-login / restart / backup observation
 
 The user re-entered the Google account flow and selected the account again.
 
-Immediate observation:
-- usable authorization did not recover immediately;
-- the user then initiated a full app restart.
+A full app restart did not visually recover the House Dance workspace: the same nine
+tracks still showed the previously persisted invalid-authorization failures.
 
-Post-restart result is still pending and must be appended when known.
+The user then restored the latest full local backup. The restore loaded another
+current playlist, `top 3`.
+
+After that:
+- the restored three-track playlist was ready;
+- cached search state was usable;
+- YTM Importer successfully created a new private YouTube/YTM playlist;
+- all three tracks were added successfully.
+
+This proves remote write authorization was usable at that point.
+
+Important: LocalBackupManager full backup contains only:
+- history_store_v1
+- pending_jobs_v1
+- quota_tracker_v1
+- youtube_search_cache
+- current_playlist_v1
+
+It does **not** include `auth_state_v1` and does not contain OAuth access tokens.
+Therefore the backup restore itself did not restore Google authorization.
+
+The most likely explanation is:
+- re-login restored authorization;
+- the House Dance playlist remained persisted with `FAILED` statuses/errors;
+- app restart reloaded those same failed track states;
+- restoring a backup replaced the current workspace with an older ready playlist,
+  making the already-recovered auth state visible through a successful write operation.
 
 ## Code-path finding
 
@@ -50,6 +75,10 @@ Therefore the Search path can consume an auth error internally without forcing:
 - `PersistentAuthStateStore.clear()`;
 - MainActivity Step 2 state resynchronization.
 
+Additionally, `CurrentPlaylistStore` serializes each track's `status` and `error`.
+That correctly preserves workspace state in general, but it also means an auth-specific
+`FAILED` state survives restart after authorization has been repaired.
+
 ## Expected repair direction
 
 Do not patch only the green icon.
@@ -62,6 +91,8 @@ controls authorization state, so one real auth failure:
 - updates Home Step 2 promptly;
 - preserves the imported local playlist/workspace;
 - gives the user one clear recovery action instead of nine equivalent per-track auth
-  errors.
+  errors;
+- after successful re-authorization, resets/retries only authorization-failed tracks
+  instead of leaving stale auth errors indefinitely.
 
 Status: **OPEN / REPRODUCED AGAIN — v1.4.40 PHONE FAIL**
