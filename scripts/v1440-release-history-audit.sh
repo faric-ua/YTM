@@ -13,8 +13,10 @@ do
   test -f "$f" || fail "missing v1.4.40 file: $f"
 done
 
-grep -Fq 'versionCode = 76' "$GRADLE" || fail "versionCode 76 missing"
-grep -Fq 'versionName = "1.4.40"' "$GRADLE" || fail "versionName 1.4.40 missing"
+grep -Fq 'versionCode: **76**' docs/v.1.4.40/RELEASE.md \
+  || fail "historical v1.4.40 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.40**' docs/v.1.4.40/RELEASE.md \
+  || fail "historical v1.4.40 versionName evidence missing"
 
 grep -Fq 'generatedChangelogAssetsDir' "$GRADLE"   || fail "generated changelog asset directory missing"
 grep -Fq 'rootProject.file(' "$GRADLE"   || fail "root changelog source guard missing"
@@ -52,7 +54,7 @@ do
 done
 
 echo "PASS:"
-echo "- v1.4.40 / code 76"
+echo "- historical v1.4.40 / code 76 evidence"
 echo "- About page exposes in-app release history"
 echo "- root CHANGELOG.md is embedded automatically at build time"
 echo "- release sections render as cards from one source of truth"
