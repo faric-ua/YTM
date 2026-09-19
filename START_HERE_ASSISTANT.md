@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.42-R1**
-- versionCode: **81**
-- release focus: **BUG-012 corrective build — direct Download via Android All files access**
-- release status: **PHONE RETEST PASS — BUG-012 CLOSED; BUG-013 AUTH FRESHNESS OPEN**
+- versionName: **1.4.43**
+- versionCode: **82**
+- release focus: **BUG-013 auth freshness — refresh/validate Google authorization before remote actions**
+- release status: **NOT PHONE-TESTED YET — BUG-013 FIX IMPLEMENTED / QA NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.41 phone QA has started:
@@ -425,3 +425,13 @@ v1.4.42-R1 current scope:
 Current UI follow-ups:
 - UX-021: wide/landscape action groups should reflow horizontally when width allows;
 - UX-022: titles inside dialogs/modal/utility windows need stronger theme-aware visual emphasis across the app.
+
+
+v1.4.43 current scope:
+- remove cached-token fast path from remote authorize() actions;
+- refresh/check Google authorization through AuthorizationClient before Search/Destination/write/manual-video operations;
+- preserve known identity on silent refresh;
+- clear misleading green Step 2 state on refresh failure;
+- propagate write-time HTTP 401 without converting pending tracks into ordinary failures;
+- preserve unfinished write in Queue;
+- BUG-013 phone retest required before close.
