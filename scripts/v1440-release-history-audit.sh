@@ -37,6 +37,10 @@ grep -Fq 'cleanReleaseMarkdown' "$SERVICE"   || fail "lightweight markdown clean
 
 grep -Fq 'Page.CHANGELOG -> {' "$SERVICE"   || fail "release-history Back parent missing"
 grep -Fq 'page = Page.ABOUT' "$SERVICE"   || fail "Back from release history does not return to About"
+grep -Fq 'KEY_CHANGELOG_SCROLL_Y' "$SERVICE"   || fail "release-history scroll state key missing"
+grep -Fq 'setOnScrollChangeListener' "$SERVICE"   || fail "release-history scroll tracking missing"
+grep -Fq 'outState.putInt(KEY_CHANGELOG_SCROLL_Y' "$SERVICE"   || fail "release-history scroll save missing"
+grep -Fq 'scroll.scrollTo(0, changelogScrollY)' "$SERVICE"   || fail "release-history scroll restore missing"
 
 grep -Fq '## v1.4.40' "$CHANGELOG"   || fail "v1.4.40 changelog entry missing"
 
@@ -52,5 +56,6 @@ echo "- v1.4.40 / code 76"
 echo "- About page exposes in-app release history"
 echo "- root CHANGELOG.md is embedded automatically at build time"
 echo "- release sections render as cards from one source of truth"
-echo "- Back from History returns to About"
+echo "- top-bar Back from History returns to About"
+echo "- release-history scroll survives Activity recreation"
 echo "- no broad filesystem permission"
