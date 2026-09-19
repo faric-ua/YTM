@@ -2977,8 +2977,8 @@ class ImportActivity : Activity() {
      * Opens the YTM Importer recent-file selector first.
      *
      * The system picker remains available from the selector as a fallback.
-     * We still use */* there because some Android providers expose CSV/TXT/JSON
-     * files with unexpected MIME types.
+     * Its MIME filter stays permissive because some Android providers expose
+     * CSV/TXT/JSON files with unexpected MIME types.
      */
     private fun chooseFile() {
         startActivityForResult(
