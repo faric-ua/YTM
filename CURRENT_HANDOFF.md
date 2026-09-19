@@ -20,7 +20,7 @@ Current release candidate:
 - active branch: `fix/v1.4.47-r1-home-nav-dialog`
 - active PR: **#20 — v1.4.47-R1: Home layout + Hub navigation fixes** → `feat/v1.4.47-playlist-hub`; underlying PR #19 remains open (`feat/v1.4.47-playlist-hub` → `feat/v1.4.46-home-layout-phase1`)
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED — corrective R1 after v1.4.47 phone FAIL**
+- status: **STATIC/FULL PREFLIGHT + SIGNED BUILD PASS / PHONE QA NEEDED — corrective R1 after v1.4.47 phone FAIL**
 - installed phone APK: **v1.4.47**
 - focus: **v1.4.47-R1 — Home prototype hierarchy + modal/nav/rotation corrections**
 
@@ -28,7 +28,12 @@ Planned stable R1 build folder:
 
 `/storage/emulated/0/Download/YTM-v1.4.47-R1-build/`
 
-R1 signed build: **PENDING**.
+R1 signed-build evidence:
+- GitHub Actions run: **35475227285**
+- build head: `ee272b1468a83347769a36b291c5426f809569d4`
+- conclusion: **success**
+- artifact: `YTM-Importer-v1.4.47-R1-Release`
+- local APK SHA-256 check: **PASS**
 
 Previous v1.4.47 signed-build evidence:
 - GitHub Actions run: **35471958580**
