@@ -26,10 +26,10 @@ A new assistant should recover context from the repository and live GitHub state
 
 ## Current release
 
-- versionName: **1.4.42-R1**
-- versionCode: **81**
-- focus: **direct Download newest-first via Android All files access**
-- status: **PHONE RETEST PASS — v1.4.42-R1 BUG-012 CLOSED**
+- versionName: **1.4.43**
+- versionCode: **82**
+- focus: **BUG-013 Google/YTM auth freshness before remote actions**
+- status: **NOT PHONE-TESTED YET — v1.4.43 BUG-013 fix implemented**
 - v1.4.39 History JSON: Cancel/rotation/invalid-file paths PASS; populated-History Restore + rollback remain inconclusive and need later retest
 - v1.4.40 Release History tested path remains PASS
 - BUG-009 portrait account-dialog fix is phone-PASS; BUG-010 and BUG-012 are closed; destination-side 401 invalidation is phone-confirmed; BUG-004 Search-specific 401 retest remains pending; BUG-013 auth freshness is open
