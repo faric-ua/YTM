@@ -50,8 +50,8 @@ grep -Fq 'feat/v1.4.44-adaptive-actions' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF active v1.4.44 branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'BUG-013 auth freshness' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF BUG-013 focus missing"
+grep -Fq 'UX-021 Adaptive Landscape Action Layout' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF UX-021 focus missing"
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
 grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
