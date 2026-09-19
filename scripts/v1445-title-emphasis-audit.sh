@@ -3,7 +3,6 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 UI="app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"
 RELEASE="docs/v.1.4.45/RELEASE.md"
 PHONE="docs/v.1.4.45/qa/PHONE_TEST.md"
@@ -23,20 +22,34 @@ FILES=(
   "app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt"
 )
 
-for file in "$GRADLE" "$UI" "$RELEASE" "$PHONE" "${FILES[@]}"; do
+for file in "$UI" "$RELEASE" "$PHONE" "${FILES[@]}"; do
   test -f "$file" || fail "missing v1.4.45 file: $file"
 done
 
-grep -Fq 'versionCode = 85' "$GRADLE" || fail "versionCode 85 missing"
-grep -Fq 'versionName = "1.4.45"' "$GRADLE" || fail "versionName 1.4.45 missing"
+grep -Fq 'versionCode: **85**' "$RELEASE" || fail "historical v1.4.45 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.45**' "$RELEASE" || fail "historical v1.4.45 versionName evidence missing"
 
 grep -Fq 'fun emphasizedTitle(' "$UI" || fail "shared emphasized title helper missing"
-grep -A28 -F 'fun emphasizedTitle(' "$UI" |
-  grep -Fq '.accent' ||
+TITLE_BLOCK="$(
+  awk '
+    /fun emphasizedTitle\(/ { capture = 1 }
+    capture { print }
+    capture && /^    fun / && !/fun emphasizedTitle\(/ { exit }
+  ' "$UI"
+)"
+
+grep -Fq '.accent' <<<"$TITLE_BLOCK" ||
   fail "shared title does not use theme accent"
 
-grep -A24 -F 'private fun addDialogHeader(' "$UI" |
-  grep -Fq 'emphasizedTitle(' ||
+DIALOG_HEADER_BLOCK="$(
+  awk '
+    /private fun addDialogHeader\(/ { capture = 1 }
+    capture { print }
+    capture && /^    private fun / && !/private fun addDialogHeader\(/ { exit }
+  ' "$UI"
+)"
+
+grep -Fq 'emphasizedTitle(' <<<"$DIALOG_HEADER_BLOCK" ||
   fail "dialog header does not use shared emphasized title"
 
 for file in "${FILES[@]}"; do
@@ -50,7 +63,7 @@ grep -Fq 'Home workflow-state semantic colors' "$PHONE" ||
   fail "phone plan does not protect Home state semantics"
 
 echo "PASS:"
-echo "- v1.4.45 / code 85"
+echo "- historical v1.4.45 / code 85 evidence"
 echo "- shared theme-aware title emphasis"
 echo "- dialog headers use shared title emphasis"
 echo "- 12 full-screen title bars migrated"
