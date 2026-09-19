@@ -3,4 +3,7 @@
     <cache-path
         name="shared_exports"
         path="shared_exports/" />
+    <external-path
+        name="shared_download"
+        path="Download/" />
 </paths>
