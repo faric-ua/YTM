@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.42 — Recent File Selector — PHONE PARTIAL: ENTRY PASS / DOWNLOAD-ROOT SETUP BLOCKED
+v1.4.42-R1 — Direct Download via All files access — IMPLEMENTED / PHONE QA NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -24,6 +24,28 @@ v1.4.42 — Recent File Selector — PHONE PARTIAL: ENTRY PASS / DOWNLOAD-ROOT S
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
+
+## v1.4.42-R1 — Direct Download via All files access
+- [x] versionCode 81 / versionName 1.4.42-R1
+- [x] declare MANAGE_EXTERNAL_STORAGE
+- [x] add AllFilesAccess helper and Android special-access settings intent
+- [x] add explicit in-app rationale before settings
+- [x] add DirectDownloadFileQuery for /storage/emulated/0/Download
+- [x] sort direct Download files by lastModified descending
+- [x] FileProvider bridge for direct Download file selection
+- [x] keep SAF subfolder fallback
+- [x] keep Android system file picker fallback
+- [x] dedicated R1 static audit + docs
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [ ] phone: rationale opens
+- [ ] phone: Android All files access settings opens for YTM Importer
+- [ ] phone: grant survives return to app
+- [ ] phone: Download files appear automatically
+- [ ] phone: newest modified files appear first
+- [ ] phone: direct House Dance import works
+- [ ] phone: Restore JSON from Download opens confirmation
+- [ ] close BUG-012 if phone PASS
 
 ## v1.4.42 — Recent File Selector
 - [x] versionCode 80 / versionName 1.4.42
@@ -761,4 +783,4 @@ including:
 - [x] phone: rotation keeps History page
 - [x] phone: rotation preserves changelog scroll position after follow-up fix
 
-- UX-020 Import File Recent-First Selector — PHONE PARTIAL v1.4.42; selector entry PASS, but root `Download` cannot be granted through Android 11+ `ACTION_OPEN_DOCUMENT_TREE`. Redesign onboarding so newest-first does not depend on root Download access; keep system picker fallback.
+- UX-020 Import File Recent-First Selector — R1 FIX IMPLEMENTED / PHONE QA NEEDED; v1.4.42 selector entry PASS but root `Download` SAF onboarding was blocked. v1.4.42-R1 uses explicit Android All files access to read Download directly, newest-first; SAF/system-picker fallbacks remain.
