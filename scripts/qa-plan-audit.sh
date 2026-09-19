@@ -112,6 +112,8 @@ grep -Fq '| v1.4.44 | **PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + 
   || fail "v1.4.44 phone FAIL status missing"
 grep -Fq '| v1.4.44-R1 | **PHONE RETEST PASS — UX-021 LANDSCAPE COPY + MODAL CLOSE** |' "$STATUS" \
   || fail "v1.4.44-R1 phone PASS status missing"
+grep -Fq '| v1.4.45 | **NOT PHONE-TESTED — UX-022 UNIFIED WINDOW TITLE EMPHASIS** |' "$STATUS" \
+  || fail "v1.4.45 pending phone status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
