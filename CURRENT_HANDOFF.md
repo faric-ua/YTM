@@ -20,7 +20,7 @@ Current release candidate:
 - active branch: `feat/v1.4.45-title-emphasis`
 - active PR: **#17 — v1.4.45: unified window title emphasis** → `feat/v1.4.44-adaptive-actions`
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **IMPLEMENTED / NOT PHONE-TESTED YET**
+- status: **PHONE RETEST PASS — UX-022 CLOSED**
 - installed phone APK: **v1.4.44-R1**
 - focus: **UX-022 Unified Window Title Emphasis**
 
@@ -185,6 +185,14 @@ UX-022 is implemented on `feat/v1.4.45-title-emphasis`:
 
 Phone QA is still required.
 
+### v1.4.45 phone result:
+- full-screen title emphasis: PASS;
+- representative dialog title emphasis: PASS;
+- Neon + alternate-theme accent behavior: PASS;
+- rotation/navigation smoke: PASS;
+- UX-022 CLOSED;
+- separate OAuth 403 `access_denied` observed for a non-approved account while the Google OAuth app remains in Testing; this is configuration, not a v1.4.45 UI regression.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -200,14 +208,10 @@ Phone QA is still required.
 
 ## 7. Exact next execution step
 
-1. Run the dedicated v1.4.45 title-emphasis audit.
-2. Run full release preflight.
-3. Compare v1.4.45 against the current v1.4.44 branch; stop on accidental deletions.
-4. PR #17 is open.
-5. Build signed v1.4.45 APK from exact head.
-6. Install over v1.4.44-R1 without clearing data.
-7. Phone-test full-screen titles, representative dialog titles, two themes, and rotation/navigation.
-8. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
+1. Run final post-QA documentation/preflight sync on v1.4.45.
+2. Merge PR #17 after that final preflight passes.
+3. Separately configure Google OAuth access for additional users: add test users while in Testing, or move the OAuth app toward Production/verification for broad access.
+4. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
