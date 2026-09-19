@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.41-R2**
-- versionCode: **79**
-- release focus: **v1.4.41-R2 parser-only corrective follow-up — stacked UX-017 duplicate filename suffix**
-- release status: **PHONE RETEST PASS — UX-017 CLOSED**
+- versionName: **1.4.42**
+- versionCode: **80**
+- release focus: **UX-020 + UX-008 Phase 2B — newest-first in-app file selector**
+- release status: **NOT PHONE-TESTED YET — IMPLEMENTED / QA NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.41 phone QA has started:
@@ -394,3 +394,20 @@ v1.4.41-R2 phone result:
 - `YTM-1`, `YTM-1 (1)`, and `YTM-1 (1) (1)` all resolve to `House Dance Hit 2000 Vol.1`;
 - UX-017 closed;
 - next planned file-import UX is UX-020: in-app newest-first selector, coordinated with UX-008 Phase 2B.
+
+
+v1.4.42 current scope:
+- opens YTM Importer's RecentFileChooserActivity before generic file-open flows;
+- remembered SAF files sort by provider lastModified newest-first;
+- Import recent list: TXT / CSV / JSON;
+- Data Restore/History recent list: JSON;
+- footer keeps Add folder / System file picker / Cancel;
+- Android ACTION_OPEN_DOCUMENT remains fallback, not removed;
+- no broad filesystem permission;
+- phone QA required before any PASS claim.
+
+Latest merged baseline:
+- PR #12 merged v1.4.41-R2 to main;
+- merge commit `a3763b8e7db6154d20a000891bdcd5b8b7e54d55`;
+- UX-017 closed on phone;
+- BUG-011 and BUG-010 remain closed.
