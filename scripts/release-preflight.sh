@@ -74,11 +74,16 @@ check_file "docs/v.1.4.41/qa/PHONE_TEST.md"
 check_file "docs/v.1.4.41/qa/BUG_REGISTER.md"
 check_file "docs/v.1.4.41/R1.md"
 check_file "docs/v.1.4.41/R2.md"
+check_file "docs/v.1.4.42/RELEASE.md"
+check_file "docs/v.1.4.42/FILE_OPEN_AUDIT.md"
+check_file "docs/v.1.4.42/qa/PHONE_TEST.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/storage/SafRecentFileQuery.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt"
 
 check_file "app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
@@ -139,6 +144,7 @@ bash scripts/v1440-release-history-audit.sh
 bash scripts/v1441-auth-ui-consistency-audit.sh
 bash scripts/v1441-r1-audit.sh
 bash scripts/v1441-r2-audit.sh
+bash scripts/v1442-recent-file-selector-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -207,6 +213,7 @@ check_file "scripts/v1440-release-history-audit.sh"
 check_file "scripts/v1441-auth-ui-consistency-audit.sh"
 check_file "scripts/v1441-r1-audit.sh"
 check_file "scripts/v1441-r2-audit.sh"
+check_file "scripts/v1442-recent-file-selector-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -222,17 +229,21 @@ grep -q 'android:name=".ImportActivity"' \
   app/src/main/AndroidManifest.xml \
   || fail "ImportActivity is missing from manifest"
 
-grep -q 'Intent(Intent.ACTION_OPEN_DOCUMENT)' \
+grep -Fq 'RecentFileChooserActivity::class.java' \
   app/src/main/java/com/saney/ytmimporter/ImportActivity.kt \
-  || fail "ImportActivity ACTION_OPEN_DOCUMENT picker missing"
+  || fail "ImportActivity recent-file selector path missing"
 
-grep -Fq 'type = "*/*"' \
+grep -Fq 'RecentFileChooserActivity.EXTRA_MIME_TYPE' \
   app/src/main/java/com/saney/ytmimporter/ImportActivity.kt \
-  || fail 'ImportActivity picker must keep type "*/*"'
+  || fail "ImportActivity recent-file MIME contract missing"
 
-grep -q 'startActivityForResult(intent, fileRequestCode)' \
+grep -Fq '"*/*"' \
   app/src/main/java/com/saney/ytmimporter/ImportActivity.kt \
-  || fail "ImportActivity picker request path missing"
+  || fail 'Import fallback picker must remain permissive "*/*"'
+
+grep -Fq 'Intent.ACTION_OPEN_DOCUMENT' \
+  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt \
+  || fail "Recent-file selector system fallback picker missing"
 
 grep -q 'android:name=".ReviewActivity"' \
   app/src/main/AndroidManifest.xml \
@@ -353,11 +364,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 79' app/build.gradle.kts \
-  || fail "Expected versionCode = 79"
+grep -q 'versionCode = 80' app/build.gradle.kts \
+  || fail "Expected versionCode = 80"
 
-grep -q 'versionName = "1.4.41-R2"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.41-R2"'
+grep -q 'versionName = "1.4.42"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.42"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"
@@ -492,7 +503,7 @@ echo "- attached Dialog decor stays hidden until inset + geometry stabilization"
 
 echo "- Cleanup wave 2: legacy MainActivity UI flows removed"
 echo "- dedicated Import/Review/History/Data/Pending/Service screens retained"
-echo "- original permissive file picker retained in ImportActivity"
+echo "- in-app recent-file selector added; permissive Android picker retained as fallback"
 echo "- Q-002 unified modal fix implemented; representative phone retest still required"
 
 echo "- v1.4.12 explicitly marked NOT TESTED"
