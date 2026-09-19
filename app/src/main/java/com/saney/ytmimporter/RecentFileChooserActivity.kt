@@ -501,8 +501,6 @@ class RecentFileChooserActivity : Activity() {
         LinearLayout {
         val root =
             LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
                 setPadding(
                     dp(12),
                     dp(10),
@@ -511,11 +509,15 @@ class RecentFileChooserActivity : Activity() {
                 )
             }
 
-        if (
+        val buttons =
+            mutableListOf<Button>()
+
+        val needsAllFilesGrant =
             AllFilesAccess.isRequired() &&
-            !AllFilesAccess.isGranted()
-        ) {
-            root.addView(
+                !AllFilesAccess.isGranted()
+
+        if (needsAllFilesGrant) {
+            buttons +=
                 footerButton(
                     label =
                         "Надати доступ до всіх файлів",
@@ -523,10 +525,9 @@ class RecentFileChooserActivity : Activity() {
                 ) {
                     explainAndRequestAllFilesAccess()
                 }
-            )
         }
 
-        root.addView(
+        buttons +=
             footerButton(
                 label =
                     "Додати SAF-папку…",
@@ -534,39 +535,30 @@ class RecentFileChooserActivity : Activity() {
                     !AllFilesAccess.isRequired()
             ) {
                 openSystemTreePicker()
-            },
-            if (
-                AllFilesAccess.isRequired() &&
-                !AllFilesAccess.isGranted()
-            ) {
-                footerParams()
-            } else {
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(54)
-                )
             }
-        )
 
-        root.addView(
+        buttons +=
             footerButton(
                 label =
                     "Системний вибір файла…",
                 primary = false
             ) {
                 openSystemDocumentPicker()
-            },
-            footerParams()
-        )
+            }
 
-        root.addView(
+        buttons +=
             footerButton(
                 label = "Скасувати",
                 primary = false
             ) {
                 finish()
-            },
-            footerParams()
+            }
+
+        UiChrome.addAdaptiveActionButtons(
+            activity = this,
+            container = root,
+            buttons = buttons,
+            buttonHeightDp = 54
         )
 
         return root
