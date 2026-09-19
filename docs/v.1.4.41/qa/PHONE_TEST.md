@@ -142,7 +142,7 @@ Confirmed on v1.4.41:
 
 Not yet promoted to PASS:
 
-- account-modal rotation smoke;
+- account-modal rotation — FAIL, tracked as BUG-011;
 - representative destructive confirmation ordering;
 - BUG-004 real/reproduced 401 invalidation/re-login path;
 - BUG-010 quota-preserving full Restore / rollback;
@@ -258,3 +258,30 @@ Do not rebuild immediately for this single finding; finish the current v1.4.41 p
 ### Plain-language note for QA terminology
 
 In user-facing QA notes, prefer `Відкотити` or `повернути стан до моменту перед Restore` instead of using the English word `rollback` by itself. This makes the test steps clearer for the project owner.
+
+
+## BUG-011 phone finding — Account modal disappears on rotation
+
+Path:
+`Home → 2. Google / YTM → rotate phone while Account modal is open`
+
+Observed:
+- portrait modal layout is correct;
+- after rotation the Account modal disappears;
+- Home remains visible.
+
+Expected:
+- Account modal should be restored/reopened after Activity recreation.
+
+Result:
+**FAIL — BUG-011 opened.**
+
+This does not invalidate BUG-009 portrait visual PASS. Corrective build should preserve
+an "Account modal open" flag/state and recreate the modal after rotation.
+
+### QA wording convention
+
+English technical terms may be used, but user-facing test instructions should include
+the visible in-app navigation path whenever it helps. Example:
+
+`rollback / Відкотити → Меню → Дані та резервні копії → Відкотити останній Restore`
