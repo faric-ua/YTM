@@ -147,6 +147,7 @@ After install, begin with the zero/low-cost visual checks before spending YouTub
   - `Закрити` is on the right;
   - profile explanatory copy is readable.
 - Existing-target playlist list renders on phone.
+- Existing-target row-tap path PASS: tapping `top 3` opened `Перевірка перед додаванням` without writing anything.
 - That existing-target list intentionally has **no bottom action buttons**:
   tapping a playlist row is the selection action; the next destination screen performs
   duplicate/confirmation handling before a write. Back returns without selection.
