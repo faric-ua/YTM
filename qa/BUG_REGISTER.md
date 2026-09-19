@@ -5,11 +5,12 @@
 | BUG-001 / Q-001 | OPEN | P2 | Review wording / Project-save feedback questions remain. | F-06 |
 | BUG-002 / Q-002 | FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34 | P2 | v1.4.32 fixed the tested incremental preflight entrance, but quota and other modal windows remained inconsistent. v1.4.33 unified the runtime modal pipeline; v1.4.34 carries that implementation forward unchanged for phone QA. | M-02; v1.4.32 partial PASS → v1.4.33 unified fix → v1.4.34 retest |
 | BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update verified: Step 2 briefly gray, then automatically green. | A-03, D-03 |
-| BUG-004 / Q-004 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31 | P1 | v1.4.31 propagates ImportActivity HTTP 401 invalidation into shared auth state and Main Step 2; real-phone 401 retest still required before closure. | B-01; v1.4.30 repro → v1.4.31 fix |
+| BUG-004 / Q-004 | REPRODUCED AGAIN — PHONE FAIL v1.4.40 | P1 | v1.4.40 text-import Search path reported invalid Google authorization for all 9 tracks while Home Step 2 still stayed green/checked. The v1.4.31 ImportActivity fix does not cover this SearchCoordinator failure path. Re-login recovery is also under active reproduction; post-restart result pending. | B-01; v1.4.30 backup repro → v1.4.31 partial fix → v1.4.40 Search repro |
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Ordinary repeat-search preserves canonical exact videoId tracks; real-phone search plan confirmed 0 redundant search.list for exact 3/3. | v1.4.26 repro → v1.4.27 PASS |
 | BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 | P2 | Incremental-delta boundary explanation was truncated as a Toast; R2 replaced it with a readable UiChrome dialog and phone retest passed. | v1.4.29 repro → v1.4.29 R2 PASS |
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
 | BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 | P2 | Restore confirmation now survives phone rotation without forcing the user to choose the backup file again. | v1.4.38 phone repro → R1 rotation-state fix → phone PASS |
+| BUG-009 / Q-009 | OPEN — PHONE REPRO v1.4.40 | P3 | Google account-switch flow has a phone-width copy/action layout problem: explanatory text and action control do not compose cleanly. Keep separate from BUG-004 auth-state logic. | v1.4.40 account-switch screenshot |
 
 ## BUG-002 current evidence
 
@@ -102,7 +103,7 @@ Implemented in v1.4.31:
 - the local working playlist is not cleared;
 - the 401 dialog offers a direct return to Step 2.
 
-Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31.**
+Status: **REPRODUCED AGAIN — PHONE FAIL v1.4.40.**
 
 ## BUG-005 reproduction
 
@@ -169,3 +170,45 @@ Implemented in v1.4.38 R1:
 - the backup itself is not placed into the Android saved-state Bundle.
 
 Status: **CLOSED — PHONE RETEST PASS v1.4.38 R1.**
+
+
+## BUG-004 v1.4.40 Search-path reproduction
+
+Real-phone reproduction on 2026-09-19 using
+`docs/test-data/collections/House_Dance_Hit_2000/House_Dance_Hit_2000_Vol1_YTM.txt`:
+
+- TXT import loaded 9 tracks successfully;
+- Home still displayed green/checked `2. Google / YTM ✓`;
+- Search attempted 9 new API searches with 0 cache hits;
+- all 9 tracks ended in error;
+- Review showed 0 ready / 9 problems;
+- affected tracks reported:
+  `Авторизація Google більше не дійсна. Відкрийте «2. Акаунт» і увійдіть знову.`;
+- the imported 9-track workspace remained present.
+
+The user then re-entered the Google account flow. The account was selected again,
+but the app did not immediately recover a usable authorized state. A full app restart
+was started; the post-restart result is still pending and must be recorded separately.
+
+Code-path inspection after the reproduction:
+- `SearchCoordinator.run(...)` catches per-track exceptions and converts them to
+  `TrackStatus.FAILED` plus a user-facing error;
+- it has a quota callback but no equivalent authorization-invalid callback;
+- therefore an auth failure can be consumed inside SearchCoordinator without clearing
+  `AuthSessionStore` / `PersistentAuthStateStore` or forcing Main Step 2 out of green.
+
+This is now the primary BUG-004 repair target. The earlier v1.4.31 ImportActivity
+invalidation implementation must not be treated as complete coverage.
+
+## BUG-009 — Google account-switch copy/action fit
+
+Status: **OPEN — PHONE REPRO v1.4.40.**
+
+Observed on the real phone while changing the connected Google account:
+
+- explanatory text and the account-switch action do not compose cleanly at the tested
+  phone width;
+- this is a UI/copy-fit issue, separate from BUG-004 authorization-state logic;
+- functional account switching is not declared broken solely from this visual finding.
+
+Keep BUG-009 separate so a future auth-state fix cannot accidentally close the UI issue.
