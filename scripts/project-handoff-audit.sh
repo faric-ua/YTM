@@ -120,7 +120,7 @@ grep -Fq 'BUG-004/009/010 + UX-017/018' START_HERE_ASSISTANT.md \
   || fail "START_HERE v1.4.41 focus missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
-grep -Fq 'four' CURRENT_HANDOFF.md | grep -Fq 'workflow buttons' \
+grep -Fq 'Home workflow buttons need theme-aware state palettes' CURRENT_HANDOFF.md \
   || fail "four-button theme-state decision missing from handoff"
 
 echo "PASS:"
