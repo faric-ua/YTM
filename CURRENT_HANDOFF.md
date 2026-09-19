@@ -18,7 +18,7 @@ Current release candidate:
 - versionName: **1.4.43**
 - versionCode: **82**
 - active branch: `fix/v1.4.43-auth-freshness`
-- active PR: **not created yet**
+- active PR: **#14 — v1.4.43: refresh auth before remote YouTube actions** → `main`
 - status: **IMPLEMENTED / NOT PHONE-TESTED YET**
 - installed phone APK: **v1.4.42-R1**
 - focus: **BUG-013 auth freshness**
@@ -160,7 +160,7 @@ If a natural write-time 401 occurs:
 
 1. Finish v1.4.43 docs/audits/guards.
 2. Compare branch to `main`; no accidental deletions.
-3. Open PR to `main`.
+3. PR #14 is open.
 4. Run full Termux `scripts/release-preflight.sh`.
 5. Build signed v1.4.43 APK from exact live head.
 6. Install over v1.4.42-R1 without clearing data.
