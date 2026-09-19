@@ -3,7 +3,6 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 MANIFEST="app/src/main/AndroidManifest.xml"
 PATHS="app/src/main/res/xml/file_paths.xml"
 CHOOSER="app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt"
@@ -11,12 +10,12 @@ ACCESS="app/src/main/java/com/saney/ytmimporter/storage/AllFilesAccess.kt"
 DIRECT="app/src/main/java/com/saney/ytmimporter/storage/DirectDownloadFileQuery.kt"
 R1="docs/v.1.4.42/R1.md"
 
-for f in "$GRADLE" "$MANIFEST" "$PATHS" "$CHOOSER" "$ACCESS" "$DIRECT" "$R1"; do
+for f in "$MANIFEST" "$PATHS" "$CHOOSER" "$ACCESS" "$DIRECT" "$R1"; do
   test -f "$f" || fail "missing v1.4.42-R1 file: $f"
 done
 
-grep -Fq 'versionCode = 81' "$GRADLE"   || fail "R1 versionCode 81 missing"
-grep -Fq 'versionName = "1.4.42-R1"' "$GRADLE"   || fail "R1 versionName missing"
+grep -Fq 'versionCode: **81**' "$R1"   || fail "historical R1 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.42-R1**' "$R1"   || fail "historical R1 versionName evidence missing"
 
 grep -Fq 'android.permission.MANAGE_EXTERNAL_STORAGE' "$MANIFEST"   || fail "MANAGE_EXTERNAL_STORAGE missing"
 
@@ -40,7 +39,7 @@ grep -Fq 'Додати SAF-папку…' "$CHOOSER"   || fail "SAF folder fallb
 grep -Fq 'Системний вибір файла…' "$CHOOSER"   || fail "system picker fallback missing"
 
 echo "PASS:"
-echo "- v1.4.42-R1 / code 81"
+echo "- historical v1.4.42-R1 / code 81 evidence"
 echo "- MANAGE_EXTERNAL_STORAGE declared"
 echo "- explicit rationale + Android special-access settings flow"
 echo "- direct Download newest-first listing"
