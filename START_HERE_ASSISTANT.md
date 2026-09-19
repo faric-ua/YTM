@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.45**
-- versionCode: **85**
-- release focus: **UX-022 Unified Window Title Emphasis**
-- release status: **PHONE RETEST PASS — v1.4.45 UX-022 CLOSED**
+- versionName: **1.4.46**
+- versionCode: **86**
+- release focus: **UX-019 Home Layout Prototype Alignment — Phase 1**
+- release status: **IMPLEMENTED / PHONE QA NEEDED — v1.4.46 UX-019 Phase 1**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.43 phone observation:
