@@ -18,10 +18,10 @@ Current release under test:
 - versionCode: **76**
 - feature focus: **UX-016 — in-app release history**
 - active branch: `feat/v1.4.40-release-history`
-- current head at this handoff: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
-- latest signed GitHub Actions run: **35408421729**
+- signed code head currently under phone test: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
+- latest signed GitHub Actions run for that code: **35408421729**
 - signed build result: **SUCCESS**
-- build head SHA: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
+- branch may contain newer documentation/status-only commits after this signed build; always verify the live PR head before merge or rebuild
 - phone state at handoff: user is installing this signed v1.4.40 build for the final release-history rotation-scroll retest.
 
 Stable phone build folder:
@@ -44,8 +44,9 @@ Open release PRs:
 - PR #11 — **v1.4.40: in-app release history**
   - base: `feat/v1.4.39-history-json-restore`
   - head: `feat/v1.4.40-release-history`
-  - current head: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
-  - mergeable: yes
+  - signed code head under current phone test: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
+  - live PR head may be newer because QA/handoff documentation is updated after phone/build events; verify it through GitHub
+  - mergeable at the last live check: yes
   - stacked on PR #10
 
 Do **not** blindly merge PR #11 first.
