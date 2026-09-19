@@ -13,11 +13,18 @@ for f in "$UI" "$MAIN" "$SERVICE" "$MANIFEST"; do
   test -f "$f" || fail "missing $f"
 done
 
-grep -q 'flatDialogActionButton' "$UI" \
-  || fail "flat trailing dialog action missing"
+if grep -q 'flatDialogActionButton' "$UI"; then
+  fail "obsolete flat trailing dialog action still present"
+fi
 
 grep -q 'trailingTextAction' "$UI" \
   || fail "AUTO three-action hierarchy missing"
+
+grep -A80 'val trailingTextAction' "$UI" | grep -q 'dialogActionButton' \
+  || fail "AUTO trailing Close/Back is not boxed"
+
+grep -A95 'DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE' "$UI" | grep -q 'dialogActionButton' \
+  || fail "vertical dismissive Close/Back is not boxed"
 
 grep -q 'ServiceActivity::class.java' "$MAIN" \
   || fail "Main does not open ServiceActivity"
@@ -51,7 +58,7 @@ grep -A12 'private fun showServiceTools()' "$MAIN" | grep -q 'ServiceActivity::c
   || fail "showServiceTools is not a ServiceActivity launcher"
 
 echo 'PASS:'
-echo '- three-action dialogs use two boxed actions + flat trailing close/back'
-echo '- two-action confirmation dialogs remain compact text confirmations'
+echo '- dismissive Close/Back actions use normal boxed dialog chrome'
+echo '- AUTO three-action hierarchy remains intact'
 echo '- Service keeps nested navigation inside ServiceActivity'
 echo '- replacement-log action labels are explicit'
