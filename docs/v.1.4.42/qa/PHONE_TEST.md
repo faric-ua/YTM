@@ -50,3 +50,31 @@ Expected:
 
 - no new Android storage permission prompt beyond SAF folder/document consent;
 - no Search API calls are needed for this QA.
+
+
+## First phone session result
+
+User-reported v1.4.42 phone QA:
+
+1. version / in-app selector entry: **PASS**;
+2. add-folder setup for root `Download`: **FAIL / PLATFORM RESTRICTION EXPOSED**;
+3. direct import from recent list: **DEFERRED**;
+4. Android system-picker fallback + Back: **DEFERRED**;
+5. Data Restore JSON selector: **DEFERRED**.
+
+The Android app-permissions screen showed no ordinary granted/denied storage
+permissions. That is expected for SAF: persisted tree access is not represented as a
+normal runtime storage permission.
+
+Important Android platform constraint:
+- on Android 11+ `ACTION_OPEN_DOCUMENT_TREE` cannot grant access to the root
+  `Download` directory;
+- therefore the v1.4.42 setup copy/flow that tells the user to authorize root Download
+  is not viable as the default onboarding path.
+
+Do not ask the user to enable broad filesystem permissions.
+
+Next engineering step:
+- redesign UX-020 setup so it does not depend on granting root Download;
+- preserve Android system picker fallback;
+- remaining phone tests 3–5 stay deferred until the revised design is built.
