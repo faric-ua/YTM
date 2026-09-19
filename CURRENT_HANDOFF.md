@@ -267,3 +267,11 @@ BUG-010 rollback phone update:
 - confirmation and result both state that local quota estimate stays current;
 - rollback returned local state from before the last Restore;
 - final quota-screen readback still needed before closing BUG-010.
+
+
+UX-017 phone finding — duplicate filename suffix:
+- fallback-only House Dance test file was downloaded as a duplicate and received a `-1` suffix;
+- v1.4.41 displayed `House Dance Hit 2000 Vol.1 YTM-1`;
+- therefore UX-017 is NOT phone PASS;
+- follow-up normalization must treat trailing service marker + common duplicate suffixes such as `YTM-1`, `YTM_1`, `YTM (1)` as removable filename noise;
+- do not rebuild immediately; finish current v1.4.41 QA first, then package findings into one corrective build.
