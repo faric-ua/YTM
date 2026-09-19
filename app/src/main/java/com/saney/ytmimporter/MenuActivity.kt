@@ -179,6 +179,46 @@ class MenuActivity : Activity() {
             )
         }
 
+    private fun showThemePicker() {
+        val active =
+            AppThemeManager.currentStyle(this)
+
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = "Тема оформлення",
+            subtitle =
+                "Один інтерфейс — три палітри. Тема зберігається на пристрої.",
+            actions =
+                AppThemeManager.ThemeStyle
+                    .values()
+                    .map { style ->
+                        UiChrome.MenuAction(
+                            label =
+                                (
+                                    if (style == active) {
+                                        "✓ "
+                                    } else {
+                                        ""
+                                    }
+                                ) +
+                                    style.marker +
+                                    "  " +
+                                    style.label,
+                            onClick = {
+                                if (style != active) {
+                                    AppThemeManager
+                                        .setStyle(
+                                            this,
+                                            style
+                                        )
+                                    recreate()
+                                }
+                            }
+                        )
+                    }
+        )
+    }
+
     private fun addAction(
         content: LinearLayout,
         title: String,
@@ -219,14 +259,18 @@ class MenuActivity : Activity() {
                             accentStroke = false
                         )
                 setOnClickListener {
-                    setResult(
-                        RESULT_OK,
-                        Intent().putExtra(
-                            EXTRA_ACTION,
-                            action
+                    if (action == ACTION_THEME) {
+                        showThemePicker()
+                    } else {
+                        setResult(
+                            RESULT_OK,
+                            Intent().putExtra(
+                                EXTRA_ACTION,
+                                action
+                            )
                         )
-                    )
-                    finish()
+                        finish()
+                    }
                 }
             }
 
