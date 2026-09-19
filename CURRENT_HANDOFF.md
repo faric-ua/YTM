@@ -20,7 +20,7 @@ Current release candidate:
 - active branch: `fix/v1.4.47-r1-home-nav-dialog`
 - active PR: **not created yet for R1**; underlying PR #19 remains open (`feat/v1.4.47-playlist-hub` → `feat/v1.4.46-home-layout-phase1`)
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — corrective R1 after v1.4.47 phone FAIL**
+- status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED — corrective R1 after v1.4.47 phone FAIL**
 - installed phone APK: **v1.4.47**
 - focus: **v1.4.47-R1 — Home prototype hierarchy + modal/nav/rotation corrections**
 
@@ -278,15 +278,13 @@ Do not merge R1 into the v1.4.47 branch until static preflight + signed APK + ta
 
 ## 7. Exact next execution step
 
-1. Run the dedicated v1.4.47-R1 audit.
-2. Run full release preflight.
-3. Compare R1 against `feat/v1.4.47-playlist-hub` and stop on accidental deletions.
-4. Open a stacked R1 PR into `feat/v1.4.47-playlist-hub` only after preflight passes.
-5. Build signed v1.4.47-R1 APK from exact head.
-6. Install over v1.4.47 without uninstalling or clearing data.
-7. Phone-test: prototype Home hierarchy, landscape scroll, modal theme migration, Hub return parent, replacement/clear modal rotation, existing bridges.
-8. Merge R1 only after targeted phone PASS.
-9. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
+1. Open/verify the stacked R1 PR into `feat/v1.4.47-playlist-hub`.
+2. Build signed v1.4.47-R1 APK from the exact R1 head.
+3. Verify APK SHA-256.
+4. Install over v1.4.47 without uninstalling or clearing data.
+5. Phone-test: prototype Home hierarchy, landscape scroll, modal theme migration, Hub return parent, replacement/clear modal rotation, existing bridges.
+6. Merge R1 only after targeted phone PASS.
+7. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
