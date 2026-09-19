@@ -21,6 +21,7 @@ v1.4.40 — In-app Release History — TESTED PATH PASS
 - BUG-009/Q-009 account-switch copy/action fit — OPEN; real-phone v1.4.40 UI finding
 - BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — OPEN; policy/fix needed
 - UX-017 Import Filename → Playlist Display Name — OPEN; fallback should humanize `_`, drop trailing service marker like `YTM`, and normalize `Vol1` → `Vol.1`; explicit in-file title remains authoritative
+- UX-018 Modal Action Position Consistency — IN PROGRESS v1.4.41; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
