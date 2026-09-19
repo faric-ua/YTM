@@ -42,8 +42,8 @@ grep -Fq 'CURRENT_HANDOFF.md' START_HERE_ASSISTANT.md \
   || fail "START_HERE does not include CURRENT_HANDOFF"
 grep -Fq 'mutable crash-recovery snapshot' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF purpose missing"
-grep -Fq 'v1.4.41 phone evidence already established' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF v1.4.41 phone evidence section missing"
+grep -Fq 'Historical status that remains true' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF historical status section missing"
 grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF current release candidate missing"
 grep -Fq 'feat/v1.4.42-recent-file-selector' CURRENT_HANDOFF.md \
@@ -122,7 +122,7 @@ grep -Fq 'UX-020 + UX-008 Phase 2B' START_HERE_ASSISTANT.md \
   || fail "START_HERE v1.4.42 focus missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
-grep -Fq 'all **four** Home workflow buttons need theme-aware state palettes' CURRENT_HANDOFF.md \
+grep -Fq 'all **four** Home workflow buttons need theme-aware Blue/Green state palettes' CURRENT_HANDOFF.md \
   || fail "four-button theme-state decision missing from handoff"
 
 echo "PASS:"
