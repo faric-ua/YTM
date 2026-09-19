@@ -90,6 +90,8 @@ class MainActivity : Activity() {
     private lateinit var pendingButton: Button
     private lateinit var progress: ProgressBar
     private var accountDialogOpen = false
+    private var returnToPlaylistHubAfterDelegatedAction =
+        false
 
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
@@ -140,6 +142,14 @@ class MainActivity : Activity() {
                 false
             ) == true
 
+        returnToPlaylistHubAfterDelegatedAction =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_RETURN_TO_PLAYLIST_HUB,
+                    false
+                )
+                ?: false
+
         buildUi()
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
@@ -181,6 +191,10 @@ class MainActivity : Activity() {
         outState.putBoolean(
             STATE_ACCOUNT_DIALOG_OPEN,
             accountDialogOpen
+        )
+        outState.putBoolean(
+            STATE_RETURN_TO_PLAYLIST_HUB,
+            returnToPlaylistHubAfterDelegatedAction
         )
         super.onSaveInstanceState(outState)
     }
@@ -1482,7 +1496,23 @@ class MainActivity : Activity() {
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != RESULT_OK || data == null) return
+
+        if (
+            resultCode != RESULT_OK ||
+            data == null
+        ) {
+            if (
+                returnToPlaylistHubAfterDelegatedAction &&
+                requestCode in
+                    setOf(
+                        reviewScreenRequestCode,
+                        destinationScreenRequestCode
+                    )
+            ) {
+                reopenPlaylistHubAfterDelegatedAction()
+            }
+            return
+        }
 
         when (requestCode) {
             pendingQueueRequestCode -> {
@@ -1616,6 +1646,23 @@ class MainActivity : Activity() {
         )
     }
 
+    private fun reopenPlaylistHubAfterDelegatedAction() {
+        if (
+            !returnToPlaylistHubAfterDelegatedAction
+        ) {
+            return
+        }
+
+        returnToPlaylistHubAfterDelegatedAction =
+            false
+
+        window.decorView.post {
+            if (!isFinishing && !isDestroyed) {
+                openPlaylistHub()
+            }
+        }
+    }
+
     private fun handleReviewScreenResult(
         data: Intent
     ) {
@@ -1704,17 +1751,26 @@ class MainActivity : Activity() {
                 PlaylistActivity.EXTRA_ACTION
             )
         ) {
-            PlaylistActivity.ACTION_SEARCH ->
+            PlaylistActivity.ACTION_SEARCH -> {
+                returnToPlaylistHubAfterDelegatedAction =
+                    true
                 searchOrReview()
+            }
 
-            PlaylistActivity.ACTION_REPEAT_SEARCH ->
+            PlaylistActivity.ACTION_REPEAT_SEARCH -> {
+                returnToPlaylistHubAfterDelegatedAction =
+                    true
                 searchAll(
                     openReviewAfter = true,
                     preserveExistingExact = true
                 )
+            }
 
-            PlaylistActivity.ACTION_CREATE ->
+            PlaylistActivity.ACTION_CREATE -> {
+                returnToPlaylistHubAfterDelegatedAction =
+                    true
                 createPlaylist()
+            }
 
             PlaylistActivity.ACTION_REPLACEMENTS ->
                 showReplacementLog()
@@ -2266,7 +2322,11 @@ class MainActivity : Activity() {
                 ""
             }
 
-        UiChrome.alertBuilder(this)
+        var searchStarted =
+            false
+
+        val searchPlanDialog =
+            UiChrome.alertBuilder(this)
             .setTitle(
                 "План пошуку (Search plan)"
             )
@@ -2292,6 +2352,9 @@ class MainActivity : Activity() {
             .setPositiveButton(
                 "Почати"
             ) { _, _ ->
+                searchStarted =
+                    true
+
                 startSearch(
                     p = p,
                     openReviewAfter =
@@ -2301,6 +2364,23 @@ class MainActivity : Activity() {
                 )
             }
             .show()
+
+        if (
+            returnToPlaylistHubAfterDelegatedAction
+        ) {
+            searchPlanDialog.setOnDismissListener {
+                window.decorView.post {
+                    if (
+                        !searchStarted &&
+                        returnToPlaylistHubAfterDelegatedAction &&
+                        !isFinishing &&
+                        !isDestroyed
+                    ) {
+                        reopenPlaylistHubAfterDelegatedAction()
+                    }
+                }
+            }
+        }
     }
 
     private fun startSearch(
@@ -4201,6 +4281,9 @@ class MainActivity : Activity() {
 
         private const val STATE_ACCOUNT_DIALOG_OPEN =
             "state_account_dialog_open"
+
+        private const val STATE_RETURN_TO_PLAYLIST_HUB =
+            "state_return_to_playlist_hub"
 
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"
