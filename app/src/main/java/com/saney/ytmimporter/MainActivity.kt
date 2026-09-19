@@ -36,6 +36,7 @@ import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.HomeDashboardChrome
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.util.ErrorMessages
@@ -89,6 +90,8 @@ class MainActivity : Activity() {
     private lateinit var pendingButton: Button
     private lateinit var progress: ProgressBar
     private var accountDialogOpen = false
+    private var returnToPlaylistHubAfterDelegatedAction =
+        false
 
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
@@ -139,6 +142,14 @@ class MainActivity : Activity() {
                 false
             ) == true
 
+        returnToPlaylistHubAfterDelegatedAction =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_RETURN_TO_PLAYLIST_HUB,
+                    false
+                )
+                ?: false
+
         buildUi()
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
@@ -181,6 +192,10 @@ class MainActivity : Activity() {
             STATE_ACCOUNT_DIALOG_OPEN,
             accountDialogOpen
         )
+        outState.putBoolean(
+            STATE_RETURN_TO_PLAYLIST_HUB,
+            returnToPlaylistHubAfterDelegatedAction
+        )
         super.onSaveInstanceState(outState)
     }
 
@@ -216,6 +231,28 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(palette.background)
         }
+
+        val scroll =
+            ScrollView(this).apply {
+                isFillViewport = true
+                overScrollMode =
+                    View.OVER_SCROLL_IF_CONTENT_SCROLLS
+            }
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setBackgroundColor(
+                    palette.background
+                )
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    dp(8)
+                )
+            }
 
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -304,7 +341,7 @@ class MainActivity : Activity() {
             }
         )
 
-        root.addView(header)
+        content.addView(header)
 
         val flowCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -329,48 +366,72 @@ class MainActivity : Activity() {
         )
 
         importButton =
-            button("1. Імпорт") {
-                openImportScreen()
-            }
+            HomeDashboardChrome
+                .workflowButton(
+                    activity = this,
+                    label = "1. Імпорт",
+                    primary = false
+                ) {
+                    openImportScreen()
+                }
 
         accountButton =
-            button("2. Google / YTM") {
-                showAccountDialog()
-            }
+            HomeDashboardChrome
+                .workflowButton(
+                    activity = this,
+                    label = "2. Google / YTM",
+                    primary = false
+                ) {
+                    showAccountDialog()
+                }
 
         searchButton =
-            primaryButton("3. Знайти / перевірити") {
-                searchOrReview()
-            }.apply {
+            HomeDashboardChrome
+                .workflowButton(
+                    activity = this,
+                    label = "3. Знайти / перевірити",
+                    primary = true
+                ) {
+                    searchOrReview()
+                }.apply {
                 isEnabled = false
                 alpha = 0.55f
             }
 
         createButton =
-            primaryButton("4. Створити / додати") {
-                createPlaylist()
-            }.apply {
+            HomeDashboardChrome
+                .workflowButton(
+                    activity = this,
+                    label = "4. Створити / додати",
+                    primary = true
+                ) {
+                    createPlaylist()
+                }.apply {
                 isEnabled = false
                 alpha = 0.55f
             }
 
         flowCard.addView(
-            equalButtonsRow(
-                importButton,
-                accountButton
-            )
+            HomeDashboardChrome
+                .equalButtonsRow(
+                    activity = this,
+                    first = importButton,
+                    second = accountButton
+                )
         )
 
         flowCard.addView(
-            equalButtonsRow(
-                searchButton,
-                createButton
-            ).apply {
+            HomeDashboardChrome
+                .equalButtonsRow(
+                    activity = this,
+                    first = searchButton,
+                    second = createButton
+                ).apply {
                 setPadding(0, dp(8), 0, 0)
             }
         )
 
-        root.addView(
+        content.addView(
             flowCard,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -388,24 +449,40 @@ class MainActivity : Activity() {
         }
 
         val historyButton =
-            compactButton("Історія") {
-                showHistory()
-            }
+            HomeDashboardChrome
+                .compactButton(
+                    activity = this,
+                    label = "Історія"
+                ) {
+                    showHistory()
+                }
 
         pendingButton =
-            compactButton("Черга") {
-                showPendingJobs()
-            }
+            HomeDashboardChrome
+                .compactButton(
+                    activity = this,
+                    label = "Черга"
+                ) {
+                    showPendingJobs()
+                }
 
         quotaButton =
-            compactButton("Квота") {
-                openQuotaScreen()
-            }
+            HomeDashboardChrome
+                .compactButton(
+                    activity = this,
+                    label = "Квота"
+                ) {
+                    openQuotaScreen()
+                }
 
         val moreButton =
-            compactButton("Меню") {
-                openMenuScreen()
-            }
+            HomeDashboardChrome
+                .compactButton(
+                    activity = this,
+                    label = "Меню"
+                ) {
+                    openMenuScreen()
+                }
 
         listOf(
             historyButton,
@@ -427,7 +504,7 @@ class MainActivity : Activity() {
             )
         }
 
-        root.addView(utilityRow)
+        content.addView(utilityRow)
 
         /*
          * UX-019 Phase 2:
@@ -457,7 +534,7 @@ class MainActivity : Activity() {
                 accountCard.subtitle
             )
 
-        root.addView(
+        content.addView(
             accountCard.root,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -472,11 +549,17 @@ class MainActivity : Activity() {
             }
         )
 
+        content.addView(
+            HomeDashboardChrome
+                .sectionTitle(
+                    activity = this,
+                    label = "Поточний плейлист"
+                )
+        )
+
         val workspaceCard =
             UiChrome.interactiveSummaryCard(
                 activity = this,
-                eyebrow =
-                    "Поточний плейлист",
                 title =
                     "Плейлист ще не імпортовано",
                 subtitle =
@@ -492,7 +575,7 @@ class MainActivity : Activity() {
         summaryText =
             workspaceCard.title
 
-        root.addView(
+        content.addView(
             workspaceCard.root,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -518,7 +601,7 @@ class MainActivity : Activity() {
                 visibility = View.GONE
             }
 
-        root.addView(
+        content.addView(
             progress,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -541,13 +624,99 @@ class MainActivity : Activity() {
                 visibleTracks
             )
 
+        content.addView(
+            HomeDashboardChrome
+                .sectionTitle(
+                    activity = this,
+                    label = "Швидкі дії"
+                )
+        )
+
+        val quickRow =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.HORIZONTAL
+                isBaselineAligned = false
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(10)
+                )
+            }
+
+        quickRow.addView(
+            HomeDashboardChrome
+                .quickActionButton(
+                    activity = this,
+                    label =
+                        "Імпортувати файл",
+                    icon =
+                        R.drawable.ic_ytm_download
+                ) {
+                openImportScreen()
+            },
+            LinearLayout.LayoutParams(
+                0,
+                dp(64),
+                1f
+            )
+        )
+
+        quickRow.addView(
+            HomeDashboardChrome
+                .quickActionButton(
+                    activity = this,
+                    label =
+                        "Експорт плейлистів",
+                    icon =
+                        R.drawable.ic_ytm_playlist_add
+                ) {
+                openImportScreen()
+            },
+            LinearLayout.LayoutParams(
+                0,
+                dp(64),
+                1f
+            ).apply {
+                marginStart =
+                    dp(8)
+            }
+        )
+
+        content.addView(quickRow)
+
+        scroll.addView(
+            content,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
         root.addView(
-            View(this),
+            scroll,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 0,
                 1f
             )
+        )
+
+        root.addView(
+            HomeDashboardChrome
+                .bottomNavigation(
+                    activity = this,
+                    onSearch = {
+                        searchOrReview()
+                    },
+                    onPlaylist = {
+                        openPlaylistHub()
+                    },
+                    onService = {
+                        showServiceTools()
+                    }
+                )
         )
 
         setContentView(root)
@@ -557,289 +726,6 @@ class MainActivity : Activity() {
         updatePendingButton()
         updatePrimaryActions()
     }
-
-    private fun button(
-        label: String,
-        action: () -> Unit
-    ): Button =
-        Button(this).apply {
-            text = label
-            isAllCaps = false
-            textSize = 13f
-            setTextColor(Color.WHITE)
-            gravity = android.view.Gravity.CENTER
-            maxLines = 2
-            applyButtonIcon(
-                button = this,
-                label = label,
-                tint =
-                    AppThemeManager
-                        .palette(
-                            this@MainActivity
-                        )
-                        .accent
-            )
-            setPadding(dp(9), dp(9), dp(9), dp(9))
-            compoundDrawablePadding =
-                dp(6)
-            UiChrome.autoSizeButton(
-                this,
-                minSp = 9,
-                maxSp = 13
-            )
-            background =
-                AppThemeManager.neutralButtonDrawable(
-                    context = this@MainActivity,
-                    radiusDp = 12
-                )
-            setOnClickListener {
-                action()
-            }
-        }
-
-    private fun primaryButton(
-        label: String,
-        action: () -> Unit
-    ): Button =
-        Button(this).apply {
-            text = label
-            isAllCaps = false
-            textSize = 13.5f
-            setTypeface(typeface, Typeface.BOLD)
-            setTextColor(Color.WHITE)
-            gravity = android.view.Gravity.CENTER
-            maxLines = 2
-            applyButtonIcon(
-                button = this,
-                label = label,
-                tint =
-                    AppThemeManager
-                        .palette(
-                            this@MainActivity
-                        )
-                        .accent
-            )
-            setPadding(dp(9), dp(9), dp(9), dp(9))
-            compoundDrawablePadding =
-                dp(6)
-            UiChrome.autoSizeButton(
-                this,
-                minSp = 9,
-                maxSp = 13
-            )
-            background =
-                AppThemeManager.accentButtonDrawable(
-                    context = this@MainActivity,
-                    radiusDp = 12
-                )
-            setOnClickListener {
-                action()
-            }
-        }
-
-    private fun compactButton(
-        label: String,
-        action: () -> Unit
-    ): Button =
-        button(
-            label = label,
-            action = action
-        ).apply {
-            textSize = 11f
-            maxLines = 1
-            minLines = 1
-            setSingleLine(true)
-            setHorizontallyScrolling(false)
-            setPadding(
-                dp(5),
-                dp(6),
-                dp(5),
-                dp(6)
-            )
-            compoundDrawablePadding =
-                dp(4)
-            resizeButtonStartIcon(
-                button = this,
-                sizeDp = 17
-            )
-            UiChrome.autoSizeButton(
-                this,
-                minSp = 8,
-                maxSp = 11
-            )
-        }
-
-    private fun buttonIconRes(
-        label: String
-    ): Int =
-        when {
-            label.contains(
-                "Google / YTM"
-            ) ->
-                R.drawable.ic_ytm_link
-
-            label.contains(
-                "Знайти"
-            ) ->
-                R.drawable.ic_ytm_search
-
-            label.contains(
-                "Створити"
-            ) ->
-                R.drawable.ic_ytm_playlist_add
-
-            label.contains(
-                "Імпорт"
-            ) ->
-                R.drawable.ic_ytm_download
-
-            label.contains(
-                "Історія"
-            ) ->
-                R.drawable.ic_ytm_history
-
-            label.contains(
-                "Черга"
-            ) ->
-                R.drawable.ic_ytm_queue
-
-            label.contains(
-                "Квота"
-            ) ->
-                R.drawable.ic_ytm_quota
-
-            label.contains(
-                "Ще"
-            ) ||
-                label.contains(
-                    "Меню"
-                ) ->
-                R.drawable.ic_ytm_more
-
-            else ->
-                0
-        }
-
-    private fun applyButtonIcon(
-        button: Button,
-        label: String,
-        tint: Int
-    ) {
-        val icon =
-            buttonIconRes(label)
-
-        if (icon == 0) {
-            return
-        }
-
-        button
-            .setCompoundDrawablesRelativeWithIntrinsicBounds(
-                icon,
-                0,
-                0,
-                0
-            )
-
-        resizeButtonStartIcon(
-            button = button,
-            sizeDp = 20
-        )
-
-        button.compoundDrawablePadding =
-            dp(6)
-
-        button.compoundDrawableTintList =
-            ColorStateList.valueOf(
-                tint
-            )
-    }
-
-    private fun resizeButtonStartIcon(
-        button: Button,
-        sizeDp: Int
-    ) {
-        val drawables =
-            button.compoundDrawablesRelative
-
-        val start =
-            drawables[0]
-                ?: return
-
-        val size =
-            dp(sizeDp)
-
-        start.setBounds(
-            0,
-            0,
-            size,
-            size
-        )
-
-        button.setCompoundDrawablesRelative(
-            start,
-            drawables[1],
-            drawables[2],
-            drawables[3]
-        )
-    }
-
-    private fun equalButtonsRow(
-        first: Button,
-        second: Button
-    ): LinearLayout =
-        LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-
-            /*
-             * Do not baseline-align sibling buttons.
-             *
-             * Step 2 can auto-size to a slightly different text size after
-             * restoring "2. Google / YTM ✓". A horizontal LinearLayout with
-             * baseline alignment enabled can then move one whole child down
-             * to align text baselines, visually clipping/offsetting the green
-             * button after configuration changes.
-             */
-            isBaselineAligned = false
-            gravity = android.view.Gravity.CENTER_VERTICAL
-
-            addView(
-                first,
-                LinearLayout.LayoutParams(
-                    0,
-                    dp(70),
-                    1f
-                )
-            )
-
-            addView(
-                second,
-                LinearLayout.LayoutParams(
-                    0,
-                    dp(70),
-                    1f
-                ).apply {
-                    marginStart = dp(6)
-                }
-            )
-        }
-
-    private fun roundedBackground(
-        color: Int,
-        radiusDp: Int,
-        strokeColor: Int? = null
-    ): GradientDrawable =
-        GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = dp(radiusDp).toFloat()
-            setColor(color)
-
-            if (strokeColor != null) {
-                setStroke(
-                    dp(1),
-                    strokeColor
-                )
-            }
-        }
 
     private fun updatePrimaryActions() {
         if (!::importButton.isInitialized ||
@@ -1188,7 +1074,23 @@ class MainActivity : Activity() {
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != RESULT_OK || data == null) return
+
+        if (
+            resultCode != RESULT_OK ||
+            data == null
+        ) {
+            if (
+                returnToPlaylistHubAfterDelegatedAction &&
+                requestCode in
+                    setOf(
+                        reviewScreenRequestCode,
+                        destinationScreenRequestCode
+                    )
+            ) {
+                reopenPlaylistHubAfterDelegatedAction()
+            }
+            return
+        }
 
         when (requestCode) {
             pendingQueueRequestCode -> {
@@ -1322,6 +1224,23 @@ class MainActivity : Activity() {
         )
     }
 
+    private fun reopenPlaylistHubAfterDelegatedAction() {
+        if (
+            !returnToPlaylistHubAfterDelegatedAction
+        ) {
+            return
+        }
+
+        returnToPlaylistHubAfterDelegatedAction =
+            false
+
+        window.decorView.post {
+            if (!isFinishing && !isDestroyed) {
+                openPlaylistHub()
+            }
+        }
+    }
+
     private fun handleReviewScreenResult(
         data: Intent
     ) {
@@ -1410,17 +1329,26 @@ class MainActivity : Activity() {
                 PlaylistActivity.EXTRA_ACTION
             )
         ) {
-            PlaylistActivity.ACTION_SEARCH ->
+            PlaylistActivity.ACTION_SEARCH -> {
+                returnToPlaylistHubAfterDelegatedAction =
+                    true
                 searchOrReview()
+            }
 
-            PlaylistActivity.ACTION_REPEAT_SEARCH ->
+            PlaylistActivity.ACTION_REPEAT_SEARCH -> {
+                returnToPlaylistHubAfterDelegatedAction =
+                    true
                 searchAll(
                     openReviewAfter = true,
                     preserveExistingExact = true
                 )
+            }
 
-            PlaylistActivity.ACTION_CREATE ->
+            PlaylistActivity.ACTION_CREATE -> {
+                returnToPlaylistHubAfterDelegatedAction =
+                    true
                 createPlaylist()
+            }
 
             PlaylistActivity.ACTION_REPLACEMENTS ->
                 showReplacementLog()
@@ -1972,7 +1900,11 @@ class MainActivity : Activity() {
                 ""
             }
 
-        UiChrome.alertBuilder(this)
+        var searchStarted =
+            false
+
+        val searchPlanDialog =
+            UiChrome.alertBuilder(this)
             .setTitle(
                 "План пошуку (Search plan)"
             )
@@ -1998,6 +1930,9 @@ class MainActivity : Activity() {
             .setPositiveButton(
                 "Почати"
             ) { _, _ ->
+                searchStarted =
+                    true
+
                 startSearch(
                     p = p,
                     openReviewAfter =
@@ -2007,6 +1942,23 @@ class MainActivity : Activity() {
                 )
             }
             .show()
+
+        if (
+            returnToPlaylistHubAfterDelegatedAction
+        ) {
+            searchPlanDialog.setOnDismissListener {
+                window.decorView.post {
+                    if (
+                        !searchStarted &&
+                        returnToPlaylistHubAfterDelegatedAction &&
+                        !isFinishing &&
+                        !isDestroyed
+                    ) {
+                        reopenPlaylistHubAfterDelegatedAction()
+                    }
+                }
+            }
+        }
     }
 
     private fun startSearch(
@@ -3578,17 +3530,21 @@ class MainActivity : Activity() {
                         label = "Відкрити в YTM"
                     ) {
                         openInYtm()
+                        reopenPlaylistHubAfterDelegatedAction()
                     },
                     UiChrome.DialogAction(
                         label = "Копіювати посилання"
                     ) {
                         copyPlaylistLink()
+                        reopenPlaylistHubAfterDelegatedAction()
                     },
                     UiChrome.DialogAction(
                         label = "Закрити",
                         tone =
                             UiChrome.ActionTone.ACCENT
-                    ) {}
+                    ) {
+                        reopenPlaylistHubAfterDelegatedAction()
+                    }
                 ),
             actionLayout =
                 UiChrome.DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
@@ -3907,6 +3863,9 @@ class MainActivity : Activity() {
 
         private const val STATE_ACCOUNT_DIALOG_OPEN =
             "state_account_dialog_open"
+
+        private const val STATE_RETURN_TO_PLAYLIST_HUB =
+            "state_return_to_playlist_hub"
 
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"

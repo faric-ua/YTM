@@ -1,5 +1,20 @@
 # Журнал змін (Changelog)
 
+## v1.4.47-R1
+- Real-phone v1.4.47 QA recorded PHONE FAIL for BUG-014..017.
+- Approved prototype is now the Home layout/hierarchy reference only; existing Neon/Blue/Green themes remain unchanged as the visual system.
+- Home dashboard order now includes account/status, current playlist, quick actions and fixed bottom navigation.
+- Home dashboard body is scrollable so landscape can reach lower sections.
+- Added HomeDashboardChrome so MainActivity stays below its cleanup-size guard.
+- Custom UiChrome dialog body/surfaces/borders/action colors now use the active palette; danger actions remain semantic red.
+- Playlist Hub keeps replacement/problem and target-link actions local.
+- Delegated Search/Create remember Playlist Hub as the return parent.
+- Search-plan Cancel and Review/Destination Back/Cancel can return to Playlist Hub.
+- Replacement/problem dialog survives Activity recreation/rotation.
+- Import clear-current-list confirmation survives Activity recreation/rotation.
+- versionCode 88 / versionName 1.4.47-R1.
+- v1.4.47-R1 = PHONE QA PENDING.
+
 ## v1.4.47
 - Continued UX-019 with a clean dashboard-style Home.
 - Home account/status card is now interactive and opens Google/YTM account details.

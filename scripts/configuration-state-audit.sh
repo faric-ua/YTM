@@ -11,9 +11,29 @@ fi
 grep -q 'restoreAuthSessionFromMemory()' "$MAIN" || fail "auth restore missing"
 grep -q 'syncAuthSessionToMemory()' "$MAIN" || fail "auth sync missing"
 grep -q 'AuthSessionStore.clear()' "$MAIN" || fail "account change does not clear old session"
-grep -A40 'override fun onCreate' "$MAIN" | grep -q 'restoreAuthSessionFromMemory()' || fail "restore not in onCreate"
-grep -A50 'override fun onCreate' "$MAIN" | grep -q 'updateAccountPanel()' || fail "account button not refreshed"
-grep -A60 'override fun onCreate' "$MAIN" | grep -q 'loadAccountIdentity' || fail "incomplete identity not reloaded"
+python - "$MAIN" <<'PY'
+from pathlib import Path
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+
+start = text.find("    override fun onCreate(")
+if start < 0:
+    raise SystemExit("FAIL: MainActivity onCreate missing")
+
+end = text.find("\n    override fun ", start + 1)
+block = text[start:] if end < 0 else text[start:end]
+
+required = {
+    "restoreAuthSessionFromMemory()": "restore not in onCreate",
+    "updateAccountPanel()": "account button not refreshed",
+    "loadAccountIdentity(": "incomplete identity not reloaded",
+}
+
+for needle, message in required.items():
+    if needle not in block:
+        raise SystemExit("FAIL: " + message)
+PY
 
 python - "$MAIN" <<'PY'
 from pathlib import Path

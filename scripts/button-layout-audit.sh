@@ -7,8 +7,9 @@ MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 REVIEW="app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
 HISTORY="app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 UI="app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"
+HOME_UI="app/src/main/java/com/saney/ytmimporter/ui/HomeDashboardChrome.kt"
 
-for f in "$MAIN" "$REVIEW" "$HISTORY" "$UI"; do
+for f in "$MAIN" "$REVIEW" "$HISTORY" "$UI" "$HOME_UI"; do
   test -f "$f" || fail "missing $f"
 done
 
@@ -20,7 +21,10 @@ grep -q 'private lateinit var importButton' "$MAIN" || fail "import step state i
 grep -q 'StepState.READY' "$MAIN" || fail "step-state colors missing"
 grep -q 'palette.success' "$MAIN" || fail "theme success ready accent missing"
 grep -q 'palette.surfaceAlt' "$MAIN" || fail "dark ready/attention surface missing"
-grep -q 'dp(70)' "$MAIN" || fail "main step buttons not tall enough"
+grep -Fq 'HomeDashboardChrome' "$MAIN" ||
+  fail "Main does not use Home dashboard chrome"
+grep -Fq 'dp(activity, 70)' "$HOME_UI" ||
+  fail "main step buttons not tall enough"
 grep -q 'needsSearch || needsAttention' "$MAIN" || fail "create attention state missing"
 grep -q 'ViewGroup.LayoutParams.WRAP_CONTENT' "$HISTORY" || fail "history actions not flexible height"
 

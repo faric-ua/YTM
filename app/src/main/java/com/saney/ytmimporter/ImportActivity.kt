@@ -3,6 +3,7 @@ import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -99,6 +100,13 @@ class ImportActivity : Activity() {
         List<YouTubePlaylistInfo> =
         emptyList()
 
+    private var clearWorkspaceDialogOpen =
+        false
+
+    private var clearWorkspaceDialog:
+        Dialog? =
+        null
+
     private val executor =
         Executors.newSingleThreadExecutor()
 
@@ -134,7 +142,36 @@ class ImportActivity : Activity() {
                     )
             )
 
+        clearWorkspaceDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_CLEAR_WORKSPACE_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
         buildUi()
+
+        if (clearWorkspaceDialogOpen) {
+            window.decorView.post {
+                val current =
+                    currentPlaylistStore
+                        .load()
+
+                if (
+                    current != null &&
+                    !isFinishing &&
+                    !isDestroyed
+                ) {
+                    confirmClearWorkspace(
+                        current.playlist.name
+                    )
+                } else {
+                    clearWorkspaceDialogOpen =
+                        false
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(
@@ -147,12 +184,24 @@ class ImportActivity : Activity() {
             )
         )
 
+        outState.putBoolean(
+            STATE_CLEAR_WORKSPACE_DIALOG_OPEN,
+            clearWorkspaceDialogOpen
+        )
+
         super.onSaveInstanceState(
             outState
         )
     }
 
     override fun onDestroy() {
+        clearWorkspaceDialog
+            ?.setOnDismissListener(
+                null
+            )
+        clearWorkspaceDialog =
+            null
+
         executor.shutdownNow()
         super.onDestroy()
     }
@@ -3197,30 +3246,44 @@ class ImportActivity : Activity() {
     private fun confirmClearWorkspace(
         playlistName: String
     ) {
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Очистити поточний список?",
-            message =
-                "Буде видалено тільки автозбережений локальний робочий список " +
-                    "«$playlistName».\n\n" +
-                    "YTM Project-файли та плейлисти в YouTube/YTM не змінюються.",
-            confirmLabel =
-                "Так, очистити"
-        ) {
-            currentPlaylistStore.clear()
+        clearWorkspaceDialogOpen =
+            true
 
-            setResult(
-                RESULT_OK,
-                Intent()
-                    .putExtra(
-                        EXTRA_CLEAR_WORKSPACE,
-                        true
-                    )
-            )
+        clearWorkspaceDialog =
+            UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title =
+                    "Очистити поточний список?",
+                message =
+                    "Буде видалено тільки автозбережений локальний робочий список " +
+                        "«$playlistName».\n\n" +
+                        "YTM Project-файли та плейлисти в YouTube/YTM не змінюються.",
+                confirmLabel =
+                    "Так, очистити"
+            ) {
+                clearWorkspaceDialogOpen =
+                    false
 
-            finish()
-        }
+                currentPlaylistStore.clear()
+
+                setResult(
+                    RESULT_OK,
+                    Intent()
+                        .putExtra(
+                            EXTRA_CLEAR_WORKSPACE,
+                            true
+                        )
+                )
+
+                finish()
+            }.also { dialog ->
+                dialog.setOnDismissListener {
+                    clearWorkspaceDialogOpen =
+                        false
+                    clearWorkspaceDialog =
+                        null
+                }
+            }
     }
 
     private fun queryFileName(
@@ -3486,6 +3549,9 @@ class ImportActivity : Activity() {
     companion object {
         private const val STATE_SELECTIVE_EXPORT =
             "selective_export_playlists"
+
+        private const val STATE_CLEAR_WORKSPACE_DIALOG_OPEN =
+            "clear_workspace_dialog_open"
 
         const val EXTRA_IMPORT_MESSAGE =
             "import_message"

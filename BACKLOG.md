@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.47 — UX-019 Phase 2 Playlist Hub + Clean Home — IMPLEMENTED / STATIC + PHONE QA NEEDED
+v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections — IMPLEMENTED / STATIC + PHONE QA NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -22,11 +22,45 @@ v1.4.47 — UX-019 Phase 2 Playlist Hub + Clean Home — IMPLEMENTED / STATIC + 
 - BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — CLOSED / PHONE RETEST PASS v1.4.41
 - BUG-011/Q-011 Account modal disappears on phone rotation — CLOSED / PHONE RETEST PASS v1.4.41-R1
 - BUG-013/Q-013 stale green auth freshness before remote API call — OPEN; app can keep Step 2 green while an in-memory access token has become invalid. The next real YouTube API request then returns 401, after which invalidation correctly turns Step 2 red. Need proactive token refresh/validation before remote destination/write flows instead of waiting for the first failing API call.
+- BUG-014 custom dialog chrome only partially follows active theme — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
+- BUG-015 Playlist Hub delegated actions lose parent/back-stack — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
+- BUG-016 replacement/clear confirmation modal rotation persistence gap — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
+- BUG-017 Home landscape hides lower dashboard sections — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
-- UX-019 Home Layout Prototype Alignment — PHASE 2 IMPLEMENTED v1.4.47 / PHONE QA NEEDED; Home is now a dashboard, account/current-playlist cards are interactive, track rows move behind Playlist Hub/Review, and existing search/write/project flows are reused. v1.4.46 portrait hierarchy already phone-PASS; combined theme/landscape smoke carries into v1.4.47.
+- UX-019 Home Layout Prototype Alignment — v1.4.47 phone QA found layout/navigation regressions; v1.4.47-R1 now uses the approved prototype as a **layout-only** contract: header → workflow → utility row → account/status → current playlist → quick actions → bottom navigation. Existing Neon/Blue/Green theme system remains authoritative.
 - UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
+
+## v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections
+- [x] versionCode 88 / versionName 1.4.47-R1
+- [x] preserve current Neon / Blue / Green theme system
+- [x] apply approved prototype as layout hierarchy only
+- [x] Home scrollable dashboard body
+- [x] Home quick actions
+- [x] Home fixed bottom navigation
+- [x] extract Home dashboard builders from MainActivity
+- [x] custom dialog body/surface/border/action chrome uses active palette
+- [x] semantic destructive actions remain danger/red
+- [x] delegated Search/Create remember Playlist Hub return parent
+- [x] Search-plan Cancel returns to Playlist Hub
+- [x] Review/Destination Back/Cancel returns to Playlist Hub
+- [x] problem/replacement dialog owned directly by PlaylistActivity
+- [x] Open-in-YTM / Copy-link owned directly by PlaylistActivity
+- [x] replacement dialog survives rotation
+- [x] Import clear-current-list confirmation survives rotation
+- [x] v1.4.47-R1 docs + phone plan
+- [x] dedicated R1 static audit
+- [x] full release preflight
+- [x] PR #20 opened into `feat/v1.4.47-playlist-hub`
+- [x] signed APK
+- [ ] phone 1: portrait Home hierarchy
+- [ ] phone 2: landscape scroll + bottom nav
+- [ ] phone 3: modal themes Neon/Green/Blue
+- [ ] phone 4: Hub Search/Create parent return
+- [ ] phone 5: modal rotation
+- [ ] phone 6: existing bridge smoke
+- [ ] merge R1 into v1.4.47 branch only after phone PASS
 
 ## v1.4.47 — Playlist Hub + Clean Home
 - [x] versionCode 87 / versionName 1.4.47

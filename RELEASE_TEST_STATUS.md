@@ -2,7 +2,8 @@
 
 | Version | Status | Note |
 |---|---|---|
-| v1.4.47 | **STATIC/FULL PREFLIGHT + SIGNED BUILD PASS — PHONE QA PENDING** | Home track rows move behind Playlist Hub/Review; Home account and current-playlist cards become interactive; target YTM playlist ID persistence added. GitHub Actions run 35471958580 succeeded from exact release head; APK SHA-256 verified. Phone QA pending. |
+| v1.4.47-R1 | **STATIC/FULL PREFLIGHT + SIGNED BUILD PASS — PHONE QA PENDING** | Corrective Home/Hub wave: approved prototype hierarchy without theme replacement; full theme-aware modal chrome; Playlist-Hub return-parent fixes; replacement + clear-confirm rotation persistence; scrollable landscape Home + fixed bottom navigation. |
+| v1.4.47 | **PHONE QA FAIL — MODAL THEME / HUB BACK STACK / ROTATION / LANDSCAPE** | Signed build itself passed, but real-phone QA found BUG-014..017: partial modal theme migration, delegated Hub actions returning to Home, replacement dialog disappearing on rotation, and landscape hiding lower dashboard content. Continued in v1.4.47-R1. |
 | v1.4.46 | **PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS** | Real-phone portrait screenshot passed the new Home hierarchy; current playlist and Google/YTM state survived update-in-place. Theme/landscape smoke is carried into v1.4.47 combined QA. |
 | v1.4.45 | **PHONE RETEST PASS — UX-022 UNIFIED WINDOW TITLE EMPHASIS** | Real-phone QA passed: full-screen titles, representative modal titles, Neon + alternate-theme accent behavior, and rotation/navigation smoke all passed. UX-022 closed. |
 | v1.4.44-R1 | **PHONE RETEST PASS — UX-021 LANDSCAPE COPY + MODAL CLOSE** | Real-phone retest passed: wide Recent-file/backup chooser shows readable `Системний вибір…`; Storage save footer remains readable; modal `Закрити` has boxed button chrome; rotate-back smoke passed. UX-021 closed. |
