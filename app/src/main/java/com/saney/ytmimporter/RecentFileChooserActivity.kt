@@ -531,8 +531,7 @@ class RecentFileChooserActivity : Activity() {
                 label =
                     "Додати SAF-папку…",
                 primary =
-                    !AllFilesAccess.isRequired() ||
-                        !AllFilesAccess.isGranted()
+                    !AllFilesAccess.isRequired()
             ) {
                 openSystemTreePicker()
             },
