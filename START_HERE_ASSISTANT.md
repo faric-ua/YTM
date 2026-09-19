@@ -35,7 +35,7 @@ Current application:
 - versionName: **1.4.41-R2**
 - versionCode: **79**
 - release focus: **v1.4.41-R2 parser-only corrective follow-up — stacked UX-017 duplicate filename suffix**
-- release status: **NOT PHONE-TESTED YET — STACKED FILENAME CORRECTIVE BUILD**
+- release status: **PHONE RETEST PASS — UX-017 CLOSED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.41 phone QA has started:
@@ -387,3 +387,10 @@ v1.4.41-R2 corrective scope:
 - R1 stacked `YTM-1 (1)` filename FAIL;
 - R2 changes only the fallback filename normalizer to strip repeated duplicate-copy suffix tokens;
 - one phone import-title retest remains.
+
+
+v1.4.41-R2 phone result:
+- stacked duplicate filename normalization PASS;
+- `YTM-1`, `YTM-1 (1)`, and `YTM-1 (1) (1)` all resolve to `House Dance Hit 2000 Vol.1`;
+- UX-017 closed;
+- next planned file-import UX is UX-020: in-app newest-first selector, coordinated with UX-008 Phase 2B.
