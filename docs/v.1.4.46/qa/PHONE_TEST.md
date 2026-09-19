@@ -41,3 +41,22 @@ Expected:
 - no action fires on rotation.
 
 Status: **PHONE QA NEEDED**.
+
+
+## Phone evidence
+
+### A — Portrait hierarchy: PASS
+
+Real-phone screenshot confirmed:
+- compact header renders correctly;
+- four-step workflow block is intact;
+- utility row is intact;
+- separate account/status card is visible;
+- separate current-playlist card is visible;
+- current playlist survived update-in-place;
+- Google/YTM session/account state survived update-in-place.
+
+### C/D — Theme + landscape
+
+Deferred into the combined v1.4.47 Home/Playlist-Hub smoke so the same
+Home hierarchy is not tested twice in isolation.
