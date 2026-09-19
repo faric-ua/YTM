@@ -727,6 +727,117 @@ class MainActivity : Activity() {
         updatePrimaryActions()
     }
 
+    private fun updatePrimaryActions() {
+        if (!::importButton.isInitialized ||
+            !::accountButton.isInitialized ||
+            !::searchButton.isInitialized ||
+            !::createButton.isInitialized
+        ) {
+            return
+        }
+
+        val current = playlist
+        val hasPlaylist =
+            current != null &&
+                current.tracks.isNotEmpty()
+
+        val hasSelectedVideo =
+            current
+                ?.tracks
+                .orEmpty()
+                .any {
+                    !it.selectedVideoId.isNullOrBlank() &&
+                        it.status != TrackStatus.SKIPPED
+                }
+
+        val needsSearch =
+            current
+                ?.tracks
+                .orEmpty()
+                .any {
+                    it.status in
+                        setOf(
+                            TrackStatus.NEW,
+                            TrackStatus.SEARCHING
+                        )
+                }
+
+        val needsAttention =
+            current
+                ?.tracks
+                .orEmpty()
+                .any {
+                    it.status in
+                        setOf(
+                            TrackStatus.REVIEW,
+                            TrackStatus.MISSING,
+                            TrackStatus.FAILED
+                        )
+                }
+
+        applyStepState(
+            button = importButton,
+            state =
+                if (hasPlaylist) {
+                    StepState.READY
+                } else {
+                    StepState.REQUIRED
+                }
+        )
+
+        applyStepState(
+            button = accountButton,
+            state =
+                when {
+                    restoringPriorAuthorization ->
+                        StepState.ATTENTION
+
+                    accessToken.isNullOrBlank() ->
+                        StepState.REQUIRED
+
+                    youtubeChannelInfo != null ->
+                        StepState.READY
+
+                    else ->
+                        StepState.ATTENTION
+                }
+        )
+
+        searchButton.isEnabled = hasPlaylist
+        applyStepState(
+            button = searchButton,
+            state =
+                when {
+                    !hasPlaylist || needsSearch ->
+                        StepState.REQUIRED
+
+                    needsAttention ->
+                        StepState.ATTENTION
+
+                    else ->
+                        StepState.READY
+                },
+            enabled = hasPlaylist
+        )
+
+        createButton.isEnabled = hasSelectedVideo
+        applyStepState(
+            button = createButton,
+            state =
+                when {
+                    !hasSelectedVideo ->
+                        StepState.REQUIRED
+
+                    needsSearch || needsAttention ->
+                        StepState.ATTENTION
+
+                    else ->
+                        StepState.READY
+                },
+            enabled = hasSelectedVideo
+        )
+    }
+
     private fun applyStepState(
         button: Button,
         state: StepState,
