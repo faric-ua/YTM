@@ -3419,17 +3419,21 @@ class MainActivity : Activity() {
                         label = "Відкрити в YTM"
                     ) {
                         openInYtm()
+                        reopenPlaylistHubAfterDelegatedAction()
                     },
                     UiChrome.DialogAction(
                         label = "Копіювати посилання"
                     ) {
                         copyPlaylistLink()
+                        reopenPlaylistHubAfterDelegatedAction()
                     },
                     UiChrome.DialogAction(
                         label = "Закрити",
                         tone =
                             UiChrome.ActionTone.ACCENT
-                    ) {}
+                    ) {
+                        reopenPlaylistHubAfterDelegatedAction()
+                    }
                 ),
             actionLayout =
                 UiChrome.DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
