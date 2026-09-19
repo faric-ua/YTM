@@ -415,6 +415,7 @@ v1.4.38 focus:
 - no broad filesystem permission
 
 Known:
+BUG-010/Q-010 CLOSED — PHONE RETEST PASS v1.4.41
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
@@ -585,5 +586,5 @@ v1.4.41 still pending:
 - account modal rotation smoke
 - representative destructive modal ordering
 - BUG-004 real/reproduced 401 path
-- BUG-010 quota-preserving Restore/rollback
+- BUG-010 CLOSED — full Restore + `Відкотити` quota-preservation phone PASS
 - UX-017 fallback-only filename normalization
