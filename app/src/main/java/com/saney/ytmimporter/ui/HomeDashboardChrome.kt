@@ -40,6 +40,54 @@ object HomeDashboardChrome {
         }
     }
 
+    fun sectionCard(
+        activity: Activity,
+        title: String
+    ): LinearLayout {
+        val palette =
+            AppThemeManager.palette(activity)
+
+        return LinearLayout(activity).apply {
+            orientation =
+                LinearLayout.VERTICAL
+            setPadding(
+                dp(activity, 12),
+                dp(activity, 9),
+                dp(activity, 12),
+                dp(activity, 10)
+            )
+            background =
+                AppThemeManager
+                    .surfaceDrawable(
+                        context = activity,
+                        fill =
+                            palette.surface,
+                        radiusDp = 16,
+                        accentStroke = true
+                    )
+
+            addView(
+                TextView(activity).apply {
+                    text = title
+                    textSize = 12f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.muted
+                    )
+                    setPadding(
+                        dp(activity, 2),
+                        0,
+                        0,
+                        dp(activity, 5)
+                    )
+                }
+            )
+        }
+    }
+
     fun workflowButton(
         activity: Activity,
         label: String,
@@ -268,8 +316,8 @@ object HomeDashboardChrome {
                             context = activity,
                             fill =
                                 palette.surface,
-                            radiusDp = 0,
-                            accentStroke = false
+                            radiusDp = 16,
+                            accentStroke = true
                         )
             }
 
