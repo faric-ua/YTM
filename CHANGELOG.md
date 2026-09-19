@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.47-R2
+- R1 phone screenshots showed remaining Home density and theme-navigation polish issues.
+- Current-playlist heading moved inside the playlist card.
+- Quick actions moved into a compact accent section container.
+- Home heading/content spacing tightened; quick-action buttons reduced to 58dp.
+- Bottom Home navigation now uses rounded outer corners.
+- MenuActivity now owns the theme picker; opening Theme no longer closes Menu first.
+- Selecting a new theme recreates MenuActivity so Menu remains the visible parent.
+- No-target playlist message shortened to `Створіть / виберіть плейлист`.
+- versionCode 89 / versionName 1.4.47-R2.
+- Phone QA pending.
+
 ## v1.4.47-R1
 - Real-phone v1.4.47 QA recorded PHONE FAIL for BUG-014..017.
 - Approved prototype is now the Home layout/hierarchy reference only; existing Neon/Blue/Green themes remain unchanged as the visual system.
