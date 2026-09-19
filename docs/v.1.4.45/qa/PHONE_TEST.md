@@ -39,4 +39,18 @@ Expected:
 - Back/Close still work;
 - no action fires because of rotation.
 
-Status: **PHONE QA NEEDED**.
+## Real-phone result — 2026-09-19
+
+**PASS.**
+
+Confirmed:
+- full-screen title emphasis: PASS;
+- representative dialog title emphasis: PASS;
+- Neon + alternate-theme accent behavior: PASS;
+- rotation/navigation smoke: PASS.
+
+During the same phone session, Google OAuth showed HTTP 403 `access_denied` for a
+non-approved account because the OAuth app audience is still in Testing. This is an
+OAuth console audience/test-user configuration issue, not a UX-022 regression.
+
+Status: **PHONE RETEST PASS — UX-022 CLOSED**.
