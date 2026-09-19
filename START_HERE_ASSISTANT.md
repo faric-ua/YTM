@@ -35,7 +35,7 @@ Current application:
 - versionName: **1.4.45**
 - versionCode: **85**
 - release focus: **UX-022 Unified Window Title Emphasis**
-- release status: **IMPLEMENTED / PHONE QA NEEDED — v1.4.45 UX-022**
+- release status: **PHONE RETEST PASS — v1.4.45 UX-022 CLOSED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.43 phone observation:
