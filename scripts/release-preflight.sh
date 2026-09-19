@@ -77,6 +77,8 @@ check_file "docs/v.1.4.41/R2.md"
 check_file "docs/v.1.4.42/RELEASE.md"
 check_file "docs/v.1.4.42/FILE_OPEN_AUDIT.md"
 check_file "docs/v.1.4.42/qa/PHONE_TEST.md"
+check_file "docs/v.1.4.42/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.42/qa/BUG_REGISTER.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
