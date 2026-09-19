@@ -1,13 +1,13 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.40 — In-app Release History — TESTED PATH PASS
+v1.4.41 — Auth/Search Recovery + UI Consistency — IMPLEMENTED / PHONE QA NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 v1.4.32 partial PASS; v1.4.33 unified modal fix carried into v1.4.34 — representative phone retest required
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
-- BUG-004/Q-004 stale green authorization state — REPRODUCED AGAIN v1.4.40 on Search path; P1 repair needed
+- BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 - UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
 - UX-009 Theme State Contrast — OPEN; Neon Dark is the accepted reference for the **four Home workflow buttons** (Import / Google-YTM / Search-Review / Create-Add). Keep Neon state semantics intact; redesign Blue Dark and Green Dark workflow-state palettes separately so ready / attention / error / inactive states remain clear without mechanically reusing Neon red/green/orange.
@@ -18,11 +18,32 @@ v1.4.40 — In-app Release History — TESTED PATH PASS
 - UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
 - UX-015 History JSON Restore — PARTIALLY PHONE-TESTED v1.4.39; file/Cancel/rotation/invalid-file PASS, populated restore + rollback remain inconclusive/pending
 - UX-016 In-app Release History — CLOSED FOR TESTED PHONE SCOPE v1.4.40; entry/rendering/scroll/readability/navigation/rotation-scroll PASS
-- BUG-009/Q-009 account-switch copy/action fit — OPEN; real-phone v1.4.40 UI finding
-- BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — OPEN; policy/fix needed
-- UX-017 Import Filename → Playlist Display Name — OPEN; fallback should humanize `_`, drop trailing service marker like `YTM`, and normalize `Vol1` → `Vol.1`; explicit in-file title remains authoritative
-- UX-018 Modal Action Position Consistency — IN PROGRESS v1.4.41; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
+- BUG-009/Q-009 account-switch copy/action fit — FIX IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED
+- BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — FIX IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED
+- UX-017 Import Filename → Playlist Display Name — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; fallback humanizes `_`, drops trailing `YTM`/`YTM Importer`, normalizes `Vol1` → `Vol.1`; explicit in-file title remains authoritative
+- UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
+
+## v1.4.41 — Auth/Search Recovery + UI Consistency
+- [x] bump versionCode 77 / versionName 1.4.41
+- [x] BUG-004 Search-path HTTP 401 stops on first auth failure
+- [x] BUG-004 shared auth state invalidated immediately from Search
+- [x] BUG-004 current track returns to retryable NEW instead of persisted auth FAILED
+- [x] BUG-004 legacy persisted auth-failure recovery after successful re-login
+- [x] BUG-009 compact account action label and profile copy
+- [x] BUG-010 preserve live local quota estimate across full Restore and safety rollback
+- [x] UX-017 human-readable filename fallback for imported playlist names
+- [x] UX-018 shared modal action position contract
+- [ ] v1.4.41 static audit
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [ ] phone: real/reproduced auth invalidation path
+- [ ] phone: re-login + retry search without stale FAILED rows
+- [ ] phone: account dialog button/copy fit
+- [ ] phone: modal confirm-left / cancel-right spot checks
+- [ ] phone: full Restore keeps current quota estimate
+- [ ] phone: House Dance title = House Dance Hit 2000 Vol.1
+- [ ] end-to-end House Dance smoke if quota is acceptable
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
