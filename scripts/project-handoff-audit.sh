@@ -8,6 +8,7 @@ fail() {
 
 for f in \
   START_HERE_ASSISTANT.md \
+  CURRENT_HANDOFF.md \
   README.md \
   YTM_ASSISTANT_WORKFLOW.md \
   TERMUX_COMMANDS.md \
@@ -35,6 +36,18 @@ grep -Fq 'CLOSED — PHONE RETEST PASS v1.4.27' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 closed state missing"
 grep -Fq 'START_HERE_ASSISTANT.md' README.md \
   || fail "README does not point new assistants to START_HERE"
+grep -Fq 'CURRENT_HANDOFF.md' README.md \
+  || fail "README does not point crash recovery to CURRENT_HANDOFF"
+grep -Fq 'CURRENT_HANDOFF.md' START_HERE_ASSISTANT.md \
+  || fail "START_HERE does not include CURRENT_HANDOFF"
+grep -Fq 'mutable crash-recovery snapshot' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF purpose missing"
+grep -Fq 'v1.4.39 History JSON phone QA' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF v1.4.39 QA resume state missing"
+grep -Fq 'v1.4.40 Release History phone QA' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF v1.4.40 QA resume state missing"
+grep -Fq 'Exact next phone test' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF next-action section missing"
 if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
 fi
@@ -45,6 +58,8 @@ grep -Fq 'Stable phone-side build artifact convention' YTM_ASSISTANT_WORKFLOW.md
   || fail "artifact convention missing from workflow policy"
 grep -Fq 'New assistant handoff' YTM_ASSISTANT_WORKFLOW.md \
   || fail "new assistant handoff section missing"
+grep -Fq 'CURRENT_HANDOFF.md' YTM_ASSISTANT_WORKFLOW.md \
+  || fail "workflow does not define CURRENT_HANDOFF crash recovery"
 
 grep -Fq 'Do **not** use `git add -A` as the routine default.' TERMUX_COMMANDS.md \
   || fail "Termux guide still lacks exact-staging rule"
@@ -102,6 +117,7 @@ grep -Fq 'UX-016 — in-app release history' START_HERE_ASSISTANT.md \
 
 echo "PASS:"
 echo "- canonical START_HERE entry point"
+echo "- mutable CURRENT_HANDOFF crash-recovery snapshot"
 echo "- README project entry page"
 echo "- current version/bug handoff state"
 echo "- tool map"
