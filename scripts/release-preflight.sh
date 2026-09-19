@@ -103,6 +103,8 @@ check_file "docs/v.1.4.47/qa/PHONE_TEST.md"
 check_file "docs/v.1.4.47/qa/BUG_REGISTER.md"
 check_file "docs/v.1.4.47/R1.md"
 check_file "docs/v.1.4.47/qa/PHONE_TEST_R1.md"
+check_file "docs/v.1.4.47/R2.md"
+check_file "docs/v.1.4.47/qa/PHONE_TEST_R2.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
@@ -184,6 +186,7 @@ bash scripts/v1445-title-emphasis-audit.sh
 bash scripts/v1446-home-layout-audit.sh
 bash scripts/v1447-playlist-hub-audit.sh
 bash scripts/v1447-r1-audit.sh
+bash scripts/v1447-r2-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -261,6 +264,7 @@ check_file "scripts/v1445-title-emphasis-audit.sh"
 check_file "scripts/v1446-home-layout-audit.sh"
 check_file "scripts/v1447-playlist-hub-audit.sh"
 check_file "scripts/v1447-r1-audit.sh"
+check_file "scripts/v1447-r2-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -411,11 +415,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 88' app/build.gradle.kts \
-  || fail "Expected versionCode = 88"
+grep -q 'versionCode = 89' app/build.gradle.kts \
+  || fail "Expected versionCode = 89"
 
-grep -q 'versionName = "1.4.47-R1"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.47-R1"'
+grep -q 'versionName = "1.4.47-R2"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.47-R2"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

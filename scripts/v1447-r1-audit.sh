@@ -3,7 +3,6 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 PLAYLIST="app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt"
 IMPORT="app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
@@ -12,12 +11,12 @@ HOME_UI="app/src/main/java/com/saney/ytmimporter/ui/HomeDashboardChrome.kt"
 R1="docs/v.1.4.47/R1.md"
 PHONE="docs/v.1.4.47/qa/PHONE_TEST_R1.md"
 
-for f in "$GRADLE" "$MAIN" "$PLAYLIST" "$IMPORT" "$UI" "$HOME_UI" "$R1" "$PHONE"; do
+for f in "$MAIN" "$PLAYLIST" "$IMPORT" "$UI" "$HOME_UI" "$R1" "$PHONE"; do
   test -f "$f" || fail "missing v1.4.47-R1 file: $f"
 done
 
-grep -Fq 'versionCode = 88' "$GRADLE" || fail "versionCode 88 missing"
-grep -Fq 'versionName = "1.4.47-R1"' "$GRADLE" || fail "versionName 1.4.47-R1 missing"
+grep -Fq 'versionCode: **88**' "$R1" || fail "historical R1 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.47-R1**' "$R1" || fail "historical R1 versionName evidence missing"
 
 LINES="$(wc -l < "$MAIN" | tr -d ' ')"
 [ "$LINES" -lt 4000 ] || fail "MainActivity cleanup regression: $LINES lines"
@@ -93,7 +92,7 @@ grep -Fq 'PHONE QA NEEDED' "$PHONE" ||
   fail "R1 phone plan status missing"
 
 echo "PASS:"
-echo "- v1.4.47-R1 / code 88"
+echo "- historical v1.4.47-R1 / code 88 evidence"
 echo "- MainActivity $LINES lines"
 echo "- prototype Home hierarchy + scroll + bottom nav"
 echo "- current theme system preserved"

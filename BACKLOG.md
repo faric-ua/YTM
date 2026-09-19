@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections — IMPLEMENTED / STATIC + PHONE QA NEEDED
+v1.4.47-R2 — Compact Home + Menu-owned Theme Picker — IMPLEMENTED / STATIC + PHONE QA NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -31,6 +31,32 @@ v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections — IMPLEMENTED 
 - UX-019 Home Layout Prototype Alignment — v1.4.47 phone QA found layout/navigation regressions; v1.4.47-R1 now uses the approved prototype as a **layout-only** contract: header → workflow → utility row → account/status → current playlist → quick actions → bottom navigation. Existing Neon/Blue/Green theme system remains authoritative.
 - UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
+
+## v1.4.47-R2 — Compact Home + Menu-owned Theme Picker
+- [x] versionCode 89 / versionName 1.4.47-R2
+- [x] preserve current Neon / Blue / Green palettes
+- [x] move current-playlist heading inside playlist card
+- [x] shorten current-playlist action copy
+- [x] wrap quick actions in compact accent section container
+- [x] reduce Home heading/content spacing
+- [x] quick-action buttons 64dp → 58dp
+- [x] round bottom navigation outer corners
+- [x] keep MenuActivity alive when opening Theme picker
+- [x] selecting theme recreates MenuActivity, not MainActivity
+- [x] shorten no-target playlist copy to `Створіть / виберіть плейлист`
+- [x] R2 docs + phone plan
+- [x] dedicated R2 static audit
+- [x] full release preflight
+- [x] PR #21 opened into `fix/v1.4.47-r1-home-nav-dialog`
+- [x] stacked PR into R1 branch
+- [ ] signed APK
+- [ ] phone 1: portrait Home density
+- [ ] phone 2: landscape + rounded nav
+- [ ] phone 3: theme picker stays over Menu
+- [ ] phone 4: playlist/quick-action smoke
+- [ ] phone 5: short no-target copy
+- [ ] phone 6: R1 regression smoke
+- [ ] merge R2 only after targeted phone PASS
 
 ## v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections
 - [x] versionCode 88 / versionName 1.4.47-R1

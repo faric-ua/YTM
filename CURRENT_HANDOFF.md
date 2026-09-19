@@ -15,14 +15,22 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.47-R1**
-- versionCode: **88**
-- active branch: `fix/v1.4.47-r1-home-nav-dialog`
-- active PR: **#20 — v1.4.47-R1: Home layout + Hub navigation fixes** → `feat/v1.4.47-playlist-hub`; underlying PR #19 remains open (`feat/v1.4.47-playlist-hub` → `feat/v1.4.46-home-layout-phase1`)
+- versionName: **1.4.47-R2**
+- versionCode: **89**
+- active branch: `fix/v1.4.47-r2-home-compact-theme-menu`
+- active PR: **#21 — v1.4.47-R2: compact Home + Menu-owned theme picker** → `fix/v1.4.47-r1-home-nav-dialog`; PR #20 remains open underneath, then PR #19
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **STATIC/FULL PREFLIGHT + SIGNED BUILD PASS / PHONE QA NEEDED — corrective R1 after v1.4.47 phone FAIL**
-- installed phone APK: **v1.4.47**
-- focus: **v1.4.47-R1 — Home prototype hierarchy + modal/nav/rotation corrections**
+- status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED — R2 after R1 phone UI findings**
+- installed phone APK: **v1.4.47-R1**
+- focus: **v1.4.47-R2 — compact Home + Menu-owned theme picker**
+
+R2 signed-build attempt evidence:
+- GitHub Actions run: **35476795879**
+- build head: `9c8d0095a7f0c5c37d8788c4593c0651942a298a`
+- result: **FAILED IN RELEASE PREFLIGHT — NO ANDROID BUILD STARTED**
+- exact cause: `scripts/v1447-r2-audit.sh` still expected the pre-PASS status literal `IMPLEMENTED — STATIC/FULL PREFLIGHT + PHONE QA PENDING`
+- repository status had correctly advanced to `STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING`
+- stale audit assertion fixed afterward; a new workflow_dispatch from the new branch HEAD is required
 
 Planned stable R1 build folder:
 
@@ -268,6 +276,29 @@ v1.4.47-R1 implementation on `fix/v1.4.47-r1-home-nav-dialog`:
 
 Do not merge R1 into the v1.4.47 branch until static preflight + signed APK + targeted phone retest pass.
 
+## 5F. v1.4.47-R1 phone finding / R2 correction
+
+Real-phone R1 screenshots confirmed the overall Home direction but exposed remaining polish issues:
+- lower Home content still consumes too much portrait height;
+- `Поточний плейлист` and `Швидкі дії` use external headings with avoidable vertical gaps;
+- bottom Home navigation outer corners are square;
+- `Меню → Тема` currently finishes MenuActivity, then MainActivity shows the theme picker over Home.
+
+v1.4.47-R2 on `fix/v1.4.47-r2-home-compact-theme-menu`:
+- versionName `1.4.47-R2` / versionCode `89`;
+- current-playlist heading moves inside the interactive playlist card;
+- playlist action copy shortens to `Натисніть для керування →`;
+- quick actions move into a compact accent section container;
+- quick-action height becomes 58dp;
+- heading/content spacing is tightened;
+- bottom navigation uses rounded 16dp outer corners with visible side/bottom margins;
+- MenuActivity owns the Theme picker and no longer finishes before opening it;
+- selecting a new theme recreates MenuActivity, keeping Menu visible;
+- no-target playlist copy shortens to `Створіть / виберіть плейлист`;
+- R1 Playlist-Hub navigation, modal-theme and rotation fixes remain carried forward.
+
+R2 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R2.md`.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -283,12 +314,12 @@ Do not merge R1 into the v1.4.47 branch until static preflight + signed APK + ta
 
 ## 7. Exact next execution step
 
-1. Open/verify the stacked R1 PR into `feat/v1.4.47-playlist-hub`.
-2. Build signed v1.4.47-R1 APK from the exact R1 head.
+1. Open/verify the stacked R2 PR into `fix/v1.4.47-r1-home-nav-dialog`.
+2. Build signed v1.4.47-R2 APK from the exact R2 head.
 3. Verify APK SHA-256.
-4. Install over v1.4.47 without uninstalling or clearing data.
-5. Phone-test: prototype Home hierarchy, landscape scroll, modal theme migration, Hub return parent, replacement/clear modal rotation, existing bridges.
-6. Merge R1 only after targeted phone PASS.
+4. Install over v1.4.47-R1 without uninstalling or clearing data.
+5. Phone-test portrait density, rounded nav, Menu-owned theme picker, quick actions, short no-target copy, and a short R1 regression smoke.
+6. Merge R2 only after targeted phone PASS.
 7. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract

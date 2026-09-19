@@ -361,7 +361,7 @@ class MainActivity : Activity() {
                 textSize = 12f
                 setTextColor(palette.muted)
                 setTypeface(typeface, Typeface.BOLD)
-                setPadding(dp(2), 0, 0, dp(8))
+                setPadding(dp(2), 0, 0, dp(5))
             }
         )
 
@@ -549,21 +549,15 @@ class MainActivity : Activity() {
             }
         )
 
-        content.addView(
-            HomeDashboardChrome
-                .sectionTitle(
-                    activity = this,
-                    label = "Поточний плейлист"
-                )
-        )
-
         val workspaceCard =
             UiChrome.interactiveSummaryCard(
                 activity = this,
+                eyebrow =
+                    "Поточний плейлист",
                 title =
                     "Плейлист ще не імпортовано",
                 subtitle =
-                    "Натисніть для керування плейлистом →",
+                    "Натисніть для керування →",
                 fill =
                     palette.surface,
                 subtitleAccent = true,
@@ -585,7 +579,7 @@ class MainActivity : Activity() {
                     dp(12),
                     0,
                     dp(12),
-                    dp(8)
+                    dp(6)
                 )
             }
         )
@@ -606,7 +600,10 @@ class MainActivity : Activity() {
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 dp(4)
-            )
+            ).apply {
+                marginStart = dp(12)
+                marginEnd = dp(12)
+            }
         )
 
         /*
@@ -624,25 +621,18 @@ class MainActivity : Activity() {
                 visibleTracks
             )
 
-        content.addView(
+        val quickSection =
             HomeDashboardChrome
-                .sectionTitle(
+                .sectionCard(
                     activity = this,
-                    label = "Швидкі дії"
+                    title = "Швидкі дії"
                 )
-        )
 
         val quickRow =
             LinearLayout(this).apply {
                 orientation =
                     LinearLayout.HORIZONTAL
                 isBaselineAligned = false
-                setPadding(
-                    dp(12),
-                    0,
-                    dp(12),
-                    dp(10)
-                )
             }
 
         quickRow.addView(
@@ -658,7 +648,7 @@ class MainActivity : Activity() {
             },
             LinearLayout.LayoutParams(
                 0,
-                dp(64),
+                dp(58),
                 1f
             )
         )
@@ -676,7 +666,7 @@ class MainActivity : Activity() {
             },
             LinearLayout.LayoutParams(
                 0,
-                dp(64),
+                dp(58),
                 1f
             ).apply {
                 marginStart =
@@ -684,7 +674,22 @@ class MainActivity : Activity() {
             }
         )
 
-        content.addView(quickRow)
+        quickSection.addView(quickRow)
+
+        content.addView(
+            quickSection,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(
+                    dp(12),
+                    dp(2),
+                    dp(12),
+                    dp(6)
+                )
+            }
+        )
 
         scroll.addView(
             content,
@@ -716,7 +721,18 @@ class MainActivity : Activity() {
                     onService = {
                         showServiceTools()
                     }
+                ),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(
+                    dp(8),
+                    0,
+                    dp(8),
+                    dp(8)
                 )
+            }
         )
 
         setContentView(root)
@@ -3562,7 +3578,7 @@ class MainActivity : Activity() {
     private fun openInYtm() {
         val id =
             createdPlaylistId
-                ?: return toast("Спочатку створіть або виберіть плейлист")
+                ?: return toast("Створіть / виберіть плейлист")
 
         openPlaylistIdInYtm(id)
     }
@@ -3590,7 +3606,7 @@ class MainActivity : Activity() {
     }
 
     private fun copyPlaylistLink() {
-        val url = playlistUrl() ?: return toast("Спочатку створіть або виберіть плейлист")
+        val url = playlistUrl() ?: return toast("Створіть / виберіть плейлист")
 
         val clipboard =
             getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
