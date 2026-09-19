@@ -8,271 +8,137 @@ Last updated: **2026-09-19**
 
 Repository: `faric-ua/YTM`
 
-Latest merged baseline:
-- **v1.4.41-R2 / versionCode 79**
-- PR #12 merged to `main`
-- merge commit: `a3763b8e7db6154d20a000891bdcd5b8b7e54d55`
-
-Current release candidate:
+Latest merged release:
 - versionName: **1.4.42-R1**
 - versionCode: **81**
-- active branch: `feat/v1.4.42-recent-file-selector`
-- active PR: **#13** → `main`
-- installed phone APK: **v1.4.42**
-- status: **PHONE RETEST PASS — BUG-012 CLOSED; BUG-013 AUTH FRESHNESS OPEN**
-- immediate next gate: **preflight → signed R1 APK → targeted All files access phone QA**
+- PR #13 merged to `main`
+- merge commit: `7376c326d55cde5df9b289bff2bf571a47f67ef0`
+- phone result: **PASS for R1 scope**
+- BUG-012: **CLOSED — PHONE RETEST PASS v1.4.42-R1**
 
-Stable build folder:
+Installed phone APK:
+- **v1.4.42-R1**
 
-`/storage/emulated/0/Download/YTM-v1.4.42-R1-build/`
+Next functional target:
+- **v1.4.43 — BUG-013 Auth Freshness**
+- status: **NEXT / NOT IMPLEMENTED**
+- active PR: **none yet**
 
-## 2. Why R1 exists
+## 2. v1.4.42-R1 final phone evidence
 
-v1.4.42 introduced the in-app RecentFileChooserActivity.
+PASS:
+- All files access rationale/grant recognition;
+- direct Download list: 47 matching files;
+- newest-first visible ordering;
+- direct House Dance import:
+  - exact title `House Dance Hit 2000 Vol.1`;
+  - 9 tracks;
+- Restore JSON reaches `Підтвердити Restore`;
+- Android system-picker fallback + return;
+- Search plan smoke:
+  - 9 tracks need matching;
+  - 9 already cached;
+  - **0 new search.list**;
+- track result/review interaction.
 
-Phone result:
-- selector entry: PASS;
-- root Download setup via `ACTION_OPEN_DOCUMENT_TREE`: FAIL/BLOCKED.
+Do not reopen BUG-012 unless new evidence contradicts this.
 
-Reason:
-- Android 11+ does not allow SAF tree access to root `Download`.
+## 3. BUG-013 — auth freshness
 
-The project owner explicitly chose the broad Android **All files access** path for the
-GitHub/sideload APK so YTM Importer can read Download directly.
+Real-phone reproduction on v1.4.42-R1:
+- Home initially showed green `2. Google / YTM ✓`;
+- user entered `4. Створити / додати`;
+- switching to the existing-playlist path triggered a live YouTube API request;
+- app reported authorization required;
+- Step 2 then turned red.
 
-This decision supersedes the earlier v1.4.42 SAF-only assumption for the current R1
-build. Do not erase the historical v1.4.42 phone finding.
+Current code behavior:
+- `authorize()` trusts a non-blank in-memory `accessToken` when account/channel identity is already cached;
+- it can therefore skip a fresh Google authorization call;
+- if that token has expired or been revoked, Home can remain green until the next live YouTube request;
+- destination HTTP 401 handling is working: `invalidateAuthorizationIfNeeded()` clears the session and turns Step 2 red.
 
-## 3. v1.4.42-R1 implementation
+Required v1.4.43 direction:
+- create a centralized fresh/silent authorization path before remote destination list/create/write operations;
+- do not trust only `accessToken != null` plus cached identity;
+- prefer silent Google AuthorizationClient refresh/validation when possible;
+- only require interactive account resolution when Google says it is needed;
+- preserve current HTTP 401 invalidation as fallback;
+- do not merge this with BUG-004 SearchCoordinator-specific real-401 acceptance.
 
-### Permission
+## 4. UI follow-ups
 
-Manifest now declares:
+### UX-021 — Adaptive Landscape Action Layout
 
-`android.permission.MANAGE_EXTERNAL_STORAGE`
+Phone landscape evidence shows vertically stacked footer actions consume most of the
+height.
 
-On Android 11+:
-- grant state is checked with `Environment.isExternalStorageManager()`;
-- the app opens `Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION`;
-- if the per-app settings activity is unavailable, it falls back to
-  `Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION`.
+Plan:
+- use available width as responsive trigger;
+- on wide/landscape layouts, action groups should move into one horizontal row when
+  they fit;
+- apply to full-screen footer actions and modal action areas;
+- preserve UX-018 action ordering/semantics;
+- implement through shared UI helpers, not screen-specific hacks.
 
-The app first shows an in-app rationale. It does not silently enable access.
+### UX-022 — Unified Window Title Emphasis
 
-### Direct Download listing
+User observed that the first/title line inside windows does not stand out enough.
 
-New `DirectDownloadFileQuery`:
-- reads Android public `Download` directly;
-- filters by the selector's allowed extensions;
-- sorts by `File.lastModified()` descending;
-- returns at most 200 matches;
-- labels source as `Download`.
+Examples:
+- `Підтвердити Restore`
+- `План пошуку (Search plan)`
+- `Доступ до Download`
 
-The same selector still merges persisted SAF-root entries and sorts the combined list
-newest-first.
+Plan:
+- stronger theme-aware title color/emphasis;
+- consistent visual hierarchy between title and body;
+- apply across dialogs, modal windows and utility/full-screen panels through shared UI
+  styling;
+- do not hardcode one color that breaks Blue/Green/Neon themes.
 
-### Direct file handoff
+These are planned after the auth-freshness functional fix unless explicitly reprioritized.
 
-`file_paths.xml` now exposes only `Download/` through the existing non-exported
-FileProvider.
+## 5. Historical status that remains true
 
-Direct Download rows return a FileProvider content URI, so ImportActivity/DataActivity
-continue using their normal ContentResolver read path.
-
-### Fallbacks retained
-
-- `Додати SAF-папку…`
-- `Системний вибір файла…`
-- Back / Cancel
-
-No existing SAF save/folder workflows are removed.
-
-## 4. Distribution caveat
-
-This GitHub/sideload build may use All files access.
-
-Google Play treats `MANAGE_EXTERNAL_STORAGE` as a restricted/high-risk permission.
-If the app is later published through Google Play, eligibility/declaration must be
-reviewed separately. Do not silently assume Play approval.
-
-## 5. Exact next execution step
-
-1. Finish current R1 docs/audits/guards.
-2. Read live PR #13 head.
-3. User runs one Termux release block.
-4. `bash scripts/release-preflight.sh` must PASS.
-5. Dispatch `.github/workflows/build-apk.yml` for that exact head.
-6. Download `YTM-Importer-v1.4.42-R1-Release`.
-7. Verify SHA-256.
-8. Install over v1.4.42 without clearing app data.
-9. Run targeted phone QA below.
-10. Merge PR #13 only after accepted phone evidence.
-
-Preflight update:
-- first R1 preflight attempt reached the historical storage audits and failed with:
-  `FAIL: broad storage permission introduced: MANAGE_EXTERNAL_STORAGE`;
-- this was not an Android/build failure; it was stale historical-audit coupling;
-- seven historical audits (v1.4.35 through v1.4.41) still compared their old SAF-only
-  policy against the live current Manifest;
-- those audits are now decoupled from current Manifest permission policy while retaining
-  historical release evidence where appropriate;
-- the dedicated `v1442-r1-all-files-audit.sh` is now the current guard that explicitly
-  requires `MANAGE_EXTERNAL_STORAGE`;
-- next action: fetch the live branch head and rerun full release preflight from the start.
-
-Second R1 preflight update:
-- after decoupling historical Manifest permission guards, preflight next failed in
-  `v1442-recent-file-selector-audit.sh` with
-  `FAIL: historical v1.4.42 SAF-only boundary evidence missing`;
-- root cause was a literal mismatch only: the immutable v1.4.42 release doc says
-  `No broad storage permission is added.`, while the audit searched for
-  `No broad filesystem permission is added.`;
-- the historical audit now checks the exact release-snapshot wording;
-- all scripts invoked by `release-preflight.sh` were rescanned for stale
-  `MANAGE_EXTERNAL_STORAGE` rejection/current v1.4.42 version pinning;
-- no additional stale broad-storage rejection was found;
-- the current R1 audit remains the only guard that explicitly requires
-  `MANAGE_EXTERNAL_STORAGE`.
-
-Third R1 preflight update:
-- preflight then failed with `FAIL: all-files grant check missing`;
-- implementation was correct, but `v1442-r1-all-files-audit.sh` searched for
-  contiguous `Environment.isExternalStorageManager()` while Kotlin formatting split
-  `Environment` and `.isExternalStorageManager()` across lines;
-- the R1 audit was made formatting-safe for:
-  - `isExternalStorageManager()`;
-  - `DIRECTORY_DOWNLOADS`;
-  - `getExternalStoragePublicDirectory(`;
-- every remaining R1 audit predicate was then checked directly against the live branch
-  files and all predicates matched.
-
-## 6. R1 phone QA
-
-### A. Permission flow
-
-Path:
-
-`Головна → 1. Імпорт → імпортувати файл`
-
-Expected:
-- YTM selector opens;
-- primary action says `Надати доступ до всіх файлів`;
-- tap it → rationale dialog;
-- `Відкрити налаштування` opens Android special-access screen for YTM Importer;
-- enable the toggle;
-- Android Back returns to YTM selector;
-- Download listing refreshes.
-
-### B. Download newest-first
-
-Expected:
-- no SAF selection of root Download is required;
-- TXT/CSV/JSON files from Download appear;
-- recent files are above older files by modified timestamp;
-- House Dance duplicate files are near the top.
-
-### C. Direct import
-
-Tap a House Dance TXT directly from the YTM selector.
-
-Expected:
-- import succeeds;
-- playlist title remains `House Dance Hit 2000 Vol.1`;
-- 9 tracks;
-- do not run Search.
-
-### D. Restore JSON
-
-Path:
-
-`Меню → Дані та резервні копії → Restore → Вибрати backup`
-
-Expected:
-- same selector;
-- JSON filter;
-- Download backup files visible;
-- selecting one opens existing Restore confirmation;
-- Cancel at confirmation leaves data unchanged.
-
-### E. Fallback smoke
-
-- `Додати SAF-папку…` opens Android folder selection.
-- `Системний вибір файла…` opens Android file picker.
-- Back from system picker returns to YTM selector.
-
-## 7. Current R1 phone evidence
-
-Real-phone screenshot evidence confirms:
-
-- the `Доступ до Download` rationale dialog renders;
-- after the grant flow, the selector sees All files access as granted;
-- the permission action disappears;
-- direct Download listing works and shows 47 matching files;
-- visible ordering is newest-first: 14:50 entries appear above 14:47;
-- Android system picker opens separately and shows 120 total Download objects;
-- Import selector intentionally filters supported types, so broad Android permission
-  does not mean every file type is shown in YTM Importer.
-
-Final R1 acceptance:
-- direct House Dance TXT import PASS: `House Dance Hit 2000 Vol.1`, 9 tracks;
-- Restore JSON reaches existing confirmation PASS;
-- system-picker fallback/return PASS;
-- BUG-012 CLOSED on v1.4.42-R1.
-
-Additional workflow smoke:
-- Search plan opens PASS;
-- 9 cached / 0 new search.list PASS;
-- track result/review interaction PASS.
-
-New auth finding:
-- Step 2 was green before a destination API call;
-- existing-playlist load then hit authorization-required / HTTP 401;
-- shared invalidation correctly turned Step 2 red;
-- tracked as **BUG-013** because the green state can outlive token validity until the first live request.
-
-Landscape screenshots exposed a separate responsive-layout issue:
-- fixed footer actions remain vertically stacked;
-- in landscape they consume most of the screen height;
-- **UX-021 Adaptive Landscape Action Layout** is now planned;
-- wide/landscape action groups should reflow horizontally when width allows;
-- apply this consistently to full-screen footer actions and modal action areas;
-- preserve UX-018 action ordering/semantics.
-
-## 8. Historical status that remains true
-
-- v1.4.42: selector entry PASS; root Download SAF setup BLOCKED (BUG-012).
-- v1.4.41-R2: UX-017 CLOSED / phone PASS.
-- BUG-011: CLOSED / phone PASS v1.4.41-R1.
+- BUG-004: destination-side real 401 invalidation is phone-confirmed; the
+  SearchCoordinator-specific real-401 retest remains pending.
 - BUG-010: CLOSED / phone PASS v1.4.41.
-- BUG-004: destination-side real HTTP 401 invalidation is phone-confirmed; SearchCoordinator-specific real-401 retest still pending.
-- v1.4.39 populated-History Restore / `Відкотити` remains inconclusive/pending.
+- BUG-011: CLOSED / phone PASS v1.4.41-R1.
+- UX-017: CLOSED / phone PASS v1.4.41-R2.
+- UX-018: representative phone PASS, not exhaustive.
+- v1.4.39 populated-History Restore / `Відкотити` proof remains inconclusive/pending.
+- UX-019 Home layout prototype alignment remains planned.
+- UX-009 Blue/Green workflow-state palettes remain open; Neon state semantics stay locked.
 
-## 9. Planned after this release
+## 6. Exact next execution step
 
-Home redesign remains separate:
-- UX-019 uses the approved top-left Polyglot K-U prototype as **layout-only** reference;
-- preserve current themes;
-- UX-009: all **four** Home workflow buttons need theme-aware Blue/Green state palettes;
-- UX-021: adaptive landscape/wide action rows across full-screen and modal UI;
-- UX-022: unified theme-aware title emphasis for dialogs, modal windows and utility panels;
-- Neon Dark remains the accepted state-color reference.
+1. Create a fresh branch from current `main` for **v1.4.43 auth freshness**.
+2. Audit every remote YouTube operation that calls `authorize()`.
+3. Implement centralized silent refresh/validation before destination list/create/write.
+4. Add static regression guards and v1.4.43 docs.
+5. Build signed APK.
+6. Phone reproduce stale-green scenario.
+7. Acceptance:
+   - no first-request surprise 401 while Step 2 remains green;
+   - silent refresh keeps flow moving when possible;
+   - if interactive authorization is needed, UI asks before destination API failure;
+   - after reauth, existing-playlist list loads normally.
+8. Keep UX-021/UX-022 as separate next UI work.
 
-## 10. Working contract
+## 7. Working contract
 
 **ChatGPT prepares → user runs exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
 
 Rules:
 - GitHub/repository truth beats chat memory;
-- build/static PASS is not phone PASS;
+- static/build success is not phone PASS;
 - preserve historical `docs/v.*`;
-- inspect diff/deletions before merge;
-- use live PR head immediately before build.
+- inspect deletion diff before merge;
+- signed builds come from `.github/workflows/build-apk.yml`;
+- use live branch/PR head immediately before build.
 
-User-facing QA instructions:
-- English technical terms are fine;
-- include the short in-app path for each test.
-
-## 11. Fresh-chat reading order
+## 8. Fresh-chat reading order
 
 1. `START_HERE_ASSISTANT.md`
 2. `CURRENT_HANDOFF.md`
@@ -281,5 +147,4 @@ User-facing QA instructions:
 5. `BACKLOG.md`
 6. `RELEASE_TEST_STATUS.md`
 7. `qa/BUG_REGISTER.md`
-8. `docs/v.1.4.42/R1.md`
-9. live GitHub PR #13 / branch state
+8. live GitHub branch/PR state
