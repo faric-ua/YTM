@@ -2782,6 +2782,20 @@ class MainActivity : Activity() {
                         showQuotaPausedDialog(outcome.job)
                     }
 
+                    is PlaylistWriteCoordinator.WriteOutcome.AuthorizationInvalidated -> {
+                        if (
+                            invalidateAuthorizationIfNeeded(
+                                outcome.error
+                            )
+                        ) {
+                            updatePendingButton()
+                            status(
+                                "Авторизацію Google/YTM потрібно відновити. " +
+                                    "Незавершене завдання збережено в «Черзі»."
+                            )
+                        }
+                    }
+
                     is PlaylistWriteCoordinator.WriteOutcome.Failed -> {
                         toast(outcome.userMessage)
                     }
