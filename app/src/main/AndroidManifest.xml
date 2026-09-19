@@ -30,6 +30,11 @@
             android:screenOrientation="unspecified" />
 
         <activity
+            android:name=".RecentFileChooserActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".QuotaActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />
