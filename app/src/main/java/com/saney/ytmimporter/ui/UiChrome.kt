@@ -783,7 +783,7 @@ object UiChrome {
             if (boxed.size != actions.size) {
                 val closeAction = actions.last()
                 card.addView(
-                    flatDialogActionButton(
+                    dialogActionButton(
                         activity = activity,
                         action = closeAction
                     ) {
@@ -895,7 +895,7 @@ object UiChrome {
 
             val closeAction = actions.last()
             card.addView(
-                flatDialogActionButton(
+                dialogActionButton(
                     activity = activity,
                     action = closeAction
                 ) {
@@ -1375,37 +1375,6 @@ object UiChrome {
             setOnClickListener { onClick() }
         }
 
-    private fun flatDialogActionButton(
-        activity: Activity,
-        action: DialogAction,
-        onClick: () -> Unit
-    ): Button =
-        Button(activity).apply {
-            text = action.label
-            isAllCaps = false
-            gravity = Gravity.CENTER
-            minHeight = dp(context, 44)
-            minimumHeight = dp(context, 44)
-            minWidth = 0
-            minimumWidth = 0
-            maxLines = 1
-            setPadding(
-                dp(context, 14),
-                dp(context, 6),
-                dp(context, 14),
-                dp(context, 6)
-            )
-            setTextColor(
-                when (action.tone) {
-                    ActionTone.NORMAL -> Color.WHITE
-                    ActionTone.ACCENT -> ACCENT
-                    ActionTone.DANGER -> Color.rgb(255, 100, 115)
-                }
-            )
-            background = ColorDrawable(Color.TRANSPARENT)
-            autoSizeButton(this, minSp = 11, maxSp = 14)
-            setOnClickListener { onClick() }
-        }
 
     private fun roundedBackground(
         context: Context,

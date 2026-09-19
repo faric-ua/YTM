@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.44**
-- versionCode: **83**
-- release focus: **UX-021 adaptive landscape action layout — width-aware footer/modal action rows**
-- release status: **NOT PHONE-TESTED YET — UX-021 IMPLEMENTED / QA NEEDED**
+- versionName: **1.4.44-R1**
+- versionCode: **84**
+- release focus: **UX-022 Unified Window Title Emphasis — next planned work**
+- release status: **v1.4.44-R1 PHONE RETEST PASS — UX-021 CLOSED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.43 phone observation:

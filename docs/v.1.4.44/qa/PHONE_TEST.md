@@ -33,3 +33,34 @@ Expected in landscape/wide:
 - Back/Cancel still work.
 - No action fires merely because of rotation.
 - No Google/YTM re-login is required by this UI-only release.
+
+## Real-phone result — 2026-09-19
+
+**FAIL / corrective R1 required.**
+
+Observed:
+- wide Recent-file / backup chooser correctly moved three footer actions into one row;
+- `Системний вибір файла…` did not fit the fixed-height button cleanly;
+- Storage save footer labels were readable in the captured landscape state;
+- result/problem modals showed `Закрити` as text without the same button background as
+  the other actions.
+
+Follow-up: v1.4.44-R1.
+
+## v1.4.44-R1 real-phone retest — 2026-09-19
+
+**PASS.**
+
+1. Recent-file / backup chooser — PASS:
+   - landscape action row visible;
+   - `Системний вибір…` readable without clipping.
+
+2. Storage save chooser — PASS:
+   - `Додати папку… / Зберегти як… / Скасувати` readable in landscape.
+
+3. Representative modal — PASS:
+   - `Закрити` has the same boxed action chrome as peer buttons.
+
+Rotate-back / usability smoke — PASS.
+
+UX-021 is closed by v1.4.44-R1.
