@@ -715,7 +715,7 @@ object UiChrome {
                 orientation = LinearLayout.HORIZONTAL
             }
 
-            actions.drop(1).forEachIndexed { index, action ->
+            orderHorizontalActions(actions.drop(1)).forEachIndexed { index, action ->
                 row.addView(
                     dialogActionButton(
                         activity = activity,
@@ -808,7 +808,7 @@ object UiChrome {
                 orientation = LinearLayout.HORIZONTAL
             }
 
-            actions.forEachIndexed { index, action ->
+            orderHorizontalActions(actions).forEachIndexed { index, action ->
                 row.addView(
                     dialogActionButton(
                         activity = activity,
@@ -853,6 +853,35 @@ object UiChrome {
             )
         }
     }
+
+    private fun orderHorizontalActions(
+        actions: List<DialogAction>
+    ): List<DialogAction> {
+        if (actions.size <= 1) return actions
+
+        val active =
+            actions.filterNot {
+                isDismissiveAction(it)
+            }
+
+        val dismissive =
+            actions.filter {
+                isDismissiveAction(it)
+            }
+
+        return active + dismissive
+    }
+
+    private fun isDismissiveAction(
+        action: DialogAction
+    ): Boolean =
+        action.label.trim() in
+            setOf(
+                "Скасувати",
+                "Закрити",
+                "Не зараз",
+                "Назад"
+            )
 
     private fun recordCard(
         activity: Activity,
