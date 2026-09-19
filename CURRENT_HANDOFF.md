@@ -134,6 +134,18 @@ Second R1 preflight update:
 - the current R1 audit remains the only guard that explicitly requires
   `MANAGE_EXTERNAL_STORAGE`.
 
+Third R1 preflight update:
+- preflight then failed with `FAIL: all-files grant check missing`;
+- implementation was correct, but `v1442-r1-all-files-audit.sh` searched for
+  contiguous `Environment.isExternalStorageManager()` while Kotlin formatting split
+  `Environment` and `.isExternalStorageManager()` across lines;
+- the R1 audit was made formatting-safe for:
+  - `isExternalStorageManager()`;
+  - `DIRECTORY_DOWNLOADS`;
+  - `getExternalStoragePublicDirectory(`;
+- every remaining R1 audit predicate was then checked directly against the live branch
+  files and all predicates matched.
+
 ## 6. R1 phone QA
 
 ### A. Permission flow
