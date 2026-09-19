@@ -120,7 +120,7 @@ grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
 grep -Fq 'v1.4.47-R2 — Compact Home + Menu-owned Theme Picker' BACKLOG.md \
   || fail "BACKLOG current v1.4.47-R2 release missing"
-grep -Fq 'v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections' START_HERE_ASSISTANT.md \
+grep -Fq 'v1.4.47-R2 — Compact Home + Menu-owned Theme Picker' START_HERE_ASSISTANT.md \
   || fail "START_HERE v1.4.47-R2 focus missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
