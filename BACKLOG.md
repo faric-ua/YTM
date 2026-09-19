@@ -48,7 +48,7 @@ v1.4.47-R2 — Compact Home + Menu-owned Theme Picker — IMPLEMENTED / STATIC +
 - [x] dedicated R2 static audit
 - [x] full release preflight
 - [x] PR #21 opened into `fix/v1.4.47-r1-home-nav-dialog`
-- [ ] stacked PR into R1 branch
+- [x] stacked PR into R1 branch
 - [ ] signed APK
 - [ ] phone 1: portrait Home density
 - [ ] phone 2: landscape + rounded nav
