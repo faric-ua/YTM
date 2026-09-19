@@ -114,8 +114,10 @@ grep -Fq '| v1.4.44-R1 | **PHONE RETEST PASS — UX-021 LANDSCAPE COPY + MODAL C
   || fail "v1.4.44-R1 phone PASS status missing"
 grep -Fq '| v1.4.45 | **PHONE RETEST PASS — UX-022 UNIFIED WINDOW TITLE EMPHASIS** |' "$STATUS" \
   || fail "v1.4.45 phone PASS status missing"
-grep -Fq '| v1.4.46 | **NOT PHONE-TESTED — UX-019 HOME LAYOUT PHASE 1** |' "$STATUS" \
-  || fail "v1.4.46 pending phone status missing"
+grep -Fq '| v1.4.46 | **PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS** |' "$STATUS" \
+  || fail "v1.4.46 portrait phone PASS status missing"
+grep -Fq '| v1.4.47 | **NOT PHONE-TESTED — UX-019 PLAYLIST HUB + CLEAN HOME** |' "$STATUS" \
+  || fail "v1.4.47 pending phone status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
