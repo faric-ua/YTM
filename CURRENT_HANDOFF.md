@@ -20,6 +20,8 @@ Current release candidate:
 - signed v1.4.41 APK: **not built yet**
 - immediate next gate: **release preflight → signed GitHub Actions APK → targeted phone QA**
 - active PR: **#12 — v1.4.41: auth/search recovery and UI consistency** → `main`
+- latest branch head prepared for build: `541dc90093f69785e46a66f643ae11b404c8a51e`
+- PR #12 mergeability: **mergeable / no branch conflict**
 - merge rule: do not merge PR #12 until targeted real-phone QA is recorded
 
 Stable phone build folder after build:
@@ -111,6 +113,30 @@ Horizontal modal contract:
 - vertical action sheets preserve explicit top-to-bottom order
 
 `showDangerConfirmDialog()` was corrected and the shared horizontal renderer now pushes dismissive actions to the right.
+
+## 4. Exact next execution step
+
+The next user action is the Termux release gate on the exact prepared head:
+
+- switch to `feat/v1.4.41-auth-ui-consistency`;
+- require HEAD = `541dc90093f69785e46a66f643ae11b404c8a51e`;
+- run `bash scripts/release-preflight.sh`;
+- if preflight PASS, dispatch `.github/workflows/build-apk.yml`;
+- wait for the signed build;
+- download artifact `YTM-Importer-v1.4.41-Release` into:
+  `/storage/emulated/0/Download/YTM-v1.4.41-build/`;
+- verify `YTM-Importer-v1.4.41-release.apk.sha256`;
+- install over v1.4.40 **without clearing app data**.
+
+If preflight or GitHub Actions fails, stop and inspect the exact error. Do not manually edit phone-side project code to work around it.
+
+After install, begin with the zero/low-cost visual checks before spending YouTube Search quota:
+
+1. account dialog: `Змінити` left, `Закрити` right, readable copy;
+2. ordinary/destructive confirmation: action left, Cancel right;
+3. then BUG-010 quota-preserving Restore;
+4. then UX-017 playlist-title fallback;
+5. BUG-004 real 401 retest only when a genuine/reproducible invalid-auth condition is available.
 
 ## 4. Exact v1.4.41 phone QA after signed build
 
