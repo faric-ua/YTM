@@ -3,7 +3,6 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 SEARCH="app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt"
 BACKUP="app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt"
@@ -12,13 +11,13 @@ PARSER="app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt"
 UI="app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"
 MANIFEST="app/src/main/AndroidManifest.xml"
 
-for f in "$GRADLE" "$MAIN" "$SEARCH" "$BACKUP" "$DATA" "$PARSER" "$UI" "$MANIFEST" docs/v.1.4.41/RELEASE.md docs/v.1.4.41/UX_AUDIT.md docs/v.1.4.41/REGRESSION_CHECKLIST.md docs/v.1.4.41/qa/PHONE_TEST.md docs/v.1.4.41/qa/BUG_REGISTER.md
+for f in "$MAIN" "$SEARCH" "$BACKUP" "$DATA" "$PARSER" "$UI" "$MANIFEST" docs/v.1.4.41/RELEASE.md docs/v.1.4.41/UX_AUDIT.md docs/v.1.4.41/REGRESSION_CHECKLIST.md docs/v.1.4.41/qa/PHONE_TEST.md docs/v.1.4.41/qa/BUG_REGISTER.md
 do
   test -f "$f" || fail "missing v1.4.41 file: $f"
 done
 
-grep -Fq 'versionCode = 77' "$GRADLE" || fail "versionCode 77 missing"
-grep -Fq 'versionName = "1.4.41"' "$GRADLE" || fail "versionName 1.4.41 missing"
+grep -Fq 'versionCode: **77**' docs/v.1.4.41/RELEASE.md || fail "historical v1.4.41 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.41**' docs/v.1.4.41/RELEASE.md || fail "historical v1.4.41 versionName evidence missing"
 
 grep -Fq 'val authorizationInvalidated: Boolean' "$SEARCH" || fail "SearchResult authorizationInvalidated flag missing"
 grep -Fq 'onAuthorizationInvalidated: (Throwable) -> Unit = {}' "$SEARCH" || fail "Search auth-invalid callback missing"
@@ -71,7 +70,7 @@ for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_S
 done
 
 echo "PASS:"
-echo "- v1.4.41 / code 77"
+echo "- historical v1.4.41 / code 77 evidence"
 echo "- Search HTTP 401 propagates once and stops retryable workspace search"
 echo "- legacy auth-failed rows have re-login recovery"
 echo "- account modal copy/action is compact"
