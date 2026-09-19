@@ -227,3 +227,22 @@ Guard:
 - after every successful signed build, hand off the APK + checksum using the stable versioned Download folder;
 - do not start treating the next release as the user's current app;
 - before advancing again, receive install confirmation or explicitly record that the user chose to skip/defer that build.
+
+## 19. Signed build SHA and live PR head are different states
+
+During v1.4.40 phone QA, the signed APK was built from one code SHA, then QA reports,
+handoff files and audit fixes legitimately added newer commits to the same feature
+branch while the user was still installing/testing the already-built APK.
+
+A handoff that labels the signed APK SHA as the "current branch head" becomes stale
+immediately after the next documentation commit.
+
+Guard:
+
+- record the exact **signed build SHA + Actions run ID** that the phone is testing;
+- treat the **live PR head** as a separate value and verify it from GitHub when resuming;
+- keep `CURRENT_HANDOFF.md` focused on the signed/tested state and exact next action;
+- keep current open PR descriptions synchronized so a new chat can discover the active
+  branch even when default `main` does not yet contain the handoff file;
+- never infer phone-installed code from the newest documentation commit.
+
