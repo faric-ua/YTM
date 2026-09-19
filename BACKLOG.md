@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.43 — Auth Freshness — IMPLEMENTED / PHONE QA NEEDED
+v1.4.43 — Auth Freshness — IMPLEMENTED / PARTIAL PHONE QA; STALE-TOKEN RETEST DEFERRED
 
 ## Known
 - BUG-001/Q-001 OPEN
