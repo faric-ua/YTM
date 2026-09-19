@@ -36,7 +36,7 @@ v1.4.39 PARTIALLY PHONE-TESTED — CANCEL / ROTATION / INVALID-FILE PASS; RESTOR
 v1.4.40 PARTIALLY PHONE-TESTED — RELEASE HISTORY PASS / BUG-004 AUTH FAIL REPRODUCED / BUG-009 UI FOUND
 v1.4.41 PARTIALLY PHONE-TESTED — BROAD REAL-PHONE COVERAGE / NOT EXHAUSTIVE
 v1.4.41-R1 PARTIALLY PHONE-TESTED — BUG-011 PASS / SIMPLE YTM-1 PASS / STACKED SUFFIX FAIL
-v1.4.41-R2 NOT PHONE-TESTED YET — STACKED UX-017 FILENAME CORRECTIVE BUILD
+v1.4.41-R2 PHONE RETEST PASS — UX-017 CLOSED
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -603,3 +603,10 @@ v1.4.41-R2 focus:
 - parser-only fix for stacked duplicate-download suffixes such as YTM-1 (1)
 - BUG-011 already closed on R1 phone retest
 - one import-title phone retest remains
+
+
+UX-017 CLOSED — PHONE RETEST PASS v1.4.41-R2
+- clean title confirmed for YTM-1
+- clean title confirmed for YTM-1 (1)
+- clean title confirmed for YTM-1 (1) (1)
+- expected title: House Dance Hit 2000 Vol.1
