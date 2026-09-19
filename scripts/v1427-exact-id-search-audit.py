@@ -19,8 +19,30 @@ coord = Path(
     "app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt"
 ).read_text(encoding="utf-8")
 
-repeat_block = '                if (\n                    data.getBooleanExtra(\n                        ReviewActivity.EXTRA_REPEAT_SEARCH,\n                        false\n                    )\n                ) {\n                    searchAll(\n                        openReviewAfter = true,\n                        preserveExistingExact = true\n                    )\n                    return\n                }\n'
-if repeat_block not in main:
+def enclosing_private_function(source: str, token: str) -> str:
+    token_pos = source.find(token)
+    if token_pos < 0:
+        fail("missing repeat-search token: " + token)
+
+    start = source.rfind("\n    private fun ", 0, token_pos)
+    if start < 0:
+        fail("repeat-search token is not inside a private function")
+
+    start += 1
+
+    next_fun = source.find("\n    private fun ", token_pos)
+    if next_fun < 0:
+        return source[start:]
+
+    return source[start:next_fun]
+
+
+repeat_handler = enclosing_private_function(
+    main,
+    "ReviewActivity.EXTRA_REPEAT_SEARCH"
+)
+
+if "preserveExistingExact = true" not in repeat_handler:
     fail("Review repeat-search does not explicitly preserve exact selections")
 
 signature = '    private fun searchAll(\n        openReviewAfter: Boolean = false,\n        preserveExistingExact: Boolean = true\n    ) {\n'

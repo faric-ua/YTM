@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.46**
-- versionCode: **86**
-- release focus: **UX-019 Home Layout Prototype Alignment — Phase 1**
-- release status: **IMPLEMENTED / PHONE QA NEEDED — v1.4.46 UX-019 Phase 1**
+- versionName: **1.4.47**
+- versionCode: **87**
+- release focus: **UX-019 Phase 2 — Playlist Hub + Clean Home**
+- release status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — v1.4.47 UX-019 Phase 2**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.43 phone observation:
@@ -279,9 +279,9 @@ Near-term repository direction:
 2. use the preserved House Dance Hit 2000 Vol.1 fixture for playlist-name and end-to-end smoke where quota allows;
 3. keep populated-History Restore + rollback proof explicitly pending until meaningful History exists;
 4. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
-5. next planned Home work: UX-019 layout alignment to the approved top-left prototype, layout only;
-6. pair that Home pass with UX-009 theme-aware state colors for all four workflow buttons in Blue Dark and Green Dark while keeping Neon Dark as the accepted reference;
-7. then continue UX-008 Phase 2B / localization / later visual-skin work according to BACKLOG.md.
+5. current Home work: UX-019 Phase 2 moves track rows behind Playlist Hub/Review and makes account/current-playlist cards interactive;
+6. keep UX-009 Blue/Green state-color work separate while Neon remains the accepted reference;
+7. UX-023 GitHub Releases + in-app updater follows after the current Home/Hub wave; then continue UX-008 Phase 2B / localization / later visual-skin work according to BACKLOG.md.
 
 Future product requirements already recorded:
 

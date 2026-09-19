@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.47
+- Continued UX-019 with a clean dashboard-style Home.
+- Home account/status card is now interactive and opens Google/YTM account details.
+- Home current-playlist card now opens a dedicated Playlist Hub.
+- Removed track rows from Home; detailed track work remains in Review.
+- Playlist Hub centralizes Tracks/Review, Search, Create/Add, YTM Project/export and replacement/problem actions.
+- Added persisted optional target YTM playlist ID so Open-in-YTM / Copy-link can survive restart after v1.4.47 observes a target.
+- CurrentPlaylistStore schema v1 remains readable; v2 adds the optional destination ID.
+- Existing auth/search/write domain logic is reused rather than duplicated.
+- versionCode 87 / versionName 1.4.47.
+- v1.4.47 = NOT PHONE-TESTED YET.
+
 ## v1.4.46
 - Started UX-019 Home Layout Prototype Alignment using the approved top-left prototype as a layout/hierarchy reference only.
 - Compacted the Home header.

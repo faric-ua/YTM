@@ -1,19 +1,18 @@
 YTM Importer
-Version: 1.4.46
-Version code: 86
+Version: 1.4.47
+Version code: 87
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.46 focus:
-- UX-019 Home Layout Prototype Alignment — Phase 1
-- compact Home header
-- four workflow actions remain unchanged
-- History / Queue / Quota / Menu utility row remains unchanged
-- live status moved into a separate theme-aware accent/info card
-- current-playlist summary remains a separate card below status
-- Neon / Blue / Green themes and workflow-state colors are unchanged
-- no auth/search/write behavior changed
-- v1.4.45 phone PASS remains valid; UX-022 CLOSED
-- v1.4.43 auth freshness remains partially phone-tested; stale-token acceptance is deferred
+Current v1.4.47 focus:
+- UX-019 Phase 2 — Playlist Hub + Clean Home
+- Home account/status card is interactive and opens account details
+- Home current-playlist card opens dedicated PlaylistActivity
+- Home no longer renders track rows
+- Playlist Hub routes into existing Review/Search/Destination/YTM Project flows
+- CurrentPlaylistStore schema v2 persists optional target YTM playlist ID
+- schema v1 snapshots remain readable
+- OAuth token remains non-persistent and hidden from account UI
+- v1.4.46 portrait Home hierarchy phone PASS; combined theme/landscape smoke moves to v1.4.47
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -52,7 +51,8 @@ v1.4.41-R2 PHONE RETEST PASS — UX-017 CLOSED
 v1.4.44 PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + FLAT CLOSE
 v1.4.44-R1 PHONE RETEST PASS — UX-021 CLOSED
 v1.4.45 PHONE RETEST PASS — UX-022 CLOSED
-v1.4.46 NOT PHONE-TESTED — UX-019 PHASE 1
+v1.4.46 PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS / THEME+LANDSCAPE CARRIED TO v1.4.47
+v1.4.47 NOT PHONE-TESTED — PLAYLIST HUB + CLEAN HOME
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.

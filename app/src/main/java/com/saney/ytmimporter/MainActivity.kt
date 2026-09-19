@@ -55,6 +55,7 @@ class MainActivity : Activity() {
     private val destinationScreenRequestCode = 1401
     private val menuScreenRequestCode = 1501
     private val quotaScreenRequestCode = 1502
+    private val playlistScreenRequestCode = 1601
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api = YouTubeApi()
@@ -77,6 +78,7 @@ class MainActivity : Activity() {
     private var currentImportSourceLabel: String = "Невідоме джерело"
     private var restoringPriorAuthorization: Boolean = false
 
+    private lateinit var accountSummaryText: TextView
     private lateinit var statusText: TextView
     private lateinit var summaryText: TextView
     private lateinit var importButton: Button
@@ -91,7 +93,6 @@ class MainActivity : Activity() {
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
     }
-    private lateinit var listView: ListView
     private lateinit var adapter: TrackAdapter
     private val visibleTracks = mutableListOf<Track>()
 
@@ -429,49 +430,35 @@ class MainActivity : Activity() {
         root.addView(utilityRow)
 
         /*
-         * UX-019 Phase 1:
-         * keep the approved Home hierarchy without changing action semantics.
-         * The live status is intentionally separated from the current-playlist
-         * summary so it reads as its own accent/info block.
+         * UX-019 Phase 2:
+         * keep account identity and live status in one compact interactive
+         * account card without changing workflow semantics.
          */
-        val statusCard =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(
-                    dp(14),
-                    dp(10),
-                    dp(14),
-                    dp(10)
-                )
-                background =
-                    AppThemeManager
-                        .largeCardDrawable(
-                            context =
-                                this@MainActivity,
-                            fill =
-                                palette.surfaceAlt,
-                            radiusDp = 14,
-                            accentOverride =
-                                palette.accent
-                        )
-            }
-
-        statusText = TextView(this).apply {
-            setTextColor(
-                palette.text
+        val accountCard =
+            UiChrome.interactiveSummaryCard(
+                activity = this,
+                title =
+                    "Google/YTM не підключено",
+                subtitle =
+                    "Натисніть, щоб переглянути інформацію акаунта.",
+                fill =
+                    palette.surfaceAlt,
+                accentOverride =
+                    palette.accent,
+                onClick = {
+                    showAccountDialog()
+                }
             )
-            textSize = 13f
-            text =
-                "Почніть з «1. Імпорт»."
-        }
 
-        statusCard.addView(
-            statusText
-        )
+        accountSummaryText =
+            accountCard.title
+        statusText =
+            requireNotNull(
+                accountCard.subtitle
+            )
 
         root.addView(
-            statusCard,
+            accountCard.root,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -486,67 +473,27 @@ class MainActivity : Activity() {
         )
 
         val workspaceCard =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(
-                    dp(14),
-                    dp(11),
-                    dp(14),
-                    dp(11)
-                )
-                background =
-                    AppThemeManager
-                        .largeCardDrawable(
-                            context =
-                                this@MainActivity,
-                            fill =
-                                palette.surface,
-                            radiusDp = 14
-                        )
-            }
-
-        workspaceCard.addView(
-            TextView(this).apply {
-                text =
-                    "Поточний плейлист"
-                textSize =
-                    11.5f
-                setTypeface(
-                    typeface,
-                    Typeface.BOLD
-                )
-                setTextColor(
-                    palette.muted
-                )
-                setPadding(
-                    0,
-                    0,
-                    0,
-                    dp(4)
-                )
-            }
-        )
-
-        summaryText = TextView(this).apply {
-            setTextColor(
-                palette.text
+            UiChrome.interactiveSummaryCard(
+                activity = this,
+                eyebrow =
+                    "Поточний плейлист",
+                title =
+                    "Плейлист ще не імпортовано",
+                subtitle =
+                    "Натисніть для керування плейлистом →",
+                fill =
+                    palette.surface,
+                subtitleAccent = true,
+                onClick = {
+                    openPlaylistHub()
+                }
             )
-            textSize = 15f
-            setTypeface(
-                typeface,
-                Typeface.BOLD
-            )
-            text =
-                "Плейлист ще не імпортовано"
-        }
 
-        workspaceCard.addView(
-            summaryText
-        )
+        summaryText =
+            workspaceCard.title
 
         root.addView(
-            workspaceCard,
+            workspaceCard.root,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -579,31 +526,23 @@ class MainActivity : Activity() {
             )
         )
 
-        listView = ListView(this).apply {
-            divider = null
-            dividerHeight = dp(1)
-            setBackgroundColor(palette.background)
-            clipToPadding = false
-            setPadding(dp(8), 0, dp(8), dp(12))
-        }
-
+        /*
+         * UX-019 Phase 2:
+         * Home is a dashboard. Track rows live behind PlaylistActivity /
+         * ReviewActivity instead of extending the Home screen.
+         *
+         * Keep the adapter initialized as an internal compatibility bridge
+         * while search/write callbacks still notify it; it is no longer
+         * attached to a Home ListView.
+         */
         adapter =
             TrackAdapter(
                 this,
                 visibleTracks
             )
 
-        listView.adapter = adapter
-
-        listView.setOnItemClickListener { _, _, position, _ ->
-            openReviewScreen(
-                visibleTracks[position]
-                    .historyIndex
-            )
-        }
-
         root.addView(
-            listView,
+            View(this),
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 0,
@@ -1097,7 +1036,9 @@ class MainActivity : Activity() {
         currentPlaylistStore.save(
             playlist = current,
             sourceLabel =
-                currentImportSourceLabel
+                currentImportSourceLabel,
+            destinationPlaylistId =
+                createdPlaylistId
         )
 
         val intent =
@@ -1156,6 +1097,8 @@ class MainActivity : Activity() {
             snapshot.playlist
         currentImportSourceLabel =
             snapshot.sourceLabel
+        createdPlaylistId =
+            snapshot.destinationPlaylistId
 
         visibleTracks.clear()
         visibleTracks.addAll(
@@ -1198,6 +1141,8 @@ class MainActivity : Activity() {
             snapshot.playlist
         currentImportSourceLabel =
             snapshot.sourceLabel
+        createdPlaylistId =
+            snapshot.destinationPlaylistId
 
         visibleTracks.clear()
         visibleTracks.addAll(
@@ -1216,7 +1161,9 @@ class MainActivity : Activity() {
         currentPlaylistStore.save(
             playlist = current,
             sourceLabel =
-                currentImportSourceLabel
+                currentImportSourceLabel,
+            destinationPlaylistId =
+                createdPlaylistId
         )
     }
 
@@ -1224,6 +1171,7 @@ class MainActivity : Activity() {
         playlist = null
         currentImportSourceLabel =
             "Невідоме джерело"
+        createdPlaylistId = null
 
         visibleTracks.clear()
         adapter.notifyDataSetChanged()
@@ -1300,69 +1248,11 @@ class MainActivity : Activity() {
             }
 
             reviewScreenRequestCode -> {
-                reloadCurrentWorkspace(
-                    force = true
-                )
+                handleReviewScreenResult(data)
+            }
 
-                if (
-                    data.getBooleanExtra(
-                        ReviewActivity.EXTRA_REPEAT_SEARCH,
-                        false
-                    )
-                ) {
-                    searchAll(
-                        openReviewAfter = true,
-                        preserveExistingExact = true
-                    )
-                    return
-                }
-
-                if (
-                    data.getBooleanExtra(
-                        ReviewActivity.EXTRA_OPEN_DESTINATION,
-                        false
-                    )
-                ) {
-                    createPlaylist()
-                    return
-                }
-
-                val videoId =
-                    data.getStringExtra(
-                        ReviewActivity.EXTRA_MANUAL_VIDEO_ID
-                    )
-
-                val historyIndex =
-                    data.getIntExtra(
-                        ReviewActivity.EXTRA_MANUAL_HISTORY_INDEX,
-                        Int.MIN_VALUE
-                    )
-
-                if (
-                    !videoId.isNullOrBlank() &&
-                    historyIndex != Int.MIN_VALUE
-                ) {
-                    val track =
-                        playlist
-                            ?.tracks
-                            ?.firstOrNull {
-                                it.historyIndex ==
-                                    historyIndex
-                            }
-
-                    if (track == null) {
-                        toast(
-                            "Не вдалося знайти трек для ручної заміни"
-                        )
-                    } else {
-                        applyManualUrl(
-                            track = track,
-                            videoId = videoId,
-                            reopenReviewHistoryIndex =
-                                historyIndex
-                        )
-                    }
-                }
+            playlistScreenRequestCode -> {
+                handlePlaylistHubResult(data)
             }
 
             destinationScreenRequestCode -> {
@@ -1420,6 +1310,130 @@ class MainActivity : Activity() {
             ),
             menuScreenRequestCode
         )
+    }
+
+    private fun openPlaylistHub() {
+        startActivityForResult(
+            Intent(
+                this,
+                PlaylistActivity::class.java
+            ),
+            playlistScreenRequestCode
+        )
+    }
+
+    private fun handleReviewScreenResult(
+        data: Intent
+    ) {
+        reloadCurrentWorkspace(
+            force = true
+        )
+
+        if (
+            data.getBooleanExtra(
+                ReviewActivity.EXTRA_REPEAT_SEARCH,
+                false
+            )
+        ) {
+            searchAll(
+                openReviewAfter = true,
+                preserveExistingExact = true
+            )
+            return
+        }
+
+        if (
+            data.getBooleanExtra(
+                ReviewActivity.EXTRA_OPEN_DESTINATION,
+                false
+            )
+        ) {
+            createPlaylist()
+            return
+        }
+
+        handleManualVideoResult(data)
+    }
+
+    private fun handleManualVideoResult(
+        data: Intent
+    ) {
+        val videoId =
+            data.getStringExtra(
+                ReviewActivity.EXTRA_MANUAL_VIDEO_ID
+            )
+
+        val historyIndex =
+            data.getIntExtra(
+                ReviewActivity.EXTRA_MANUAL_HISTORY_INDEX,
+                Int.MIN_VALUE
+            )
+
+        if (
+            videoId.isNullOrBlank() ||
+            historyIndex == Int.MIN_VALUE
+        ) {
+            return
+        }
+
+        val track =
+            playlist
+                ?.tracks
+                ?.firstOrNull {
+                    it.historyIndex ==
+                        historyIndex
+                }
+
+        if (track == null) {
+            toast(
+                "Не вдалося знайти трек для ручної заміни"
+            )
+        } else {
+            applyManualUrl(
+                track = track,
+                videoId = videoId,
+                reopenReviewHistoryIndex =
+                    historyIndex
+            )
+        }
+    }
+
+    private fun handlePlaylistHubResult(
+        data: Intent
+    ) {
+        reloadCurrentWorkspace(
+            force = true
+        )
+
+        when (
+            data.getStringExtra(
+                PlaylistActivity.EXTRA_ACTION
+            )
+        ) {
+            PlaylistActivity.ACTION_SEARCH ->
+                searchOrReview()
+
+            PlaylistActivity.ACTION_REPEAT_SEARCH ->
+                searchAll(
+                    openReviewAfter = true,
+                    preserveExistingExact = true
+                )
+
+            PlaylistActivity.ACTION_CREATE ->
+                createPlaylist()
+
+            PlaylistActivity.ACTION_REPLACEMENTS ->
+                showReplacementLog()
+
+            PlaylistActivity.ACTION_OPEN_YTM ->
+                openInYtm()
+
+            PlaylistActivity.ACTION_COPY_LINK ->
+                copyPlaylistLink()
+
+            PlaylistActivity.ACTION_MANUAL_VIDEO ->
+                handleManualVideoResult(data)
+        }
     }
 
     private fun handleMenuScreenResult(
@@ -1480,9 +1494,12 @@ class MainActivity : Activity() {
             UiChrome.alertBuilder(this)
                 .setTitle("Акаунт")
                 .setMessage(
-                    "Google:\n$googleText\n\n" +
+                    "Статус: Підключено\n\n" +
+                        "Google профіль:\n$googleText\n\n" +
                         "YouTube / YouTube Music:\n$youtubeText\n\n" +
-                        "Плейлисти створюватимуться в цьому YouTube/YTM профілі."
+                        "Доступ: пошук, створення та робота з плейлистами " +
+                        "через YouTube API.\n\n" +
+                        "OAuth token у цьому вікні не показується і на диск не зберігається."
                 )
                 .setNegativeButton("Закрити", null)
                 .setPositiveButton("Змінити") { _, _ ->
@@ -1790,12 +1807,11 @@ class MainActivity : Activity() {
                 val channel = youtubeChannelInfo
                 status(
                     if (channel != null) {
-                        "Підключено YouTube/YTM: ${channel.title}" +
-                            if (recoveredTracks > 0) {
-                                " • відновлено треків після auth-помилки: $recoveredTracks"
-                            } else {
-                                ""
-                            }
+                        if (recoveredTracks > 0) {
+                            "Акаунт готовий • відновлено треків після auth-помилки: $recoveredTracks"
+                        } else {
+                            "Акаунт готовий до роботи."
+                        }
                     } else {
                         "Google підключено, але YouTube канал не вдалося визначити."
                     }
@@ -1866,6 +1882,24 @@ class MainActivity : Activity() {
                 else ->
                     "2. Google / YTM …"
             }
+
+        if (::accountSummaryText.isInitialized) {
+            accountSummaryText.text =
+                when {
+                    restoringPriorAuthorization ->
+                        "Відновлення Google/YTM…"
+
+                    accessToken.isNullOrBlank() ->
+                        "Google/YTM не підключено"
+
+                    youtubeChannelInfo != null ->
+                        "Підключено YouTube/YTM: " +
+                            youtubeChannelInfo?.title.orEmpty()
+
+                    else ->
+                        "Google підключено • YouTube/YTM уточнюється…"
+                }
+        }
 
         updatePrimaryActions()
     }
@@ -2666,6 +2700,7 @@ class MainActivity : Activity() {
             updatePendingButton()
 
             createdPlaylistId = target.id
+            persistCurrentWorkspace()
 
             prepareWriteUi(
                 total = selected.size,
@@ -2764,6 +2799,7 @@ class MainActivity : Activity() {
                     },
                     onPlaylistIdAvailable = { playlistId ->
                         createdPlaylistId = playlistId
+                        persistCurrentWorkspace()
                     },
                     onProgress = { writeProgress ->
                         runOnUiThread {
@@ -2800,6 +2836,7 @@ class MainActivity : Activity() {
                 when (outcome) {
                     is PlaylistWriteCoordinator.WriteOutcome.Completed -> {
                         createdPlaylistId = outcome.playlistId
+                        persistCurrentWorkspace()
 
                         status(
                             "Готово. ${outcome.job.playlistName}: " +

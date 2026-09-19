@@ -113,6 +113,19 @@ class ReviewActivity : Activity() {
         }
 
         showListScreen()
+
+        if (
+            intent.getBooleanExtra(
+                EXTRA_OPEN_PROJECT_ACTIONS,
+                false
+            )
+        ) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showProjectActions()
+                }
+            }
+        }
     }
 
     override fun onActivityResult(
@@ -1277,7 +1290,9 @@ class ReviewActivity : Activity() {
             playlist =
                 snapshot.playlist,
             sourceLabel =
-                snapshot.sourceLabel
+                snapshot.sourceLabel,
+            destinationPlaylistId =
+                snapshot.destinationPlaylistId
         )
     }
 
@@ -1987,6 +2002,9 @@ class ReviewActivity : Activity() {
     companion object {
         const val EXTRA_FOCUS_HISTORY_INDEX =
             "review_focus_history_index"
+
+        const val EXTRA_OPEN_PROJECT_ACTIONS =
+            "review_open_project_actions"
 
         const val EXTRA_REPEAT_SEARCH =
             "review_repeat_search"
