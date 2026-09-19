@@ -122,6 +122,89 @@ class LocalBackupManager(
         )
     }
 
+    fun restoreHistoryJson(
+        rawHistory: String
+    ): RestoreSummary {
+        val normalizedHistory =
+            HistoryStore(context)
+                .normalizeImportJson(
+                    rawHistory
+                )
+
+        val historyValues =
+            JSONObject()
+                .put(
+                    "history",
+                    JSONObject()
+                        .put(
+                            "type",
+                            "string"
+                        )
+                        .put(
+                            "value",
+                            normalizedHistory
+                        )
+                )
+
+        val groups =
+            JSONObject()
+                .put(
+                    "history_store_v1",
+                    historyValues
+                )
+
+        val partialBackup =
+            JSONObject()
+                .put(
+                    "format",
+                    FORMAT
+                )
+                .put(
+                    "schemaVersion",
+                    SCHEMA_VERSION
+                )
+                .put(
+                    "appVersion",
+                    BuildConfig.VERSION_NAME
+                )
+                .put(
+                    "exportedAt",
+                    System.currentTimeMillis()
+                )
+                .put(
+                    "containsSensitiveData",
+                    true
+                )
+                .put(
+                    "note",
+                    "History-only restore from YTM_History_*.json. " +
+                        "Other local preference groups are intentionally omitted."
+                )
+                .put(
+                    "preferences",
+                    groups
+                )
+                .put(
+                    "valueCount",
+                    1
+                )
+                .put(
+                    "integrityAlgorithm",
+                    "SHA-256"
+                )
+                .put(
+                    "preferencesSha256",
+                    sha256(
+                        groups.toString()
+                    )
+                )
+                .toString()
+
+        return restoreBackupJson(
+            partialBackup
+        )
+    }
+
     fun restoreBackupJson(raw: String): RestoreSummary {
         val summary = inspectBackup(raw)
         val safetySnapshot = createBackupJson()

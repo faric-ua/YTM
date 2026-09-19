@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.38-R2 — Checkbox Visual Centering — PHONE RETEST PASS
+v1.4.39 — Native History JSON Restore — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -16,7 +16,7 @@ v1.4.38-R2 — Checkbox Visual Centering — PHONE RETEST PASS
 - UX-012 Destructive Action Confirmation — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; explicit danger confirmations + separate safety-snapshot deletion flow
 - UX-013 Mobile Action Copy Fit — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; long Restore/save labels shortened from real-phone evidence
 - UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
-- UX-015 History JSON Restore — OPEN; `YTM_History_*.json` is an export array, not a full backup; add a native History-only restore/import path or clearer in-app conversion flow
+- UX-015 History JSON Restore — IMPLEMENTED v1.4.39 / PHONE RETEST NEEDED; native History-only restore preserves Queue/quota/cache/current playlist and creates full safety snapshot
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -603,9 +603,9 @@ including:
 - [x] identify `YTM_History_*.json` as raw History export, not `ytm-importer-local-backup`
 - [x] verify the user-provided History JSON contains valid History records
 - [x] provide a History-only compatible backup conversion for immediate recovery
-- [ ] add native Data-screen History JSON restore/import flow
-- [ ] preserve Queue/quota/cache/current playlist during History-only import
-- [ ] create safety snapshot before native History-only import
+- [x] add native Data-screen History JSON restore/import flow
+- [x] preserve Queue/quota/cache/current playlist during History-only import
+- [x] create safety snapshot before native History-only import
 - [ ] phone QA History-only restore
 
 
@@ -636,3 +636,26 @@ including:
 - [ ] signed R2 build
 - [ ] APK handoff to phone
 - [x] phone: checkbox visual balance on selective-export screen — PASS
+
+
+## v1.4.39 — Native History JSON Restore
+- [x] bump versionCode 75 / versionName 1.4.39
+- [x] add strict History JSON inspection
+- [x] reject non-array / malformed History files
+- [x] reject duplicate History ids
+- [x] normalize to newest 100 History entries
+- [x] add dedicated Data-screen `History JSON` restore card
+- [x] keep one centralized Data ACTION_OPEN_DOCUMENT launcher
+- [x] show current/import entry counts and track count before restore
+- [x] preserve History-import confirmation across rotation
+- [x] restore only `history_store_v1/history`
+- [x] preserve Queue/quota/SearchCache/current playlist
+- [x] reuse full safety-snapshot + rollback engine
+- [x] add v1.4.39 docs + audit
+- [ ] signed APK
+- [ ] APK handoff to phone
+- [ ] phone: real YTM_History_*.json accepted
+- [ ] phone: Cancel leaves History unchanged
+- [ ] phone: rotation does not lose History file
+- [ ] phone: History replaced, other local groups preserved
+- [ ] phone: safety rollback restores pre-import state

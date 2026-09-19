@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.38-R2
-Version code: 74
+Version: 1.4.39
+Version code: 75
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -31,6 +31,7 @@ v1.4.37 PARTIALLY PHONE-TESTED — STORAGE LAYOUT + HELP PASS / LONG-LIST SELECT
 v1.4.38 NOT PHONE-TESTED YET — FULL-SCREEN SELECTORS + DESTRUCTIVE SAFETY + MOBILE COPY
 v1.4.38-R1 PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX FAIL
 v1.4.38-R2 PHONE RETEST PASS — CHECKBOX VISUAL CENTERING
+v1.4.39 NOT PHONE-TESTED YET — NATIVE HISTORY JSON RESTORE
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -512,3 +513,14 @@ v1.4.38-R2 phone result:
 - UX-014 closed for the tested phone path
 - evidence: 783×1536, SHA-256 b86f70c820d6d2332b124a67cf77fa0c2c9f5ade5a581f4f3406d9666ca1c85d
 - BUG-008 Restore rotation remains CLOSED from R1
+
+
+v1.4.39 focus:
+- UX-015 native restore for YTM_History_*.json
+- strict History-array validation and duplicate-id rejection
+- History-only import replaces only history_store_v1/history
+- Pending Queue, quota, SearchCache and current playlist remain untouched
+- full pre-import safety snapshot is created through LocalBackupManager
+- History import confirmation survives Activity recreation/rotation
+- DataActivity retains one centralized ACTION_OPEN_DOCUMENT launcher
+- no broad filesystem permission

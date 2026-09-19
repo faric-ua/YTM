@@ -1,5 +1,16 @@
 # Журнал змін (Changelog)
 
+## v1.4.39
+- Added native restore for `YTM_History_*.json`.
+- Added strict History-array validation and duplicate-id rejection.
+- Added dedicated Data-screen `History JSON` / `Імпорт History` flow.
+- History-only restore replaces only local History while preserving Queue, quota, SearchCache and current playlist.
+- Reuses the full LocalBackupManager safety snapshot before History replacement.
+- History import confirmation survives Activity recreation/rotation.
+- DataActivity keeps one centralized `ACTION_OPEN_DOCUMENT` launcher for full backup and History JSON file selection.
+- versionCode 75 / versionName 1.4.39.
+- v1.4.39 = NOT PHONE-TESTED YET.
+
 ## v1.4.38-R2
 - Checkbox-only visual follow-up after v1.4.38-R1.
 - R1 Restore confirmation rotation persistence passed on phone; BUG-008 closed.

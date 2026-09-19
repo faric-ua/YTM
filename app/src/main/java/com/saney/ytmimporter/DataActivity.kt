@@ -22,6 +22,7 @@ import com.saney.ytmimporter.model.HistoryEntry
 import com.saney.ytmimporter.model.HistoryStatus
 import com.saney.ytmimporter.model.HistoryTrack
 import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.storage.HistoryImportSummary
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.LocalBackupManager
 import com.saney.ytmimporter.storage.PendingJobStore
@@ -50,10 +51,12 @@ class DataActivity : Activity() {
     private var pendingExportFileName: String? = null
     private var pendingExportMimeType: String? = null
     private var restoreConfirmationPending = false
+    private var historyImportConfirmationPending = false
 
     private val saveExportRequestCode = 4201
     private val restoreBackupRequestCode = 4202
     private val saveExportFolderRequestCode = 4203
+    private val historyImportRequestCode = 4204
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +81,18 @@ class DataActivity : Activity() {
             restoreConfirmationPending = true
             restorePendingBackupConfirmation()
         }
+
+        if (
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_HISTORY_IMPORT_CONFIRMATION_PENDING,
+                    false
+                ) ==
+                true
+        ) {
+            historyImportConfirmationPending = true
+            restorePendingHistoryImportConfirmation()
+        }
     }
 
     override fun onSaveInstanceState(
@@ -86,6 +101,11 @@ class DataActivity : Activity() {
         outState.putBoolean(
             STATE_RESTORE_CONFIRMATION_PENDING,
             restoreConfirmationPending
+        )
+
+        outState.putBoolean(
+            STATE_HISTORY_IMPORT_CONFIRMATION_PENDING,
+            historyImportConfirmationPending
         )
 
         super.onSaveInstanceState(outState)
@@ -123,6 +143,11 @@ class DataActivity : Activity() {
             restoreBackupRequestCode -> {
                 val uri = data?.data ?: return
                 prepareRestoreBackup(uri)
+            }
+
+            historyImportRequestCode -> {
+                val uri = data?.data ?: return
+                prepareHistoryImport(uri)
             }
 
             saveExportFolderRequestCode -> {
@@ -221,6 +246,19 @@ class DataActivity : Activity() {
                 buttonLabel = "Вибрати backup",
                 primary = false,
                 action = ::chooseBackupForRestore
+            )
+        )
+
+        content.addView(
+            actionCard(
+                title = "History JSON",
+                description =
+                    "Відновлює тільки History з YTM_History_*.json. " +
+                        "Черга, квота, SearchCache і поточний список не змінюються. " +
+                        "Перед імпортом створюється safety snapshot.",
+                buttonLabel = "Імпорт History",
+                primary = false,
+                action = ::chooseHistoryJsonForRestore
             )
         )
 
@@ -555,43 +593,76 @@ class DataActivity : Activity() {
             .setPositiveButton(
                 "Вибрати файл"
             ) { _, _ ->
-                val intent =
-                    Intent(
-                        Intent.ACTION_OPEN_DOCUMENT
-                    ).apply {
-                        addCategory(
-                            Intent.CATEGORY_OPENABLE
-                        )
-                        type = "application/json"
-                    }
-
-                startActivityForResult(
-                    intent,
+                launchJsonPicker(
                     restoreBackupRequestCode
                 )
             }
             .show()
     }
 
-    private fun prepareRestoreBackup(
+    private fun chooseHistoryJsonForRestore() {
+        UiChrome.alertBuilder(this)
+            .setTitle(
+                "Імпортувати History JSON?"
+            )
+            .setMessage(
+                "Буде замінено тільки локальну History.\n\n" +
+                    "Черга, локальна квота, SearchCache і поточний робочий список " +
+                    "не змінюються.\n\n" +
+                    "Очікується файл YTM_History_*.json, створений через «History JSON».\n\n" +
+                    "Перед імпортом буде створено safety snapshot повного локального стану."
+            )
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Вибрати файл"
+            ) { _, _ ->
+                launchJsonPicker(
+                    historyImportRequestCode
+                )
+            }
+            .show()
+    }
+
+    private fun launchJsonPicker(
+        requestCode: Int
+    ) {
+        val intent =
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT
+            ).apply {
+                addCategory(
+                    Intent.CATEGORY_OPENABLE
+                )
+                type = "application/json"
+            }
+
+        startActivityForResult(
+            intent,
+            requestCode
+        )
+    }
+
+    private fun prepareHistoryImport(
         uri: Uri
     ) {
         val raw =
+            readJsonDocument(
+                uri = uri,
+                label = "History JSON"
+            ) ?: return
+
+        val summary =
             runCatching {
-                contentResolver
-                    .openInputStream(uri)
-                    ?.bufferedReader(
-                        Charsets.UTF_8
-                    )
-                    ?.use {
-                        it.readText()
-                    }
-                    ?: error(
-                        "Не вдалося прочитати backup"
+                historyStore
+                    .inspectImportJson(
+                        raw
                     )
             }.getOrElse { error ->
                 toast(
-                    "Помилка читання backup: " +
+                    "History JSON не підходить: " +
                         (
                             error.message
                                 ?: "невідома помилка"
@@ -599,6 +670,255 @@ class DataActivity : Activity() {
                 )
                 return
             }
+
+        runCatching {
+            pendingHistoryImportCacheFile()
+                .writeText(
+                    raw,
+                    Charsets.UTF_8
+                )
+        }.getOrElse { error ->
+            toast(
+                "Не вдалося підготувати History import: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+            return
+        }
+
+        historyImportConfirmationPending =
+            true
+
+        showHistoryImportConfirmation(
+            raw = raw,
+            summary = summary
+        )
+    }
+
+    private fun restorePendingHistoryImportConfirmation() {
+        val raw =
+            runCatching {
+                pendingHistoryImportCacheFile()
+                    .takeIf {
+                        it.isFile
+                    }
+                    ?.readText(
+                        Charsets.UTF_8
+                    )
+                    ?: error(
+                        "Тимчасовий History JSON для підтвердження втрачено"
+                    )
+            }.getOrElse { error ->
+                clearPendingHistoryImportConfirmation()
+                toast(
+                    error.message
+                        ?: "History JSON потрібно вибрати ще раз"
+                )
+                return
+            }
+
+        val summary =
+            runCatching {
+                historyStore
+                    .inspectImportJson(
+                        raw
+                    )
+            }.getOrElse { error ->
+                clearPendingHistoryImportConfirmation()
+                toast(
+                    "History JSON більше не доступний: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return
+            }
+
+        showHistoryImportConfirmation(
+            raw = raw,
+            summary = summary
+        )
+    }
+
+    private fun showHistoryImportConfirmation(
+        raw: String,
+        summary: HistoryImportSummary
+    ) {
+        val currentCount =
+            historyStore
+                .getAll()
+                .size
+
+        val truncatedNote =
+            if (
+                summary.sourceEntries >
+                    summary.importEntries
+            ) {
+                "\nФайл містить ${summary.sourceEntries} записів; буде імпортовано " +
+                    "${summary.importEntries} найновіших."
+            } else {
+                ""
+            }
+
+        val dialog =
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Підтвердити History import"
+                )
+                .setMessage(
+                    "History JSON\n\n" +
+                        "Поточна History: $currentCount записів\n" +
+                        "Буде відновлено: ${summary.importEntries} записів\n" +
+                        "Треків у відновлених записах: ${summary.trackCount}" +
+                        truncatedNote +
+                        "\n\nБуде замінено тільки History. " +
+                        "Черга, quota, SearchCache і поточний список залишаться без змін.\n\n" +
+                        "Перед імпортом автоматично створиться safety snapshot повного стану."
+                )
+                .setNegativeButton(
+                    "Скасувати"
+                ) { _, _ ->
+                    clearPendingHistoryImportConfirmation()
+                }
+                .setPositiveButton(
+                    "Відновити History"
+                ) { _, _ ->
+                    clearPendingHistoryImportConfirmation()
+                    restoreHistoryJsonNow(
+                        raw
+                    )
+                }
+                .show()
+
+        dialog.setOnCancelListener {
+            if (!isChangingConfigurations) {
+                clearPendingHistoryImportConfirmation()
+            }
+        }
+    }
+
+    private fun pendingHistoryImportCacheFile():
+        File =
+        File(
+            cacheDir,
+            PENDING_HISTORY_IMPORT_CACHE_FILE
+        )
+
+    private fun clearPendingHistoryImportConfirmation() {
+        historyImportConfirmationPending =
+            false
+
+        runCatching {
+            pendingHistoryImportCacheFile()
+                .delete()
+        }
+    }
+
+    private fun restoreHistoryJsonNow(
+        raw: String
+    ) {
+        val summary =
+            runCatching {
+                historyStore
+                    .inspectImportJson(
+                        raw
+                    )
+            }.getOrElse { error ->
+                toast(
+                    "History import не виконано: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return
+            }
+
+        val result =
+            runCatching {
+                localBackupManager
+                    .restoreHistoryJson(
+                        raw
+                    )
+            }.getOrElse { error ->
+                toast(
+                    "History import не виконано: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return
+            }
+
+        refreshSummary()
+
+        UiChrome.alertBuilder(this)
+            .setTitle(
+                "History відновлено"
+            )
+            .setMessage(
+                "Відновлено записів: ${summary.importEntries}\n" +
+                    "Треків у History: ${summary.trackCount}\n\n" +
+                    "Черга, quota, SearchCache і поточний робочий список не змінювалися.\n\n" +
+                    if (
+                        result.safetySnapshotCreated
+                    ) {
+                        "Safety snapshot стану ДО імпорту збережено."
+                    } else {
+                        ""
+                    }
+            )
+            .setNeutralButton(
+                "Відкотити"
+            ) { _, _ ->
+                confirmRestoreSafetySnapshot()
+            }
+            .setPositiveButton(
+                "Готово",
+                null
+            )
+            .show()
+    }
+
+    private fun readJsonDocument(
+        uri: Uri,
+        label: String
+    ): String? =
+        runCatching {
+            contentResolver
+                .openInputStream(uri)
+                ?.bufferedReader(
+                    Charsets.UTF_8
+                )
+                ?.use {
+                    it.readText()
+                }
+                ?: error(
+                    "Не вдалося прочитати $label"
+                )
+        }.getOrElse { error ->
+            toast(
+                "Помилка читання $label: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+            null
+        }
+
+    private fun prepareRestoreBackup(
+        uri: Uri
+    ) {
+        val raw =
+            readJsonDocument(
+                uri = uri,
+                label = "backup"
+            ) ?: return
 
         val summary =
             runCatching {
@@ -1886,8 +2206,14 @@ class DataActivity : Activity() {
         private const val STATE_RESTORE_CONFIRMATION_PENDING =
             "restore_confirmation_pending"
 
+        private const val STATE_HISTORY_IMPORT_CONFIRMATION_PENDING =
+            "history_import_confirmation_pending"
+
         private const val PENDING_RESTORE_CACHE_FILE =
             "pending_restore_confirmation_v1.json"
+
+        private const val PENDING_HISTORY_IMPORT_CACHE_FILE =
+            "pending_history_import_confirmation_v1.json"
     }
 
 }

@@ -8,6 +8,13 @@ import com.saney.ytmimporter.model.PendingDestination
 import org.json.JSONArray
 import org.json.JSONObject
 
+data class HistoryImportSummary(
+    val sourceEntries: Int,
+    val importEntries: Int,
+    val trackCount: Int,
+    val newestUpdatedAt: Long
+)
+
 class HistoryStore(context: Context) {
     private val prefs =
         context.getSharedPreferences("history_store_v1", Context.MODE_PRIVATE)
@@ -54,6 +61,227 @@ class HistoryStore(context: Context) {
         return runCatching {
             JSONArray(raw).toString(2)
         }.getOrDefault("[]")
+    }
+
+    @Synchronized
+    fun inspectImportJson(
+        raw: String
+    ): HistoryImportSummary {
+        val entries =
+            parseImportEntries(raw)
+
+        require(entries.isNotEmpty()) {
+            "History JSON порожній"
+        }
+
+        val uniqueIds =
+            entries
+                .map { it.id }
+                .toSet()
+
+        require(
+            uniqueIds.size ==
+                entries.size
+        ) {
+            "History JSON містить дублікати id"
+        }
+
+        val normalized =
+            entries
+                .sortedByDescending {
+                    it.updatedAt
+                }
+                .take(
+                    MAX_HISTORY_ENTRIES
+                )
+
+        return HistoryImportSummary(
+            sourceEntries =
+                entries.size,
+            importEntries =
+                normalized.size,
+            trackCount =
+                normalized.sumOf {
+                    it.tracks.size
+                },
+            newestUpdatedAt =
+                normalized
+                    .maxOfOrNull {
+                        it.updatedAt
+                    }
+                    ?: 0L
+        )
+    }
+
+    @Synchronized
+    fun normalizeImportJson(
+        raw: String
+    ): String {
+        val parsed =
+            parseImportEntries(raw)
+
+        require(parsed.isNotEmpty()) {
+            "History JSON порожній"
+        }
+
+        require(
+            parsed
+                .map { it.id }
+                .toSet()
+                .size ==
+                parsed.size
+        ) {
+            "History JSON містить дублікати id"
+        }
+
+        val entries =
+            parsed
+                .sortedByDescending {
+                    it.updatedAt
+                }
+                .take(
+                    MAX_HISTORY_ENTRIES
+                )
+
+        val array =
+            JSONArray()
+
+        entries.forEach { entry ->
+            array.put(
+                entryToJson(entry)
+            )
+        }
+
+        return array.toString()
+    }
+
+    private fun parseImportEntries(
+        raw: String
+    ): List<HistoryEntry> {
+        val array =
+            try {
+                JSONArray(raw)
+            } catch (
+                error: Throwable
+            ) {
+                throw IllegalArgumentException(
+                    "Очікується YTM_History_*.json — JSON-масив History",
+                    error
+                )
+            }
+
+        return buildList {
+            for (
+                i in 0 until array.length()
+            ) {
+                val item =
+                    array.optJSONObject(i)
+                        ?: throw IllegalArgumentException(
+                            "History JSON: запис #${i + 1} не є об'єктом"
+                        )
+
+                validateImportObject(
+                    item,
+                    i
+                )
+
+                add(
+                    entryFromJson(item)
+                )
+            }
+        }
+    }
+
+    private fun validateImportObject(
+        json: JSONObject,
+        index: Int
+    ) {
+        val number =
+            index + 1
+
+        require(
+            json.optString("id")
+                .isNotBlank()
+        ) {
+            "History JSON: запис #$number не має id"
+        }
+
+        require(
+            json.optString(
+                "playlistName"
+            ).isNotBlank()
+        ) {
+            "History JSON: запис #$number не має playlistName"
+        }
+
+        require(
+            json.has("createdAt") &&
+                json.has("updatedAt")
+        ) {
+            "History JSON: запис #$number не має timestamp"
+        }
+
+        val status =
+            json.optString("status")
+
+        require(
+            runCatching {
+                HistoryStatus.valueOf(
+                    status
+                )
+            }.isSuccess
+        ) {
+            "History JSON: невідомий status у записі #$number"
+        }
+
+        val destination =
+            json.optString(
+                "destination"
+            )
+
+        require(
+            runCatching {
+                PendingDestination.valueOf(
+                    destination
+                )
+            }.isSuccess
+        ) {
+            "History JSON: невідомий destination у записі #$number"
+        }
+
+        val tracks =
+            json.optJSONArray(
+                "tracks"
+            )
+                ?: throw IllegalArgumentException(
+                    "History JSON: запис #$number не має tracks"
+                )
+
+        for (
+            trackIndex in 0 until tracks.length()
+        ) {
+            val track =
+                tracks.optJSONObject(
+                    trackIndex
+                )
+                    ?: throw IllegalArgumentException(
+                        "History JSON: track #${trackIndex + 1} у записі #$number не є об'єктом"
+                    )
+
+            require(
+                track.has(
+                    "originalTitle"
+                ) &&
+                    track.has(
+                        "originalArtist"
+                    ) &&
+                    track.has(
+                        "status"
+                    )
+            ) {
+                "History JSON: track #${trackIndex + 1} у записі #$number має невірний формат"
+            }
+        }
     }
 
     private fun readEntries(): List<HistoryEntry> {
