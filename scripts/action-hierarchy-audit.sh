@@ -20,10 +20,26 @@ fi
 grep -q 'trailingTextAction' "$UI" \
   || fail "AUTO three-action hierarchy missing"
 
-grep -A80 'val trailingTextAction' "$UI" | grep -q 'dialogActionButton' \
+AUTO_BLOCK="$(
+  awk '
+    /val trailingTextAction/ { capture = 1 }
+    capture { print }
+    /val compactRow/ { exit }
+  ' "$UI"
+)"
+
+grep -Fq 'dialogActionButton(' <<<"$AUTO_BLOCK" \
   || fail "AUTO trailing Close/Back is not boxed"
 
-grep -A95 'DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE' "$UI" | grep -q 'dialogActionButton' \
+VERTICAL_BLOCK="$(
+  awk '
+    /actionLayout == DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE/ { capture = 1 }
+    capture { print }
+    /actionLayout == DialogActionLayout.PRIMARY_TOP/ { exit }
+  ' "$UI"
+)"
+
+grep -Fq 'dialogActionButton(' <<<"$VERTICAL_BLOCK" \
   || fail "vertical dismissive Close/Back is not boxed"
 
 grep -q 'ServiceActivity::class.java' "$MAIN" \
