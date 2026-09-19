@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.42 — Recent File Selector — IMPLEMENTED / PHONE QA NEEDED
+v1.4.42 — Recent File Selector — PHONE PARTIAL: ENTRY PASS / DOWNLOAD-ROOT SETUP BLOCKED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -40,13 +40,13 @@ v1.4.42 — Recent File Selector — IMPLEMENTED / PHONE QA NEEDED
 - [x] v1.4.42 static audit + release docs
 - [ ] full release preflight
 - [ ] signed GitHub Actions APK
-- [ ] phone: first open shows in-app selector
-- [ ] phone: authorize Download if needed
-- [ ] phone: newest modified files appear first
-- [ ] phone: recent House Dance file imports directly
-- [ ] phone: Android system-picker fallback opens and Back returns to selector
-- [ ] phone: Data Restore JSON selector smoke
-- [ ] phone: existing save/folder SAF flows regression smoke
+- [x] phone: first open shows in-app selector — PASS
+- [ ] phone: authorize Download if needed — FAIL/BLOCKED by Android 11+ SAF root-Download restriction; redesign required
+- [ ] phone: newest modified files appear first — DEFERRED after setup blocker
+- [ ] phone: recent House Dance file imports directly — DEFERRED after setup blocker
+- [ ] phone: Android system-picker fallback opens and Back returns to selector — DEFERRED after setup blocker
+- [ ] phone: Data Restore JSON selector smoke — DEFERRED after setup blocker
+- [ ] phone: existing save/folder SAF flows regression smoke — DEFERRED after setup blocker
 
 ## v1.4.41-R2 — Stacked Filename Follow-up
 - [x] versionCode 79 / versionName 1.4.41-R2
@@ -761,4 +761,4 @@ including:
 - [x] phone: rotation keeps History page
 - [x] phone: rotation preserves changelog scroll position after follow-up fix
 
-- UX-020 Import File Recent-First Selector — IMPLEMENTED v1.4.42 / PHONE QA NEEDED; in-app selector lists direct-child files from remembered SAF roots by provider `lastModified` newest-first; Android picker remains explicit fallback
+- UX-020 Import File Recent-First Selector — PHONE PARTIAL v1.4.42; selector entry PASS, but root `Download` cannot be granted through Android 11+ `ACTION_OPEN_DOCUMENT_TREE`. Redesign onboarding so newest-first does not depend on root Download access; keep system picker fallback.
