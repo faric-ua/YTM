@@ -232,6 +232,8 @@ v1.4.40 — In-app Release History — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Project handoff / documentation hardening — COMPLETE
 - [x] add canonical `START_HERE_ASSISTANT.md` for a new ChatGPT node
+- [x] add mutable `CURRENT_HANDOFF.md` crash-recovery snapshot for exact active work
+- [x] keep open release PR descriptions synchronized with current QA/next-step state
 - [x] make README a real project entry point
 - [x] add assistant tool/source-of-truth map
 - [x] reconcile reusable Termux/Git rules with `YTM_ASSISTANT_WORKFLOW.md`
