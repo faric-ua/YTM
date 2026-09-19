@@ -24,11 +24,13 @@ Current release candidate:
 - installed phone APK: **v1.4.47**
 - focus: **v1.4.47-R1 — Home prototype hierarchy + modal/nav/rotation corrections**
 
-Stable build folder after signed build:
+Planned stable R1 build folder:
 
 `/storage/emulated/0/Download/YTM-v1.4.47-R1-build/`
 
-Signed build evidence:
+R1 signed build: **PENDING**.
+
+Previous v1.4.47 signed-build evidence:
 - GitHub Actions run: **35471958580**
 - build head: `57eccccb468a384201b1d1846d16e5826764ea71`
 - conclusion: **success**
