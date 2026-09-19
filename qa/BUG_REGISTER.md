@@ -11,7 +11,7 @@
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
 | BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 | P2 | Restore confirmation now survives phone rotation without forcing the user to choose the backup file again. | v1.4.38 phone repro → R1 rotation-state fix → phone PASS |
 | BUG-009 / Q-009 | PHONE PORTRAIT PASS v1.4.41 — ROTATION SMOKE PENDING | P3 | Real-phone portrait confirms readable profile copy, single-line `Змінити` on the left and `Закрити` on the right. Rotation smoke remains optional/pending before treating the UI check as fully exercised. | v1.4.40 account-switch screenshot → v1.4.41 portrait PASS |
-| BUG-010 / Q-010 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41 | P2 | Full Restore and safety rollback no longer apply `quota_tracker_v1`; backup files may still contain quota counters for diagnostics, but the current local estimate is preserved. | v1.4.40 House Dance finding → v1.4.41 restore policy fix |
+| BUG-010 / Q-010 | ORDINARY RESTORE PHONE PASS v1.4.41 — SAFETY ROLLBACK PENDING | P2 | Real-phone full Restore preserved the live quota estimate exactly (Search 0/100; total 505/10000; ≈9495 remaining). Backup exposed 4 groups while Restore applied 3, consistent with excluding `quota_tracker_v1`. Safety rollback still needs the same phone check. | v1.4.40 House Dance finding → v1.4.41 ordinary Restore PASS |
 
 ## BUG-002 current evidence
 
@@ -272,7 +272,7 @@ Phone width/rotation still require visual confirmation.
 
 ## BUG-010 — Restore rewinds local quota estimate
 
-Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41.**
+Status: **ORDINARY RESTORE PHONE PASS v1.4.41 — SAFETY ROLLBACK PENDING.**
 
 Observed during the House Dance recovery run:
 
@@ -303,5 +303,29 @@ Implemented policy in v1.4.41:
 ### v1.4.41 BUG-010 implementation
 
 This prevents an old local backup from making the app claim that externally consumed API quota became available again.
+
+### v1.4.41 BUG-010 phone result
+
+Ordinary full Restore passed on the real phone.
+
+Before Restore:
+- Search `0/100`;
+- total local quota `505/10000`;
+- remaining units `≈9495`.
+
+The selected legacy backup reported 4 data groups. Restore reported 3 restored groups
+and 33 restored values. The confirmation/result copy both stated that local quota
+estimate would remain current.
+
+After Restore the quota screen still showed:
+- Search `0/100`;
+- total local quota `505/10000`;
+- remaining units `≈9495`.
+
+This is direct phone evidence that ordinary full Restore no longer rewinds
+`quota_tracker_v1`.
+
+Safety-snapshot rollback still needs the equivalent phone verification before BUG-010
+can be fully closed.
 
 Do not close this from static reasoning alone; verify the chosen policy on phone.
