@@ -26,10 +26,10 @@ A new assistant should recover context from the repository and live GitHub state
 
 ## Current release
 
-- versionName: **1.4.41-R1**
-- versionCode: **78**
-- focus: **targeted corrective follow-up: Account rotation + duplicate filename cleanup**
-- status: **NOT PHONE-TESTED YET — v1.4.41-R1 corrective build pending phone retest**
+- versionName: **1.4.41-R2**
+- versionCode: **79**
+- focus: **parser-only corrective follow-up: stacked duplicate filename cleanup**
+- status: **NOT PHONE-TESTED YET — v1.4.41-R2 stacked-filename retest pending**
 - v1.4.39 History JSON: Cancel/rotation/invalid-file paths PASS; populated-History Restore + rollback remain inconclusive and need later retest
 - v1.4.40 Release History tested path remains PASS
 - BUG-009 portrait account-dialog fix is phone-PASS; BUG-004 real-401 and BUG-010 Restore quota-preservation still await targeted phone retest
