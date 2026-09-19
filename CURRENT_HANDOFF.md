@@ -158,7 +158,9 @@ After install, begin with the zero/low-cost visual checks before spending YouTub
 - This is broad accumulated phone coverage, **not** proof that every path/corner case
   has been retested on v1.4.41.
 
-Pending targeted evidence remains BUG-004 real 401, BUG-010 quota Restore/rollback,
+BUG-010 ordinary full Restore quota preservation is now PHONE PASS: 0/100 and 505/10000 (≈9495 remaining) stayed unchanged across Restore. Safety rollback remains pending.
+
+Pending targeted evidence remains BUG-004 real 401, BUG-010 safety rollback,
 UX-017 fallback-title normalization, and additional UX-018 modal spot checks.
 
 ## 5. Exact v1.4.41 phone QA after signed build
