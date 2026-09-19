@@ -18,7 +18,7 @@ Current release candidate:
 - versionName: **1.4.44**
 - versionCode: **83**
 - active branch: `feat/v1.4.44-adaptive-actions`
-- active PR: **not created yet**
+- active PR: **#15 — v1.4.44: adaptive landscape action layout** → `fix/v1.4.43-auth-freshness`
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
 - status: **IMPLEMENTED / NOT PHONE-TESTED YET**
 - installed phone APK: **v1.4.43**
@@ -170,7 +170,7 @@ If a natural write-time 401 occurs:
 1. Run the dedicated v1.4.44 adaptive-actions audit.
 2. Run full release preflight.
 3. Compare the stacked v1.4.44 branch to its v1.4.43 base; stop on accidental deletions.
-4. Open a stacked PR for v1.4.44.
+4. PR #15 is open and mergeable.
 5. Build signed v1.4.44 APK from the exact live head.
 6. Install over v1.4.43 without clearing data.
 7. Run portrait/landscape Storage + Recent-file + representative modal QA.
