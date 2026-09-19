@@ -13,7 +13,7 @@
 | BUG-009 / Q-009 | PHONE PORTRAIT PASS v1.4.41 | P3 | Real-phone portrait confirms readable profile copy, single-line `Змінити` on the left and `Закрити` on the right. Rotation itself exposed separate BUG-011 (dialog disappears), so BUG-009 remains a portrait visual-fit PASS rather than absorbing the state-restoration defect. | v1.4.40 account-switch screenshot → v1.4.41 portrait PASS |
 | BUG-010 / Q-010 | CLOSED — PHONE RETEST PASS v1.4.41 | P2 | Real-phone full Restore and subsequent `Відкотити` both preserved the live quota exactly: Search 0/100; total 505/10000; ≈9495 remaining. Full Restore applied 3 of 4 backup groups; `Відкотити` applied 4 of 5 safety-snapshot groups, confirming `quota_tracker_v1` was excluded from both paths. | v1.4.40 finding → v1.4.41 Restore + `Відкотити` PASS |
 | BUG-011 / Q-011 | CLOSED — PHONE RETEST PASS v1.4.41-R1 | P3 | Real-phone R1 retest passed: Account modal remains/reappears through portrait ↔ landscape Activity recreation and preserves the expected action layout. | v1.4.41 repro → v1.4.41-R1 phone PASS |
-| BUG-012 / Q-012 | FIX IMPLEMENTED — v1.4.42-R1 PHONE RETEST NEEDED | P2 | v1.4.42 root `Download` SAF onboarding was blocked by Android 11+. R1 switches the primary Download path to explicit `MANAGE_EXTERNAL_STORAGE` / All files access, reads Download directly, and keeps SAF/system-picker fallbacks. | v1.4.42 repro → v1.4.42-R1 fix |
+| BUG-012 / Q-012 | PARTIAL PHONE PASS v1.4.42-R1 — DOWNLOAD ACCESS WORKS / DIRECT IMPORT+RESTORE PENDING | P2 | R1 All files access is recognized on phone and direct Download listing works newest-first. Core root-Download access blocker is repaired; final close waits for direct Import + Restore JSON regression checks. | v1.4.42 repro → v1.4.42-R1 partial PASS |
 
 ## BUG-002 current evidence
 
@@ -384,7 +384,7 @@ BUG-011 is closed on v1.4.41-R1.
 
 ## BUG-012 — Recent-file selector cannot grant root Download
 
-Status: **FIX IMPLEMENTED — v1.4.42-R1 PHONE RETEST NEEDED.**
+Status: **PARTIAL PHONE PASS v1.4.42-R1 — DOWNLOAD ACCESS WORKS / DIRECT IMPORT+RESTORE PENDING.**
 
 Path:
 `Home → 1. Імпорт → імпортувати файл → Додати папку… → Download`
@@ -411,3 +411,28 @@ Product decision after the reproduction:
 Distribution note:
 - Google Play treats MANAGE_EXTERNAL_STORAGE as restricted/high-risk; future Play
   distribution would require a separate policy/eligibility review.
+
+### v1.4.42-R1 phone evidence
+
+PASS:
+- rationale dialog displayed;
+- app recognized the All files access grant after return;
+- grant action disappeared;
+- direct Download list loaded 47 matching files;
+- visible newest-first ordering passed: 14:50 entries above 14:47;
+- standard Android system picker opened.
+
+Important scope clarification:
+- MANAGE_EXTERNAL_STORAGE itself is broad shared-storage access;
+- YTM Importer narrows what it displays/uses in each selector;
+- Import currently filters to TXT/CSV/JSON;
+- Data/Restore filters to JSON.
+
+Pending before BUG-012 close:
+- direct House Dance TXT import from the in-app Download row;
+- Restore JSON selection to existing confirmation;
+- explicit system-picker Back → YTM selector return smoke.
+
+Separate UX observation:
+- landscape footer actions consume most vertical space;
+- tracked as UX-021, not as BUG-012 functional failure.
