@@ -42,6 +42,7 @@ class ServiceActivity : Activity() {
     private var page: Page = Page.HOME
     private var pendingExportContent: String? = null
     private var pendingExportFileName: String? = null
+    private var changelogScrollY: Int = 0
 
     private val saveDiagnosticsRequestCode = 6101
     private val saveDiagnosticsFolderRequestCode = 6102
@@ -64,11 +65,17 @@ class ServiceActivity : Activity() {
                 }
                 ?: Page.HOME
 
+        changelogScrollY =
+            savedInstanceState
+                ?.getInt(KEY_CHANGELOG_SCROLL_Y, 0)
+                ?: 0
+
         buildUi()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(KEY_PAGE, page.name)
+        outState.putInt(KEY_CHANGELOG_SCROLL_Y, changelogScrollY)
         super.onSaveInstanceState(outState)
     }
 
@@ -663,6 +670,10 @@ class ServiceActivity : Activity() {
 
 
     private fun open(value: Page) {
+        if (value == Page.CHANGELOG && page != Page.CHANGELOG) {
+            changelogScrollY = 0
+        }
+
         page = value
         buildUi()
     }
@@ -685,6 +696,12 @@ class ServiceActivity : Activity() {
     ) {
         val scroll = ScrollView(this).apply {
             isFillViewport = true
+
+            if (page == Page.CHANGELOG) {
+                setOnScrollChangeListener { _, _, scrollY, _, _ ->
+                    changelogScrollY = scrollY
+                }
+            }
         }
         scroll.addView(content)
         root.addView(
@@ -697,6 +714,12 @@ class ServiceActivity : Activity() {
         )
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+
+        if (page == Page.CHANGELOG && changelogScrollY > 0) {
+            scroll.post {
+                scroll.scrollTo(0, changelogScrollY)
+            }
+        }
     }
 
     private fun topBar(title: String): LinearLayout =
@@ -1225,6 +1248,8 @@ class ServiceActivity : Activity() {
         const val EXTRA_CHANNEL_ID = "service_channel_id"
 
         private const val KEY_PAGE = "service_page"
+        private const val KEY_CHANGELOG_SCROLL_Y =
+            "service_changelog_scroll_y"
 
         private val BACKGROUND = Color.rgb(15, 16, 19)
         private val SURFACE = Color.rgb(25, 27, 32)
