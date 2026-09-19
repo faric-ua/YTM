@@ -51,12 +51,9 @@ do
   grep -Fq "$preserved" "$DATA"     || fail "History-only preservation copy missing: $preserved"
 done
 
-for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
-do
-  if grep -Fq "$permission" "$MANIFEST"; then
-    fail "broad storage permission introduced: $permission"
-  fi
-done
+# Historical v1.4.39 behavior is audited from its immutable release snapshot.
+# Do not assert old storage-permission policy against the current manifest:
+# later corrective releases may intentionally change that policy.
 
 echo "PASS:"
 echo "- immutable v1.4.39 / code 75 release snapshot"
@@ -65,4 +62,4 @@ echo "- History-only partial restore through existing safety-snapshot engine"
 echo "- Queue/quota/SearchCache/current playlist preserved"
 echo "- History confirmation survives Activity recreation"
 echo "- Data JSON selection remains available through the recent-file selector + system fallback"
-echo "- no broad filesystem permission"
+echo "- historical v1.4.39 audit is decoupled from current storage-permission policy"
