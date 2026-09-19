@@ -33,7 +33,7 @@ v1.4.38 PARTIALLY PHONE-TESTED — SELECTORS + DESTRUCTIVE CONFIRMATIONS PASS / 
 v1.4.38-R1 PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX FAIL
 v1.4.38-R2 PHONE RETEST PASS — CHECKBOX VISUAL CENTERING
 v1.4.39 PARTIALLY PHONE-TESTED — CANCEL / ROTATION / INVALID-FILE PASS; RESTORE+ROLLBACK INCONCLUSIVE
-v1.4.40 PARTIALLY PHONE-TESTED — RELEASE HISTORY TESTED PATH PASS
+v1.4.40 PARTIALLY PHONE-TESTED — RELEASE HISTORY PASS / BUG-004 AUTH FAIL REPRODUCED / BUG-009 UI FOUND
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -540,3 +540,11 @@ v1.4.40 focus:
 - rotation + scroll-position preservation PASS after follow-up fix
 - UX-016 closed for the tested Release History scope
 - no network fetch, server dependency or new permission
+
+v1.4.40 post-closeout phone findings:
+- House_Dance_Hit_2000_Vol1_YTM TXT import loaded 9 tracks and became a repeatable test fixture.
+- BUG-004/Q-004 REPRODUCED AGAIN on Search: Home Step 2 stayed green/checked while all 9 searches reported invalid Google authorization.
+- SearchCoordinator consumes per-track auth failures without a shared auth-invalidation callback; v1.4.31 covered ImportActivity paths but not this Search path.
+- User re-entered the Google account flow, but authorization did not immediately recover; full-app restart result is pending.
+- BUG-009/Q-009 OPEN: Google account-switch explanatory text/action have a phone-width copy/layout fit problem.
+- These findings do not invalidate the already accepted v1.4.40 Release History tested-path PASS.
