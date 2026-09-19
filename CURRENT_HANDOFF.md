@@ -110,6 +110,15 @@ New post-closeout real-phone findings now take priority before starting unrelate
 - BUG-009/Q-009 is OPEN for account-switch text/action phone-width layout.
 - Permanent test data is stored under
   `docs/test-data/collections/House_Dance_Hit_2000/`.
+- House Dance Vol.1 later completed end-to-end successfully after auth recovery:
+  9/9 Search ready → new private playlist → 9/9 tracks added.
+- Desired playlist display title is `House Dance Hit 2000 Vol.1`; the fixture now
+  carries that explicit title as its first line. UX-017 tracks generic filename
+  humanization so `House_Dance_Hit_2000_Vol1_YTM.txt` does not become a raw display name.
+- YouTube playlist description `Створено через YTM Importer` is already correct and
+  should remain description metadata, not part of the title.
+- BUG-010/Q-010 OPEN: full Restore includes `quota_tracker_v1`; an older backup can
+  rewind the local quota estimate (observed Search plan returning to 0/100).
 
 The unfinished History item carried from the combined v1.4.39/v1.4.40 wave is:
 
