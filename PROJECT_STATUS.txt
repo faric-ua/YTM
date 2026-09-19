@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.41-R2
-Version code: 79
+Version: 1.4.42
+Version code: 80
 Current live resume snapshot: CURRENT_HANDOFF.md
 
 v1.4.12 NOT TESTED
@@ -610,3 +610,20 @@ UX-017 CLOSED — PHONE RETEST PASS v1.4.41-R2
 - clean title confirmed for YTM-1 (1)
 - clean title confirmed for YTM-1 (1) (1)
 - expected title: House Dance Hit 2000 Vol.1
+
+
+v1.4.42 NOT PHONE-TESTED YET — RECENT FILE SELECTOR / UX-008 PHASE 2B
+
+v1.4.42 focus:
+- RecentFileChooserActivity before generic open-file flows
+- SafRecentFileQuery over persisted READ SAF roots
+- newest-first order by provider lastModified
+- Import TXT/CSV/JSON recent list
+- Data Restore/History JSON recent list
+- add-folder flow + explicit Android system picker fallback
+- direct-child remembered-root scope, max 200 matching files
+- no broad storage permission
+- branch: feat/v1.4.42-recent-file-selector
+- phone QA required before PASS
+
+v1.4.41-R2 remains PHONE RETEST PASS — UX-017 CLOSED.
