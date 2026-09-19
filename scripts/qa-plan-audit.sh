@@ -100,8 +100,8 @@ grep -F '| v1.4.41 |' "$STATUS" | grep -Fq 'NOT EXHAUSTIVE' \
   || fail "v1.4.41 non-exhaustive QA qualifier missing"
 grep -Fq '| v1.4.41-R1 | **PARTIALLY PHONE-TESTED — BUG-011 PASS / SIMPLE YTM-1 PASS / STACKED SUFFIX FAIL** |' "$STATUS" \
   || fail "v1.4.41-R1 phone result missing"
-grep -Fq '| v1.4.41-R2 | **NOT PHONE-TESTED YET — STACKED FILENAME CORRECTIVE BUILD** |' "$STATUS" \
-  || fail "v1.4.41-R2 pending phone status missing"
+grep -Fq '| v1.4.41-R2 | **PHONE RETEST PASS — UX-017 STACKED FILENAME FIX** |' "$STATUS" \
+  || fail "v1.4.41-R2 phone PASS status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
