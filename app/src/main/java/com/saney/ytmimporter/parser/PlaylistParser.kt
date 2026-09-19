@@ -93,7 +93,8 @@ object PlaylistParser {
         val withoutServiceMarker =
             base.replace(
                 Regex(
-                    "(?i)\\s*(?:[-–—]\\s*)?YTM(?:\\s+Importer)?\\s*$"
+                    "(?i)\\s*(?:[-–—]\\s*)?YTM(?:\\s+Importer)?" +
+                        "(?:\\s*(?:[-_]\\s*\\d+|\\(\\s*\\d+\\s*\\)|\\s+\\d+))?\\s*$"
                 ),
                 ""
             ).trim()
