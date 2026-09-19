@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.42**
-- versionCode: **80**
-- release focus: **UX-020 + UX-008 Phase 2B — newest-first in-app file selector**
-- release status: **NOT PHONE-TESTED YET — IMPLEMENTED / QA NEEDED**
+- versionName: **1.4.42-R1**
+- versionCode: **81**
+- release focus: **BUG-012 corrective build — direct Download via Android All files access**
+- release status: **NOT PHONE-TESTED YET — ALL-FILES CORRECTIVE BUILD**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.41 phone QA has started:
@@ -411,3 +411,12 @@ Latest merged baseline:
 - merge commit `a3763b8e7db6154d20a000891bdcd5b8b7e54d55`;
 - UX-017 closed on phone;
 - BUG-011 and BUG-010 remain closed.
+
+
+v1.4.42-R1 current scope:
+- v1.4.42 selector entry passed on phone, but Android 11+ blocked root Download through ACTION_OPEN_DOCUMENT_TREE;
+- the project owner explicitly chose MANAGE_EXTERNAL_STORAGE / All files access for this sideload build;
+- R1 asks through an in-app rationale, opens Android special-access settings, then reads Download directly;
+- direct Download files sort by lastModified newest-first;
+- SAF subfolder access and the Android system picker remain fallbacks;
+- BUG-012 fix is implemented but not phone-PASS until R1 is installed and tested.
