@@ -434,73 +434,31 @@ class MainActivity : Activity() {
          * keep account identity and live status in one compact interactive
          * account card without changing workflow semantics.
          */
-        val statusCard =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(
-                    dp(14),
-                    dp(10),
-                    dp(14),
-                    dp(10)
-                )
-                background =
-                    AppThemeManager
-                        .largeCardDrawable(
-                            context =
-                                this@MainActivity,
-                            fill =
-                                palette.surfaceAlt,
-                            radiusDp = 14,
-                            accentOverride =
-                                palette.accent
-                        )
-                isClickable = true
-                isFocusable = true
-                setOnClickListener {
+        val accountCard =
+            UiChrome.interactiveSummaryCard(
+                activity = this,
+                title =
+                    "Google/YTM не підключено",
+                subtitle =
+                    "Натисніть, щоб переглянути інформацію акаунта.",
+                fill =
+                    palette.surfaceAlt,
+                accentOverride =
+                    palette.accent,
+                onClick = {
                     showAccountDialog()
                 }
-            }
+            )
 
         accountSummaryText =
-            TextView(this).apply {
-                setTextColor(
-                    palette.text
-                )
-                textSize = 15f
-                setTypeface(
-                    typeface,
-                    Typeface.BOLD
-                )
-                text =
-                    "Google/YTM не підключено"
-            }
-
-        statusText = TextView(this).apply {
-            setTextColor(
-                palette.muted
+            accountCard.title
+        statusText =
+            requireNotNull(
+                accountCard.subtitle
             )
-            textSize = 12.5f
-            setPadding(
-                0,
-                dp(4),
-                0,
-                0
-            )
-            text =
-                "Натисніть, щоб переглянути інформацію акаунта."
-        }
-
-        statusCard.addView(
-            accountSummaryText
-        )
-
-        statusCard.addView(
-            statusText
-        )
 
         root.addView(
-            statusCard,
+            accountCard.root,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -515,89 +473,27 @@ class MainActivity : Activity() {
         )
 
         val workspaceCard =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(
-                    dp(14),
-                    dp(11),
-                    dp(14),
-                    dp(11)
-                )
-                background =
-                    AppThemeManager
-                        .largeCardDrawable(
-                            context =
-                                this@MainActivity,
-                            fill =
-                                palette.surface,
-                            radiusDp = 14
-                        )
-                isClickable = true
-                isFocusable = true
-                setOnClickListener {
+            UiChrome.interactiveSummaryCard(
+                activity = this,
+                eyebrow =
+                    "Поточний плейлист",
+                title =
+                    "Плейлист ще не імпортовано",
+                subtitle =
+                    "Натисніть для керування плейлистом →",
+                fill =
+                    palette.surface,
+                subtitleAccent = true,
+                onClick = {
                     openPlaylistHub()
                 }
-            }
-
-        workspaceCard.addView(
-            TextView(this).apply {
-                text =
-                    "Поточний плейлист"
-                textSize =
-                    11.5f
-                setTypeface(
-                    typeface,
-                    Typeface.BOLD
-                )
-                setTextColor(
-                    palette.muted
-                )
-                setPadding(
-                    0,
-                    0,
-                    0,
-                    dp(4)
-                )
-            }
-        )
-
-        summaryText = TextView(this).apply {
-            setTextColor(
-                palette.text
             )
-            textSize = 15f
-            setTypeface(
-                typeface,
-                Typeface.BOLD
-            )
-            text =
-                "Плейлист ще не імпортовано"
-        }
 
-        workspaceCard.addView(
-            summaryText
-        )
-
-        workspaceCard.addView(
-            TextView(this).apply {
-                text =
-                    "Натисніть для керування плейлистом →"
-                textSize = 12.5f
-                setTextColor(
-                    palette.accent
-                )
-                setPadding(
-                    0,
-                    dp(6),
-                    0,
-                    0
-                )
-            }
-        )
+        summaryText =
+            workspaceCard.title
 
         root.addView(
-            workspaceCard,
+            workspaceCard.root,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
