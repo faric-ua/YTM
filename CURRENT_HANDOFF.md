@@ -21,7 +21,7 @@ Current release candidate:
 - active PR: **not created yet**; branch is stacked on v1.4.44 PR #15
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
 - status: **IMPLEMENTED / PHONE RETEST NEEDED**
-- installed phone APK: **v1.4.43**
+- installed phone APK: **v1.4.44**
 - focus: **UX-021 R1 — compact landscape copy + boxed modal Close**
 
 Stable build folder after signed build:
