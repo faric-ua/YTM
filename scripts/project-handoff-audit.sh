@@ -26,9 +26,9 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.41-R1**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionName: **1.4.41-R2**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **78**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionCode: **79**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
 grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 identity missing"
@@ -97,9 +97,9 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.41-R1' PROJECT_STATUS.txt \
+grep -Fq 'Version: 1.4.41-R2' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 78' PROJECT_STATUS.txt \
+grep -Fq 'Version code: 79' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"
@@ -112,10 +112,10 @@ grep -Fq 'BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.
 
 grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
-grep -Fq 'v1.4.41-R1 — Corrective Follow-up' BACKLOG.md \
-  || fail "BACKLOG current v1.4.41-R1 release missing"
-grep -Fq 'v1.4.41-R1 corrective follow-up' START_HERE_ASSISTANT.md \
-  || fail "START_HERE v1.4.41-R1 focus missing"
+grep -Fq 'v1.4.41-R2 — Stacked Filename Follow-up' BACKLOG.md \
+  || fail "BACKLOG current v1.4.41-R2 release missing"
+grep -Fq 'v1.4.41-R2 parser-only corrective follow-up' START_HERE_ASSISTANT.md \
+  || fail "START_HERE v1.4.41-R2 focus missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
 grep -Fq 'all **four** Home workflow buttons need theme-aware state palettes' CURRENT_HANDOFF.md \
