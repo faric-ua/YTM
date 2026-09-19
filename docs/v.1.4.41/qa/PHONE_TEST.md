@@ -228,8 +228,12 @@ Rollback result:
 The 5-group snapshot / 4-group rollback result is consistent with excluding
 `quota_tracker_v1` from rollback.
 
-One final quota-screen readback is still required before fully closing BUG-010:
-expected `0/100`, `505/10000`, `≈9495`.
+Final quota-screen readback after `Відкотити`:
+- Search: `0/100`;
+- total local quota estimate: `505/10000`;
+- remaining units: `≈9495`.
+
+Result: **PASS. BUG-010 fully closed for both full Restore and `Відкотити`.**
 
 
 ## UX-017 phone finding — duplicate-download suffix FAIL
@@ -249,3 +253,8 @@ Result: **FAIL for the duplicate-download filename edge case.**
 The v1.4.41 normalizer strips a clean trailing `YTM` marker but does not yet strip the marker when the operating system/browser appends a copy suffix. Follow-up should cover at least `YTM-1`, `YTM_1`, and `YTM (1)`.
 
 Do not rebuild immediately for this single finding; finish the current v1.4.41 phone QA and package corrective findings into one follow-up build.
+
+
+### Plain-language note for QA terminology
+
+In user-facing QA notes, prefer `Відкотити` or `повернути стан до моменту перед Restore` instead of using the English word `rollback` by itself. This makes the test steps clearer for the project owner.
