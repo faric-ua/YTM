@@ -108,6 +108,18 @@ reviewed separately. Do not silently assume Play approval.
 9. Run targeted phone QA below.
 10. Merge PR #13 only after accepted phone evidence.
 
+Preflight update:
+- first R1 preflight attempt reached the historical storage audits and failed with:
+  `FAIL: broad storage permission introduced: MANAGE_EXTERNAL_STORAGE`;
+- this was not an Android/build failure; it was stale historical-audit coupling;
+- seven historical audits (v1.4.35 through v1.4.41) still compared their old SAF-only
+  policy against the live current Manifest;
+- those audits are now decoupled from current Manifest permission policy while retaining
+  historical release evidence where appropriate;
+- the dedicated `v1442-r1-all-files-audit.sh` is now the current guard that explicitly
+  requires `MANAGE_EXTERNAL_STORAGE`;
+- next action: fetch the live branch head and rerun full release preflight from the start.
+
 ## 6. R1 phone QA
 
 ### A. Permission flow
