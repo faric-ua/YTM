@@ -246,3 +246,24 @@ Guard:
   branch even when default `main` does not yet contain the handoff file;
 - never infer phone-installed code from the newest documentation commit.
 
+## 20. Partial file reads must never be written back as whole files
+
+During the v1.4.40 QA closeout, a range-limited read of `BACKLOG.md` was edited and
+sent to a whole-file update operation. Because the write API replaces the complete
+file, the untouched tail of the backlog was temporarily deleted.
+
+The anomaly was caught by the unexpectedly large PR deletion count before merge and
+the file was restored from the previous blob.
+
+Guard:
+
+- use range-limited reads only for inspection;
+- before a whole-file update, fetch the complete current blob/content;
+- after documentation-heavy commits, inspect PR additions/deletions or file size for
+  unexpected large changes;
+- if a large mutable document suddenly shrinks, stop before merge/build;
+- restore from the immediately previous known-good blob/commit instead of reconstructing
+  missing history manually;
+- keep handoff/preflight audits checking anchors from later sections of large files so
+  accidental truncation fails closed.
+
