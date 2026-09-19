@@ -15,18 +15,18 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.44**
-- versionCode: **83**
-- active branch: `feat/v1.4.44-adaptive-actions`
-- active PR: **#15 — v1.4.44: adaptive landscape action layout** → `fix/v1.4.43-auth-freshness`
+- versionName: **1.4.44-R1**
+- versionCode: **84**
+- active branch: `fix/v1.4.44-r1-action-copy-close-style`
+- active PR: **not created yet**; branch is stacked on v1.4.44 PR #15
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **IMPLEMENTED / NOT PHONE-TESTED YET**
+- status: **IMPLEMENTED / PHONE RETEST NEEDED**
 - installed phone APK: **v1.4.43**
-- focus: **UX-021 Adaptive Landscape Action Layout**
+- focus: **UX-021 R1 — compact landscape copy + boxed modal Close**
 
 Stable build folder after signed build:
 
-`/storage/emulated/0/Download/YTM-v1.4.44-build/`
+`/storage/emulated/0/Download/YTM-v1.4.44-R1-build/`
 
 ## 2. BUG-013 reproduction
 
@@ -152,6 +152,20 @@ If a natural write-time 401 occurs:
 - use theme-aware color/emphasis;
 - apply through shared UI styling, not per-screen hardcoding.
 
+## 5A. v1.4.44 phone finding / R1 correction
+
+Real-phone landscape screenshots on v1.4.44 showed:
+- responsive three-button footer row activates correctly;
+- `Системний вибір файла…` does not fit the fixed-height wide button cleanly;
+- Storage save footer labels fit in the captured state;
+- result/problem modals render `Закрити` as unboxed colored text while peer actions are boxed.
+
+v1.4.44-R1:
+- uses `Системний вибір…` only when the Recent-file footer is in the wide horizontal layout;
+- keeps the full label in stacked/portrait mode;
+- renders dismissive modal Close through the regular boxed dialog action button;
+- removes the obsolete transparent Close helper.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -167,15 +181,14 @@ If a natural write-time 401 occurs:
 
 ## 7. Exact next execution step
 
-1. Run the dedicated v1.4.44 adaptive-actions audit.
+1. Run the v1.4.44-R1 audit.
 2. Run full release preflight.
-3. Compare the stacked v1.4.44 branch to its v1.4.43 base; stop on accidental deletions.
-4. PR #15 is open and mergeable.
-5. Build signed v1.4.44 APK from the exact live head.
-6. Install over v1.4.43 without clearing data.
-7. Run portrait/landscape Storage + Recent-file + representative modal QA.
+3. Compare R1 to v1.4.44 branch and confirm no accidental deletions.
+4. Open stacked R1 PR.
+5. Build signed v1.4.44-R1 APK from exact head.
+6. Install over v1.4.44 without clearing data.
+7. Retest the same landscape Recent-file / Storage / modal screenshots.
 8. Keep BUG-013 stale-token acceptance deferred until it naturally becomes reproducible.
-9. Keep UX-022 title emphasis separate after UX-021.
 
 ## 8. Working contract
 
