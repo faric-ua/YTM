@@ -56,6 +56,115 @@ object UiChrome {
         val onClick: () -> Unit
     )
 
+    data class InteractiveSummaryCard(
+        val root: LinearLayout,
+        val title: TextView,
+        val subtitle: TextView?
+    )
+
+    fun interactiveSummaryCard(
+        activity: Activity,
+        eyebrow: CharSequence? = null,
+        title: CharSequence,
+        subtitle: CharSequence? = null,
+        fill: Int,
+        accentOverride: Int? = null,
+        subtitleAccent: Boolean = false,
+        onClick: () -> Unit
+    ): InteractiveSummaryCard {
+        val palette =
+            AppThemeManager.palette(activity)
+
+        val root =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(activity, 14),
+                    dp(activity, 11),
+                    dp(activity, 14),
+                    dp(activity, 11)
+                )
+                background =
+                    AppThemeManager.largeCardDrawable(
+                        context = activity,
+                        fill = fill,
+                        radiusDp = 14,
+                        accentOverride =
+                            accentOverride
+                    )
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    onClick()
+                }
+            }
+
+        if (!eyebrow.isNullOrBlank()) {
+            root.addView(
+                TextView(activity).apply {
+                    text = eyebrow
+                    textSize = 11.5f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.muted
+                    )
+                    setPadding(
+                        0,
+                        0,
+                        0,
+                        dp(activity, 4)
+                    )
+                }
+            )
+        }
+
+        val titleView =
+            TextView(activity).apply {
+                text = title
+                textSize = 15f
+                setTypeface(
+                    typeface,
+                    Typeface.BOLD
+                )
+                setTextColor(
+                    palette.text
+                )
+            }
+
+        root.addView(titleView)
+
+        val subtitleView =
+            subtitle?.let { value ->
+                TextView(activity).apply {
+                    text = value
+                    textSize = 12.5f
+                    setTextColor(
+                        if (subtitleAccent) {
+                            palette.accent
+                        } else {
+                            palette.muted
+                        }
+                    )
+                    setPadding(
+                        0,
+                        dp(activity, 4),
+                        0,
+                        0
+                    )
+                }.also(root::addView)
+            }
+
+        return InteractiveSummaryCard(
+            root = root,
+            title = titleView,
+            subtitle = subtitleView
+        )
+    }
+
     fun useHorizontalActionRow(
         context: Context,
         actionCount: Int,
