@@ -2,6 +2,7 @@ package com.saney.ytmimporter
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
@@ -535,7 +536,11 @@ class PlaylistActivity : Activity() {
                     Gravity.START or
                         Gravity.CENTER_VERTICAL
                 setTextColor(
-                    palette.text
+                    if (primary) {
+                        Color.WHITE
+                    } else {
+                        palette.text
+                    }
                 )
                 setPadding(
                     dp(16),
