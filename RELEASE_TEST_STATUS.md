@@ -1,3 +1,4 @@
+| v1.4.43 | **NOT PHONE-TESTED YET — BUG-013 AUTH FRESHNESS FIX** | Pre-action Google AuthorizationClient refresh/check implemented; stale-green refresh failure clears auth state; write-time 401 preserves pending work and propagates invalidation. Phone retest required. |
 # YTM Importer — Release test status
 
 | Version | Status | Note |
