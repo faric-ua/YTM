@@ -132,11 +132,8 @@ class MenuActivity : Activity() {
     }
 
     private fun topBar():
-        LinearLayout {
-        val palette =
-            AppThemeManager.palette(this)
-
-        return LinearLayout(this).apply {
+        LinearLayout =
+        LinearLayout(this).apply {
             orientation =
                 LinearLayout.HORIZONTAL
             gravity =
@@ -163,18 +160,10 @@ class MenuActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@MenuActivity
+                UiChrome.emphasizedTitle(
+                    activity = this@MenuActivity,
+                    label = "Меню"
                 ).apply {
-                    text = "Меню"
-                    textSize = 20f
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
-                    setTextColor(
-                        palette.text
-                    )
                     setPadding(
                         dp(12),
                         0,
@@ -189,7 +178,6 @@ class MenuActivity : Activity() {
                 )
             )
         }
-    }
 
     private fun addAction(
         content: LinearLayout,
