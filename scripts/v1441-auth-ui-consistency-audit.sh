@@ -32,7 +32,14 @@ grep -Fq '!result.authorizationInvalidated' "$MAIN" || fail "Review auto-open is
 grep -Fq 'recoverPersistedAuthorizationFailures()' "$MAIN" || fail "legacy persisted auth-failure recovery missing"
 
 grep -Fq '.setPositiveButton("Змінити")' "$MAIN" || fail "compact account action label missing"
-grep -Fq 'Плейлисти створюватимуться в цьому YouTube/YTM профілі.' "$MAIN" || fail "compact account profile explanation missing"
+
+if ! grep -Fq 'Плейлисти створюватимуться в цьому YouTube/YTM профілі.' "$MAIN" &&
+   ! grep -Fq 'Доступ: пошук, створення та робота з плейлистами' "$MAIN"; then
+  fail "compact account profile explanation missing"
+fi
+
+grep -Fq 'OAuth token у цьому вікні не показується' "$MAIN" ||
+  fail "account dialog token-privacy explanation missing"
 
 grep -Fq 'RESTORABLE_PREFS_NAMES' "$BACKUP" || fail "restorable preference group list missing"
 grep -A4 -F 'private val RESTORABLE_PREFS_NAMES' "$BACKUP" | grep -Fq 'it == "quota_tracker_v1"' || fail "quota_tracker_v1 is not excluded from Restore"
