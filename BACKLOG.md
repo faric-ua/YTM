@@ -41,7 +41,7 @@ v1.4.47 — UX-019 Phase 2 Playlist Hub + Clean Home — IMPLEMENTED / STATIC + 
 - [x] preserve schema v1 read compatibility
 - [x] keep OAuth token hidden/non-persistent
 - [x] dedicated v1.4.47 audit + QA docs
-- [ ] full release preflight
+- [x] full release preflight
 - [ ] signed GitHub Actions APK
 - [ ] phone: Home account-card details
 - [ ] phone: Home → Playlist Hub
