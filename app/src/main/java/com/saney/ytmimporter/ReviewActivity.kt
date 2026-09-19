@@ -1277,7 +1277,9 @@ class ReviewActivity : Activity() {
             playlist =
                 snapshot.playlist,
             sourceLabel =
-                snapshot.sourceLabel
+                snapshot.sourceLabel,
+            destinationPlaylistId =
+                snapshot.destinationPlaylistId
         )
     }
 
