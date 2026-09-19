@@ -20,9 +20,9 @@ Current release candidate:
 - active branch: `fix/v1.4.44-r1-action-copy-close-style`
 - active PR: **#16 — v1.4.44-R1: fix landscape action copy and modal Close style** → `feat/v1.4.44-adaptive-actions`
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **IMPLEMENTED / PHONE RETEST NEEDED**
-- installed phone APK: **v1.4.44**
-- focus: **UX-021 R1 — compact landscape copy + boxed modal Close**
+- status: **PHONE RETEST PASS — UX-021 CLOSED**
+- installed phone APK: **v1.4.44-R1**
+- focus: **UX-022 Unified Window Title Emphasis — next planned work**
 
 Stable build folder after signed build:
 
@@ -166,6 +166,13 @@ v1.4.44-R1:
 - renders dismissive modal Close through the regular boxed dialog action button;
 - removes the obsolete transparent Close helper.
 
+### v1.4.44-R1 phone result:
+- Recent-file / backup landscape footer: PASS; `Системний вибір…` fits;
+- Storage save landscape footer: PASS;
+- result/problem modal `Закрити`: PASS with boxed button chrome;
+- rotate-back usability smoke: PASS;
+- UX-021 CLOSED.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -181,14 +188,11 @@ v1.4.44-R1:
 
 ## 7. Exact next execution step
 
-1. Run the v1.4.44-R1 audit.
-2. Run full release preflight.
-3. Compare R1 to v1.4.44 branch and confirm no accidental deletions.
-4. PR #16 is open.
-5. Build signed v1.4.44-R1 APK from exact head.
-6. Install over v1.4.44 without clearing data.
-7. Retest the same landscape Recent-file / Storage / modal screenshots.
-8. Keep BUG-013 stale-token acceptance deferred until it naturally becomes reproducible.
+1. Run one final documentation/preflight sync on the v1.4.44-R1 branch.
+2. Merge PR #16 into the v1.4.44 branch after the sync passes.
+3. Keep PR #15 stacked on v1.4.43 PR #14 while BUG-013 stale-token acceptance remains deferred.
+4. Start the next UI release for UX-022 Unified Window Title Emphasis.
+5. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
