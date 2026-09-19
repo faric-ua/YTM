@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.40**
-- versionCode: **76**
-- release focus: **UX-016 — in-app release history**
-- release status: **PARTIALLY PHONE-TESTED — RELEASE HISTORY TESTED PATH PASS**
+- versionName: **1.4.41**
+- versionCode: **77**
+- release focus: **BUG-004/009/010 + UX-017/018 — auth/search recovery and UI consistency**
+- release status: **NOT PHONE-TESTED YET — v1.4.41 IMPLEMENTED / QA NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -88,7 +88,7 @@ Current known items include:
 - BUG-001 / Q-001: OPEN;
 - BUG-002 / Q-002: FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34;
 - BUG-003 / Q-003: CLOSED — PHONE RETEST PASS v1.4.20;
-- BUG-004 / Q-004: FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31;
+- BUG-004 / Q-004: FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41;
 - BUG-005 / Q-005: CLOSED — PHONE RETEST PASS v1.4.27;
 - BUG-006 / Q-006: CLOSED — PHONE RETEST PASS v1.4.29 R2;
 - BUG-007 / Q-007: CLOSED — PHONE RETEST PASS v1.4.30 R2.
@@ -257,13 +257,13 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. build and phone-test v1.4.40 in-app release history together with pending v1.4.39 History JSON restore;
-2. keep the v1.4.37 storage / Quota / Menu follow-up checks in the combined phone pass;
-3. implement UX-008 Phase 2B for the two generic open-file flows after v1.4.38 evidence;
+1. finish static/preflight + signed phone QA for v1.4.41 auth/search recovery and UI consistency;
+2. use the preserved House Dance Hit 2000 Vol.1 fixture for playlist-name and end-to-end smoke where quota allows;
+3. keep populated-History Restore + rollback proof explicitly pending until meaningful History exists;
 4. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
-5. keep BUG-004 pending until a real/reproduced HTTP 401 is available for retest;
-6. then establish the localization resource foundation for Ukrainian / Korean / English;
-7. then build the visual skin foundation without changing import/search/write semantics.
+5. next planned Home work: UX-019 layout alignment to the approved top-left prototype, layout only;
+6. pair that Home pass with UX-009 theme-aware state colors for all four workflow buttons in Blue Dark and Green Dark while keeping Neon Dark as the accepted reference;
+7. then continue UX-008 Phase 2B / localization / later visual-skin work according to BACKLOG.md.
 
 Future product requirements already recorded:
 
@@ -356,3 +356,13 @@ v1.4.40 adds an in-app release history:
 - first rotation test exposed a scroll reset to v1.4.40;
 - scroll-state preservation fix was implemented and the signed-build phone retest PASSED;
 - UX-016 is closed for the tested Release History scope; this is not a full-app regression claim.
+
+v1.4.41 fixes the latest real-phone findings:
+- BUG-004: Search-path HTTP 401 stops on the first auth failure, invalidates Step 2 through shared state, leaves the current track retryable, and does not auto-open Review;
+- old v1.4.40 persisted auth-failed rows are repaired after successful re-login;
+- BUG-009: account dialog uses shorter `Змінити` action and clearer profile copy;
+- BUG-010: full Restore/safety rollback no longer apply old `quota_tracker_v1` values;
+- UX-017: filename fallback becomes a human playlist title while explicit in-file title remains authoritative;
+- UX-018: horizontal modal actions use confirm/action left and cancel/close/no-op right.
+- UX-019 is **not** part of v1.4.41; it remains the next planned Home layout pass.
+- UX-009 clarification: the four Home workflow buttons will later get theme-aware state palettes for Blue/Green; Neon state colors remain the accepted reference.
