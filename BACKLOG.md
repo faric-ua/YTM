@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.43 — Auth Freshness — IMPLEMENTED / PARTIAL PHONE QA; STALE-TOKEN RETEST DEFERRED
+v1.4.44 — Adaptive Landscape Actions — IMPLEMENTED / PHONE QA NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -25,8 +25,25 @@ v1.4.43 — Auth Freshness — IMPLEMENTED / PARTIAL PHONE QA; STALE-TOKEN RETES
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
-- UX-021 Adaptive Landscape Action Layout — PLANNED; on wide/landscape screens, action buttons in full-screen footers and modal action areas should reflow into one horizontal row when width allows, instead of keeping portrait-style vertical stacks that consume most of the height. Apply as a shared responsive rule across app screens, not only RecentFileChooserActivity.
+- UX-021 Adaptive Landscape Action Layout — IMPLEMENTED v1.4.44 / PHONE QA NEEDED; full-screen footer and modal action groups use a shared width-based rule and reflow horizontally only when practical button width is available.
 - UX-022 Unified Window Title Emphasis — PLANNED; strengthen the first/title line inside dialogs, modal windows and full-screen utility panels with theme-aware title color/emphasis so titles such as `Підтвердити Restore`, `План пошуку`, and `Доступ до Download` visually separate from body text. Implement via shared UI styling across the app, not per-screen hardcoding.
+
+## v1.4.44 — Adaptive Landscape Actions
+- [x] versionCode 83 / versionName 1.4.44
+- [x] shared UiChrome width-based action-row decision
+- [x] shared adaptive full-screen action-button helper
+- [x] StorageChooser footer migration
+- [x] RecentFileChooser footer migration
+- [x] modal action areas use the same wide-layout decision
+- [x] preserve UX-018 action ordering
+- [x] preserve vertical fallback when width is insufficient
+- [x] dedicated v1.4.44 audit + release docs
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [ ] phone portrait/landscape Storage chooser
+- [ ] phone portrait/landscape Recent-file chooser
+- [ ] phone representative modal wide action row
+- [ ] phone rotate-back state/navigation smoke
 
 ## v1.4.43 — Auth Freshness
 - [x] versionCode 82 / versionName 1.4.43
