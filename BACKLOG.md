@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.41 — Auth/Search Recovery + UI Consistency — PARTIALLY PHONE-TESTED / NOT EXHAUSTIVE
+v1.4.41-R1 — Corrective Follow-up — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -24,6 +24,17 @@ v1.4.41 — Auth/Search Recovery + UI Consistency — PARTIALLY PHONE-TESTED / N
 - UX-017 Import Filename → Playlist Display Name — FOLLOW-UP FIX IMPLEMENTED / NEXT BUILD PHONE RETEST NEEDED; installed v1.4.41 failed on duplicate-download suffix `YTM-1`; active branch now strips `YTM-1`, `YTM_1`, `YTM (1)` style copy suffixes while keeping explicit in-file title authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
+
+## v1.4.41-R1 — Corrective Follow-up
+- [x] versionCode 78 / versionName 1.4.41-R1
+- [x] BUG-011 preserve Account modal visibility across phone rotation
+- [x] UX-017 strip duplicate-download service-marker suffixes: YTM-1 / YTM_1 / YTM (1)
+- [x] dedicated R1 static audit
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [ ] phone: Account modal portrait → landscape → portrait stays/reappears
+- [ ] phone: House Dance duplicate filename fallback resolves to House Dance Hit 2000 Vol.1
+- [ ] update BUG-011 / UX-017 status from phone evidence
 
 ## v1.4.41 — Auth/Search Recovery + UI Consistency
 - [x] bump versionCode 77 / versionName 1.4.41
