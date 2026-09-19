@@ -21,8 +21,8 @@ Current release candidate:
 - base: merged `main` at `a3763b8e7db6154d20a000891bdcd5b8b7e54d55`
 - status: **IMPLEMENTED / NOT PHONE-TESTED YET**
 - installed phone APK: **v1.4.41-R2**
-- active PR: **not created yet**
-- immediate next gate: **finish guards/docs → PR → Termux preflight → signed APK → targeted phone QA**
+- active PR: **#13 — v1.4.42: newest-first recent file selector** → `main`
+- immediate next gate: **Termux preflight → signed APK → targeted phone QA**
 
 Stable build folder after signed build:
 
@@ -108,15 +108,19 @@ No broad filesystem permission is added.
 
 ## 4. Exact next execution step
 
-1. Finish v1.4.42 static guards and compare branch against `main`.
-2. Open a dedicated PR from `feat/v1.4.42-recent-file-selector` to `main`.
-3. User runs the exact Termux release block.
-4. `bash scripts/release-preflight.sh` must PASS.
-5. Dispatch `.github/workflows/build-apk.yml` for the exact live branch head.
-6. Download and verify the signed `YTM-Importer-v1.4.42-Release` artifact.
-7. Install over v1.4.41-R2 without clearing app data.
-8. Run only the targeted recent-file / fallback / Data JSON phone QA.
-9. Record evidence before merge.
+1. Fetch/pull the live head of `feat/v1.4.42-recent-file-selector`.
+2. Run `bash scripts/release-preflight.sh`.
+3. If preflight PASS, dispatch `.github/workflows/build-apk.yml` for that exact live head.
+4. Download artifact `YTM-Importer-v1.4.42-Release`.
+5. Store it under:
+   `/storage/emulated/0/Download/YTM-v1.4.42-build/`.
+6. Verify `YTM-Importer-v1.4.42-release.apk.sha256`.
+7. Install over v1.4.41-R2 **without clearing app data**.
+8. Run the targeted recent-file / fallback / Data JSON phone QA.
+9. Record evidence in repo.
+10. Merge PR #13 only after the targeted phone QA is accepted.
+
+Do not pin an old docs-only SHA in future chats; always read the live PR/branch head before build.
 
 ## 5. Phone QA for v1.4.42
 
