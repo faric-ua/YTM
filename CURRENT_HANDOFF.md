@@ -223,3 +223,16 @@ User-facing QA instructions:
 8. `docs/v.1.4.42/RELEASE.md`
 9. `docs/v.1.4.42/qa/PHONE_TEST.md`
 10. live GitHub branch/PR state
+
+
+v1.4.42 first phone session:
+- test 1 PASS: v1.4.42 installed and in-app RecentFileChooserActivity opens;
+- test 2 FAIL/BLOCKED: root Download cannot be granted through the add-folder
+  `ACTION_OPEN_DOCUMENT_TREE` flow on Android 11+;
+- screenshot of Android app permissions showed no normal storage permission to enable;
+  that screen is not how SAF tree grants are managed;
+- do NOT ask user to enable broad storage permission;
+- tests 3–5 are explicitly deferred to the next session;
+- UX-020 design must be revised so primary newest-first onboarding does not depend on
+  root Download tree access;
+- Android system picker fallback must remain available.
