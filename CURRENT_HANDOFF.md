@@ -18,10 +18,10 @@ Current release candidate:
 - versionName: **1.4.46**
 - versionCode: **86**
 - active branch: `feat/v1.4.46-home-layout-phase1`
-- active PR: **not created yet**; v1.4.46 is stacked on current v1.4.44 branch head after merged PR #17
+- active PR: **#18 — v1.4.46: Home layout prototype alignment phase 1** → `feat/v1.4.44-adaptive-actions`
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **IMPLEMENTED / NOT PHONE-TESTED YET**
-- installed phone APK: **v1.4.44-R1**
+- status: **STATIC/FULL PREFLIGHT PASS / NOT PHONE-TESTED YET**
+- installed phone APK: **v1.4.45**
 - focus: **UX-019 Home Layout Prototype Alignment — Phase 1**
 
 Stable build folder after signed build:
