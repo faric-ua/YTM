@@ -5,13 +5,13 @@
 | BUG-001 / Q-001 | OPEN | P2 | Review wording / Project-save feedback questions remain. | F-06 |
 | BUG-002 / Q-002 | FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34 | P2 | v1.4.32 fixed the tested incremental preflight entrance, but quota and other modal windows remained inconsistent. v1.4.33 unified the runtime modal pipeline; v1.4.34 carries that implementation forward unchanged for phone QA. | M-02; v1.4.32 partial PASS → v1.4.33 unified fix → v1.4.34 retest |
 | BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update verified: Step 2 briefly gray, then automatically green. | A-03, D-03 |
-| BUG-004 / Q-004 | REPRODUCED AGAIN — PHONE FAIL v1.4.40 | P1 | v1.4.40 Search can consume auth failure per track while Home Step 2 stays green. After re-login, auth can be usable again, but auth-failed track states/errors persist in current_playlist_v1 across restart and can make recovery look broken. Backup restore does not contain auth state; later successful playlist creation proved write authorization was working. | B-01; v1.4.30 backup repro → v1.4.31 partial fix → v1.4.40 Search repro/recovery-state finding |
+| BUG-004 / Q-004 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41 | P1 | Search now stops on the first HTTP 401, returns the active track to retryable NEW state, propagates auth invalidation to Main Step 2, and avoids auto-opening Review. Successful re-login also repairs legacy auth-failed rows persisted by older builds. | B-01; v1.4.30 backup repro → v1.4.31 partial fix → v1.4.40 Search repro → v1.4.41 repair |
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Ordinary repeat-search preserves canonical exact videoId tracks; real-phone search plan confirmed 0 redundant search.list for exact 3/3. | v1.4.26 repro → v1.4.27 PASS |
 | BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 | P2 | Incremental-delta boundary explanation was truncated as a Toast; R2 replaced it with a readable UiChrome dialog and phone retest passed. | v1.4.29 repro → v1.4.29 R2 PASS |
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
 | BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 | P2 | Restore confirmation now survives phone rotation without forcing the user to choose the backup file again. | v1.4.38 phone repro → R1 rotation-state fix → phone PASS |
-| BUG-009 / Q-009 | OPEN — PHONE REPRO v1.4.40 | P3 | Google account-switch flow has a phone-width copy/action layout problem: explanatory text and action control do not compose cleanly. Keep separate from BUG-004 auth-state logic. | v1.4.40 account-switch screenshot |
-| BUG-010 / Q-010 | OPEN — PHONE FINDING v1.4.40 | P2 | Full local Restore also restores `quota_tracker_v1`, so restoring an older backup can rewind the app's local quota counters and make the remaining-quota estimate stale. Google Cloud quota itself is not restored. | v1.4.40 House Dance recovery run |
+| BUG-009 / Q-009 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41 | P3 | Google account dialog uses shorter `Змінити` action and clearer profile copy; horizontal action placement follows the shared confirm-left / dismiss-right rule. | v1.4.40 account-switch screenshot → v1.4.41 UI fix |
+| BUG-010 / Q-010 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41 | P2 | Full Restore and safety rollback no longer apply `quota_tracker_v1`; backup files may still contain quota counters for diagnostics, but the current local estimate is preserved. | v1.4.40 House Dance finding → v1.4.41 restore policy fix |
 
 ## BUG-002 current evidence
 
@@ -104,7 +104,7 @@ Implemented in v1.4.31:
 - the local working playlist is not cleared;
 - the 401 dialog offers a direct return to Step 2.
 
-Status: **REPRODUCED AGAIN — PHONE FAIL v1.4.40.**
+Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41.**
 
 ## BUG-005 reproduction
 
@@ -224,9 +224,21 @@ BUG-004 therefore has two connected repair targets:
 The earlier v1.4.31 ImportActivity invalidation implementation must not be treated as
 complete coverage.
 
+### v1.4.41 BUG-004 implementation
+
+- SearchCoordinator detects HTTP 401 separately from ordinary per-track errors.
+- The first auth failure stops the search loop immediately.
+- The currently searching track returns to `NEW` with no persisted auth error.
+- Remaining tracks are not converted into duplicate auth failures.
+- MainActivity receives `onAuthorizationInvalidated` and clears shared/persistent ready state through the existing centralized invalidation path.
+- Review is not auto-opened after an auth-invalidated Search.
+- After a successful re-login, old persisted v1.4.40 auth-failed rows are repaired back to a retryable/reviewable state.
+
+Phone acceptance still requires a real/reproduced auth failure.
+
 ## BUG-009 — Google account-switch copy/action fit
 
-Status: **OPEN — PHONE REPRO v1.4.40.**
+Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41.**
 
 Observed on the real phone while changing the connected Google account:
 
@@ -237,10 +249,18 @@ Observed on the real phone while changing the connected Google account:
 
 Keep BUG-009 separate so a future auth-state fix cannot accidentally close the UI issue.
 
+### v1.4.41 BUG-009 implementation
+
+- account action shortened from `Змінити акаунт` to `Змінити`;
+- explanatory copy shortened to `Плейлисти створюватимуться в цьому YouTube/YTM профілі.`;
+- shared horizontal modal policy keeps the action on the left and Close/Cancel on the right.
+
+Phone width/rotation still require visual confirmation.
+
 
 ## BUG-010 — Restore rewinds local quota estimate
 
-Status: **OPEN — PHONE FINDING v1.4.40.**
+Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41.**
 
 Observed during the House Dance recovery run:
 
@@ -260,5 +280,16 @@ Expected direction:
 - decide whether `quota_tracker_v1` should be excluded from ordinary Restore, merged
   conservatively, or reset with an explicit warning;
 - keep safety/rollback semantics documented before changing behavior.
+
+Implemented policy in v1.4.41:
+
+- `quota_tracker_v1` remains inside exported full backup JSON for diagnostics and backward compatibility;
+- ordinary full Restore does not apply that preference group;
+- safety-snapshot rollback also leaves the live quota tracker untouched;
+- Data/Restore copy explicitly tells the user that the local quota estimate is preserved.
+
+### v1.4.41 BUG-010 implementation
+
+This prevents an old local backup from making the app claim that externally consumed API quota became available again.
 
 Do not close this from static reasoning alone; verify the chosen policy on phone.
