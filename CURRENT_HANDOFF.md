@@ -119,6 +119,7 @@ New post-closeout real-phone findings now take priority before starting unrelate
   should remain description metadata, not part of the title.
 - BUG-010/Q-010 OPEN: full Restore includes `quota_tracker_v1`; an older backup can
   rewind the local quota estimate (observed Search plan returning to 0/100).
+- UX-018 IN PROGRESS on `feat/v1.4.41-auth-ui-consistency`: horizontal modal confirmation contract is **primary/confirm left, cancel/close/no-op right**. `showDangerConfirmDialog()` was the main reversed shared helper and has been corrected; remaining custom dialog call sites still need audit/phone QA.
 
 The unfinished History item carried from the combined v1.4.39/v1.4.40 wave is:
 
