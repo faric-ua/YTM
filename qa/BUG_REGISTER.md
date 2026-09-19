@@ -14,7 +14,7 @@
 | BUG-010 / Q-010 | CLOSED — PHONE RETEST PASS v1.4.41 | P2 | Real-phone full Restore and subsequent `Відкотити` both preserved the live quota exactly: Search 0/100; total 505/10000; ≈9495 remaining. Full Restore applied 3 of 4 backup groups; `Відкотити` applied 4 of 5 safety-snapshot groups, confirming `quota_tracker_v1` was excluded from both paths. | v1.4.40 finding → v1.4.41 Restore + `Відкотити` PASS |
 | BUG-011 / Q-011 | CLOSED — PHONE RETEST PASS v1.4.41-R1 | P3 | Real-phone R1 retest passed: Account modal remains/reappears through portrait ↔ landscape Activity recreation and preserves the expected action layout. | v1.4.41 repro → v1.4.41-R1 phone PASS |
 | BUG-012 / Q-012 | CLOSED — PHONE RETEST PASS v1.4.42-R1 | P2 | All files access is recognized; direct Download newest-first list works; direct House Dance import succeeds; Restore JSON reaches confirmation; system-picker fallback/return passes. | v1.4.42 repro → v1.4.42-R1 phone PASS |
-| BUG-013 / Q-013 | OPEN — PHONE REPRO v1.4.42-R1 | P1 | Step 2 can remain green while the in-memory Google access token has become invalid. A later destination API call returns 401; invalidation then correctly clears the session and turns Step 2 red. Need proactive refresh/validation before remote operations. | v1.4.42-R1 destination flow |
+| BUG-013 / Q-013 | FIX IMPLEMENTED — v1.4.43 PHONE RETEST NEEDED | P1 | Remote authorize() now refreshes/checks Google authorization before live operations; refresh failure clears stale green state. Write-time 401 also propagates auth invalidation while preserving pending work. | v1.4.42-R1 repro → v1.4.43 fix |
 
 ## BUG-002 current evidence
 
@@ -442,7 +442,7 @@ Separate UX observation:
 
 ## BUG-013 — Green auth state can outlive token validity
 
-Status: **OPEN — PHONE REPRO v1.4.42-R1.**
+Status: **FIX IMPLEMENTED — v1.4.43 PHONE RETEST NEEDED.**
 
 Phone reproduction:
 - Home showed green `2. Google / YTM ✓`;
@@ -472,3 +472,20 @@ Repair direction:
 - prefer a silent Google authorization refresh/validation before destination list/create/write actions;
 - preserve current 401 invalidation as the fallback;
 - keep BUG-004 Search-path real-401 retest separate: this phone evidence is destination-side, not SearchCoordinator.
+
+### v1.4.43 implementation
+
+- removed the cached-token fast path from `MainActivity.authorize()`;
+- each remote action routed through `authorize()` now asks Google AuthorizationClient
+  for current authorization first;
+- silent success updates the access token and can preserve already-known account/channel
+  identity;
+- refresh failure or a missing token clears local/persistent ready state so Step 2
+  cannot remain misleadingly green;
+- PlaylistWriteCoordinator now stops on HTTP 401 with an explicit
+  `AuthorizationInvalidated` outcome;
+- remaining write tracks stay PENDING/retryable and the pending job is preserved;
+- MainActivity invalidates shared auth and tells the user the unfinished job remains in
+  `Черга`.
+
+Phone retest is required before BUG-013 closes.
