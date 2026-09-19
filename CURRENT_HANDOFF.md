@@ -4,193 +4,205 @@ This is the **mutable crash-recovery snapshot** for the current development sess
 
 Use it when a ChatGPT chat/node hangs, loses context, or a new assistant takes over mid-release.
 
-It is intentionally short and current. Historical truth remains in `docs/v.*`, QA reports, `CHANGELOG.md`, and Git history.
-
 Last updated: **2026-09-19**
 
 ## 1. Resume point
 
 Repository: `faric-ua/YTM`
 
-Current integrated release:
+Current release candidate:
 
-- versionName: **1.4.40**
-- versionCode: **76**
-- primary branch: `main`
-- release integration merge commit: `96153d0f0f701f36a8057c75a96d78e869acb344`
-- v1.4.40 feature focus: **UX-016 — in-app release history**
-- v1.4.40 Release History status: **TESTED PATH PASS**
-- signed code SHA validated on the real phone: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
-- signed GitHub Actions run: **35408421729**
-- signed build result: **SUCCESS**
-- phone-installed v1.4.40 passed the final release-history rotation-scroll retest.
+- versionName: **1.4.41**
+- versionCode: **77**
+- active branch: `feat/v1.4.41-auth-ui-consistency`
+- base branch: `main`
+- status: **IMPLEMENTED / NOT PHONE-TESTED YET**
+- signed v1.4.41 APK: **not built yet**
+- immediate next gate: **release preflight → signed GitHub Actions APK → targeted phone QA**
 
-The live `main` branch can contain documentation/status commits newer than the signed phone-tested code SHA. Do not confuse repository head with the APK code actually exercised on the phone.
+Stable phone build folder after build:
 
-Stable phone build folder:
+`/storage/emulated/0/Download/YTM-v1.4.41-build/`
 
-`/storage/emulated/0/Download/YTM-v1.4.40-build/`
+Always verify the live branch head through GitHub before building or merging.
 
-## 2. Release PR integration completed
+## 2. Why v1.4.41 exists
 
-The previous stacked PR sequence is complete:
+The real `House Dance Hit 2000 Vol.1` migration on v1.4.40 exposed several issues:
 
-- PR #10 — **v1.4.39: native History JSON restore**
-  - merged into `main`;
-  - merge commit: `a056add33eb64288b650ba565c44b3e103c1a1ef`.
-- PR #11 — **v1.4.40: in-app release history**
-  - retargeted from the v1.4.39 branch to `main`;
-  - post-retarget diff was inspected;
-  - merged into `main`;
-  - merge commit: `96153d0f0f701f36a8057c75a96d78e869acb344`.
+- BUG-004: Search returned invalid-auth errors while Home Step 2 stayed green/checked.
+- auth errors were persisted per-track and survived restart, making recovered authorization look broken.
+- BUG-009: the Google account dialog had awkward phone-width copy/action fit.
+- BUG-010: restoring an older full backup rewound the app's local quota estimate.
+- UX-017: filename fallback produced raw names such as `House_Dance_Hit_2000_Vol1_YTM`.
+- UX-018: confirmation/cancel button placement was inconsistent across modal types.
 
-No open release PR from this v1.4.39/v1.4.40 stack remains.
+The same House Dance fixture later completed end-to-end successfully after re-authorization:
+9/9 Search ready → new private playlist → 9/9 tracks added.
 
-Do not repeat the old PR #10 → retarget #11 → merge #11 sequence; it has already been completed.
+Permanent fixture/research:
 
-The old feature branches may still exist on GitHub. Do not delete them merely for cleanup unless the user explicitly wants branch cleanup.
+`docs/test-data/collections/House_Dance_Hit_2000/`
 
-## 3. v1.4.39 History JSON phone QA
+Desired playlist title:
 
-Combined phone QA was performed using v1.4.40 because v1.4.40 contains the v1.4.39 work.
+`House Dance Hit 2000 Vol.1`
 
-Results:
+Playlist description remains:
 
-1. pre-restore control state — PASS;
-2. real History JSON accepted + confirmation + Cancel — PASS;
-3. confirmation survives rotation without reselecting file — PASS;
-4. actual History restore — **INCONCLUSIVE / RETEST REQUIRED**;
-5. safety-snapshot rollback — **INCONCLUSIVE / RETEST REQUIRED**;
-6. invalid/non-History JSON rejection — PASS.
+`Створено через YTM Importer`
 
-Why 4/5 are not final PASS:
+## 3. v1.4.41 implementation
 
-The device History had previously been cleared. There was not enough meaningful pre-existing/imported History to prove replacement and rollback behavior.
+### BUG-004 — Search auth invalidation
 
-Retest 4/5 later when the phone has populated History with clearly distinguishable entries/counts.
+Implemented:
 
-Do not upgrade 4/5 to PASS from code inspection alone.
+- SearchCoordinator detects HTTP 401 separately from ordinary track errors.
+- The first 401 stops Search immediately.
+- The currently searching track returns to retryable `NEW` instead of persistent `FAILED`.
+- Remaining tracks are not filled with repeated auth errors.
+- MainActivity receives an auth-invalidated callback and clears shared/persistent ready state through the centralized invalidation path.
+- Review is not auto-opened after an auth-invalidated Search.
+- After successful re-login, legacy auth-failed rows persisted by older builds are repaired to retryable/reviewable states.
 
-## 4. v1.4.40 Release History phone QA
+Phone retest is still required. Do not mark BUG-004 closed from static inspection.
 
-PASS for the tested phone scope:
+### BUG-009 — account dialog fit
 
-- About page exposes `Історія змін`;
-- Quick Start and Privacy remain present;
-- full-screen release-history rendering;
-- v1.4.40 appears first;
-- older releases render and scroll normally;
-- markdown cleanup/readability;
-- no reported clipping/overlap;
-- oldest visible release is v1.4.6 because root `CHANGELOG.md` currently has no older `##` release sections;
-- top-bar arrow steps History → About → Service;
-- system Back may exit Service directly to app Home — accepted product behavior;
-- History page survives rotation without crash;
-- after the follow-up fix, rotation preserves the release-history scroll position instead of resetting to v1.4.40.
+Implemented:
 
-UX-016 is closed for this tested Release History scope.
+- `Змінити акаунт` → `Змінити`;
+- profile explanation shortened to:
+  `Плейлисти створюватимуться в цьому YouTube/YTM профілі.`;
+- horizontal action ordering is governed by UX-018.
 
-This is **not** a claim of full-app regression coverage.
+### BUG-010 — quota-preserving Restore
 
-## 5. Exact next step
+Implemented policy:
 
-There is no pending v1.4.40 Release History QA.
+- full backup JSON may still contain `quota_tracker_v1` for diagnostics/backward compatibility;
+- ordinary full Restore does **not** apply `quota_tracker_v1`;
+- safety-snapshot rollback also leaves the live quota tracker untouched;
+- Data/Restore UI explains that the current local quota estimate is preserved.
 
-New post-closeout real-phone findings now take priority before starting unrelated auth-sensitive work:
+Reason: a local backup cannot restore Google's externally consumed quota, so an old snapshot must not make the app claim that quota became available again.
 
-- BUG-004/Q-004 is **REPRODUCED AGAIN on v1.4.40** through the Search path.
-  The 9-track House Dance fixture produced invalid-auth errors for every track while
-  Home Step 2 still stayed green/checked.
-- Re-login plus restart left the House Dance workspace visually failed because its
-  per-track auth errors were persisted in `current_playlist_v1`.
-- A later full-backup restore loaded the older `top 3` workspace. Backup does not
-  contain auth state/tokens, yet a new private YouTube/YTM playlist with 3/3 tracks
-  was created successfully afterward. This proves authorization itself had recovered;
-  stale persisted track failure state is part of BUG-004 recovery behavior.
-- BUG-009/Q-009 is OPEN for account-switch text/action phone-width layout.
-- Permanent test data is stored under
-  `docs/test-data/collections/House_Dance_Hit_2000/`.
-- House Dance Vol.1 later completed end-to-end successfully after auth recovery:
-  9/9 Search ready → new private playlist → 9/9 tracks added.
-- Desired playlist display title is `House Dance Hit 2000 Vol.1`; the fixture now
-  carries that explicit title as its first line. UX-017 tracks generic filename
-  humanization so `House_Dance_Hit_2000_Vol1_YTM.txt` does not become a raw display name.
-- YouTube playlist description `Створено через YTM Importer` is already correct and
-  should remain description metadata, not part of the title.
-- BUG-010/Q-010 OPEN: full Restore includes `quota_tracker_v1`; an older backup can
-  rewind the local quota estimate (observed Search plan returning to 0/100).
-- UX-018 IN PROGRESS on `feat/v1.4.41-auth-ui-consistency`: horizontal modal confirmation contract is **primary/confirm left, cancel/close/no-op right**. `showDangerConfirmDialog()` was the main reversed shared helper and has been corrected; remaining custom dialog call sites still need audit/phone QA.
-- UX-019 PLANNED: future Home redesign uses the user's approved top-left Polyglot K-U prototype **for layout/section placement only**. Preserve current YTM Importer themes, palettes, semantic colors and established visual styling; do not treat the prototype artwork/colors as a theme target.
-- UX-009 clarification: theme visuals remain intact, but the **four Home workflow buttons** need theme-aware state colors. Neon Dark keeps its accepted red/green/orange semantics; Blue Dark and Green Dark require separate state palettes rather than reusing the Neon colors unchanged.
+### UX-017 — imported playlist display names
 
-The unfinished History item carried from the combined v1.4.39/v1.4.40 wave is:
+Fallback filename normalization now:
 
-- populated-History Restore verification;
-- populated-History safety-snapshot rollback verification.
+- replaces underscores with spaces;
+- removes a trailing `YTM` / `YTM Importer` marker;
+- normalizes `Vol1` / `Vol 1` to `Vol.1`;
+- keeps an explicit in-file playlist title authoritative.
 
-Those tests should be resumed later when enough meaningful History has accumulated on the phone.
+The House Dance fixture now also carries the explicit title as its first line.
 
-Until then, choose the next product/QA task from `BACKLOG.md`. Current broader pending areas include:
+### UX-018 — modal action positions
 
-- v1.4.37 Storage / Quota / Menu follow-up phone checks;
-- UX-008 Phase 2B for the two remaining generic open-file flows;
-- deferred BUG-002 representative modal retest;
-- BUG-004 Search-path auth invalidation/recovery repair (now reproduced on v1.4.40);
-- localization foundation for Ukrainian / Korean / English;
-- later visual skin foundation.
+Horizontal modal contract:
 
-Do not reopen already accepted v1.4.40 Release History behavior without new evidence.
+- **primary/confirm/action = left**
+- **cancel/close/no-op = right**
+- optional secondary action stays between them when relevant
+- vertical action sheets preserve explicit top-to-bottom order
 
-## 6. Important QA/workflow lessons from this wave
+`showDangerConfirmDialog()` was corrected and the shared horizontal renderer now pushes dismissive actions to the right.
 
-Two release-preflight failures were audit drift, not application regressions:
+## 4. Exact v1.4.41 phone QA after signed build
 
-1. `scripts/service-navigation-audit.sh`
-   - old guard required the obsolete `if (page != Page.HOME)` implementation shape;
-   - v1.4.40 intentionally uses explicit page routing;
-   - audit now tests semantic routes.
+Targeted acceptance:
 
-2. `scripts/qa-plan-audit.sh`
-   - old guard pinned exact mutable phone-QA wording;
-   - current QA status legitimately changed after phone testing;
-   - audit now checks semantic status/retest state.
+1. Launch/update to v1.4.41 and confirm version.
+2. Account dialog:
+   - `Змінити` fits on one line;
+   - action is left, `Закрити` right;
+   - explanation is readable.
+3. Modal ordering spot checks:
+   - ordinary confirmation: action left / Cancel right;
+   - destructive confirmation: destructive action left / Cancel right.
+4. BUG-004:
+   - use a real/reproduced invalid-auth condition when available;
+   - first 401 must stop Search;
+   - Step 2 must stop showing green/ready;
+   - workspace must remain intact;
+   - do not get nine duplicate auth-failed rows.
+5. Re-login:
+   - Step 2 returns ready after successful account/channel load;
+   - legacy auth-failed rows, if present, become retryable/reviewable;
+   - rerun Search successfully.
+6. BUG-010:
+   - note current local quota counters;
+   - Restore an older full backup;
+   - verify current local quota estimate does not rewind to the backup value.
+7. UX-017:
+   - import a TXT without an explicit title whose filename resembles
+     `House_Dance_Hit_2000_Vol1_YTM.txt`;
+   - expected title: `House Dance Hit 2000 Vol.1`.
+8. Optional end-to-end House Dance smoke if quota is acceptable:
+   - Search → Review → Create private playlist → 9/9 added.
 
-During QA closeout, a range-limited read of `BACKLOG.md` was accidentally used in a whole-file update and temporarily truncated the file. The anomaly was caught from the PR deletion count before merge; the full file was restored from the previous blob.
+Real phone evidence is authoritative.
 
-Guard now recorded in `docs/WORKFLOW_LESSONS.md`:
+## 5. Historical state that must remain true
 
-- partial reads are for inspection only;
-- fetch full content before whole-file writes;
-- inspect surprising PR deletion counts before merge.
+v1.4.40 Release History:
+- tested-path PASS;
+- rotation scroll preservation PASS;
+- accepted Back distinction remains unchanged.
 
-## 7. Working contract to preserve
+v1.4.39 History JSON:
+- file acceptance / Cancel / rotation / invalid-file rejection PASS;
+- actual populated-History Restore and safety rollback remain **INCONCLUSIVE / RETEST REQUIRED** until meaningful History is available.
+
+Do not rewrite those historical results.
+
+## 6. Planned after v1.4.41
+
+Do not fold the Home redesign into this release.
+
+Planned next Home work:
+
+- UX-019: use the approved **top-left Polyglot K-U prototype only as a layout/section-placement reference**;
+- preserve existing YTM Importer themes/design language;
+- UX-009: all **four** Home workflow buttons need theme-aware state palettes;
+- Neon Dark keeps the accepted red/green/orange state semantics;
+- Blue Dark and Green Dark need their own state palettes instead of mechanically reusing Neon colors.
+
+Other pending backlog:
+- populated-History Restore + rollback proof;
+- v1.4.37 utility/storage follow-up checks;
+- UX-008 Phase 2B open-file flows;
+- remaining BUG-002 representative modal QA;
+- localization foundation UA / KO / EN;
+- later visual-skin foundation.
+
+## 7. Working contract
 
 Default loop:
 
-**ChatGPT prepares → user runs one exact Termux block → user installs signed APK → user performs real-phone QA → ChatGPT records evidence/status → next step.**
+**ChatGPT prepares → user runs one exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
 
-Key rules:
+Rules:
 
-- GitHub/repository truth beats chat memory.
-- Real phone QA beats static assumptions for visible behavior.
-- Static audit/build success is not phone PASS.
-- Do not ask the user to reconstruct old context if repository evidence is available.
-- Do not mark inconclusive tests as PASS.
-- Preserve historical `docs/v.*` evidence.
-- Stage exact paths and inspect deletions before commits.
-- Signed release builds come from `.github/workflows/build-apk.yml`.
+- repository/live GitHub truth beats chat memory;
+- static audit/build success is not phone PASS;
+- never mark an inconclusive test PASS;
+- preserve historical `docs/v.*`;
+- inspect diff/deletions before merge;
+- signed builds come from `.github/workflows/build-apk.yml`.
 
-## 8. Files to read after this snapshot
+## 8. Fresh-chat reading order
 
-For a fresh assistant, use this order:
+1. `START_HERE_ASSISTANT.md`
+2. `CURRENT_HANDOFF.md`
+3. `YTM_ASSISTANT_WORKFLOW.md`
+4. `PROJECT_STATUS.txt`
+5. `BACKLOG.md`
+6. `RELEASE_TEST_STATUS.md`
+7. `qa/BUG_REGISTER.md`
+8. `docs/v.1.4.41/`
+9. live GitHub branch/PR state
 
-1. `START_HERE_ASSISTANT.md`;
-2. **this file — `CURRENT_HANDOFF.md`**;
-3. `YTM_ASSISTANT_WORKFLOW.md`;
-4. `PROJECT_STATUS.txt`;
-5. `BACKLOG.md`;
-6. `RELEASE_TEST_STATUS.md`;
-7. `qa/BUG_REGISTER.md` and `OPEN_QUESTIONS.md`;
-8. current release docs under `docs/v.1.4.40/` and `docs/v.1.4.39/`.
-
-If this file conflicts with immutable historical release evidence, do not rewrite history. Treat this file only as the current resume pointer and verify live GitHub state.
+If this mutable handoff conflicts with immutable historical evidence, verify live GitHub state and preserve the historical record.
