@@ -11,6 +11,8 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import com.saney.ytmimporter.storage.AllFilesAccess
+import com.saney.ytmimporter.storage.DirectDownloadFileQuery
 import com.saney.ytmimporter.storage.SafRecentFileQuery
 import com.saney.ytmimporter.storage.SafTreeAccess
 import com.saney.ytmimporter.ui.AppThemeManager
@@ -29,6 +31,9 @@ class RecentFileChooserActivity : Activity() {
     private var allowedExtensions:
         Set<String> =
         emptySet()
+
+    private var refreshAfterSettings =
+        false
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -69,6 +74,15 @@ class RecentFileChooserActivity : Activity() {
         render()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (refreshAfterSettings) {
+            refreshAfterSettings = false
+            render()
+        }
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         finish()
@@ -85,13 +99,44 @@ class RecentFileChooserActivity : Activity() {
                     SafTreeAccess.Access.READ
             )
 
-        val recentFiles =
+        val allFilesGranted =
+            AllFilesAccess.isGranted()
+
+        val downloadFiles =
+            DirectDownloadFileQuery.list(
+                context = this,
+                allowedExtensions =
+                    allowedExtensions
+            )
+
+        val safFiles =
             SafRecentFileQuery.list(
                 context = this,
                 roots = roots,
                 allowedExtensions =
                     allowedExtensions
             )
+
+        val recentFiles =
+            (
+                downloadFiles +
+                    safFiles
+            )
+                .distinctBy {
+                    it.uri.toString()
+                }
+                .sortedWith(
+                    compareByDescending<
+                        SafRecentFileQuery.Entry
+                    > {
+                        it.lastModified
+                    }.thenBy {
+                        it.name.lowercase(
+                            Locale.ROOT
+                        )
+                    }
+                )
+                .take(200)
 
         val root =
             LinearLayout(this).apply {
@@ -107,11 +152,14 @@ class RecentFileChooserActivity : Activity() {
         root.addView(
             TextView(this).apply {
                 text =
-                    if (roots.isEmpty()) {
-                        "Дозволених папок ще немає. Додайте, наприклад, Download — " +
-                            "після цього нові файли будуть зверху."
-                    } else {
-                        "Останні файли: ${recentFiles.size} • найсвіжіші зверху"
+                    when {
+                        AllFilesAccess.isRequired() &&
+                            !allFilesGranted ->
+                            "Надайте «Доступ до всіх файлів», щоб YTM Importer " +
+                                "автоматично показував Download • найсвіжіші зверху"
+
+                        else ->
+                            "Останні файли: ${recentFiles.size} • найсвіжіші зверху"
                     }
                 textSize = 12.5f
                 setTextColor(
@@ -148,12 +196,19 @@ class RecentFileChooserActivity : Activity() {
             listContent.addView(
                 TextView(this).apply {
                     text =
-                        if (roots.isEmpty()) {
-                            "Натисніть «Додати папку…» і дайте YTM Importer доступ " +
-                                "до папки з файлами."
-                        } else {
-                            "У дозволених папках немає файлів потрібного типу. " +
-                                "Можна додати іншу папку або відкрити системний вибір."
+                        when {
+                            AllFilesAccess.isRequired() &&
+                                !allFilesGranted ->
+                                "Натисніть «Надати доступ до всіх файлів», " +
+                                    "потім увімкніть доступ для YTM Importer у системних налаштуваннях."
+
+                            roots.isEmpty() ->
+                                "У Download немає файлів потрібного типу. " +
+                                    "Можна додати окрему SAF-папку або відкрити системний вибір."
+
+                            else ->
+                                "У Download та дозволених SAF-папках немає файлів потрібного типу. " +
+                                    "Можна додати іншу папку або відкрити системний вибір."
                         }
                     gravity = Gravity.CENTER
                     textSize = 15f
@@ -456,13 +511,41 @@ class RecentFileChooserActivity : Activity() {
                 )
             }
 
+        if (
+            AllFilesAccess.isRequired() &&
+            !AllFilesAccess.isGranted()
+        ) {
+            root.addView(
+                footerButton(
+                    label =
+                        "Надати доступ до всіх файлів",
+                    primary = true
+                ) {
+                    explainAndRequestAllFilesAccess()
+                }
+            )
+        }
+
         root.addView(
             footerButton(
                 label =
-                    "Додати папку…",
-                primary = true
+                    "Додати SAF-папку…",
+                primary =
+                    !AllFilesAccess.isRequired() ||
+                        !AllFilesAccess.isGranted()
             ) {
                 openSystemTreePicker()
+            },
+            if (
+                AllFilesAccess.isRequired() &&
+                !AllFilesAccess.isGranted()
+            ) {
+                footerParams()
+            } else {
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(54)
+                )
             }
         )
 
@@ -543,19 +626,76 @@ class RecentFileChooserActivity : Activity() {
             activity = this,
             title = "Останні файли",
             message =
-                "YTM Importer показує файли з папок, до яких ви вже надали доступ. " +
-                    "Файли сортуються за часом останньої зміни: найсвіжіші зверху.\n\n" +
-                    "«Додати папку…» відкриває Android лише для вибору нової папки, " +
-                    "наприклад Download. Після цього вона зберігається як SAF-дозвіл.\n\n" +
-                    "«Системний вибір файла…» залишає старий Android picker як запасний варіант.\n\n" +
-                    "Android document providers не завжди дають справжній час створення, " +
-                    "тому використовується last modified.",
+                "На Android 11+ YTM Importer може напряму читати Download після того, " +
+                    "як ви вручну увімкнете спеціальний системний дозвіл «Доступ до всіх файлів».\n\n" +
+                    "Після цього файли з Download показуються автоматично й сортуються " +
+                    "за часом останньої зміни: найсвіжіші зверху.\n\n" +
+                    "«Додати SAF-папку…» лишається додатковим способом підключити іншу папку. " +
+                    "Корінь Download Android через SAF не дозволяє — для нього використовується " +
+                    "саме All files access.\n\n" +
+                    "«Системний вибір файла…» залишає стандартний Android picker як запасний варіант.\n\n" +
+                    "Справжній creation time доступний не у всіх файлових системах, " +
+                    "тому сортування використовує last modified.",
             actions =
                 listOf(
                     UiChrome.DialogAction(
                         label = "Зрозуміло",
                         tone =
                             UiChrome.ActionTone.ACCENT
+                    ) {}
+                )
+        )
+    }
+
+    private fun explainAndRequestAllFilesAccess() {
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "Доступ до Download",
+            message =
+                "Щоб автоматично показувати файли з Download і сортувати їх " +
+                    "найсвіжіші зверху, YTM Importer просить спеціальний Android-доступ " +
+                    "«Доступ до всіх файлів».\n\n" +
+                    "Цей доступ ширший за звичайний вибір одного файла. " +
+                    "Ви можете не вмикати його й користуватися «Системним вибором файла…».",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label =
+                            "Відкрити налаштування",
+                        tone =
+                            UiChrome.ActionTone.ACCENT,
+                        onClick = {
+                            refreshAfterSettings = true
+                            runCatching {
+                                startActivity(
+                                    AllFilesAccess.settingsIntent(
+                                        this
+                                    )
+                                )
+                            }.onFailure {
+                                refreshAfterSettings = false
+                                UiChrome.showMessageDialog(
+                                    activity = this,
+                                    title = "Не вдалося відкрити налаштування",
+                                    message =
+                                        "Відкрийте системні Налаштування → Спеціальний доступ → " +
+                                            "Доступ до всіх файлів → YTM Importer.",
+                                    actions =
+                                        listOf(
+                                            UiChrome.DialogAction(
+                                                label = "Закрити",
+                                                tone =
+                                                    UiChrome.ActionTone.NORMAL
+                                            ) {}
+                                        )
+                                )
+                            }
+                        }
+                    ),
+                    UiChrome.DialogAction(
+                        label = "Скасувати",
+                        tone =
+                            UiChrome.ActionTone.NORMAL
                     ) {}
                 )
         )
