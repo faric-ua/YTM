@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.41**
-- versionCode: **77**
-- release focus: **BUG-004/009/010 + UX-017/018 — auth/search recovery and UI consistency**
-- release status: **PARTIALLY PHONE-TESTED — BROAD REAL-PHONE COVERAGE, NOT EXHAUSTIVE**
+- versionName: **1.4.41-R1**
+- versionCode: **78**
+- release focus: **v1.4.41-R1 corrective follow-up — BUG-011 rotation + UX-017 duplicate filename suffix**
+- release status: **NOT PHONE-TESTED YET — TARGETED CORRECTIVE BUILD**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.41 phone QA has started:
@@ -44,6 +44,12 @@ v1.4.41 phone QA has started:
 - existing-target playlist selection screen renders and intentionally uses direct row tap with no footer buttons;
 - remaining targeted checks include BUG-004 real 401, BUG-010 Restore quota preservation, UX-017 fallback naming and additional UX-018 modal spot checks;
 - broad accumulated phone coverage exists across the project, but no exhaustive full-app regression is claimed.
+
+v1.4.41-R1 corrective scope:
+- BUG-011: Account modal must survive portrait ↔ landscape Activity recreation;
+- UX-017: duplicate-download filename suffixes after the service marker must be removed;
+- installed v1.4.41 remains the evidence source for the failures;
+- R1 is not phone-PASS until the new signed APK is installed and both targeted paths pass.
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
 
