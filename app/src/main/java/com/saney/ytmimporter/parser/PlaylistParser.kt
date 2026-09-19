@@ -94,7 +94,7 @@ object PlaylistParser {
             base.replace(
                 Regex(
                     "(?i)\\s*(?:[-–—]\\s*)?YTM(?:\\s+Importer)?" +
-                        "(?:\\s*(?:[-_]\\s*\\d+|\\(\\s*\\d+\\s*\\)|\\s+\\d+))?\\s*$"
+                        "(?:\\s*(?:[-_]\\s*\\d+|\\(\\s*\\d+\\s*\\)|\\s+\\d+))*\\s*$"
                 ),
                 ""
             ).trim()
