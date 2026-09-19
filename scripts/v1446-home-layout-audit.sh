@@ -3,17 +3,18 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 RELEASE="docs/v.1.4.46/RELEASE.md"
 PHONE="docs/v.1.4.46/qa/PHONE_TEST.md"
 
-for f in "$GRADLE" "$MAIN" "$RELEASE" "$PHONE"; do
+for f in "$MAIN" "$RELEASE" "$PHONE"; do
   test -f "$f" || fail "missing v1.4.46 file: $f"
 done
 
-grep -Fq 'versionCode = 86' "$GRADLE" || fail "versionCode 86 missing"
-grep -Fq 'versionName = "1.4.46"' "$GRADLE" || fail "versionName 1.4.46 missing"
+grep -Fq 'versionCode: **86**' "$RELEASE" ||
+  fail "historical v1.4.46 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.46**' "$RELEASE" ||
+  fail "historical v1.4.46 versionName evidence missing"
 
 for label in   '1. Імпорт'   '2. Google / YTM'   '3. Знайти / перевірити'   '4. Створити / додати'   'Історія'   'Черга'   'Квота'   'Меню'   'Поточний плейлист'
 do
@@ -48,7 +49,7 @@ grep -Fq 'no auth/search/write logic changed' "$PHONE" ||
   fail "phone plan does not protect workflow logic"
 
 echo "PASS:"
-echo "- v1.4.46 / code 86"
+echo "- historical v1.4.46 / code 86 evidence"
 echo "- four-step workflow preserved"
 echo "- utility row preserved"
 echo "- separate theme-aware status/info card"
