@@ -3279,16 +3279,10 @@ class ImportActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@ImportActivity
+                UiChrome.emphasizedTitle(
+                    activity = this@ImportActivity,
+                    label = "Імпорт"
                 ).apply {
-                    text = "Імпорт"
-                    textSize = 20f
-                    setTextColor(Color.WHITE)
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
                     setPadding(
                         dp(12),
                         0,
