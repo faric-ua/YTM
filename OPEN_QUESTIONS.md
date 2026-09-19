@@ -136,13 +136,19 @@ v1.4.33 was superseded before phone QA by v1.4.34. The modal engine is unchanged
 
 ## Q-003 — Silent Google/YTM recovery after update
 
-Status: **DEFERRED FOR LATER FIX**
+Status: **CLOSED — PHONE RETEST PASS v1.4.20.**
 
-Reproduced on v1.4.14:
-install over authorized v1.4.13 → launch → Step 2 remains red.
+Historical reproduction on v1.4.14:
+install over authorized v1.4.13 → launch → Step 2 remained red.
 
 Related QA: A-03, D-03.
-Do not claim fixed until an in-place update test passes without pressing Step 2.
+
+Closure evidence from the real-phone v1.4.20 in-place update retest:
+- Step 2 briefly showed the neutral/gray recovery state;
+- silent account recovery completed without pressing Step 2;
+- Step 2 automatically returned to green/ready.
+
+Keep the v1.4.14 failure as historical evidence, but do not treat Q-003 as an open current issue.
 
 ## Q-005 — Manual Search should respect exact videoId
 
