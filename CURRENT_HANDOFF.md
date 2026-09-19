@@ -162,7 +162,7 @@ Expected:
 - `Системний вибір файла…` opens Android file picker.
 - Back from system picker returns to YTM selector.
 
-## 7. Historical phone status that remains true
+## 7. Historical status that remains true
 
 - v1.4.42: selector entry PASS; root Download SAF setup BLOCKED (BUG-012).
 - v1.4.41-R2: UX-017 CLOSED / phone PASS.
