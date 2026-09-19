@@ -86,6 +86,7 @@ class MainActivity : Activity() {
     private lateinit var quotaButton: Button
     private lateinit var pendingButton: Button
     private lateinit var progress: ProgressBar
+    private var accountDialogOpen = false
 
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
@@ -131,6 +132,12 @@ class MainActivity : Activity() {
                 persistentAuthStateStore
                     .hadSuccessfulAuthorization()
 
+        accountDialogOpen =
+            savedInstanceState?.getBoolean(
+                STATE_ACCOUNT_DIALOG_OPEN,
+                false
+            ) == true
+
         buildUi()
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
@@ -157,7 +164,23 @@ class MainActivity : Activity() {
             window.decorView.post {
                 maybeShowWelcome()
             }
+        } else if (accountDialogOpen) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showAccountDialog()
+                }
+            }
         }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putBoolean(
+            STATE_ACCOUNT_DIALOG_OPEN,
+            accountDialogOpen
+        )
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -1396,9 +1419,12 @@ class MainActivity : Activity() {
 
     private fun showAccountDialog() {
         if (accessToken.isNullOrBlank()) {
+            accountDialogOpen = false
             authorize()
             return
         }
+
+        accountDialogOpen = true
 
         val googleText =
             googleAccountInfo?.let {
@@ -1412,18 +1438,23 @@ class MainActivity : Activity() {
                 "${it.title}\nChannel ID (ID каналу): ${it.id}"
             } ?: "YouTube/YTM канал не визначено"
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Акаунт")
-            .setMessage(
-                "Google:\n$googleText\n\n" +
-                    "YouTube / YouTube Music:\n$youtubeText\n\n" +
-                    "Плейлисти створюватимуться в цьому YouTube/YTM профілі."
-            )
-            .setNegativeButton("Закрити", null)
-            .setPositiveButton("Змінити") { _, _ ->
-                authorize(after = null, forceAccountPicker = true)
-            }
-            .show()
+        val dialog =
+            UiChrome.alertBuilder(this)
+                .setTitle("Акаунт")
+                .setMessage(
+                    "Google:\n$googleText\n\n" +
+                        "YouTube / YouTube Music:\n$youtubeText\n\n" +
+                        "Плейлисти створюватимуться в цьому YouTube/YTM профілі."
+                )
+                .setNegativeButton("Закрити", null)
+                .setPositiveButton("Змінити") { _, _ ->
+                    authorize(after = null, forceAccountPicker = true)
+                }
+                .show()
+
+        dialog.setOnDismissListener {
+            accountDialogOpen = false
+        }
     }
 
     private fun restoreAuthSessionFromMemory() {
@@ -3733,6 +3764,9 @@ class MainActivity : Activity() {
     companion object {
         private const val KEY_WELCOME_SEEN =
             "welcome_v1_1_seen"
+
+        private const val STATE_ACCOUNT_DIALOG_OPEN =
+            "state_account_dialog_open"
 
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"
