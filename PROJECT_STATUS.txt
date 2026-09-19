@@ -33,7 +33,7 @@ v1.4.38 PARTIALLY PHONE-TESTED — SELECTORS + DESTRUCTIVE CONFIRMATIONS PASS / 
 v1.4.38-R1 PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX FAIL
 v1.4.38-R2 PHONE RETEST PASS — CHECKBOX VISUAL CENTERING
 v1.4.39 PARTIALLY PHONE-TESTED — CANCEL / ROTATION / INVALID-FILE PASS; RESTORE+ROLLBACK INCONCLUSIVE
-v1.4.40 PARTIALLY PHONE-TESTED — RENDERING PASS; ROTATION-SCROLL FIX NEEDS RETEST
+v1.4.40 PARTIALLY PHONE-TESTED — RELEASE HISTORY TESTED PATH PASS
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -535,5 +535,8 @@ v1.4.40 focus:
 - root CHANGELOG.md is the single source of truth
 - Gradle copies CHANGELOG.md into generated Android assets before build
 - ServiceActivity parses ## release sections into readable cards
-- Back from History returns to About
+- top-bar Back from History returns to About; system Back direct-to-Home is accepted behavior
+- release-history rendering/readability/scroll PASS on phone
+- rotation + scroll-position preservation PASS after follow-up fix
+- UX-016 closed for the tested Release History scope
 - no network fetch, server dependency or new permission
