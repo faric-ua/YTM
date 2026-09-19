@@ -12,7 +12,7 @@
 | BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 | P2 | Restore confirmation now survives phone rotation without forcing the user to choose the backup file again. | v1.4.38 phone repro → R1 rotation-state fix → phone PASS |
 | BUG-009 / Q-009 | PHONE PORTRAIT PASS v1.4.41 | P3 | Real-phone portrait confirms readable profile copy, single-line `Змінити` on the left and `Закрити` on the right. Rotation itself exposed separate BUG-011 (dialog disappears), so BUG-009 remains a portrait visual-fit PASS rather than absorbing the state-restoration defect. | v1.4.40 account-switch screenshot → v1.4.41 portrait PASS |
 | BUG-010 / Q-010 | CLOSED — PHONE RETEST PASS v1.4.41 | P2 | Real-phone full Restore and subsequent `Відкотити` both preserved the live quota exactly: Search 0/100; total 505/10000; ≈9495 remaining. Full Restore applied 3 of 4 backup groups; `Відкотити` applied 4 of 5 safety-snapshot groups, confirming `quota_tracker_v1` was excluded from both paths. | v1.4.40 finding → v1.4.41 Restore + `Відкотити` PASS |
-| BUG-011 / Q-011 | OPEN — PHONE REPRO v1.4.41 | P3 | Account modal disappears when the phone rotates because `showAccountDialog()` has no saved/recreated dialog-state path. Portrait layout remains PASS; the rotation continuity issue is tracked separately from BUG-009 visual fit. | v1.4.41 account modal rotation repro |
+| BUG-011 / Q-011 | FIX IMPLEMENTED — NEXT BUILD PHONE RETEST NEEDED | P3 | Account modal disappeared on rotation in installed v1.4.41. Branch follow-up now saves an `accountDialogOpen` flag through `onSaveInstanceState` and recreates the Account modal after Activity recreation. Portrait layout PASS remains separate BUG-009 evidence. | v1.4.41 repro → follow-up fix implemented |
 
 ## BUG-002 current evidence
 
@@ -336,7 +336,7 @@ Do not close this from static reasoning alone; verify the chosen policy on phone
 
 ## BUG-011 — Account modal disappears on rotation
 
-Status: **OPEN — PHONE REPRO v1.4.41.**
+Status: **FIX IMPLEMENTED — NEXT BUILD PHONE RETEST NEEDED.**
 
 Path:
 `Home → 2. Google / YTM → Account modal → rotate phone`
@@ -353,10 +353,16 @@ Expected:
   Activity recreation;
 - preserve the same safe action order: `Змінити` left, `Закрити` right.
 
-Code finding:
-- `MainActivity.showAccountDialog()` builds/shows the modal directly;
-- there is no saved-instance-state flag/pending modal marker for this dialog;
-- therefore normal Activity recreation dismisses it.
+Code finding from installed v1.4.41:
+- `MainActivity.showAccountDialog()` built/shows the modal directly;
+- there was no saved-instance-state flag/pending modal marker;
+- therefore normal Activity recreation dismissed it.
+
+Follow-up implementation on the active branch:
+- stores `accountDialogOpen` in `onSaveInstanceState`;
+- restores the flag in `onCreate`;
+- reposts `showAccountDialog()` after Activity recreation;
+- resets the flag when the dialog is dismissed.
 
 Keep BUG-011 separate from BUG-009:
 - BUG-009 = portrait copy/button fit;
