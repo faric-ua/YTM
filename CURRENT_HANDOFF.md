@@ -138,7 +138,7 @@ After install, begin with the zero/low-cost visual checks before spending YouTub
 4. then UX-017 playlist-title fallback;
 5. BUG-004 real 401 retest only when a genuine/reproducible invalid-auth condition is available.
 
-## 4. Exact v1.4.41 phone QA after signed build
+## 5. Exact v1.4.41 phone QA after signed build
 
 Targeted acceptance:
 
@@ -173,7 +173,7 @@ Targeted acceptance:
 
 Real phone evidence is authoritative.
 
-## 5. Historical state that must remain true
+## 6. Historical state that must remain true
 
 v1.4.40 Release History:
 - tested-path PASS;
@@ -186,7 +186,7 @@ v1.4.39 History JSON:
 
 Do not rewrite those historical results.
 
-## 6. Planned after v1.4.41
+## 7. Planned after v1.4.41
 
 Do not fold the Home redesign into this release.
 
@@ -206,7 +206,7 @@ Other pending backlog:
 - localization foundation UA / KO / EN;
 - later visual-skin foundation.
 
-## 7. Working contract
+## 8. Working contract
 
 Default loop:
 
@@ -221,7 +221,7 @@ Rules:
 - inspect diff/deletions before merge;
 - signed builds come from `.github/workflows/build-apk.yml`.
 
-## 8. Fresh-chat reading order
+## 9. Fresh-chat reading order
 
 1. `START_HERE_ASSISTANT.md`
 2. `CURRENT_HANDOFF.md`
