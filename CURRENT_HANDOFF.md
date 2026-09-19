@@ -18,7 +18,7 @@ Current release candidate:
 - versionName: **1.4.44-R1**
 - versionCode: **84**
 - active branch: `fix/v1.4.44-r1-action-copy-close-style`
-- active PR: **not created yet**; branch is stacked on v1.4.44 PR #15
+- active PR: **#16 — v1.4.44-R1: fix landscape action copy and modal Close style** → `feat/v1.4.44-adaptive-actions`
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
 - status: **IMPLEMENTED / PHONE RETEST NEEDED**
 - installed phone APK: **v1.4.44**
@@ -184,7 +184,7 @@ v1.4.44-R1:
 1. Run the v1.4.44-R1 audit.
 2. Run full release preflight.
 3. Compare R1 to v1.4.44 branch and confirm no accidental deletions.
-4. Open stacked R1 PR.
+4. PR #16 is open.
 5. Build signed v1.4.44-R1 APK from exact head.
 6. Install over v1.4.44 without clearing data.
 7. Retest the same landscape Recent-file / Storage / modal screenshots.
