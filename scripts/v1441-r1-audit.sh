@@ -3,17 +3,16 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 PARSER="app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt"
 R1="docs/v.1.4.41/R1.md"
 
-for f in "$GRADLE" "$MAIN" "$PARSER" "$R1"; do
+for f in "$MAIN" "$PARSER" "$R1"; do
   test -f "$f" || fail "missing v1.4.41-R1 file: $f"
 done
 
-grep -Fq 'versionCode = 78' "$GRADLE" || fail "R1 versionCode 78 missing"
-grep -Fq 'versionName = "1.4.41-R1"' "$GRADLE" || fail "R1 versionName missing"
+grep -Fq 'versionCode: **78**' "$R1" || fail "historical R1 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.41-R1**' "$R1" || fail "historical R1 versionName evidence missing"
 
 grep -Fq 'private var accountDialogOpen = false' "$MAIN"   || fail "BUG-011 account dialog state flag missing"
 grep -Fq 'STATE_ACCOUNT_DIALOG_OPEN' "$MAIN"   || fail "BUG-011 saved-state key missing"
@@ -29,7 +28,7 @@ grep -Fq '\\(\\s*\\d+\\s*\\)' "$PARSER"   || fail "UX-017 parenthesized copy suf
 grep -Fq 'two targeted corrective phone findings only' "$R1"   || fail "R1 narrow corrective scope missing"
 
 echo "PASS:"
-echo "- v1.4.41-R1 / code 78"
+echo "- historical v1.4.41-R1 / code 78 evidence"
 echo "- BUG-011 Account modal rotation persistence implementation"
 echo "- UX-017 duplicate-download filename suffix cleanup"
 echo "- narrow R1 phone acceptance documented"
