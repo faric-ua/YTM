@@ -115,7 +115,7 @@ grep -F '| BUG-009 / Q-009 |' "$BUG" | \
   grep -Fq 'PHONE PORTRAIT PASS v1.4.41' \
   || fail "BUG-009 v1.4.41 portrait phone PASS missing"
 grep -F '| BUG-010 / Q-010 |' "$BUG" | \
-  grep -Fq 'FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41' \
-  || fail "BUG-010 v1.4.41 fix status missing"
+  grep -Fq 'CLOSED — PHONE RETEST PASS v1.4.41' \
+  || fail "BUG-010 v1.4.41 closed phone PASS missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"
