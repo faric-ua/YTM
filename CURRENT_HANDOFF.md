@@ -12,13 +12,13 @@ Last updated: **2026-09-19**
 
 Repository: `faric-ua/YTM`
 
-Current release under test:
+Current release closeout:
 
 - versionName: **1.4.40**
 - versionCode: **76**
 - feature focus: **UX-016 — in-app release history**
 - active branch: `feat/v1.4.40-release-history`
-- signed code head currently under phone test: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
+- signed code head validated by phone QA: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
 - latest signed GitHub Actions run for that code: **35408421729**
 - signed build result: **SUCCESS**
 - branch may contain newer documentation/status-only commits after this signed build; always verify the live PR head before merge or rebuild
@@ -44,7 +44,7 @@ Open release PRs:
 - PR #11 — **v1.4.40: in-app release history**
   - base: `feat/v1.4.39-history-json-restore`
   - head: `feat/v1.4.40-release-history`
-  - signed code head under current phone test: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
+  - signed code head validated by phone QA: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
   - live PR head may be newer because QA/handoff documentation is updated after phone/build events; verify it through GitHub
   - mergeable at the last live check: yes
   - stacked on PR #10
