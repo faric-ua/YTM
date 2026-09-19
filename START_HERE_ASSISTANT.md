@@ -35,7 +35,7 @@ Current application:
 - versionName: **1.4.42-R1**
 - versionCode: **81**
 - release focus: **BUG-012 corrective build — direct Download via Android All files access**
-- release status: **NOT PHONE-TESTED YET — ALL-FILES CORRECTIVE BUILD**
+- release status: **PHONE RETEST PASS — BUG-012 CLOSED; BUG-013 AUTH FRESHNESS OPEN**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.41 phone QA has started:
@@ -420,3 +420,8 @@ v1.4.42-R1 current scope:
 - direct Download files sort by lastModified newest-first;
 - SAF subfolder access and the Android system picker remain fallbacks;
 - BUG-012 fix is implemented but not phone-PASS until R1 is installed and tested.
+
+
+Current UI follow-ups:
+- UX-021: wide/landscape action groups should reflow horizontally when width allows;
+- UX-022: titles inside dialogs/modal/utility windows need stronger theme-aware visual emphasis across the app.
