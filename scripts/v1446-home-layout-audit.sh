@@ -21,8 +21,16 @@ do
 done
 
 grep -Fq 'val statusCard =' "$MAIN" || fail "separate Home status card missing"
-grep -A45 -F 'val statusCard =' "$MAIN" |
-  grep -Fq 'palette.accent' ||
+
+STATUS_BLOCK="$(
+  awk '
+    /val statusCard =/ { capture = 1 }
+    capture { print }
+    /statusCard.addView\(/ { exit }
+  ' "$MAIN"
+)"
+
+grep -Fq 'palette.accent' <<<"$STATUS_BLOCK" ||
   fail "Home status card is not theme-accent aware"
 
 STATUS_LINE="$(grep -n -F 'statusCard.addView(' "$MAIN" | head -n1 | cut -d: -f1)"
