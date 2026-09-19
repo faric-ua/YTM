@@ -142,6 +142,10 @@ After install, begin with the zero/low-cost visual checks before spending YouTub
 
 - v1.4.41 is installed on the real phone and visible in the header.
 - Existing local workspace survived the update.
+- UX-018 representative horizontal-action spot check PASS:
+  - account modal: `Змінити` left / `Закрити` right;
+  - History destructive confirmation: `Так, очистити` left / `Скасувати` right;
+  - this does not claim every modal in the app was exhaustively retested.
 - BUG-009 portrait account modal PASS:
   - `Змінити` is single-line on the left;
   - `Закрити` is on the right;
