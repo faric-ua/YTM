@@ -103,8 +103,8 @@ grep -Fq 'PHONE QA NEEDED' "$PHONE" ||
   fail "R2 phone plan status missing"
 grep -Fq '| v1.4.47-R1 | **PHONE QA FAIL — HOME DENSITY / THEME-PICKER PARENT / NAV POLISH** |' "$STATUS" ||
   fail "R1 phone FAIL status missing"
-grep -Fq '| v1.4.47-R2 | **IMPLEMENTED — STATIC/FULL PREFLIGHT + PHONE QA PENDING** |' "$STATUS" ||
-  fail "R2 pending status missing"
+grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING** |' "$STATUS" ||
+  fail "R2 preflight PASS / build+phone pending status missing"
 
 echo "PASS:"
 echo "- v1.4.47-R2 / code 89"
