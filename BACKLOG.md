@@ -20,8 +20,8 @@ v1.4.41 — Auth/Search Recovery + UI Consistency — PARTIALLY PHONE-TESTED / N
 - UX-016 In-app Release History — CLOSED FOR TESTED PHONE SCOPE v1.4.40; entry/rendering/scroll/readability/navigation/rotation-scroll PASS
 - BUG-009/Q-009 account-switch copy/action fit — PHONE PORTRAIT PASS v1.4.41
 - BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — CLOSED / PHONE RETEST PASS v1.4.41
-- BUG-011/Q-011 Account modal disappears on phone rotation — OPEN / PHONE REPRO v1.4.41; preserve modal visibility across Activity recreation
-- UX-017 Import Filename → Playlist Display Name — PARTIAL PHONE FAIL v1.4.41; duplicate-download suffixes such as trailing `YTM-1` survive and leak into the playlist title. Follow-up must also strip typical duplicate suffix forms (`YTM-1`, `YTM_1`, `YTM (1)`) while keeping explicit in-file title authoritative
+- BUG-011/Q-011 Account modal disappears on phone rotation — FIX IMPLEMENTED / NEXT BUILD PHONE RETEST NEEDED
+- UX-017 Import Filename → Playlist Display Name — FOLLOW-UP FIX IMPLEMENTED / NEXT BUILD PHONE RETEST NEEDED; installed v1.4.41 failed on duplicate-download suffix `YTM-1`; active branch now strips `YTM-1`, `YTM_1`, `YTM (1)` style copy suffixes while keeping explicit in-file title authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
 
@@ -41,13 +41,13 @@ v1.4.41 — Auth/Search Recovery + UI Consistency — PARTIALLY PHONE-TESTED / N
 - [ ] phone: real/reproduced auth invalidation path
 - [ ] phone: re-login + retry search without stale FAILED rows
 - [x] phone: account dialog button/copy fit — portrait PASS
-- [ ] BUG-011 account modal rotation — FAIL: modal disappears on rotate; fix in corrective build
+- [ ] BUG-011 account modal rotation — FIX IMPLEMENTED; next signed build must retest portrait → landscape → portrait
 - [x] phone: existing-target single-select list renders; row tap is selection, no footer buttons required; confirmation screen opens PASS
 - [x] phone: modal confirm-left / cancel-right spot checks — account + destructive History confirmation PASS
 - [x] phone: full Restore keeps current quota estimate — PASS (0/100; 505/10000; ≈9495 unchanged)
 - [x] phone: `Відкотити` keeps current quota estimate — PASS (0/100; 505/10000; ≈9495 unchanged)
 - [ ] phone: House Dance fallback title — PARTIAL FAIL: duplicate download produced `... YTM-1`; follow-up normalization required
-- [ ] UX-017 duplicate-download filename follow-up: strip trailing service marker plus copy suffix (`YTM-1`, `YTM_1`, `YTM (1)`)
+- [ ] UX-017 duplicate-download filename follow-up — FIX IMPLEMENTED; next signed build must retest `YTM-1`, `YTM_1`, `YTM (1)`
 - [ ] end-to-end House Dance smoke if quota is acceptable
 
 ## v1.4.16
