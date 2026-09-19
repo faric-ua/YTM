@@ -1,10 +1,21 @@
 # Журнал змін (Changelog)
 
+## v1.4.42
+- Added an in-app recent-file selector for the two remaining generic open-file flows from UX-008 Phase 2B.
+- Import and Data/Restore now enter YTM Importer file selection before Android's system picker.
+- Remembered SAF folders are queried for matching direct-child files and sorted by provider `lastModified` newest-first.
+- Import recent list filters to TXT / CSV / JSON; Data Restore / History JSON filters to JSON.
+- File rows show name, modified time, size and source folder.
+- Added explicit `Додати папку…`, `Системний вибір файла…` fallback and `Скасувати` actions.
+- No broad filesystem permission added; Android SAF remains the permission boundary.
+- versionCode 80 / versionName 1.4.42.
+- v1.4.42 = NOT PHONE-TESTED YET.
+
 ## v1.4.41-R2
 - Targeted corrective follow-up for the remaining UX-017 phone edge case.
 - Filename fallback now strips repeated/stacked duplicate-download suffix tokens after the YTM service marker, including forms such as `YTM-1 (1)`.
 - versionCode 79 / versionName 1.4.41-R2.
-- v1.4.41-R2 = NOT PHONE-TESTED YET; acceptance is one import-title retest only.
+- v1.4.41-R2 phone retest PASS: stacked duplicate-download suffixes including `YTM-1 (1) (1)` normalize to `House Dance Hit 2000 Vol.1`; UX-017 closed.
 
 ## v1.4.41-R1
 - Corrective build for two real-phone findings from v1.4.41.
