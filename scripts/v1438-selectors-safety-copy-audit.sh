@@ -14,8 +14,9 @@ PENDING="$SRC/PendingActivity.kt"
 SERVICE="$SRC/ServiceActivity.kt"
 UI="$SRC/ui/UiChrome.kt"
 STORAGE="$SRC/StorageChooserActivity.kt"
+RECENT="$SRC/RecentFileChooserActivity.kt"
 
-for f in   TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt   "$GRADLE"   "$MANIFEST"   "$SELECTOR"   "$IMPORT"   "$DATA"   "$HISTORY"   "$PENDING"   "$SERVICE"   "$UI"   "$STORAGE"   docs/v.1.4.38/RELEASE.md   docs/v.1.4.38/UX_AUDIT.md   docs/v.1.4.38/REGRESSION_CHECKLIST.md   docs/v.1.4.38/qa/PHONE_TEST.md   docs/v.1.4.38/qa/BUG_REGISTER.md
+for f in   TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt   "$GRADLE"   "$MANIFEST"   "$SELECTOR"   "$IMPORT"   "$DATA"   "$HISTORY"   "$PENDING"   "$SERVICE"   "$UI"   "$STORAGE"   "$RECENT"   docs/v.1.4.38/RELEASE.md   docs/v.1.4.38/UX_AUDIT.md   docs/v.1.4.38/REGRESSION_CHECKLIST.md   docs/v.1.4.38/qa/PHONE_TEST.md   docs/v.1.4.38/qa/BUG_REGISTER.md
 do
   test -f "$f" || fail "missing v1.4.38 file: $f"
 done
@@ -80,10 +81,12 @@ grep -Fq 'label = "Відкотити Restore"' "$DATA"   || fail "short rollbac
 grep -Fq '"Додати папку…"' "$STORAGE"   || fail "short save-folder label missing"
 grep -Fq '"Зберегти як…"' "$STORAGE"   || fail "short system-save label missing"
 
-OPEN_IMPORT="$(grep -h -F 'ACTION_OPEN_DOCUMENT' "$IMPORT" | grep -v 'TREE' | wc -l | tr -d ' ')"
-OPEN_DATA="$(grep -h -F 'ACTION_OPEN_DOCUMENT' "$DATA" | grep -v 'TREE' | wc -l | tr -d ' ')"
-[ "$OPEN_IMPORT" -eq 1 ] || fail "Import open-document regression path drift"
-[ "$OPEN_DATA" -eq 1 ] || fail "Data Restore open-document regression path drift"
+grep -Fq 'RecentFileChooserActivity::class.java' "$IMPORT" \
+  || fail "Import generic open-document path missing"
+grep -Fq 'RecentFileChooserActivity::class.java' "$DATA" \
+  || fail "Data generic open-document path missing"
+grep -Fq 'Intent.ACTION_OPEN_DOCUMENT' "$RECENT" \
+  || fail "generic Android open-document fallback missing"
 
 for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
 do
@@ -103,6 +106,6 @@ echo "- destructive local mutations use explicit danger confirmation"
 echo "- safety snapshot deletion separated from rollback success"
 echo "- short mobile action copy present"
 echo "- R1 checkbox centering + Restore rotation persistence guarded"
-echo "- both generic open-document regression paths remain"
+echo "- both generic open-document flows remain through the recent-file selector"
 echo "- no broad filesystem permission"
 echo "- Neon Dark color lock retained"
