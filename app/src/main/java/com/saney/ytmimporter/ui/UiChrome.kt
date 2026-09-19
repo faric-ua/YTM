@@ -516,7 +516,7 @@ object UiChrome {
         actions: List<DialogAction>,
         subtitle: String? = null,
         actionLayout: DialogActionLayout = DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
-    ) {
+    ): Dialog {
         val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
@@ -561,7 +561,7 @@ object UiChrome {
             actionLayout = actionLayout
         )
 
-        showCustomDialog(
+        return showCustomDialog(
             activity = activity,
             dialog = dialog,
             card = card
