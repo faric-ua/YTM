@@ -106,7 +106,19 @@ Back from the Android fallback returns to the YTM selector rather than ending th
 
 No broad filesystem permission is added.
 
-## 4. Phone QA for v1.4.42
+## 4. Exact next execution step
+
+1. Finish v1.4.42 static guards and compare branch against `main`.
+2. Open a dedicated PR from `feat/v1.4.42-recent-file-selector` to `main`.
+3. User runs the exact Termux release block.
+4. `bash scripts/release-preflight.sh` must PASS.
+5. Dispatch `.github/workflows/build-apk.yml` for the exact live branch head.
+6. Download and verify the signed `YTM-Importer-v1.4.42-Release` artifact.
+7. Install over v1.4.41-R2 without clearing app data.
+8. Run only the targeted recent-file / fallback / Data JSON phone QA.
+9. Record evidence before merge.
+
+## 5. Phone QA for v1.4.42
 
 ### Test A — Import recent-first
 
@@ -153,7 +165,7 @@ Optional:
 - existing remembered folder/save flows still open;
 - no Search API work is required for this release QA.
 
-## 5. Historical status that remains true
+## 6. Historical status that remains true
 
 - v1.4.41-R2: UX-017 CLOSED / phone PASS.
 - BUG-011: CLOSED / phone PASS v1.4.41-R1.
@@ -163,15 +175,15 @@ Optional:
 
 Do not rewrite these historical results.
 
-## 6. Planned after v1.4.42
+## 7. Planned after v1.4.42
 
 Home work remains separate:
 - UX-019: approved top-left Polyglot K-U prototype is layout-only reference;
 - preserve current themes;
-- UX-009: all four workflow buttons need theme-aware Blue/Green state palettes;
+- UX-009: all **four** Home workflow buttons need theme-aware Blue/Green state palettes;
 - Neon Dark state colors remain the accepted reference.
 
-## 7. Working contract
+## 8. Working contract
 
 **ChatGPT prepares → user runs exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
 
@@ -187,7 +199,7 @@ User-facing QA instructions:
 - include a short in-app path showing where the control is;
 - e.g. `rollback / Відкотити → Меню → Дані та резервні копії → Відкотити Restore`.
 
-## 8. Fresh-chat reading order
+## 9. Fresh-chat reading order
 
 1. `START_HERE_ASSISTANT.md`
 2. `CURRENT_HANDOFF.md`
