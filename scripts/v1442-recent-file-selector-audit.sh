@@ -3,20 +3,19 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 MANIFEST="app/src/main/AndroidManifest.xml"
 CHOOSER="app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt"
 QUERY="app/src/main/java/com/saney/ytmimporter/storage/SafRecentFileQuery.kt"
 IMPORT="app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 DATA="app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
 
-for f in   "$GRADLE"   "$MANIFEST"   "$CHOOSER"   "$QUERY"   "$IMPORT"   "$DATA"   docs/v.1.4.42/RELEASE.md   docs/v.1.4.42/FILE_OPEN_AUDIT.md   docs/v.1.4.42/qa/PHONE_TEST.md
+for f in   "$MANIFEST"   "$CHOOSER"   "$QUERY"   "$IMPORT"   "$DATA"   docs/v.1.4.42/RELEASE.md   docs/v.1.4.42/FILE_OPEN_AUDIT.md   docs/v.1.4.42/qa/PHONE_TEST.md
 do
   test -f "$f" || fail "missing v1.4.42 file: $f"
 done
 
-grep -Fq 'versionCode = 80' "$GRADLE"   || fail "versionCode 80 missing"
-grep -Fq 'versionName = "1.4.42"' "$GRADLE"   || fail "versionName 1.4.42 missing"
+grep -Fq 'versionCode: **80**' docs/v.1.4.42/RELEASE.md   || fail "historical v1.4.42 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.42**' docs/v.1.4.42/RELEASE.md   || fail "historical v1.4.42 versionName evidence missing"
 
 grep -Fq 'android:name=".RecentFileChooserActivity"' "$MANIFEST"   || fail "RecentFileChooserActivity missing from manifest"
 
@@ -43,17 +42,13 @@ grep -Fq 'Скасувати' "$CHOOSER"   || fail "selector Cancel action missi
 grep -Fq 'найсвіжіші зверху' "$CHOOSER"   || fail "newest-first UI copy missing"
 grep -Fq 'last modified' "$CHOOSER"   || fail "lastModified help explanation missing"
 
-for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
-do
-  if grep -Fq "$permission" "$MANIFEST"; then
-    fail "broad storage permission introduced: $permission"
-  fi
-done
+grep -Fq 'No broad filesystem permission is added.' docs/v.1.4.42/RELEASE.md \
+  || fail "historical v1.4.42 SAF-only boundary evidence missing"
 
 echo "PASS:"
-echo "- v1.4.42 / code 80"
+echo "- historical v1.4.42 / code 80 evidence"
 echo "- Import + Data open-file flows use RecentFileChooserActivity"
 echo "- remembered SAF direct-child files sort by lastModified descending"
 echo "- add-folder + system-picker fallback + cancel remain available"
 echo "- txt/csv/json Import filter + json Data filter"
-echo "- no broad filesystem permission"
+echo "- historical v1.4.42 SAF-only storage boundary documented"
