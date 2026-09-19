@@ -12,7 +12,10 @@ object DirectDownloadFileQuery {
         allowedExtensions: Set<String>,
         limit: Int = 200
     ): List<SafRecentFileQuery.Entry> {
-        if (!AllFilesAccess.isGranted()) {
+        if (
+            !AllFilesAccess.isRequired() ||
+            !AllFilesAccess.isGranted()
+        ) {
             return emptyList()
         }
 
