@@ -101,8 +101,12 @@ New post-closeout real-phone findings now take priority before starting unrelate
 - BUG-004/Q-004 is **REPRODUCED AGAIN on v1.4.40** through the Search path.
   The 9-track House Dance fixture produced invalid-auth errors for every track while
   Home Step 2 still stayed green/checked.
-- Re-entering the Google account flow did not immediately restore usable authorization;
-  the user is performing a full app restart and that result is still pending.
+- Re-login plus restart left the House Dance workspace visually failed because its
+  per-track auth errors were persisted in `current_playlist_v1`.
+- A later full-backup restore loaded the older `top 3` workspace. Backup does not
+  contain auth state/tokens, yet a new private YouTube/YTM playlist with 3/3 tracks
+  was created successfully afterward. This proves authorization itself had recovered;
+  stale persisted track failure state is part of BUG-004 recovery behavior.
 - BUG-009/Q-009 is OPEN for account-switch text/action phone-width layout.
 - Permanent test data is stored under
   `docs/test-data/collections/House_Dance_Hit_2000/`.
