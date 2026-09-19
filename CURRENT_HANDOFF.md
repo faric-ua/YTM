@@ -15,18 +15,18 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.46**
-- versionCode: **86**
-- active branch: `feat/v1.4.46-home-layout-phase1`
-- active PR: **#18 — v1.4.46: Home layout prototype alignment phase 1** → `feat/v1.4.44-adaptive-actions`
+- versionName: **1.4.47**
+- versionCode: **87**
+- active branch: `feat/v1.4.47-playlist-hub`
+- active PR: **not created yet**; v1.4.47 is stacked on v1.4.46 PR #18 head
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **STATIC/FULL PREFLIGHT PASS / NOT PHONE-TESTED YET**
-- installed phone APK: **v1.4.45**
-- focus: **UX-019 Home Layout Prototype Alignment — Phase 1**
+- status: **IMPLEMENTED / STATIC + PHONE QA NEEDED**
+- installed phone APK: **v1.4.46**
+- focus: **UX-019 Phase 2 — Playlist Hub + Clean Home**
 
 Stable build folder after signed build:
 
-`/storage/emulated/0/Download/YTM-v1.4.46-build/`
+`/storage/emulated/0/Download/YTM-v1.4.47-build/`
 
 ## 2. BUG-013 reproduction
 
@@ -210,6 +210,21 @@ a later UX-019 phase should only implement them from an explicit approved reposi
 
 Phone QA is still required.
 
+## 5D. v1.4.47 implementation
+
+UX-019 Phase 2 is implemented on `feat/v1.4.47-playlist-hub`:
+- Home account/status card is interactive and opens existing Google/YTM account details;
+- account dialog shows Google name/email plus YouTube/YTM channel + Channel ID, never the OAuth token;
+- Home current-playlist card opens dedicated `PlaylistActivity`;
+- track rows are removed from Home;
+- Playlist Hub centralizes Tracks/Review, Search, Create/Add, YTM Project/export and replacements;
+- existing Review/Search/Destination/write implementations remain the execution paths;
+- `CurrentPlaylistStore` schema v2 adds optional `destinationPlaylistId` while reading schema v1;
+- last observed target YTM playlist ID is persisted so Open-in-YTM / Copy-link can survive restart;
+- v1.4.46 portrait hierarchy is real-phone PASS; theme/landscape smoke is carried into v1.4.47 combined QA.
+
+UX-023 GitHub Releases + in-app updater remains the next separate product wave after this Home/Hub release.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -221,18 +236,19 @@ Phone QA is still required.
   retest remains pending.
 - v1.4.39 populated-History Restore / rollback remains inconclusive/pending.
 - UX-009 Blue/Green workflow-state palettes remain open; Neon semantics stay locked.
-- UX-019 Phase 1 is current; later quick-actions/bottom-navigation alignment remains pending explicit approved details.
+- UX-019 Phase 2 is current; Home is becoming a dashboard and detailed playlist work moves behind Playlist Hub/Review.
 
 ## 7. Exact next execution step
 
-1. Run the dedicated v1.4.46 Home-layout audit.
+1. Run the dedicated v1.4.47 Playlist-Hub audit.
 2. Run full release preflight.
-3. Compare v1.4.46 against the current v1.4.44 branch head and stop on accidental deletions.
-4. Open a stacked v1.4.46 PR.
-5. Build signed v1.4.46 APK from exact head.
-6. Install over v1.4.45 without clearing data.
-7. Phone-test portrait hierarchy, Neon + alternate-theme smoke, and landscape/rotation.
-8. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
+3. Compare v1.4.47 against the v1.4.46 branch head and stop on accidental deletions.
+4. Open a stacked v1.4.47 PR after preflight passes.
+5. Build signed v1.4.47 APK from exact head.
+6. Install over v1.4.46 without uninstalling or clearing data.
+7. Phone-test account card, Playlist Hub, Review/Project/Search/Destination bridges, alternate theme and landscape/rotate-back.
+8. Test target-link persistence only when a safe Create/Add operation is convenient.
+9. Keep UX-023 updater, BUG-004 real-401 acceptance and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
