@@ -576,6 +576,9 @@ object UiChrome {
         subtitle: String? = null,
         actionLayout: DialogActionLayout = DialogActionLayout.AUTO
     ): Dialog {
+        val palette =
+            AppThemeManager.palette(activity)
+
         val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
@@ -1183,6 +1186,7 @@ object UiChrome {
                 }
             )
         }
+    }
 
     private fun dialogCard(
         activity: Activity
@@ -1205,6 +1209,7 @@ object UiChrome {
                 strokeColor = palette.border
             )
         }
+    }
 
     private fun addDialogHeader(
         activity: Activity,
@@ -1490,6 +1495,7 @@ object UiChrome {
             autoSizeButton(this, minSp = 12, maxSp = 15)
             setOnClickListener { onClick() }
         }
+    }
 
     private fun dialogActionButton(
         activity: Activity,
@@ -1530,7 +1536,7 @@ object UiChrome {
             autoSizeButton(this, minSp = 10, maxSp = 14)
             setOnClickListener { onClick() }
         }
-
+    }
 
     private fun roundedBackground(
         context: Context,
