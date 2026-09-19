@@ -19,6 +19,8 @@ Current release candidate:
 - status: **IMPLEMENTED / NOT PHONE-TESTED YET**
 - signed v1.4.41 APK: **not built yet**
 - immediate next gate: **release preflight → signed GitHub Actions APK → targeted phone QA**
+- active PR: **#12 — v1.4.41: auth/search recovery and UI consistency** → `main`
+- merge rule: do not merge PR #12 until targeted real-phone QA is recorded
 
 Stable phone build folder after build:
 
