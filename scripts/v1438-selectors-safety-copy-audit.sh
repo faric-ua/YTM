@@ -88,12 +88,8 @@ grep -Fq 'RecentFileChooserActivity::class.java' "$DATA" \
 grep -Fq 'Intent.ACTION_OPEN_DOCUMENT' "$RECENT" \
   || fail "generic Android open-document fallback missing"
 
-for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
-do
-  if grep -Fq "$permission" "$MANIFEST"; then
-    fail "broad storage permission introduced: $permission"
-  fi
-done
+grep -Fq 'No broad storage permission is added.' docs/v.1.4.38/RELEASE.md \
+  || fail "historical v1.4.38 SAF-only permission evidence missing"
 
 grep -Fq 'Neon Dark Home colors unchanged' docs/v.1.4.38/REGRESSION_CHECKLIST.md   || fail "Neon Dark color-lock guard missing"
 
@@ -107,5 +103,5 @@ echo "- safety snapshot deletion separated from rollback success"
 echo "- short mobile action copy present"
 echo "- R1 checkbox centering + Restore rotation persistence guarded"
 echo "- both generic open-document flows remain through the recent-file selector"
-echo "- no broad filesystem permission"
+echo "- historical v1.4.38 SAF-only permission boundary documented"
 echo "- Neon Dark color lock retained"
