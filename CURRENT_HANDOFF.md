@@ -121,6 +121,7 @@ New post-closeout real-phone findings now take priority before starting unrelate
   rewind the local quota estimate (observed Search plan returning to 0/100).
 - UX-018 IN PROGRESS on `feat/v1.4.41-auth-ui-consistency`: horizontal modal confirmation contract is **primary/confirm left, cancel/close/no-op right**. `showDangerConfirmDialog()` was the main reversed shared helper and has been corrected; remaining custom dialog call sites still need audit/phone QA.
 - UX-019 PLANNED: future Home redesign uses the user's approved top-left Polyglot K-U prototype **for layout/section placement only**. Preserve current YTM Importer themes, palettes, semantic colors and established visual styling; do not treat the prototype artwork/colors as a theme target.
+- UX-009 clarification: theme visuals remain intact, but the **four Home workflow buttons** need theme-aware state colors. Neon Dark keeps its accepted red/green/orange semantics; Blue Dark and Green Dark require separate state palettes rather than reusing the Neon colors unchanged.
 
 The unfinished History item carried from the combined v1.4.39/v1.4.40 wave is:
 
