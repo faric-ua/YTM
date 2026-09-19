@@ -842,28 +842,20 @@ class PendingActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@PendingActivity
-                ).apply {
-                    text =
+                UiChrome.emphasizedTitle(
+                    activity = this@PendingActivity,
+                    label =
                         title.take(
                             50
-                        )
-                    textSize = 20f
-                    setTextColor(
-                        Color.WHITE
-                    )
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
+                        ),
+                    maxLines = 2
+                ).apply {
                     setPadding(
                         dp(12),
                         0,
                         0,
                         0
                     )
-                    maxLines = 2
                 },
                 LinearLayout.LayoutParams(
                     0,

@@ -672,6 +672,27 @@ object UiChrome {
         )
     }
 
+    fun emphasizedTitle(
+        activity: Activity,
+        label: CharSequence,
+        textSizeSp: Float = 20f,
+        maxLines: Int = 1
+    ): TextView =
+        TextView(activity).apply {
+            text = label
+            textSize = textSizeSp
+            setTextColor(
+                AppThemeManager
+                    .palette(activity)
+                    .accent
+            )
+            setTypeface(
+                typeface,
+                Typeface.BOLD
+            )
+            this.maxLines = maxLines
+        }
+
     fun autoSizeButton(
         button: Button,
         minSp: Int = 11,
@@ -1066,12 +1087,12 @@ object UiChrome {
         subtitle: String?
     ) {
         card.addView(
-            TextView(activity).apply {
-                text = title
-                textSize = 22f
-                setTextColor(Color.WHITE)
-                setTypeface(typeface, Typeface.BOLD)
-            }
+            emphasizedTitle(
+                activity = activity,
+                label = title,
+                textSizeSp = 22f,
+                maxLines = 2
+            )
         )
 
         if (!subtitle.isNullOrBlank()) {

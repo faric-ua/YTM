@@ -89,6 +89,10 @@ check_file "docs/v.1.4.44/REGRESSION_CHECKLIST.md"
 check_file "docs/v.1.4.44/qa/PHONE_TEST.md"
 check_file "docs/v.1.4.44/qa/BUG_REGISTER.md"
 check_file "docs/v.1.4.44/R1.md"
+check_file "docs/v.1.4.45/RELEASE.md"
+check_file "docs/v.1.4.45/REGRESSION_CHECKLIST.md"
+check_file "docs/v.1.4.45/qa/PHONE_TEST.md"
+check_file "docs/v.1.4.45/qa/BUG_REGISTER.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
@@ -164,6 +168,7 @@ bash scripts/v1442-r1-all-files-audit.sh
 bash scripts/v1443-auth-freshness-audit.sh
 bash scripts/v1444-adaptive-actions-audit.sh
 bash scripts/v1444-r1-audit.sh
+bash scripts/v1445-title-emphasis-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -237,6 +242,7 @@ check_file "scripts/v1442-r1-all-files-audit.sh"
 check_file "scripts/v1443-auth-freshness-audit.sh"
 check_file "scripts/v1444-adaptive-actions-audit.sh"
 check_file "scripts/v1444-r1-audit.sh"
+check_file "scripts/v1445-title-emphasis-audit.sh"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -387,11 +393,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 84' app/build.gradle.kts \
-  || fail "Expected versionCode = 84"
+grep -q 'versionCode = 85' app/build.gradle.kts \
+  || fail "Expected versionCode = 85"
 
-grep -q 'versionName = "1.4.44-R1"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.44-R1"'
+grep -q 'versionName = "1.4.45"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.45"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

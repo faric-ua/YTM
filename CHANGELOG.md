@@ -1,5 +1,14 @@
 # Журнал змін (Changelog)
 
+## v1.4.45
+- Added UX-022 shared title emphasis through `UiChrome.emphasizedTitle(...)`.
+- Dialog/modal titles now use the active theme accent while body text remains unchanged.
+- Major full-screen title bars across Import, Review, History, Queue, Destination, Service, Data, Menu, Quota, selectors, storage and recent-file flows use the same shared title styling.
+- Existing per-screen title sizes and one/two-line limits are preserved.
+- Home workflow-state color semantics are intentionally unchanged.
+- versionCode 85 / versionName 1.4.45.
+- v1.4.45 phone retest PASS: full-screen and modal title emphasis, theme-accent switching, and rotation/navigation smoke passed. UX-022 closed.
+
 ## v1.4.44-R1
 - Corrective follow-up from real-phone v1.4.44 landscape QA.
 - Recent-file / backup chooser uses the explicit compact wide-row label `Системний вибір…` while stacked/portrait layouts keep `Системний вибір файла…`.

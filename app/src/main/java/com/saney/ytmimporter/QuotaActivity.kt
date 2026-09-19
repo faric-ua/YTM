@@ -188,11 +188,8 @@ class QuotaActivity : Activity() {
     }
 
     private fun topBar():
-        LinearLayout {
-        val palette =
-            AppThemeManager.palette(this)
-
-        return LinearLayout(this).apply {
+        LinearLayout =
+        LinearLayout(this).apply {
             orientation =
                 LinearLayout.HORIZONTAL
             gravity =
@@ -219,18 +216,10 @@ class QuotaActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@QuotaActivity
+                UiChrome.emphasizedTitle(
+                    activity = this@QuotaActivity,
+                    label = "Квота API"
                 ).apply {
-                    text = "Квота API"
-                    textSize = 20f
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
-                    setTextColor(
-                        palette.text
-                    )
                     setPadding(
                         dp(12),
                         0,
@@ -245,7 +234,6 @@ class QuotaActivity : Activity() {
                 )
             )
         }
-    }
 
     private fun footer():
         LinearLayout =

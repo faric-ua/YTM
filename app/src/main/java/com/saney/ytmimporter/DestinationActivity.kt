@@ -829,11 +829,10 @@ class DestinationActivity : Activity() {
             )
 
             addView(
-                TextView(this@DestinationActivity).apply {
-                    text = title
-                    textSize = 20f
-                    setTextColor(Color.WHITE)
-                    setTypeface(typeface, Typeface.BOLD)
+                UiChrome.emphasizedTitle(
+                    activity = this@DestinationActivity,
+                    label = title
+                ).apply {
                     setPadding(dp(12), 0, 0, 0)
                 },
                 LinearLayout.LayoutParams(

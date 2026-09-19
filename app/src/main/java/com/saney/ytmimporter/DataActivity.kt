@@ -2044,16 +2044,10 @@ class DataActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@DataActivity
+                UiChrome.emphasizedTitle(
+                    activity = this@DataActivity,
+                    label = title
                 ).apply {
-                    text = title
-                    textSize = 20f
-                    setTextColor(Color.WHITE)
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
                     setPadding(
                         dp(12),
                         0,

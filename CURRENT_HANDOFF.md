@@ -15,18 +15,18 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.44-R1**
-- versionCode: **84**
-- active branch: `feat/v1.4.44-adaptive-actions`
-- active PR: **#15 — v1.4.44: adaptive landscape action layout** → `fix/v1.4.43-auth-freshness`; PR #16 merged into this branch
+- versionName: **1.4.45**
+- versionCode: **85**
+- active branch: `feat/v1.4.45-title-emphasis`
+- active PR: **#17 — v1.4.45: unified window title emphasis** → `feat/v1.4.44-adaptive-actions`
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **PHONE RETEST PASS — UX-021 CLOSED**
+- status: **PHONE RETEST PASS — UX-022 CLOSED**
 - installed phone APK: **v1.4.44-R1**
-- focus: **UX-022 Unified Window Title Emphasis — next planned work**
+- focus: **UX-022 Unified Window Title Emphasis**
 
 Stable build folder after signed build:
 
-`/storage/emulated/0/Download/YTM-v1.4.44-R1-build/`
+`/storage/emulated/0/Download/YTM-v1.4.45-build/`
 
 ## 2. BUG-013 reproduction
 
@@ -173,6 +173,26 @@ v1.4.44-R1:
 - rotate-back usability smoke: PASS;
 - UX-021 CLOSED.
 
+## 5B. v1.4.45 implementation
+
+UX-022 is implemented on `feat/v1.4.45-title-emphasis`:
+- shared `UiChrome.emphasizedTitle(...)` uses the active theme accent and bold type;
+- UiChrome dialog headers use the shared title helper;
+- Import, Review, History, Queue, Destination, Service, Data, Menu, Quota,
+  ListSelector, StorageChooser, and RecentFileChooser top-bar titles use the same helper;
+- existing per-screen title size / line-count constraints are preserved;
+- body/action styling and Home workflow-state semantics are intentionally unchanged.
+
+Phone QA is still required.
+
+### v1.4.45 phone result:
+- full-screen title emphasis: PASS;
+- representative dialog title emphasis: PASS;
+- Neon + alternate-theme accent behavior: PASS;
+- rotation/navigation smoke: PASS;
+- UX-022 CLOSED;
+- separate OAuth 403 `access_denied` observed for a non-approved account while the Google OAuth app remains in Testing; this is configuration, not a v1.4.45 UI regression.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -188,9 +208,9 @@ v1.4.44-R1:
 
 ## 7. Exact next execution step
 
-1. PR #16 is merged; v1.4.44-R1 phone PASS is preserved on the v1.4.44 branch.
-2. Keep PR #15 stacked on v1.4.43 PR #14 while BUG-013 stale-token acceptance remains deferred.
-3. Start the next UI release for UX-022 Unified Window Title Emphasis from the current v1.4.44 branch head.
+1. Run final post-QA documentation/preflight sync on v1.4.45.
+2. Merge PR #17 after that final preflight passes.
+3. Separately configure Google OAuth access for additional users: add test users while in Testing, or move the OAuth app toward Production/verification for broad access.
 4. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
