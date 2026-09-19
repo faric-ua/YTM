@@ -3,11 +3,14 @@ Version: 1.4.44-R1
 Version code: 84
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.44-R1 focus:
-- UX-021 corrective phone follow-up
-- compact `Системний вибір…` copy in wide Recent-file footer
-- boxed modal `Закрити` action instead of transparent text-only styling
-- v1.4.44 phone QA failed these two visual points
+Current v1.4.44-R1 status:
+- PHONE RETEST PASS
+- UX-021 CLOSED
+- compact `Системний вибір…` fits in the wide Recent-file footer
+- Storage save footer landscape smoke PASS
+- boxed modal `Закрити` PASS
+- rotate-back usability smoke PASS
+- next planned work: UX-022 Unified Window Title Emphasis
 - v1.4.43 auth freshness remains partially phone-tested; stale-token acceptance is deferred
 
 v1.4.12 NOT TESTED
@@ -44,6 +47,8 @@ v1.4.40 PARTIALLY PHONE-TESTED — RELEASE HISTORY PASS / BUG-004 AUTH FAIL REPR
 v1.4.41 PARTIALLY PHONE-TESTED — BROAD REAL-PHONE COVERAGE / NOT EXHAUSTIVE
 v1.4.41-R1 PARTIALLY PHONE-TESTED — BUG-011 PASS / SIMPLE YTM-1 PASS / STACKED SUFFIX FAIL
 v1.4.41-R2 PHONE RETEST PASS — UX-017 CLOSED
+v1.4.44 PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + FLAT CLOSE
+v1.4.44-R1 PHONE RETEST PASS — UX-021 CLOSED
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
