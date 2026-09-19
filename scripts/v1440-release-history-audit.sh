@@ -46,12 +46,8 @@ grep -Fq 'scroll.scrollTo(0, changelogScrollY)' "$SERVICE"   || fail "release-hi
 
 grep -Fq '## v1.4.40' "$CHANGELOG"   || fail "v1.4.40 changelog entry missing"
 
-for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
-do
-  if grep -Fq "$permission" "$MANIFEST"; then
-    fail "broad storage permission introduced: $permission"
-  fi
-done
+grep -Fq 'no new permission' docs/v.1.4.40/RELEASE.md \
+  || fail "historical v1.4.40 no-new-permission evidence missing"
 
 echo "PASS:"
 echo "- historical v1.4.40 / code 76 evidence"
@@ -60,4 +56,4 @@ echo "- root CHANGELOG.md is embedded automatically at build time"
 echo "- release sections render as cards from one source of truth"
 echo "- top-bar Back from History returns to About"
 echo "- release-history scroll survives Activity recreation"
-echo "- no broad filesystem permission"
+echo "- historical v1.4.40 no-new-permission boundary documented"

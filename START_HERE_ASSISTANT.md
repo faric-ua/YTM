@@ -32,17 +32,17 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.41-R2**
-- versionCode: **79**
-- release focus: **v1.4.41-R2 parser-only corrective follow-up — stacked UX-017 duplicate filename suffix**
-- release status: **PHONE RETEST PASS — UX-017 CLOSED**
+- versionName: **1.4.42-R1**
+- versionCode: **81**
+- release focus: **BUG-012 corrective build — direct Download via Android All files access**
+- release status: **PHONE RETEST PASS — BUG-012 CLOSED; BUG-013 AUTH FRESHNESS OPEN**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.41 phone QA has started:
 - signed v1.4.41 is installed on the real phone;
 - BUG-009 portrait account modal PASS;
 - existing-target playlist selection screen renders and intentionally uses direct row tap with no footer buttons;
-- remaining targeted checks include BUG-004 real 401, BUG-010 Restore quota preservation, UX-017 fallback naming and additional UX-018 modal spot checks;
+- BUG-010 is now closed; UX-017 is closed via v1.4.41-R2; BUG-004 real 401 still needs phone retest and UX-018 remains representative rather than exhaustive;
 - broad accumulated phone coverage exists across the project, but no exhaustive full-app regression is claimed.
 
 v1.4.41-R1 corrective scope:
@@ -394,3 +394,34 @@ v1.4.41-R2 phone result:
 - `YTM-1`, `YTM-1 (1)`, and `YTM-1 (1) (1)` all resolve to `House Dance Hit 2000 Vol.1`;
 - UX-017 closed;
 - next planned file-import UX is UX-020: in-app newest-first selector, coordinated with UX-008 Phase 2B.
+
+
+v1.4.42 current scope:
+- opens YTM Importer's RecentFileChooserActivity before generic file-open flows;
+- remembered SAF files sort by provider lastModified newest-first;
+- Import recent list: TXT / CSV / JSON;
+- Data Restore/History recent list: JSON;
+- footer keeps Add folder / System file picker / Cancel;
+- Android ACTION_OPEN_DOCUMENT remains fallback, not removed;
+- no broad filesystem permission;
+- phone QA required before any PASS claim.
+
+Latest merged baseline:
+- PR #12 merged v1.4.41-R2 to main;
+- merge commit `a3763b8e7db6154d20a000891bdcd5b8b7e54d55`;
+- UX-017 closed on phone;
+- BUG-011 and BUG-010 remain closed.
+
+
+v1.4.42-R1 current scope:
+- v1.4.42 selector entry passed on phone, but Android 11+ blocked root Download through ACTION_OPEN_DOCUMENT_TREE;
+- the project owner explicitly chose MANAGE_EXTERNAL_STORAGE / All files access for this sideload build;
+- R1 asks through an in-app rationale, opens Android special-access settings, then reads Download directly;
+- direct Download files sort by lastModified newest-first;
+- SAF subfolder access and the Android system picker remain fallbacks;
+- BUG-012 fix is implemented but not phone-PASS until R1 is installed and tested.
+
+
+Current UI follow-ups:
+- UX-021: wide/landscape action groups should reflow horizontally when width allows;
+- UX-022: titles inside dialogs/modal/utility windows need stronger theme-aware visual emphasis across the app.

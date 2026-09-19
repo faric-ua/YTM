@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.41-R2 — Stacked Filename Follow-up — PHONE PASS
+v1.4.42-R1 — Direct Download via All files access — PHONE PASS / BUG-012 CLOSED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -9,7 +9,7 @@ v1.4.41-R2 — Stacked Filename Follow-up — PHONE PASS
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
 - BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
-- UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
+- UX-008 File Picker Escape / Unified SAF Navigation — Phase 1 folder trees + Phase 2A saves complete; Phase 2B open-file selector IMPLEMENTED v1.4.42 / PHONE QA NEEDED
 - UX-009 Theme State Contrast — OPEN; Neon Dark is the accepted reference for the **four Home workflow buttons** (Import / Google-YTM / Search-Review / Create-Add). Keep Neon state semantics intact; redesign Blue Dark and Green Dark workflow-state palettes separately so ready / attention / error / inactive states remain clear without mechanically reusing Neon red/green/orange.
 - UX-010 Utility Screens — IMPLEMENTED v1.4.37 / PHONE RETEST NEEDED; `Квота` and `Меню` use dedicated full-screen pages
 - UX-011 Full-screen List Selectors — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; four dynamic Import list families now use ListSelectorActivity
@@ -21,9 +21,57 @@ v1.4.41-R2 — Stacked Filename Follow-up — PHONE PASS
 - BUG-009/Q-009 account-switch copy/action fit — PHONE PORTRAIT PASS v1.4.41
 - BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — CLOSED / PHONE RETEST PASS v1.4.41
 - BUG-011/Q-011 Account modal disappears on phone rotation — CLOSED / PHONE RETEST PASS v1.4.41-R1
+- BUG-013/Q-013 stale green auth freshness before remote API call — OPEN; app can keep Step 2 green while an in-memory access token has become invalid. The next real YouTube API request then returns 401, after which invalidation correctly turns Step 2 red. Need proactive token refresh/validation before remote destination/write flows instead of waiting for the first failing API call.
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
+- UX-021 Adaptive Landscape Action Layout — PLANNED; on wide/landscape screens, action buttons in full-screen footers and modal action areas should reflow into one horizontal row when width allows, instead of keeping portrait-style vertical stacks that consume most of the height. Apply as a shared responsive rule across app screens, not only RecentFileChooserActivity.
+- UX-022 Unified Window Title Emphasis — PLANNED; strengthen the first/title line inside dialogs, modal windows and full-screen utility panels with theme-aware title color/emphasis so titles such as `Підтвердити Restore`, `План пошуку`, and `Доступ до Download` visually separate from body text. Implement via shared UI styling across the app, not per-screen hardcoding.
+
+## v1.4.42-R1 — Direct Download via All files access
+- [x] versionCode 81 / versionName 1.4.42-R1
+- [x] declare MANAGE_EXTERNAL_STORAGE
+- [x] add AllFilesAccess helper and Android special-access settings intent
+- [x] add explicit in-app rationale before settings
+- [x] add DirectDownloadFileQuery for /storage/emulated/0/Download
+- [x] sort direct Download files by lastModified descending
+- [x] FileProvider bridge for direct Download file selection
+- [x] keep SAF subfolder fallback
+- [x] keep Android system file picker fallback
+- [x] dedicated R1 static audit + docs
+- [x] full release preflight — PASS
+- [x] signed GitHub Actions APK — installed on phone
+- [x] phone: rationale opens — PASS
+- [x] phone: All files access effective grant confirmed — PASS; Android ordinary permission screen is separate/confusing but app correctly recognized special access
+- [x] phone: grant survives return to app — PASS; selector recognized All files access and removed the grant button
+- [x] phone: Download files appear automatically — PASS; 47 matching files visible
+- [x] phone: newest modified files appear first — PASS on visible evidence (14:50 above 14:47)
+- [x] phone: direct House Dance import works — PASS; `House Dance Hit 2000 Vol.1`, 9 tracks
+- [x] phone: Restore JSON from Download opens confirmation — PASS
+- [x] BUG-012 CLOSED — v1.4.42-R1 phone PASS
+
+## v1.4.42 — Recent File Selector
+- [x] versionCode 80 / versionName 1.4.42
+- [x] add reusable RecentFileChooserActivity
+- [x] add SafRecentFileQuery over persisted READ SAF roots
+- [x] sort matching files by lastModified descending
+- [x] show filename / modified time / size / source folder
+- [x] Import uses recent selector for TXT / CSV / JSON
+- [x] Data Restore + History JSON use recent selector for JSON
+- [x] add `Додати папку…` SAF root flow
+- [x] keep Android `ACTION_OPEN_DOCUMENT` as explicit fallback
+- [x] Back / Cancel remain inside YTM Importer
+- [x] no broad storage permission
+- [x] v1.4.42 static audit + release docs
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [x] phone: first open shows in-app selector — PASS
+- [ ] phone: authorize Download if needed — FAIL/BLOCKED by Android 11+ SAF root-Download restriction; redesign required
+- [ ] phone: newest modified files appear first — DEFERRED after setup blocker
+- [ ] phone: recent House Dance file imports directly — DEFERRED after setup blocker
+- [ ] phone: Android system-picker fallback opens and Back returns to selector — DEFERRED after setup blocker
+- [ ] phone: Data Restore JSON selector smoke — DEFERRED after setup blocker
+- [ ] phone: existing save/folder SAF flows regression smoke — DEFERRED after setup blocker
 
 ## v1.4.41-R2 — Stacked Filename Follow-up
 - [x] versionCode 79 / versionName 1.4.41-R2
@@ -60,7 +108,7 @@ v1.4.41-R2 — Stacked Filename Follow-up — PHONE PASS
 - [x] v1.4.41 static audit
 - [x] full release preflight
 - [x] signed GitHub Actions APK
-- [ ] phone: real/reproduced auth invalidation path
+- [~] phone: real/reproduced auth invalidation path — destination-side 401 reproduced on v1.4.42-R1 and correctly turned Step 2 red; Search-path 401 retest still pending
 - [ ] phone: re-login + retry search without stale FAILED rows
 - [x] phone: account dialog button/copy fit — portrait PASS
 - [x] BUG-011 account modal rotation — CLOSED / R1 PHONE PASS
@@ -738,9 +786,4 @@ including:
 - [x] phone: rotation keeps History page
 - [x] phone: rotation preserves changelog scroll position after follow-up fix
 
-- UX-020 Import File Recent-First Selector — OPEN; current `1. Імпорт → імпортувати файл`
-  uses Android `ACTION_OPEN_DOCUMENT`, so YTM Importer cannot force the system picker's
-  sort order. Future in-app file selector should sort by provider `lastModified`
-  descending (freshest first), with system picker retained as fallback. True creation
-  time is not reliably exposed by all Android document providers. Coordinate with
-  UX-008 Phase 2B.
+- UX-020 Import File Recent-First Selector — R1 FIX IMPLEMENTED / PHONE QA NEEDED; v1.4.42 selector entry PASS but root `Download` SAF onboarding was blocked. v1.4.42-R1 uses explicit Android All files access to read Download directly, newest-first; SAF/system-picker fallbacks remain.

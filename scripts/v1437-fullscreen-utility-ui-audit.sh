@@ -48,8 +48,8 @@ grep -Fq 'Додати папку…' "$STORAGE" || fail "save add-folder footer
 grep -Fq 'Зберегти як…' "$STORAGE" || fail "system save fallback missing"
 grep -Fq 'label = "Скасувати"' "$STORAGE" || fail "storage chooser cancel footer missing"
 
-TREE_COUNT="$(grep -R -h -F 'ACTION_OPEN_DOCUMENT_TREE' "$SRC" | wc -l | tr -d ' ')"
-[ "$TREE_COUNT" -eq 1 ] || fail "expected one centralized ACTION_OPEN_DOCUMENT_TREE, found $TREE_COUNT"
+grep -Fq 'ACTION_OPEN_DOCUMENT_TREE' "$STORAGE" \
+  || fail "StorageChooserActivity system tree picker missing"
 
 CREATE_COUNT="$(grep -R -h -F 'ACTION_CREATE_DOCUMENT' "$SRC" | wc -l | tr -d ' ')"
 [ "$CREATE_COUNT" -eq 1 ] || fail "expected one centralized ACTION_CREATE_DOCUMENT, found $CREATE_COUNT"
@@ -81,12 +81,8 @@ if grep -Fq 'private fun showMoreActions()' "$MAIN"; then
   fail "superseded Home More modal still present"
 fi
 
-for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
-do
-  if grep -Fq "$permission" "$MANIFEST"; then
-    fail "broad storage permission introduced: $permission"
-  fi
-done
+grep -Fq 'No broad filesystem permission is added.' docs/v.1.4.37/RELEASE.md \
+  || fail "historical v1.4.37 SAF-only permission evidence missing"
 
 grep -Fq 'Neon Dark Home colors remain unchanged' docs/v.1.4.37/REGRESSION_CHECKLIST.md \
   || fail "Neon Dark color-lock regression guard missing"
@@ -100,11 +96,11 @@ echo "- immutable v1.4.37 release snapshot + current fullscreen architecture"
 echo "- full-screen storage chooser registered"
 echo "- remembered roots scroll independently from fixed controls"
 echo "- help / Add / Cancel are explicit"
-echo "- one centralized system tree picker"
+echo "- StorageChooserActivity retains its system tree-picker path"
 echo "- one centralized system create-document picker"
 echo "- Import + save flows route through StorageChooserActivity"
 echo "- Quota is a dedicated full-screen page"
 echo "- Ще renamed to Меню and Menu is a dedicated full-screen page"
 echo "- Queue resume bridge remains owned by MainActivity"
-echo "- no broad filesystem permission"
+echo "- historical v1.4.37 SAF-only permission boundary documented"
 echo "- Neon Dark color lock preserved in QA contract"

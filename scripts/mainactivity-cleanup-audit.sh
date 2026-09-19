@@ -9,8 +9,9 @@ fail() {
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 IMPORT="app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 REVIEW="app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
+CHOOSER="app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt"
 
-for f in "$MAIN" "$IMPORT" "$REVIEW"; do
+for f in "$MAIN" "$IMPORT" "$REVIEW" "$CHOOSER"; do
   test -f "$f" || fail "missing file: $f"
 done
 
@@ -67,15 +68,19 @@ do
     || fail "MainActivity does not navigate to ${dedicated}"
 done
 
-# The original permissive Android file picker must remain in ImportActivity.
-grep -q 'Intent(Intent.ACTION_OPEN_DOCUMENT)' "$IMPORT" \
-  || fail "ImportActivity ACTION_OPEN_DOCUMENT picker missing"
-grep -q 'addCategory(Intent.CATEGORY_OPENABLE)' "$IMPORT" \
-  || fail "ImportActivity CATEGORY_OPENABLE missing"
-grep -Fq 'type = "*/*"' "$IMPORT" \
-  || fail 'ImportActivity file picker type must remain "*/*"'
-grep -q 'startActivityForResult(intent, fileRequestCode)' "$IMPORT" \
-  || fail "ImportActivity file picker request code missing"
+# Import owns parsing, but file selection now enters the in-app recent-file
+# selector first. The original permissive Android picker remains inside that selector
+# as an explicit fallback.
+grep -Fq 'RecentFileChooserActivity::class.java' "$IMPORT" \
+  || fail "ImportActivity does not route through RecentFileChooserActivity"
+grep -Fq 'RecentFileChooserActivity.EXTRA_MIME_TYPE' "$IMPORT" \
+  || fail "ImportActivity recent-file MIME contract missing"
+grep -Fq '"*/*"' "$IMPORT" \
+  || fail 'ImportActivity fallback picker must stay permissive "*/*"'
+grep -Fq 'Intent.ACTION_OPEN_DOCUMENT' "$CHOOSER" \
+  || fail "RecentFileChooserActivity system fallback picker missing"
+grep -Fq 'Intent.CATEGORY_OPENABLE' "$CHOOSER" \
+  || fail "RecentFileChooserActivity CATEGORY_OPENABLE missing"
 
 # Main still owns the bridges/core that have not yet been extracted.
 for required in \
@@ -97,5 +102,5 @@ echo "PASS:"
 echo "- MainActivity reduced to $LINES lines"
 echo "- legacy Import/Data/History/Service/Pending-detail/Review-detail flows removed"
 echo "- dedicated activities remain the UI owners"
-echo "- permissive file picker remains in ImportActivity"
+echo "- recent-file selector owns system picker fallback; ImportActivity remains parser owner"
 echo "- auth/search/write/resume/history-sync bridges remain intact"

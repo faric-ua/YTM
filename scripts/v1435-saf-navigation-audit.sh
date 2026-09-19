@@ -23,14 +23,10 @@ grep -Fq 'object SafTreeAccess' "$SAF" || fail "SafTreeAccess missing"
 grep -Fq 'persistedUriPermissions' "$SAF" || fail "persisted SAF catalog missing"
 grep -Fq 'takePersistableUriPermission' "$SAF" || fail "persistable SAF helper missing"
 
-for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
-do
-  if grep -Fq "$permission" "$MANIFEST"; then
-    fail "broad storage permission introduced: $permission"
-  fi
-done
+grep -Fq 'No broad filesystem permission is added.' docs/v.1.4.35/RELEASE.md \
+  || fail "historical v1.4.35 SAF-only permission evidence missing"
 
 echo "PASS:"
 echo "- immutable v1.4.35 SAF release snapshot present"
 echo "- persisted SAF permission foundation still present"
-echo "- no broad filesystem permission"
+echo "- historical v1.4.35 SAF-only permission boundary documented"

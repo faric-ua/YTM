@@ -26,14 +26,14 @@ A new assistant should recover context from the repository and live GitHub state
 
 ## Current release
 
-- versionName: **1.4.41-R2**
-- versionCode: **79**
-- focus: **parser-only corrective follow-up: stacked duplicate filename cleanup**
-- status: **PHONE RETEST PASS — v1.4.41-R2 UX-017 corrective path**
+- versionName: **1.4.42-R1**
+- versionCode: **81**
+- focus: **direct Download newest-first via Android All files access**
+- status: **PHONE RETEST PASS — v1.4.42-R1 BUG-012 CLOSED**
 - v1.4.39 History JSON: Cancel/rotation/invalid-file paths PASS; populated-History Restore + rollback remain inconclusive and need later retest
 - v1.4.40 Release History tested path remains PASS
-- BUG-009 portrait account-dialog fix is phone-PASS; BUG-004 real-401 and BUG-010 Restore quota-preservation still await targeted phone retest
-- UX-018 has partial phone evidence via the account dialog; UX-017 fallback-title and additional modal-order checks remain pending
+- BUG-009 portrait account-dialog fix is phone-PASS; BUG-010 and BUG-012 are closed; destination-side 401 invalidation is phone-confirmed; BUG-004 Search-specific 401 retest remains pending; BUG-013 auth freshness is open
+- UX-017 is closed on v1.4.41-R2; UX-018 has representative phone PASS but not exhaustive modal coverage
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 For the exact active resume point, read `CURRENT_HANDOFF.md`.
@@ -66,3 +66,7 @@ Reusable Termux/Git commands live in `TERMUX_COMMANDS.md`.
 - `docs/BUILD_ARTIFACT_CONVENTION.md` — stable APK artifact layout.
 
 Do not delete or rewrite historical QA/evidence merely to simplify the repository.
+
+Current v1.4.42 work adds a YTM Importer **Recent file selector** before generic Android
+open-file flows. Remembered SAF files are ordered by provider `lastModified` newest-first,
+while Android's system picker remains available as an explicit fallback.

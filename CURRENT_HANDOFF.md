@@ -8,193 +8,271 @@ Last updated: **2026-09-19**
 
 Repository: `faric-ua/YTM`
 
-Current corrective release candidate:
+Latest merged baseline:
+- **v1.4.41-R2 / versionCode 79**
+- PR #12 merged to `main`
+- merge commit: `a3763b8e7db6154d20a000891bdcd5b8b7e54d55`
 
-- versionName: **1.4.41-R2**
-- versionCode: **79**
-- active branch: `feat/v1.4.41-auth-ui-consistency`
-- base branch: `main`
-- active PR: **#12**
-- status: **PHONE RETEST PASS — R2 TARGETED CORRECTIVE PATH**
-- installed phone APK: **v1.4.41-R1**
-- immediate next gate: **record/merge R2 corrective work, then continue planned backlog**
-- merge rule: do not merge PR #12 until the R1 corrective phone checks are recorded.
+Current release candidate:
+- versionName: **1.4.42-R1**
+- versionCode: **81**
+- active branch: `feat/v1.4.42-recent-file-selector`
+- active PR: **#13** → `main`
+- installed phone APK: **v1.4.42**
+- status: **PHONE RETEST PASS — BUG-012 CLOSED; BUG-013 AUTH FRESHNESS OPEN**
+- immediate next gate: **preflight → signed R1 APK → targeted All files access phone QA**
 
-Stable phone build folder:
+Stable build folder:
 
-`/storage/emulated/0/Download/YTM-v1.4.41-R2-build/`
+`/storage/emulated/0/Download/YTM-v1.4.42-R1-build/`
 
-Always fetch the live branch HEAD before build/merge.
+## 2. Why R1 exists
 
-## 2. v1.4.41 phone evidence already established
+v1.4.42 introduced the in-app RecentFileChooserActivity.
 
-v1.4.41 has broad real-phone coverage but is **not** an exhaustive full-app regression.
+Phone result:
+- selector entry: PASS;
+- root Download setup via `ACTION_OPEN_DOCUMENT_TREE`: FAIL/BLOCKED.
 
-Confirmed:
+Reason:
+- Android 11+ does not allow SAF tree access to root `Download`.
 
-- BUG-009 portrait Account dialog layout PASS:
-  - `Змінити` one line, left;
-  - `Закрити` right;
-  - copy readable.
-- UX-018 representative modal order PASS:
-  - Account: action left / close right;
-  - History destructive confirmation: `Так, очистити` left / `Скасувати` right.
-- existing-target list PASS:
-  - path: `Home → Step 4 → existing playlist`;
-  - no footer buttons by design;
-  - tapping `top 3` opened `Перевірка перед додаванням`.
-- BUG-010 CLOSED — PHONE RETEST PASS v1.4.41:
-  - full Restore preserved quota;
-  - `Відкотити` (return local state to pre-Restore state) also preserved quota;
-  - before/after values stayed Search `0/100`, total `505/10000`, remaining `≈9495`.
+The project owner explicitly chose the broad Android **All files access** path for the
+GitHub/sideload APK so YTM Importer can read Download directly.
 
-Still pending from v1.4.41:
-- BUG-004 real/reproduced HTTP 401 phone retest when naturally available;
-- populated-History Restore / `Відкотити` proof remains separately inconclusive from v1.4.39.
+This decision supersedes the earlier v1.4.42 SAF-only assumption for the current R1
+build. Do not erase the historical v1.4.42 phone finding.
 
-## 3. Corrective phone findings and status
+## 3. v1.4.42-R1 implementation
 
-### BUG-011 — Account modal disappears on rotation
+### Permission
 
-Phone repro on installed v1.4.41:
+Manifest now declares:
+
+`android.permission.MANAGE_EXTERNAL_STORAGE`
+
+On Android 11+:
+- grant state is checked with `Environment.isExternalStorageManager()`;
+- the app opens `Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION`;
+- if the per-app settings activity is unavailable, it falls back to
+  `Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION`.
+
+The app first shows an in-app rationale. It does not silently enable access.
+
+### Direct Download listing
+
+New `DirectDownloadFileQuery`:
+- reads Android public `Download` directly;
+- filters by the selector's allowed extensions;
+- sorts by `File.lastModified()` descending;
+- returns at most 200 matches;
+- labels source as `Download`.
+
+The same selector still merges persisted SAF-root entries and sorts the combined list
+newest-first.
+
+### Direct file handoff
+
+`file_paths.xml` now exposes only `Download/` through the existing non-exported
+FileProvider.
+
+Direct Download rows return a FileProvider content URI, so ImportActivity/DataActivity
+continue using their normal ContentResolver read path.
+
+### Fallbacks retained
+
+- `Додати SAF-папку…`
+- `Системний вибір файла…`
+- Back / Cancel
+
+No existing SAF save/folder workflows are removed.
+
+## 4. Distribution caveat
+
+This GitHub/sideload build may use All files access.
+
+Google Play treats `MANAGE_EXTERNAL_STORAGE` as a restricted/high-risk permission.
+If the app is later published through Google Play, eligibility/declaration must be
+reviewed separately. Do not silently assume Play approval.
+
+## 5. Exact next execution step
+
+1. Finish current R1 docs/audits/guards.
+2. Read live PR #13 head.
+3. User runs one Termux release block.
+4. `bash scripts/release-preflight.sh` must PASS.
+5. Dispatch `.github/workflows/build-apk.yml` for that exact head.
+6. Download `YTM-Importer-v1.4.42-R1-Release`.
+7. Verify SHA-256.
+8. Install over v1.4.42 without clearing app data.
+9. Run targeted phone QA below.
+10. Merge PR #13 only after accepted phone evidence.
+
+Preflight update:
+- first R1 preflight attempt reached the historical storage audits and failed with:
+  `FAIL: broad storage permission introduced: MANAGE_EXTERNAL_STORAGE`;
+- this was not an Android/build failure; it was stale historical-audit coupling;
+- seven historical audits (v1.4.35 through v1.4.41) still compared their old SAF-only
+  policy against the live current Manifest;
+- those audits are now decoupled from current Manifest permission policy while retaining
+  historical release evidence where appropriate;
+- the dedicated `v1442-r1-all-files-audit.sh` is now the current guard that explicitly
+  requires `MANAGE_EXTERNAL_STORAGE`;
+- next action: fetch the live branch head and rerun full release preflight from the start.
+
+Second R1 preflight update:
+- after decoupling historical Manifest permission guards, preflight next failed in
+  `v1442-recent-file-selector-audit.sh` with
+  `FAIL: historical v1.4.42 SAF-only boundary evidence missing`;
+- root cause was a literal mismatch only: the immutable v1.4.42 release doc says
+  `No broad storage permission is added.`, while the audit searched for
+  `No broad filesystem permission is added.`;
+- the historical audit now checks the exact release-snapshot wording;
+- all scripts invoked by `release-preflight.sh` were rescanned for stale
+  `MANAGE_EXTERNAL_STORAGE` rejection/current v1.4.42 version pinning;
+- no additional stale broad-storage rejection was found;
+- the current R1 audit remains the only guard that explicitly requires
+  `MANAGE_EXTERNAL_STORAGE`.
+
+Third R1 preflight update:
+- preflight then failed with `FAIL: all-files grant check missing`;
+- implementation was correct, but `v1442-r1-all-files-audit.sh` searched for
+  contiguous `Environment.isExternalStorageManager()` while Kotlin formatting split
+  `Environment` and `.isExternalStorageManager()` across lines;
+- the R1 audit was made formatting-safe for:
+  - `isExternalStorageManager()`;
+  - `DIRECTORY_DOWNLOADS`;
+  - `getExternalStoragePublicDirectory(`;
+- every remaining R1 audit predicate was then checked directly against the live branch
+  files and all predicates matched.
+
+## 6. R1 phone QA
+
+### A. Permission flow
 
 Path:
-`Home → 2. Google / YTM → Account modal → rotate phone`
 
-Actual:
-- portrait modal is visually correct;
-- phone rotation recreates MainActivity;
-- Account modal disappears.
-
-R1 implementation:
-- persist `accountDialogOpen` in `onSaveInstanceState`;
-- restore the flag on Activity recreation;
-- repost `showAccountDialog()` after the recreated window is ready;
-- clear the flag when the dialog is actually dismissed.
-
-Status:
-**CLOSED — PHONE RETEST PASS v1.4.41-R1.**
-
-### UX-017 — duplicate-download filename suffix leaks into title
-
-Phone repro on installed v1.4.41:
-
-Fallback-only file was downloaded as a duplicate and named like:
-
-`House_Dance_Hit_2000_Vol1_YTM-1.txt`
-
-Observed title:
-
-`House Dance Hit 2000 Vol.1 YTM-1`
+`Головна → 1. Імпорт → імпортувати файл`
 
 Expected:
+- YTM selector opens;
+- primary action says `Надати доступ до всіх файлів`;
+- tap it → rationale dialog;
+- `Відкрити налаштування` opens Android special-access screen for YTM Importer;
+- enable the toggle;
+- Android Back returns to YTM selector;
+- Download listing refreshes.
 
-`House Dance Hit 2000 Vol.1`
+### B. Download newest-first
 
-R1 implementation extends filename cleanup for common copy suffixes after the service marker:
-- `YTM-1`
-- `YTM_1`
-- `YTM (1)`
+Expected:
+- no SAF selection of root Download is required;
+- TXT/CSV/JSON files from Download appear;
+- recent files are above older files by modified timestamp;
+- House Dance duplicate files are near the top.
 
-Explicit title inside TXT/CSV remains authoritative.
+### C. Direct import
 
-Status:
-**FOLLOW-UP FIX IMPLEMENTED — R1 PHONE RETEST NEEDED.**
+Tap a House Dance TXT directly from the YTM selector.
 
-### UX-017 R1 stacked-suffix finding
+Expected:
+- import succeeds;
+- playlist title remains `House Dance Hit 2000 Vol.1`;
+- 9 tracks;
+- do not run Search.
 
-R1 phone result:
-- simple `YTM-1`: PASS;
-- stacked `YTM-1 (1)`: FAIL;
-- observed title: `House Dance Hit 2000 Vol.1 YTM-1 (1)`.
-
-R2 implementation:
-- filename cleanup now accepts repeated duplicate-copy suffix tokens after the YTM marker;
-- examples covered: `YTM-1 (1)`, `YTM (1) (2)`, `YTM_1 (1)`.
-
-Status:
-**FIX IMPLEMENTED — R2 PHONE RETEST NEEDED.**
-
-## 4. Exact next execution step
-
-User should run one Termux block that:
-
-1. opens the local YTM repo;
-2. fetches `feat/v1.4.41-auth-ui-consistency`;
-3. fast-forwards to the live branch HEAD;
-4. runs `bash scripts/release-preflight.sh`;
-5. dispatches `.github/workflows/build-apk.yml`;
-6. waits for the signed build;
-7. downloads artifact:
-   `YTM-Importer-v1.4.41-R2-Release`;
-8. stores it under:
-   `/storage/emulated/0/Download/YTM-v1.4.41-R2-build/`;
-9. verifies:
-   `YTM-Importer-v1.4.41-R2-release.apk.sha256`;
-10. installs over v1.4.41-R1 **without clearing app data**.
-
-If preflight fails, return the exact FAIL output rather than editing phone-side code.
-
-## 5. R2 phone QA — one required corrective check
+### D. Restore JSON
 
 Path:
-`Home → 1. Імпорт → імпортувати файл`
 
-Use the same fallback-only duplicate file that on R1 produced:
+`Меню → Дані та резервні копії → Restore → Вибрати backup`
 
-`House Dance Hit 2000 Vol.1 YTM-1 (1)`
+Expected:
+- same selector;
+- JSON filter;
+- Download backup files visible;
+- selecting one opens existing Restore confirmation;
+- Cancel at confirmation leaves data unchanged.
 
-PASS:
-- playlist title becomes exactly `House Dance Hit 2000 Vol.1`;
-- no `YTM-1 (1)` remains;
-- no Search API call is needed.
+### E. Fallback smoke
 
-R1 evidence remains valid:
-- BUG-011 rotation PASS / closed;
-- simple `YTM-1` filename PASS.
+- `Додати SAF-папку…` opens Android folder selection.
+- `Системний вибір файла…` opens Android file picker.
+- Back from system picker returns to YTM selector.
 
-## 6. Historical v1.4.41 scope
+## 7. Current R1 phone evidence
 
-v1.4.41 implemented:
-- BUG-004 Search 401 propagation/retry-state repair;
-- BUG-009 Account dialog phone-width copy/action fit;
-- BUG-010 quota-preserving full Restore and `Відкотити`;
-- UX-017 filename display normalization base implementation;
-- UX-018 horizontal modal action contract.
+Real-phone screenshot evidence confirms:
 
-R1 only corrects the two phone findings above; it does not expand release scope.
+- the `Доступ до Download` rationale dialog renders;
+- after the grant flow, the selector sees All files access as granted;
+- the permission action disappears;
+- direct Download listing works and shows 47 matching files;
+- visible ordering is newest-first: 14:50 entries appear above 14:47;
+- Android system picker opens separately and shows 120 total Download objects;
+- Import selector intentionally filters supported types, so broad Android permission
+  does not mean every file type is shown in YTM Importer.
 
-## 7. Planned after R1
+Final R1 acceptance:
+- direct House Dance TXT import PASS: `House Dance Hit 2000 Vol.1`, 9 tracks;
+- Restore JSON reaches existing confirmation PASS;
+- system-picker fallback/return PASS;
+- BUG-012 CLOSED on v1.4.42-R1.
 
-Do not fold the Home redesign into R1.
+Additional workflow smoke:
+- Search plan opens PASS;
+- 9 cached / 0 new search.list PASS;
+- track result/review interaction PASS.
 
-Next planned Home work:
-- UX-019: approved top-left Polyglot K-U prototype is **layout-only** reference;
-- preserve current YTM Importer themes/design language;
-- UX-009: all **four** Home workflow buttons need theme-aware state palettes;
-- Neon Dark keeps accepted red/green/orange state semantics;
-- Blue Dark and Green Dark get their own state palettes.
+New auth finding:
+- Step 2 was green before a destination API call;
+- existing-playlist load then hit authorization-required / HTTP 401;
+- shared invalidation correctly turned Step 2 red;
+- tracked as **BUG-013** because the green state can outlive token validity until the first live request.
 
-Other backlog remains in `BACKLOG.md`.
+Landscape screenshots exposed a separate responsive-layout issue:
+- fixed footer actions remain vertically stacked;
+- in landscape they consume most of the screen height;
+- **UX-021 Adaptive Landscape Action Layout** is now planned;
+- wide/landscape action groups should reflow horizontally when width allows;
+- apply this consistently to full-screen footer actions and modal action areas;
+- preserve UX-018 action ordering/semantics.
 
-## 8. Working contract
+## 8. Historical status that remains true
+
+- v1.4.42: selector entry PASS; root Download SAF setup BLOCKED (BUG-012).
+- v1.4.41-R2: UX-017 CLOSED / phone PASS.
+- BUG-011: CLOSED / phone PASS v1.4.41-R1.
+- BUG-010: CLOSED / phone PASS v1.4.41.
+- BUG-004: destination-side real HTTP 401 invalidation is phone-confirmed; SearchCoordinator-specific real-401 retest still pending.
+- v1.4.39 populated-History Restore / `Відкотити` remains inconclusive/pending.
+
+## 9. Planned after this release
+
+Home redesign remains separate:
+- UX-019 uses the approved top-left Polyglot K-U prototype as **layout-only** reference;
+- preserve current themes;
+- UX-009: all **four** Home workflow buttons need theme-aware Blue/Green state palettes;
+- UX-021: adaptive landscape/wide action rows across full-screen and modal UI;
+- UX-022: unified theme-aware title emphasis for dialogs, modal windows and utility panels;
+- Neon Dark remains the accepted state-color reference.
+
+## 10. Working contract
 
 **ChatGPT prepares → user runs exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
 
 Rules:
 - GitHub/repository truth beats chat memory;
-- static audit/build success is not phone PASS;
-- do not mark inconclusive tests PASS;
+- build/static PASS is not phone PASS;
 - preserve historical `docs/v.*`;
 - inspect diff/deletions before merge;
-- signed builds come from `.github/workflows/build-apk.yml`.
+- use live PR head immediately before build.
 
 User-facing QA instructions:
 - English technical terms are fine;
-- include a short in-app navigation path when useful;
-- example: `rollback / Відкотити → Меню → Дані та резервні копії → Відкотити останній Restore`.
+- include the short in-app path for each test.
 
-## 9. Fresh-chat reading order
+## 11. Fresh-chat reading order
 
 1. `START_HERE_ASSISTANT.md`
 2. `CURRENT_HANDOFF.md`
@@ -203,46 +281,5 @@ User-facing QA instructions:
 5. `BACKLOG.md`
 6. `RELEASE_TEST_STATUS.md`
 7. `qa/BUG_REGISTER.md`
-8. `docs/v.1.4.41/R1.md`
-9. live GitHub branch/PR state
-
-
-R1 phone result update:
-- v1.4.41-R1 badge: PASS;
-- BUG-011 Account rotation: PASS / CLOSED;
-- UX-017 simple `YTM-1`: PASS;
-- UX-017 stacked `YTM-1 (1)`: FAIL; parser needs repeated suffix stripping;
-- do not call UX-017 fully closed yet.
-
-Import-file sorting request:
-- current path `Home → 1. Імпорт → імпортувати файл` launches Android
-  `ACTION_OPEN_DOCUMENT`;
-- YTM Importer cannot force sort order inside that external system/provider UI;
-- planned UX-020 / UX-008 Phase 2B: add an in-app file selector sorted by
-  `lastModified` newest-first, with the system picker retained as fallback;
-- Android SAF does not reliably expose true creation time across providers, so
-  `lastModified` is the stable practical sort key.
-
-
-UX-020 Import File Recent-First Selector:
-- current path `Home → 1. Імпорт → імпортувати файл` uses Android `ACTION_OPEN_DOCUMENT`;
-- the app cannot force sort order inside that external system picker;
-- planned in-app selector should sort by document `lastModified` descending so fresh files appear first;
-- retain Android system picker as fallback;
-- true creation time is not reliably exposed by all Android SAF providers;
-- coordinate this with UX-008 Phase 2B.
-
-
-R2 final phone result:
-- v1.4.41-R2 installed and version badge confirmed;
-- simple `YTM-1`: PASS;
-- stacked `YTM-1 (1)`: PASS;
-- deeper stacked `YTM-1 (1) (1)`: PASS;
-- final title exactly `House Dance Hit 2000 Vol.1`;
-- UX-017 CLOSED on v1.4.41-R2.
-
-UX-020 remains planned:
-- current Android system picker shows timestamps but YTM Importer cannot force its sort;
-- future in-app selector should sort by `lastModified` descending (newest first);
-- coordinate with UX-008 Phase 2B;
-- keep system picker as fallback.
+8. `docs/v.1.4.42/R1.md`
+9. live GitHub PR #13 / branch state

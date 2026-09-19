@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.41-R2
-Version code: 79
+Version: 1.4.42-R1
+Version code: 81
 Current live resume snapshot: CURRENT_HANDOFF.md
 
 v1.4.12 NOT TESTED
@@ -610,3 +610,45 @@ UX-017 CLOSED — PHONE RETEST PASS v1.4.41-R2
 - clean title confirmed for YTM-1 (1)
 - clean title confirmed for YTM-1 (1) (1)
 - expected title: House Dance Hit 2000 Vol.1
+
+
+v1.4.42 NOT PHONE-TESTED YET — RECENT FILE SELECTOR / UX-008 PHASE 2B
+
+v1.4.42 focus:
+- RecentFileChooserActivity before generic open-file flows
+- SafRecentFileQuery over persisted READ SAF roots
+- newest-first order by provider lastModified
+- Import TXT/CSV/JSON recent list
+- Data Restore/History JSON recent list
+- add-folder flow + explicit Android system picker fallback
+- direct-child remembered-root scope, max 200 matching files
+- no broad storage permission
+- branch: feat/v1.4.42-recent-file-selector
+- phone QA required before PASS
+
+v1.4.41-R2 remains PHONE RETEST PASS — UX-017 CLOSED.
+
+
+v1.4.42 PARTIAL PHONE QA — selector entry PASS / root Download SAF setup BLOCKED (BUG-012)
+v1.4.42-R1 NOT PHONE-TESTED YET — ALL-FILES DIRECT DOWNLOAD CORRECTIVE BUILD
+
+v1.4.42-R1 focus:
+- MANAGE_EXTERNAL_STORAGE declared for Android 11+ sideload build
+- explicit in-app rationale before Android special-access settings
+- direct /storage/emulated/0/Download listing after user grant
+- newest-first order by File.lastModified()
+- FileProvider bridge for selecting direct Download files
+- SAF subfolder + system picker fallbacks retained
+- BUG-012 phone retest required
+
+
+v1.4.42-R1 PHONE RETEST PASS — BUG-012 CLOSED
+- All files access recognized on real phone
+- direct Download list: 47 matching files, newest-first visible evidence PASS
+- direct House Dance import PASS: House Dance Hit 2000 Vol.1 / 9 tracks
+- Restore JSON reaches confirmation PASS
+- system-picker fallback/return PASS
+- Search plan smoke: 9 cached / 0 new search.list PASS
+- BUG-013 OPEN: Step 2 can remain green until the first live API request discovers stale token and turns auth red
+- UX-021 PLANNED: adaptive horizontal action rows on wide/landscape UI
+- UX-022 PLANNED: stronger theme-aware title emphasis in dialogs/modal/utility windows
