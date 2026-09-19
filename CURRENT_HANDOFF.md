@@ -20,7 +20,7 @@ Current release candidate:
 - signed v1.4.41 APK: **not built yet**
 - immediate next gate: **release preflight → signed GitHub Actions APK → targeted phone QA**
 - active PR: **#12 — v1.4.41: auth/search recovery and UI consistency** → `main`
-- latest branch head prepared for build: `541dc90093f69785e46a66f643ae11b404c8a51e`
+- code baseline prepared for build: `541dc90093f69785e46a66f643ae11b404c8a51e`; later commits may be documentation/handoff-only, so always read the live branch HEAD before build and verify this baseline is an ancestor
 - PR #12 mergeability: **mergeable / no branch conflict**
 - merge rule: do not merge PR #12 until targeted real-phone QA is recorded
 
@@ -119,7 +119,7 @@ Horizontal modal contract:
 The next user action is the Termux release gate on the exact prepared head:
 
 - switch to `feat/v1.4.41-auth-ui-consistency`;
-- require HEAD = `541dc90093f69785e46a66f643ae11b404c8a51e`;
+- fetch/pull the live branch HEAD and verify `541dc90093f69785e46a66f643ae11b404c8a51e` is an ancestor of HEAD;
 - run `bash scripts/release-preflight.sh`;
 - if preflight PASS, dispatch `.github/workflows/build-apk.yml`;
 - wait for the signed build;
