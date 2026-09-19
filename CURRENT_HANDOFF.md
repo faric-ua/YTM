@@ -2,249 +2,206 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Use it when a ChatGPT chat/node hangs, loses context, or a new assistant takes over mid-release.
-
 Last updated: **2026-09-19**
 
 ## 1. Resume point
 
 Repository: `faric-ua/YTM`
 
-Current release candidate:
+Current corrective release candidate:
 
-- versionName: **1.4.41**
-- versionCode: **77**
+- versionName: **1.4.41-R1**
+- versionCode: **78**
 - active branch: `feat/v1.4.41-auth-ui-consistency`
 - base branch: `main`
-- status: **PARTIALLY PHONE-TESTED — BROAD REAL-PHONE COVERAGE, NOT EXHAUSTIVE**
-- signed v1.4.41 APK: **built and installed on the real phone**
-- immediate next gate: **continue targeted v1.4.41 phone QA; do not claim exhaustive regression**
-- active PR: **#12 — v1.4.41: auth/search recovery and UI consistency** → `main`
-- code baseline prepared for build: `541dc90093f69785e46a66f643ae11b404c8a51e`; later commits may be documentation/handoff-only, so always read the live branch HEAD before build and verify this baseline is an ancestor
-- PR #12 mergeability: **mergeable / no branch conflict**
-- merge rule: do not merge PR #12 until targeted real-phone QA is recorded
+- active PR: **#12**
+- status: **NOT PHONE-TESTED YET — TARGETED CORRECTIVE BUILD**
+- installed phone APK: **v1.4.41** (does not contain the latest R1 fixes)
+- immediate next gate: **preflight → signed v1.4.41-R1 APK → two targeted phone retests**
+- merge rule: do not merge PR #12 until the R1 corrective phone checks are recorded.
 
-Stable phone build folder after build:
+Stable phone build folder:
 
-`/storage/emulated/0/Download/YTM-v1.4.41-build/`
+`/storage/emulated/0/Download/YTM-v1.4.41-R1-build/`
 
-Always verify the live branch head through GitHub before building or merging.
+Always fetch the live branch HEAD before build/merge.
 
-## 2. Why v1.4.41 exists
+## 2. v1.4.41 phone evidence already established
 
-The real `House Dance Hit 2000 Vol.1` migration on v1.4.40 exposed several issues:
+v1.4.41 has broad real-phone coverage but is **not** an exhaustive full-app regression.
 
-- BUG-004: Search returned invalid-auth errors while Home Step 2 stayed green/checked.
-- auth errors were persisted per-track and survived restart, making recovered authorization look broken.
-- BUG-009: the Google account dialog had awkward phone-width copy/action fit.
-- BUG-010: restoring an older full backup rewound the app's local quota estimate.
-- UX-017: filename fallback produced raw names such as `House_Dance_Hit_2000_Vol1_YTM`.
-- UX-018: confirmation/cancel button placement was inconsistent across modal types.
+Confirmed:
 
-The same House Dance fixture later completed end-to-end successfully after re-authorization:
-9/9 Search ready → new private playlist → 9/9 tracks added.
+- BUG-009 portrait Account dialog layout PASS:
+  - `Змінити` one line, left;
+  - `Закрити` right;
+  - copy readable.
+- UX-018 representative modal order PASS:
+  - Account: action left / close right;
+  - History destructive confirmation: `Так, очистити` left / `Скасувати` right.
+- existing-target list PASS:
+  - path: `Home → Step 4 → existing playlist`;
+  - no footer buttons by design;
+  - tapping `top 3` opened `Перевірка перед додаванням`.
+- BUG-010 CLOSED — PHONE RETEST PASS v1.4.41:
+  - full Restore preserved quota;
+  - `Відкотити` (return local state to pre-Restore state) also preserved quota;
+  - before/after values stayed Search `0/100`, total `505/10000`, remaining `≈9495`.
 
-Permanent fixture/research:
+Still pending from v1.4.41:
+- BUG-004 real/reproduced HTTP 401 phone retest when naturally available;
+- populated-History Restore / `Відкотити` proof remains separately inconclusive from v1.4.39.
 
-`docs/test-data/collections/House_Dance_Hit_2000/`
+## 3. Findings that created v1.4.41-R1
 
-Desired playlist title:
+### BUG-011 — Account modal disappears on rotation
+
+Phone repro on installed v1.4.41:
+
+Path:
+`Home → 2. Google / YTM → Account modal → rotate phone`
+
+Actual:
+- portrait modal is visually correct;
+- phone rotation recreates MainActivity;
+- Account modal disappears.
+
+R1 implementation:
+- persist `accountDialogOpen` in `onSaveInstanceState`;
+- restore the flag on Activity recreation;
+- repost `showAccountDialog()` after the recreated window is ready;
+- clear the flag when the dialog is actually dismissed.
+
+Status:
+**FIX IMPLEMENTED — R1 PHONE RETEST NEEDED.**
+
+### UX-017 — duplicate-download filename suffix leaks into title
+
+Phone repro on installed v1.4.41:
+
+Fallback-only file was downloaded as a duplicate and named like:
+
+`House_Dance_Hit_2000_Vol1_YTM-1.txt`
+
+Observed title:
+
+`House Dance Hit 2000 Vol.1 YTM-1`
+
+Expected:
 
 `House Dance Hit 2000 Vol.1`
 
-Playlist description remains:
+R1 implementation extends filename cleanup for common copy suffixes after the service marker:
+- `YTM-1`
+- `YTM_1`
+- `YTM (1)`
 
-`Створено через YTM Importer`
+Explicit title inside TXT/CSV remains authoritative.
 
-## 3. v1.4.41 implementation
-
-### BUG-004 — Search auth invalidation
-
-Implemented:
-
-- SearchCoordinator detects HTTP 401 separately from ordinary track errors.
-- The first 401 stops Search immediately.
-- The currently searching track returns to retryable `NEW` instead of persistent `FAILED`.
-- Remaining tracks are not filled with repeated auth errors.
-- MainActivity receives an auth-invalidated callback and clears shared/persistent ready state through the centralized invalidation path.
-- Review is not auto-opened after an auth-invalidated Search.
-- After successful re-login, legacy auth-failed rows persisted by older builds are repaired to retryable/reviewable states.
-
-Phone retest is still required. Do not mark BUG-004 closed from static inspection.
-
-### BUG-009 — account dialog fit
-
-Implemented:
-
-- `Змінити акаунт` → `Змінити`;
-- profile explanation shortened to:
-  `Плейлисти створюватимуться в цьому YouTube/YTM профілі.`;
-- horizontal action ordering is governed by UX-018.
-
-### BUG-010 — quota-preserving Restore
-
-Implemented policy:
-
-- full backup JSON may still contain `quota_tracker_v1` for diagnostics/backward compatibility;
-- ordinary full Restore does **not** apply `quota_tracker_v1`;
-- safety-snapshot rollback also leaves the live quota tracker untouched;
-- Data/Restore UI explains that the current local quota estimate is preserved.
-
-Reason: a local backup cannot restore Google's externally consumed quota, so an old snapshot must not make the app claim that quota became available again.
-
-### UX-017 — imported playlist display names
-
-Fallback filename normalization now:
-
-- replaces underscores with spaces;
-- removes a trailing `YTM` / `YTM Importer` marker;
-- normalizes `Vol1` / `Vol 1` to `Vol.1`;
-- keeps an explicit in-file playlist title authoritative.
-
-The House Dance fixture now also carries the explicit title as its first line.
-
-### UX-018 — modal action positions
-
-Horizontal modal contract:
-
-- **primary/confirm/action = left**
-- **cancel/close/no-op = right**
-- optional secondary action stays between them when relevant
-- vertical action sheets preserve explicit top-to-bottom order
-
-`showDangerConfirmDialog()` was corrected and the shared horizontal renderer now pushes dismissive actions to the right.
+Status:
+**FOLLOW-UP FIX IMPLEMENTED — R1 PHONE RETEST NEEDED.**
 
 ## 4. Exact next execution step
 
-The next user action is the Termux release gate on the exact prepared head:
+User should run one Termux block that:
 
-- switch to `feat/v1.4.41-auth-ui-consistency`;
-- fetch/pull the live branch HEAD and verify `541dc90093f69785e46a66f643ae11b404c8a51e` is an ancestor of HEAD;
-- run `bash scripts/release-preflight.sh`;
-- if preflight PASS, dispatch `.github/workflows/build-apk.yml`;
-- wait for the signed build;
-- download artifact `YTM-Importer-v1.4.41-Release` into:
-  `/storage/emulated/0/Download/YTM-v1.4.41-build/`;
-- verify `YTM-Importer-v1.4.41-release.apk.sha256`;
-- install over v1.4.40 **without clearing app data**.
+1. opens the local YTM repo;
+2. fetches `feat/v1.4.41-auth-ui-consistency`;
+3. fast-forwards to the live branch HEAD;
+4. runs `bash scripts/release-preflight.sh`;
+5. dispatches `.github/workflows/build-apk.yml`;
+6. waits for the signed build;
+7. downloads artifact:
+   `YTM-Importer-v1.4.41-R1-Release`;
+8. stores it under:
+   `/storage/emulated/0/Download/YTM-v1.4.41-R1-build/`;
+9. verifies:
+   `YTM-Importer-v1.4.41-R1-release.apk.sha256`;
+10. installs over v1.4.41 **without clearing app data**.
 
-If preflight or GitHub Actions fails, stop and inspect the exact error. Do not manually edit phone-side project code to work around it.
+Do not manually edit phone-side project files if preflight fails; return the exact FAIL output.
 
-After install, begin with the zero/low-cost visual checks before spending YouTube Search quota:
+## 5. R1 phone QA — only two required corrective checks
 
-1. account dialog: `Змінити` left, `Закрити` right, readable copy;
-2. ordinary/destructive confirmation: action left, Cancel right;
-3. then BUG-010 quota-preserving Restore;
-4. then UX-017 playlist-title fallback;
-5. BUG-004 real 401 retest only when a genuine/reproducible invalid-auth condition is available.
+### Test A — BUG-011 rotation
 
-### Phone evidence already confirmed on v1.4.41
+Path:
+`Home → 2. Google / YTM → Account`
 
-- v1.4.41 is installed on the real phone and visible in the header.
-- Existing local workspace survived the update.
-- UX-018 representative horizontal-action spot check PASS:
-  - account modal: `Змінити` left / `Закрити` right;
-  - History destructive confirmation: `Так, очистити` left / `Скасувати` right;
-  - this does not claim every modal in the app was exhaustively retested.
-- BUG-009 portrait account modal PASS:
-  - `Змінити` is single-line on the left;
-  - `Закрити` is on the right;
-  - profile explanatory copy is readable.
-- Existing-target playlist list renders on phone.
-- Existing-target row-tap path PASS: tapping `top 3` opened `Перевірка перед додаванням` without writing anything.
-- That existing-target list intentionally has **no bottom action buttons**:
-  tapping a playlist row is the selection action; the next destination screen performs
-  duplicate/confirmation handling before a write. Back returns without selection.
-- This is broad accumulated phone coverage, **not** proof that every path/corner case
-  has been retested on v1.4.41.
+Steps:
+1. open Account modal in portrait;
+2. rotate to landscape;
+3. confirm the Account modal remains/reappears;
+4. rotate back to portrait;
+5. confirm it remains/reappears again;
+6. verify `Змінити` left / `Закрити` right.
 
-BUG-010 is now CLOSED — PHONE PASS v1.4.41. Full Restore and `Відкотити` both preserved 0/100, 505/10000 and ≈9495 remaining. Use `Відкотити` / `повернути стан до моменту перед Restore` in future user-facing instructions instead of the bare English term `rollback`.
+PASS:
+- modal survives both rotations;
+- no need to reopen Step 2 manually;
+- account details remain readable.
 
-Pending targeted evidence remains BUG-004 real 401,
-UX-017 fallback-title normalization, and additional UX-018 modal spot checks.
+### Test B — UX-017 duplicate filename
 
-## 5. Exact v1.4.41 phone QA after signed build
+Path:
+`Home → 1. Імпорт → імпортувати файл`
 
-Targeted acceptance:
+Use a fallback-only TXT with no explicit title and filename such as:
 
-1. Launch/update to v1.4.41 and confirm version.
-2. Account dialog:
-   - `Змінити` fits on one line;
-   - action is left, `Закрити` right;
-   - explanation is readable.
-3. Modal ordering spot checks:
-   - ordinary confirmation: action left / Cancel right;
-   - destructive confirmation: destructive action left / Cancel right.
-4. BUG-004:
-   - use a real/reproduced invalid-auth condition when available;
-   - first 401 must stop Search;
-   - Step 2 must stop showing green/ready;
-   - workspace must remain intact;
-   - do not get nine duplicate auth-failed rows.
-5. Re-login:
-   - Step 2 returns ready after successful account/channel load;
-   - legacy auth-failed rows, if present, become retryable/reviewable;
-   - rerun Search successfully.
-6. BUG-010:
-   - note current local quota counters;
-   - Restore an older full backup;
-   - verify current local quota estimate does not rewind to the backup value.
-7. UX-017:
-   - import a TXT without an explicit title whose filename resembles
-     `House_Dance_Hit_2000_Vol1_YTM.txt`;
-   - expected title: `House Dance Hit 2000 Vol.1`.
-8. Optional end-to-end House Dance smoke if quota is acceptable:
-   - Search → Review → Create private playlist → 9/9 added.
+`House_Dance_Hit_2000_Vol1_YTM-1.txt`
 
-Real phone evidence is authoritative.
+PASS title:
 
-## 6. Historical state that must remain true
+`House Dance Hit 2000 Vol.1`
 
-v1.4.40 Release History:
-- tested-path PASS;
-- rotation scroll preservation PASS;
-- accepted Back distinction remains unchanged.
+No Search API call is needed.
 
-v1.4.39 History JSON:
-- file acceptance / Cancel / rotation / invalid-file rejection PASS;
-- actual populated-History Restore and safety rollback remain **INCONCLUSIVE / RETEST REQUIRED** until meaningful History is available.
+Optional extra spot checks if convenient:
+- same content named `..._YTM_1.txt`;
+- same content named `..._YTM (1).txt`.
 
-Do not rewrite those historical results.
+Do not spend YouTube Search quota for R1 acceptance.
 
-## 7. Planned after v1.4.41
+## 6. Historical v1.4.41 scope
 
-Do not fold the Home redesign into this release.
+v1.4.41 implemented:
+- BUG-004 Search 401 propagation/retry-state repair;
+- BUG-009 Account dialog phone-width copy/action fit;
+- BUG-010 quota-preserving full Restore and `Відкотити`;
+- UX-017 filename display normalization base implementation;
+- UX-018 horizontal modal action contract.
 
-Planned next Home work:
+R1 only corrects the two phone findings above; it does not expand release scope.
 
-- UX-019: use the approved **top-left Polyglot K-U prototype only as a layout/section-placement reference**;
-- preserve existing YTM Importer themes/design language;
+## 7. Planned after R1
+
+Do not fold the Home redesign into R1.
+
+Next planned Home work:
+- UX-019: approved top-left Polyglot K-U prototype is **layout-only** reference;
+- preserve current YTM Importer themes/design language;
 - UX-009: all **four** Home workflow buttons need theme-aware state palettes;
-- Neon Dark keeps the accepted red/green/orange state semantics;
-- Blue Dark and Green Dark need their own state palettes instead of mechanically reusing Neon colors.
+- Neon Dark keeps accepted red/green/orange state semantics;
+- Blue Dark and Green Dark get their own state palettes.
 
-Other pending backlog:
-- populated-History Restore + rollback proof;
-- v1.4.37 utility/storage follow-up checks;
-- UX-008 Phase 2B open-file flows;
-- remaining BUG-002 representative modal QA;
-- localization foundation UA / KO / EN;
-- later visual-skin foundation.
+Other backlog remains in `BACKLOG.md`.
 
 ## 8. Working contract
 
-Default loop:
-
-**ChatGPT prepares → user runs one exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
+**ChatGPT prepares → user runs exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
 
 Rules:
-
-- repository/live GitHub truth beats chat memory;
+- GitHub/repository truth beats chat memory;
 - static audit/build success is not phone PASS;
-- never mark an inconclusive test PASS;
+- do not mark inconclusive tests PASS;
 - preserve historical `docs/v.*`;
 - inspect diff/deletions before merge;
 - signed builds come from `.github/workflows/build-apk.yml`.
+
+User-facing QA instructions:
+- English technical terms are fine;
+- include a short in-app navigation path when useful;
+- example: `rollback / Відкотити → Меню → Дані та резервні копії → Відкотити останній Restore`.
 
 ## 9. Fresh-chat reading order
 
@@ -255,46 +212,5 @@ Rules:
 5. `BACKLOG.md`
 6. `RELEASE_TEST_STATUS.md`
 7. `qa/BUG_REGISTER.md`
-8. `docs/v.1.4.41/`
+8. `docs/v.1.4.41/R1.md`
 9. live GitHub branch/PR state
-
-If this mutable handoff conflicts with immutable historical evidence, verify live GitHub state and preserve the historical record.
-
-
-BUG-010 final phone result:
-- ordinary full Restore: PASS;
-- `Відкотити` (return local state to the moment before Restore): PASS;
-- safety snapshot showed 5 groups / 117 values; `Відкотити` applied 4 groups / 113 values;
-- quota before/after both paths stayed 0/100, 505/10000, ≈9495;
-- BUG-010 closed on v1.4.41.
-
-
-UX-017 phone finding — duplicate filename suffix:
-- fallback-only House Dance test file was downloaded as a duplicate and received a `-1` suffix;
-- v1.4.41 displayed `House Dance Hit 2000 Vol.1 YTM-1`;
-- therefore UX-017 is NOT phone PASS;
-- follow-up normalization must treat trailing service marker + common duplicate suffixes such as `YTM-1`, `YTM_1`, `YTM (1)` as removable filename noise;
-- do not rebuild immediately; finish current v1.4.41 QA first, then package findings into one corrective build.
-
-
-BUG-011 phone finding:
-- path: `Home → 2. Google / YTM → Account modal → rotate phone`;
-- portrait Account modal remains visually PASS;
-- rotating the phone dismisses the modal instead of restoring it;
-- track as BUG-011, separate from BUG-009 visual fit;
-- likely repair: save a small "account modal open" state and recreate the modal after Activity restoration;
-- package this with the UX-017 duplicate-filename correction in one follow-up build rather than rebuilding for every finding.
-
-User-facing instruction preference:
-- English technical terms are fine;
-- always include a short in-app path showing where the control/screen is located;
-- for terms such as rollback, pair them with the visible app action when useful, e.g.
-  `rollback / Відкотити → Меню → Дані та резервні копії → Відкотити останній Restore`.
-
-
-Follow-up code now implemented after v1.4.41 phone findings:
-- IMPORTANT: the currently installed phone APK is still v1.4.41 and does NOT include these latest code fixes;
-- BUG-011 fix: MainActivity persists `accountDialogOpen` through saved instance state and recreates the Account modal after rotation;
-- UX-017 fix: filename cleanup now also strips duplicate-download forms such as `YTM-1`, `YTM_1`, and `YTM (1)`;
-- both changes need one new signed corrective build and real-phone retest;
-- do not claim PASS until that new build is installed.
