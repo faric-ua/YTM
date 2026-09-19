@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.41-R2 — Stacked Filename Follow-up — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.41-R2 — Stacked Filename Follow-up — PHONE PASS
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -21,7 +21,7 @@ v1.4.41-R2 — Stacked Filename Follow-up — IMPLEMENTED / PHONE RETEST NEEDED
 - BUG-009/Q-009 account-switch copy/action fit — PHONE PORTRAIT PASS v1.4.41
 - BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — CLOSED / PHONE RETEST PASS v1.4.41
 - BUG-011/Q-011 Account modal disappears on phone rotation — CLOSED / PHONE RETEST PASS v1.4.41-R1
-- UX-017 Import Filename → Playlist Display Name — R2 FOLLOW-UP IMPLEMENTED / PHONE RETEST NEEDED; R1 passed simple `YTM-1` but failed stacked `YTM-1 (1)`; R2 strips repeated duplicate-copy suffix tokens while keeping explicit in-file title authoritative
+- UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
 
@@ -29,11 +29,11 @@ v1.4.41-R2 — Stacked Filename Follow-up — IMPLEMENTED / PHONE RETEST NEEDED
 - [x] versionCode 79 / versionName 1.4.41-R2
 - [x] parser accepts repeated duplicate suffix tokens after YTM marker
 - [x] dedicated R2 static audit
-- [ ] full release preflight
-- [ ] signed GitHub Actions APK
-- [ ] phone: import existing `...YTM-1 (1).txt`
-- [ ] expected title exactly `House Dance Hit 2000 Vol.1`
-- [ ] close UX-017 if phone PASS
+- [x] full release preflight
+- [x] signed GitHub Actions APK
+- [x] phone: import existing `...YTM-1 (1).txt` — PASS
+- [x] expected title exactly `House Dance Hit 2000 Vol.1` — PASS
+- [x] UX-017 closed on v1.4.41-R2
 
 ## v1.4.41-R1 — Corrective Follow-up
 - [x] versionCode 78 / versionName 1.4.41-R1
@@ -68,8 +68,8 @@ v1.4.41-R2 — Stacked Filename Follow-up — IMPLEMENTED / PHONE RETEST NEEDED
 - [x] phone: modal confirm-left / cancel-right spot checks — account + destructive History confirmation PASS
 - [x] phone: full Restore keeps current quota estimate — PASS (0/100; 505/10000; ≈9495 unchanged)
 - [x] phone: `Відкотити` keeps current quota estimate — PASS (0/100; 505/10000; ≈9495 unchanged)
-- [ ] phone: House Dance fallback title — PARTIAL FAIL: duplicate download produced `... YTM-1`; follow-up normalization required
-- [ ] UX-017 duplicate-download filename follow-up — R1 simple `YTM-1` PASS, stacked `YTM-1 (1)` FAIL; R2 parser fix needed
+- [x] phone: House Dance fallback title — CLOSED on R2; clean title confirmed for simple and stacked duplicate suffixes
+- [x] UX-017 duplicate-download filename follow-up — R2 PASS including `YTM-1 (1) (1)`
 - [ ] end-to-end House Dance smoke if quota is acceptable
 
 ## v1.4.16
