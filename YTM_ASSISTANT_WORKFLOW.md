@@ -212,9 +212,13 @@ The long-term goal is that the project can teach both the author and other devel
 
 `START_HERE_ASSISTANT.md` is the canonical entry point for a new ChatGPT node/session.
 
-A new assistant should not depend on hidden conversation history. It should recover context from the repository in the reading order defined by `START_HERE_ASSISTANT.md`.
+`CURRENT_HANDOFF.md` is the mutable crash-recovery snapshot for the exact active branch / PR stack / signed-build / phone-QA / next-step state. Read it immediately after START_HERE when resuming a hung or replaced chat.
 
-If repository state and old conversation memory disagree, current repository state wins unless the user explicitly says otherwise.
+A new assistant should not depend on hidden conversation history. It should recover context from the repository in the reading order defined by `START_HERE_ASSISTANT.md`, then verify live GitHub state before making merge/build assumptions.
+
+Update `CURRENT_HANDOFF.md` after meaningful resume-point changes such as a new signed build under test, a phone PASS/FAIL that changes the next action, a branch/PR transition, or a merge. Keep it concise; historical evidence belongs in release QA files, not in the handoff snapshot.
+
+If repository state and old conversation memory disagree, current repository/live GitHub state wins unless the user explicitly says otherwise.
 
 ## 17. Tool/source-of-truth rule
 

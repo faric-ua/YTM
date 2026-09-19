@@ -227,3 +227,43 @@ Guard:
 - after every successful signed build, hand off the APK + checksum using the stable versioned Download folder;
 - do not start treating the next release as the user's current app;
 - before advancing again, receive install confirmation or explicitly record that the user chose to skip/defer that build.
+
+## 19. Signed build SHA and live PR head are different states
+
+During v1.4.40 phone QA, the signed APK was built from one code SHA, then QA reports,
+handoff files and audit fixes legitimately added newer commits to the same feature
+branch while the user was still installing/testing the already-built APK.
+
+A handoff that labels the signed APK SHA as the "current branch head" becomes stale
+immediately after the next documentation commit.
+
+Guard:
+
+- record the exact **signed build SHA + Actions run ID** that the phone is testing;
+- treat the **live PR head** as a separate value and verify it from GitHub when resuming;
+- keep `CURRENT_HANDOFF.md` focused on the signed/tested state and exact next action;
+- keep current open PR descriptions synchronized so a new chat can discover the active
+  branch even when default `main` does not yet contain the handoff file;
+- never infer phone-installed code from the newest documentation commit.
+
+## 20. Partial file reads must never be written back as whole files
+
+During the v1.4.40 QA closeout, a range-limited read of `BACKLOG.md` was edited and
+sent to a whole-file update operation. Because the write API replaces the complete
+file, the untouched tail of the backlog was temporarily deleted.
+
+The anomaly was caught by the unexpectedly large PR deletion count before merge and
+the file was restored from the previous blob.
+
+Guard:
+
+- use range-limited reads only for inspection;
+- before a whole-file update, fetch the complete current blob/content;
+- after documentation-heavy commits, inspect PR additions/deletions or file size for
+  unexpected large changes;
+- if a large mutable document suddenly shrinks, stop before merge/build;
+- restore from the immediately previous known-good blob/commit instead of reconstructing
+  missing history manually;
+- keep handoff/preflight audits checking anchors from later sections of large files so
+  accidental truncation fails closed.
+

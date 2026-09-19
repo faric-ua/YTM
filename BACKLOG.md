@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.39 — Native History JSON Restore — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.40 — In-app Release History — TESTED PATH PASS
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -16,7 +16,8 @@ v1.4.39 — Native History JSON Restore — IMPLEMENTED / PHONE RETEST NEEDED
 - UX-012 Destructive Action Confirmation — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; explicit danger confirmations + separate safety-snapshot deletion flow
 - UX-013 Mobile Action Copy Fit — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; long Restore/save labels shortened from real-phone evidence
 - UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
-- UX-015 History JSON Restore — IMPLEMENTED v1.4.39 / PHONE RETEST NEEDED; native History-only restore preserves Queue/quota/cache/current playlist and creates full safety snapshot
+- UX-015 History JSON Restore — PARTIALLY PHONE-TESTED v1.4.39; file/Cancel/rotation/invalid-file PASS, populated restore + rollback remain inconclusive/pending
+- UX-016 In-app Release History — CLOSED FOR TESTED PHONE SCOPE v1.4.40; entry/rendering/scroll/readability/navigation/rotation-scroll PASS
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -231,6 +232,8 @@ v1.4.39 — Native History JSON Restore — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Project handoff / documentation hardening — COMPLETE
 - [x] add canonical `START_HERE_ASSISTANT.md` for a new ChatGPT node
+- [x] add mutable `CURRENT_HANDOFF.md` crash-recovery snapshot for exact active work
+- [x] keep open release PR descriptions synchronized with current QA/next-step state
 - [x] make README a real project entry point
 - [x] add assistant tool/source-of-truth map
 - [x] reconcile reusable Termux/Git rules with `YTM_ASSISTANT_WORKFLOW.md`
@@ -606,7 +609,7 @@ including:
 - [x] add native Data-screen History JSON restore/import flow
 - [x] preserve Queue/quota/cache/current playlist during History-only import
 - [x] create safety snapshot before native History-only import
-- [ ] phone QA History-only restore
+- [ ] phone QA History-only restore: file/Cancel/rotation/invalid-file PASS; populated restore + rollback still pending
 
 
 ## v1.4.38-R1 — Checkbox Alignment + Restore Rotation
@@ -652,10 +655,32 @@ including:
 - [x] preserve Queue/quota/SearchCache/current playlist
 - [x] reuse full safety-snapshot + rollback engine
 - [x] add v1.4.39 docs + audit
-- [ ] signed APK
-- [ ] APK handoff to phone
-- [ ] phone: real YTM_History_*.json accepted
-- [ ] phone: Cancel leaves History unchanged
-- [ ] phone: rotation does not lose History file
-- [ ] phone: History replaced, other local groups preserved
-- [ ] phone: safety rollback restores pre-import state
+- [x] signed APK exercised through stacked v1.4.40 build
+- [x] APK handoff to phone
+- [x] phone: real YTM_History_*.json accepted
+- [x] phone: Cancel leaves History unchanged
+- [x] phone: rotation does not lose History file
+- [ ] phone: History replaced, other local groups preserved — INCONCLUSIVE; retest with populated History
+- [ ] phone: safety rollback restores pre-import state — INCONCLUSIVE; retest with populated History
+
+
+## v1.4.40 — In-app Release History
+- [x] bump versionCode 76 / versionName 1.4.40
+- [x] add About → Історія змін card
+- [x] add dedicated full-screen release-history page
+- [x] make root CHANGELOG.md the single source of truth
+- [x] copy root changelog into generated Android assets at build time
+- [x] render ## release sections as cards
+- [x] convert markdown list markers to readable bullets
+- [x] strip simple backtick/bold markers
+- [x] Back from release history returns to About
+- [x] add v1.4.40 docs + audit
+- [x] signed APK
+- [x] APK handoff to phone
+- [x] phone: release-history card visible
+- [x] phone: v1.4.40 appears first
+- [x] phone: long release list scrolls cleanly
+- [x] phone: top-bar Back returns to About
+- [x] phone: accepted system Back may exit Service directly to Home
+- [x] phone: rotation keeps History page
+- [x] phone: rotation preserves changelog scroll position after follow-up fix

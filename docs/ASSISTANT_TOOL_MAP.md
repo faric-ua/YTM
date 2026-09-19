@@ -19,6 +19,12 @@ Repository: `faric-ua/YTM`.
 
 Repository facts should come from the repository, not from general web search.
 
+Fresh-chat recovery rule:
+- inspect the default branch **and open pull requests** before assuming `main` is the active development point;
+- read `CURRENT_HANDOFF.md` from the active release branch when present;
+- if the handoff file is not visible on default `main`, use the current open release PR description to discover the active branch and resume pointer;
+- distinguish the live PR head from the SHA of the signed APK currently installed/tested on the phone.
+
 If live repository access is unavailable, use the user's local Git output or ask for the smallest missing file/state instead of guessing.
 
 ## 2. Local package / fixture generation

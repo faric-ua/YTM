@@ -86,8 +86,14 @@ grep -Fq '| v1.4.38-R1 | **PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CH
   || fail "v1.4.38-R1 partial phone-test status missing"
 grep -Fq '| v1.4.38-R2 | **PHONE RETEST PASS — CHECKBOX ALIGNMENT** |' "$STATUS" \
   || fail "v1.4.38-R2 checkbox phone PASS status missing"
-grep -Fq '| v1.4.39 | **NOT PHONE-TESTED YET** |' "$STATUS" \
-  || fail "v1.4.39 pending phone-test status missing"
+grep -Eq '^\| v1\.4\.39 \| \*\*PARTIALLY PHONE-TESTED — .+\*\* \|' "$STATUS" \
+  || fail "v1.4.39 partial phone-test status missing"
+grep -F '| v1.4.39 |' "$STATUS" | grep -Eq 'INCONCLUSIVE|RETEST' \
+  || fail "v1.4.39 restore/rollback retest state missing"
+grep -Eq '^\| v1\.4\.40 \| \*\*PARTIALLY PHONE-TESTED — .+\*\* \|' "$STATUS" \
+  || fail "v1.4.40 partial phone-test status missing"
+grep -F '| v1.4.40 |' "$STATUS" | grep -Fq 'RELEASE HISTORY TESTED PATH PASS' \
+  || fail "v1.4.40 Release History tested-path PASS missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \

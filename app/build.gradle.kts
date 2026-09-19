@@ -1,9 +1,28 @@
 import java.util.Properties
+import org.gradle.api.tasks.Copy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+}
+
+val generatedChangelogAssetsDir =
+    layout.buildDirectory.dir(
+        "generated/changelogAssets"
+    )
+
+val generateChangelogAsset by tasks.registering(
+    Copy::class
+) {
+    from(
+        rootProject.file(
+            "CHANGELOG.md"
+        )
+    )
+    into(
+        generatedChangelogAssetsDir
+    )
 }
 
 android {
@@ -14,8 +33,8 @@ android {
         applicationId = "com.saney.ytmimporter"
         minSdk = 26
         targetSdk = 36
-        versionCode = 75
-        versionName = "1.4.39"
+        versionCode = 76
+        versionName = "1.4.40"
     }
 
     signingConfigs {
@@ -54,6 +73,15 @@ android {
         buildConfig = true
     }
 
+    sourceSets
+        .getByName(
+            "main"
+        )
+        .assets
+        .srcDir(
+            generatedChangelogAssetsDir
+        )
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -70,3 +98,14 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.6.0")
     implementation("androidx.core:core:1.15.0")
 }
+
+
+tasks
+    .named(
+        "preBuild"
+    )
+    .configure {
+        dependsOn(
+            generateChangelogAsset
+        )
+    }

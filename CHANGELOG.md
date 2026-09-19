@@ -1,5 +1,15 @@
 # Журнал змін (Changelog)
 
+## v1.4.40
+- Shortened the History restore confirmation action to `Відновити` for phone-width buttons.
+- Added an in-app `Історія змін` page under `Про YTM Importer → Дізнатися більше`.
+- Release history is rendered from the repository root `CHANGELOG.md`, embedded automatically into Android assets at build time.
+- Added one release card per `##` changelog section with readable bullet formatting.
+- Back from release history returns to `Про YTM Importer`.
+- No network fetch, server dependency, analytics or new permission.
+- versionCode 76 / versionName 1.4.40.
+- v1.4.40 phone QA: release-history entry/rendering/scroll/readability/navigation PASS; rotation scroll-position preservation PASS after follow-up fix. Full-app regression was not run.
+
 ## v1.4.39
 - Added native restore for `YTM_History_*.json`.
 - Added strict History-array validation and duplicate-id rejection.
@@ -9,7 +19,7 @@
 - History import confirmation survives Activity recreation/rotation.
 - DataActivity keeps one centralized `ACTION_OPEN_DOCUMENT` launcher for full backup and History JSON file selection.
 - versionCode 75 / versionName 1.4.39.
-- v1.4.39 = NOT PHONE-TESTED YET.
+- v1.4.39 phone QA: file acceptance, Cancel, confirmation rotation and invalid-file rejection PASS; populated-History restore + rollback remain inconclusive/pending.
 
 ## v1.4.38-R2
 - Checkbox-only visual follow-up after v1.4.38-R1.

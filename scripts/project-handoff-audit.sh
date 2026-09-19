@@ -8,6 +8,7 @@ fail() {
 
 for f in \
   START_HERE_ASSISTANT.md \
+  CURRENT_HANDOFF.md \
   README.md \
   YTM_ASSISTANT_WORKFLOW.md \
   TERMUX_COMMANDS.md \
@@ -25,9 +26,9 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.39**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionName: **1.4.40**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **75**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionCode: **76**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
 grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 identity missing"
@@ -35,6 +36,18 @@ grep -Fq 'CLOSED — PHONE RETEST PASS v1.4.27' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 closed state missing"
 grep -Fq 'START_HERE_ASSISTANT.md' README.md \
   || fail "README does not point new assistants to START_HERE"
+grep -Fq 'CURRENT_HANDOFF.md' README.md \
+  || fail "README does not point crash recovery to CURRENT_HANDOFF"
+grep -Fq 'CURRENT_HANDOFF.md' START_HERE_ASSISTANT.md \
+  || fail "START_HERE does not include CURRENT_HANDOFF"
+grep -Fq 'mutable crash-recovery snapshot' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF purpose missing"
+grep -Fq 'v1.4.39 History JSON phone QA' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF v1.4.39 QA resume state missing"
+grep -Fq 'v1.4.40 Release History phone QA' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF v1.4.40 QA resume state missing"
+grep -Fq 'Exact next step' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF next-action section missing"
 if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
 fi
@@ -45,6 +58,8 @@ grep -Fq 'Stable phone-side build artifact convention' YTM_ASSISTANT_WORKFLOW.md
   || fail "artifact convention missing from workflow policy"
 grep -Fq 'New assistant handoff' YTM_ASSISTANT_WORKFLOW.md \
   || fail "new assistant handoff section missing"
+grep -Fq 'CURRENT_HANDOFF.md' YTM_ASSISTANT_WORKFLOW.md \
+  || fail "workflow does not define CURRENT_HANDOFF crash recovery"
 
 grep -Fq 'Do **not** use `git add -A` as the routine default.' TERMUX_COMMANDS.md \
   || fail "Termux guide still lacks exact-staging rule"
@@ -80,9 +95,9 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.39' PROJECT_STATUS.txt \
+grep -Fq 'Version: 1.4.40' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 75' PROJECT_STATUS.txt \
+grep -Fq 'Version code: 76' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"
@@ -95,13 +110,14 @@ grep -Fq 'BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.
 
 grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
-grep -Fq 'v1.4.39 — Native History JSON Restore' BACKLOG.md \
-  || fail "BACKLOG current v1.4.39 release missing"
-grep -Fq 'UX-015 — native History JSON restore' START_HERE_ASSISTANT.md \
-  || fail "START_HERE v1.4.39 handoff missing"
+grep -Fq 'v1.4.40 — In-app Release History' BACKLOG.md \
+  || fail "BACKLOG current v1.4.40 release missing"
+grep -Fq 'UX-016 — in-app release history' START_HERE_ASSISTANT.md \
+  || fail "START_HERE v1.4.40 handoff missing"
 
 echo "PASS:"
 echo "- canonical START_HERE entry point"
+echo "- mutable CURRENT_HANDOFF crash-recovery snapshot"
 echo "- README project entry page"
 echo "- current version/bug handoff state"
 echo "- tool map"
