@@ -7,7 +7,7 @@ v1.4.40 — In-app Release History — TESTED PATH PASS
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 v1.4.32 partial PASS; v1.4.33 unified modal fix carried into v1.4.34 — representative phone retest required
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
-- BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.31 / PHONE RETEST NEEDED
+- BUG-004/Q-004 stale green authorization state — REPRODUCED AGAIN v1.4.40 on Search path; P1 repair needed
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 - UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
 - UX-009 Theme State Contrast — OPEN; Neon Dark Home colors are locked as the accepted reference; Green Dark workflow states need higher-contrast/inverse treatment without changing Neon Dark
@@ -18,6 +18,7 @@ v1.4.40 — In-app Release History — TESTED PATH PASS
 - UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
 - UX-015 History JSON Restore — PARTIALLY PHONE-TESTED v1.4.39; file/Cancel/rotation/invalid-file PASS, populated restore + rollback remain inconclusive/pending
 - UX-016 In-app Release History — CLOSED FOR TESTED PHONE SCOPE v1.4.40; entry/rendering/scroll/readability/navigation/rotation-scroll PASS
+- BUG-009/Q-009 account-switch copy/action fit — OPEN; real-phone v1.4.40 UI finding
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
