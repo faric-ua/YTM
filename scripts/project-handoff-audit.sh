@@ -50,7 +50,7 @@ grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF current release candidate missing"
 grep -Fq 'feat/v1.4.41-auth-ui-consistency' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF active v1.4.41 branch missing"
-grep -Fq 'Exact next step' CURRENT_HANDOFF.md \
+grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
 if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
