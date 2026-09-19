@@ -13,7 +13,8 @@
 | BUG-009 / Q-009 | PHONE PORTRAIT PASS v1.4.41 | P3 | Real-phone portrait confirms readable profile copy, single-line `Змінити` on the left and `Закрити` on the right. Rotation itself exposed separate BUG-011 (dialog disappears), so BUG-009 remains a portrait visual-fit PASS rather than absorbing the state-restoration defect. | v1.4.40 account-switch screenshot → v1.4.41 portrait PASS |
 | BUG-010 / Q-010 | CLOSED — PHONE RETEST PASS v1.4.41 | P2 | Real-phone full Restore and subsequent `Відкотити` both preserved the live quota exactly: Search 0/100; total 505/10000; ≈9495 remaining. Full Restore applied 3 of 4 backup groups; `Відкотити` applied 4 of 5 safety-snapshot groups, confirming `quota_tracker_v1` was excluded from both paths. | v1.4.40 finding → v1.4.41 Restore + `Відкотити` PASS |
 | BUG-011 / Q-011 | CLOSED — PHONE RETEST PASS v1.4.41-R1 | P3 | Real-phone R1 retest passed: Account modal remains/reappears through portrait ↔ landscape Activity recreation and preserves the expected action layout. | v1.4.41 repro → v1.4.41-R1 phone PASS |
-| BUG-012 / Q-012 | PARTIAL PHONE PASS v1.4.42-R1 — DOWNLOAD ACCESS WORKS / DIRECT IMPORT+RESTORE PENDING | P2 | R1 All files access is recognized on phone and direct Download listing works newest-first. Core root-Download access blocker is repaired; final close waits for direct Import + Restore JSON regression checks. | v1.4.42 repro → v1.4.42-R1 partial PASS |
+| BUG-012 / Q-012 | CLOSED — PHONE RETEST PASS v1.4.42-R1 | P2 | All files access is recognized; direct Download newest-first list works; direct House Dance import succeeds; Restore JSON reaches confirmation; system-picker fallback/return passes. | v1.4.42 repro → v1.4.42-R1 phone PASS |
+| BUG-013 / Q-013 | OPEN — PHONE REPRO v1.4.42-R1 | P1 | Step 2 can remain green while the in-memory Google access token has become invalid. A later destination API call returns 401; invalidation then correctly clears the session and turns Step 2 red. Need proactive refresh/validation before remote operations. | v1.4.42-R1 destination flow |
 
 ## BUG-002 current evidence
 
@@ -384,7 +385,7 @@ BUG-011 is closed on v1.4.41-R1.
 
 ## BUG-012 — Recent-file selector cannot grant root Download
 
-Status: **PARTIAL PHONE PASS v1.4.42-R1 — DOWNLOAD ACCESS WORKS / DIRECT IMPORT+RESTORE PENDING.**
+Status: **CLOSED — PHONE RETEST PASS v1.4.42-R1.**
 
 Path:
 `Home → 1. Імпорт → імпортувати файл → Додати папку… → Download`
@@ -428,11 +429,46 @@ Important scope clarification:
 - Import currently filters to TXT/CSV/JSON;
 - Data/Restore filters to JSON.
 
-Pending before BUG-012 close:
-- direct House Dance TXT import from the in-app Download row;
-- Restore JSON selection to existing confirmation;
-- explicit system-picker Back → YTM selector return smoke.
+Final v1.4.42-R1 phone acceptance:
+- direct House Dance TXT import PASS: exact title `House Dance Hit 2000 Vol.1`, 9 tracks;
+- Restore JSON selection PASS: valid backup reaches `Підтвердити Restore`;
+- system-picker fallback and return PASS;
+- BUG-012 closed.
 
 Separate UX observation:
 - landscape footer actions consume most vertical space;
 - tracked as UX-021, not as BUG-012 functional failure.
+
+
+## BUG-013 — Green auth state can outlive token validity
+
+Status: **OPEN — PHONE REPRO v1.4.42-R1.**
+
+Phone reproduction:
+- Home showed green `2. Google / YTM ✓`;
+- user entered `4. Створити / додати`;
+- new private-playlist path was initially reachable;
+- switching to `додати в існуючий playlist` triggered a real YouTube API request;
+- app then reported authorization required;
+- Step 2 changed from green to red.
+
+Code-path interpretation:
+- `authorize()` skips a fresh Google authorization call when `accessToken` is already non-blank and account/channel identity is cached;
+- therefore Home can remain green even if that token has expired or was revoked;
+- `loadExistingPlaylistsForDestination()` then performs the first live YouTube request;
+- on HTTP 401, `invalidateAuthorizationIfNeeded()` correctly clears accessToken/account/channel state, clears persistent ready state, and updates Step 2 to red.
+
+What passed:
+- destination-side 401 invalidation is working as intended;
+- the misleading green state is cleared immediately after the real 401.
+
+What remains broken:
+- token freshness is not proactively validated/refreshed before remote destination/write operations;
+- the first remote action can therefore fail even while Home still shows green.
+
+Repair direction:
+- centralize an `ensureFreshAuthorization` path before remote YouTube operations;
+- do not trust only `accessToken != null` plus cached identity;
+- prefer a silent Google authorization refresh/validation before destination list/create/write actions;
+- preserve current 401 invalidation as the fallback;
+- keep BUG-004 Search-path real-401 retest separate: this phone evidence is destination-side, not SearchCoordinator.
