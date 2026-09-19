@@ -78,3 +78,59 @@ Next engineering step:
 - redesign UX-020 setup so it does not depend on granting root Download;
 - preserve Android system picker fallback;
 - remaining phone tests 3–5 stay deferred until the revised design is built.
+
+
+## v1.4.42-R1 All files access retest
+
+The project owner explicitly chose Android All files access after v1.4.42 exposed the
+root-Download SAF platform restriction.
+
+### 1. Permission flow
+
+Path:
+`Home → 1. Імпорт → імпортувати файл`
+
+Expected:
+- selector opens;
+- `Надати доступ до всіх файлів` is visible when not granted;
+- tapping it opens an in-app rationale;
+- `Відкрити налаштування` opens Android special access for YTM Importer;
+- enable All files access;
+- Back returns to selector;
+- direct Download list appears.
+
+### 2. Ordering
+
+Confirm at least three Download files with different modified times:
+- newest timestamp first;
+- older timestamps below.
+
+### 3. Direct Import
+
+Tap a House Dance TXT from the selector.
+
+Expected:
+- import succeeds;
+- exact title `House Dance Hit 2000 Vol.1`;
+- 9 tracks;
+- no Search API call.
+
+### 4. Direct Restore JSON
+
+Path:
+`Menu → Дані та резервні копії → Restore → Вибрати backup`
+
+Expected:
+- same selector;
+- JSON-only list;
+- Download backups visible;
+- selected backup reaches existing Restore confirmation;
+- Cancel leaves state unchanged.
+
+### 5. Fallbacks
+
+- `Додати SAF-папку…` still opens SAF tree selection.
+- `Системний вибір файла…` still opens Android document picker.
+- Back from Android picker returns to YTM selector.
+
+Phone PASS is required before closing BUG-012.
