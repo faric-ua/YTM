@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.40
-Version code: 76
+Version: 1.4.41
+Version code: 77
 Current live resume snapshot: CURRENT_HANDOFF.md
 
 v1.4.12 NOT TESTED
@@ -34,6 +34,7 @@ v1.4.38-R1 PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX FAIL
 v1.4.38-R2 PHONE RETEST PASS — CHECKBOX VISUAL CENTERING
 v1.4.39 PARTIALLY PHONE-TESTED — CANCEL / ROTATION / INVALID-FILE PASS; RESTORE+ROLLBACK INCONCLUSIVE
 v1.4.40 PARTIALLY PHONE-TESTED — RELEASE HISTORY PASS / BUG-004 AUTH FAIL REPRODUCED / BUG-009 UI FOUND
+v1.4.41 NOT PHONE-TESTED YET — AUTH/RESTORE/UI FIXES IMPLEMENTED
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -417,7 +418,7 @@ Known:
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
-BUG-004/Q-004 FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31
+BUG-004/Q-004 FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41
 BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27
 BUG-006/Q-006 CLOSED — PHONE RETEST PASS v1.4.29 R2
 BUG-007/Q-007 CLOSED — PHONE RETEST PASS v1.4.30 R2
@@ -548,3 +549,24 @@ v1.4.40 post-closeout phone findings:
 - Re-login + restart did not clear the House Dance per-track auth failures because CurrentPlaylistStore persists status/error. Full backup does not include auth state/tokens; after restoring an older `top 3` workspace, a new 3-track private YouTube/YTM playlist was successfully created, proving authorization had recovered.
 - BUG-009/Q-009 OPEN: Google account-switch explanatory text/action have a phone-width copy/layout fit problem.
 - These findings do not invalidate the already accepted v1.4.40 Release History tested-path PASS.
+
+
+v1.4.41 focus:
+- BUG-004 Search-path HTTP 401 propagation into shared auth state
+- first auth failure stops Search instead of creating repeated per-track auth failures
+- auth-failed active track returns to retryable NEW state; Review is not auto-opened
+- successful re-login repairs legacy persisted auth-failed rows from older builds
+- BUG-009 account dialog action shortened to `Змінити` with clearer profile copy
+- BUG-010 full Restore/safety rollback preserve current `quota_tracker_v1`; quota counters remain backup diagnostics only
+- UX-017 human-readable filename fallback: underscores → spaces, trailing YTM marker removed, Vol1 → Vol.1
+- UX-018 horizontal modal rule: action/confirm left, cancel/close/no-op right
+- current branch: feat/v1.4.41-auth-ui-consistency
+- phone QA still required before any PASS/closure claims
+
+v1.4.41 planned phone acceptance:
+- reproduce/observe auth invalidation and verify Step 2 leaves ready state immediately
+- re-login and retry without stale persisted auth FAILED rows
+- account modal copy/button fit
+- destructive + ordinary confirm button order
+- old full backup Restore must not rewind local quota estimate
+- House Dance filename/title path should produce `House Dance Hit 2000 Vol.1`
