@@ -59,7 +59,7 @@ object UiChrome {
     fun useHorizontalActionRow(
         context: Context,
         actionCount: Int,
-        minButtonWidthDp: Int = 150
+        minButtonWidthDp: Int = 180
     ): Boolean {
         if (actionCount <= 1) {
             return false
