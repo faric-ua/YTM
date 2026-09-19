@@ -207,16 +207,10 @@ class PlaylistActivity : Activity() {
             content = content,
             title = "Треки / перевірка",
             subtitle =
-                "Усі треки, фільтри, ручний вибір і YTM Project",
+                "Усі треки, фільтри та ручний вибір",
             primary = false
         ) {
-            startActivityForResult(
-                Intent(
-                    this,
-                    ReviewActivity::class.java
-                ),
-                reviewRequestCode
-            )
+            openReview()
         }
 
         addAction(
@@ -240,6 +234,18 @@ class PlaylistActivity : Activity() {
         ) {
             finishWithAction(
                 ACTION_CREATE
+            )
+        }
+
+        addAction(
+            content = content,
+            title = "YTM Project / export",
+            subtitle =
+                "Зберегти або поділитися поточним робочим проєктом",
+            primary = false
+        ) {
+            openReview(
+                openProjectActions = true
             )
         }
 
@@ -572,6 +578,23 @@ class PlaylistActivity : Activity() {
                 bottomMargin =
                     dp(9)
             }
+        )
+    }
+
+    private fun openReview(
+        openProjectActions: Boolean = false
+    ) {
+        startActivityForResult(
+            Intent(
+                this,
+                ReviewActivity::class.java
+            ).apply {
+                putExtra(
+                    ReviewActivity.EXTRA_OPEN_PROJECT_ACTIONS,
+                    openProjectActions
+                )
+            },
+            reviewRequestCode
         )
     }
 
