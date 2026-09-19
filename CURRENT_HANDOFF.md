@@ -120,6 +120,20 @@ Preflight update:
   requires `MANAGE_EXTERNAL_STORAGE`;
 - next action: fetch the live branch head and rerun full release preflight from the start.
 
+Second R1 preflight update:
+- after decoupling historical Manifest permission guards, preflight next failed in
+  `v1442-recent-file-selector-audit.sh` with
+  `FAIL: historical v1.4.42 SAF-only boundary evidence missing`;
+- root cause was a literal mismatch only: the immutable v1.4.42 release doc says
+  `No broad storage permission is added.`, while the audit searched for
+  `No broad filesystem permission is added.`;
+- the historical audit now checks the exact release-snapshot wording;
+- all scripts invoked by `release-preflight.sh` were rescanned for stale
+  `MANAGE_EXTERNAL_STORAGE` rejection/current v1.4.42 version pinning;
+- no additional stale broad-storage rejection was found;
+- the current R1 audit remains the only guard that explicitly requires
+  `MANAGE_EXTERNAL_STORAGE`.
+
 ## 6. R1 phone QA
 
 ### A. Permission flow
