@@ -120,7 +120,7 @@ grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
 grep -Fq 'v1.4.45 — Unified Window Title Emphasis' BACKLOG.md \
   || fail "BACKLOG current v1.4.45 release missing"
-grep -Fq 'UX-022 Unified Window Title Emphasis — next planned work' START_HERE_ASSISTANT.md \
+grep -Fq 'UX-022 Unified Window Title Emphasis' START_HERE_ASSISTANT.md \
   || fail "START_HERE UX-022 focus missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
