@@ -30,11 +30,25 @@ Device test after installing signed v1.4.40.
    - `Швидкий старт` and `Приватність` remain present.
    - The oldest visible release is v1.4.6. This is expected because root `CHANGELOG.md` currently has no release sections older than `## v1.4.6`.
 
-## Still pending in this run
+8. Release-history rendering / scrolling — PASS.
+   - v1.4.40 appears first.
+   - Older releases render and scroll normally down to v1.4.6.
+   - No distracting raw Markdown, clipping or overlap was reported.
+9. Back behavior — PASS / ACCEPTED PRODUCT BEHAVIOR.
+   - Top-bar arrow steps History → About → Service.
+   - System Back may exit Service directly to app Home.
+10. Rotation after scroll-state fix — PASS.
+   - History page remains open after rotation.
+   - No crash.
+   - The list preserves the scrolled position instead of resetting to v1.4.40.
 
-- Release-history full-screen rendering and scrolling.
-- Markdown cleanup / visual clipping checks.
-- Back stack: History → About → Service.
-- Rotation while on the History page.
+## Release History closeout
+
+UX-016 / v1.4.40 Release History is PASS for the tested phone scope.
+
+This does not broaden into a full-app regression PASS.
+
+## Still pending from combined History JSON QA
+
 - Final populated-History Restore verification.
 - Final populated-History rollback verification.
