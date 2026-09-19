@@ -151,3 +151,10 @@ Not yet promoted to PASS:
 
 The raw account screenshot contains personal account identifiers and is not committed
 to repository evidence without redaction.
+
+
+Additional v1.4.41 phone evidence:
+- existing-target row tap → confirmation screen PASS;
+- tapping `top 3` on the existing-playlist list opened `Перевірка перед додаванням`;
+- this confirms the list screen's direct-tap single-select behavior end-to-end up to the pre-write confirmation screen;
+- no tracks were added as part of this check.
