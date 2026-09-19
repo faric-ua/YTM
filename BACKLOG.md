@@ -39,7 +39,7 @@ v1.4.46 — Home Layout Prototype Alignment Phase 1 — IMPLEMENTED / PHONE QA N
 - [x] preserve Home workflow-state colors
 - [x] no auth/search/write behavior changes
 - [x] dedicated v1.4.46 audit + docs
-- [ ] full release preflight
+- [x] full release preflight
 - [ ] signed GitHub Actions APK
 - [ ] phone portrait hierarchy
 - [ ] phone theme smoke
