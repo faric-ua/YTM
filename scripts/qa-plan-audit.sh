@@ -98,8 +98,10 @@ grep -Eq '^\| v1\.4\.41 \| \*\*PARTIALLY PHONE-TESTED — .+\*\* \|' "$STATUS" \
   || fail "v1.4.41 partial phone-test status missing"
 grep -F '| v1.4.41 |' "$STATUS" | grep -Fq 'NOT EXHAUSTIVE' \
   || fail "v1.4.41 non-exhaustive QA qualifier missing"
-grep -Fq '| v1.4.41-R1 | **NOT PHONE-TESTED YET — TARGETED CORRECTIVE BUILD** |' "$STATUS" \
-  || fail "v1.4.41-R1 pending corrective status missing"
+grep -Fq '| v1.4.41-R1 | **PARTIALLY PHONE-TESTED — BUG-011 PASS / SIMPLE YTM-1 PASS / STACKED SUFFIX FAIL** |' "$STATUS" \
+  || fail "v1.4.41-R1 phone result missing"
+grep -Fq '| v1.4.41-R2 | **NOT PHONE-TESTED YET — STACKED FILENAME CORRECTIVE BUILD** |' "$STATUS" \
+  || fail "v1.4.41-R2 pending phone status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
@@ -120,7 +122,7 @@ grep -F '| BUG-010 / Q-010 |' "$BUG" | \
   grep -Fq 'CLOSED — PHONE RETEST PASS v1.4.41' \
   || fail "BUG-010 v1.4.41 closed phone PASS missing"
 grep -F '| BUG-011 / Q-011 |' "$BUG" | \
-  grep -Fq 'FIX IMPLEMENTED — NEXT BUILD PHONE RETEST NEEDED' \
-  || fail "BUG-011 corrective implementation status missing"
+  grep -Fq 'CLOSED — PHONE RETEST PASS v1.4.41-R1' \
+  || fail "BUG-011 R1 closed phone PASS missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"
