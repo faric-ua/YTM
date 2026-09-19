@@ -134,3 +134,43 @@ Expected:
 - Back from Android picker returns to YTM selector.
 
 Phone PASS is required before closing BUG-012.
+
+
+## v1.4.42-R1 screenshot evidence
+
+Observed on the real phone:
+
+- the in-app `Доступ до Download` rationale dialog renders and explains that All files
+  access is broader than choosing one file;
+- after the grant flow, `RecentFileChooserActivity` reports
+  `Останні файли: 47 • найсвіжіші зверху`;
+- the All-files grant action is no longer shown, which means
+  `Environment.isExternalStorageManager()` is being recognized by the app;
+- direct Download rows are visible with source label `Download`;
+- visible ordering shows 14:50 entries above a 14:47 entry: newest-first PASS for the
+  visible sample;
+- the Android system picker opens and shows the full Download location with more
+  objects (120 visible in the system picker), including types such as Markdown that
+  are intentionally not shown in the Import selector;
+- this confirms the distinction: Android grants broad shared-storage access, while
+  YTM Importer's Import selector filters its own list to supported extensions
+  (TXT/CSV/JSON). Data/Restore remains JSON-only.
+
+Not yet accepted:
+- direct House Dance import from the in-app direct Download row;
+- Restore JSON selection to the existing confirmation;
+- explicit Back-from-system-picker return assertion.
+
+### Landscape UX observation
+
+Real-phone landscape screenshots show the three fixed footer actions still stacked
+vertically. On a phone-height landscape viewport this consumes most of the usable
+height and leaves only a very small file-list area.
+
+Tracked separately as **UX-021 Adaptive Landscape Action Layout**:
+- use available width, not orientation name alone, as the responsive trigger;
+- when width allows, full-screen footer actions should reflow into one horizontal row;
+- modal action areas should follow the same adaptive rule;
+- preserve action ordering/semantics from UX-018;
+- portrait behavior can remain vertical where needed;
+- apply through shared UI helpers so the rule is consistent across the app.
