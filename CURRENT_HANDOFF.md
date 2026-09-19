@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-19**
+Last updated: **2026-09-20**
 
 ## 1. Resume point
 
@@ -15,18 +15,18 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.47**
-- versionCode: **87**
-- active branch: `feat/v1.4.47-playlist-hub`
-- active PR: **#19 — v1.4.47: Playlist Hub + Clean Home** → `feat/v1.4.46-home-layout-phase1`
+- versionName: **1.4.47-R1**
+- versionCode: **88**
+- active branch: `fix/v1.4.47-r1-home-nav-dialog`
+- active PR: **not created yet for R1**; underlying PR #19 remains open (`feat/v1.4.47-playlist-hub` → `feat/v1.4.46-home-layout-phase1`)
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **STATIC/FULL PREFLIGHT + SIGNED BUILD PASS / PHONE QA NEEDED**
-- installed phone APK: **v1.4.46**
-- focus: **UX-019 Phase 2 — Playlist Hub + Clean Home**
+- status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — corrective R1 after v1.4.47 phone FAIL**
+- installed phone APK: **v1.4.47**
+- focus: **v1.4.47-R1 — Home prototype hierarchy + modal/nav/rotation corrections**
 
 Stable build folder after signed build:
 
-`/storage/emulated/0/Download/YTM-v1.4.47-build/`
+`/storage/emulated/0/Download/YTM-v1.4.47-R1-build/`
 
 Signed build evidence:
 - GitHub Actions run: **35471958580**
@@ -232,6 +232,35 @@ UX-019 Phase 2 is implemented on `feat/v1.4.47-playlist-hub`:
 
 UX-023 GitHub Releases + in-app updater remains the next separate product wave after this Home/Hub release.
 
+## 5E. v1.4.47 phone FAIL / R1 correction
+
+Real-phone v1.4.47 QA produced screenshots/video and is **FAIL** for the combined Home/Playlist-Hub acceptance.
+
+Confirmed findings:
+- BUG-014: custom modal title follows the active palette but dialog/card/action chrome remains partly hardcoded to Neon-like colors;
+- BUG-015: Playlist Hub delegates Search/Create by finishing itself, so Back/Cancel can return to Home;
+- BUG-016: replacement/problem modal disappears on rotation; Import clear-current-list confirmation is included in the same R1 lifecycle acceptance;
+- BUG-017: Home landscape hides lower dashboard sections because the dashboard body is not scrollable.
+
+The newly approved Home prototype is now an explicit **layout/hierarchy reference only**:
+- preserve current Neon / Blue / Green theme system;
+- do not copy prototype yellow/blue colors, embroidery, photos or branding;
+- target order: header → four-step workflow → utility row → account/status → current playlist → quick actions → bottom navigation.
+
+v1.4.47-R1 implementation on `fix/v1.4.47-r1-home-nav-dialog`:
+- versionName `1.4.47-R1` / versionCode `88`;
+- Home dashboard body is scrollable and bottom navigation is fixed;
+- Home quick actions + bottom navigation are implemented through `HomeDashboardChrome`;
+- MainActivity remains below the existing cleanup size guard;
+- UiChrome custom dialog text/surfaces/borders/action colors use the active palette while danger stays semantic red;
+- PlaylistActivity owns replacements/problem dialog and target open/copy actions locally;
+- Main remembers Playlist Hub origin for delegated Search/Create and restores Hub on cancel/back;
+- replacement dialog state survives Activity recreation;
+- Import clear-current-list confirmation also survives Activity recreation;
+- phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R1.md`.
+
+Do not merge R1 into the v1.4.47 branch until static preflight + signed APK + targeted phone retest pass.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -247,15 +276,15 @@ UX-023 GitHub Releases + in-app updater remains the next separate product wave a
 
 ## 7. Exact next execution step
 
-1. Run the dedicated v1.4.47 Playlist-Hub audit.
+1. Run the dedicated v1.4.47-R1 audit.
 2. Run full release preflight.
-3. Compare v1.4.47 against the v1.4.46 branch head and stop on accidental deletions.
-4. Open a stacked v1.4.47 PR after preflight passes.
-5. Build signed v1.4.47 APK from exact head.
-6. Install over v1.4.46 without uninstalling or clearing data.
-7. Phone-test account card, Playlist Hub, Review/Project/Search/Destination bridges, alternate theme and landscape/rotate-back.
-8. Test target-link persistence only when a safe Create/Add operation is convenient.
-9. Keep UX-023 updater, BUG-004 real-401 acceptance and BUG-013 aged-token acceptance separate.
+3. Compare R1 against `feat/v1.4.47-playlist-hub` and stop on accidental deletions.
+4. Open a stacked R1 PR into `feat/v1.4.47-playlist-hub` only after preflight passes.
+5. Build signed v1.4.47-R1 APK from exact head.
+6. Install over v1.4.47 without uninstalling or clearing data.
+7. Phone-test: prototype Home hierarchy, landscape scroll, modal theme migration, Hub return parent, replacement/clear modal rotation, existing bridges.
+8. Merge R1 only after targeted phone PASS.
+9. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
