@@ -52,13 +52,13 @@ v1.4.41-R1 — Corrective Follow-up — IMPLEMENTED / PHONE RETEST NEEDED
 - [ ] phone: real/reproduced auth invalidation path
 - [ ] phone: re-login + retry search without stale FAILED rows
 - [x] phone: account dialog button/copy fit — portrait PASS
-- [ ] BUG-011 account modal rotation — FIX IMPLEMENTED; next signed build must retest portrait → landscape → portrait
+- [x] BUG-011 account modal rotation — CLOSED / R1 PHONE PASS
 - [x] phone: existing-target single-select list renders; row tap is selection, no footer buttons required; confirmation screen opens PASS
 - [x] phone: modal confirm-left / cancel-right spot checks — account + destructive History confirmation PASS
 - [x] phone: full Restore keeps current quota estimate — PASS (0/100; 505/10000; ≈9495 unchanged)
 - [x] phone: `Відкотити` keeps current quota estimate — PASS (0/100; 505/10000; ≈9495 unchanged)
 - [ ] phone: House Dance fallback title — PARTIAL FAIL: duplicate download produced `... YTM-1`; follow-up normalization required
-- [ ] UX-017 duplicate-download filename follow-up — FIX IMPLEMENTED; next signed build must retest `YTM-1`, `YTM_1`, `YTM (1)`
+- [ ] UX-017 duplicate-download filename follow-up — R1 simple `YTM-1` PASS, stacked `YTM-1 (1)` FAIL; R2 parser fix needed
 - [ ] end-to-end House Dance smoke if quota is acceptable
 
 ## v1.4.16
@@ -726,3 +726,10 @@ including:
 - [x] phone: accepted system Back may exit Service directly to Home
 - [x] phone: rotation keeps History page
 - [x] phone: rotation preserves changelog scroll position after follow-up fix
+
+- UX-020 Import File Recent-First Selector — OPEN; current `1. Імпорт → імпортувати файл`
+  uses Android `ACTION_OPEN_DOCUMENT`, so YTM Importer cannot force the system picker's
+  sort order. Future in-app file selector should sort by provider `lastModified`
+  descending (freshest first), with system picker retained as fallback. True creation
+  time is not reliably exposed by all Android document providers. Coordinate with
+  UX-008 Phase 2B.
