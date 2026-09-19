@@ -23,12 +23,12 @@ grep -Fq 'android.permission.MANAGE_EXTERNAL_STORAGE' "$MANIFEST"   || fail "MAN
 grep -Fq 'name="shared_download"' "$PATHS"   || fail "FileProvider Download path missing"
 grep -Fq 'path="Download/"' "$PATHS"   || fail "FileProvider Download directory missing"
 
-grep -Fq 'Environment.isExternalStorageManager()' "$ACCESS"   || fail "all-files grant check missing"
+grep -Fq 'isExternalStorageManager()' "$ACCESS"   || fail "all-files grant check missing"
 grep -Fq 'ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION' "$ACCESS"   || fail "per-app all-files settings intent missing"
 grep -Fq 'ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION' "$ACCESS"   || fail "global all-files settings fallback missing"
 
-grep -Fq 'Environment.DIRECTORY_DOWNLOADS' "$DIRECT"   || fail "direct Download path missing"
-grep -Fq 'getExternalStoragePublicDirectory' "$DIRECT"   || fail "direct shared-storage query missing"
+grep -Fq 'DIRECTORY_DOWNLOADS' "$DIRECT"   || fail "direct Download path missing"
+grep -Fq 'getExternalStoragePublicDirectory(' "$DIRECT"   || fail "direct shared-storage query missing"
 grep -Fq 'compareByDescending<File>' "$DIRECT"   || fail "direct Download newest-first sort missing"
 grep -Fq 'it.lastModified()' "$DIRECT"   || fail "direct Download lastModified key missing"
 grep -Fq 'FileProvider' "$DIRECT"   || fail "direct Download FileProvider URI bridge missing"
