@@ -42,7 +42,7 @@ v1.4.41 phone QA has started:
 - signed v1.4.41 is installed on the real phone;
 - BUG-009 portrait account modal PASS;
 - existing-target playlist selection screen renders and intentionally uses direct row tap with no footer buttons;
-- remaining targeted checks include BUG-004 real 401, BUG-010 Restore quota preservation, UX-017 fallback naming and additional UX-018 modal spot checks;
+- BUG-010 is now closed; UX-017 is closed via v1.4.41-R2; BUG-004 real 401 still needs phone retest and UX-018 remains representative rather than exhaustive;
 - broad accumulated phone coverage exists across the project, but no exhaustive full-app regression is claimed.
 
 v1.4.41-R1 corrective scope:
