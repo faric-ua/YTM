@@ -15,14 +15,14 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.47-R1**
-- versionCode: **88**
-- active branch: `fix/v1.4.47-r1-home-nav-dialog`
-- active PR: **#20 — v1.4.47-R1: Home layout + Hub navigation fixes** → `feat/v1.4.47-playlist-hub`; underlying PR #19 remains open (`feat/v1.4.47-playlist-hub` → `feat/v1.4.46-home-layout-phase1`)
+- versionName: **1.4.47-R2**
+- versionCode: **89**
+- active branch: `fix/v1.4.47-r2-home-compact-theme-menu`
+- active PR: **not created yet for R2**; PR #20 remains open (`fix/v1.4.47-r1-home-nav-dialog` → `feat/v1.4.47-playlist-hub`), and PR #19 remains open underneath
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **STATIC/FULL PREFLIGHT + SIGNED BUILD PASS / PHONE QA NEEDED — corrective R1 after v1.4.47 phone FAIL**
-- installed phone APK: **v1.4.47**
-- focus: **v1.4.47-R1 — Home prototype hierarchy + modal/nav/rotation corrections**
+- status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — R2 after R1 phone UI findings**
+- installed phone APK: **v1.4.47-R1**
+- focus: **v1.4.47-R2 — compact Home + Menu-owned theme picker**
 
 Planned stable R1 build folder:
 
@@ -268,6 +268,29 @@ v1.4.47-R1 implementation on `fix/v1.4.47-r1-home-nav-dialog`:
 
 Do not merge R1 into the v1.4.47 branch until static preflight + signed APK + targeted phone retest pass.
 
+## 5F. v1.4.47-R1 phone finding / R2 correction
+
+Real-phone R1 screenshots confirmed the overall Home direction but exposed remaining polish issues:
+- lower Home content still consumes too much portrait height;
+- `Поточний плейлист` and `Швидкі дії` use external headings with avoidable vertical gaps;
+- bottom Home navigation outer corners are square;
+- `Меню → Тема` currently finishes MenuActivity, then MainActivity shows the theme picker over Home.
+
+v1.4.47-R2 on `fix/v1.4.47-r2-home-compact-theme-menu`:
+- versionName `1.4.47-R2` / versionCode `89`;
+- current-playlist heading moves inside the interactive playlist card;
+- playlist action copy shortens to `Натисніть для керування →`;
+- quick actions move into a compact accent section container;
+- quick-action height becomes 58dp;
+- heading/content spacing is tightened;
+- bottom navigation uses rounded 16dp outer corners with visible side/bottom margins;
+- MenuActivity owns the Theme picker and no longer finishes before opening it;
+- selecting a new theme recreates MenuActivity, keeping Menu visible;
+- no-target playlist copy shortens to `Створіть / виберіть плейлист`;
+- R1 Playlist-Hub navigation, modal-theme and rotation fixes remain carried forward.
+
+R2 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R2.md`.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -283,13 +306,15 @@ Do not merge R1 into the v1.4.47 branch until static preflight + signed APK + ta
 
 ## 7. Exact next execution step
 
-1. Open/verify the stacked R1 PR into `feat/v1.4.47-playlist-hub`.
-2. Build signed v1.4.47-R1 APK from the exact R1 head.
-3. Verify APK SHA-256.
-4. Install over v1.4.47 without uninstalling or clearing data.
-5. Phone-test: prototype Home hierarchy, landscape scroll, modal theme migration, Hub return parent, replacement/clear modal rotation, existing bridges.
-6. Merge R1 only after targeted phone PASS.
-7. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
+1. Run the dedicated v1.4.47-R2 audit.
+2. Run full release preflight.
+3. Compare R2 against `fix/v1.4.47-r1-home-nav-dialog` and stop on accidental deletions.
+4. Open a stacked R2 PR into the R1 branch only after preflight passes.
+5. Build signed v1.4.47-R2 APK from the exact R2 head.
+6. Install over v1.4.47-R1 without uninstalling or clearing data.
+7. Phone-test portrait density, rounded nav, Menu-owned theme picker, quick actions, short no-target copy, and a short R1 regression smoke.
+8. Merge R2 only after targeted phone PASS.
+9. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
