@@ -174,3 +174,29 @@ Tracked separately as **UX-021 Adaptive Landscape Action Layout**:
 - preserve action ordering/semantics from UX-018;
 - portrait behavior can remain vertical where needed;
 - apply through shared UI helpers so the rule is consistent across the app.
+
+
+## v1.4.42-R1 final phone acceptance
+
+Final phone results:
+
+- direct House Dance TXT import from the in-app Download list: **PASS**;
+- imported title: **House Dance Hit 2000 Vol.1**;
+- imported track count: **9**;
+- Restore JSON from the in-app selector reaches **Підтвердити Restore**: **PASS**;
+- Android system-picker fallback + return: **PASS**;
+- BUG-012: **CLOSED — PHONE RETEST PASS v1.4.42-R1**.
+
+Additional workflow smoke:
+- Search plan opens: **PASS**;
+- current 9-track House Dance search plan reports **9 cached / 0 new search.list**;
+- track result/review interaction: **PASS**;
+- destination flow exposed a separate auth-freshness issue tracked as BUG-013.
+
+BUG-013 evidence:
+- Step 2 was initially green;
+- entering the existing-playlist destination path produced an authorization-required
+  failure from a real API request;
+- Step 2 then changed to red;
+- this proves destination-side HTTP-401 invalidation works, but the green ready state
+  can remain stale until the first live request.
