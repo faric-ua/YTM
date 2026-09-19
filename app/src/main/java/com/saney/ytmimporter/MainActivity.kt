@@ -2903,6 +2903,7 @@ class MainActivity : Activity() {
                     },
                     onPlaylistIdAvailable = { playlistId ->
                         createdPlaylistId = playlistId
+                        persistCurrentWorkspace()
                     },
                     onProgress = { writeProgress ->
                         runOnUiThread {
