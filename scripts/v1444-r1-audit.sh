@@ -22,12 +22,26 @@ if grep -Fq 'flatDialogActionButton(' "$UI"; then
   fail "text-only modal Close helper still present"
 fi
 
-grep -A80 -F 'DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE' "$UI" |
-  grep -Fq 'dialogActionButton(' ||
+VERTICAL_BLOCK="$(
+  awk '
+    /actionLayout == DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE/ { capture = 1 }
+    capture { print }
+    /actionLayout == DialogActionLayout.PRIMARY_TOP/ { exit }
+  ' "$UI"
+)"
+
+grep -Fq 'dialogActionButton(' <<<"$VERTICAL_BLOCK" ||
   fail "vertical dismissive Close is not boxed"
 
-grep -A80 -F 'val trailingTextAction' "$UI" |
-  grep -Fq 'dialogActionButton(' ||
+AUTO_BLOCK="$(
+  awk '
+    /val trailingTextAction/ { capture = 1 }
+    capture { print }
+    /val compactRow/ { exit }
+  ' "$UI"
+)"
+
+grep -Fq 'dialogActionButton(' <<<"$AUTO_BLOCK" ||
   fail "AUTO trailing Close is not boxed"
 
 echo "PASS:"
