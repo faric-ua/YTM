@@ -35,7 +35,7 @@ Current application:
 - versionName: **1.4.40**
 - versionCode: **76**
 - release focus: **UX-016 — in-app release history**
-- release status: **PARTIALLY PHONE-TESTED — RENDERING PASS; ROTATION-SCROLL FIX NEEDS FINAL PHONE RETEST**
+- release status: **PARTIALLY PHONE-TESTED — RELEASE HISTORY TESTED PATH PASS**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -353,6 +353,6 @@ v1.4.40 adds an in-app release history:
 - release sections render as cards, newest first;
 - top-bar Back from History returns to About; the user explicitly accepts system Back exiting Service directly to Home;
 - rendering/scroll/readability phone QA passed;
-- first rotation test preserved the page but reset scroll to v1.4.40;
-- scroll-state preservation fix is implemented and a signed-build phone retest is the immediate next step;
-- UX-016 is implemented and partially phone-tested.
+- first rotation test exposed a scroll reset to v1.4.40;
+- scroll-state preservation fix was implemented and the signed-build phone retest PASSED;
+- UX-016 is closed for the tested Release History scope; this is not a full-app regression claim.
