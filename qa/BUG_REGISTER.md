@@ -5,7 +5,7 @@
 | BUG-001 / Q-001 | OPEN | P2 | Review wording / Project-save feedback questions remain. | F-06 |
 | BUG-002 / Q-002 | FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34 | P2 | v1.4.32 fixed the tested incremental preflight entrance, but quota and other modal windows remained inconsistent. v1.4.33 unified the runtime modal pipeline; v1.4.34 carries that implementation forward unchanged for phone QA. | M-02; v1.4.32 partial PASS → v1.4.33 unified fix → v1.4.34 retest |
 | BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 | P1 | Silent Google/YTM recovery after in-place update verified: Step 2 briefly gray, then automatically green. | A-03, D-03 |
-| BUG-004 / Q-004 | REPRODUCED AGAIN — PHONE FAIL v1.4.40 | P1 | v1.4.40 text-import Search path reported invalid Google authorization for all 9 tracks while Home Step 2 still stayed green/checked. The v1.4.31 ImportActivity fix does not cover this SearchCoordinator failure path. Re-login recovery is also under active reproduction; post-restart result pending. | B-01; v1.4.30 backup repro → v1.4.31 partial fix → v1.4.40 Search repro |
+| BUG-004 / Q-004 | REPRODUCED AGAIN — PHONE FAIL v1.4.40 | P1 | v1.4.40 Search can consume auth failure per track while Home Step 2 stays green. After re-login, auth can be usable again, but auth-failed track states/errors persist in current_playlist_v1 across restart and can make recovery look broken. Backup restore does not contain auth state; later successful playlist creation proved write authorization was working. | B-01; v1.4.30 backup repro → v1.4.31 partial fix → v1.4.40 Search repro/recovery-state finding |
 | BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 | P2 | Ordinary repeat-search preserves canonical exact videoId tracks; real-phone search plan confirmed 0 redundant search.list for exact 3/3. | v1.4.26 repro → v1.4.27 PASS |
 | BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 | P2 | Incremental-delta boundary explanation was truncated as a Toast; R2 replaced it with a readable UiChrome dialog and phone retest passed. | v1.4.29 repro → v1.4.29 R2 PASS |
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
@@ -186,19 +186,42 @@ Real-phone reproduction on 2026-09-19 using
   `Авторизація Google більше не дійсна. Відкрийте «2. Акаунт» і увійдіть знову.`;
 - the imported 9-track workspace remained present.
 
-The user then re-entered the Google account flow. The account was selected again,
-but the app did not immediately recover a usable authorized state. A full app restart
-was started; the post-restart result is still pending and must be recorded separately.
+The user then re-entered the Google account flow and later fully restarted the app.
+The House Dance workspace still appeared broken because its nine auth-failed tracks
+had already been persisted as `TrackStatus.FAILED` with the old authorization error.
+
+The user then restored the latest full local backup. That restore loaded a different
+current playlist (`top 3`). Afterward:
+- cached search/match state was usable;
+- all three tracks were ready;
+- YTM Importer successfully created a **new private YouTube/YTM playlist** and added
+  all three tracks.
+
+Important correction:
+- `LocalBackupManager` does **not** back up `auth_state_v1`;
+- it explicitly does not contain OAuth access tokens;
+- therefore backup restore did not restore authorization;
+- the successful remote playlist creation proves authorization was already usable
+  again by that point.
 
 Code-path inspection after the reproduction:
 - `SearchCoordinator.run(...)` catches per-track exceptions and converts them to
   `TrackStatus.FAILED` plus a user-facing error;
 - it has a quota callback but no equivalent authorization-invalid callback;
 - therefore an auth failure can be consumed inside SearchCoordinator without clearing
-  `AuthSessionStore` / `PersistentAuthStateStore` or forcing Main Step 2 out of green.
+  shared authorization state or forcing Main Step 2 out of green;
+- `CurrentPlaylistStore` persists each track's `status` and `error`, so auth-failed
+  rows survive process restart;
+- successful re-authorization does not currently clear/reset those stale auth-failed
+  track states automatically.
 
-This is now the primary BUG-004 repair target. The earlier v1.4.31 ImportActivity
-invalidation implementation must not be treated as complete coverage.
+BUG-004 therefore has two connected repair targets:
+1. propagate Search-path HTTP 401/auth invalidation to shared auth state immediately;
+2. after successful re-authorization, recover or clearly reset only tracks that failed
+   because of invalid authorization, without destroying the imported workspace.
+
+The earlier v1.4.31 ImportActivity invalidation implementation must not be treated as
+complete coverage.
 
 ## BUG-009 — Google account-switch copy/action fit
 
