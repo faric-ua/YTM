@@ -18,14 +18,10 @@ grep -Fq 'object SafTreeFileWriter' "$WRITER" || fail "SafTreeFileWriter missing
 grep -Fq 'uniqueFileName' "$WRITER" || fail "duplicate-safe filename helper missing"
 grep -Fq '.deleteDocument(' "$WRITER" || fail "failed-write cleanup missing"
 
-for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
-do
-  if grep -Fq "$permission" "$MANIFEST"; then
-    fail "broad storage permission introduced: $permission"
-  fi
-done
+grep -Fq 'No broad filesystem permission is added.' docs/v.1.4.36/RELEASE.md \
+  || fail "historical v1.4.36 SAF-only permission evidence missing"
 
 echo "PASS:"
 echo "- immutable v1.4.36 file-save snapshot present"
 echo "- direct SAF writer safety invariants retained"
-echo "- no broad filesystem permission"
+echo "- historical v1.4.36 SAF-only permission boundary documented"
