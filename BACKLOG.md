@@ -50,8 +50,8 @@ v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections — IMPLEMENTED 
 - [x] replacement dialog survives rotation
 - [x] Import clear-current-list confirmation survives rotation
 - [x] v1.4.47-R1 docs + phone plan
-- [ ] dedicated R1 static audit
-- [ ] full release preflight
+- [x] dedicated R1 static audit
+- [x] full release preflight
 - [ ] signed APK
 - [ ] phone 1: portrait Home hierarchy
 - [ ] phone 2: landscape scroll + bottom nav
