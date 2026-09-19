@@ -19,7 +19,7 @@ Current release candidate:
 - active branch: `feat/v1.4.42-recent-file-selector`
 - active PR: **#13** → `main`
 - installed phone APK: **v1.4.42**
-- status: **IMPLEMENTED / NOT PHONE-TESTED YET**
+- status: **PARTIAL PHONE PASS — ALL-FILES DOWNLOAD LIST WORKS / DIRECT IMPORT+RESTORE PENDING**
 - immediate next gate: **preflight → signed R1 APK → targeted All files access phone QA**
 
 Stable build folder:
@@ -200,7 +200,33 @@ Expected:
 - `Системний вибір файла…` opens Android file picker.
 - Back from system picker returns to YTM selector.
 
-## 7. Historical status that remains true
+## 7. Current R1 phone evidence
+
+Real-phone screenshot evidence confirms:
+
+- the `Доступ до Download` rationale dialog renders;
+- after the grant flow, the selector sees All files access as granted;
+- the permission action disappears;
+- direct Download listing works and shows 47 matching files;
+- visible ordering is newest-first: 14:50 entries appear above 14:47;
+- Android system picker opens separately and shows 120 total Download objects;
+- Import selector intentionally filters supported types, so broad Android permission
+  does not mean every file type is shown in YTM Importer.
+
+Still pending:
+- direct House Dance TXT import;
+- Restore JSON to existing confirmation;
+- explicit system-picker Back → selector return smoke.
+
+Landscape screenshots exposed a separate responsive-layout issue:
+- fixed footer actions remain vertically stacked;
+- in landscape they consume most of the screen height;
+- **UX-021 Adaptive Landscape Action Layout** is now planned;
+- wide/landscape action groups should reflow horizontally when width allows;
+- apply this consistently to full-screen footer actions and modal action areas;
+- preserve UX-018 action ordering/semantics.
+
+## 8. Historical status that remains true
 
 - v1.4.42: selector entry PASS; root Download SAF setup BLOCKED (BUG-012).
 - v1.4.41-R2: UX-017 CLOSED / phone PASS.
@@ -209,15 +235,16 @@ Expected:
 - BUG-004: fix implemented; real/reproduced HTTP 401 phone retest still pending.
 - v1.4.39 populated-History Restore / `Відкотити` remains inconclusive/pending.
 
-## 8. Planned after this release
+## 9. Planned after this release
 
 Home redesign remains separate:
 - UX-019 uses the approved top-left Polyglot K-U prototype as **layout-only** reference;
 - preserve current themes;
 - UX-009: all **four** Home workflow buttons need theme-aware Blue/Green state palettes;
+- UX-021: adaptive landscape/wide action rows across full-screen and modal UI;
 - Neon Dark remains the accepted state-color reference.
 
-## 9. Working contract
+## 10. Working contract
 
 **ChatGPT prepares → user runs exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
 
@@ -232,7 +259,7 @@ User-facing QA instructions:
 - English technical terms are fine;
 - include the short in-app path for each test.
 
-## 10. Fresh-chat reading order
+## 11. Fresh-chat reading order
 
 1. `START_HERE_ASSISTANT.md`
 2. `CURRENT_HANDOFF.md`
