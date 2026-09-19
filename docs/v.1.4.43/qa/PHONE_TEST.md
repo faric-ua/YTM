@@ -59,3 +59,12 @@ If a real HTTP 401 is naturally reproduced during create/add:
 Do not mix into v1.4.43 acceptance:
 - UX-021 landscape/wide horizontal action rows;
 - UX-022 title emphasis across windows/modals.
+## 7. Real-phone observation — 2026-09-19
+
+Observed on installed v1.4.43:
+- app launch automatically refreshed/recovered Step 2 authorization;
+- normal flows are therefore reachable immediately;
+- the historical stale-token condition cannot be reproduced on demand immediately after launch;
+- primary stale-token acceptance remains **DEFERRED** until the authorization naturally ages or becomes invalid again.
+
+This is partial phone evidence for startup silent recovery only. It is not enough to close BUG-013.
