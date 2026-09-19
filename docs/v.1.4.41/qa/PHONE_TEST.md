@@ -165,3 +165,42 @@ Additional UX-018 phone evidence:
 - History → `Очистити` confirmation shows the destructive action `Так, очистити` on the left and `Скасувати` on the right;
 - user cancels instead of deleting data;
 - together with the account modal (`Змінити` left / `Закрити` right), this is a representative horizontal-action spot check, not an exhaustive audit of every modal.
+
+
+## BUG-010 phone evidence — ordinary full Restore PASS
+
+Real-phone v1.4.41 evidence:
+
+Before Restore:
+- Search: `0/100`;
+- total local quota estimate: `505/10000`;
+- remaining units: `≈9495`.
+
+Selected backup:
+- schema 1;
+- app version 0.13.0;
+- dated 2026-09-15 04:55;
+- 4 data groups;
+- legacy backup without checksum.
+
+Confirmation explicitly stated that the local quota estimate from the backup would not
+be restored.
+
+Restore result:
+- restored groups: 3;
+- restored values: 33;
+- UI explicitly stated that the current local quota estimate remained unchanged.
+
+After Restore:
+- Search: `0/100`;
+- total local quota estimate: `505/10000`;
+- remaining units: `≈9495`.
+
+Result:
+**PASS for ordinary full Restore quota preservation.**
+
+The backup exposed 4 groups while the restore applied 3 groups, consistent with
+excluding `quota_tracker_v1` from Restore.
+
+Safety-snapshot rollback quota preservation is still pending until `Відкотити` is
+actually exercised.
