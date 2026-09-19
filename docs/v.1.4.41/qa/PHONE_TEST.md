@@ -230,3 +230,22 @@ The 5-group snapshot / 4-group rollback result is consistent with excluding
 
 One final quota-screen readback is still required before fully closing BUG-010:
 expected `0/100`, `505/10000`, `≈9495`.
+
+
+## UX-017 phone finding — duplicate-download suffix FAIL
+
+The fallback-only House Dance file was imported after the phone file list was sorted differently than expected. Because it was a duplicate download, its filename received a numeric copy suffix.
+
+Observed playlist title on v1.4.41:
+
+`House Dance Hit 2000 Vol.1 YTM-1`
+
+Expected:
+
+`House Dance Hit 2000 Vol.1`
+
+Result: **FAIL for the duplicate-download filename edge case.**
+
+The v1.4.41 normalizer strips a clean trailing `YTM` marker but does not yet strip the marker when the operating system/browser appends a copy suffix. Follow-up should cover at least `YTM-1`, `YTM_1`, and `YTM (1)`.
+
+Do not rebuild immediately for this single finding; finish the current v1.4.41 phone QA and package corrective findings into one follow-up build.
