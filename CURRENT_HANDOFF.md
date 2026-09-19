@@ -96,7 +96,18 @@ This is **not** a claim of full-app regression coverage.
 
 There is no pending v1.4.40 Release History QA.
 
-The only unfinished item carried from the combined v1.4.39/v1.4.40 wave is:
+New post-closeout real-phone findings now take priority before starting unrelated auth-sensitive work:
+
+- BUG-004/Q-004 is **REPRODUCED AGAIN on v1.4.40** through the Search path.
+  The 9-track House Dance fixture produced invalid-auth errors for every track while
+  Home Step 2 still stayed green/checked.
+- Re-entering the Google account flow did not immediately restore usable authorization;
+  the user is performing a full app restart and that result is still pending.
+- BUG-009/Q-009 is OPEN for account-switch text/action phone-width layout.
+- Permanent test data is stored under
+  `docs/test-data/collections/House_Dance_Hit_2000/`.
+
+The unfinished History item carried from the combined v1.4.39/v1.4.40 wave is:
 
 - populated-History Restore verification;
 - populated-History safety-snapshot rollback verification.
@@ -108,7 +119,7 @@ Until then, choose the next product/QA task from `BACKLOG.md`. Current broader p
 - v1.4.37 Storage / Quota / Menu follow-up phone checks;
 - UX-008 Phase 2B for the two remaining generic open-file flows;
 - deferred BUG-002 representative modal retest;
-- BUG-004 real/reproduced HTTP 401 retest;
+- BUG-004 Search-path auth invalidation/recovery repair (now reproduced on v1.4.40);
 - localization foundation for Ukrainian / Korean / English;
 - later visual skin foundation.
 
