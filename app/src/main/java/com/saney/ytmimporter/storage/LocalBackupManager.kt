@@ -42,7 +42,8 @@ class LocalBackupManager(
                 "Backup may contain playlist history, Google email, " +
                     "YouTube channel IDs and cached search results. " +
                     "It does NOT contain OAuth access tokens, passwords " +
-                    "or signing keys."
+                    "or signing keys. Local quota counters are included for " +
+                    "diagnostics but are not restored."
             )
             .put("preferences", groups)
             .put("valueCount", totalValues)
@@ -213,9 +214,14 @@ class LocalBackupManager(
 
         return try {
             val restoredValues = applyBackupJson(raw)
+            val restoredGroups =
+                countRestorableGroups(
+                    JSONObject(raw)
+                        .getJSONObject("preferences")
+                )
 
             RestoreSummary(
-                preferenceGroups = summary.preferenceGroups,
+                preferenceGroups = restoredGroups,
                 restoredValues = restoredValues,
                 safetySnapshotCreated = true
             )
@@ -255,11 +261,16 @@ class LocalBackupManager(
                 "Safety snapshot ще не створено"
             )
 
-        val summary = inspectBackup(raw)
+        inspectBackup(raw)
         val restoredValues = applyBackupJson(raw)
+        val restoredGroups =
+            countRestorableGroups(
+                JSONObject(raw)
+                    .getJSONObject("preferences")
+            )
 
         return RestoreSummary(
-            preferenceGroups = summary.preferenceGroups,
+            preferenceGroups = restoredGroups,
             restoredValues = restoredValues,
             safetySnapshotCreated = false
         )
@@ -341,6 +352,13 @@ class LocalBackupManager(
         return total
     }
 
+    private fun countRestorableGroups(
+        groups: JSONObject
+    ): Int =
+        RESTORABLE_PREFS_NAMES.count { prefsName ->
+            groups.optJSONObject(prefsName) != null
+        }
+
     private fun applyBackupJson(raw: String): Int {
         inspectBackup(raw)
 
@@ -348,7 +366,7 @@ class LocalBackupManager(
         val groups = root.getJSONObject("preferences")
         var restoredValues = 0
 
-        PREFS_NAMES.forEach { prefsName ->
+        RESTORABLE_PREFS_NAMES.forEach { prefsName ->
             val values = groups.optJSONObject(prefsName)
                 ?: return@forEach
 
@@ -562,5 +580,10 @@ class LocalBackupManager(
                 "youtube_search_cache",
                 "current_playlist_v1"
             )
+
+        private val RESTORABLE_PREFS_NAMES =
+            PREFS_NAMES.filterNot {
+                it == "quota_tracker_v1"
+            }
     }
 }
