@@ -10,7 +10,7 @@
 | BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 | P2 | Incremental-delta boundary explanation was truncated as a Toast; R2 replaced it with a readable UiChrome dialog and phone retest passed. | v1.4.29 repro → v1.4.29 R2 PASS |
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
 | BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 | P2 | Restore confirmation now survives phone rotation without forcing the user to choose the backup file again. | v1.4.38 phone repro → R1 rotation-state fix → phone PASS |
-| BUG-009 / Q-009 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41 | P3 | Google account dialog uses shorter `Змінити` action and clearer profile copy; horizontal action placement follows the shared confirm-left / dismiss-right rule. | v1.4.40 account-switch screenshot → v1.4.41 UI fix |
+| BUG-009 / Q-009 | PHONE PORTRAIT PASS v1.4.41 — ROTATION SMOKE PENDING | P3 | Real-phone portrait confirms readable profile copy, single-line `Змінити` on the left and `Закрити` on the right. Rotation smoke remains optional/pending before treating the UI check as fully exercised. | v1.4.40 account-switch screenshot → v1.4.41 portrait PASS |
 | BUG-010 / Q-010 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41 | P2 | Full Restore and safety rollback no longer apply `quota_tracker_v1`; backup files may still contain quota counters for diagnostics, but the current local estimate is preserved. | v1.4.40 House Dance finding → v1.4.41 restore policy fix |
 
 ## BUG-002 current evidence
@@ -238,7 +238,7 @@ Phone acceptance still requires a real/reproduced auth failure.
 
 ## BUG-009 — Google account-switch copy/action fit
 
-Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41.**
+Status: **PHONE PORTRAIT PASS v1.4.41 — ROTATION SMOKE PENDING.**
 
 Observed on the real phone while changing the connected Google account:
 
@@ -254,6 +254,18 @@ Keep BUG-009 separate so a future auth-state fix cannot accidentally close the U
 - account action shortened from `Змінити акаунт` to `Змінити`;
 - explanatory copy shortened to `Плейлисти створюватимуться в цьому YouTube/YTM профілі.`;
 - shared horizontal modal policy keeps the action on the left and Close/Cancel on the right.
+
+### v1.4.41 BUG-009 phone result
+
+Portrait real-phone evidence confirms:
+- explanatory copy is readable;
+- `Змінити` fits on one line;
+- `Змінити` is left;
+- `Закрити` is right;
+- no obvious height/fit problem remains in portrait.
+
+Rotation was not yet separately exercised, so the result is recorded as portrait PASS
+rather than a full all-orientation closure.
 
 Phone width/rotation still require visual confirmation.
 
