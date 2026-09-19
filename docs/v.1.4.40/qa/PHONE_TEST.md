@@ -36,13 +36,12 @@ PASS:
 
 ## D. Back
 
-Tap Back.
+Top-bar arrow behavior:
 
-PASS: returns to `Про YTM Importer`, not directly to Service home.
+- from `Історія змін` it returns to `Про YTM Importer`;
+- from `Про YTM Importer` it returns to `Сервіс`.
 
-Tap Back again.
-
-PASS: returns to `Сервіс`.
+System Back is intentionally allowed to exit the Service flow directly to the app Home screen. The phone QA accepted this distinction as intended behavior.
 
 ## E. Rotation
 
@@ -52,4 +51,5 @@ PASS:
 
 - page remains `Історія змін`;
 - app does not jump back to Service home;
+- the list restores the previous scroll position instead of resetting to v1.4.40;
 - no crash.
