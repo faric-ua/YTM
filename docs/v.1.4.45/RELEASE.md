@@ -21,4 +21,4 @@ utility/detail screens.
 - versionName: **1.4.45**
 - versionCode: **85**
 
-Status: **IMPLEMENTED / PHONE QA NEEDED**.
+Status: **PHONE RETEST PASS — UX-022 CLOSED**.
