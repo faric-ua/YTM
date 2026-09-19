@@ -26,10 +26,10 @@ A new assistant should recover context from the repository and live GitHub state
 
 ## Current release
 
-- versionName: **1.4.44**
-- versionCode: **83**
-- focus: **UX-021 adaptive landscape action layout**
-- status: **NOT PHONE-TESTED YET — v1.4.44 UX-021 implemented**
+- versionName: **1.4.44-R1**
+- versionCode: **84**
+- focus: **UX-021 R1 landscape action copy fit + modal Close chrome**
+- status: **IMPLEMENTED / PHONE RETEST NEEDED — v1.4.44 visual findings corrected in R1**
 - v1.4.39 History JSON: Cancel/rotation/invalid-file paths PASS; populated-History Restore + rollback remain inconclusive and need later retest
 - v1.4.40 Release History tested path remains PASS
 - BUG-009 portrait account-dialog fix is phone-PASS; BUG-010 and BUG-012 are closed; v1.4.43 startup silent auth recovery is phone-observed, while the aged-token BUG-013 acceptance case and BUG-004 Search-specific 401 retest remain pending
