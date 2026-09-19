@@ -1423,24 +1423,18 @@ class ReviewActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@ReviewActivity
+                UiChrome.emphasizedTitle(
+                    activity = this@ReviewActivity,
+                    label = title.take(70),
+                    textSizeSp = 19f,
+                    maxLines = 2
                 ).apply {
-                    text =
-                        title.take(70)
-                    textSize = 19f
-                    setTextColor(Color.WHITE)
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
                     setPadding(
                         dp(12),
                         0,
                         dp(8),
                         0
                     )
-                    maxLines = 2
                 },
                 LinearLayout.LayoutParams(
                     0,
