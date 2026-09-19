@@ -783,7 +783,7 @@ object UiChrome {
             if (boxed.size != actions.size) {
                 val closeAction = actions.last()
                 card.addView(
-                    flatDialogActionButton(
+                    dialogActionButton(
                         activity = activity,
                         action = closeAction
                     ) {
@@ -895,7 +895,7 @@ object UiChrome {
 
             val closeAction = actions.last()
             card.addView(
-                flatDialogActionButton(
+                dialogActionButton(
                     activity = activity,
                     action = closeAction
                 ) {
