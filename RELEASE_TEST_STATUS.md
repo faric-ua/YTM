@@ -2,7 +2,8 @@
 
 | Version | Status | Note |
 |---|---|---|
-| v1.4.44 | **NOT PHONE-TESTED — UX-021 ADAPTIVE ACTION LAYOUT** | Shared width-aware action rule implemented for Storage/Recent full-screen footers and UiChrome modal action areas. Phone portrait/landscape QA required. |
+| v1.4.44-R1 | **NOT PHONE-TESTED — LANDSCAPE COPY + MODAL CLOSE CORRECTION** | Compact `Системний вибір…` is used in the wide Recent-file footer and modal Close actions regain full button chrome. Phone retest required. |
+| v1.4.44 | **PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + FLAT CLOSE** | Landscape row activation worked, but `Системний вибір файла…` wrapped/clipped in the fixed footer button. Result/problem modals also showed `Закрити` as unboxed text while other actions were boxed. Continued in R1. |
 | v1.4.43 | **PARTIALLY PHONE-TESTED — STARTUP SILENT AUTH RECOVERY OBSERVED / STALE-TOKEN RETEST DEFERRED** | Installed on phone. App launch automatically refreshed/recovered Step 2 authorization, so the historical aged-token condition cannot be forced immediately. Primary BUG-013 stale-token acceptance remains deferred until a naturally aged/invalid session occurs. |
 | v1.4.11 | PARTIALLY PHONE-TESTED | Q-002 dialog movement reproduced. |
 | v1.4.12 | **NOT TESTED** | No phone regression. |

@@ -516,6 +516,19 @@ class RecentFileChooserActivity : Activity() {
             AllFilesAccess.isRequired() &&
                 !AllFilesAccess.isGranted()
 
+        val actionCount =
+            if (needsAllFilesGrant) {
+                4
+            } else {
+                3
+            }
+
+        val useCompactLandscapeLabels =
+            UiChrome.useHorizontalActionRow(
+                context = this,
+                actionCount = actionCount
+            )
+
         if (needsAllFilesGrant) {
             buttons +=
                 footerButton(
@@ -540,7 +553,11 @@ class RecentFileChooserActivity : Activity() {
         buttons +=
             footerButton(
                 label =
-                    "Системний вибір файла…",
+                    if (useCompactLandscapeLabels) {
+                        "Системний вибір…"
+                    } else {
+                        "Системний вибір файла…"
+                    },
                 primary = false
             ) {
                 openSystemDocumentPicker()

@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.44 — Adaptive Landscape Actions — IMPLEMENTED / PHONE QA NEEDED
+v1.4.44-R1 — Landscape Copy + Modal Close — IMPLEMENTED / PHONE RETEST NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -25,8 +25,22 @@ v1.4.44 — Adaptive Landscape Actions — IMPLEMENTED / PHONE QA NEEDED
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
-- UX-021 Adaptive Landscape Action Layout — IMPLEMENTED v1.4.44 / PHONE QA NEEDED; full-screen footer and modal action groups use a shared width-based rule and reflow horizontally only when practical button width is available.
+- UX-021 Adaptive Landscape Action Layout — v1.4.44 PHONE FAIL / R1 RETEST NEEDED; horizontal reflow works, but the Recent-file `Системний вибір файла…` label clipped and modal `Закрити` lacked boxed chrome. R1 adds compact wide copy and boxed Close actions.
 - UX-022 Unified Window Title Emphasis — PLANNED; strengthen the first/title line inside dialogs, modal windows and full-screen utility panels with theme-aware title color/emphasis so titles such as `Підтвердити Restore`, `План пошуку`, and `Доступ до Download` visually separate from body text. Implement via shared UI styling across the app, not per-screen hardcoding.
+
+## v1.4.44-R1 — Landscape Copy + Modal Close
+- [x] versionCode 84 / versionName 1.4.44-R1
+- [x] wide Recent-file footer uses `Системний вибір…`
+- [x] portrait/stacked Recent-file footer keeps full `Системний вибір файла…`
+- [x] modal `Закрити` uses the same boxed button chrome as peer actions
+- [x] remove transparent text-only Close helper
+- [x] dedicated R1 audit + notes
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [ ] phone: wide Recent-file footer text fit
+- [ ] phone: Storage save footer regression smoke
+- [ ] phone: result/problem modal `Закрити` background
+- [ ] rotate back to portrait smoke
 
 ## v1.4.44 — Adaptive Landscape Actions
 - [x] versionCode 83 / versionName 1.4.44
@@ -41,8 +55,8 @@ v1.4.44 — Adaptive Landscape Actions — IMPLEMENTED / PHONE QA NEEDED
 - [ ] full release preflight
 - [ ] signed GitHub Actions APK
 - [ ] phone portrait/landscape Storage chooser
-- [ ] phone portrait/landscape Recent-file chooser
-- [ ] phone representative modal wide action row
+- [x] phone portrait/landscape Recent-file chooser — FAIL: `Системний вибір файла…` clipped in wide row
+- [x] phone representative modal visual — FAIL: `Закрити` rendered without button background
 - [ ] phone rotate-back state/navigation smoke
 
 ## v1.4.43 — Auth Freshness

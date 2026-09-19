@@ -1,5 +1,13 @@
 # Журнал змін (Changelog)
 
+## v1.4.44-R1
+- Corrective follow-up from real-phone v1.4.44 landscape QA.
+- Recent-file / backup chooser uses the explicit compact wide-row label `Системний вибір…` while stacked/portrait layouts keep `Системний вибір файла…`.
+- Modal dismissive actions such as `Закрити` now use the same boxed button chrome as other actions instead of transparent text-only styling.
+- Removed the obsolete text-only Close action helper.
+- versionCode 84 / versionName 1.4.44-R1.
+- v1.4.44-R1 = NOT PHONE-TESTED YET.
+
 ## v1.4.44
 - Added UX-021 shared width-aware action layout for wide/landscape screens.
 - Storage chooser and recent-file chooser fixed footers now switch from vertical stacks to equal-width horizontal rows when sufficient width is available.
@@ -8,7 +16,7 @@
 - UX-018 semantic action ordering remains unchanged.
 - No Google/YTM API, authorization, storage-permission, or write behavior changed.
 - versionCode 83 / versionName 1.4.44.
-- v1.4.44 = NOT PHONE-TESTED YET.
+- v1.4.44 phone QA = FAIL: landscape `Системний вибір файла…` clipped/wrapped and modal `Закрити` lacked boxed button chrome; continued in R1.
 
 ## v1.4.43
 - Fixed BUG-013 auth freshness: remote actions no longer trust a merely non-blank cached access token.

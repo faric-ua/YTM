@@ -108,8 +108,10 @@ grep -Fq '| v1.4.42-R1 | **PHONE RETEST PASS — ALL-FILES DOWNLOAD / DIRECT IMP
   || fail "v1.4.42-R1 phone PASS status missing"
 grep -Fq '| v1.4.43 | **PARTIALLY PHONE-TESTED — STARTUP SILENT AUTH RECOVERY OBSERVED / STALE-TOKEN RETEST DEFERRED** |' "$STATUS" \
   || fail "v1.4.43 partial/deferred phone status missing"
-grep -Fq '| v1.4.44 | **NOT PHONE-TESTED — UX-021 ADAPTIVE ACTION LAYOUT** |' "$STATUS" \
-  || fail "v1.4.44 pending phone status missing"
+grep -Fq '| v1.4.44 | **PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + FLAT CLOSE** |' "$STATUS" \
+  || fail "v1.4.44 phone FAIL status missing"
+grep -Fq '| v1.4.44-R1 | **NOT PHONE-TESTED — LANDSCAPE COPY + MODAL CLOSE CORRECTION** |' "$STATUS" \
+  || fail "v1.4.44-R1 pending phone status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \

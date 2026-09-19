@@ -3,19 +3,18 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 UI="app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"
 STORAGE="app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt"
 RECENT="app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt"
 RELEASE="docs/v.1.4.44/RELEASE.md"
 PHONE="docs/v.1.4.44/qa/PHONE_TEST.md"
 
-for f in "$GRADLE" "$UI" "$STORAGE" "$RECENT" "$RELEASE" "$PHONE"; do
+for f in "$UI" "$STORAGE" "$RECENT" "$RELEASE" "$PHONE"; do
   test -f "$f" || fail "missing v1.4.44 file: $f"
 done
 
-grep -Fq 'versionCode = 83' "$GRADLE" || fail "versionCode 83 missing"
-grep -Fq 'versionName = "1.4.44"' "$GRADLE" || fail "versionName 1.4.44 missing"
+grep -Fq 'versionCode: **83**' "$RELEASE" || fail "historical v1.4.44 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.44**' "$RELEASE" || fail "historical v1.4.44 versionName evidence missing"
 
 grep -Fq 'fun useHorizontalActionRow(' "$UI" || fail "shared wide-action decision missing"
 grep -Fq '.screenWidthDp' "$UI" || fail "screen-width trigger missing"
@@ -38,7 +37,7 @@ grep -Fq 'four-action footer may remain stacked' "$RELEASE" ||
   fail "width-insufficient fallback not documented"
 
 echo "PASS:"
-echo "- v1.4.44 / code 83"
+echo "- historical v1.4.44 / code 83 evidence"
 echo "- shared width-based responsive action rule"
 echo "- StorageChooser adaptive footer"
 echo "- RecentFileChooser adaptive footer"

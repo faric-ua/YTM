@@ -1,11 +1,13 @@
 YTM Importer
-Version: 1.4.44
-Version code: 83
+Version: 1.4.44-R1
+Version code: 84
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.44 focus:
-- UX-021 adaptive landscape action layout
-- width-based shared rule for full-screen footer and modal actions
+Current v1.4.44-R1 focus:
+- UX-021 corrective phone follow-up
+- compact `Системний вибір…` copy in wide Recent-file footer
+- boxed modal `Закрити` action instead of transparent text-only styling
+- v1.4.44 phone QA failed these two visual points
 - v1.4.43 auth freshness remains partially phone-tested; stale-token acceptance is deferred
 
 v1.4.12 NOT TESTED
