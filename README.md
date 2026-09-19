@@ -8,26 +8,34 @@ The repository is intentionally more than source code: it preserves release hist
 
 **Start here: [`START_HERE_ASSISTANT.md`](START_HERE_ASSISTANT.md)**
 
-That file explains:
+For a chat crash or mid-release takeover, immediately continue with:
+
+**[`CURRENT_HANDOFF.md`](CURRENT_HANDOFF.md)**
+
+The two files together explain:
 
 - what the project is and why it exists;
+- the exact current branch / PR stack / signed-build / phone-QA resume point;
 - current version and known issues;
 - ChatGPT/user responsibilities;
-- available tools;
 - package/Git/QA safety rules;
 - signed-APK workflow;
-- documentation structure;
 - the correct reading order for continuing development.
+
+A new assistant should recover context from the repository and live GitHub state instead of asking the user to reconstruct the previous chat.
 
 ## Current release
 
-- versionName: **1.4.30**
-- versionCode: **64**
-- focus: **Consolidated Delta-Chain Restore**
-- status: **PARTIALLY PHONE-TESTED — PASS FOR CONSOLIDATED DELTA-CHAIN PATH**
+- versionName: **1.4.40**
+- versionCode: **76**
+- focus: **UX-016 — in-app Release History**
+- status: **PARTIALLY PHONE-TESTED — rendering PASS; rotation-scroll fix needs final phone retest**
+- v1.4.39 History JSON: Cancel/rotation/invalid-file paths PASS; populated-History Restore + rollback remain inconclusive and need later retest
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
-For exact current status, see:
+For the exact active resume point, read `CURRENT_HANDOFF.md`.
+
+For broader current status, see:
 
 - `PROJECT_STATUS.txt`
 - `BACKLOG.md`
@@ -39,7 +47,7 @@ For exact current status, see:
 
 The default project loop is:
 
-`requirements → prepared change → package self-test → Termux apply/preflight → Git commit/push → signed GitHub Actions APK → real-phone QA → evidence/QA closeout → tutorial/history`
+`requirements → prepared change → package/self-test → Termux preflight → Git push → signed GitHub Actions APK → real-phone QA → evidence/status closeout → merge/next work`
 
 Stable collaboration rules live in `YTM_ASSISTANT_WORKFLOW.md`.
 
@@ -47,10 +55,11 @@ Reusable Termux/Git commands live in `TERMUX_COMMANDS.md`.
 
 ## Documentation
 
+- `CURRENT_HANDOFF.md` — mutable crash-recovery/current-session snapshot;
 - `docs/v.*` — immutable historical release/QA evidence snapshots;
 - `docs/tutorial/` — curated step-by-step learning path;
 - `docs/ASSISTANT_TOOL_MAP.md` — tool/capability map;
 - `docs/WORKFLOW_LESSONS.md` — mistakes and guards learned from them;
 - `docs/BUILD_ARTIFACT_CONVENTION.md` — stable APK artifact layout.
 
-Do not delete historical QA/evidence merely to simplify the repository.
+Do not delete or rewrite historical QA/evidence merely to simplify the repository.
