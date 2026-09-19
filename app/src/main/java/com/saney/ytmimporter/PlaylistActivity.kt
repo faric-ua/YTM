@@ -1,9 +1,13 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
@@ -11,6 +15,8 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
+import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
@@ -25,6 +31,13 @@ class PlaylistActivity : Activity() {
     private val reviewRequestCode =
         4701
 
+    private var replacementDialogOpen =
+        false
+
+    private var replacementDialog:
+        Dialog? =
+        null
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -32,11 +45,53 @@ class PlaylistActivity : Activity() {
         AppThemeManager.applyWindow(this)
         currentPlaylistStore =
             CurrentPlaylistStore(this)
+
+        replacementDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_REPLACEMENT_DIALOG_OPEN,
+                    false
+                )
+                ?: false
     }
 
     override fun onResume() {
         super.onResume()
         render()
+
+        if (
+            replacementDialogOpen &&
+            replacementDialog
+                ?.isShowing != true
+        ) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showReplacementLog()
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putBoolean(
+            STATE_REPLACEMENT_DIALOG_OPEN,
+            replacementDialogOpen
+        )
+        super.onSaveInstanceState(
+            outState
+        )
+    }
+
+    override fun onDestroy() {
+        replacementDialog
+            ?.setOnDismissListener(
+                null
+            )
+        replacementDialog =
+            null
+        super.onDestroy()
     }
 
     override fun onActivityResult(
@@ -257,9 +312,7 @@ class PlaylistActivity : Activity() {
                 "Ручні заміни, пропуски, дублікати та помилки",
             primary = false
         ) {
-            finishWithAction(
-                ACTION_REPLACEMENTS
-            )
+            showReplacementLog()
         }
 
         if (
@@ -274,8 +327,10 @@ class PlaylistActivity : Activity() {
                     "Перейти до останнього цільового плейлиста",
                 primary = false
             ) {
-                finishWithAction(
-                    ACTION_OPEN_YTM
+                openTargetInYtm(
+                    requireNotNull(
+                        snapshot.destinationPlaylistId
+                    )
                 )
             }
 
@@ -286,8 +341,10 @@ class PlaylistActivity : Activity() {
                     "Скопіювати URL цільового YTM плейлиста",
                 primary = false
             ) {
-                finishWithAction(
-                    ACTION_COPY_LINK
+                copyTargetLink(
+                    requireNotNull(
+                        snapshot.destinationPlaylistId
+                    )
                 )
             }
         } else {
@@ -586,6 +643,393 @@ class PlaylistActivity : Activity() {
         )
     }
 
+    private fun showReplacementLog() {
+        val snapshot =
+            currentPlaylistStore
+                .load()
+                ?: return toast(
+                    "Немає імпортованого плейлиста"
+                )
+
+        val problemTracks =
+            snapshot.playlist.tracks
+                .filter { track ->
+                    track.manuallySelected ||
+                        track.status ==
+                            TrackStatus.SKIPPED ||
+                        track.status ==
+                            TrackStatus.DUPLICATE ||
+                        track.status ==
+                            TrackStatus.MISSING ||
+                        track.status ==
+                            TrackStatus.PENDING ||
+                        track.status ==
+                            TrackStatus.FAILED
+                }
+
+        if (problemTracks.isEmpty()) {
+            replacementDialogOpen = false
+            return toast(
+                "Замін, пропусків або проблемних треків поки немає"
+            )
+        }
+
+        replacementDialogOpen = true
+
+        val shortText =
+            buildShortReplacementText(
+                problemTracks
+            )
+
+        val fullText =
+            buildFullReplacementText(
+                problemTracks
+            )
+
+        replacementDialog =
+            UiChrome.showRecordDialog(
+                activity = this,
+                title =
+                    "Заміни / проблемні треки: " +
+                        problemTracks.size,
+                subtitle =
+                    "Кожна позиція показана окремою плиткою.",
+                records =
+                    problemTracks.mapIndexed {
+                        index,
+                        track ->
+                        UiChrome.DialogRecord(
+                            title =
+                                "${index + 1}. " +
+                                    "${track.originalArtist} — " +
+                                    track.originalTitle,
+                            detail =
+                                replacementRecordLabel(
+                                    track
+                                ),
+                            tone =
+                                if (
+                                    track.manuallySelected
+                                ) {
+                                    UiChrome.ActionTone.ACCENT
+                                } else {
+                                    UiChrome.ActionTone.NORMAL
+                                }
+                        )
+                    },
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            "TikTok список"
+                        ) {
+                            copyText(
+                                label =
+                                    "YTM Importer TikTok replacements",
+                                text =
+                                    shortText,
+                                successMessage =
+                                    "Короткий список для TikTok скопійовано"
+                            )
+                        },
+                        UiChrome.DialogAction(
+                            "Повний текст"
+                        ) {
+                            copyText(
+                                label =
+                                    "YTM Importer replacement log",
+                                text =
+                                    fullText,
+                                successMessage =
+                                    "Повний журнал скопійовано"
+                            )
+                        },
+                        UiChrome.DialogAction(
+                            label = "Закрити",
+                            tone =
+                                UiChrome.ActionTone.ACCENT
+                        ) {}
+                    ),
+                actionLayout =
+                    UiChrome.DialogActionLayout
+                        .VERTICAL_WITH_TEXT_CLOSE
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    replacementDialogOpen = false
+                    replacementDialog = null
+                }
+            }
+    }
+
+    private fun replacementRecordLabel(
+        track: Track
+    ): String =
+        when {
+            track.manuallySelected &&
+                !track.selectedTitle
+                    .isNullOrBlank() ->
+                buildString {
+                    append(
+                        "Ручний вибір: "
+                    )
+                    append(
+                        track.selectedTitle
+                    )
+
+                    if (
+                        !track.selectedChannel
+                            .isNullOrBlank()
+                    ) {
+                        append(" • ")
+                        append(
+                            track.selectedChannel
+                        )
+                    }
+                }
+
+            track.status ==
+                TrackStatus.SKIPPED ->
+                "Пропущено"
+
+            track.status ==
+                TrackStatus.DUPLICATE ->
+                "Дублікат у цільовому плейлисті"
+
+            track.status ==
+                TrackStatus.MISSING ->
+                "Не знайдено"
+
+            track.status ==
+                TrackStatus.PENDING ->
+                "Очікує в Pending Queue"
+
+            track.status ==
+                TrackStatus.FAILED ->
+                track.error
+                    ?.takeIf {
+                        it.isNotBlank()
+                    }
+                    ?.let {
+                        "Помилка: $it"
+                    }
+                    ?: "Помилка"
+
+            else ->
+                replacementLabel(
+                    track
+                )
+        }
+
+    private fun replacementLabel(
+        track: Track
+    ): String =
+        when {
+            track.status ==
+                TrackStatus.SKIPPED ->
+                "[пропущено]"
+
+            track.status ==
+                TrackStatus.DUPLICATE ->
+                "[дублікат — write-запит пропущено]"
+
+            track.status ==
+                TrackStatus.MISSING ->
+                "[не знайдено]"
+
+            track.status ==
+                TrackStatus.PENDING ->
+                "[очікує в черзі]"
+
+            track.status ==
+                TrackStatus.FAILED &&
+                track.selectedTitle
+                    .isNullOrBlank() ->
+                "[помилка]"
+
+            track.selectedTitle ==
+                "Ручне посилання" ->
+                "[ручне YouTube/YTM посилання]"
+
+            !track.selectedTitle
+                .isNullOrBlank() ->
+                track.selectedTitle.orEmpty()
+
+            else ->
+                "[без заміни]"
+        }
+
+    private fun buildShortReplacementText(
+        tracks: List<Track>
+    ): String =
+        buildString {
+            append(
+                "Заміни / недоступні треки:\n"
+            )
+
+            tracks.forEachIndexed {
+                index,
+                track ->
+                append(index + 1)
+                append(". ")
+                append(track.originalArtist)
+                append(" – ")
+                append(track.originalTitle)
+                append(" → ")
+                append(
+                    replacementLabel(
+                        track
+                    )
+                )
+
+                if (
+                    index !=
+                    tracks.lastIndex
+                ) {
+                    append('\n')
+                }
+            }
+        }
+
+    private fun buildFullReplacementText(
+        tracks: List<Track>
+    ): String =
+        buildString {
+            append(
+                "YTM Importer — журнал замін\n\n"
+            )
+
+            tracks.forEachIndexed {
+                index,
+                track ->
+                append(index + 1)
+                append(". Оригінал: ")
+                append(track.originalArtist)
+                append(" – ")
+                append(track.originalTitle)
+                append('\n')
+                append("   Результат: ")
+                append(
+                    replacementLabel(
+                        track
+                    )
+                )
+                append('\n')
+
+                if (
+                    !track.selectedChannel
+                        .isNullOrBlank()
+                ) {
+                    append("   Канал: ")
+                    append(
+                        track.selectedChannel
+                    )
+                    append('\n')
+                }
+
+                if (
+                    !track.selectedVideoId
+                        .isNullOrBlank()
+                ) {
+                    append(
+                        "   YTM: https://music.youtube.com/watch?v="
+                    )
+                    append(
+                        track.selectedVideoId
+                    )
+                    append('\n')
+                }
+
+                if (
+                    !track.error
+                        .isNullOrBlank()
+                ) {
+                    append(
+                        "   Помилка: "
+                    )
+                    append(
+                        track.error
+                    )
+                    append('\n')
+                }
+
+                if (
+                    index !=
+                    tracks.lastIndex
+                ) {
+                    append('\n')
+                }
+            }
+        }
+
+    private fun copyText(
+        label: String,
+        text: String,
+        successMessage: String
+    ) {
+        val clipboard =
+            getSystemService(
+                CLIPBOARD_SERVICE
+            ) as ClipboardManager
+
+        clipboard.setPrimaryClip(
+            ClipData.newPlainText(
+                label,
+                text
+            )
+        )
+
+        toast(
+            successMessage
+        )
+    }
+
+    private fun targetUrl(
+        playlistId: String
+    ): String =
+        "https://music.youtube.com/playlist?list=" +
+            playlistId
+
+    private fun openTargetInYtm(
+        playlistId: String
+    ) {
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(
+                    targetUrl(
+                        playlistId
+                    )
+                )
+            )
+        )
+    }
+
+    private fun copyTargetLink(
+        playlistId: String
+    ) {
+        copyText(
+            label =
+                "YouTube Music playlist",
+            text =
+                targetUrl(
+                    playlistId
+                ),
+            successMessage =
+                "Посилання на плейлист скопійовано"
+        )
+    }
+
+    private fun toast(
+        message: String
+    ) {
+        Toast
+            .makeText(
+                this,
+                message,
+                Toast.LENGTH_LONG
+            )
+            .show()
+    }
+
     private fun openReview(
         openProjectActions: Boolean = false
     ) {
@@ -644,5 +1088,8 @@ class PlaylistActivity : Activity() {
             "COPY_LINK"
         const val ACTION_MANUAL_VIDEO =
             "MANUAL_VIDEO"
+
+        private const val STATE_REPLACEMENT_DIALOG_OPEN =
+            "playlist_replacement_dialog_open"
     }
 }
