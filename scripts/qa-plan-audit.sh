@@ -106,8 +106,14 @@ grep -Fq '| v1.4.42 | **PARTIAL PHONE QA — ENTRY PASS / ROOT DOWNLOAD SETUP BL
   || fail "v1.4.42 partial phone status missing"
 grep -Fq '| v1.4.42-R1 | **PHONE RETEST PASS — ALL-FILES DOWNLOAD / DIRECT IMPORT / RESTORE / FALLBACK** |' "$STATUS" \
   || fail "v1.4.42-R1 phone PASS status missing"
-grep -Fq '| v1.4.43 | **NOT PHONE-TESTED YET — BUG-013 AUTH FRESHNESS FIX** |' "$STATUS" \
-  || fail "v1.4.43 pending phone status missing"
+grep -Fq '| v1.4.43 | **PARTIALLY PHONE-TESTED — STARTUP SILENT AUTH RECOVERY OBSERVED / STALE-TOKEN RETEST DEFERRED** |' "$STATUS" \
+  || fail "v1.4.43 partial/deferred phone status missing"
+grep -Fq '| v1.4.44 | **PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + FLAT CLOSE** |' "$STATUS" \
+  || fail "v1.4.44 phone FAIL status missing"
+grep -Fq '| v1.4.44-R1 | **PHONE RETEST PASS — UX-021 LANDSCAPE COPY + MODAL CLOSE** |' "$STATUS" \
+  || fail "v1.4.44-R1 phone PASS status missing"
+grep -Fq '| v1.4.45 | **PHONE RETEST PASS — UX-022 UNIFIED WINDOW TITLE EMPHASIS** |' "$STATUS" \
+  || fail "v1.4.45 phone PASS status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
@@ -134,7 +140,7 @@ grep -F '| BUG-012 / Q-012 |' "$BUG" | \
   grep -Fq 'CLOSED — PHONE RETEST PASS v1.4.42-R1' \
   || fail "BUG-012 R1 closed phone PASS missing"
 grep -F '| BUG-013 / Q-013 |' "$BUG" | \
-  grep -Fq 'FIX IMPLEMENTED — v1.4.43 PHONE RETEST NEEDED' \
-  || fail "BUG-013 v1.4.43 fix status missing"
+  grep -Fq 'PARTIAL PHONE QA — STARTUP RECOVERY OBSERVED / STALE-TOKEN RETEST DEFERRED' \
+  || fail "BUG-013 partial/deferred phone status missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"

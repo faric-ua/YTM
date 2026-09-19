@@ -741,13 +741,12 @@ class ServiceActivity : Activity() {
             )
 
             addView(
-                TextView(this@ServiceActivity).apply {
-                    text = title
-                    textSize = 21f
-                    setTextColor(Color.WHITE)
-                    setTypeface(typeface, Typeface.BOLD)
+                UiChrome.emphasizedTitle(
+                    activity = this@ServiceActivity,
+                    label = title,
+                    textSizeSp = 21f
+                ).apply {
                     setPadding(dp(14), 0, dp(4), 0)
-                    maxLines = 1
                 },
                 LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             )

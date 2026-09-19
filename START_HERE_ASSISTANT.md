@@ -32,11 +32,16 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.43**
-- versionCode: **82**
-- release focus: **BUG-013 auth freshness — refresh/validate Google authorization before remote actions**
-- release status: **NOT PHONE-TESTED YET — BUG-013 FIX IMPLEMENTED / QA NEEDED**
+- versionName: **1.4.45**
+- versionCode: **85**
+- release focus: **UX-022 Unified Window Title Emphasis**
+- release status: **PHONE RETEST PASS — v1.4.45 UX-022 CLOSED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
+
+v1.4.43 phone observation:
+- installed on the real phone;
+- startup silent Google/YTM authorization recovery was observed;
+- the aged/stale-token BUG-013 acceptance case remains deferred until it occurs naturally.
 
 v1.4.41 phone QA has started:
 - signed v1.4.41 is installed on the real phone;

@@ -65,7 +65,8 @@ grep -Fq 'quotaScreenRequestCode' "$MAIN" || fail "Main quota result bridge miss
 grep -Fq 'showPendingJobs()' "$MAIN" || fail "Main Pending bridge missing"
 
 grep -Fq 'class MenuActivity' "$MENU" || fail "MenuActivity missing"
-grep -Fq 'text = "Меню"' "$MENU" || fail "Menu screen title missing"
+grep -Eq '(text|label)[[:space:]]*=[[:space:]]*"Меню"' "$MENU" \
+  || fail "Menu screen title missing"
 grep -Fq 'compactButton("Меню")' "$MAIN" || fail "Home Ще → Меню rename missing"
 grep -Fq 'menuScreenRequestCode' "$MAIN" || fail "Menu result bridge missing"
 grep -Fq 'MenuActivity.ACTION_THEME' "$MAIN" || fail "Theme action bridge missing"

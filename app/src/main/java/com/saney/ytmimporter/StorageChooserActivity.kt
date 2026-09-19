@@ -255,26 +255,17 @@ class StorageChooserActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@StorageChooserActivity
+                UiChrome.emphasizedTitle(
+                    activity = this@StorageChooserActivity,
+                    label = titleText.take(56),
+                    maxLines = 2
                 ).apply {
-                    text =
-                        titleText.take(56)
-                    textSize = 20f
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
-                    setTextColor(
-                        palette.text
-                    )
                     setPadding(
                         dp(12),
                         0,
                         dp(8),
                         0
                     )
-                    maxLines = 2
                 },
                 LinearLayout.LayoutParams(
                     0,
@@ -328,8 +319,6 @@ class StorageChooserActivity : Activity() {
         LinearLayout {
         val root =
             LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
                 setPadding(
                     dp(12),
                     dp(10),
@@ -338,7 +327,10 @@ class StorageChooserActivity : Activity() {
                 )
             }
 
-        root.addView(
+        val buttons =
+            mutableListOf<Button>()
+
+        buttons +=
             footerButton(
                 label =
                     if (mode == Mode.SAVE) {
@@ -350,41 +342,30 @@ class StorageChooserActivity : Activity() {
             ) {
                 openSystemTreePicker()
             }
-        )
 
         if (mode == Mode.SAVE) {
-            root.addView(
+            buttons +=
                 footerButton(
                     label =
                         "Зберегти як…",
                     primary = false
                 ) {
                     openSystemCreateDocument()
-                },
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(54)
-                ).apply {
-                    topMargin =
-                        dp(8)
                 }
-            )
         }
 
-        root.addView(
+        buttons +=
             footerButton(
                 label = "Скасувати",
                 primary = false
             ) {
                 finish()
-            },
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(54)
-            ).apply {
-                topMargin =
-                    dp(8)
             }
+
+        UiChrome.addAdaptiveActionButtons(
+            activity = this,
+            container = root,
+            buttons = buttons
         )
 
         return root

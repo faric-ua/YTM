@@ -3,18 +3,17 @@ set -euo pipefail
 
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
-GRADLE="app/build.gradle.kts"
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 WRITE="app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
 RELEASE="docs/v.1.4.43/RELEASE.md"
 PHONE="docs/v.1.4.43/qa/PHONE_TEST.md"
 
-for f in "$GRADLE" "$MAIN" "$WRITE" "$RELEASE" "$PHONE"; do
+for f in "$MAIN" "$WRITE" "$RELEASE" "$PHONE"; do
   test -f "$f" || fail "missing v1.4.43 file: $f"
 done
 
-grep -Fq 'versionCode = 82' "$GRADLE"   || fail "versionCode 82 missing"
-grep -Fq 'versionName = "1.4.43"' "$GRADLE"   || fail "versionName 1.4.43 missing"
+grep -Fq 'versionCode: **82**' "$RELEASE"   || fail "historical v1.4.43 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.43**' "$RELEASE"   || fail "historical v1.4.43 versionName evidence missing"
 
 if grep -Fq 'if (!forceAccountPicker && !accessToken.isNullOrBlank())' "$MAIN"; then
   fail "stale-token authorize fast path still present"
@@ -35,7 +34,7 @@ grep -Fq 'invalidateAuthorizationIfNeeded(' "$MAIN"   || fail "shared auth inval
 grep -Fq 'Незавершене завдання збережено в «Черзі».' "$MAIN"   || fail "write auth interruption queue copy missing"
 
 echo "PASS:"
-echo "- v1.4.43 / code 82"
+echo "- historical v1.4.43 / code 82 evidence"
 echo "- cached token is no longer trusted as a fresh-auth fast path"
 echo "- Google AuthorizationClient refresh/check precedes remote authorize() actions"
 echo "- silent refresh can preserve known account/channel identity"

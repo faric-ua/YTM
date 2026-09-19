@@ -15,17 +15,18 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.43**
-- versionCode: **82**
-- active branch: `fix/v1.4.43-auth-freshness`
-- active PR: **#14 — v1.4.43: refresh auth before remote YouTube actions** → `main`
-- status: **PARTIALLY PHONE-TESTED — startup silent auth refresh observed; stale-token acceptance DEFERRED**
-- installed phone APK: **v1.4.43**
-- focus: **BUG-013 auth freshness**
+- versionName: **1.4.45**
+- versionCode: **85**
+- active branch: `feat/v1.4.45-title-emphasis`
+- active PR: **#17 — v1.4.45: unified window title emphasis** → `feat/v1.4.44-adaptive-actions`
+- stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
+- status: **PHONE RETEST PASS — UX-022 CLOSED**
+- installed phone APK: **v1.4.44-R1**
+- focus: **UX-022 Unified Window Title Emphasis**
 
 Stable build folder after signed build:
 
-`/storage/emulated/0/Download/YTM-v1.4.43-build/`
+`/storage/emulated/0/Download/YTM-v1.4.45-build/`
 
 ## 2. BUG-013 reproduction
 
@@ -151,6 +152,47 @@ If a natural write-time 401 occurs:
 - use theme-aware color/emphasis;
 - apply through shared UI styling, not per-screen hardcoding.
 
+## 5A. v1.4.44 phone finding / R1 correction
+
+Real-phone landscape screenshots on v1.4.44 showed:
+- responsive three-button footer row activates correctly;
+- `Системний вибір файла…` does not fit the fixed-height wide button cleanly;
+- Storage save footer labels fit in the captured state;
+- result/problem modals render `Закрити` as unboxed colored text while peer actions are boxed.
+
+v1.4.44-R1:
+- uses `Системний вибір…` only when the Recent-file footer is in the wide horizontal layout;
+- keeps the full label in stacked/portrait mode;
+- renders dismissive modal Close through the regular boxed dialog action button;
+- removes the obsolete transparent Close helper.
+
+### v1.4.44-R1 phone result:
+- Recent-file / backup landscape footer: PASS; `Системний вибір…` fits;
+- Storage save landscape footer: PASS;
+- result/problem modal `Закрити`: PASS with boxed button chrome;
+- rotate-back usability smoke: PASS;
+- UX-021 CLOSED.
+
+## 5B. v1.4.45 implementation
+
+UX-022 is implemented on `feat/v1.4.45-title-emphasis`:
+- shared `UiChrome.emphasizedTitle(...)` uses the active theme accent and bold type;
+- UiChrome dialog headers use the shared title helper;
+- Import, Review, History, Queue, Destination, Service, Data, Menu, Quota,
+  ListSelector, StorageChooser, and RecentFileChooser top-bar titles use the same helper;
+- existing per-screen title size / line-count constraints are preserved;
+- body/action styling and Home workflow-state semantics are intentionally unchanged.
+
+Phone QA is still required.
+
+### v1.4.45 phone result:
+- full-screen title emphasis: PASS;
+- representative dialog title emphasis: PASS;
+- Neon + alternate-theme accent behavior: PASS;
+- rotation/navigation smoke: PASS;
+- UX-022 CLOSED;
+- separate OAuth 403 `access_denied` observed for a non-approved account while the Google OAuth app remains in Testing; this is configuration, not a v1.4.45 UI regression.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -166,10 +208,10 @@ If a natural write-time 401 occurs:
 
 ## 7. Exact next execution step
 
-1. Keep PR #14 open; do not claim BUG-013 closed yet.
-2. Re-run the stale-token destination test later when the session naturally ages or Google invalidates it.
-3. Continue product work with **UX-021 Adaptive Landscape Action Layout** as the next active implementation target.
-4. Keep UX-022 title emphasis separate after UX-021.
+1. Run final post-QA documentation/preflight sync on v1.4.45.
+2. Merge PR #17 after that final preflight passes.
+3. Separately configure Google OAuth access for additional users: add test users while in Testing, or move the OAuth app toward Production/verification for broad access.
+4. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 

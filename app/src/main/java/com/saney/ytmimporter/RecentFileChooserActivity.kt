@@ -298,26 +298,17 @@ class RecentFileChooserActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@RecentFileChooserActivity
+                UiChrome.emphasizedTitle(
+                    activity = this@RecentFileChooserActivity,
+                    label = titleText.take(56),
+                    maxLines = 2
                 ).apply {
-                    text =
-                        titleText.take(56)
-                    textSize = 20f
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
-                    setTextColor(
-                        palette.text
-                    )
                     setPadding(
                         dp(12),
                         0,
                         dp(8),
                         0
                     )
-                    maxLines = 2
                 },
                 LinearLayout.LayoutParams(
                     0,
@@ -501,8 +492,6 @@ class RecentFileChooserActivity : Activity() {
         LinearLayout {
         val root =
             LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
                 setPadding(
                     dp(12),
                     dp(10),
@@ -511,11 +500,28 @@ class RecentFileChooserActivity : Activity() {
                 )
             }
 
-        if (
+        val buttons =
+            mutableListOf<Button>()
+
+        val needsAllFilesGrant =
             AllFilesAccess.isRequired() &&
-            !AllFilesAccess.isGranted()
-        ) {
-            root.addView(
+                !AllFilesAccess.isGranted()
+
+        val actionCount =
+            if (needsAllFilesGrant) {
+                4
+            } else {
+                3
+            }
+
+        val useCompactLandscapeLabels =
+            UiChrome.useHorizontalActionRow(
+                context = this,
+                actionCount = actionCount
+            )
+
+        if (needsAllFilesGrant) {
+            buttons +=
                 footerButton(
                     label =
                         "Надати доступ до всіх файлів",
@@ -523,10 +529,9 @@ class RecentFileChooserActivity : Activity() {
                 ) {
                     explainAndRequestAllFilesAccess()
                 }
-            )
         }
 
-        root.addView(
+        buttons +=
             footerButton(
                 label =
                     "Додати SAF-папку…",
@@ -534,39 +539,34 @@ class RecentFileChooserActivity : Activity() {
                     !AllFilesAccess.isRequired()
             ) {
                 openSystemTreePicker()
-            },
-            if (
-                AllFilesAccess.isRequired() &&
-                !AllFilesAccess.isGranted()
-            ) {
-                footerParams()
-            } else {
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(54)
-                )
             }
-        )
 
-        root.addView(
+        buttons +=
             footerButton(
                 label =
-                    "Системний вибір файла…",
+                    if (useCompactLandscapeLabels) {
+                        "Системний вибір…"
+                    } else {
+                        "Системний вибір файла…"
+                    },
                 primary = false
             ) {
                 openSystemDocumentPicker()
-            },
-            footerParams()
-        )
+            }
 
-        root.addView(
+        buttons +=
             footerButton(
                 label = "Скасувати",
                 primary = false
             ) {
                 finish()
-            },
-            footerParams()
+            }
+
+        UiChrome.addAdaptiveActionButtons(
+            activity = this,
+            container = root,
+            buttons = buttons,
+            buttonHeightDp = 54
         )
 
         return root

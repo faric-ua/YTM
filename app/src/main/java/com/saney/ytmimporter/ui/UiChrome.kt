@@ -56,6 +56,78 @@ object UiChrome {
         val onClick: () -> Unit
     )
 
+    fun useHorizontalActionRow(
+        context: Context,
+        actionCount: Int,
+        minButtonWidthDp: Int = 180
+    ): Boolean {
+        if (actionCount <= 1) {
+            return false
+        }
+
+        val screenWidthDp =
+            context.resources
+                .configuration
+                .screenWidthDp
+
+        val requiredWidthDp =
+            48 +
+                actionCount * minButtonWidthDp +
+                (actionCount - 1) * 8
+
+        return screenWidthDp >= requiredWidthDp
+    }
+
+    fun addAdaptiveActionButtons(
+        activity: Activity,
+        container: LinearLayout,
+        buttons: List<Button>,
+        buttonHeightDp: Int = 54
+    ) {
+        if (buttons.isEmpty()) {
+            return
+        }
+
+        val horizontal =
+            useHorizontalActionRow(
+                context = activity,
+                actionCount = buttons.size
+            )
+
+        container.orientation =
+            if (horizontal) {
+                LinearLayout.HORIZONTAL
+            } else {
+                LinearLayout.VERTICAL
+            }
+
+        buttons.forEachIndexed { index, button ->
+            container.addView(
+                button,
+                if (horizontal) {
+                    LinearLayout.LayoutParams(
+                        0,
+                        dp(activity, buttonHeightDp),
+                        1f
+                    ).apply {
+                        if (index > 0) {
+                            marginStart = dp(activity, 8)
+                        }
+                    }
+                } else {
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        dp(activity, buttonHeightDp)
+                    ).apply {
+                        if (index > 0) {
+                            topMargin = dp(activity, 8)
+                        }
+                    }
+                }
+            )
+        }
+    }
+
     private data class LegacyDialogAction(
         val label: String,
         val listener: DialogInterface.OnClickListener?
@@ -600,6 +672,27 @@ object UiChrome {
         )
     }
 
+    fun emphasizedTitle(
+        activity: Activity,
+        label: CharSequence,
+        textSizeSp: Float = 20f,
+        maxLines: Int = 1
+    ): TextView =
+        TextView(activity).apply {
+            text = label
+            textSize = textSizeSp
+            setTextColor(
+                AppThemeManager
+                    .palette(activity)
+                    .accent
+            )
+            setTypeface(
+                typeface,
+                Typeface.BOLD
+            )
+            this.maxLines = maxLines
+        }
+
     fun autoSizeButton(
         button: Button,
         minSp: Int = 11,
@@ -630,6 +723,45 @@ object UiChrome {
         actionLayout: DialogActionLayout
     ) {
         if (actions.isEmpty()) return
+
+        if (
+            useHorizontalActionRow(
+                context = activity,
+                actionCount = actions.size
+            )
+        ) {
+            val row =
+                LinearLayout(activity).apply {
+                    orientation =
+                        LinearLayout.HORIZONTAL
+                }
+
+            orderHorizontalActions(actions)
+                .forEachIndexed { index, action ->
+                    row.addView(
+                        dialogActionButton(
+                            activity = activity,
+                            action = action
+                        ) {
+                            dialog.dismiss()
+                            action.onClick()
+                        },
+                        LinearLayout.LayoutParams(
+                            0,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            1f
+                        ).apply {
+                            if (index > 0) {
+                                marginStart =
+                                    dp(activity, 8)
+                            }
+                        }
+                    )
+                }
+
+            card.addView(row)
+            return
+        }
 
         if (
             actionLayout == DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE &&
@@ -672,7 +804,7 @@ object UiChrome {
             if (boxed.size != actions.size) {
                 val closeAction = actions.last()
                 card.addView(
-                    flatDialogActionButton(
+                    dialogActionButton(
                         activity = activity,
                         action = closeAction
                     ) {
@@ -784,7 +916,7 @@ object UiChrome {
 
             val closeAction = actions.last()
             card.addView(
-                flatDialogActionButton(
+                dialogActionButton(
                     activity = activity,
                     action = closeAction
                 ) {
@@ -955,12 +1087,12 @@ object UiChrome {
         subtitle: String?
     ) {
         card.addView(
-            TextView(activity).apply {
-                text = title
-                textSize = 22f
-                setTextColor(Color.WHITE)
-                setTypeface(typeface, Typeface.BOLD)
-            }
+            emphasizedTitle(
+                activity = activity,
+                label = title,
+                textSizeSp = 22f,
+                maxLines = 2
+            )
         )
 
         if (!subtitle.isNullOrBlank()) {
@@ -1264,37 +1396,6 @@ object UiChrome {
             setOnClickListener { onClick() }
         }
 
-    private fun flatDialogActionButton(
-        activity: Activity,
-        action: DialogAction,
-        onClick: () -> Unit
-    ): Button =
-        Button(activity).apply {
-            text = action.label
-            isAllCaps = false
-            gravity = Gravity.CENTER
-            minHeight = dp(context, 44)
-            minimumHeight = dp(context, 44)
-            minWidth = 0
-            minimumWidth = 0
-            maxLines = 1
-            setPadding(
-                dp(context, 14),
-                dp(context, 6),
-                dp(context, 14),
-                dp(context, 6)
-            )
-            setTextColor(
-                when (action.tone) {
-                    ActionTone.NORMAL -> Color.WHITE
-                    ActionTone.ACCENT -> ACCENT
-                    ActionTone.DANGER -> Color.rgb(255, 100, 115)
-                }
-            )
-            background = ColorDrawable(Color.TRANSPARENT)
-            autoSizeButton(this, minSp = 11, maxSp = 14)
-            setOnClickListener { onClick() }
-        }
 
     private fun roundedBackground(
         context: Context,

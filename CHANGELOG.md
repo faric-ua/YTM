@@ -1,5 +1,32 @@
 # Журнал змін (Changelog)
 
+## v1.4.45
+- Added UX-022 shared title emphasis through `UiChrome.emphasizedTitle(...)`.
+- Dialog/modal titles now use the active theme accent while body text remains unchanged.
+- Major full-screen title bars across Import, Review, History, Queue, Destination, Service, Data, Menu, Quota, selectors, storage and recent-file flows use the same shared title styling.
+- Existing per-screen title sizes and one/two-line limits are preserved.
+- Home workflow-state color semantics are intentionally unchanged.
+- versionCode 85 / versionName 1.4.45.
+- v1.4.45 phone retest PASS: full-screen and modal title emphasis, theme-accent switching, and rotation/navigation smoke passed. UX-022 closed.
+
+## v1.4.44-R1
+- Corrective follow-up from real-phone v1.4.44 landscape QA.
+- Recent-file / backup chooser uses the explicit compact wide-row label `Системний вибір…` while stacked/portrait layouts keep `Системний вибір файла…`.
+- Modal dismissive actions such as `Закрити` now use the same boxed button chrome as other actions instead of transparent text-only styling.
+- Removed the obsolete text-only Close action helper.
+- versionCode 84 / versionName 1.4.44-R1.
+- v1.4.44-R1 phone retest PASS: compact landscape copy fits, Storage footer remains readable, boxed `Закрити` is confirmed, and rotate-back smoke passed. UX-021 closed.
+
+## v1.4.44
+- Added UX-021 shared width-aware action layout for wide/landscape screens.
+- Storage chooser and recent-file chooser fixed footers now switch from vertical stacks to equal-width horizontal rows when sufficient width is available.
+- Shared modal action areas use the same wide-layout decision before portrait-specific stacked layouts.
+- Narrow screens and width-constrained four-action groups keep a vertical fallback.
+- UX-018 semantic action ordering remains unchanged.
+- No Google/YTM API, authorization, storage-permission, or write behavior changed.
+- versionCode 83 / versionName 1.4.44.
+- v1.4.44 phone QA = FAIL: landscape `Системний вибір файла…` clipped/wrapped and modal `Закрити` lacked boxed button chrome; continued in R1.
+
 ## v1.4.43
 - Fixed BUG-013 auth freshness: remote actions no longer trust a merely non-blank cached access token.
 - `MainActivity.authorize()` now asks Google AuthorizationClient for current authorization before remote Search/Destination/write/manual-video operations.
@@ -7,7 +34,7 @@
 - Refresh failure clears misleading green ready state instead of waiting for the first YouTube API 401.
 - Playlist write-time HTTP 401 now stops the write, preserves retryable pending tracks/job state, and propagates authorization invalidation back to Home.
 - versionCode 82 / versionName 1.4.43.
-- v1.4.43 = NOT PHONE-TESTED YET.
+- v1.4.43 phone observation: startup silent authorization recovery occurred automatically; the aged/stale-token BUG-013 acceptance case remains deferred.
 
 ## v1.4.42-R1
 - Corrective follow-up for BUG-012: Android 11+ blocks SAF tree access to root Download.

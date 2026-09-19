@@ -1516,24 +1516,17 @@ class HistoryActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@HistoryActivity
+                UiChrome.emphasizedTitle(
+                    activity = this@HistoryActivity,
+                    label = title.take(50),
+                    maxLines = 2
                 ).apply {
-                    text =
-                        title.take(50)
-                    textSize = 20f
-                    setTextColor(Color.WHITE)
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
-                    )
                     setPadding(
                         dp(12),
                         0,
                         dp(8),
                         0
                     )
-                    maxLines = 2
                 },
                 LinearLayout.LayoutParams(
                     0,

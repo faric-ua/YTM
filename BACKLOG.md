@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.43 — Auth Freshness — IMPLEMENTED / PARTIAL PHONE QA; STALE-TOKEN RETEST DEFERRED
+v1.4.45 — Unified Window Title Emphasis — PHONE RETEST PASS / UX-022 CLOSED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -25,8 +25,56 @@ v1.4.43 — Auth Freshness — IMPLEMENTED / PARTIAL PHONE QA; STALE-TOKEN RETES
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
-- UX-021 Adaptive Landscape Action Layout — PLANNED; on wide/landscape screens, action buttons in full-screen footers and modal action areas should reflow into one horizontal row when width allows, instead of keeping portrait-style vertical stacks that consume most of the height. Apply as a shared responsive rule across app screens, not only RecentFileChooserActivity.
-- UX-022 Unified Window Title Emphasis — PLANNED; strengthen the first/title line inside dialogs, modal windows and full-screen utility panels with theme-aware title color/emphasis so titles such as `Підтвердити Restore`, `План пошуку`, and `Доступ до Download` visually separate from body text. Implement via shared UI styling across the app, not per-screen hardcoding.
+- UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
+- UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
+
+## v1.4.45 — Unified Window Title Emphasis
+- [x] versionCode 85 / versionName 1.4.45
+- [x] shared `UiChrome.emphasizedTitle(...)`
+- [x] shared modal/dialog header title emphasis
+- [x] Import / Review / History / Queue / Destination / Service / Data title bars
+- [x] Menu / Quota / ListSelector / Storage / Recent-file title bars
+- [x] theme accent used instead of hard-coded title color
+- [x] preserve per-screen title size / line-count constraints
+- [x] protect Home workflow-state semantics from this UI-only change
+- [x] dedicated v1.4.45 audit + release/QA docs
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [x] phone: full-screen title emphasis — PASS
+- [x] phone: representative dialog title emphasis — PASS
+- [x] phone: Neon + Blue/Green theme smoke — PASS
+- [x] phone: rotation/navigation smoke — PASS
+
+## v1.4.44-R1 — Landscape Copy + Modal Close
+- [x] versionCode 84 / versionName 1.4.44-R1
+- [x] wide Recent-file footer uses `Системний вибір…`
+- [x] portrait/stacked Recent-file footer keeps full `Системний вибір файла…`
+- [x] modal `Закрити` uses the same boxed button chrome as peer actions
+- [x] remove transparent text-only Close helper
+- [x] dedicated R1 audit + notes
+- [x] full release preflight
+- [x] signed GitHub Actions APK
+- [x] phone: wide Recent-file footer text fit — PASS
+- [x] phone: Storage save footer regression smoke — PASS
+- [x] phone: result/problem modal `Закрити` background — PASS
+- [x] rotate back to portrait smoke — PASS
+
+## v1.4.44 — Adaptive Landscape Actions
+- [x] versionCode 83 / versionName 1.4.44
+- [x] shared UiChrome width-based action-row decision
+- [x] shared adaptive full-screen action-button helper
+- [x] StorageChooser footer migration
+- [x] RecentFileChooser footer migration
+- [x] modal action areas use the same wide-layout decision
+- [x] preserve UX-018 action ordering
+- [x] preserve vertical fallback when width is insufficient
+- [x] dedicated v1.4.44 audit + release docs
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [ ] phone portrait/landscape Storage chooser
+- [x] phone portrait/landscape Recent-file chooser — FAIL: `Системний вибір файла…` clipped in wide row
+- [x] phone representative modal visual — FAIL: `Закрити` rendered without button background
+- [ ] phone rotate-back state/navigation smoke
 
 ## v1.4.43 — Auth Freshness
 - [x] versionCode 82 / versionName 1.4.43

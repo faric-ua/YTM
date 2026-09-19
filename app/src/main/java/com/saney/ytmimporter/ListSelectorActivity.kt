@@ -245,18 +245,17 @@ class ListSelectorActivity : Activity() {
             )
 
             addView(
-                TextView(this@ListSelectorActivity).apply {
-                    text = titleText
-                    textSize = 20f
-                    setTypeface(typeface, Typeface.BOLD)
-                    setTextColor(palette.text)
+                UiChrome.emphasizedTitle(
+                    activity = this@ListSelectorActivity,
+                    label = titleText,
+                    maxLines = 2
+                ).apply {
                     setPadding(
                         dp(12),
                         0,
                         dp(8),
                         0
                     )
-                    maxLines = 2
                 },
                 LinearLayout.LayoutParams(
                     0,

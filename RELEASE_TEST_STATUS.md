@@ -1,8 +1,11 @@
-| v1.4.43 | **PARTIALLY PHONE-TESTED — STARTUP SILENT AUTH RECOVERY OBSERVED / STALE-TOKEN RETEST DEFERRED** | Installed on phone. App launch automatically refreshed/recovered Step 2 authorization, so the historical aged-token condition cannot be forced immediately. Primary BUG-013 stale-token acceptance remains deferred until a naturally aged/invalid session occurs. |
 # YTM Importer — Release test status
 
 | Version | Status | Note |
 |---|---|---|
+| v1.4.45 | **PHONE RETEST PASS — UX-022 UNIFIED WINDOW TITLE EMPHASIS** | Real-phone QA passed: full-screen titles, representative modal titles, Neon + alternate-theme accent behavior, and rotation/navigation smoke all passed. UX-022 closed. |
+| v1.4.44-R1 | **PHONE RETEST PASS — UX-021 LANDSCAPE COPY + MODAL CLOSE** | Real-phone retest passed: wide Recent-file/backup chooser shows readable `Системний вибір…`; Storage save footer remains readable; modal `Закрити` has boxed button chrome; rotate-back smoke passed. UX-021 closed. |
+| v1.4.44 | **PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + FLAT CLOSE** | Landscape row activation worked, but `Системний вибір файла…` wrapped/clipped in the fixed footer button. Result/problem modals also showed `Закрити` as unboxed text while other actions were boxed. Continued in R1. |
+| v1.4.43 | **PARTIALLY PHONE-TESTED — STARTUP SILENT AUTH RECOVERY OBSERVED / STALE-TOKEN RETEST DEFERRED** | Installed on phone. App launch automatically refreshed/recovered Step 2 authorization, so the historical aged-token condition cannot be forced immediately. Primary BUG-013 stale-token acceptance remains deferred until a naturally aged/invalid session occurs. |
 | v1.4.11 | PARTIALLY PHONE-TESTED | Q-002 dialog movement reproduced. |
 | v1.4.12 | **NOT TESTED** | No phone regression. |
 | v1.4.13 | PARTIALLY PHONE-TESTED | Installed; Home/account and successful 3-track playlist creation observed. Full regression not run. |
