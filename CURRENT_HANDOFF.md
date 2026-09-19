@@ -18,7 +18,7 @@ Current release candidate:
 - versionName: **1.4.47-R1**
 - versionCode: **88**
 - active branch: `fix/v1.4.47-r1-home-nav-dialog`
-- active PR: **not created yet for R1**; underlying PR #19 remains open (`feat/v1.4.47-playlist-hub` → `feat/v1.4.46-home-layout-phase1`)
+- active PR: **#20 — v1.4.47-R1: Home layout + Hub navigation fixes** → `feat/v1.4.47-playlist-hub`; underlying PR #19 remains open (`feat/v1.4.47-playlist-hub` → `feat/v1.4.46-home-layout-phase1`)
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
 - status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED — corrective R1 after v1.4.47 phone FAIL**
 - installed phone APK: **v1.4.47**
