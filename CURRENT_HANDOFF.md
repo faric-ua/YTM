@@ -18,7 +18,7 @@ Current release candidate:
 - versionName: **1.4.45**
 - versionCode: **85**
 - active branch: `feat/v1.4.45-title-emphasis`
-- active PR: **not created yet**; v1.4.45 is stacked on current v1.4.44 branch head / PR #15
+- active PR: **#17 — v1.4.45: unified window title emphasis** → `feat/v1.4.44-adaptive-actions`
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
 - status: **IMPLEMENTED / NOT PHONE-TESTED YET**
 - installed phone APK: **v1.4.44-R1**
@@ -203,7 +203,7 @@ Phone QA is still required.
 1. Run the dedicated v1.4.45 title-emphasis audit.
 2. Run full release preflight.
 3. Compare v1.4.45 against the current v1.4.44 branch; stop on accidental deletions.
-4. Open a stacked v1.4.45 PR.
+4. PR #17 is open.
 5. Build signed v1.4.45 APK from exact head.
 6. Install over v1.4.44-R1 without clearing data.
 7. Phone-test full-screen titles, representative dialog titles, two themes, and rotation/navigation.
