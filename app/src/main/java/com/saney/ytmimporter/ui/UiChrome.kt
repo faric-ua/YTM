@@ -155,7 +155,9 @@ object UiChrome {
                         0,
                         0
                     )
-                }.also(root::addView)
+                }.also { view ->
+                    root.addView(view)
+                }
             }
 
         return InteractiveSummaryCard(
