@@ -328,8 +328,6 @@ class StorageChooserActivity : Activity() {
         LinearLayout {
         val root =
             LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
                 setPadding(
                     dp(12),
                     dp(10),
@@ -338,7 +336,10 @@ class StorageChooserActivity : Activity() {
                 )
             }
 
-        root.addView(
+        val buttons =
+            mutableListOf<Button>()
+
+        buttons +=
             footerButton(
                 label =
                     if (mode == Mode.SAVE) {
@@ -350,41 +351,30 @@ class StorageChooserActivity : Activity() {
             ) {
                 openSystemTreePicker()
             }
-        )
 
         if (mode == Mode.SAVE) {
-            root.addView(
+            buttons +=
                 footerButton(
                     label =
                         "Зберегти як…",
                     primary = false
                 ) {
                     openSystemCreateDocument()
-                },
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(54)
-                ).apply {
-                    topMargin =
-                        dp(8)
                 }
-            )
         }
 
-        root.addView(
+        buttons +=
             footerButton(
                 label = "Скасувати",
                 primary = false
             ) {
                 finish()
-            },
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(54)
-            ).apply {
-                topMargin =
-                    dp(8)
             }
+
+        UiChrome.addAdaptiveActionButtons(
+            activity = this,
+            container = root,
+            buttons = buttons
         )
 
         return root

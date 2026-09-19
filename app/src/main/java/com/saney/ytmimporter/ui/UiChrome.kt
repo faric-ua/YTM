@@ -56,6 +56,78 @@ object UiChrome {
         val onClick: () -> Unit
     )
 
+    fun useHorizontalActionRow(
+        context: Context,
+        actionCount: Int,
+        minButtonWidthDp: Int = 180
+    ): Boolean {
+        if (actionCount <= 1) {
+            return false
+        }
+
+        val screenWidthDp =
+            context.resources
+                .configuration
+                .screenWidthDp
+
+        val requiredWidthDp =
+            48 +
+                actionCount * minButtonWidthDp +
+                (actionCount - 1) * 8
+
+        return screenWidthDp >= requiredWidthDp
+    }
+
+    fun addAdaptiveActionButtons(
+        activity: Activity,
+        container: LinearLayout,
+        buttons: List<Button>,
+        buttonHeightDp: Int = 54
+    ) {
+        if (buttons.isEmpty()) {
+            return
+        }
+
+        val horizontal =
+            useHorizontalActionRow(
+                context = activity,
+                actionCount = buttons.size
+            )
+
+        container.orientation =
+            if (horizontal) {
+                LinearLayout.HORIZONTAL
+            } else {
+                LinearLayout.VERTICAL
+            }
+
+        buttons.forEachIndexed { index, button ->
+            container.addView(
+                button,
+                if (horizontal) {
+                    LinearLayout.LayoutParams(
+                        0,
+                        dp(activity, buttonHeightDp),
+                        1f
+                    ).apply {
+                        if (index > 0) {
+                            marginStart = dp(activity, 8)
+                        }
+                    }
+                } else {
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        dp(activity, buttonHeightDp)
+                    ).apply {
+                        if (index > 0) {
+                            topMargin = dp(activity, 8)
+                        }
+                    }
+                }
+            )
+        }
+    }
+
     private data class LegacyDialogAction(
         val label: String,
         val listener: DialogInterface.OnClickListener?
@@ -630,6 +702,45 @@ object UiChrome {
         actionLayout: DialogActionLayout
     ) {
         if (actions.isEmpty()) return
+
+        if (
+            useHorizontalActionRow(
+                context = activity,
+                actionCount = actions.size
+            )
+        ) {
+            val row =
+                LinearLayout(activity).apply {
+                    orientation =
+                        LinearLayout.HORIZONTAL
+                }
+
+            orderHorizontalActions(actions)
+                .forEachIndexed { index, action ->
+                    row.addView(
+                        dialogActionButton(
+                            activity = activity,
+                            action = action
+                        ) {
+                            dialog.dismiss()
+                            action.onClick()
+                        },
+                        LinearLayout.LayoutParams(
+                            0,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            1f
+                        ).apply {
+                            if (index > 0) {
+                                marginStart =
+                                    dp(activity, 8)
+                            }
+                        }
+                    )
+                }
+
+            card.addView(row)
+            return
+        }
 
         if (
             actionLayout == DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE &&

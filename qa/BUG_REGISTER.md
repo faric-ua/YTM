@@ -14,7 +14,7 @@
 | BUG-010 / Q-010 | CLOSED — PHONE RETEST PASS v1.4.41 | P2 | Real-phone full Restore and subsequent `Відкотити` both preserved the live quota exactly: Search 0/100; total 505/10000; ≈9495 remaining. Full Restore applied 3 of 4 backup groups; `Відкотити` applied 4 of 5 safety-snapshot groups, confirming `quota_tracker_v1` was excluded from both paths. | v1.4.40 finding → v1.4.41 Restore + `Відкотити` PASS |
 | BUG-011 / Q-011 | CLOSED — PHONE RETEST PASS v1.4.41-R1 | P3 | Real-phone R1 retest passed: Account modal remains/reappears through portrait ↔ landscape Activity recreation and preserves the expected action layout. | v1.4.41 repro → v1.4.41-R1 phone PASS |
 | BUG-012 / Q-012 | CLOSED — PHONE RETEST PASS v1.4.42-R1 | P2 | All files access is recognized; direct Download newest-first list works; direct House Dance import succeeds; Restore JSON reaches confirmation; system-picker fallback/return passes. | v1.4.42 repro → v1.4.42-R1 phone PASS |
-| BUG-013 / Q-013 | FIX IMPLEMENTED — v1.4.43 PHONE RETEST NEEDED | P1 | Remote authorize() now refreshes/checks Google authorization before live operations; refresh failure clears stale green state. Write-time 401 also propagates auth invalidation while preserving pending work. | v1.4.42-R1 repro → v1.4.43 fix |
+| BUG-013 / Q-013 | PARTIAL PHONE QA — STARTUP RECOVERY OBSERVED / STALE-TOKEN RETEST DEFERRED | P1 | v1.4.43 is installed and startup silent Google/YTM recovery was observed. The aged/stale-token acceptance case cannot be forced immediately and remains deferred until it occurs naturally. The fix still refreshes/checks before live operations and preserves pending work on write-time 401. | v1.4.42-R1 repro → v1.4.43 partial phone evidence |
 
 ## BUG-002 current evidence
 
@@ -442,7 +442,7 @@ Separate UX observation:
 
 ## BUG-013 — Green auth state can outlive token validity
 
-Status: **FIX IMPLEMENTED — v1.4.43 PHONE RETEST NEEDED.**
+Status: **PARTIAL PHONE QA — STARTUP RECOVERY OBSERVED / STALE-TOKEN RETEST DEFERRED.**
 
 Phone reproduction:
 - Home showed green `2. Google / YTM ✓`;
@@ -488,4 +488,4 @@ Repair direction:
 - MainActivity invalidates shared auth and tells the user the unfinished job remains in
   `Черга`.
 
-Phone retest is required before BUG-013 closes.
+Real-phone startup silent recovery has been observed. The decisive aged/stale-token retest remains required before BUG-013 closes and is deferred until that state occurs naturally.

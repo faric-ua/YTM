@@ -26,9 +26,9 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.43**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionName: **1.4.44**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **82**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionCode: **83**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
 grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 identity missing"
@@ -46,12 +46,12 @@ grep -Fq 'Historical status that remains true' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF historical status section missing"
 grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF current release candidate missing"
-grep -Fq 'fix/v1.4.43-auth-freshness' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF active v1.4.43 branch missing"
+grep -Fq 'feat/v1.4.44-adaptive-actions' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF active v1.4.44 branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'BUG-013 auth freshness' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF BUG-013 focus missing"
+grep -Fq 'UX-021 Adaptive Landscape Action Layout' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF UX-021 focus missing"
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
 grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
@@ -103,9 +103,9 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.43' PROJECT_STATUS.txt \
+grep -Fq 'Version: 1.4.44' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 82' PROJECT_STATUS.txt \
+grep -Fq 'Version code: 83' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"
@@ -118,10 +118,10 @@ grep -Fq 'BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.
 
 grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
-grep -Fq 'v1.4.43 — Auth Freshness' BACKLOG.md \
-  || fail "BACKLOG current v1.4.43 release missing"
-grep -Fq 'BUG-013 auth freshness — refresh/validate Google authorization before remote actions' START_HERE_ASSISTANT.md \
-  || fail "START_HERE v1.4.43 focus missing"
+grep -Fq 'v1.4.44 — Adaptive Landscape Actions' BACKLOG.md \
+  || fail "BACKLOG current v1.4.44 release missing"
+grep -Fq 'UX-021 adaptive landscape action layout — width-aware footer/modal action rows' START_HERE_ASSISTANT.md \
+  || fail "START_HERE v1.4.44 focus missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
 grep -Fq 'UX-009 Blue/Green workflow-state palettes remain open' CURRENT_HANDOFF.md \
