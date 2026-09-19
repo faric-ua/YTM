@@ -1417,10 +1417,10 @@ class MainActivity : Activity() {
             .setMessage(
                 "Google:\n$googleText\n\n" +
                     "YouTube / YouTube Music:\n$youtubeText\n\n" +
-                    "Плейлисти записуються саме в цей YouTube/YTM профіль."
+                    "Плейлисти створюватимуться в цьому YouTube/YTM профілі."
             )
             .setNegativeButton("Закрити", null)
-            .setPositiveButton("Змінити акаунт") { _, _ ->
+            .setPositiveButton("Змінити") { _, _ ->
                 authorize(after = null, forceAccountPicker = true)
             }
             .show()
@@ -1876,6 +1876,12 @@ class MainActivity : Activity() {
                                         "Треки, які вже є в кеші, програма ще обробить."
                                 )
                             }
+                        },
+                        onAuthorizationInvalidated = { error ->
+                            runOnUiThread {
+                                invalidateAuthorizationIfNeeded(error)
+                                updateSummary()
+                            }
                         }
                     )
 
@@ -1884,22 +1890,31 @@ class MainActivity : Activity() {
                         View.GONE
 
                     status(
-                        if (result.quotaBlocked) {
-                            "Готово: з кешу ${result.cacheHits}, " +
-                                "API-запитів ${result.apiSearches}. " +
-                                "Квота закінчилась; некешовані треки " +
-                                "залишились без пошуку."
-                        } else {
-                            "Пошук завершено: з кешу ${result.cacheHits}, " +
-                                "нових API-пошуків ${result.apiSearches}. " +
-                                "Жовті треки краще перевірити натисканням."
+                        when {
+                            result.authorizationInvalidated ->
+                                "Пошук зупинено: Google/YTM потребує повторного входу. " +
+                                    "Поточний список збережено; після входу запустіть пошук ще раз."
+
+                            result.quotaBlocked ->
+                                "Готово: з кешу ${result.cacheHits}, " +
+                                    "API-запитів ${result.apiSearches}. " +
+                                    "Квота закінчилась; некешовані треки " +
+                                    "залишились без пошуку."
+
+                            else ->
+                                "Пошук завершено: з кешу ${result.cacheHits}, " +
+                                    "нових API-пошуків ${result.apiSearches}. " +
+                                    "Жовті треки краще перевірити натисканням."
                         }
                     )
 
                     updateSummary()
                     updateQuotaPanel()
 
-                    if (openReviewAfter) {
+                    if (
+                        openReviewAfter &&
+                        !result.authorizationInvalidated
+                    ) {
                         openReviewScreen()
                     }
                 }
@@ -2707,7 +2722,7 @@ class MainActivity : Activity() {
                             "Зараз підключений інший акаунт або канал."
                     )
                     .setNegativeButton("Скасувати", null)
-                    .setPositiveButton("Змінити акаунт") { _, _ ->
+                    .setPositiveButton("Змінити") { _, _ ->
                         authorize(forceAccountPicker = true) {
                             resumePendingJob(job)
                         }
