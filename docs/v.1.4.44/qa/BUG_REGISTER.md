@@ -2,7 +2,7 @@
 
 ## UX-021 — Adaptive Landscape Action Layout
 
-Status: **PHONE FAIL — CORRECTIVE v1.4.44-R1 IMPLEMENTED / RETEST NEEDED**
+Status: **CLOSED — PHONE RETEST PASS v1.4.44-R1**
 
 Triggering evidence:
 - wide/landscape full-screen action areas could retain portrait-style vertical stacks;
@@ -34,3 +34,14 @@ Acceptance remains phone-gated.
 - explicit wide-row copy: `Системний вибір…`;
 - stacked/portrait copy remains `Системний вибір файла…`;
 - dismissive Close uses normal boxed dialog action chrome.
+
+
+### v1.4.44-R1 phone result
+
+**PASS.**
+- compact wide-row `Системний вибір…` is readable;
+- Storage save footer remains readable;
+- modal `Закрити` uses normal boxed chrome;
+- rotate-back smoke passed.
+
+UX-021 is closed.
