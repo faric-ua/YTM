@@ -46,3 +46,21 @@ Observed:
   the other actions.
 
 Follow-up: v1.4.44-R1.
+
+## v1.4.44-R1 real-phone retest — 2026-09-19
+
+**PASS.**
+
+1. Recent-file / backup chooser — PASS:
+   - landscape action row visible;
+   - `Системний вибір…` readable without clipping.
+
+2. Storage save chooser — PASS:
+   - `Додати папку… / Зберегти як… / Скасувати` readable in landscape.
+
+3. Representative modal — PASS:
+   - `Закрити` has the same boxed action chrome as peer buttons.
+
+Rotate-back / usability smoke — PASS.
+
+UX-021 is closed by v1.4.44-R1.
