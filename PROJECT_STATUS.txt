@@ -34,7 +34,7 @@ v1.4.38-R1 PARTIALLY PHONE-TESTED — RESTORE ROTATION PASS / CHECKBOX FAIL
 v1.4.38-R2 PHONE RETEST PASS — CHECKBOX VISUAL CENTERING
 v1.4.39 PARTIALLY PHONE-TESTED — CANCEL / ROTATION / INVALID-FILE PASS; RESTORE+ROLLBACK INCONCLUSIVE
 v1.4.40 PARTIALLY PHONE-TESTED — RELEASE HISTORY PASS / BUG-004 AUTH FAIL REPRODUCED / BUG-009 UI FOUND
-v1.4.41 NOT PHONE-TESTED YET — AUTH/RESTORE/UI FIXES IMPLEMENTED
+v1.4.41 PARTIALLY PHONE-TESTED — BROAD REAL-PHONE COVERAGE / NOT EXHAUSTIVE
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -570,3 +570,20 @@ v1.4.41 planned phone acceptance:
 - destructive + ordinary confirm button order
 - old full backup Restore must not rewind local quota estimate
 - House Dance filename/title path should produce `House Dance Hit 2000 Vol.1`
+
+
+v1.4.41 phone QA confirmed:
+- signed v1.4.41 installed on real phone
+- header visibly shows v1.4.41
+- existing local House Dance workspace survived update
+- BUG-009 portrait account modal PASS: readable copy, one-line Змінити left, Закрити right
+- existing-target playlist list renders; direct row tap is the intended single-select action
+- no bottom buttons on that existing-target list are required; Back returns without selection
+- project/release has broad accumulated real-phone coverage, but this is NOT an exhaustive full-app regression claim
+
+v1.4.41 still pending:
+- account modal rotation smoke
+- representative destructive modal ordering
+- BUG-004 real/reproduced 401 path
+- BUG-010 quota-preserving Restore/rollback
+- UX-017 fallback-only filename normalization
