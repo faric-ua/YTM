@@ -20,7 +20,8 @@ Exercise or inspect the four workflow buttons.
 
 Expected:
 - existing READY / REQUIRED / ATTENTION / error semantics are unchanged;
-- this release changes placement/hierarchy only, not workflow meaning.
+- this release changes placement/hierarchy only, not workflow meaning;
+- no auth/search/write logic changed.
 
 ## C — Theme smoke
 
