@@ -13,6 +13,7 @@
 | BUG-009 / Q-009 | PHONE PORTRAIT PASS v1.4.41 | P3 | Real-phone portrait confirms readable profile copy, single-line `Змінити` on the left and `Закрити` on the right. Rotation itself exposed separate BUG-011 (dialog disappears), so BUG-009 remains a portrait visual-fit PASS rather than absorbing the state-restoration defect. | v1.4.40 account-switch screenshot → v1.4.41 portrait PASS |
 | BUG-010 / Q-010 | CLOSED — PHONE RETEST PASS v1.4.41 | P2 | Real-phone full Restore and subsequent `Відкотити` both preserved the live quota exactly: Search 0/100; total 505/10000; ≈9495 remaining. Full Restore applied 3 of 4 backup groups; `Відкотити` applied 4 of 5 safety-snapshot groups, confirming `quota_tracker_v1` was excluded from both paths. | v1.4.40 finding → v1.4.41 Restore + `Відкотити` PASS |
 | BUG-011 / Q-011 | CLOSED — PHONE RETEST PASS v1.4.41-R1 | P3 | Real-phone R1 retest passed: Account modal remains/reappears through portrait ↔ landscape Activity recreation and preserves the expected action layout. | v1.4.41 repro → v1.4.41-R1 phone PASS |
+| BUG-012 / Q-012 | OPEN — PHONE REPRO v1.4.42 / PLATFORM-CONSTRAINT DESIGN BUG | P2 | UX-020 onboarding asks the user to grant root `Download` through `ACTION_OPEN_DOCUMENT_TREE`, but Android 11+ forbids selecting root Download. In-app selector entry works, but its intended newest-first Download setup is blocked. | v1.4.42 first phone QA |
 
 ## BUG-002 current evidence
 
@@ -379,3 +380,31 @@ Result:
 
 The Account modal remains/reappears after rotation instead of disappearing.
 BUG-011 is closed on v1.4.41-R1.
+
+
+## BUG-012 — Recent-file selector cannot grant root Download
+
+Status: **OPEN — PHONE REPRO v1.4.42 / PLATFORM-CONSTRAINT DESIGN BUG.**
+
+Path:
+`Home → 1. Імпорт → імпортувати файл → Додати папку… → Download`
+
+Phone result:
+- v1.4.42 RecentFileChooserActivity opens correctly;
+- attempting to use root Download as the remembered SAF tree is blocked;
+- Android app-permissions settings show no ordinary storage permission to grant.
+
+Platform constraint:
+- Android 11+ does not allow `ACTION_OPEN_DOCUMENT_TREE` to grant access to root
+  `Download`;
+- therefore this is not solved by asking for a normal runtime storage permission.
+
+Required repair direction:
+- do not depend on root Download tree access for primary onboarding;
+- keep scoped-storage / SAF boundaries;
+- do not add broad filesystem permission;
+- keep `ACTION_OPEN_DOCUMENT` system picker fallback;
+- redesign newest-first source strategy, or require/select an allowed subfolder with
+  clear UX rather than promising root Download.
+
+Remaining v1.4.42 phone tests are deferred until this is revised.
