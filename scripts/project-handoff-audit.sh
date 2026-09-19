@@ -50,8 +50,8 @@ grep -Fq 'fix/v1.4.44-r1-action-copy-close-style' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF active v1.4.44-R1 branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'UX-021 R1 — compact landscape copy + boxed modal Close' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF UX-021 focus missing"
+grep -Fq 'UX-022 Unified Window Title Emphasis — next planned work' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF next UX-022 focus missing"
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
 grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
@@ -120,8 +120,8 @@ grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
 grep -Fq 'v1.4.44-R1 — Landscape Copy + Modal Close' BACKLOG.md \
   || fail "BACKLOG current v1.4.44-R1 release missing"
-grep -Fq 'UX-021 R1 — landscape action copy fit + boxed modal Close' START_HERE_ASSISTANT.md \
-  || fail "START_HERE v1.4.44-R1 focus missing"
+grep -Fq 'UX-022 Unified Window Title Emphasis — next planned work' START_HERE_ASSISTANT.md \
+  || fail "START_HERE next UX-022 focus missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
 grep -Fq 'UX-009 Blue/Green workflow-state palettes remain open' CURRENT_HANDOFF.md \
