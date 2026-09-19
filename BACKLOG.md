@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.42-R1 — Direct Download via All files access — PARTIAL PHONE PASS / IMPORT+RESTORE PENDING
+v1.4.42-R1 — Direct Download via All files access — PHONE PASS / BUG-012 CLOSED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -21,10 +21,12 @@ v1.4.42-R1 — Direct Download via All files access — PARTIAL PHONE PASS / IMP
 - BUG-009/Q-009 account-switch copy/action fit — PHONE PORTRAIT PASS v1.4.41
 - BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — CLOSED / PHONE RETEST PASS v1.4.41
 - BUG-011/Q-011 Account modal disappears on phone rotation — CLOSED / PHONE RETEST PASS v1.4.41-R1
+- BUG-013/Q-013 stale green auth freshness before remote API call — OPEN; app can keep Step 2 green while an in-memory access token has become invalid. The next real YouTube API request then returns 401, after which invalidation correctly turns Step 2 red. Need proactive token refresh/validation before remote destination/write flows instead of waiting for the first failing API call.
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
 - UX-021 Adaptive Landscape Action Layout — PLANNED; on wide/landscape screens, action buttons in full-screen footers and modal action areas should reflow into one horizontal row when width allows, instead of keeping portrait-style vertical stacks that consume most of the height. Apply as a shared responsive rule across app screens, not only RecentFileChooserActivity.
+- UX-022 Unified Window Title Emphasis — PLANNED; strengthen the first/title line inside dialogs, modal windows and full-screen utility panels with theme-aware title color/emphasis so titles such as `Підтвердити Restore`, `План пошуку`, and `Доступ до Download` visually separate from body text. Implement via shared UI styling across the app, not per-screen hardcoding.
 
 ## v1.4.42-R1 — Direct Download via All files access
 - [x] versionCode 81 / versionName 1.4.42-R1
@@ -37,16 +39,16 @@ v1.4.42-R1 — Direct Download via All files access — PARTIAL PHONE PASS / IMP
 - [x] keep SAF subfolder fallback
 - [x] keep Android system file picker fallback
 - [x] dedicated R1 static audit + docs
-- [ ] full release preflight
-- [ ] signed GitHub Actions APK
+- [x] full release preflight — PASS
+- [x] signed GitHub Actions APK — installed on phone
 - [x] phone: rationale opens — PASS
-- [~] phone: Android All files access settings navigation — EFFECTIVE GRANT CONFIRMED, but the shown ordinary app-permissions screen is confusing and does not itself display the special All files access switch
+- [x] phone: All files access effective grant confirmed — PASS; Android ordinary permission screen is separate/confusing but app correctly recognized special access
 - [x] phone: grant survives return to app — PASS; selector recognized All files access and removed the grant button
 - [x] phone: Download files appear automatically — PASS; 47 matching files visible
 - [x] phone: newest modified files appear first — PASS on visible evidence (14:50 above 14:47)
-- [ ] phone: direct House Dance import works — PENDING
-- [ ] phone: Restore JSON from Download opens confirmation — PENDING
-- [ ] close BUG-012 if phone PASS
+- [x] phone: direct House Dance import works — PASS; `House Dance Hit 2000 Vol.1`, 9 tracks
+- [x] phone: Restore JSON from Download opens confirmation — PASS
+- [x] BUG-012 CLOSED — v1.4.42-R1 phone PASS
 
 ## v1.4.42 — Recent File Selector
 - [x] versionCode 80 / versionName 1.4.42
@@ -106,7 +108,7 @@ v1.4.42-R1 — Direct Download via All files access — PARTIAL PHONE PASS / IMP
 - [x] v1.4.41 static audit
 - [x] full release preflight
 - [x] signed GitHub Actions APK
-- [ ] phone: real/reproduced auth invalidation path
+- [~] phone: real/reproduced auth invalidation path — destination-side 401 reproduced on v1.4.42-R1 and correctly turned Step 2 red; Search-path 401 retest still pending
 - [ ] phone: re-login + retry search without stale FAILED rows
 - [x] phone: account dialog button/copy fit — portrait PASS
 - [x] BUG-011 account modal rotation — CLOSED / R1 PHONE PASS
