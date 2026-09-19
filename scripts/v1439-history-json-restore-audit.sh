@@ -7,8 +7,9 @@ DATA="app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
 HISTORY="app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt"
 BACKUP="app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt"
 MANIFEST="app/src/main/AndroidManifest.xml"
+CHOOSER="app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt"
 
-for f in   "$DATA"   "$HISTORY"   "$BACKUP"   "$MANIFEST"   docs/v.1.4.39/RELEASE.md   docs/v.1.4.39/UX_AUDIT.md   docs/v.1.4.39/REGRESSION_CHECKLIST.md   docs/v.1.4.39/qa/PHONE_TEST.md   docs/v.1.4.39/qa/BUG_REGISTER.md
+for f in   "$DATA"   "$HISTORY"   "$BACKUP"   "$MANIFEST"   "$CHOOSER"   docs/v.1.4.39/RELEASE.md   docs/v.1.4.39/UX_AUDIT.md   docs/v.1.4.39/REGRESSION_CHECKLIST.md   docs/v.1.4.39/qa/PHONE_TEST.md   docs/v.1.4.39/qa/BUG_REGISTER.md
 do
   test -f "$f" || fail "missing v1.4.39 file: $f"
 done
@@ -40,8 +41,10 @@ grep -Fq 'clearPendingHistoryImportConfirmation()' "$DATA"   || fail "History im
 grep -Fq 'localBackupManager' "$DATA"   || fail "LocalBackupManager use missing"
 grep -Fq '.restoreHistoryJson(' "$DATA"   || fail "History-only restore execution missing"
 
-OPEN_DATA="$(grep -F 'ACTION_OPEN_DOCUMENT' "$DATA" | grep -v 'TREE' | wc -l | tr -d ' ')"
-[ "$OPEN_DATA" -eq 1 ]   || fail "DataActivity must keep one centralized ACTION_OPEN_DOCUMENT launcher; found $OPEN_DATA"
+grep -Fq 'RecentFileChooserActivity::class.java' "$DATA" \
+  || fail "DataActivity no longer routes JSON selection through the file-selector layer"
+grep -Fq 'Intent.ACTION_OPEN_DOCUMENT' "$CHOOSER" \
+  || fail "system ACTION_OPEN_DOCUMENT fallback missing from recent-file selector"
 
 for preserved in   'Черга, quota, SearchCache і поточний список залишаться без змін.'   'Черга, локальна квота, SearchCache і поточний робочий список'
 do
@@ -61,5 +64,5 @@ echo "- native YTM_History_*.json validation + normalization"
 echo "- History-only partial restore through existing safety-snapshot engine"
 echo "- Queue/quota/SearchCache/current playlist preserved"
 echo "- History confirmation survives Activity recreation"
-echo "- DataActivity still has one centralized ACTION_OPEN_DOCUMENT launcher"
+echo "- Data JSON selection remains available through the recent-file selector + system fallback"
 echo "- no broad filesystem permission"
