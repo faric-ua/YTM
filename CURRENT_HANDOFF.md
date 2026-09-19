@@ -15,18 +15,18 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.44-R1**
-- versionCode: **84**
-- active branch: `feat/v1.4.44-adaptive-actions`
-- active PR: **#15 — v1.4.44: adaptive landscape action layout** → `fix/v1.4.43-auth-freshness`; PR #16 merged into this branch
+- versionName: **1.4.45**
+- versionCode: **85**
+- active branch: `feat/v1.4.45-title-emphasis`
+- active PR: **not created yet**; v1.4.45 is stacked on current v1.4.44 branch head / PR #15
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **PHONE RETEST PASS — UX-021 CLOSED**
+- status: **IMPLEMENTED / NOT PHONE-TESTED YET**
 - installed phone APK: **v1.4.44-R1**
-- focus: **UX-022 Unified Window Title Emphasis — next planned work**
+- focus: **UX-022 Unified Window Title Emphasis**
 
 Stable build folder after signed build:
 
-`/storage/emulated/0/Download/YTM-v1.4.44-R1-build/`
+`/storage/emulated/0/Download/YTM-v1.4.45-build/`
 
 ## 2. BUG-013 reproduction
 
@@ -173,6 +173,18 @@ v1.4.44-R1:
 - rotate-back usability smoke: PASS;
 - UX-021 CLOSED.
 
+## 5B. v1.4.45 implementation
+
+UX-022 is implemented on `feat/v1.4.45-title-emphasis`:
+- shared `UiChrome.emphasizedTitle(...)` uses the active theme accent and bold type;
+- UiChrome dialog headers use the shared title helper;
+- Import, Review, History, Queue, Destination, Service, Data, Menu, Quota,
+  ListSelector, StorageChooser, and RecentFileChooser top-bar titles use the same helper;
+- existing per-screen title size / line-count constraints are preserved;
+- body/action styling and Home workflow-state semantics are intentionally unchanged.
+
+Phone QA is still required.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
@@ -188,10 +200,14 @@ v1.4.44-R1:
 
 ## 7. Exact next execution step
 
-1. PR #16 is merged; v1.4.44-R1 phone PASS is preserved on the v1.4.44 branch.
-2. Keep PR #15 stacked on v1.4.43 PR #14 while BUG-013 stale-token acceptance remains deferred.
-3. Start the next UI release for UX-022 Unified Window Title Emphasis from the current v1.4.44 branch head.
-4. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
+1. Run the dedicated v1.4.45 title-emphasis audit.
+2. Run full release preflight.
+3. Compare v1.4.45 against the current v1.4.44 branch; stop on accidental deletions.
+4. Open a stacked v1.4.45 PR.
+5. Build signed v1.4.45 APK from exact head.
+6. Install over v1.4.44-R1 without clearing data.
+7. Phone-test full-screen titles, representative dialog titles, two themes, and rotation/navigation.
+8. Keep BUG-004 Search-specific real-401 acceptance and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
