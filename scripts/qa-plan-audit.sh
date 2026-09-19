@@ -94,6 +94,8 @@ grep -Eq '^\| v1\.4\.40 \| \*\*PARTIALLY PHONE-TESTED — .+\*\* \|' "$STATUS" \
   || fail "v1.4.40 partial phone-test status missing"
 grep -F '| v1.4.40 |' "$STATUS" | grep -Fq 'RELEASE HISTORY TESTED PATH PASS' \
   || fail "v1.4.40 Release History tested-path PASS missing"
+grep -Fq '| v1.4.41 | **NOT PHONE-TESTED YET** |' "$STATUS" \
+  || fail "v1.4.41 pending phone-test status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
@@ -104,7 +106,14 @@ grep -Fq '| BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 |' "$BUG" 
   || fail "BUG-008 R1 closed phone-retest status missing"
 grep -Fq '| BUG-002 / Q-002 | FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34 |' "$BUG" \
   || fail "BUG-002 v1.4.34 retest status missing"
-grep -Fq '| BUG-004 / Q-004 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31 |' "$BUG" \
-  || fail "BUG-004 v1.4.31 fix status missing"
+grep -F '| BUG-004 / Q-004 |' "$BUG" | \
+  grep -Fq 'FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41' \
+  || fail "BUG-004 v1.4.41 fix status missing"
+grep -F '| BUG-009 / Q-009 |' "$BUG" | \
+  grep -Fq 'FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41' \
+  || fail "BUG-009 v1.4.41 fix status missing"
+grep -F '| BUG-010 / Q-010 |' "$BUG" | \
+  grep -Fq 'FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41' \
+  || fail "BUG-010 v1.4.41 fix status missing"
 grep -Fq '| BUG-003 / Q-003 | CLOSED — PHONE RETEST PASS v1.4.20 |' "$BUG" \
   || fail "BUG-003 closed phone-retest status missing"
