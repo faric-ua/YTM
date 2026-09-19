@@ -445,14 +445,14 @@ object UiChrome {
             actions =
                 listOf(
                     DialogAction(
-                        label = "Скасувати",
-                        tone = ActionTone.NORMAL,
-                        onClick = {}
-                    ),
-                    DialogAction(
                         label = confirmLabel,
                         tone = ActionTone.DANGER,
                         onClick = onConfirm
+                    ),
+                    DialogAction(
+                        label = "Скасувати",
+                        tone = ActionTone.NORMAL,
+                        onClick = {}
                     )
                 )
         )
@@ -613,6 +613,15 @@ object UiChrome {
         )
     }
 
+    /*
+     * Horizontal modal action contract:
+     * - primary/confirm action is on the left;
+     * - dismissive action (Cancel/Close/Not now) is on the right;
+     * - a third secondary action sits between them when applicable.
+     *
+     * Callers must pass horizontal actions in that semantic order.
+     * Vertical action sheets keep their explicit top-to-bottom order.
+     */
     private fun addDialogActions(
         activity: Activity,
         dialog: Dialog,
@@ -706,7 +715,7 @@ object UiChrome {
                 orientation = LinearLayout.HORIZONTAL
             }
 
-            actions.drop(1).forEachIndexed { index, action ->
+            orderHorizontalActions(actions.drop(1)).forEachIndexed { index, action ->
                 row.addView(
                     dialogActionButton(
                         activity = activity,
@@ -799,7 +808,7 @@ object UiChrome {
                 orientation = LinearLayout.HORIZONTAL
             }
 
-            actions.forEachIndexed { index, action ->
+            orderHorizontalActions(actions).forEachIndexed { index, action ->
                 row.addView(
                     dialogActionButton(
                         activity = activity,
@@ -844,6 +853,35 @@ object UiChrome {
             )
         }
     }
+
+    private fun orderHorizontalActions(
+        actions: List<DialogAction>
+    ): List<DialogAction> {
+        if (actions.size <= 1) return actions
+
+        val active =
+            actions.filterNot {
+                isDismissiveAction(it)
+            }
+
+        val dismissive =
+            actions.filter {
+                isDismissiveAction(it)
+            }
+
+        return active + dismissive
+    }
+
+    private fun isDismissiveAction(
+        action: DialogAction
+    ): Boolean =
+        action.label.trim() in
+            setOf(
+                "Скасувати",
+                "Закрити",
+                "Не зараз",
+                "Назад"
+            )
 
     private fun recordCard(
         activity: Activity,

@@ -1,0 +1,350 @@
+# v1.4.41 phone QA
+
+Use the signed release APK. Static checks alone are not PASS.
+
+## 1. Version / update
+
+Install over the existing app without clearing data.
+
+PASS:
+- header shows v1.4.41;
+- existing local workspace/settings remain.
+
+## 2. Account modal — BUG-009 + UX-018
+
+Tap `2. Google / YTM` while authorized.
+
+PASS:
+- account details are readable;
+- copy says `Плейлисти створюватимуться в цьому YouTube/YTM профілі.`;
+- left button: `Змінити`;
+- right button: `Закрити`;
+- `Змінити` stays on one line.
+
+Rotate once for a smoke check.
+
+## 3. Modal position spot checks — UX-018
+
+Open at least:
+- one normal confirmation with an action + Cancel;
+- one destructive confirmation such as local History/Queue/SearchCache clear/delete.
+
+PASS:
+- primary/destructive action is on the left;
+- `Скасувати` / `Закрити` is on the right;
+- no modal swaps the semantic sides.
+
+## 4. BUG-004 — real auth invalidation
+
+Use a genuine/reproduced invalid Google/YTM authorization condition when available.
+
+Start Search.
+
+PASS:
+- first HTTP 401 stops Search;
+- Step 2 stops showing green/checked ready state;
+- current playlist stays loaded;
+- current auth-interrupted track remains retryable rather than permanent auth FAILED;
+- remaining tracks are not converted into repeated auth-error cards;
+- Review does not auto-open.
+
+Then re-authorize.
+
+PASS:
+- account/channel identity loads;
+- Step 2 becomes ready;
+- legacy persisted auth-failed rows, if any, become retryable/reviewable;
+- Search can be started again.
+
+If a real 401 cannot be reproduced, record this case BLOCKED, not PASS.
+
+## 5. BUG-010 — quota-preserving full Restore
+
+Before Restore:
+- note Search calls and general-unit estimate.
+
+Restore an older full backup whose stored counters are lower/different.
+
+PASS:
+- Restore works for normal local data;
+- current quota estimate does not jump backward to the backup value;
+- Restore UI explicitly states quota estimate is preserved.
+
+Then, if safe, use `Відкотити`.
+
+PASS:
+- rollback restores local snapshot groups;
+- live local quota estimate still does not rewind.
+
+## 6. UX-017 — playlist title
+
+Test A — explicit title fixture:
+
+`docs/test-data/collections/House_Dance_Hit_2000/House_Dance_Hit_2000_Vol1_YTM.txt`
+
+Expected current playlist title:
+
+`House Dance Hit 2000 Vol.1`
+
+Test B — fallback:
+use equivalent track data without the explicit title line and filename:
+
+`House_Dance_Hit_2000_Vol1_YTM.txt`
+
+Expected fallback title:
+
+`House Dance Hit 2000 Vol.1`
+
+If creating a YouTube/YTM playlist, confirm:
+- title has no underscores;
+- title has no trailing YTM marker;
+- description remains `Створено через YTM Importer`.
+
+## 7. End-to-end optional smoke
+
+Only if Search quota is comfortable:
+
+House Dance Vol.1 → Search → Review → Create private playlist.
+
+Expected:
+- 9/9 usable tracks if current YouTube search results allow;
+- successful create/add;
+- correct human playlist title.
+
+Do not spend quota only to prove UI items already covered elsewhere.
+
+
+## Phone evidence — 2026-09-19
+
+Current release statement:
+
+**v1.4.41 has broad real-phone coverage, but this is not an exhaustive full-app regression claim.**
+Many major workflows have been exercised across recent releases and some v1.4.41 paths
+are now directly confirmed, while the still-pending cases below remain explicitly open.
+
+Confirmed on v1.4.41:
+
+- signed APK installed on the real phone;
+- header visibly shows v1.4.41;
+- existing local House Dance workspace survived the update;
+- BUG-009 portrait account modal PASS:
+  - account/profile details readable;
+  - copy reads `Плейлисти створюватимуться в цьому YouTube/YTM профілі.`;
+  - `Змінити` is on the left;
+  - `Закрити` is on the right;
+  - `Змінити` remains single-line;
+- existing-playlist destination list renders with search + playlist count + rows;
+- **no footer buttons on the existing-playlist list are intentional**:
+  - it is a single-select screen;
+  - tapping a playlist row immediately selects that playlist;
+  - the next screen performs duplicate scan / confirmation before any write;
+  - the top-left Back arrow returns without selecting.
+
+Not yet promoted to PASS:
+
+- account-modal rotation — FAIL, tracked as BUG-011;
+- representative destructive confirmation ordering;
+- BUG-004 real/reproduced 401 invalidation/re-login path;
+- BUG-010 quota-preserving full Restore / rollback;
+- UX-017 fallback-only filename normalization;
+- optional v1.4.41 House Dance end-to-end write smoke.
+
+The raw account screenshot contains personal account identifiers and is not committed
+to repository evidence without redaction.
+
+
+Additional v1.4.41 phone evidence:
+- existing-target row tap → confirmation screen PASS;
+- tapping `top 3` on the existing-playlist list opened `Перевірка перед додаванням`;
+- this confirms the list screen's direct-tap single-select behavior end-to-end up to the pre-write confirmation screen;
+- no tracks were added as part of this check.
+
+
+Additional UX-018 phone evidence:
+- destructive modal ordering PASS;
+- History → `Очистити` confirmation shows the destructive action `Так, очистити` on the left and `Скасувати` on the right;
+- user cancels instead of deleting data;
+- together with the account modal (`Змінити` left / `Закрити` right), this is a representative horizontal-action spot check, not an exhaustive audit of every modal.
+
+
+## BUG-010 phone evidence — ordinary full Restore PASS
+
+Real-phone v1.4.41 evidence:
+
+Before Restore:
+- Search: `0/100`;
+- total local quota estimate: `505/10000`;
+- remaining units: `≈9495`.
+
+Selected backup:
+- schema 1;
+- app version 0.13.0;
+- dated 2026-09-15 04:55;
+- 4 data groups;
+- legacy backup without checksum.
+
+Confirmation explicitly stated that the local quota estimate from the backup would not
+be restored.
+
+Restore result:
+- restored groups: 3;
+- restored values: 33;
+- UI explicitly stated that the current local quota estimate remained unchanged.
+
+After Restore:
+- Search: `0/100`;
+- total local quota estimate: `505/10000`;
+- remaining units: `≈9495`.
+
+Result:
+**PASS for ordinary full Restore quota preservation.**
+
+The backup exposed 4 groups while the restore applied 3 groups, consistent with
+excluding `quota_tracker_v1` from Restore.
+
+Safety-snapshot rollback quota preservation is still pending until `Відкотити` is
+actually exercised.
+
+
+## BUG-010 safety rollback — UI/restore-path PASS
+
+Real-phone v1.4.41 rollback evidence:
+
+Rollback confirmation:
+- safety snapshot date: 2026-09-19 14:45;
+- snapshot app version: 1.4.41;
+- snapshot groups: 5;
+- snapshot values: 117;
+- confirmation explicitly states that the local quota estimate will remain current
+  and will not roll back.
+
+Rollback result:
+- restored groups: 4;
+- restored values: 113;
+- UI explicitly states that the local quota estimate did not change;
+- local state from before the last Restore was returned;
+- safety snapshot was retained.
+
+The 5-group snapshot / 4-group rollback result is consistent with excluding
+`quota_tracker_v1` from rollback.
+
+Final quota-screen readback after `Відкотити`:
+- Search: `0/100`;
+- total local quota estimate: `505/10000`;
+- remaining units: `≈9495`.
+
+Result: **PASS. BUG-010 fully closed for both full Restore and `Відкотити`.**
+
+
+## UX-017 phone finding — duplicate-download suffix FAIL
+
+The fallback-only House Dance file was imported after the phone file list was sorted differently than expected. Because it was a duplicate download, its filename received a numeric copy suffix.
+
+Observed playlist title on v1.4.41:
+
+`House Dance Hit 2000 Vol.1 YTM-1`
+
+Expected:
+
+`House Dance Hit 2000 Vol.1`
+
+Result: **FAIL for the duplicate-download filename edge case.**
+
+The v1.4.41 normalizer strips a clean trailing `YTM` marker but does not yet strip the marker when the operating system/browser appends a copy suffix. Follow-up should cover at least `YTM-1`, `YTM_1`, and `YTM (1)`.
+
+Do not rebuild immediately for this single finding; finish the current v1.4.41 phone QA and package corrective findings into one follow-up build.
+
+
+### Plain-language note for QA terminology
+
+In user-facing QA notes, prefer `Відкотити` or `повернути стан до моменту перед Restore` instead of using the English word `rollback` by itself. This makes the test steps clearer for the project owner.
+
+
+## BUG-011 phone finding — Account modal disappears on rotation
+
+Path:
+`Home → 2. Google / YTM → rotate phone while Account modal is open`
+
+Observed:
+- portrait modal layout is correct;
+- after rotation the Account modal disappears;
+- Home remains visible.
+
+Expected:
+- Account modal should be restored/reopened after Activity recreation.
+
+Result:
+**FAIL — BUG-011 opened.**
+
+This does not invalidate BUG-009 portrait visual PASS. Corrective build should preserve
+an "Account modal open" flag/state and recreate the modal after rotation.
+
+### QA wording convention
+
+English technical terms may be used, but user-facing test instructions should include
+the visible in-app navigation path whenever it helps. Example:
+
+`rollback / Відкотити → Меню → Дані та резервні копії → Відкотити останній Restore`
+
+
+## Follow-up implementation after phone findings
+
+The installed v1.4.41 APK does not contain these changes yet.
+
+Active branch now includes:
+- BUG-011 repair: save/recreate Account modal visibility through Activity rotation;
+- UX-017 repair: strip service marker plus duplicate-download copy suffixes such as
+  `YTM-1`, `YTM_1`, and `YTM (1)`.
+
+Required next-build phone retest:
+- path: `Home → 2. Google / YTM → rotate portrait → landscape → portrait`;
+- Account modal must remain/reappear after both rotations;
+- import duplicate-named fallback files and verify playlist title remains
+  `House Dance Hit 2000 Vol.1`.
+
+These are implementation notes only, not PASS evidence.
+
+
+## v1.4.41-R1 phone result
+
+User-reported targeted results:
+
+1. version badge `v1.4.41-R1`: **PASS**;
+2. BUG-011 Account modal rotation: **PASS**;
+3. UX-017 simple duplicate suffix `YTM-1`: **PASS**;
+4. UX-017 stacked duplicate suffix `YTM-1 (1)`: **FAIL**.
+
+Observed stacked-suffix title:
+
+`House Dance Hit 2000 Vol.1 YTM-1 (1)`
+
+Expected:
+
+`House Dance Hit 2000 Vol.1`
+
+Interpretation:
+- BUG-011 is closed on R1;
+- UX-017 is improved but not fully closed;
+- next corrective parser patch must strip repeated/stacked copy suffix tokens after
+  the service marker, not only one suffix token.
+
+
+## v1.4.41-R2 phone result
+
+Targeted corrective test: **PASS**.
+
+Path:
+`Home → 1. Імпорт → імпортувати файл`
+
+Confirmed on phone:
+- `YTM-1` → clean playlist title;
+- `YTM-1 (1)` → clean playlist title;
+- `YTM-1 (1) (1)` → clean playlist title;
+- final displayed title:
+  `House Dance Hit 2000 Vol.1`.
+
+UX-017 is now closed.
+
+The file-picker screenshot also confirms the current import flow is the external Android
+document picker. It displays file timestamps but YTM Importer does not control its sort
+order. UX-020 remains planned for an in-app newest-first selector.

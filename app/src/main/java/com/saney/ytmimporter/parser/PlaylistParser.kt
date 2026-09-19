@@ -40,7 +40,7 @@ object PlaylistParser {
 
         val playlistName = rows.drop(1)
             .firstNotNullOfOrNull { it.getOrNull(playlistIndex).orEmpty().trim().ifBlank { null } }
-            ?: fileName.substringBeforeLast('.')
+            ?: fallbackPlaylistName(fileName)
 
         return ImportedPlaylist(playlistName, tracks)
     }
@@ -72,9 +72,47 @@ object PlaylistParser {
 
         require(tracks.isNotEmpty()) { "TXT не містить рядків формату Artist - Track" }
         return ImportedPlaylist(
-            name = playlistName ?: fileName.substringBeforeLast('.'),
+            name = playlistName ?: fallbackPlaylistName(fileName),
             tracks = tracks
         )
+    }
+
+    private fun fallbackPlaylistName(
+        fileName: String
+    ): String {
+        val base =
+            fileName
+                .substringBeforeLast('.')
+                .replace('_', ' ')
+                .replace(
+                    Regex("\\s+"),
+                    " "
+                )
+                .trim()
+
+        val withoutServiceMarker =
+            base.replace(
+                Regex(
+                    "(?i)\\s*(?:[-–—]\\s*)?YTM(?:\\s+Importer)?" +
+                        "(?:\\s*(?:[-_]\\s*\\d+|\\(\\s*\\d+\\s*\\)|\\s+\\d+))*\\s*$"
+                ),
+                ""
+            ).trim()
+
+        val normalizedVolumes =
+            withoutServiceMarker.replace(
+                Regex(
+                    "(?i)\\bVol\\.?\\s*(\\d+)\\b"
+                )
+            ) { match ->
+                "Vol.${match.groupValues[1]}"
+            }
+
+        return normalizedVolumes
+            .trim()
+            .ifBlank {
+                "YTM Import"
+            }
     }
 
     private fun normalizeHeader(value: String): String =

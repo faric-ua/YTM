@@ -80,8 +80,8 @@ grep -Fq 'спільну батьківську папку' "$IMPORT" \
   || fail "destination parent guidance missing"
 
 grep -Fq '| BUG-004 / Q-004 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31 |' \
-  qa/BUG_REGISTER.md \
-  || fail "root BUG-004 implementation status missing"
+  docs/v.1.4.31/qa/BUG_REGISTER.md \
+  || fail "historical v1.4.31 BUG-004 implementation status missing"
 
 echo "PASS:"
 echo "- version 1.4.31 / code 65"

@@ -26,9 +26,9 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.40**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionName: **1.4.41-R2**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **76**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionCode: **79**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
 grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 identity missing"
@@ -42,11 +42,13 @@ grep -Fq 'CURRENT_HANDOFF.md' START_HERE_ASSISTANT.md \
   || fail "START_HERE does not include CURRENT_HANDOFF"
 grep -Fq 'mutable crash-recovery snapshot' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF purpose missing"
-grep -Fq 'v1.4.39 History JSON phone QA' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF v1.4.39 QA resume state missing"
-grep -Fq 'v1.4.40 Release History phone QA' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF v1.4.40 QA resume state missing"
-grep -Fq 'Exact next step' CURRENT_HANDOFF.md \
+grep -Fq 'v1.4.41 phone evidence already established' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF v1.4.41 phone evidence section missing"
+grep -Fq 'Current corrective release candidate:' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF current corrective release candidate missing"
+grep -Fq 'feat/v1.4.41-auth-ui-consistency' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF active v1.4.41 branch missing"
+grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
 if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
@@ -95,25 +97,29 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.40' PROJECT_STATUS.txt \
+grep -Fq 'Version: 1.4.41-R2' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 76' PROJECT_STATUS.txt \
+grep -Fq 'Version code: 79' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"
 grep -Fq 'BUG-007/Q-007 CLOSED — PHONE RETEST PASS v1.4.30 R2' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-007 state drift"
-grep -Fq 'BUG-004/Q-004 FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.31' PROJECT_STATUS.txt \
+grep -Fq 'BUG-004/Q-004 FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-004 fix state drift"
 grep -Fq 'BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-002 fix state drift"
 
 grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
-grep -Fq 'v1.4.40 — In-app Release History' BACKLOG.md \
-  || fail "BACKLOG current v1.4.40 release missing"
-grep -Fq 'UX-016 — in-app release history' START_HERE_ASSISTANT.md \
-  || fail "START_HERE v1.4.40 handoff missing"
+grep -Fq 'v1.4.41-R2 — Stacked Filename Follow-up' BACKLOG.md \
+  || fail "BACKLOG current v1.4.41-R2 release missing"
+grep -Fq 'v1.4.41-R2 parser-only corrective follow-up' START_HERE_ASSISTANT.md \
+  || fail "START_HERE v1.4.41-R2 focus missing"
+grep -Fq 'UX-019' CURRENT_HANDOFF.md \
+  || fail "future Home layout decision missing from handoff"
+grep -Fq 'all **four** Home workflow buttons need theme-aware state palettes' CURRENT_HANDOFF.md \
+  || fail "four-button theme-state decision missing from handoff"
 
 echo "PASS:"
 echo "- canonical START_HERE entry point"

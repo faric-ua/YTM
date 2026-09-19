@@ -1,5 +1,28 @@
 # Журнал змін (Changelog)
 
+## v1.4.41-R2
+- Targeted corrective follow-up for the remaining UX-017 phone edge case.
+- Filename fallback now strips repeated/stacked duplicate-download suffix tokens after the YTM service marker, including forms such as `YTM-1 (1)`.
+- versionCode 79 / versionName 1.4.41-R2.
+- v1.4.41-R2 = NOT PHONE-TESTED YET; acceptance is one import-title retest only.
+
+## v1.4.41-R1
+- Corrective build for two real-phone findings from v1.4.41.
+- BUG-011: preserve/recreate the Account modal across Activity recreation when the phone rotates.
+- UX-017: filename fallback now strips common duplicate-download suffix forms after the service marker, including `YTM-1`, `YTM_1`, and `YTM (1)`.
+- Existing explicit in-file playlist titles remain authoritative.
+- versionCode 78 / versionName 1.4.41-R1.
+- v1.4.41-R1 = NOT PHONE-TESTED YET; acceptance is limited to the two targeted corrective paths.
+## v1.4.41
+- Fixed BUG-004 on the Search path: the first YouTube HTTP 401 now stops search and invalidates shared Google/YTM authorization instead of turning every remaining track into a repeated auth failure.
+- Search-path authorization failure is treated as a session problem, not a track problem: the current track returns to retryable NEW state and Review is not opened automatically.
+- Added compatibility recovery for auth-failed track rows persisted by older builds after a successful re-login.
+- BUG-009 mobile account dialog polish: shorter `Змінити` action and clearer profile copy.
+- BUG-010: full Restore and safety rollback no longer rewind `quota_tracker_v1`; quota counters remain embedded in backups for diagnostics but are not applied during Restore.
+- UX-017: TXT/CSV filename fallback now humanizes underscores, removes a trailing `YTM`/`YTM Importer` service marker, and normalizes `Vol1` to `Vol.1`; an explicit in-file playlist title still wins.
+- UX-018: horizontal modal actions follow one contract — primary/confirm on the left, cancel/close/no-op on the right; destructive dialogs use the same rule.
+- versionCode 77 / versionName 1.4.41.
+- v1.4.41 phone QA: signed APK installed; BUG-009 portrait account modal PASS and existing-target single-select list behavior confirmed. Coverage is broad but not exhaustive; BUG-004 real-401, BUG-010 Restore quota preservation, UX-017 fallback naming and additional modal-order checks remain pending.
 ## v1.4.40
 - Shortened the History restore confirmation action to `Відновити` for phone-width buttons.
 - Added an in-app `Історія змін` page under `Про YTM Importer → Дізнатися більше`.

@@ -1,16 +1,16 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.40 — In-app Release History — TESTED PATH PASS
+v1.4.41-R2 — Stacked Filename Follow-up — PHONE PASS
 
 ## Known
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 v1.4.32 partial PASS; v1.4.33 unified modal fix carried into v1.4.34 — representative phone retest required
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
-- BUG-004/Q-004 stale green authorization state — REPRODUCED AGAIN v1.4.40 on Search path; P1 repair needed
+- BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 - UX-008 File Picker Escape / Unified SAF Navigation — OPEN; Phase 1 folder trees in v1.4.35 + Phase 2A create-file saves in v1.4.36 implemented; open-file Phase 2B remains
-- UX-009 Theme State Contrast — OPEN; Neon Dark Home colors are locked as the accepted reference; Green Dark workflow states need higher-contrast/inverse treatment without changing Neon Dark
+- UX-009 Theme State Contrast — OPEN; Neon Dark is the accepted reference for the **four Home workflow buttons** (Import / Google-YTM / Search-Review / Create-Add). Keep Neon state semantics intact; redesign Blue Dark and Green Dark workflow-state palettes separately so ready / attention / error / inactive states remain clear without mechanically reusing Neon red/green/orange.
 - UX-010 Utility Screens — IMPLEMENTED v1.4.37 / PHONE RETEST NEEDED; `Квота` and `Меню` use dedicated full-screen pages
 - UX-011 Full-screen List Selectors — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; four dynamic Import list families now use ListSelectorActivity
 - UX-012 Destructive Action Confirmation — IMPLEMENTED v1.4.38 / PHONE RETEST NEEDED; explicit danger confirmations + separate safety-snapshot deletion flow
@@ -18,9 +18,59 @@ v1.4.40 — In-app Release History — TESTED PATH PASS
 - UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
 - UX-015 History JSON Restore — PARTIALLY PHONE-TESTED v1.4.39; file/Cancel/rotation/invalid-file PASS, populated restore + rollback remain inconclusive/pending
 - UX-016 In-app Release History — CLOSED FOR TESTED PHONE SCOPE v1.4.40; entry/rendering/scroll/readability/navigation/rotation-scroll PASS
-- BUG-009/Q-009 account-switch copy/action fit — OPEN; real-phone v1.4.40 UI finding
-- BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — OPEN; policy/fix needed
-- UX-017 Import Filename → Playlist Display Name — OPEN; fallback should humanize `_`, drop trailing service marker like `YTM`, and normalize `Vol1` → `Vol.1`; explicit in-file title remains authoritative
+- BUG-009/Q-009 account-switch copy/action fit — PHONE PORTRAIT PASS v1.4.41
+- BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — CLOSED / PHONE RETEST PASS v1.4.41
+- BUG-011/Q-011 Account modal disappears on phone rotation — CLOSED / PHONE RETEST PASS v1.4.41-R1
+- UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
+- UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
+- UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
+
+## v1.4.41-R2 — Stacked Filename Follow-up
+- [x] versionCode 79 / versionName 1.4.41-R2
+- [x] parser accepts repeated duplicate suffix tokens after YTM marker
+- [x] dedicated R2 static audit
+- [x] full release preflight
+- [x] signed GitHub Actions APK
+- [x] phone: import existing `...YTM-1 (1).txt` — PASS
+- [x] expected title exactly `House Dance Hit 2000 Vol.1` — PASS
+- [x] UX-017 closed on v1.4.41-R2
+
+## v1.4.41-R1 — Corrective Follow-up
+- [x] versionCode 78 / versionName 1.4.41-R1
+- [x] BUG-011 preserve Account modal visibility across phone rotation
+- [x] UX-017 strip duplicate-download service-marker suffixes: YTM-1 / YTM_1 / YTM (1)
+- [x] dedicated R1 static audit
+- [x] full release preflight
+- [x] signed GitHub Actions APK
+- [x] phone: Account modal portrait → landscape → portrait stays/reappears — PASS
+- [x] phone: simple `YTM-1` fallback resolves to House Dance Hit 2000 Vol.1 — PASS
+- [ ] phone: stacked `YTM-1 (1)` — FAIL, moved to R2
+- [x] BUG-011 closed from phone evidence
+
+## v1.4.41 — Auth/Search Recovery + UI Consistency
+- [x] bump versionCode 77 / versionName 1.4.41
+- [x] BUG-004 Search-path HTTP 401 stops on first auth failure
+- [x] BUG-004 shared auth state invalidated immediately from Search
+- [x] BUG-004 current track returns to retryable NEW instead of persisted auth FAILED
+- [x] BUG-004 legacy persisted auth-failure recovery after successful re-login
+- [x] BUG-009 compact account action label and profile copy
+- [x] BUG-010 preserve live local quota estimate across full Restore and safety rollback
+- [x] UX-017 human-readable filename fallback for imported playlist names
+- [x] UX-018 shared modal action position contract
+- [x] v1.4.41 static audit
+- [x] full release preflight
+- [x] signed GitHub Actions APK
+- [ ] phone: real/reproduced auth invalidation path
+- [ ] phone: re-login + retry search without stale FAILED rows
+- [x] phone: account dialog button/copy fit — portrait PASS
+- [x] BUG-011 account modal rotation — CLOSED / R1 PHONE PASS
+- [x] phone: existing-target single-select list renders; row tap is selection, no footer buttons required; confirmation screen opens PASS
+- [x] phone: modal confirm-left / cancel-right spot checks — account + destructive History confirmation PASS
+- [x] phone: full Restore keeps current quota estimate — PASS (0/100; 505/10000; ≈9495 unchanged)
+- [x] phone: `Відкотити` keeps current quota estimate — PASS (0/100; 505/10000; ≈9495 unchanged)
+- [x] phone: House Dance fallback title — CLOSED on R2; clean title confirmed for simple and stacked duplicate suffixes
+- [x] UX-017 duplicate-download filename follow-up — R2 PASS including `YTM-1 (1) (1)`
+- [ ] end-to-end House Dance smoke if quota is acceptable
 
 ## v1.4.16
 - [x] extract DestinationCoordinator
@@ -687,3 +737,10 @@ including:
 - [x] phone: accepted system Back may exit Service directly to Home
 - [x] phone: rotation keeps History page
 - [x] phone: rotation preserves changelog scroll position after follow-up fix
+
+- UX-020 Import File Recent-First Selector — OPEN; current `1. Імпорт → імпортувати файл`
+  uses Android `ACTION_OPEN_DOCUMENT`, so YTM Importer cannot force the system picker's
+  sort order. Future in-app file selector should sort by provider `lastModified`
+  descending (freshest first), with system picker retained as fallback. True creation
+  time is not reliably exposed by all Android document providers. Coordinate with
+  UX-008 Phase 2B.

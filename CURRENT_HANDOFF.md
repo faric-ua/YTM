@@ -2,192 +2,247 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Use it when a ChatGPT chat/node hangs, loses context, or a new assistant takes over mid-release.
-
-It is intentionally short and current. Historical truth remains in `docs/v.*`, QA reports, `CHANGELOG.md`, and Git history.
-
 Last updated: **2026-09-19**
 
 ## 1. Resume point
 
 Repository: `faric-ua/YTM`
 
-Current integrated release:
+Current corrective release candidate:
 
-- versionName: **1.4.40**
-- versionCode: **76**
-- primary branch: `main`
-- release integration merge commit: `96153d0f0f701f36a8057c75a96d78e869acb344`
-- v1.4.40 feature focus: **UX-016 — in-app release history**
-- v1.4.40 Release History status: **TESTED PATH PASS**
-- signed code SHA validated on the real phone: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
-- signed GitHub Actions run: **35408421729**
-- signed build result: **SUCCESS**
-- phone-installed v1.4.40 passed the final release-history rotation-scroll retest.
-
-The live `main` branch can contain documentation/status commits newer than the signed phone-tested code SHA. Do not confuse repository head with the APK code actually exercised on the phone.
+- versionName: **1.4.41-R2**
+- versionCode: **79**
+- active branch: `feat/v1.4.41-auth-ui-consistency`
+- base branch: `main`
+- active PR: **#12**
+- status: **PHONE RETEST PASS — R2 TARGETED CORRECTIVE PATH**
+- installed phone APK: **v1.4.41-R1**
+- immediate next gate: **record/merge R2 corrective work, then continue planned backlog**
+- merge rule: do not merge PR #12 until the R1 corrective phone checks are recorded.
 
 Stable phone build folder:
 
-`/storage/emulated/0/Download/YTM-v1.4.40-build/`
+`/storage/emulated/0/Download/YTM-v1.4.41-R2-build/`
 
-## 2. Release PR integration completed
+Always fetch the live branch HEAD before build/merge.
 
-The previous stacked PR sequence is complete:
+## 2. v1.4.41 phone evidence already established
 
-- PR #10 — **v1.4.39: native History JSON restore**
-  - merged into `main`;
-  - merge commit: `a056add33eb64288b650ba565c44b3e103c1a1ef`.
-- PR #11 — **v1.4.40: in-app release history**
-  - retargeted from the v1.4.39 branch to `main`;
-  - post-retarget diff was inspected;
-  - merged into `main`;
-  - merge commit: `96153d0f0f701f36a8057c75a96d78e869acb344`.
+v1.4.41 has broad real-phone coverage but is **not** an exhaustive full-app regression.
 
-No open release PR from this v1.4.39/v1.4.40 stack remains.
+Confirmed:
 
-Do not repeat the old PR #10 → retarget #11 → merge #11 sequence; it has already been completed.
+- BUG-009 portrait Account dialog layout PASS:
+  - `Змінити` one line, left;
+  - `Закрити` right;
+  - copy readable.
+- UX-018 representative modal order PASS:
+  - Account: action left / close right;
+  - History destructive confirmation: `Так, очистити` left / `Скасувати` right.
+- existing-target list PASS:
+  - path: `Home → Step 4 → existing playlist`;
+  - no footer buttons by design;
+  - tapping `top 3` opened `Перевірка перед додаванням`.
+- BUG-010 CLOSED — PHONE RETEST PASS v1.4.41:
+  - full Restore preserved quota;
+  - `Відкотити` (return local state to pre-Restore state) also preserved quota;
+  - before/after values stayed Search `0/100`, total `505/10000`, remaining `≈9495`.
 
-The old feature branches may still exist on GitHub. Do not delete them merely for cleanup unless the user explicitly wants branch cleanup.
+Still pending from v1.4.41:
+- BUG-004 real/reproduced HTTP 401 phone retest when naturally available;
+- populated-History Restore / `Відкотити` proof remains separately inconclusive from v1.4.39.
 
-## 3. v1.4.39 History JSON phone QA
+## 3. Corrective phone findings and status
 
-Combined phone QA was performed using v1.4.40 because v1.4.40 contains the v1.4.39 work.
+### BUG-011 — Account modal disappears on rotation
 
-Results:
+Phone repro on installed v1.4.41:
 
-1. pre-restore control state — PASS;
-2. real History JSON accepted + confirmation + Cancel — PASS;
-3. confirmation survives rotation without reselecting file — PASS;
-4. actual History restore — **INCONCLUSIVE / RETEST REQUIRED**;
-5. safety-snapshot rollback — **INCONCLUSIVE / RETEST REQUIRED**;
-6. invalid/non-History JSON rejection — PASS.
+Path:
+`Home → 2. Google / YTM → Account modal → rotate phone`
 
-Why 4/5 are not final PASS:
+Actual:
+- portrait modal is visually correct;
+- phone rotation recreates MainActivity;
+- Account modal disappears.
 
-The device History had previously been cleared. There was not enough meaningful pre-existing/imported History to prove replacement and rollback behavior.
+R1 implementation:
+- persist `accountDialogOpen` in `onSaveInstanceState`;
+- restore the flag on Activity recreation;
+- repost `showAccountDialog()` after the recreated window is ready;
+- clear the flag when the dialog is actually dismissed.
 
-Retest 4/5 later when the phone has populated History with clearly distinguishable entries/counts.
+Status:
+**CLOSED — PHONE RETEST PASS v1.4.41-R1.**
 
-Do not upgrade 4/5 to PASS from code inspection alone.
+### UX-017 — duplicate-download filename suffix leaks into title
 
-## 4. v1.4.40 Release History phone QA
+Phone repro on installed v1.4.41:
 
-PASS for the tested phone scope:
+Fallback-only file was downloaded as a duplicate and named like:
 
-- About page exposes `Історія змін`;
-- Quick Start and Privacy remain present;
-- full-screen release-history rendering;
-- v1.4.40 appears first;
-- older releases render and scroll normally;
-- markdown cleanup/readability;
-- no reported clipping/overlap;
-- oldest visible release is v1.4.6 because root `CHANGELOG.md` currently has no older `##` release sections;
-- top-bar arrow steps History → About → Service;
-- system Back may exit Service directly to app Home — accepted product behavior;
-- History page survives rotation without crash;
-- after the follow-up fix, rotation preserves the release-history scroll position instead of resetting to v1.4.40.
+`House_Dance_Hit_2000_Vol1_YTM-1.txt`
 
-UX-016 is closed for this tested Release History scope.
+Observed title:
 
-This is **not** a claim of full-app regression coverage.
+`House Dance Hit 2000 Vol.1 YTM-1`
 
-## 5. Exact next step
+Expected:
 
-There is no pending v1.4.40 Release History QA.
+`House Dance Hit 2000 Vol.1`
 
-New post-closeout real-phone findings now take priority before starting unrelated auth-sensitive work:
+R1 implementation extends filename cleanup for common copy suffixes after the service marker:
+- `YTM-1`
+- `YTM_1`
+- `YTM (1)`
 
-- BUG-004/Q-004 is **REPRODUCED AGAIN on v1.4.40** through the Search path.
-  The 9-track House Dance fixture produced invalid-auth errors for every track while
-  Home Step 2 still stayed green/checked.
-- Re-login plus restart left the House Dance workspace visually failed because its
-  per-track auth errors were persisted in `current_playlist_v1`.
-- A later full-backup restore loaded the older `top 3` workspace. Backup does not
-  contain auth state/tokens, yet a new private YouTube/YTM playlist with 3/3 tracks
-  was created successfully afterward. This proves authorization itself had recovered;
-  stale persisted track failure state is part of BUG-004 recovery behavior.
-- BUG-009/Q-009 is OPEN for account-switch text/action phone-width layout.
-- Permanent test data is stored under
-  `docs/test-data/collections/House_Dance_Hit_2000/`.
-- House Dance Vol.1 later completed end-to-end successfully after auth recovery:
-  9/9 Search ready → new private playlist → 9/9 tracks added.
-- Desired playlist display title is `House Dance Hit 2000 Vol.1`; the fixture now
-  carries that explicit title as its first line. UX-017 tracks generic filename
-  humanization so `House_Dance_Hit_2000_Vol1_YTM.txt` does not become a raw display name.
-- YouTube playlist description `Створено через YTM Importer` is already correct and
-  should remain description metadata, not part of the title.
-- BUG-010/Q-010 OPEN: full Restore includes `quota_tracker_v1`; an older backup can
-  rewind the local quota estimate (observed Search plan returning to 0/100).
+Explicit title inside TXT/CSV remains authoritative.
 
-The unfinished History item carried from the combined v1.4.39/v1.4.40 wave is:
+Status:
+**FOLLOW-UP FIX IMPLEMENTED — R1 PHONE RETEST NEEDED.**
 
-- populated-History Restore verification;
-- populated-History safety-snapshot rollback verification.
+### UX-017 R1 stacked-suffix finding
 
-Those tests should be resumed later when enough meaningful History has accumulated on the phone.
+R1 phone result:
+- simple `YTM-1`: PASS;
+- stacked `YTM-1 (1)`: FAIL;
+- observed title: `House Dance Hit 2000 Vol.1 YTM-1 (1)`.
 
-Until then, choose the next product/QA task from `BACKLOG.md`. Current broader pending areas include:
+R2 implementation:
+- filename cleanup now accepts repeated duplicate-copy suffix tokens after the YTM marker;
+- examples covered: `YTM-1 (1)`, `YTM (1) (2)`, `YTM_1 (1)`.
 
-- v1.4.37 Storage / Quota / Menu follow-up phone checks;
-- UX-008 Phase 2B for the two remaining generic open-file flows;
-- deferred BUG-002 representative modal retest;
-- BUG-004 Search-path auth invalidation/recovery repair (now reproduced on v1.4.40);
-- localization foundation for Ukrainian / Korean / English;
-- later visual skin foundation.
+Status:
+**FIX IMPLEMENTED — R2 PHONE RETEST NEEDED.**
 
-Do not reopen already accepted v1.4.40 Release History behavior without new evidence.
+## 4. Exact next execution step
 
-## 6. Important QA/workflow lessons from this wave
+User should run one Termux block that:
 
-Two release-preflight failures were audit drift, not application regressions:
+1. opens the local YTM repo;
+2. fetches `feat/v1.4.41-auth-ui-consistency`;
+3. fast-forwards to the live branch HEAD;
+4. runs `bash scripts/release-preflight.sh`;
+5. dispatches `.github/workflows/build-apk.yml`;
+6. waits for the signed build;
+7. downloads artifact:
+   `YTM-Importer-v1.4.41-R2-Release`;
+8. stores it under:
+   `/storage/emulated/0/Download/YTM-v1.4.41-R2-build/`;
+9. verifies:
+   `YTM-Importer-v1.4.41-R2-release.apk.sha256`;
+10. installs over v1.4.41-R1 **without clearing app data**.
 
-1. `scripts/service-navigation-audit.sh`
-   - old guard required the obsolete `if (page != Page.HOME)` implementation shape;
-   - v1.4.40 intentionally uses explicit page routing;
-   - audit now tests semantic routes.
+If preflight fails, return the exact FAIL output rather than editing phone-side code.
 
-2. `scripts/qa-plan-audit.sh`
-   - old guard pinned exact mutable phone-QA wording;
-   - current QA status legitimately changed after phone testing;
-   - audit now checks semantic status/retest state.
+## 5. R2 phone QA — one required corrective check
 
-During QA closeout, a range-limited read of `BACKLOG.md` was accidentally used in a whole-file update and temporarily truncated the file. The anomaly was caught from the PR deletion count before merge; the full file was restored from the previous blob.
+Path:
+`Home → 1. Імпорт → імпортувати файл`
 
-Guard now recorded in `docs/WORKFLOW_LESSONS.md`:
+Use the same fallback-only duplicate file that on R1 produced:
 
-- partial reads are for inspection only;
-- fetch full content before whole-file writes;
-- inspect surprising PR deletion counts before merge.
+`House Dance Hit 2000 Vol.1 YTM-1 (1)`
 
-## 7. Working contract to preserve
+PASS:
+- playlist title becomes exactly `House Dance Hit 2000 Vol.1`;
+- no `YTM-1 (1)` remains;
+- no Search API call is needed.
 
-Default loop:
+R1 evidence remains valid:
+- BUG-011 rotation PASS / closed;
+- simple `YTM-1` filename PASS.
 
-**ChatGPT prepares → user runs one exact Termux block → user installs signed APK → user performs real-phone QA → ChatGPT records evidence/status → next step.**
+## 6. Historical v1.4.41 scope
 
-Key rules:
+v1.4.41 implemented:
+- BUG-004 Search 401 propagation/retry-state repair;
+- BUG-009 Account dialog phone-width copy/action fit;
+- BUG-010 quota-preserving full Restore and `Відкотити`;
+- UX-017 filename display normalization base implementation;
+- UX-018 horizontal modal action contract.
 
-- GitHub/repository truth beats chat memory.
-- Real phone QA beats static assumptions for visible behavior.
-- Static audit/build success is not phone PASS.
-- Do not ask the user to reconstruct old context if repository evidence is available.
-- Do not mark inconclusive tests as PASS.
-- Preserve historical `docs/v.*` evidence.
-- Stage exact paths and inspect deletions before commits.
-- Signed release builds come from `.github/workflows/build-apk.yml`.
+R1 only corrects the two phone findings above; it does not expand release scope.
 
-## 8. Files to read after this snapshot
+## 7. Planned after R1
 
-For a fresh assistant, use this order:
+Do not fold the Home redesign into R1.
 
-1. `START_HERE_ASSISTANT.md`;
-2. **this file — `CURRENT_HANDOFF.md`**;
-3. `YTM_ASSISTANT_WORKFLOW.md`;
-4. `PROJECT_STATUS.txt`;
-5. `BACKLOG.md`;
-6. `RELEASE_TEST_STATUS.md`;
-7. `qa/BUG_REGISTER.md` and `OPEN_QUESTIONS.md`;
-8. current release docs under `docs/v.1.4.40/` and `docs/v.1.4.39/`.
+Next planned Home work:
+- UX-019: approved top-left Polyglot K-U prototype is **layout-only** reference;
+- preserve current YTM Importer themes/design language;
+- UX-009: all **four** Home workflow buttons need theme-aware state palettes;
+- Neon Dark keeps accepted red/green/orange state semantics;
+- Blue Dark and Green Dark get their own state palettes.
 
-If this file conflicts with immutable historical release evidence, do not rewrite history. Treat this file only as the current resume pointer and verify live GitHub state.
+Other backlog remains in `BACKLOG.md`.
+
+## 8. Working contract
+
+**ChatGPT prepares → user runs exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
+
+Rules:
+- GitHub/repository truth beats chat memory;
+- static audit/build success is not phone PASS;
+- do not mark inconclusive tests PASS;
+- preserve historical `docs/v.*`;
+- inspect diff/deletions before merge;
+- signed builds come from `.github/workflows/build-apk.yml`.
+
+User-facing QA instructions:
+- English technical terms are fine;
+- include a short in-app navigation path when useful;
+- example: `rollback / Відкотити → Меню → Дані та резервні копії → Відкотити останній Restore`.
+
+## 9. Fresh-chat reading order
+
+1. `START_HERE_ASSISTANT.md`
+2. `CURRENT_HANDOFF.md`
+3. `YTM_ASSISTANT_WORKFLOW.md`
+4. `PROJECT_STATUS.txt`
+5. `BACKLOG.md`
+6. `RELEASE_TEST_STATUS.md`
+7. `qa/BUG_REGISTER.md`
+8. `docs/v.1.4.41/R1.md`
+9. live GitHub branch/PR state
+
+
+R1 phone result update:
+- v1.4.41-R1 badge: PASS;
+- BUG-011 Account rotation: PASS / CLOSED;
+- UX-017 simple `YTM-1`: PASS;
+- UX-017 stacked `YTM-1 (1)`: FAIL; parser needs repeated suffix stripping;
+- do not call UX-017 fully closed yet.
+
+Import-file sorting request:
+- current path `Home → 1. Імпорт → імпортувати файл` launches Android
+  `ACTION_OPEN_DOCUMENT`;
+- YTM Importer cannot force sort order inside that external system/provider UI;
+- planned UX-020 / UX-008 Phase 2B: add an in-app file selector sorted by
+  `lastModified` newest-first, with the system picker retained as fallback;
+- Android SAF does not reliably expose true creation time across providers, so
+  `lastModified` is the stable practical sort key.
+
+
+UX-020 Import File Recent-First Selector:
+- current path `Home → 1. Імпорт → імпортувати файл` uses Android `ACTION_OPEN_DOCUMENT`;
+- the app cannot force sort order inside that external system picker;
+- planned in-app selector should sort by document `lastModified` descending so fresh files appear first;
+- retain Android system picker as fallback;
+- true creation time is not reliably exposed by all Android SAF providers;
+- coordinate this with UX-008 Phase 2B.
+
+
+R2 final phone result:
+- v1.4.41-R2 installed and version badge confirmed;
+- simple `YTM-1`: PASS;
+- stacked `YTM-1 (1)`: PASS;
+- deeper stacked `YTM-1 (1) (1)`: PASS;
+- final title exactly `House Dance Hit 2000 Vol.1`;
+- UX-017 CLOSED on v1.4.41-R2.
+
+UX-020 remains planned:
+- current Android system picker shows timestamps but YTM Importer cannot force its sort;
+- future in-app selector should sort by `lastModified` descending (newest first);
+- coordinate with UX-008 Phase 2B;
+- keep system picker as fallback.

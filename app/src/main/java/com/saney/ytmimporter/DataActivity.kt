@@ -229,7 +229,8 @@ class DataActivity : Activity() {
             actionCard(
                 title = "Повний backup",
                 description =
-                    "History + Черга + робочий список + локальна квота + SearchCache. " +
+                    "History + Черга + робочий список + SearchCache. " +
+                        "Лічильники квоти входять лише для діагностики й не відновлюються. " +
                         "Має SHA-256 integrity check.",
                 buttonLabel = "Зберегти backup",
                 primary = true,
@@ -241,8 +242,9 @@ class DataActivity : Activity() {
             actionCard(
                 title = "Restore",
                 description =
-                    "Відновлює локальні дані з YTM_Backup_*.json. " +
-                        "Перед Restore автоматично створюється safety snapshot.",
+                    "Відновлює локальні дані з YTM_Backup_*.json, але не відкочує " +
+                        "поточну локальну оцінку квоти. Перед Restore автоматично " +
+                        "створюється safety snapshot.",
                 buttonLabel = "Вибрати backup",
                 primary = false,
                 action = ::chooseBackupForRestore
@@ -545,12 +547,14 @@ class DataActivity : Activity() {
                 "Буде збережено:\n" +
                     "• History\n" +
                     "• Pending Queue\n" +
-                    "• локальні quota counters\n" +
+                    "• локальні quota counters (лише діагностика)\n" +
                     "• SearchCache\n" +
                     "• поточний робочий список\n\n" +
                     "Backup може містити Google email, Channel ID " +
                     "та назви плейлистів.\n\n" +
                     "OAuth token, паролі та signing keys не входять.\n\n" +
+                    "Під час Restore quota counters з файла не застосовуються, " +
+                    "щоб стара копія не збільшувала оцінку доступної квоти.\n\n" +
                     "Файл має SHA-256 integrity check."
             )
             .setNegativeButton(
@@ -580,9 +584,9 @@ class DataActivity : Activity() {
                 "Restore замінить локальні:\n\n" +
                     "• History\n" +
                     "• Чергу\n" +
-                    "• локальну квоту\n" +
                     "• SearchCache\n" +
                     "• поточний робочий список\n\n" +
+                    "Поточна локальна оцінка квоти НЕ відкочується з backup.\n\n" +
                     "YouTube/YTM плейлисти в інтернеті не змінюються.\n\n" +
                     "Перед Restore буде створено safety snapshot."
             )
@@ -1033,6 +1037,7 @@ class DataActivity : Activity() {
                         } else {
                             "legacy backup без checksum\n\n"
                         } +
+                        "Локальна quota estimate з backup не відновлюється.\n\n" +
                         "Перед Restore буде автоматично створено " +
                         "safety snapshot поточного стану."
                 )
@@ -1096,8 +1101,8 @@ class DataActivity : Activity() {
             .setMessage(
                 "Груп даних: ${result.preferenceGroups}\n" +
                     "Відновлено значень: ${result.restoredValues}\n\n" +
-                    "History, Черга, робочий список, локальна квота та SearchCache " +
-                    "вже відновлені.\n\n" +
+                    "History, Черга, робочий список та SearchCache вже відновлені.\n" +
+                    "Поточна локальна оцінка квоти залишилась без змін.\n\n" +
                     if (result.safetySnapshotCreated) {
                         "Safety snapshot стану ДО Restore збережено."
                     } else {
@@ -1149,6 +1154,7 @@ class DataActivity : Activity() {
                     "Версія: ${summary.appVersion}\n" +
                     "Груп: ${summary.preferenceGroups}\n" +
                     "Значень: ${summary.valueCount}\n\n" +
+                    "Локальна оцінка квоти залишиться поточною й не відкочуватиметься.\n\n" +
                     "YouTube/YTM плейлисти в інтернеті не змінюються."
             )
             .setNegativeButton(
@@ -1185,7 +1191,8 @@ class DataActivity : Activity() {
             .setMessage(
                 "Локальний стан ДО останнього Restore повернуто.\n\n" +
                     "Груп: ${result.preferenceGroups}\n" +
-                    "Відновлено значень: ${result.restoredValues}.\n\n" +
+                    "Відновлено значень: ${result.restoredValues}.\n" +
+                    "Локальна оцінка квоти не змінювалася.\n\n" +
                     "Резервний знімок залишено. За потреби його можна видалити " +
                     "окремою кнопкою на екрані «Дані та резервні копії»."
             )

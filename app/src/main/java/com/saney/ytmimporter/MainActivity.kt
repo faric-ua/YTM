@@ -86,6 +86,7 @@ class MainActivity : Activity() {
     private lateinit var quotaButton: Button
     private lateinit var pendingButton: Button
     private lateinit var progress: ProgressBar
+    private var accountDialogOpen = false
 
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
@@ -131,6 +132,12 @@ class MainActivity : Activity() {
                 persistentAuthStateStore
                     .hadSuccessfulAuthorization()
 
+        accountDialogOpen =
+            savedInstanceState?.getBoolean(
+                STATE_ACCOUNT_DIALOG_OPEN,
+                false
+            ) == true
+
         buildUi()
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
@@ -157,7 +164,23 @@ class MainActivity : Activity() {
             window.decorView.post {
                 maybeShowWelcome()
             }
+        } else if (accountDialogOpen) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showAccountDialog()
+                }
+            }
         }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putBoolean(
+            STATE_ACCOUNT_DIALOG_OPEN,
+            accountDialogOpen
+        )
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -1396,9 +1419,12 @@ class MainActivity : Activity() {
 
     private fun showAccountDialog() {
         if (accessToken.isNullOrBlank()) {
+            accountDialogOpen = false
             authorize()
             return
         }
+
+        accountDialogOpen = true
 
         val googleText =
             googleAccountInfo?.let {
@@ -1412,18 +1438,23 @@ class MainActivity : Activity() {
                 "${it.title}\nChannel ID (ID каналу): ${it.id}"
             } ?: "YouTube/YTM канал не визначено"
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Акаунт")
-            .setMessage(
-                "Google:\n$googleText\n\n" +
-                    "YouTube / YouTube Music:\n$youtubeText\n\n" +
-                    "Плейлисти записуються саме в цей YouTube/YTM профіль."
-            )
-            .setNegativeButton("Закрити", null)
-            .setPositiveButton("Змінити акаунт") { _, _ ->
-                authorize(after = null, forceAccountPicker = true)
-            }
-            .show()
+        val dialog =
+            UiChrome.alertBuilder(this)
+                .setTitle("Акаунт")
+                .setMessage(
+                    "Google:\n$googleText\n\n" +
+                        "YouTube / YouTube Music:\n$youtubeText\n\n" +
+                        "Плейлисти створюватимуться в цьому YouTube/YTM профілі."
+                )
+                .setNegativeButton("Закрити", null)
+                .setPositiveButton("Змінити") { _, _ ->
+                    authorize(after = null, forceAccountPicker = true)
+                }
+                .show()
+
+        dialog.setOnDismissListener {
+            accountDialogOpen = false
+        }
     }
 
     private fun restoreAuthSessionFromMemory() {
@@ -1664,10 +1695,18 @@ class MainActivity : Activity() {
                 updateAccountPanel()
                 updateQuotaPanel()
 
+                val recoveredTracks =
+                    recoverPersistedAuthorizationFailures()
+
                 val channel = youtubeChannelInfo
                 status(
                     if (channel != null) {
-                        "Підключено YouTube/YTM: ${channel.title}"
+                        "Підключено YouTube/YTM: ${channel.title}" +
+                            if (recoveredTracks > 0) {
+                                " • відновлено треків після auth-помилки: $recoveredTracks"
+                            } else {
+                                ""
+                            }
                     } else {
                         "Google підключено, але YouTube канал не вдалося визначити."
                     }
@@ -1676,6 +1715,49 @@ class MainActivity : Activity() {
                 after?.invoke()
             }
         }
+    }
+
+    private fun recoverPersistedAuthorizationFailures(): Int {
+        val current =
+            playlist
+                ?: return 0
+
+        var recovered = 0
+
+        current.tracks.forEach { track ->
+            val legacyAuthFailure =
+                track.status == TrackStatus.FAILED &&
+                    track.error
+                        .orEmpty()
+                        .contains(
+                            "Авторизація Google більше не дійсна",
+                            ignoreCase = true
+                        )
+
+            if (!legacyAuthFailure) {
+                return@forEach
+            }
+
+            track.status =
+                when {
+                    track.selectedVideoId.isNullOrBlank() ->
+                        TrackStatus.NEW
+
+                    track.candidates.isEmpty() ->
+                        TrackStatus.MATCHED
+
+                    else ->
+                        TrackStatus.REVIEW
+                }
+            track.error = null
+            recovered += 1
+        }
+
+        if (recovered > 0) {
+            updateSummary()
+        }
+
+        return recovered
     }
 
     private fun updateAccountPanel() {
@@ -1876,6 +1958,12 @@ class MainActivity : Activity() {
                                         "Треки, які вже є в кеші, програма ще обробить."
                                 )
                             }
+                        },
+                        onAuthorizationInvalidated = { error ->
+                            runOnUiThread {
+                                invalidateAuthorizationIfNeeded(error)
+                                updateSummary()
+                            }
                         }
                     )
 
@@ -1884,22 +1972,31 @@ class MainActivity : Activity() {
                         View.GONE
 
                     status(
-                        if (result.quotaBlocked) {
-                            "Готово: з кешу ${result.cacheHits}, " +
-                                "API-запитів ${result.apiSearches}. " +
-                                "Квота закінчилась; некешовані треки " +
-                                "залишились без пошуку."
-                        } else {
-                            "Пошук завершено: з кешу ${result.cacheHits}, " +
-                                "нових API-пошуків ${result.apiSearches}. " +
-                                "Жовті треки краще перевірити натисканням."
+                        when {
+                            result.authorizationInvalidated ->
+                                "Пошук зупинено: Google/YTM потребує повторного входу. " +
+                                    "Поточний список збережено; після входу запустіть пошук ще раз."
+
+                            result.quotaBlocked ->
+                                "Готово: з кешу ${result.cacheHits}, " +
+                                    "API-запитів ${result.apiSearches}. " +
+                                    "Квота закінчилась; некешовані треки " +
+                                    "залишились без пошуку."
+
+                            else ->
+                                "Пошук завершено: з кешу ${result.cacheHits}, " +
+                                    "нових API-пошуків ${result.apiSearches}. " +
+                                    "Жовті треки краще перевірити натисканням."
                         }
                     )
 
                     updateSummary()
                     updateQuotaPanel()
 
-                    if (openReviewAfter) {
+                    if (
+                        openReviewAfter &&
+                        !result.authorizationInvalidated
+                    ) {
                         openReviewScreen()
                     }
                 }
@@ -2707,7 +2804,7 @@ class MainActivity : Activity() {
                             "Зараз підключений інший акаунт або канал."
                     )
                     .setNegativeButton("Скасувати", null)
-                    .setPositiveButton("Змінити акаунт") { _, _ ->
+                    .setPositiveButton("Змінити") { _, _ ->
                         authorize(forceAccountPicker = true) {
                             resumePendingJob(job)
                         }
@@ -3667,6 +3764,9 @@ class MainActivity : Activity() {
     companion object {
         private const val KEY_WELCOME_SEEN =
             "welcome_v1_1_seen"
+
+        private const val STATE_ACCOUNT_DIALOG_OPEN =
+            "state_account_dialog_open"
 
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"

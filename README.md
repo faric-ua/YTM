@@ -26,11 +26,14 @@ A new assistant should recover context from the repository and live GitHub state
 
 ## Current release
 
-- versionName: **1.4.40**
-- versionCode: **76**
-- focus: **UX-016 — in-app Release History**
-- status: **PARTIALLY PHONE-TESTED — Release History tested-path PASS**
+- versionName: **1.4.41-R2**
+- versionCode: **79**
+- focus: **parser-only corrective follow-up: stacked duplicate filename cleanup**
+- status: **PHONE RETEST PASS — v1.4.41-R2 UX-017 corrective path**
 - v1.4.39 History JSON: Cancel/rotation/invalid-file paths PASS; populated-History Restore + rollback remain inconclusive and need later retest
+- v1.4.40 Release History tested path remains PASS
+- BUG-009 portrait account-dialog fix is phone-PASS; BUG-004 real-401 and BUG-010 Restore quota-preservation still await targeted phone retest
+- UX-018 has partial phone evidence via the account dialog; UX-017 fallback-title and additional modal-order checks remain pending
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 For the exact active resume point, read `CURRENT_HANDOFF.md`.
