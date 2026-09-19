@@ -1,16 +1,15 @@
 YTM Importer
-Version: 1.4.44-R1
-Version code: 84
+Version: 1.4.45
+Version code: 85
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.44-R1 status:
-- PHONE RETEST PASS
-- UX-021 CLOSED
-- compact `Системний вибір…` fits in the wide Recent-file footer
-- Storage save footer landscape smoke PASS
-- boxed modal `Закрити` PASS
-- rotate-back usability smoke PASS
-- next planned work: UX-022 Unified Window Title Emphasis
+Current v1.4.45 focus:
+- UX-022 Unified Window Title Emphasis
+- shared theme-aware `UiChrome.emphasizedTitle(...)`
+- dialog/modal title headers use active theme accent
+- major full-screen title bars use the same shared styling
+- body/action semantics and Home workflow-state colors remain unchanged
+- v1.4.44-R1 phone PASS remains valid; UX-021 CLOSED
 - v1.4.43 auth freshness remains partially phone-tested; stale-token acceptance is deferred
 
 v1.4.12 NOT TESTED
