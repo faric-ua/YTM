@@ -118,7 +118,7 @@ grep -Fq '| v1.4.46 | **PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS** |' "$STA
   || fail "v1.4.46 portrait phone PASS status missing"
 grep -Fq '| v1.4.47 | **PHONE QA FAIL — MODAL THEME / HUB BACK STACK / ROTATION / LANDSCAPE** |' "$STATUS" \
   || fail "v1.4.47 phone FAIL status missing"
-grep -Fq '| v1.4.47-R1 | **IMPLEMENTED — STATIC/FULL PREFLIGHT + PHONE QA PENDING** |' "$STATUS" \
+grep -Fq '| v1.4.47-R1 | **IMPLEMENTED — FULL PREFLIGHT + PHONE QA PENDING** |' "$STATUS" \
   || fail "v1.4.47-R1 pending corrective status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
