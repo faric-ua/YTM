@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.41
-Version code: 77
+Version: 1.4.41-R1
+Version code: 78
 Current live resume snapshot: CURRENT_HANDOFF.md
 
 v1.4.12 NOT TESTED
@@ -35,6 +35,7 @@ v1.4.38-R2 PHONE RETEST PASS — CHECKBOX VISUAL CENTERING
 v1.4.39 PARTIALLY PHONE-TESTED — CANCEL / ROTATION / INVALID-FILE PASS; RESTORE+ROLLBACK INCONCLUSIVE
 v1.4.40 PARTIALLY PHONE-TESTED — RELEASE HISTORY PASS / BUG-004 AUTH FAIL REPRODUCED / BUG-009 UI FOUND
 v1.4.41 PARTIALLY PHONE-TESTED — BROAD REAL-PHONE COVERAGE / NOT EXHAUSTIVE
+v1.4.41-R1 NOT PHONE-TESTED YET — TARGETED BUG-011 + UX-017 CORRECTIVE BUILD
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -588,3 +589,10 @@ v1.4.41 still pending:
 - BUG-004 real/reproduced 401 path
 - BUG-010 CLOSED — full Restore + `Відкотити` quota-preservation phone PASS
 - UX-017 fallback-only filename normalization
+
+
+v1.4.41-R1 focus:
+- BUG-011 fix implemented: Account modal state survives Activity recreation/phone rotation
+- UX-017 follow-up implemented: strip trailing YTM service marker with duplicate copy suffixes (-1, _1, (1))
+- phone acceptance limited to those two corrective paths
+- no broad regression PASS claimed from R1
