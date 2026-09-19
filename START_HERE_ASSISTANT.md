@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.47**
-- versionCode: **87**
-- release focus: **UX-019 Phase 2 — Playlist Hub + Clean Home**
-- release status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — v1.4.47 UX-019 Phase 2**
+- versionName: **1.4.47-R1**
+- versionCode: **88**
+- release focus: **v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections**
+- release status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — v1.4.47-R1 corrective retest**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.43 phone observation:
