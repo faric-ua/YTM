@@ -11,7 +11,7 @@
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
 | BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 | P2 | Restore confirmation now survives phone rotation without forcing the user to choose the backup file again. | v1.4.38 phone repro → R1 rotation-state fix → phone PASS |
 | BUG-009 / Q-009 | PHONE PORTRAIT PASS v1.4.41 — ROTATION SMOKE PENDING | P3 | Real-phone portrait confirms readable profile copy, single-line `Змінити` on the left and `Закрити` on the right. Rotation smoke remains optional/pending before treating the UI check as fully exercised. | v1.4.40 account-switch screenshot → v1.4.41 portrait PASS |
-| BUG-010 / Q-010 | ORDINARY RESTORE PHONE PASS v1.4.41 — SAFETY ROLLBACK PENDING | P2 | Real-phone full Restore preserved the live quota estimate exactly (Search 0/100; total 505/10000; ≈9495 remaining). Backup exposed 4 groups while Restore applied 3, consistent with excluding `quota_tracker_v1`. Safety rollback still needs the same phone check. | v1.4.40 House Dance finding → v1.4.41 ordinary Restore PASS |
+| BUG-010 / Q-010 | ORDINARY RESTORE PASS + ROLLBACK PATH PASS v1.4.41 — FINAL QUOTA READBACK PENDING | P2 | Full Restore preserved live quota exactly (0/100; 505/10000; ≈9495). Safety snapshot showed 5 groups while rollback applied 4 and both rollback dialogs state quota remains current, consistent with excluding `quota_tracker_v1`. One final quota-screen readback remains before closure. | v1.4.40 finding → v1.4.41 Restore PASS + rollback path PASS |
 
 ## BUG-002 current evidence
 
@@ -325,7 +325,12 @@ After Restore the quota screen still showed:
 This is direct phone evidence that ordinary full Restore no longer rewinds
 `quota_tracker_v1`.
 
-Safety-snapshot rollback still needs the equivalent phone verification before BUG-010
-can be fully closed.
+Safety-snapshot rollback path has now also been exercised on phone:
+- snapshot: 5 groups / 117 values;
+- rollback applied: 4 groups / 113 values;
+- confirmation/result both state local quota estimate remains current;
+- local state before Restore was returned.
+
+One final quota-screen readback is still required before BUG-010 can be fully closed.
 
 Do not close this from static reasoning alone; verify the chosen policy on phone.
