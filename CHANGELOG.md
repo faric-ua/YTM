@@ -1,5 +1,15 @@
 # Журнал змін (Changelog)
 
+## v1.4.41
+- Fixed BUG-004 on the Search path: the first YouTube HTTP 401 now stops search and invalidates shared Google/YTM authorization instead of turning every remaining track into a repeated auth failure.
+- Search-path authorization failure is treated as a session problem, not a track problem: the current track returns to retryable NEW state and Review is not opened automatically.
+- Added compatibility recovery for auth-failed track rows persisted by older builds after a successful re-login.
+- BUG-009 mobile account dialog polish: shorter `Змінити` action and clearer profile copy.
+- BUG-010: full Restore and safety rollback no longer rewind `quota_tracker_v1`; quota counters remain embedded in backups for diagnostics but are not applied during Restore.
+- UX-017: TXT/CSV filename fallback now humanizes underscores, removes a trailing `YTM`/`YTM Importer` service marker, and normalizes `Vol1` to `Vol.1`; an explicit in-file playlist title still wins.
+- UX-018: horizontal modal actions follow one contract — primary/confirm on the left, cancel/close/no-op on the right; destructive dialogs use the same rule.
+- versionCode 77 / versionName 1.4.41.
+- v1.4.41 = NOT PHONE-TESTED YET.
 ## v1.4.40
 - Shortened the History restore confirmation action to `Відновити` for phone-width buttons.
 - Added an in-app `Історія змін` page under `Про YTM Importer → Дізнатися більше`.
