@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.46 — Home Layout Prototype Alignment Phase 1 — IMPLEMENTED / PHONE QA NEEDED
+v1.4.47 — UX-019 Phase 2 Playlist Hub + Clean Home — IMPLEMENTED / STATIC + PHONE QA NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -24,9 +24,32 @@ v1.4.46 — Home Layout Prototype Alignment Phase 1 — IMPLEMENTED / PHONE QA N
 - BUG-013/Q-013 stale green auth freshness before remote API call — OPEN; app can keep Step 2 green while an in-memory access token has become invalid. The next real YouTube API request then returns 401, after which invalidation correctly turns Step 2 red. Need proactive token refresh/validation before remote destination/write flows instead of waiting for the first failing API call.
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
-- UX-019 Home Layout Prototype Alignment — PHASE 1 IMPLEMENTED v1.4.46 / PHONE QA NEEDED; compact Home header + dedicated accent/info status card above the separate current-playlist card. Prototype remains a **layout-only** reference; themes/palettes/semantic state colors are unchanged.
+- UX-019 Home Layout Prototype Alignment — PHASE 2 IMPLEMENTED v1.4.47 / PHONE QA NEEDED; Home is now a dashboard, account/current-playlist cards are interactive, track rows move behind Playlist Hub/Review, and existing search/write/project flows are reused. v1.4.46 portrait hierarchy already phone-PASS; combined theme/landscape smoke carries into v1.4.47.
 - UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
+
+## v1.4.47 — Playlist Hub + Clean Home
+- [x] versionCode 87 / versionName 1.4.47
+- [x] interactive Home account card
+- [x] account details reuse existing Google/YTM identity
+- [x] interactive current-playlist card
+- [x] dedicated PlaylistActivity
+- [x] remove track-row list from Home
+- [x] reuse Review/Search/Destination write paths
+- [x] expose YTM Project/export from Playlist Hub
+- [x] persist optional target YTM playlist ID in CurrentPlaylistStore schema v2
+- [x] preserve schema v1 read compatibility
+- [x] keep OAuth token hidden/non-persistent
+- [x] dedicated v1.4.47 audit + QA docs
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [ ] phone: Home account-card details
+- [ ] phone: Home → Playlist Hub
+- [ ] phone: Tracks / YTM Project / Search / Destination bridge smoke
+- [ ] phone: Neon + alternate-theme smoke
+- [ ] phone: landscape / rotate-back smoke
+- [ ] phone: target-link persistence after a safe Create/Add operation, when convenient
+- [ ] UX-023: GitHub Releases + in-app updater after this Home/Hub wave
 
 ## v1.4.46 — Home Layout Prototype Alignment Phase 1
 - [x] versionCode 86 / versionName 1.4.46
