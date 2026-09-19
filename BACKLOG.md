@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.40 — In-app Release History — IMPLEMENTED / PHONE RETEST NEEDED
+v1.4.40 — In-app Release History — TESTED PATH PASS
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -609,7 +609,7 @@ including:
 - [x] add native Data-screen History JSON restore/import flow
 - [x] preserve Queue/quota/cache/current playlist during History-only import
 - [x] create safety snapshot before native History-only import
-- [ ] phone QA History-only restore
+- [ ] phone QA History-only restore: file/Cancel/rotation/invalid-file PASS; populated restore + rollback still pending
 
 
 ## v1.4.38-R1 — Checkbox Alignment + Restore Rotation
@@ -655,13 +655,13 @@ including:
 - [x] preserve Queue/quota/SearchCache/current playlist
 - [x] reuse full safety-snapshot + rollback engine
 - [x] add v1.4.39 docs + audit
-- [ ] signed APK
-- [ ] APK handoff to phone
-- [ ] phone: real YTM_History_*.json accepted
-- [ ] phone: Cancel leaves History unchanged
-- [ ] phone: rotation does not lose History file
-- [ ] phone: History replaced, other local groups preserved
-- [ ] phone: safety rollback restores pre-import state
+- [x] signed APK exercised through stacked v1.4.40 build
+- [x] APK handoff to phone
+- [x] phone: real YTM_History_*.json accepted
+- [x] phone: Cancel leaves History unchanged
+- [x] phone: rotation does not lose History file
+- [ ] phone: History replaced, other local groups preserved — INCONCLUSIVE; retest with populated History
+- [ ] phone: safety rollback restores pre-import state — INCONCLUSIVE; retest with populated History
 
 
 ## v1.4.40 — In-app Release History
@@ -675,9 +675,12 @@ including:
 - [x] strip simple backtick/bold markers
 - [x] Back from release history returns to About
 - [x] add v1.4.40 docs + audit
-- [ ] signed APK
-- [ ] APK handoff to phone
-- [ ] phone: release-history card visible
-- [ ] phone: v1.4.40 appears first
-- [ ] phone: long release list scrolls cleanly
-- [ ] phone: Back returns to About
+- [x] signed APK
+- [x] APK handoff to phone
+- [x] phone: release-history card visible
+- [x] phone: v1.4.40 appears first
+- [x] phone: long release list scrolls cleanly
+- [x] phone: top-bar Back returns to About
+- [x] phone: accepted system Back may exit Service directly to Home
+- [x] phone: rotation keeps History page
+- [x] phone: rotation preserves changelog scroll position after follow-up fix
