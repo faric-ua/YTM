@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.41-R1**
-- versionCode: **78**
-- release focus: **v1.4.41-R1 corrective follow-up — BUG-011 rotation + UX-017 duplicate filename suffix**
-- release status: **NOT PHONE-TESTED YET — TARGETED CORRECTIVE BUILD**
+- versionName: **1.4.41-R2**
+- versionCode: **79**
+- release focus: **v1.4.41-R2 parser-only corrective follow-up — stacked UX-017 duplicate filename suffix**
+- release status: **NOT PHONE-TESTED YET — STACKED FILENAME CORRECTIVE BUILD**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.41 phone QA has started:
@@ -379,3 +379,11 @@ v1.4.41 fixes the latest real-phone findings:
 - UX-018: horizontal modal actions use confirm/action left and cancel/close/no-op right.
 - UX-019 is **not** part of v1.4.41; it remains the next planned Home layout pass.
 - UX-009 clarification: the four Home workflow buttons will later get theme-aware state palettes for Blue/Green; Neon state colors remain the accepted reference.
+
+
+v1.4.41-R2 corrective scope:
+- R1 phone result: BUG-011 rotation PASS / closed;
+- R1 simple `YTM-1` filename PASS;
+- R1 stacked `YTM-1 (1)` filename FAIL;
+- R2 changes only the fallback filename normalizer to strip repeated duplicate-copy suffix tokens;
+- one phone import-title retest remains.
