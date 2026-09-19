@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.42
-Version code: 80
+Version: 1.4.42-R1
+Version code: 81
 Current live resume snapshot: CURRENT_HANDOFF.md
 
 v1.4.12 NOT TESTED
@@ -627,3 +627,16 @@ v1.4.42 focus:
 - phone QA required before PASS
 
 v1.4.41-R2 remains PHONE RETEST PASS — UX-017 CLOSED.
+
+
+v1.4.42 PARTIAL PHONE QA — selector entry PASS / root Download SAF setup BLOCKED (BUG-012)
+v1.4.42-R1 NOT PHONE-TESTED YET — ALL-FILES DIRECT DOWNLOAD CORRECTIVE BUILD
+
+v1.4.42-R1 focus:
+- MANAGE_EXTERNAL_STORAGE declared for Android 11+ sideload build
+- explicit in-app rationale before Android special-access settings
+- direct /storage/emulated/0/Download listing after user grant
+- newest-first order by File.lastModified()
+- FileProvider bridge for selecting direct Download files
+- SAF subfolder + system picker fallbacks retained
+- BUG-012 phone retest required
