@@ -20,13 +20,20 @@ Current release candidate:
 - active branch: `feat/v1.4.47-playlist-hub`
 - active PR: **#19 — v1.4.47: Playlist Hub + Clean Home** → `feat/v1.4.46-home-layout-phase1`
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED**
+- status: **STATIC/FULL PREFLIGHT + SIGNED BUILD PASS / PHONE QA NEEDED**
 - installed phone APK: **v1.4.46**
 - focus: **UX-019 Phase 2 — Playlist Hub + Clean Home**
 
 Stable build folder after signed build:
 
 `/storage/emulated/0/Download/YTM-v1.4.47-build/`
+
+Signed build evidence:
+- GitHub Actions run: **35471958580**
+- build head: `57eccccb468a384201b1d1846d16e5826764ea71`
+- conclusion: **success**
+- artifact: `YTM-Importer-v1.4.47-Release`
+- local APK SHA-256 check: **PASS**
 
 ## 2. BUG-013 reproduction
 
