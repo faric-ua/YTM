@@ -11,7 +11,8 @@ import org.json.JSONObject
 data class CurrentPlaylistSnapshot(
     val playlist: ImportedPlaylist,
     val sourceLabel: String,
-    val updatedAt: Long
+    val updatedAt: Long,
+    val destinationPlaylistId: String? = null
 )
 
 class CurrentPlaylistStore(
@@ -26,13 +27,18 @@ class CurrentPlaylistStore(
     @Synchronized
     fun save(
         playlist: ImportedPlaylist,
-        sourceLabel: String
+        sourceLabel: String,
+        destinationPlaylistId: String? = null
     ) {
         val root =
             JSONObject()
                 .put("schemaVersion", SCHEMA_VERSION)
                 .put("sourceLabel", sourceLabel)
                 .put("updatedAt", System.currentTimeMillis())
+                .putNullable(
+                    "destinationPlaylistId",
+                    destinationPlaylistId
+                )
                 .put("playlist", playlistToJson(playlist))
 
         prefs
@@ -73,6 +79,10 @@ class CurrentPlaylistStore(
                     root.optLong(
                         "updatedAt",
                         0L
+                    ),
+                destinationPlaylistId =
+                    root.optNullableString(
+                        "destinationPlaylistId"
                     )
             )
         }.getOrNull()
@@ -331,6 +341,6 @@ class CurrentPlaylistStore(
             "current_playlist_json"
 
         private const val SCHEMA_VERSION =
-            1
+            2
     }
 }
