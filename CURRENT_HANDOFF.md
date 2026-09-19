@@ -22,7 +22,7 @@ Current release under test:
 - latest signed GitHub Actions run for that code: **35408421729**
 - signed build result: **SUCCESS**
 - branch may contain newer documentation/status-only commits after this signed build; always verify the live PR head before merge or rebuild
-- phone state at handoff: user is installing this signed v1.4.40 build for the final release-history rotation-scroll retest.
+- phone state at handoff: signed v1.4.40 build was installed and the final release-history rotation-scroll retest PASSED.
 
 Stable phone build folder:
 
@@ -99,48 +99,34 @@ Back behavior is **accepted product behavior**:
 
 Do not “fix” this difference unless the user changes the product decision.
 
-Rotation finding from first phone run:
+Rotation result:
 
-- History page itself survived rotation;
-- no crash;
-- but scroll position reset to the top / v1.4.40.
+- first phone run exposed scroll reset to v1.4.40;
+- ServiceActivity follow-up fix tracks/saves/restores changelog `scrollY`;
+- signed build retest PASSED on the real phone;
+- History remains open and preserves the scrolled position across rotation;
+- no crash.
 
-Fix implemented:
+Static guard is present in `scripts/v1440-release-history-audit.sh`.
 
-- ServiceActivity now tracks changelog `scrollY`;
-- saves it in Activity state;
-- restores it after recreation;
-- opening History normally still starts from the top.
+UX-016 / v1.4.40 Release History is therefore closed for the tested phone scope.
 
-Static guard was added to `scripts/v1440-release-history-audit.sh`.
+## 5. Exact next step
 
-## 5. Exact next phone test
+No further v1.4.40 Release History phone test is pending.
 
-This is the immediate resume action after a chat crash:
+Current remaining item from the combined QA wave:
 
-1. install the signed v1.4.40 build from Actions run **35408421729**;
-2. open:
-   `Меню → Сервіс → Про YTM Importer → Історія змін`;
-3. scroll well down, for example near v1.4.20 or v1.4.10;
-4. rotate the phone;
-5. verify the list stays approximately at the previous scroll position and does **not** jump back to v1.4.40.
+- v1.4.39 History Restore + rollback items 4/5 remain **INCONCLUSIVE / RETEST REQUIRED** until the phone has populated, clearly distinguishable History.
 
-Expected user reply:
+When the user is ready to advance repository history, use the clean stacked-PR sequence:
 
-- `10 +` if it passes; or
-- a short description/screenshot if it fails.
+1. merge PR #10 into `main`;
+2. retarget/rebase/update PR #11 onto `main`;
+3. verify PR #11 contains only the intended v1.4.40 delta;
+4. merge PR #11.
 
-If it passes:
-
-- record v1.4.40 rotation-scroll PASS in `RELEASE_TEST_STATUS.md`;
-- update `docs/v.1.4.40/qa/PHONE_TEST_REPORT_2026-09-19.md`;
-- mark UX-016 release-history phone QA complete for the tested scope;
-- keep v1.4.39 History restore/rollback 4/5 explicitly pending for populated-History retest;
-- then proceed to the clean PR #10 → PR #11 merge sequence only when the user asks/approves moving to merge.
-
-If it fails:
-
-- inspect only the scroll-state restoration path first; do not reopen already accepted rendering/back behavior without evidence.
+Do not perform the merge merely because QA passed; wait for the user's instruction to move to merge/release integration.
 
 ## 6. Static/preflight fixes made during this QA
 
