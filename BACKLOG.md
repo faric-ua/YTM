@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.41 — Auth/Search Recovery + UI Consistency — IMPLEMENTED / PHONE QA NEEDED
+v1.4.41 — Auth/Search Recovery + UI Consistency — PARTIALLY PHONE-TESTED / NOT EXHAUSTIVE
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -34,12 +34,13 @@ v1.4.41 — Auth/Search Recovery + UI Consistency — IMPLEMENTED / PHONE QA NEE
 - [x] BUG-010 preserve live local quota estimate across full Restore and safety rollback
 - [x] UX-017 human-readable filename fallback for imported playlist names
 - [x] UX-018 shared modal action position contract
-- [ ] v1.4.41 static audit
-- [ ] full release preflight
-- [ ] signed GitHub Actions APK
+- [x] v1.4.41 static audit
+- [x] full release preflight
+- [x] signed GitHub Actions APK
 - [ ] phone: real/reproduced auth invalidation path
 - [ ] phone: re-login + retry search without stale FAILED rows
-- [ ] phone: account dialog button/copy fit
+- [x] phone: account dialog button/copy fit — portrait PASS
+- [x] phone: existing-target single-select list renders; row tap is selection, no footer buttons required
 - [ ] phone: modal confirm-left / cancel-right spot checks
 - [ ] phone: full Restore keeps current quota estimate
 - [ ] phone: House Dance title = House Dance Hit 2000 Vol.1
