@@ -15,17 +15,18 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.43**
-- versionCode: **82**
-- active branch: `fix/v1.4.43-auth-freshness`
-- active PR: **#14 — v1.4.43: refresh auth before remote YouTube actions** → `main`
-- status: **PARTIALLY PHONE-TESTED — startup silent auth refresh observed; stale-token acceptance DEFERRED**
+- versionName: **1.4.44**
+- versionCode: **83**
+- active branch: `feat/v1.4.44-adaptive-actions`
+- active PR: **not created yet**
+- stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
+- status: **IMPLEMENTED / NOT PHONE-TESTED YET**
 - installed phone APK: **v1.4.43**
-- focus: **BUG-013 auth freshness**
+- focus: **UX-021 Adaptive Landscape Action Layout**
 
 Stable build folder after signed build:
 
-`/storage/emulated/0/Download/YTM-v1.4.43-build/`
+`/storage/emulated/0/Download/YTM-v1.4.44-build/`
 
 ## 2. BUG-013 reproduction
 
@@ -166,10 +167,15 @@ If a natural write-time 401 occurs:
 
 ## 7. Exact next execution step
 
-1. Keep PR #14 open; do not claim BUG-013 closed yet.
-2. Re-run the stale-token destination test later when the session naturally ages or Google invalidates it.
-3. Continue product work with **UX-021 Adaptive Landscape Action Layout** as the next active implementation target.
-4. Keep UX-022 title emphasis separate after UX-021.
+1. Run the dedicated v1.4.44 adaptive-actions audit.
+2. Run full release preflight.
+3. Compare the stacked v1.4.44 branch to its v1.4.43 base; stop on accidental deletions.
+4. Open a stacked PR for v1.4.44.
+5. Build signed v1.4.44 APK from the exact live head.
+6. Install over v1.4.43 without clearing data.
+7. Run portrait/landscape Storage + Recent-file + representative modal QA.
+8. Keep BUG-013 stale-token acceptance deferred until it naturally becomes reproducible.
+9. Keep UX-022 title emphasis separate after UX-021.
 
 ## 8. Working contract
 
