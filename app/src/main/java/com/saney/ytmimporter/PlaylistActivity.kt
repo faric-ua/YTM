@@ -463,8 +463,8 @@ class PlaylistActivity : Activity() {
                     this@PlaylistActivity
                 ).apply {
                     text =
-                        "\${tracks.size} треків • ✓ \$ready  ! \$review  " +
-                            "⧉ \$duplicates  ⏳ \$pending  × \$problems"
+                        "${tracks.size} треків • ✓ $ready  ! $review  " +
+                            "⧉ $duplicates  ⏳ $pending  × $problems"
                     textSize = 13.5f
                     setTextColor(
                         palette.text
@@ -483,7 +483,7 @@ class PlaylistActivity : Activity() {
                     this@PlaylistActivity
                 ).apply {
                     text =
-                        "Джерело: \${snapshot.sourceLabel}"
+                        "Джерело: ${snapshot.sourceLabel}"
                     textSize = 12.5f
                     setTextColor(
                         palette.muted
@@ -522,7 +522,7 @@ class PlaylistActivity : Activity() {
         val button =
             Button(this).apply {
                 text =
-                    "\$title\n\$subtitle"
+                    "$title\n$subtitle"
                 isAllCaps = false
                 textSize = 15f
                 gravity =
