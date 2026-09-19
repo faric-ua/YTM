@@ -35,8 +35,15 @@ Current application:
 - versionName: **1.4.41**
 - versionCode: **77**
 - release focus: **BUG-004/009/010 + UX-017/018 — auth/search recovery and UI consistency**
-- release status: **NOT PHONE-TESTED YET — v1.4.41 IMPLEMENTED / QA NEEDED**
+- release status: **PARTIALLY PHONE-TESTED — BROAD REAL-PHONE COVERAGE, NOT EXHAUSTIVE**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
+
+v1.4.41 phone QA has started:
+- signed v1.4.41 is installed on the real phone;
+- BUG-009 portrait account modal PASS;
+- existing-target playlist selection screen renders and intentionally uses direct row tap with no footer buttons;
+- remaining targeted checks include BUG-004 real 401, BUG-010 Restore quota preservation, UX-017 fallback naming and additional UX-018 modal spot checks;
+- broad accumulated phone coverage exists across the project, but no exhaustive full-app regression is claimed.
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
 
