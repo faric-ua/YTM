@@ -445,14 +445,14 @@ object UiChrome {
             actions =
                 listOf(
                     DialogAction(
-                        label = "Скасувати",
-                        tone = ActionTone.NORMAL,
-                        onClick = {}
-                    ),
-                    DialogAction(
                         label = confirmLabel,
                         tone = ActionTone.DANGER,
                         onClick = onConfirm
+                    ),
+                    DialogAction(
+                        label = "Скасувати",
+                        tone = ActionTone.NORMAL,
+                        onClick = {}
                     )
                 )
         )
@@ -613,6 +613,15 @@ object UiChrome {
         )
     }
 
+    /*
+     * Horizontal modal action contract:
+     * - primary/confirm action is on the left;
+     * - dismissive action (Cancel/Close/Not now) is on the right;
+     * - a third secondary action sits between them when applicable.
+     *
+     * Callers must pass horizontal actions in that semantic order.
+     * Vertical action sheets keep their explicit top-to-bottom order.
+     */
     private fun addDialogActions(
         activity: Activity,
         dialog: Dialog,
