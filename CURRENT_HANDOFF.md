@@ -18,7 +18,7 @@ Current release candidate:
 - versionName: **1.4.47-R2**
 - versionCode: **89**
 - active branch: `fix/v1.4.47-r2-home-compact-theme-menu`
-- active PR: **not created yet for R2**; PR #20 remains open (`fix/v1.4.47-r1-home-nav-dialog` → `feat/v1.4.47-playlist-hub`), and PR #19 remains open underneath
+- active PR: **#21 — v1.4.47-R2: compact Home + Menu-owned theme picker** → `fix/v1.4.47-r1-home-nav-dialog`; PR #20 remains open underneath, then PR #19
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
 - status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED — R2 after R1 phone UI findings**
 - installed phone APK: **v1.4.47-R1**
