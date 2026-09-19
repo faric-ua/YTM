@@ -275,3 +275,18 @@ UX-017 phone finding — duplicate filename suffix:
 - therefore UX-017 is NOT phone PASS;
 - follow-up normalization must treat trailing service marker + common duplicate suffixes such as `YTM-1`, `YTM_1`, `YTM (1)` as removable filename noise;
 - do not rebuild immediately; finish current v1.4.41 QA first, then package findings into one corrective build.
+
+
+BUG-011 phone finding:
+- path: `Home → 2. Google / YTM → Account modal → rotate phone`;
+- portrait Account modal remains visually PASS;
+- rotating the phone dismisses the modal instead of restoring it;
+- track as BUG-011, separate from BUG-009 visual fit;
+- likely repair: save a small "account modal open" state and recreate the modal after Activity restoration;
+- package this with the UX-017 duplicate-filename correction in one follow-up build rather than rebuilding for every finding.
+
+User-facing instruction preference:
+- English technical terms are fine;
+- always include a short in-app path showing where the control/screen is located;
+- for terms such as rollback, pair them with the visible app action when useful, e.g.
+  `rollback / Відкотити → Меню → Дані та резервні копії → Відкотити останній Restore`.
