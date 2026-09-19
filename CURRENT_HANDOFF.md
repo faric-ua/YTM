@@ -20,7 +20,7 @@ Current release candidate:
 - active branch: `fix/v1.4.47-r2-home-compact-theme-menu`
 - active PR: **not created yet for R2**; PR #20 remains open (`fix/v1.4.47-r1-home-nav-dialog` → `feat/v1.4.47-playlist-hub`), and PR #19 remains open underneath
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — R2 after R1 phone UI findings**
+- status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED — R2 after R1 phone UI findings**
 - installed phone APK: **v1.4.47-R1**
 - focus: **v1.4.47-R2 — compact Home + Menu-owned theme picker**
 
@@ -306,15 +306,13 @@ R2 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R2.md`.
 
 ## 7. Exact next execution step
 
-1. Run the dedicated v1.4.47-R2 audit.
-2. Run full release preflight.
-3. Compare R2 against `fix/v1.4.47-r1-home-nav-dialog` and stop on accidental deletions.
-4. Open a stacked R2 PR into the R1 branch only after preflight passes.
-5. Build signed v1.4.47-R2 APK from the exact R2 head.
-6. Install over v1.4.47-R1 without uninstalling or clearing data.
-7. Phone-test portrait density, rounded nav, Menu-owned theme picker, quick actions, short no-target copy, and a short R1 regression smoke.
-8. Merge R2 only after targeted phone PASS.
-9. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
+1. Open/verify the stacked R2 PR into `fix/v1.4.47-r1-home-nav-dialog`.
+2. Build signed v1.4.47-R2 APK from the exact R2 head.
+3. Verify APK SHA-256.
+4. Install over v1.4.47-R1 without uninstalling or clearing data.
+5. Phone-test portrait density, rounded nav, Menu-owned theme picker, quick actions, short no-target copy, and a short R1 regression smoke.
+6. Merge R2 only after targeted phone PASS.
+7. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
