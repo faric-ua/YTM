@@ -24,6 +24,14 @@ Current release candidate:
 - installed phone APK: **v1.4.47-R1**
 - focus: **v1.4.47-R2 — compact Home + Menu-owned theme picker**
 
+R2 signed-build attempt evidence:
+- GitHub Actions run: **35476795879**
+- build head: `9c8d0095a7f0c5c37d8788c4593c0651942a298a`
+- result: **FAILED IN RELEASE PREFLIGHT — NO ANDROID BUILD STARTED**
+- exact cause: `scripts/v1447-r2-audit.sh` still expected the pre-PASS status literal `IMPLEMENTED — STATIC/FULL PREFLIGHT + PHONE QA PENDING`
+- repository status had correctly advanced to `STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING`
+- stale audit assertion fixed afterward; a new workflow_dispatch from the new branch HEAD is required
+
 Planned stable R1 build folder:
 
 `/storage/emulated/0/Download/YTM-v1.4.47-R1-build/`
