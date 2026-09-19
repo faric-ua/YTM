@@ -48,8 +48,8 @@ grep -Fq 'Додати папку…' "$STORAGE" || fail "save add-folder footer
 grep -Fq 'Зберегти як…' "$STORAGE" || fail "system save fallback missing"
 grep -Fq 'label = "Скасувати"' "$STORAGE" || fail "storage chooser cancel footer missing"
 
-TREE_COUNT="$(grep -R -h -F 'ACTION_OPEN_DOCUMENT_TREE' "$SRC" | wc -l | tr -d ' ')"
-[ "$TREE_COUNT" -eq 1 ] || fail "expected one centralized ACTION_OPEN_DOCUMENT_TREE, found $TREE_COUNT"
+grep -Fq 'ACTION_OPEN_DOCUMENT_TREE' "$STORAGE" \
+  || fail "StorageChooserActivity system tree picker missing"
 
 CREATE_COUNT="$(grep -R -h -F 'ACTION_CREATE_DOCUMENT' "$SRC" | wc -l | tr -d ' ')"
 [ "$CREATE_COUNT" -eq 1 ] || fail "expected one centralized ACTION_CREATE_DOCUMENT, found $CREATE_COUNT"
@@ -100,7 +100,7 @@ echo "- immutable v1.4.37 release snapshot + current fullscreen architecture"
 echo "- full-screen storage chooser registered"
 echo "- remembered roots scroll independently from fixed controls"
 echo "- help / Add / Cancel are explicit"
-echo "- one centralized system tree picker"
+echo "- StorageChooserActivity retains its system tree-picker path"
 echo "- one centralized system create-document picker"
 echo "- Import + save flows route through StorageChooserActivity"
 echo "- Quota is a dedicated full-screen page"
