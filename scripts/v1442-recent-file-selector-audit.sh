@@ -42,7 +42,7 @@ grep -Fq 'Скасувати' "$CHOOSER"   || fail "selector Cancel action missi
 grep -Fq 'найсвіжіші зверху' "$CHOOSER"   || fail "newest-first UI copy missing"
 grep -Fq 'last modified' "$CHOOSER"   || fail "lastModified help explanation missing"
 
-grep -Fq 'No broad filesystem permission is added.' docs/v.1.4.42/RELEASE.md \
+grep -Fq 'No broad storage permission is added.' docs/v.1.4.42/RELEASE.md \
   || fail "historical v1.4.42 SAF-only boundary evidence missing"
 
 echo "PASS:"
