@@ -46,6 +46,11 @@
             android:screenOrientation="unspecified" />
 
         <activity
+            android:name=".PlaylistActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".ServiceActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />
