@@ -41,10 +41,31 @@ grep -Fq 'STATE_REPLACEMENT_DIALOG_OPEN' "$PLAYLIST" ||
   fail "Playlist replacement dialog rotation state missing"
 grep -Fq 'showReplacementLog()' "$PLAYLIST" ||
   fail "Playlist-local replacement dialog missing"
-if grep -A10 -F 'title = "Заміни / проблемні треки"' "$PLAYLIST" |
-   grep -Fq 'finishWithAction'; then
-  fail "Playlist replacement action still exits Hub"
-fi
+python - "$PLAYLIST" <<'PY'
+from pathlib import Path
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+anchor = 'title = "Заміни / проблемні треки"'
+start = text.find(anchor)
+if start < 0:
+    raise SystemExit("FAIL: Playlist replacement action block missing")
+
+end = text.find(
+    'if (\n            !snapshot',
+    start
+)
+if end < 0:
+    raise SystemExit("FAIL: Playlist replacement action block boundary missing")
+
+block = text[start:end]
+
+if 'showReplacementLog()' not in block:
+    raise SystemExit("FAIL: Playlist replacement action is not Hub-local")
+
+if 'finishWithAction' in block:
+    raise SystemExit("FAIL: Playlist replacement action still exits Hub")
+PY
 grep -Fq 'openTargetInYtm(' "$PLAYLIST" ||
   fail "Playlist-local Open in YTM missing"
 grep -Fq 'copyTargetLink(' "$PLAYLIST" ||
