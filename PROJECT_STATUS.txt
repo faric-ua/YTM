@@ -1,17 +1,18 @@
 YTM Importer
-Version: 1.4.45
-Version code: 85
+Version: 1.4.46
+Version code: 86
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.45 status:
-- PHONE RETEST PASS
-- UX-022 CLOSED
-- shared theme-aware `UiChrome.emphasizedTitle(...)`
-- dialog/modal title headers use active theme accent
-- major full-screen title bars use the same shared styling
-- body/action semantics and Home workflow-state colors remain unchanged
-- v1.4.44-R1 phone PASS remains valid; UX-021 CLOSED
-- separate Google OAuth 403 access_denied can occur for non-approved users while OAuth audience is in Testing
+Current v1.4.46 focus:
+- UX-019 Home Layout Prototype Alignment — Phase 1
+- compact Home header
+- four workflow actions remain unchanged
+- History / Queue / Quota / Menu utility row remains unchanged
+- live status moved into a separate theme-aware accent/info card
+- current-playlist summary remains a separate card below status
+- Neon / Blue / Green themes and workflow-state colors are unchanged
+- no auth/search/write behavior changed
+- v1.4.45 phone PASS remains valid; UX-022 CLOSED
 - v1.4.43 auth freshness remains partially phone-tested; stale-token acceptance is deferred
 
 v1.4.12 NOT TESTED
@@ -51,6 +52,7 @@ v1.4.41-R2 PHONE RETEST PASS — UX-017 CLOSED
 v1.4.44 PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + FLAT CLOSE
 v1.4.44-R1 PHONE RETEST PASS — UX-021 CLOSED
 v1.4.45 PHONE RETEST PASS — UX-022 CLOSED
+v1.4.46 NOT PHONE-TESTED — UX-019 PHASE 1
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.

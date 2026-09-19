@@ -1,5 +1,14 @@
 # Журнал змін (Changelog)
 
+## v1.4.46
+- Started UX-019 Home Layout Prototype Alignment using the approved top-left prototype as a layout/hierarchy reference only.
+- Compacted the Home header.
+- Moved the live Home status into a separate theme-aware accent/info card.
+- Kept `Поточний плейлист` as a separate card below the status block.
+- Preserved all four workflow actions, the History/Queue/Quota/Menu utility row, theme palettes, workflow-state colors and auth/search/write behavior.
+- versionCode 86 / versionName 1.4.46.
+- v1.4.46 = NOT PHONE-TESTED YET.
+
 ## v1.4.45
 - Added UX-022 shared title emphasis through `UiChrome.emphasizedTitle(...)`.
 - Dialog/modal titles now use the active theme accent while body text remains unchanged.

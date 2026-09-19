@@ -219,7 +219,7 @@ class MainActivity : Activity() {
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = android.view.Gravity.CENTER_VERTICAL
-            setPadding(dp(18), dp(14), dp(18), dp(10))
+            setPadding(dp(16), dp(10), dp(16), dp(8))
         }
 
         val logoView =
@@ -232,10 +232,10 @@ class MainActivity : Activity() {
                         Color.WHITE
                     )
                 setPadding(
-                    dp(10),
-                    dp(10),
-                    dp(10),
-                    dp(10)
+                    dp(9),
+                    dp(9),
+                    dp(9),
+                    dp(9)
                 )
                 background =
                     AppThemeManager
@@ -251,7 +251,7 @@ class MainActivity : Activity() {
         titleBlock.addView(
             TextView(this).apply {
                 text = "YTM Importer"
-                textSize = 23f
+                textSize = 21.5f
                 setTextColor(Color.WHITE)
                 setTypeface(typeface, Typeface.BOLD)
             }
@@ -269,11 +269,11 @@ class MainActivity : Activity() {
         header.addView(
             logoView,
             LinearLayout.LayoutParams(
-                dp(46),
-                dp(46)
+                dp(42),
+                dp(42)
             ).apply {
                 marginEnd =
-                    dp(10)
+                    dp(9)
             }
         )
 
@@ -428,6 +428,63 @@ class MainActivity : Activity() {
 
         root.addView(utilityRow)
 
+        /*
+         * UX-019 Phase 1:
+         * keep the approved Home hierarchy without changing action semantics.
+         * The live status is intentionally separated from the current-playlist
+         * summary so it reads as its own accent/info block.
+         */
+        val statusCard =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(14),
+                    dp(10),
+                    dp(14),
+                    dp(10)
+                )
+                background =
+                    AppThemeManager
+                        .largeCardDrawable(
+                            context =
+                                this@MainActivity,
+                            fill =
+                                palette.surfaceAlt,
+                            radiusDp = 14,
+                            accentOverride =
+                                palette.accent
+                        )
+            }
+
+        statusText = TextView(this).apply {
+            setTextColor(
+                palette.text
+            )
+            textSize = 13f
+            text =
+                "Почніть з «1. Імпорт»."
+        }
+
+        statusCard.addView(
+            statusText
+        )
+
+        root.addView(
+            statusCard,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(8)
+                )
+            }
+        )
+
         val workspaceCard =
             LinearLayout(this).apply {
                 orientation =
@@ -486,25 +543,6 @@ class MainActivity : Activity() {
 
         workspaceCard.addView(
             summaryText
-        )
-
-        statusText = TextView(this).apply {
-            setPadding(
-                0,
-                dp(3),
-                0,
-                0
-            )
-            setTextColor(
-                palette.muted
-            )
-            textSize = 13f
-            text =
-                "Почніть з «1. Імпорт»."
-        }
-
-        workspaceCard.addView(
-            statusText
         )
 
         root.addView(

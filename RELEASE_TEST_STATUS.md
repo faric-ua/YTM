@@ -2,6 +2,7 @@
 
 | Version | Status | Note |
 |---|---|---|
+| v1.4.46 | **PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS** | Real-phone portrait screenshot passed the new Home hierarchy; current playlist and Google/YTM state survived update-in-place. Theme/landscape smoke is carried into v1.4.47 combined QA. |
 | v1.4.45 | **PHONE RETEST PASS — UX-022 UNIFIED WINDOW TITLE EMPHASIS** | Real-phone QA passed: full-screen titles, representative modal titles, Neon + alternate-theme accent behavior, and rotation/navigation smoke all passed. UX-022 closed. |
 | v1.4.44-R1 | **PHONE RETEST PASS — UX-021 LANDSCAPE COPY + MODAL CLOSE** | Real-phone retest passed: wide Recent-file/backup chooser shows readable `Системний вибір…`; Storage save footer remains readable; modal `Закрити` has boxed button chrome; rotate-back smoke passed. UX-021 closed. |
 | v1.4.44 | **PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + FLAT CLOSE** | Landscape row activation worked, but `Системний вибір файла…` wrapped/clipped in the fixed footer button. Result/problem modals also showed `Закрити` as unboxed text while other actions were boxed. Continued in R1. |
