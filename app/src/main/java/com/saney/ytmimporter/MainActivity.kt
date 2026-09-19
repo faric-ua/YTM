@@ -430,10 +430,9 @@ class MainActivity : Activity() {
         root.addView(utilityRow)
 
         /*
-         * UX-019 Phase 1:
-         * keep the approved Home hierarchy without changing action semantics.
-         * The live status is intentionally separated from the current-playlist
-         * summary so it reads as its own accent/info block.
+         * UX-019 Phase 2:
+         * keep account identity and live status in one compact interactive
+         * account card without changing workflow semantics.
          */
         val statusCard =
             LinearLayout(this).apply {
@@ -1246,6 +1245,8 @@ class MainActivity : Activity() {
             snapshot.playlist
         currentImportSourceLabel =
             snapshot.sourceLabel
+        createdPlaylistId =
+            snapshot.destinationPlaylistId
 
         visibleTracks.clear()
         visibleTracks.addAll(
@@ -1264,7 +1265,9 @@ class MainActivity : Activity() {
         currentPlaylistStore.save(
             playlist = current,
             sourceLabel =
-                currentImportSourceLabel
+                currentImportSourceLabel,
+            destinationPlaylistId =
+                createdPlaylistId
         )
     }
 
@@ -2801,6 +2804,7 @@ class MainActivity : Activity() {
             updatePendingButton()
 
             createdPlaylistId = target.id
+            persistCurrentWorkspace()
 
             prepareWriteUi(
                 total = selected.size,
@@ -2935,6 +2939,7 @@ class MainActivity : Activity() {
                 when (outcome) {
                     is PlaylistWriteCoordinator.WriteOutcome.Completed -> {
                         createdPlaylistId = outcome.playlistId
+                        persistCurrentWorkspace()
 
                         status(
                             "Готово. ${outcome.job.playlistName}: " +
