@@ -158,3 +158,10 @@ Additional v1.4.41 phone evidence:
 - tapping `top 3` on the existing-playlist list opened `Перевірка перед додаванням`;
 - this confirms the list screen's direct-tap single-select behavior end-to-end up to the pre-write confirmation screen;
 - no tracks were added as part of this check.
+
+
+Additional UX-018 phone evidence:
+- destructive modal ordering PASS;
+- History → `Очистити` confirmation shows the destructive action `Так, очистити` on the left and `Скасувати` on the right;
+- user cancels instead of deleting data;
+- together with the account modal (`Змінити` left / `Закрити` right), this is a representative horizontal-action spot check, not an exhaustive audit of every modal.
