@@ -12,55 +12,47 @@ Last updated: **2026-09-19**
 
 Repository: `faric-ua/YTM`
 
-Current release closeout:
+Current integrated release:
 
 - versionName: **1.4.40**
 - versionCode: **76**
-- feature focus: **UX-016 — in-app release history**
-- active branch: `feat/v1.4.40-release-history`
-- signed code head validated by phone QA: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
-- latest signed GitHub Actions run for that code: **35408421729**
+- primary branch: `main`
+- release integration merge commit: `96153d0f0f701f36a8057c75a96d78e869acb344`
+- v1.4.40 feature focus: **UX-016 — in-app release history**
+- v1.4.40 Release History status: **TESTED PATH PASS**
+- signed code SHA validated on the real phone: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
+- signed GitHub Actions run: **35408421729**
 - signed build result: **SUCCESS**
-- branch may contain newer documentation/status-only commits after this signed build; always verify the live PR head before merge or rebuild
-- phone state at handoff: signed v1.4.40 build was installed and the final release-history rotation-scroll retest PASSED.
+- phone-installed v1.4.40 passed the final release-history rotation-scroll retest.
+
+The live `main` branch can contain documentation/status commits newer than the signed phone-tested code SHA. Do not confuse repository head with the APK code actually exercised on the phone.
 
 Stable phone build folder:
 
 `/storage/emulated/0/Download/YTM-v1.4.40-build/`
 
-## 2. Branch / PR stack
+## 2. Release PR integration completed
 
-`main` currently points to:
-
-`bdf9120a056a7a56113eb3026c828d0b9277405c`
-
-Open release PRs:
+The previous stacked PR sequence is complete:
 
 - PR #10 — **v1.4.39: native History JSON restore**
-  - base: `main`
-  - head: `feat/v1.4.39-history-json-restore`
-  - head SHA: `ba2c91312447f30588de128ff4d74851aec9c086`
-  - mergeable: yes
+  - merged into `main`;
+  - merge commit: `a056add33eb64288b650ba565c44b3e103c1a1ef`.
 - PR #11 — **v1.4.40: in-app release history**
-  - base: `feat/v1.4.39-history-json-restore`
-  - head: `feat/v1.4.40-release-history`
-  - signed code head validated by phone QA: `d9c53442c00b96b8ccb59e706af680fb8c5f324d`
-  - live PR head may be newer because QA/handoff documentation is updated after phone/build events; verify it through GitHub
-  - mergeable at the last live check: yes
-  - stacked on PR #10
+  - retargeted from the v1.4.39 branch to `main`;
+  - post-retarget diff was inspected;
+  - merged into `main`;
+  - merge commit: `96153d0f0f701f36a8057c75a96d78e869acb344`.
 
-Do **not** blindly merge PR #11 first.
+No open release PR from this v1.4.39/v1.4.40 stack remains.
 
-After release QA is accepted, preferred clean sequence:
+Do not repeat the old PR #10 → retarget #11 → merge #11 sequence; it has already been completed.
 
-1. merge PR #10 into `main`;
-2. retarget/rebase/update PR #11 onto `main`;
-3. verify PR #11 then contains only the intended v1.4.40 delta;
-4. merge PR #11.
+The old feature branches may still exist on GitHub. Do not delete them merely for cleanup unless the user explicitly wants branch cleanup.
 
 ## 3. v1.4.39 History JSON phone QA
 
-Combined phone QA was performed using v1.4.40 because v1.4.40 includes the v1.4.39 work.
+Combined phone QA was performed using v1.4.40 because v1.4.40 contains the v1.4.39 work.
 
 Results:
 
@@ -81,7 +73,7 @@ Do not upgrade 4/5 to PASS from code inspection alone.
 
 ## 4. v1.4.40 Release History phone QA
 
-Already passed:
+PASS for the tested phone scope:
 
 - About page exposes `Історія змін`;
 - Quick Start and Privacy remain present;
@@ -90,59 +82,59 @@ Already passed:
 - older releases render and scroll normally;
 - markdown cleanup/readability;
 - no reported clipping/overlap;
-- oldest visible release is v1.4.6, which is expected because root `CHANGELOG.md` currently has no older `##` release sections.
+- oldest visible release is v1.4.6 because root `CHANGELOG.md` currently has no older `##` release sections;
+- top-bar arrow steps History → About → Service;
+- system Back may exit Service directly to app Home — accepted product behavior;
+- History page survives rotation without crash;
+- after the follow-up fix, rotation preserves the release-history scroll position instead of resetting to v1.4.40.
 
-Back behavior is **accepted product behavior**:
+UX-016 is closed for this tested Release History scope.
 
-- top-bar arrow steps inside Service: History → About → Service;
-- system Back may exit Service directly to app Home.
-
-Do not “fix” this difference unless the user changes the product decision.
-
-Rotation result:
-
-- first phone run exposed scroll reset to v1.4.40;
-- ServiceActivity follow-up fix tracks/saves/restores changelog `scrollY`;
-- signed build retest PASSED on the real phone;
-- History remains open and preserves the scrolled position across rotation;
-- no crash.
-
-Static guard is present in `scripts/v1440-release-history-audit.sh`.
-
-UX-016 / v1.4.40 Release History is therefore closed for the tested phone scope.
+This is **not** a claim of full-app regression coverage.
 
 ## 5. Exact next step
 
-No further v1.4.40 Release History phone test is pending.
+There is no pending v1.4.40 Release History QA.
 
-Current remaining item from the combined QA wave:
+The only unfinished item carried from the combined v1.4.39/v1.4.40 wave is:
 
-- v1.4.39 History Restore + rollback items 4/5 remain **INCONCLUSIVE / RETEST REQUIRED** until the phone has populated, clearly distinguishable History.
+- populated-History Restore verification;
+- populated-History safety-snapshot rollback verification.
 
-When the user is ready to advance repository history, use the clean stacked-PR sequence:
+Those tests should be resumed later when enough meaningful History has accumulated on the phone.
 
-1. merge PR #10 into `main`;
-2. retarget/rebase/update PR #11 onto `main`;
-3. verify PR #11 contains only the intended v1.4.40 delta;
-4. merge PR #11.
+Until then, choose the next product/QA task from `BACKLOG.md`. Current broader pending areas include:
 
-Do not perform the merge merely because QA passed; wait for the user's instruction to move to merge/release integration.
+- v1.4.37 Storage / Quota / Menu follow-up phone checks;
+- UX-008 Phase 2B for the two remaining generic open-file flows;
+- deferred BUG-002 representative modal retest;
+- BUG-004 real/reproduced HTTP 401 retest;
+- localization foundation for Ukrainian / Korean / English;
+- later visual skin foundation.
 
-## 6. Static/preflight fixes made during this QA
+Do not reopen already accepted v1.4.40 Release History behavior without new evidence.
 
-Two preflight failures were audit drift, not application regressions:
+## 6. Important QA/workflow lessons from this wave
+
+Two release-preflight failures were audit drift, not application regressions:
 
 1. `scripts/service-navigation-audit.sh`
-   - old guard required `if (page != Page.HOME)`;
-   - v1.4.40 intentionally uses explicit `when (page)` routing for CHANGELOG → ABOUT;
-   - audit updated to test semantic routes instead of the obsolete implementation shape.
+   - old guard required the obsolete `if (page != Page.HOME)` implementation shape;
+   - v1.4.40 intentionally uses explicit page routing;
+   - audit now tests semantic routes.
 
 2. `scripts/qa-plan-audit.sh`
-   - old guard pinned exact mutable status text for v1.4.39 and v1.4.40;
-   - status legitimately evolved after phone QA;
-   - audit updated to verify semantic current status/retest state instead of stale full sentences.
+   - old guard pinned exact mutable phone-QA wording;
+   - current QA status legitimately changed after phone testing;
+   - audit now checks semantic status/retest state.
 
-Do not revert these audit fixes to the old literal checks.
+During QA closeout, a range-limited read of `BACKLOG.md` was accidentally used in a whole-file update and temporarily truncated the file. The anomaly was caught from the PR deletion count before merge; the full file was restored from the previous blob.
+
+Guard now recorded in `docs/WORKFLOW_LESSONS.md`:
+
+- partial reads are for inspection only;
+- fetch full content before whole-file writes;
+- inspect surprising PR deletion counts before merge.
 
 ## 7. Working contract to preserve
 
