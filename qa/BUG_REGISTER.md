@@ -13,7 +13,7 @@
 | BUG-009 / Q-009 | PHONE PORTRAIT PASS v1.4.41 | P3 | Real-phone portrait confirms readable profile copy, single-line `Змінити` on the left and `Закрити` on the right. Rotation itself exposed separate BUG-011 (dialog disappears), so BUG-009 remains a portrait visual-fit PASS rather than absorbing the state-restoration defect. | v1.4.40 account-switch screenshot → v1.4.41 portrait PASS |
 | BUG-010 / Q-010 | CLOSED — PHONE RETEST PASS v1.4.41 | P2 | Real-phone full Restore and subsequent `Відкотити` both preserved the live quota exactly: Search 0/100; total 505/10000; ≈9495 remaining. Full Restore applied 3 of 4 backup groups; `Відкотити` applied 4 of 5 safety-snapshot groups, confirming `quota_tracker_v1` was excluded from both paths. | v1.4.40 finding → v1.4.41 Restore + `Відкотити` PASS |
 | BUG-011 / Q-011 | CLOSED — PHONE RETEST PASS v1.4.41-R1 | P3 | Real-phone R1 retest passed: Account modal remains/reappears through portrait ↔ landscape Activity recreation and preserves the expected action layout. | v1.4.41 repro → v1.4.41-R1 phone PASS |
-| BUG-012 / Q-012 | OPEN — PHONE REPRO v1.4.42 / PLATFORM-CONSTRAINT DESIGN BUG | P2 | UX-020 onboarding asks the user to grant root `Download` through `ACTION_OPEN_DOCUMENT_TREE`, but Android 11+ forbids selecting root Download. In-app selector entry works, but its intended newest-first Download setup is blocked. | v1.4.42 first phone QA |
+| BUG-012 / Q-012 | FIX IMPLEMENTED — v1.4.42-R1 PHONE RETEST NEEDED | P2 | v1.4.42 root `Download` SAF onboarding was blocked by Android 11+. R1 switches the primary Download path to explicit `MANAGE_EXTERNAL_STORAGE` / All files access, reads Download directly, and keeps SAF/system-picker fallbacks. | v1.4.42 repro → v1.4.42-R1 fix |
 
 ## BUG-002 current evidence
 
@@ -384,7 +384,7 @@ BUG-011 is closed on v1.4.41-R1.
 
 ## BUG-012 — Recent-file selector cannot grant root Download
 
-Status: **OPEN — PHONE REPRO v1.4.42 / PLATFORM-CONSTRAINT DESIGN BUG.**
+Status: **FIX IMPLEMENTED — v1.4.42-R1 PHONE RETEST NEEDED.**
 
 Path:
 `Home → 1. Імпорт → імпортувати файл → Додати папку… → Download`
@@ -399,12 +399,15 @@ Platform constraint:
   `Download`;
 - therefore this is not solved by asking for a normal runtime storage permission.
 
-Required repair direction:
-- do not depend on root Download tree access for primary onboarding;
-- keep scoped-storage / SAF boundaries;
-- do not add broad filesystem permission;
-- keep `ACTION_OPEN_DOCUMENT` system picker fallback;
-- redesign newest-first source strategy, or require/select an allowed subfolder with
-  clear UX rather than promising root Download.
+Product decision after the reproduction:
+- the project owner explicitly chose Android All files access for the sideload build;
+- v1.4.42-R1 declares `MANAGE_EXTERNAL_STORAGE`;
+- the selector shows an in-app rationale before opening Android special-access settings;
+- after the user enables access, Download is read directly and sorted by `lastModified` newest-first;
+- direct files are returned through the app's non-exported FileProvider;
+- SAF subfolders and `ACTION_OPEN_DOCUMENT` remain fallbacks;
+- phone retest is required before BUG-012 can close.
 
-Remaining v1.4.42 phone tests are deferred until this is revised.
+Distribution note:
+- Google Play treats MANAGE_EXTERNAL_STORAGE as restricted/high-risk; future Play
+  distribution would require a separate policy/eligibility review.
