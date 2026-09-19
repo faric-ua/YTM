@@ -54,7 +54,8 @@ class SearchCoordinator(
     data class SearchResult(
         val cacheHits: Int,
         val apiSearches: Int,
-        val quotaBlocked: Boolean
+        val quotaBlocked: Boolean,
+        val authorizationInvalidated: Boolean
     )
 
     fun plan(
@@ -89,12 +90,14 @@ class SearchCoordinator(
         preserveExistingExact: Boolean,
         onTrackStateChanged: (index: Int) -> Unit = {},
         onProgress: (SearchProgress) -> Unit = {},
-        onQuotaBlocked: () -> Unit = {}
+        onQuotaBlocked: () -> Unit = {},
+        onAuthorizationInvalidated: (Throwable) -> Unit = {}
     ): SearchResult {
         var cacheHits = 0
         var apiSearches = 0
         var quotaBlocked = false
         var quotaCallbackSent = false
+        var authorizationInvalidated = false
 
         for ((index, track) in playlist.tracks.withIndex()) {
             if (Thread.currentThread().isInterrupted) {
@@ -164,6 +167,28 @@ class SearchCoordinator(
                     )
                 }
             } catch (error: Exception) {
+                if (isAuthorizationFailure(error)) {
+                    // A 401 is a session failure, not a track failure.
+                    // Keep the workspace retryable and stop before producing
+                    // the same misleading error for every remaining track.
+                    track.status =
+                        TrackStatus.NEW
+                    track.error = null
+                    authorizationInvalidated = true
+                    onTrackStateChanged(index)
+                    onAuthorizationInvalidated(error)
+
+                    onProgress(
+                        SearchProgress(
+                            processed = index + 1,
+                            total = playlist.tracks.size,
+                            cacheHits = cacheHits,
+                            apiSearches = apiSearches
+                        )
+                    )
+                    break
+                }
+
                 track.status =
                     TrackStatus.FAILED
                 track.error =
@@ -199,7 +224,8 @@ class SearchCoordinator(
         return SearchResult(
             cacheHits = cacheHits,
             apiSearches = apiSearches,
-            quotaBlocked = quotaBlocked
+            quotaBlocked = quotaBlocked,
+            authorizationInvalidated = authorizationInvalidated
         )
     }
 
@@ -300,6 +326,24 @@ class SearchCoordinator(
             } else {
                 TrackStatus.REVIEW
             }
+    }
+
+    private fun isAuthorizationFailure(
+        error: Throwable
+    ): Boolean {
+        var current: Throwable? = error
+
+        while (current != null) {
+            if (
+                current is YouTubeApiException &&
+                current.httpCode == 401
+            ) {
+                return true
+            }
+            current = current.cause
+        }
+
+        return false
     }
 
     private fun isQuotaError(
