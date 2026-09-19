@@ -217,6 +217,28 @@ class MainActivity : Activity() {
             setBackgroundColor(palette.background)
         }
 
+        val scroll =
+            ScrollView(this).apply {
+                isFillViewport = true
+                overScrollMode =
+                    View.OVER_SCROLL_IF_CONTENT_SCROLLS
+            }
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setBackgroundColor(
+                    palette.background
+                )
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    dp(8)
+                )
+            }
+
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = android.view.Gravity.CENTER_VERTICAL
@@ -304,7 +326,7 @@ class MainActivity : Activity() {
             }
         )
 
-        root.addView(header)
+        content.addView(header)
 
         val flowCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -370,7 +392,7 @@ class MainActivity : Activity() {
             }
         )
 
-        root.addView(
+        content.addView(
             flowCard,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -427,7 +449,7 @@ class MainActivity : Activity() {
             )
         }
 
-        root.addView(utilityRow)
+        content.addView(utilityRow)
 
         /*
          * UX-019 Phase 2:
@@ -457,7 +479,7 @@ class MainActivity : Activity() {
                 accountCard.subtitle
             )
 
-        root.addView(
+        content.addView(
             accountCard.root,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -472,11 +494,15 @@ class MainActivity : Activity() {
             }
         )
 
+        content.addView(
+            homeSectionTitle(
+                "Поточний плейлист"
+            )
+        )
+
         val workspaceCard =
             UiChrome.interactiveSummaryCard(
                 activity = this,
-                eyebrow =
-                    "Поточний плейлист",
                 title =
                     "Плейлист ще не імпортовано",
                 subtitle =
@@ -492,7 +518,7 @@ class MainActivity : Activity() {
         summaryText =
             workspaceCard.title
 
-        root.addView(
+        content.addView(
             workspaceCard.root,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -518,7 +544,7 @@ class MainActivity : Activity() {
                 visibility = View.GONE
             }
 
-        root.addView(
+        content.addView(
             progress,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -541,13 +567,81 @@ class MainActivity : Activity() {
                 visibleTracks
             )
 
+        content.addView(
+            homeSectionTitle(
+                "Швидкі дії"
+            )
+        )
+
+        val quickRow =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.HORIZONTAL
+                isBaselineAligned = false
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(10)
+                )
+            }
+
+        quickRow.addView(
+            quickActionButton(
+                label =
+                    "Імпортувати файл",
+                icon =
+                    R.drawable.ic_ytm_download
+            ) {
+                openImportScreen()
+            },
+            LinearLayout.LayoutParams(
+                0,
+                dp(64),
+                1f
+            )
+        )
+
+        quickRow.addView(
+            quickActionButton(
+                label =
+                    "Експорт плейлистів",
+                icon =
+                    R.drawable.ic_ytm_playlist_add
+            ) {
+                openImportScreen()
+            },
+            LinearLayout.LayoutParams(
+                0,
+                dp(64),
+                1f
+            ).apply {
+                marginStart =
+                    dp(8)
+            }
+        )
+
+        content.addView(quickRow)
+
+        scroll.addView(
+            content,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
         root.addView(
-            View(this),
+            scroll,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 0,
                 1f
             )
+        )
+
+        root.addView(
+            homeBottomNavigation()
         )
 
         setContentView(root)
@@ -556,6 +650,205 @@ class MainActivity : Activity() {
         updateQuotaPanel()
         updatePendingButton()
         updatePrimaryActions()
+    }
+
+    private fun homeSectionTitle(
+        label: String
+    ): TextView {
+        val palette =
+            AppThemeManager.palette(this)
+
+        return TextView(this).apply {
+            text = label
+            textSize = 13f
+            setTypeface(
+                typeface,
+                Typeface.BOLD
+            )
+            setTextColor(
+                palette.text
+            )
+            setPadding(
+                dp(14),
+                dp(7),
+                dp(14),
+                dp(7)
+            )
+        }
+    }
+
+    private fun quickActionButton(
+        label: String,
+        icon: Int,
+        action: () -> Unit
+    ): Button {
+        val palette =
+            AppThemeManager.palette(this)
+
+        return Button(this).apply {
+            text = label
+            isAllCaps = false
+            textSize = 12f
+            maxLines = 2
+            gravity =
+                android.view.Gravity.CENTER
+            setTypeface(
+                typeface,
+                Typeface.BOLD
+            )
+            setTextColor(
+                palette.text
+            )
+            setCompoundDrawablesRelativeWithIntrinsicBounds(
+                icon,
+                0,
+                0,
+                0
+            )
+            resizeButtonStartIcon(
+                button = this,
+                sizeDp = 19
+            )
+            compoundDrawablePadding =
+                dp(7)
+            compoundDrawableTintList =
+                ColorStateList.valueOf(
+                    palette.accent
+                )
+            background =
+                AppThemeManager
+                    .neutralButtonDrawable(
+                        context =
+                            this@MainActivity,
+                        radiusDp = 12
+                    )
+            setOnClickListener {
+                action()
+            }
+        }
+    }
+
+    private fun homeBottomNavigation():
+        LinearLayout {
+        val palette =
+            AppThemeManager.palette(this)
+
+        val row =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.HORIZONTAL
+                isBaselineAligned = false
+                setPadding(
+                    dp(8),
+                    dp(6),
+                    dp(8),
+                    dp(6)
+                )
+                background =
+                    AppThemeManager
+                        .surfaceDrawable(
+                            context =
+                                this@MainActivity,
+                            fill =
+                                palette.surface,
+                            radiusDp = 0,
+                            accentStroke = false
+                        )
+            }
+
+        fun navButton(
+            label: String,
+            icon: Int,
+            active: Boolean = false,
+            action: () -> Unit
+        ): Button =
+            Button(this).apply {
+                text = label
+                isAllCaps = false
+                textSize = 10.5f
+                maxLines = 1
+                setSingleLine(true)
+                gravity =
+                    android.view.Gravity.CENTER
+                setTextColor(
+                    if (active) {
+                        palette.accent
+                    } else {
+                        palette.muted
+                    }
+                )
+                setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    0,
+                    icon,
+                    0,
+                    0
+                )
+                compoundDrawableTintList =
+                    ColorStateList.valueOf(
+                        if (active) {
+                            palette.accent
+                        } else {
+                            palette.muted
+                        }
+                    )
+                background =
+                    ColorDrawable(
+                        Color.TRANSPARENT
+                    )
+                setPadding(
+                    dp(4),
+                    dp(3),
+                    dp(4),
+                    dp(3)
+                )
+                setOnClickListener {
+                    action()
+                }
+            }
+
+        val items =
+            listOf(
+                navButton(
+                    label = "Головна",
+                    icon =
+                        R.drawable.ic_ytm_history,
+                    active = true
+                ) {},
+                navButton(
+                    label = "Пошук",
+                    icon =
+                        R.drawable.ic_ytm_search
+                ) {
+                    searchOrReview()
+                },
+                navButton(
+                    label = "Плейлист",
+                    icon =
+                        R.drawable.ic_ytm_playlist_add
+                ) {
+                    openPlaylistHub()
+                },
+                navButton(
+                    label = "Сервіс",
+                    icon =
+                        R.drawable.ic_ytm_more
+                ) {
+                    showServiceTools()
+                }
+            )
+
+        items.forEach { button ->
+            row.addView(
+                button,
+                LinearLayout.LayoutParams(
+                    0,
+                    dp(62),
+                    1f
+                )
+            )
+        }
+
+        return row
     }
 
     private fun button(
