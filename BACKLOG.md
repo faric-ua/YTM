@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.42-R1 — Direct Download via All files access — PHONE PASS / BUG-012 CLOSED
+v1.4.43 — Auth Freshness — NEXT / NOT IMPLEMENTED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -27,6 +27,17 @@ v1.4.42-R1 — Direct Download via All files access — PHONE PASS / BUG-012 CLO
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
 - UX-021 Adaptive Landscape Action Layout — PLANNED; on wide/landscape screens, action buttons in full-screen footers and modal action areas should reflow into one horizontal row when width allows, instead of keeping portrait-style vertical stacks that consume most of the height. Apply as a shared responsive rule across app screens, not only RecentFileChooserActivity.
 - UX-022 Unified Window Title Emphasis — PLANNED; strengthen the first/title line inside dialogs, modal windows and full-screen utility panels with theme-aware title color/emphasis so titles such as `Підтвердити Restore`, `План пошуку`, and `Доступ до Download` visually separate from body text. Implement via shared UI styling across the app, not per-screen hardcoding.
+
+## v1.4.43 — Auth Freshness
+- [ ] BUG-013: prevent stale green Step 2 from trusting an old in-memory token
+- [ ] centralize fresh/silent authorization before destination list/create/write remote calls
+- [ ] preserve current HTTP 401 invalidation as fallback
+- [ ] avoid unnecessary account-picker prompts when Google can refresh silently
+- [ ] static audit + release docs
+- [ ] signed APK
+- [ ] phone: stale-token destination flow refreshes or prompts before first YouTube API failure
+- [ ] phone: Step 2 state remains consistent with usable authorization
+- [ ] keep BUG-004 SearchCoordinator-specific real-401 retest separate
 
 ## v1.4.42-R1 — Direct Download via All files access
 - [x] versionCode 81 / versionName 1.4.42-R1
