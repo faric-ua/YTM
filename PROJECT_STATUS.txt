@@ -1,18 +1,19 @@
 YTM Importer
-Version: 1.4.47
-Version code: 87
+Version: 1.4.47-R1
+Version code: 88
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.47 focus:
-- UX-019 Phase 2 — Playlist Hub + Clean Home
-- Home account/status card is interactive and opens account details
-- Home current-playlist card opens dedicated PlaylistActivity
-- Home no longer renders track rows
-- Playlist Hub routes into existing Review/Search/Destination/YTM Project flows
-- CurrentPlaylistStore schema v2 persists optional target YTM playlist ID
-- schema v1 snapshots remain readable
-- OAuth token remains non-persistent and hidden from account UI
-- v1.4.46 portrait Home hierarchy phone PASS; combined theme/landscape smoke moves to v1.4.47
+Current v1.4.47-R1 focus:
+- v1.4.47 real-phone QA = FAIL for BUG-014..017
+- approved prototype is layout/hierarchy reference only; keep Neon/Blue/Green visual system
+- Home: header → workflow → utility row → account/status → current playlist → quick actions → bottom navigation
+- Home dashboard body scrolls in landscape; bottom navigation stays fixed
+- custom modal chrome follows active palette; danger remains semantic red
+- Playlist Hub localizes replacements + target open/copy actions
+- delegated Search/Create remember Playlist Hub as return parent
+- replacement/problem modal survives rotation
+- Import clear-current-list confirmation survives rotation
+- MainActivity remains below cleanup size guard via HomeDashboardChrome
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -52,7 +53,8 @@ v1.4.44 PARTIALLY PHONE-TESTED — FAIL: LANDSCAPE LABEL CLIP + FLAT CLOSE
 v1.4.44-R1 PHONE RETEST PASS — UX-021 CLOSED
 v1.4.45 PHONE RETEST PASS — UX-022 CLOSED
 v1.4.46 PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS / THEME+LANDSCAPE CARRIED TO v1.4.47
-v1.4.47 NOT PHONE-TESTED — PLAYLIST HUB + CLEAN HOME
+v1.4.47 PHONE QA FAIL — BUG-014..017
+v1.4.47-R1 IMPLEMENTED — STATIC + PHONE QA NEEDED
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
