@@ -1,5 +1,14 @@
 # Журнал змін (Changelog)
 
+## v1.4.42-R1
+- Corrective follow-up for BUG-012: Android 11+ blocks SAF tree access to root Download.
+- Added `MANAGE_EXTERNAL_STORAGE` / All files access flow for direct `/storage/emulated/0/Download` listing on Android 11+.
+- Added an in-app rationale before opening the Android special-access settings screen.
+- After permission is granted, Download files are listed directly and sorted by `lastModified` newest-first.
+- SAF subfolder access and Android system file picker remain available as fallbacks.
+- Added FileProvider access for selected direct Download files without exposing the provider externally.
+- versionCode 81 / versionName 1.4.42-R1.
+- v1.4.42-R1 = NOT PHONE-TESTED YET.
 ## v1.4.42
 - Added an in-app recent-file selector for the two remaining generic open-file flows from UX-008 Phase 2B.
 - Import and Data/Restore now enter YTM Importer file selection before Android's system picker.
@@ -7,9 +16,9 @@
 - Import recent list filters to TXT / CSV / JSON; Data Restore / History JSON filters to JSON.
 - File rows show name, modified time, size and source folder.
 - Added explicit `Додати папку…`, `Системний вибір файла…` fallback and `Скасувати` actions.
-- No broad filesystem permission added; Android SAF remains the permission boundary.
+- v1.4.42 original build used SAF only; phone QA later exposed the root-Download platform blocker tracked as BUG-012.
 - versionCode 80 / versionName 1.4.42.
-- v1.4.42 = NOT PHONE-TESTED YET.
+- v1.4.42 phone QA: selector entry PASS; root Download SAF onboarding BLOCKED by Android 11+ platform restriction; remaining tests deferred to R1.
 
 ## v1.4.41-R2
 - Targeted corrective follow-up for the remaining UX-017 phone edge case.
