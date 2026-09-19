@@ -4,6 +4,7 @@ set -euo pipefail
 fail(){ echo "FAIL: $1" >&2; exit 1; }
 
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
+UI="app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"
 PLAYLIST="app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt"
 REVIEW="app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
 STORE="app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
@@ -11,7 +12,7 @@ MANIFEST="app/src/main/AndroidManifest.xml"
 RELEASE="docs/v.1.4.47/RELEASE.md"
 PHONE="docs/v.1.4.47/qa/PHONE_TEST.md"
 
-for f in "$MAIN" "$PLAYLIST" "$REVIEW" "$STORE" "$MANIFEST" "$RELEASE" "$PHONE"; do
+for f in "$MAIN" "$UI" "$PLAYLIST" "$REVIEW" "$STORE" "$MANIFEST" "$RELEASE" "$PHONE"; do
   test -f "$f" || fail "missing v1.4.47 file: $f"
 done
 
@@ -23,8 +24,12 @@ grep -Fq 'versionName: **1.4.47**' "$RELEASE" ||
 grep -Fq 'android:name=".PlaylistActivity"' "$MANIFEST" ||
   fail "PlaylistActivity missing from manifest"
 
-grep -Fq 'setOnClickListener {' "$MAIN" ||
-  fail "interactive Home card handlers missing"
+grep -Fq 'UiChrome.interactiveSummaryCard(' "$MAIN" ||
+  fail "interactive Home summary-card bridge missing"
+grep -Fq 'fun interactiveSummaryCard(' "$UI" ||
+  fail "interactive summary-card helper missing"
+grep -Fq 'setOnClickListener {' "$UI" ||
+  fail "interactive summary-card click handler missing"
 grep -Fq 'showAccountDialog()' "$MAIN" ||
   fail "Home account card does not route to account dialog"
 grep -Fq 'openPlaylistHub()' "$MAIN" ||
