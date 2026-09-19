@@ -1,0 +1,702 @@
+package com.saney.ytmimporter
+
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Typeface
+import android.net.Uri
+import android.os.Bundle
+import android.view.Gravity
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
+import com.saney.ytmimporter.storage.SafRecentFileQuery
+import com.saney.ytmimporter.storage.SafTreeAccess
+import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.UiChrome
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+class RecentFileChooserActivity : Activity() {
+    private var titleText =
+        "Вибір файла"
+
+    private var mimeType =
+        "*/*"
+
+    private var allowedExtensions:
+        Set<String> =
+        emptySet()
+
+    override fun onCreate(
+        savedInstanceState: Bundle?
+    ) {
+        super.onCreate(savedInstanceState)
+        AppThemeManager.applyWindow(this)
+
+        titleText =
+            intent
+                .getStringExtra(EXTRA_TITLE)
+                ?.trim()
+                ?.takeIf { it.isNotBlank() }
+                ?: "Вибір файла"
+
+        mimeType =
+            intent
+                .getStringExtra(EXTRA_MIME_TYPE)
+                ?.trim()
+                ?.takeIf { it.isNotBlank() }
+                ?: "*/*"
+
+        allowedExtensions =
+            intent
+                .getStringArrayExtra(
+                    EXTRA_ALLOWED_EXTENSIONS
+                )
+                ?.asSequence()
+                ?.map {
+                    it
+                        .trim()
+                        .removePrefix(".")
+                        .lowercase(Locale.ROOT)
+                }
+                ?.filter { it.isNotBlank() }
+                ?.toSet()
+                ?: emptySet()
+
+        render()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        finish()
+    }
+
+    private fun render() {
+        val palette =
+            AppThemeManager.palette(this)
+
+        val roots =
+            SafTreeAccess.persistedRoots(
+                context = this,
+                access =
+                    SafTreeAccess.Access.READ
+            )
+
+        val recentFiles =
+            SafRecentFileQuery.list(
+                context = this,
+                roots = roots,
+                allowedExtensions =
+                    allowedExtensions
+            )
+
+        val root =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setBackgroundColor(
+                    palette.background
+                )
+            }
+
+        root.addView(topBar())
+
+        root.addView(
+            TextView(this).apply {
+                text =
+                    if (roots.isEmpty()) {
+                        "Дозволених папок ще немає. Додайте, наприклад, Download — " +
+                            "після цього нові файли будуть зверху."
+                    } else {
+                        "Останні файли: ${recentFiles.size} • найсвіжіші зверху"
+                    }
+                textSize = 12.5f
+                setTextColor(
+                    palette.muted
+                )
+                setPadding(
+                    dp(18),
+                    0,
+                    dp(18),
+                    dp(8)
+                )
+            }
+        )
+
+        val scroll =
+            ScrollView(this).apply {
+                isFillViewport = true
+                clipToPadding = false
+            }
+
+        val listContent =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(12)
+                )
+            }
+
+        if (recentFiles.isEmpty()) {
+            listContent.addView(
+                TextView(this).apply {
+                    text =
+                        if (roots.isEmpty()) {
+                            "Натисніть «Додати папку…» і дайте YTM Importer доступ " +
+                                "до папки з файлами."
+                        } else {
+                            "У дозволених папках немає файлів потрібного типу. " +
+                                "Можна додати іншу папку або відкрити системний вибір."
+                        }
+                    gravity = Gravity.CENTER
+                    textSize = 15f
+                    setTextColor(
+                        palette.muted
+                    )
+                    setPadding(
+                        dp(18),
+                        dp(36),
+                        dp(18),
+                        dp(36)
+                    )
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+        } else {
+            recentFiles.forEachIndexed {
+                    index,
+                    entry ->
+                listContent.addView(
+                    fileRow(entry),
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        if (index > 0) {
+                            topMargin =
+                                dp(8)
+                        }
+                    }
+                )
+            }
+        }
+
+        scroll.addView(listContent)
+
+        root.addView(
+            scroll,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        root.addView(footer())
+
+        setContentView(root)
+        UiChrome.applyScreenInsets(
+            this,
+            root
+        )
+    }
+
+    private fun topBar():
+        LinearLayout {
+        val palette =
+            AppThemeManager.palette(this)
+
+        return LinearLayout(this).apply {
+            orientation =
+                LinearLayout.HORIZONTAL
+            gravity =
+                Gravity.CENTER_VERTICAL
+            setPadding(
+                dp(10),
+                dp(8),
+                dp(10),
+                dp(8)
+            )
+
+            addView(
+                UiChrome.backButton(
+                    activity =
+                        this@RecentFileChooserActivity,
+                    onClick = {
+                        finish()
+                    }
+                ),
+                LinearLayout.LayoutParams(
+                    dp(48),
+                    dp(48)
+                )
+            )
+
+            addView(
+                TextView(
+                    this@RecentFileChooserActivity
+                ).apply {
+                    text =
+                        titleText.take(56)
+                    textSize = 20f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.text
+                    )
+                    setPadding(
+                        dp(12),
+                        0,
+                        dp(8),
+                        0
+                    )
+                    maxLines = 2
+                },
+                LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            )
+
+            addView(
+                Button(
+                    this@RecentFileChooserActivity
+                ).apply {
+                    text = "?"
+                    isAllCaps = false
+                    textSize = 20f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.text
+                    )
+                    minWidth = 0
+                    minimumWidth = 0
+                    minHeight = 0
+                    minimumHeight = 0
+                    setPadding(0, 0, 0, 0)
+                    background =
+                        AppThemeManager
+                            .neutralButtonDrawable(
+                                this@RecentFileChooserActivity
+                            )
+                    setOnClickListener {
+                        showHelp()
+                    }
+                },
+                LinearLayout.LayoutParams(
+                    dp(48),
+                    dp(48)
+                )
+            )
+        }
+    }
+
+    private fun fileRow(
+        entry:
+            SafRecentFileQuery.Entry
+    ): LinearLayout {
+        val palette =
+            AppThemeManager.palette(this)
+
+        return LinearLayout(this).apply {
+            orientation =
+                LinearLayout.VERTICAL
+            setPadding(
+                dp(16),
+                dp(12),
+                dp(16),
+                dp(12)
+            )
+            minimumHeight =
+                dp(72)
+            background =
+                AppThemeManager
+                    .surfaceDrawable(
+                        context =
+                            this@RecentFileChooserActivity,
+                        fill =
+                            palette.surfaceAlt,
+                        radiusDp = 12,
+                        accentStroke = false
+                    )
+            isClickable = true
+            isFocusable = true
+
+            addView(
+                TextView(
+                    this@RecentFileChooserActivity
+                ).apply {
+                    text =
+                        entry.name
+                    textSize = 15f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.text
+                    )
+                    maxLines = 2
+                }
+            )
+
+            addView(
+                TextView(
+                    this@RecentFileChooserActivity
+                ).apply {
+                    text =
+                        fileSubtitle(entry)
+                    textSize = 12f
+                    setTextColor(
+                        palette.muted
+                    )
+                    setPadding(
+                        0,
+                        dp(4),
+                        0,
+                        0
+                    )
+                    maxLines = 2
+                }
+            )
+
+            setOnClickListener {
+                finishWithDocument(
+                    entry.uri
+                )
+            }
+        }
+    }
+
+    private fun fileSubtitle(
+        entry:
+            SafRecentFileQuery.Entry
+    ): String {
+        val modified =
+            if (entry.lastModified > 0L) {
+                DATE_FORMAT.format(
+                    Date(
+                        entry.lastModified
+                    )
+                )
+            } else {
+                "час невідомий"
+            }
+
+        val size =
+            entry.size
+                ?.takeIf { it >= 0L }
+                ?.let {
+                    " • ${formatSize(it)}"
+                }
+                .orEmpty()
+
+        return buildString {
+            append(modified)
+            append(size)
+            append(" • ")
+            append(entry.rootLabel)
+        }
+    }
+
+    private fun formatSize(
+        bytes: Long
+    ): String =
+        when {
+            bytes < 1024L ->
+                "$bytes Б"
+
+            bytes <
+                1024L * 1024L ->
+                String.format(
+                    Locale.getDefault(),
+                    "%.1f КБ",
+                    bytes / 1024.0
+                )
+
+            else ->
+                String.format(
+                    Locale.getDefault(),
+                    "%.1f МБ",
+                    bytes /
+                        (
+                            1024.0 *
+                                1024.0
+                        )
+                )
+        }
+
+    private fun footer():
+        LinearLayout {
+        val root =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(12),
+                    dp(10),
+                    dp(12),
+                    dp(10)
+                )
+            }
+
+        root.addView(
+            footerButton(
+                label =
+                    "Додати папку…",
+                primary = true
+            ) {
+                openSystemTreePicker()
+            }
+        )
+
+        root.addView(
+            footerButton(
+                label =
+                    "Системний вибір файла…",
+                primary = false
+            ) {
+                openSystemDocumentPicker()
+            },
+            footerParams()
+        )
+
+        root.addView(
+            footerButton(
+                label = "Скасувати",
+                primary = false
+            ) {
+                finish()
+            },
+            footerParams()
+        )
+
+        return root
+    }
+
+    private fun footerButton(
+        label: String,
+        primary: Boolean,
+        onClick: () -> Unit
+    ): Button {
+        val palette =
+            AppThemeManager.palette(this)
+
+        return Button(this).apply {
+            text = label
+            isAllCaps = false
+            textSize = 15f
+            setTextColor(
+                palette.text
+            )
+            background =
+                if (primary) {
+                    AppThemeManager
+                        .accentButtonDrawable(
+                            this@RecentFileChooserActivity
+                        )
+                } else {
+                    AppThemeManager
+                        .neutralButtonDrawable(
+                            this@RecentFileChooserActivity
+                        )
+                }
+            setOnClickListener {
+                onClick()
+            }
+            layoutParams =
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(54)
+                )
+        }
+    }
+
+    private fun footerParams():
+        LinearLayout.LayoutParams =
+        LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            dp(54)
+        ).apply {
+            topMargin =
+                dp(8)
+        }
+
+    private fun showHelp() {
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "Останні файли",
+            message =
+                "YTM Importer показує файли з папок, до яких ви вже надали доступ. " +
+                    "Файли сортуються за часом останньої зміни: найсвіжіші зверху.\n\n" +
+                    "«Додати папку…» відкриває Android лише для вибору нової папки, " +
+                    "наприклад Download. Після цього вона зберігається як SAF-дозвіл.\n\n" +
+                    "«Системний вибір файла…» залишає старий Android picker як запасний варіант.\n\n" +
+                    "Android document providers не завжди дають справжній час створення, " +
+                    "тому використовується last modified.",
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label = "Зрозуміло",
+                        tone =
+                            UiChrome.ActionTone.ACCENT
+                    ) {}
+                )
+        )
+    }
+
+    private fun openSystemTreePicker() {
+        val flags =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+                Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+
+        startActivityForResult(
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT_TREE
+            ).apply {
+                addFlags(flags)
+            },
+            REQUEST_SYSTEM_TREE
+        )
+    }
+
+    private fun openSystemDocumentPicker() {
+        startActivityForResult(
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT
+            ).apply {
+                addCategory(
+                    Intent.CATEGORY_OPENABLE
+                )
+                type = mimeType
+            },
+            REQUEST_SYSTEM_DOCUMENT
+        )
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(
+            requestCode,
+            resultCode,
+            data
+        )
+
+        if (
+            resultCode != RESULT_OK ||
+            data == null
+        ) {
+            return
+        }
+
+        when (requestCode) {
+            REQUEST_SYSTEM_TREE -> {
+                val uri =
+                    data.data
+                        ?: return
+
+                runCatching {
+                    SafTreeAccess.persist(
+                        context = this,
+                        treeUri = uri,
+                        access =
+                            SafTreeAccess.Access.READ
+                    )
+                }
+
+                render()
+            }
+
+            REQUEST_SYSTEM_DOCUMENT -> {
+                val uri =
+                    data.data
+                        ?: return
+
+                runCatching {
+                    contentResolver
+                        .takePersistableUriPermission(
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+                }
+
+                finishWithDocument(uri)
+            }
+        }
+    }
+
+    private fun finishWithDocument(
+        uri: Uri
+    ) {
+        setResult(
+            RESULT_OK,
+            Intent()
+                .setData(uri)
+                .putExtra(
+                    EXTRA_RESULT_KIND,
+                    RESULT_DOCUMENT
+                )
+        )
+        finish()
+    }
+
+    private fun dp(
+        value: Int
+    ): Int =
+        (
+            value *
+                resources
+                    .displayMetrics
+                    .density
+        ).toInt()
+
+    companion object {
+        const val EXTRA_TITLE =
+            "recent_file_chooser_title"
+
+        const val EXTRA_MIME_TYPE =
+            "recent_file_chooser_mime_type"
+
+        const val EXTRA_ALLOWED_EXTENSIONS =
+            "recent_file_chooser_allowed_extensions"
+
+        const val EXTRA_RESULT_KIND =
+            "recent_file_chooser_result_kind"
+
+        const val RESULT_DOCUMENT =
+            "DOCUMENT"
+
+        private const val REQUEST_SYSTEM_TREE =
+            8801
+
+        private const val REQUEST_SYSTEM_DOCUMENT =
+            8802
+
+        private val DATE_FORMAT =
+            SimpleDateFormat(
+                "dd.MM.yyyy HH:mm",
+                Locale.getDefault()
+            )
+    }
+}
