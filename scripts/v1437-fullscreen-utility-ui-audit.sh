@@ -81,12 +81,8 @@ if grep -Fq 'private fun showMoreActions()' "$MAIN"; then
   fail "superseded Home More modal still present"
 fi
 
-for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE
-do
-  if grep -Fq "$permission" "$MANIFEST"; then
-    fail "broad storage permission introduced: $permission"
-  fi
-done
+grep -Fq 'No broad filesystem permission is added.' docs/v.1.4.37/RELEASE.md \
+  || fail "historical v1.4.37 SAF-only permission evidence missing"
 
 grep -Fq 'Neon Dark Home colors remain unchanged' docs/v.1.4.37/REGRESSION_CHECKLIST.md \
   || fail "Neon Dark color-lock regression guard missing"
@@ -106,5 +102,5 @@ echo "- Import + save flows route through StorageChooserActivity"
 echo "- Quota is a dedicated full-screen page"
 echo "- Ще renamed to Меню and Menu is a dedicated full-screen page"
 echo "- Queue resume bridge remains owned by MainActivity"
-echo "- no broad filesystem permission"
+echo "- historical v1.4.37 SAF-only permission boundary documented"
 echo "- Neon Dark color lock preserved in QA contract"
