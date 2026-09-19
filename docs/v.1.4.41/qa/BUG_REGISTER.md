@@ -11,7 +11,7 @@
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
 | BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 | P2 | Restore confirmation now survives phone rotation without forcing the user to choose the backup file again. | v1.4.38 phone repro → R1 rotation-state fix → phone PASS |
 | BUG-009 / Q-009 | PHONE PORTRAIT PASS v1.4.41 — ROTATION SMOKE PENDING | P3 | Real-phone portrait confirms readable profile copy, single-line `Змінити` on the left and `Закрити` on the right. Rotation smoke remains optional/pending before treating the UI check as fully exercised. | v1.4.40 account-switch screenshot → v1.4.41 portrait PASS |
-| BUG-010 / Q-010 | ORDINARY RESTORE PASS + ROLLBACK PATH PASS v1.4.41 — FINAL QUOTA READBACK PENDING | P2 | Full Restore preserved live quota exactly (0/100; 505/10000; ≈9495). Safety snapshot showed 5 groups while rollback applied 4 and both rollback dialogs state quota remains current, consistent with excluding `quota_tracker_v1`. One final quota-screen readback remains before closure. | v1.4.40 finding → v1.4.41 Restore PASS + rollback path PASS |
+| BUG-010 / Q-010 | CLOSED — PHONE RETEST PASS v1.4.41 | P2 | Real-phone full Restore and subsequent `Відкотити` both preserved the live quota exactly: Search 0/100; total 505/10000; ≈9495 remaining. Full Restore applied 3 of 4 backup groups; `Відкотити` applied 4 of 5 safety-snapshot groups, confirming `quota_tracker_v1` was excluded from both paths. | v1.4.40 finding → v1.4.41 Restore + `Відкотити` PASS |
 
 ## BUG-002 current evidence
 
@@ -272,7 +272,7 @@ Phone width/rotation still require visual confirmation.
 
 ## BUG-010 — Restore rewinds local quota estimate
 
-Status: **ORDINARY RESTORE PHONE PASS v1.4.41 — SAFETY ROLLBACK PENDING.**
+Status: **CLOSED — PHONE RETEST PASS v1.4.41.**
 
 Observed during the House Dance recovery run:
 
@@ -331,6 +331,6 @@ Safety-snapshot rollback path has now also been exercised on phone:
 - confirmation/result both state local quota estimate remains current;
 - local state before Restore was returned.
 
-One final quota-screen readback is still required before BUG-010 can be fully closed.
+Final quota-screen readback after `Відкотити` confirmed the same values: Search `0/100`, total local quota `505/10000`, remaining units `≈9495`. BUG-010 is closed for both ordinary full Restore and return-to-pre-Restore state (`Відкотити`).
 
 Do not close this from static reasoning alone; verify the chosen policy on phone.
