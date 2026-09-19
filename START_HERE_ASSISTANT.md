@@ -4,6 +4,8 @@ This is the canonical entry point for a new ChatGPT node/session working on YTM 
 
 Do not begin by guessing from the code. Read this file, then follow the reading order below.
 
+For a mid-release/chat-crash resume, read `CURRENT_HANDOFF.md` immediately after this file. It is the short mutable snapshot of the exact active branch/PR/QA/next-step state.
+
 ## 1. Project mission
 
 YTM Importer is an Android/Kotlin application for importing track lists and moving verified tracks into YouTube / YouTube Music workflows.
@@ -33,7 +35,7 @@ Current application:
 - versionName: **1.4.40**
 - versionCode: **76**
 - release focus: **UX-016 — in-app release history**
-- release status: **NOT PHONE-TESTED YET — v1.4.40 RELEASE HISTORY QA NEEDED**
+- release status: **PARTIALLY PHONE-TESTED — RENDERING PASS; ROTATION-SCROLL FIX NEEDS FINAL PHONE RETEST**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.30 adds local consolidated delta-chain restore/materialization.
@@ -91,25 +93,26 @@ Current known items include:
 - BUG-006 / Q-006: CLOSED — PHONE RETEST PASS v1.4.29 R2;
 - BUG-007 / Q-007: CLOSED — PHONE RETEST PASS v1.4.30 R2.
 
-For the freshest exact status, always read `PROJECT_STATUS.txt`, `BACKLOG.md`, `RELEASE_TEST_STATUS.md`, `qa/BUG_REGISTER.md`, and `OPEN_QUESTIONS.md`.
+For the freshest exact resume point, read `CURRENT_HANDOFF.md` first, then verify against `PROJECT_STATUS.txt`, `BACKLOG.md`, `RELEASE_TEST_STATUS.md`, `qa/BUG_REGISTER.md`, `OPEN_QUESTIONS.md`, and live GitHub state.
 
 ## 3. Mandatory reading order
 
 Before changing the project, read in this order:
 
 1. `START_HERE_ASSISTANT.md` — this file.
-2. `YTM_ASSISTANT_WORKFLOW.md` — collaboration and safety contract.
-3. `PROJECT_STATUS.txt` — current technical/product state.
-4. `BACKLOG.md` — roadmap and unfinished work.
-5. `RELEASE_TEST_STATUS.md` — what is actually phone-tested.
-6. `qa/BUG_REGISTER.md` and `OPEN_QUESTIONS.md` — known bugs and deferred decisions.
-7. `docs/ASSISTANT_TOOL_MAP.md` — available workflow tools and when to use them.
-8. `TERMUX_COMMANDS.md` — reusable phone/Git commands.
-9. `docs/WORKFLOW_LESSONS.md` — mistakes that must not be repeated.
-10. `docs/BUILD_ARTIFACT_CONVENTION.md` — stable APK/download folder convention.
-11. Relevant current release folder under `docs/v.X.Y.Z/`.
-12. `docs/tutorial/ROADMAP.md` and the relevant tutorial chapter.
-13. If working on exclusive skins/avatars, read `docs/design/exclusive/README.md` and `ASSET_MANIFEST.md`.
+2. `CURRENT_HANDOFF.md` — exact mutable crash-recovery/resume point.
+3. `YTM_ASSISTANT_WORKFLOW.md` — collaboration and safety contract.
+4. `PROJECT_STATUS.txt` — current technical/product state.
+5. `BACKLOG.md` — roadmap and unfinished work.
+6. `RELEASE_TEST_STATUS.md` — what is actually phone-tested.
+7. `qa/BUG_REGISTER.md` and `OPEN_QUESTIONS.md` — known bugs and deferred decisions.
+8. `docs/ASSISTANT_TOOL_MAP.md` — available workflow tools and when to use them.
+9. `TERMUX_COMMANDS.md` — reusable phone/Git commands.
+10. `docs/WORKFLOW_LESSONS.md` — mistakes that must not be repeated.
+11. `docs/BUILD_ARTIFACT_CONVENTION.md` — stable APK/download folder convention.
+12. Relevant current release folder under `docs/v.X.Y.Z/`.
+13. `docs/tutorial/ROADMAP.md` and the relevant tutorial chapter.
+14. If working on exclusive skins/avatars, read `docs/design/exclusive/README.md` and `ASSET_MANIFEST.md`.
 
 If these sources disagree, prefer the newest current root status/policy files over an older historical release snapshot.
 
@@ -303,12 +306,13 @@ Do not infer the next version or feature solely from old conversation memory. Re
 
 When entering a fresh chat/node:
 
-1. inspect `main` and verify it is current;
-2. read the mandatory files above;
-3. summarize current version, open bugs, next task and safety constraints;
-4. verify the working tree is clean before asking the user to apply anything;
+1. read `CURRENT_HANDOFF.md` and identify the active release branch, stacked/open PRs, last signed build, phone-installed/tested state, and exact next QA action;
+2. inspect live GitHub state for `main`, the active branch and the PR stack; do not assume the handoff SHA is still the current PR head after documentation/status commits;
+3. read the remaining mandatory files above;
+4. summarize current version, open bugs, next task and safety constraints;
 5. continue from repository evidence rather than asking the user to reconstruct old context;
-6. if repository access is unavailable, say so and ask for the minimum missing evidence instead of guessing.
+6. verify the working tree is clean before asking the user to apply anything;
+7. if repository access is unavailable, say so and ask for the minimum missing evidence instead of guessing.
 
 The goal is that a new assistant can become productive from the repository itself, not from hidden conversation history.
 
@@ -339,7 +343,7 @@ v1.4.39 adds a native History-only restore path:
 - Queue/quota/SearchCache/current playlist are preserved;
 - a full safety snapshot is created before the History change;
 - confirmation survives rotation without selecting the file again;
-- UX-015 is implemented and needs phone QA.
+- UX-015 is implemented; file acceptance, Cancel, confirmation rotation and invalid-file rejection passed on phone; final populated-History Restore + rollback remain explicitly inconclusive/pending.
 
 
 v1.4.40 adds an in-app release history:
@@ -347,5 +351,8 @@ v1.4.40 adds an in-app release history:
 - root CHANGELOG.md is copied into app assets during build;
 - no second hand-maintained changelog exists;
 - release sections render as cards, newest first;
-- Back from History returns to About;
-- UX-016 is implemented and needs phone QA.
+- top-bar Back from History returns to About; the user explicitly accepts system Back exiting Service directly to Home;
+- rendering/scroll/readability phone QA passed;
+- first rotation test preserved the page but reset scroll to v1.4.40;
+- scroll-state preservation fix is implemented and a signed-build phone retest is the immediate next step;
+- UX-016 is implemented and partially phone-tested.
