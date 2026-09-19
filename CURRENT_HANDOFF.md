@@ -73,7 +73,7 @@ R1 implementation:
 - clear the flag when the dialog is actually dismissed.
 
 Status:
-**FIX IMPLEMENTED — R1 PHONE RETEST NEEDED.**
+**CLOSED — PHONE RETEST PASS v1.4.41-R1.**
 
 ### UX-017 — duplicate-download filename suffix leaks into title
 
@@ -214,3 +214,20 @@ User-facing QA instructions:
 7. `qa/BUG_REGISTER.md`
 8. `docs/v.1.4.41/R1.md`
 9. live GitHub branch/PR state
+
+
+R1 phone result update:
+- v1.4.41-R1 badge: PASS;
+- BUG-011 Account rotation: PASS / CLOSED;
+- UX-017 simple `YTM-1`: PASS;
+- UX-017 stacked `YTM-1 (1)`: FAIL; parser needs repeated suffix stripping;
+- do not call UX-017 fully closed yet.
+
+Import-file sorting request:
+- current path `Home → 1. Імпорт → імпортувати файл` launches Android
+  `ACTION_OPEN_DOCUMENT`;
+- YTM Importer cannot force sort order inside that external system/provider UI;
+- planned UX-020 / UX-008 Phase 2B: add an in-app file selector sorted by
+  `lastModified` newest-first, with the system picker retained as fallback;
+- Android SAF does not reliably expose true creation time across providers, so
+  `lastModified` is the stable practical sort key.
