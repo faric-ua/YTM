@@ -29,7 +29,7 @@ A new assistant should recover context from the repository and live GitHub state
 - versionName: **1.4.40**
 - versionCode: **76**
 - focus: **UX-016 — in-app Release History**
-- status: **PARTIALLY PHONE-TESTED — rendering PASS; rotation-scroll fix needs final phone retest**
+- status: **PARTIALLY PHONE-TESTED — Release History tested-path PASS**
 - v1.4.39 History JSON: Cancel/rotation/invalid-file paths PASS; populated-History Restore + rollback remain inconclusive and need later retest
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
