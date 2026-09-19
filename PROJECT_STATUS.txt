@@ -652,3 +652,10 @@ v1.4.42-R1 PHONE RETEST PASS — BUG-012 CLOSED
 - BUG-013 OPEN: Step 2 can remain green until the first live API request discovers stale token and turns auth red
 - UX-021 PLANNED: adaptive horizontal action rows on wide/landscape UI
 - UX-022 PLANNED: stronger theme-aware title emphasis in dialogs/modal/utility windows
+
+
+v1.4.42-R1 merged:
+- PR #13 merged to main
+- merge commit 7376c326d55cde5df9b289bff2bf571a47f67ef0
+- tested APK code corresponds to the R1 app-code state; later closeout commits are docs/audit only
+- next functional target: BUG-013 auth freshness
