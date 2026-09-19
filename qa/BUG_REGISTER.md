@@ -11,6 +11,7 @@
 | BUG-007 / Q-007 | CLOSED — PHONE RETEST PASS v1.4.30 R2 | P3 | Timestamp-first folder naming is readable in portrait; R2 one-word `Створити` keeps both preview actions single-line and equal-height. | v1.4.30 repro → R1 naming PASS → R2 button PASS |
 | BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 | P2 | Restore confirmation now survives phone rotation without forcing the user to choose the backup file again. | v1.4.38 phone repro → R1 rotation-state fix → phone PASS |
 | BUG-009 / Q-009 | OPEN — PHONE REPRO v1.4.40 | P3 | Google account-switch flow has a phone-width copy/action layout problem: explanatory text and action control do not compose cleanly. Keep separate from BUG-004 auth-state logic. | v1.4.40 account-switch screenshot |
+| BUG-010 / Q-010 | OPEN — PHONE FINDING v1.4.40 | P2 | Full local Restore also restores `quota_tracker_v1`, so restoring an older backup can rewind the app's local quota counters and make the remaining-quota estimate stale. Google Cloud quota itself is not restored. | v1.4.40 House Dance recovery run |
 
 ## BUG-002 current evidence
 
@@ -235,3 +236,29 @@ Observed on the real phone while changing the connected Google account:
 - functional account switching is not declared broken solely from this visual finding.
 
 Keep BUG-009 separate so a future auth-state fix cannot accidentally close the UI issue.
+
+
+## BUG-010 — Restore rewinds local quota estimate
+
+Status: **OPEN — PHONE FINDING v1.4.40.**
+
+Observed during the House Dance recovery run:
+
+- before the successful second Search, the user restored an older full local backup;
+- the subsequent Search plan showed local search usage back at `0/100`;
+- `LocalBackupManager.PREFS_NAMES` includes `quota_tracker_v1`;
+- full Restore therefore replaces the current local quota tracker with the value from
+  the backup snapshot.
+
+This does not change Google Cloud's real quota. It only rewinds YTM Importer's local
+estimate, which can make the UI overestimate remaining search capacity after restoring
+an older backup.
+
+Expected direction:
+- backup/restore should preserve useful app state without pretending external API quota
+  usage moved backward in time;
+- decide whether `quota_tracker_v1` should be excluded from ordinary Restore, merged
+  conservatively, or reset with an explicit warning;
+- keep safety/rollback semantics documented before changing behavior.
+
+Do not close this from static reasoning alone; verify the chosen policy on phone.
