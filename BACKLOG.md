@@ -52,6 +52,7 @@ v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections — IMPLEMENTED 
 - [x] v1.4.47-R1 docs + phone plan
 - [x] dedicated R1 static audit
 - [x] full release preflight
+- [x] PR #20 opened into `feat/v1.4.47-playlist-hub`
 - [ ] signed APK
 - [ ] phone 1: portrait Home hierarchy
 - [ ] phone 2: landscape scroll + bottom nav
