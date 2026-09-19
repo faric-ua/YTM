@@ -63,7 +63,8 @@ if block.index("label = confirmLabel") >= block.index('label = "Скасуват
 PY
 
 grep -Fq '## v1.4.41' CHANGELOG.md || fail "v1.4.41 changelog entry missing"
-grep -Fq '| v1.4.41 | **NOT PHONE-TESTED YET** |' RELEASE_TEST_STATUS.md || fail "v1.4.41 pending phone-test status missing"
+grep -Eq '^\| v1\.4\.41 \| \*\*PARTIALLY PHONE-TESTED — .+\*\* \|' RELEASE_TEST_STATUS.md || fail "v1.4.41 partial phone-test status missing"
+grep -F '| v1.4.41 |' RELEASE_TEST_STATUS.md | grep -Fq 'NOT EXHAUSTIVE' || fail "v1.4.41 non-exhaustive QA qualifier missing"
 
 for permission in MANAGE_EXTERNAL_STORAGE READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE; do
   if grep -Fq "$permission" "$MANIFEST"; then fail "broad storage permission introduced: $permission"; fi
