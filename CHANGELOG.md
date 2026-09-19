@@ -6,7 +6,7 @@
 - Modal dismissive actions such as `Закрити` now use the same boxed button chrome as other actions instead of transparent text-only styling.
 - Removed the obsolete text-only Close action helper.
 - versionCode 84 / versionName 1.4.44-R1.
-- v1.4.44-R1 = NOT PHONE-TESTED YET.
+- v1.4.44-R1 phone retest PASS: compact landscape copy fits, Storage footer remains readable, boxed `Закрити` is confirmed, and rotate-back smoke passed. UX-021 closed.
 
 ## v1.4.44
 - Added UX-021 shared width-aware action layout for wide/landscape screens.
