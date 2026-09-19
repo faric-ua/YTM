@@ -26,10 +26,10 @@ A new assistant should recover context from the repository and live GitHub state
 
 ## Current release
 
-- versionName: **1.4.46**
-- versionCode: **86**
-- focus: **UX-019 Home Layout Prototype Alignment — Phase 1**
-- status: **IMPLEMENTED / PHONE QA NEEDED — v1.4.46 UX-019 Phase 1**
+- versionName: **1.4.47**
+- versionCode: **87**
+- focus: **UX-019 Phase 2 — Playlist Hub + Clean Home**
+- status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — v1.4.47 UX-019 Phase 2**
 - v1.4.39 History JSON: Cancel/rotation/invalid-file paths PASS; populated-History Restore + rollback remain inconclusive and need later retest
 - v1.4.40 Release History tested path remains PASS
 - BUG-009 portrait account-dialog fix is phone-PASS; BUG-010 and BUG-012 are closed; v1.4.43 startup silent auth recovery is phone-observed, while the aged-token BUG-013 acceptance case and BUG-004 Search-specific 401 retest remain pending
