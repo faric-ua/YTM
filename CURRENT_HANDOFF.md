@@ -19,7 +19,7 @@ Current release candidate:
 - active branch: `feat/v1.4.42-recent-file-selector`
 - active PR: **#13** → `main`
 - installed phone APK: **v1.4.42**
-- status: **PARTIAL PHONE PASS — ALL-FILES DOWNLOAD LIST WORKS / DIRECT IMPORT+RESTORE PENDING**
+- status: **PHONE RETEST PASS — BUG-012 CLOSED; BUG-013 AUTH FRESHNESS OPEN**
 - immediate next gate: **preflight → signed R1 APK → targeted All files access phone QA**
 
 Stable build folder:
@@ -213,10 +213,22 @@ Real-phone screenshot evidence confirms:
 - Import selector intentionally filters supported types, so broad Android permission
   does not mean every file type is shown in YTM Importer.
 
-Still pending:
-- direct House Dance TXT import;
-- Restore JSON to existing confirmation;
-- explicit system-picker Back → selector return smoke.
+Final R1 acceptance:
+- direct House Dance TXT import PASS: `House Dance Hit 2000 Vol.1`, 9 tracks;
+- Restore JSON reaches existing confirmation PASS;
+- system-picker fallback/return PASS;
+- BUG-012 CLOSED on v1.4.42-R1.
+
+Additional workflow smoke:
+- Search plan opens PASS;
+- 9 cached / 0 new search.list PASS;
+- track result/review interaction PASS.
+
+New auth finding:
+- Step 2 was green before a destination API call;
+- existing-playlist load then hit authorization-required / HTTP 401;
+- shared invalidation correctly turned Step 2 red;
+- tracked as **BUG-013** because the green state can outlive token validity until the first live request.
 
 Landscape screenshots exposed a separate responsive-layout issue:
 - fixed footer actions remain vertically stacked;
@@ -232,7 +244,7 @@ Landscape screenshots exposed a separate responsive-layout issue:
 - v1.4.41-R2: UX-017 CLOSED / phone PASS.
 - BUG-011: CLOSED / phone PASS v1.4.41-R1.
 - BUG-010: CLOSED / phone PASS v1.4.41.
-- BUG-004: fix implemented; real/reproduced HTTP 401 phone retest still pending.
+- BUG-004: destination-side real HTTP 401 invalidation is phone-confirmed; SearchCoordinator-specific real-401 retest still pending.
 - v1.4.39 populated-History Restore / `Відкотити` remains inconclusive/pending.
 
 ## 9. Planned after this release
@@ -242,6 +254,7 @@ Home redesign remains separate:
 - preserve current themes;
 - UX-009: all **four** Home workflow buttons need theme-aware Blue/Green state palettes;
 - UX-021: adaptive landscape/wide action rows across full-screen and modal UI;
+- UX-022: unified theme-aware title emphasis for dialogs, modal windows and utility panels;
 - Neon Dark remains the accepted state-color reference.
 
 ## 10. Working contract
