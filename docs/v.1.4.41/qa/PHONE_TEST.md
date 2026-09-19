@@ -204,3 +204,29 @@ excluding `quota_tracker_v1` from Restore.
 
 Safety-snapshot rollback quota preservation is still pending until `Відкотити` is
 actually exercised.
+
+
+## BUG-010 safety rollback — UI/restore-path PASS
+
+Real-phone v1.4.41 rollback evidence:
+
+Rollback confirmation:
+- safety snapshot date: 2026-09-19 14:45;
+- snapshot app version: 1.4.41;
+- snapshot groups: 5;
+- snapshot values: 117;
+- confirmation explicitly states that the local quota estimate will remain current
+  and will not roll back.
+
+Rollback result:
+- restored groups: 4;
+- restored values: 113;
+- UI explicitly states that the local quota estimate did not change;
+- local state from before the last Restore was returned;
+- safety snapshot was retained.
+
+The 5-group snapshot / 4-group rollback result is consistent with excluding
+`quota_tracker_v1` from rollback.
+
+One final quota-screen readback is still required before fully closing BUG-010:
+expected `0/100`, `505/10000`, `≈9495`.
