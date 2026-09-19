@@ -455,6 +455,9 @@ object UiChrome {
         subtitle: String? = null,
         onNegative: (() -> Unit)? = null
     ) {
+        val palette =
+            AppThemeManager.palette(activity)
+
         val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
@@ -587,7 +590,7 @@ object UiChrome {
             TextView(activity).apply {
                 text = message
                 textSize = 15f
-                setTextColor(Color.rgb(230, 231, 234))
+                setTextColor(palette.text)
                 setTextIsSelectable(true)
                 setLineSpacing(0f, 1.08f)
                 setPadding(
@@ -649,6 +652,9 @@ object UiChrome {
         subtitle: String? = null,
         actionLayout: DialogActionLayout = DialogActionLayout.AUTO
     ): Dialog {
+        val palette =
+            AppThemeManager.palette(activity)
+
         val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
@@ -664,7 +670,7 @@ object UiChrome {
                 TextView(activity).apply {
                     text = message
                     textSize = 15f
-                    setTextColor(Color.rgb(230, 231, 234))
+                    setTextColor(palette.text)
                     setTextIsSelectable(true)
                     setLineSpacing(0f, 1.08f)
                     setPadding(0, dp(context, 6), 0, dp(context, 12))
@@ -709,6 +715,9 @@ object UiChrome {
     ): Dialog {
         require(items.size == checked.size)
 
+        val palette =
+            AppThemeManager.palette(activity)
+
         val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
@@ -728,7 +737,7 @@ object UiChrome {
                 CheckBox(activity).apply {
                     text = label
                     textSize = 14f
-                    setTextColor(Color.WHITE)
+                    setTextColor(palette.text)
                     setPadding(
                         dp(context, 12),
                         dp(context, 9),
@@ -737,9 +746,9 @@ object UiChrome {
                     )
                     background = roundedBackground(
                         context = context,
-                        color = ROW_SURFACE,
+                        color = palette.surfaceAlt,
                         radiusDp = 12,
-                        strokeColor = BORDER
+                        strokeColor = palette.border
                     )
                     isChecked = checked[index]
                     setOnCheckedChangeListener { _, value ->
@@ -1129,8 +1138,11 @@ object UiChrome {
     private fun recordCard(
         activity: Activity,
         record: DialogRecord
-    ): LinearLayout =
-        LinearLayout(activity).apply {
+    ): LinearLayout {
+        val palette =
+            AppThemeManager.palette(activity)
+
+        return LinearLayout(activity).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(
                 dp(context, 14),
@@ -1140,9 +1152,9 @@ object UiChrome {
             )
             background = roundedBackground(
                 context = context,
-                color = ROW_SURFACE,
+                color = palette.surfaceAlt,
                 radiusDp = 13,
-                strokeColor = BORDER
+                strokeColor = palette.border
             )
 
             addView(
@@ -1152,9 +1164,9 @@ object UiChrome {
                     setTypeface(typeface, Typeface.BOLD)
                     setTextColor(
                         when (record.tone) {
-                            ActionTone.NORMAL -> Color.WHITE
-                            ActionTone.ACCENT -> Color.rgb(110, 215, 145)
-                            ActionTone.DANGER -> Color.rgb(255, 120, 130)
+                            ActionTone.NORMAL -> palette.text
+                            ActionTone.ACCENT -> palette.accent
+                            ActionTone.DANGER -> palette.danger
                         }
                     )
                     setLineSpacing(0f, 1.05f)
@@ -1165,7 +1177,7 @@ object UiChrome {
                 TextView(activity).apply {
                     text = record.detail
                     textSize = 13f
-                    setTextColor(MUTED)
+                    setTextColor(palette.muted)
                     setPadding(0, dp(context, 5), 0, 0)
                     setLineSpacing(0f, 1.08f)
                 }
@@ -1174,8 +1186,11 @@ object UiChrome {
 
     private fun dialogCard(
         activity: Activity
-    ): LinearLayout =
-        LinearLayout(activity).apply {
+    ): LinearLayout {
+        val palette =
+            AppThemeManager.palette(activity)
+
+        return LinearLayout(activity).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(
                 dp(context, 18),
@@ -1185,9 +1200,9 @@ object UiChrome {
             )
             background = roundedBackground(
                 context = context,
-                color = SURFACE,
+                color = palette.surface,
                 radiusDp = 18,
-                strokeColor = BORDER
+                strokeColor = palette.border
             )
         }
 
@@ -1197,6 +1212,9 @@ object UiChrome {
         title: String,
         subtitle: String?
     ) {
+        val palette =
+            AppThemeManager.palette(activity)
+
         card.addView(
             emphasizedTitle(
                 activity = activity,
@@ -1211,7 +1229,7 @@ object UiChrome {
                 TextView(activity).apply {
                     text = subtitle
                     textSize = 13f
-                    setTextColor(MUTED)
+                    setTextColor(palette.muted)
                     setPadding(
                         0,
                         dp(context, 6),
@@ -1441,8 +1459,11 @@ object UiChrome {
         label: String,
         accent: Boolean = false,
         onClick: () -> Unit
-    ): Button =
-        Button(activity).apply {
+    ): Button {
+        val palette =
+            AppThemeManager.palette(activity)
+
+        return Button(activity).apply {
             text = label
             isAllCaps = false
             gravity = Gravity.START or Gravity.CENTER_VERTICAL
@@ -1458,13 +1479,13 @@ object UiChrome {
                 dp(context, 12)
             )
             setTextColor(
-                if (accent) ACCENT else Color.WHITE
+                if (accent) palette.accent else palette.text
             )
             background = roundedBackground(
                 context = context,
-                color = ROW_SURFACE,
+                color = palette.surfaceAlt,
                 radiusDp = 14,
-                strokeColor = BORDER
+                strokeColor = palette.border
             )
             autoSizeButton(this, minSp = 12, maxSp = 15)
             setOnClickListener { onClick() }
@@ -1474,8 +1495,11 @@ object UiChrome {
         activity: Activity,
         action: DialogAction,
         onClick: () -> Unit
-    ): Button =
-        Button(activity).apply {
+    ): Button {
+        val palette =
+            AppThemeManager.palette(activity)
+
+        return Button(activity).apply {
             text = action.label
             isAllCaps = false
             gravity = Gravity.CENTER
@@ -1492,16 +1516,16 @@ object UiChrome {
             )
             setTextColor(
                 when (action.tone) {
-                    ActionTone.NORMAL -> Color.WHITE
-                    ActionTone.ACCENT -> ACCENT
-                    ActionTone.DANGER -> Color.rgb(255, 100, 115)
+                    ActionTone.NORMAL -> palette.text
+                    ActionTone.ACCENT -> palette.accent
+                    ActionTone.DANGER -> palette.danger
                 }
             )
             background = roundedBackground(
                 context = context,
-                color = ROW_SURFACE,
+                color = palette.surfaceAlt,
                 radiusDp = 12,
-                strokeColor = BORDER
+                strokeColor = palette.border
             )
             autoSizeButton(this, minSp = 10, maxSp = 14)
             setOnClickListener { onClick() }
