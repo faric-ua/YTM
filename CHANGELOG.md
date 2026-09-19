@@ -9,7 +9,7 @@
 - UX-017: TXT/CSV filename fallback now humanizes underscores, removes a trailing `YTM`/`YTM Importer` service marker, and normalizes `Vol1` to `Vol.1`; an explicit in-file playlist title still wins.
 - UX-018: horizontal modal actions follow one contract — primary/confirm on the left, cancel/close/no-op on the right; destructive dialogs use the same rule.
 - versionCode 77 / versionName 1.4.41.
-- v1.4.41 = NOT PHONE-TESTED YET.
+- v1.4.41 phone QA: signed APK installed; BUG-009 portrait account modal PASS and existing-target single-select list behavior confirmed. Coverage is broad but not exhaustive; BUG-004 real-401, BUG-010 Restore quota preservation, UX-017 fallback naming and additional modal-order checks remain pending.
 ## v1.4.40
 - Shortened the History restore confirmation action to `Відновити` for phone-width buttons.
 - Added an in-app `Історія змін` page under `Про YTM Importer → Дізнатися більше`.
