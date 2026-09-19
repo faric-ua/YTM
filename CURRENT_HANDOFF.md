@@ -15,9 +15,9 @@ Current corrective release candidate:
 - active branch: `feat/v1.4.41-auth-ui-consistency`
 - base branch: `main`
 - active PR: **#12**
-- status: **NOT PHONE-TESTED YET — STACKED FILENAME CORRECTIVE BUILD**
+- status: **PHONE RETEST PASS — R2 TARGETED CORRECTIVE PATH**
 - installed phone APK: **v1.4.41-R1**
-- immediate next gate: **preflight → signed v1.4.41-R2 APK → one targeted filename retest**
+- immediate next gate: **record/merge R2 corrective work, then continue planned backlog**
 - merge rule: do not merge PR #12 until the R1 corrective phone checks are recorded.
 
 Stable phone build folder:
@@ -231,3 +231,18 @@ UX-020 Import File Recent-First Selector:
 - retain Android system picker as fallback;
 - true creation time is not reliably exposed by all Android SAF providers;
 - coordinate this with UX-008 Phase 2B.
+
+
+R2 final phone result:
+- v1.4.41-R2 installed and version badge confirmed;
+- simple `YTM-1`: PASS;
+- stacked `YTM-1 (1)`: PASS;
+- deeper stacked `YTM-1 (1) (1)`: PASS;
+- final title exactly `House Dance Hit 2000 Vol.1`;
+- UX-017 CLOSED on v1.4.41-R2.
+
+UX-020 remains planned:
+- current Android system picker shows timestamps but YTM Importer cannot force its sort;
+- future in-app selector should sort by `lastModified` descending (newest first);
+- coordinate with UX-008 Phase 2B;
+- keep system picker as fallback.
