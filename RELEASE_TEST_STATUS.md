@@ -1,3 +1,4 @@
+| v1.4.43 | **PARTIALLY PHONE-TESTED — STARTUP SILENT AUTH RECOVERY OBSERVED / STALE-TOKEN RETEST DEFERRED** | Installed on phone. App launch automatically refreshed/recovered Step 2 authorization, so the historical aged-token condition cannot be forced immediately. Primary BUG-013 stale-token acceptance remains deferred until a naturally aged/invalid session occurs. |
 # YTM Importer — Release test status
 
 | Version | Status | Note |

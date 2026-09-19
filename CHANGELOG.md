@@ -1,5 +1,14 @@
 # Журнал змін (Changelog)
 
+## v1.4.43
+- Fixed BUG-013 auth freshness: remote actions no longer trust a merely non-blank cached access token.
+- `MainActivity.authorize()` now asks Google AuthorizationClient for current authorization before remote Search/Destination/write/manual-video operations.
+- Silent refresh preserves known Google/YouTube identity when possible; interactive resolution is used only when Google requires it.
+- Refresh failure clears misleading green ready state instead of waiting for the first YouTube API 401.
+- Playlist write-time HTTP 401 now stops the write, preserves retryable pending tracks/job state, and propagates authorization invalidation back to Home.
+- versionCode 82 / versionName 1.4.43.
+- v1.4.43 = NOT PHONE-TESTED YET.
+
 ## v1.4.42-R1
 - Corrective follow-up for BUG-012: Android 11+ blocks SAF tree access to root Download.
 - Added `MANAGE_EXTERNAL_STORAGE` / All files access flow for direct `/storage/emulated/0/Download` listing on Android 11+.
@@ -8,7 +17,7 @@
 - SAF subfolder access and Android system file picker remain available as fallbacks.
 - Added FileProvider access for selected direct Download files without exposing the provider externally.
 - versionCode 81 / versionName 1.4.42-R1.
-- v1.4.42-R1 = NOT PHONE-TESTED YET.
+- v1.4.42-R1 phone retest PASS: All files access, direct Download newest-first listing, direct House Dance import, Restore JSON confirmation and system-picker fallback/return passed; BUG-012 closed.
 ## v1.4.42
 - Added an in-app recent-file selector for the two remaining generic open-file flows from UX-008 Phase 2B.
 - Import and Data/Restore now enter YTM Importer file selection before Android's system picker.

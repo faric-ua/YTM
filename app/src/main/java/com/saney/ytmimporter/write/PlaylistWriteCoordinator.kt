@@ -49,6 +49,11 @@ class PlaylistWriteCoordinator(
             val job: PendingJob,
             val userMessage: String
         ) : WriteOutcome()
+
+        data class AuthorizationInvalidated(
+            val job: PendingJob,
+            val error: Throwable
+        ) : WriteOutcome()
     }
 
     fun buildPendingJob(
@@ -140,6 +145,31 @@ class PlaylistWriteCoordinator(
                     )
                 )
             } catch (error: Exception) {
+                if (isAuthorizationError(error)) {
+                    job =
+                        job.copy(
+                            updatedAt = System.currentTimeMillis(),
+                            remainingTracks =
+                                tracks.mapNotNull(::trackToPendingTrack),
+                            lastError = error.message
+                        )
+
+                    pendingJobStore.upsert(job)
+
+                    tracks.forEach { pendingTrack ->
+                        pendingTrack.status = TrackStatus.PENDING
+                        pendingTrack.error =
+                            "Очікує повторної авторизації Google/YTM"
+                    }
+
+                    onHistoryState(job, HistoryStatus.FAILED)
+
+                    return WriteOutcome.AuthorizationInvalidated(
+                        job = job,
+                        error = error
+                    )
+                }
+
                 if (isQuotaError(error)) {
                     quotaTracker.recordQuotaError(
                         error.message ?: "Quota exceeded while creating playlist"
@@ -245,6 +275,35 @@ class PlaylistWriteCoordinator(
                 pendingJobStore.upsert(job)
                 onHistoryState(job, HistoryStatus.RUNNING)
             } catch (error: Exception) {
+                if (isAuthorizationError(error)) {
+                    val remaining =
+                        tracks
+                            .drop(index)
+                            .mapNotNull(::trackToPendingTrack)
+
+                    job =
+                        job.copy(
+                            updatedAt = System.currentTimeMillis(),
+                            remainingTracks = remaining,
+                            lastError = error.message
+                        )
+
+                    pendingJobStore.upsert(job)
+
+                    tracks.drop(index).forEach { pendingTrack ->
+                        pendingTrack.status = TrackStatus.PENDING
+                        pendingTrack.error =
+                            "Очікує повторної авторизації Google/YTM"
+                    }
+
+                    onHistoryState(job, HistoryStatus.FAILED)
+
+                    return WriteOutcome.AuthorizationInvalidated(
+                        job = job,
+                        error = error
+                    )
+                }
+
                 if (isQuotaError(error)) {
                     quotaTracker.recordQuotaError(
                         error.message ?: "Quota exceeded while adding track"
@@ -335,6 +394,11 @@ class PlaylistWriteCoordinator(
             historyIndex = track.historyIndex ?: -1
         )
     }
+
+    private fun isAuthorizationError(
+        error: Throwable
+    ): Boolean =
+        (error as? YouTubeApiException)?.httpCode == 401
 
     private fun isQuotaError(error: Throwable): Boolean =
         (error as? YouTubeApiException)?.isQuotaError == true ||

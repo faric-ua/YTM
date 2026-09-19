@@ -9,124 +9,169 @@ Last updated: **2026-09-19**
 Repository: `faric-ua/YTM`
 
 Latest merged release:
-- versionName: **1.4.42-R1**
-- versionCode: **81**
+- **v1.4.42-R1 / versionCode 81**
 - PR #13 merged to `main`
 - merge commit: `7376c326d55cde5df9b289bff2bf571a47f67ef0`
-- phone result: **PASS for R1 scope**
-- BUG-012: **CLOSED — PHONE RETEST PASS v1.4.42-R1**
+- BUG-012 CLOSED — PHONE RETEST PASS
 
-Installed phone APK:
-- **v1.4.42-R1**
+Current release candidate:
+- versionName: **1.4.43**
+- versionCode: **82**
+- active branch: `fix/v1.4.43-auth-freshness`
+- active PR: **#14 — v1.4.43: refresh auth before remote YouTube actions** → `main`
+- status: **PARTIALLY PHONE-TESTED — startup silent auth refresh observed; stale-token acceptance DEFERRED**
+- installed phone APK: **v1.4.43**
+- focus: **BUG-013 auth freshness**
 
-Next functional target:
-- **v1.4.43 — BUG-013 Auth Freshness**
-- status: **NEXT / NOT IMPLEMENTED**
-- active PR: **none yet**
+Stable build folder after signed build:
 
-## 2. v1.4.42-R1 final phone evidence
+`/storage/emulated/0/Download/YTM-v1.4.43-build/`
 
-PASS:
-- All files access rationale/grant recognition;
-- direct Download list: 47 matching files;
-- newest-first visible ordering;
-- direct House Dance import:
-  - exact title `House Dance Hit 2000 Vol.1`;
-  - 9 tracks;
-- Restore JSON reaches `Підтвердити Restore`;
-- Android system-picker fallback + return;
-- Search plan smoke:
-  - 9 tracks need matching;
-  - 9 already cached;
-  - **0 new search.list**;
-- track result/review interaction.
+## 2. BUG-013 reproduction
 
-Do not reopen BUG-012 unless new evidence contradicts this.
-
-## 3. BUG-013 — auth freshness
-
-Real-phone reproduction on v1.4.42-R1:
-- Home initially showed green `2. Google / YTM ✓`;
+On real phone with v1.4.42-R1:
+- Home showed green `2. Google / YTM ✓`;
 - user entered `4. Створити / додати`;
-- switching to the existing-playlist path triggered a live YouTube API request;
+- switching to add-to-existing triggered a live YouTube API request;
 - app reported authorization required;
-- Step 2 then turned red.
+- only then did Step 2 change from green to red.
 
-Current code behavior:
-- `authorize()` trusts a non-blank in-memory `accessToken` when account/channel identity is already cached;
-- it can therefore skip a fresh Google authorization call;
-- if that token has expired or been revoked, Home can remain green until the next live YouTube request;
-- destination HTTP 401 handling is working: `invalidateAuthorizationIfNeeded()` clears the session and turns Step 2 red.
+Interpretation:
+- destination-side HTTP-401 invalidation works;
+- the stale green state existed because `authorize()` trusted a non-blank in-memory
+  access token plus cached identity without first asking Google for current
+  authorization.
 
-Required v1.4.43 direction:
-- create a centralized fresh/silent authorization path before remote destination list/create/write operations;
-- do not trust only `accessToken != null` plus cached identity;
-- prefer silent Google AuthorizationClient refresh/validation when possible;
-- only require interactive account resolution when Google says it is needed;
-- preserve current HTTP 401 invalidation as fallback;
-- do not merge this with BUG-004 SearchCoordinator-specific real-401 acceptance.
+BUG-004 remains separate:
+- this reproduction is destination-side;
+- SearchCoordinator-specific real-401 acceptance is still pending.
 
-## 4. UI follow-ups
+## 3. v1.4.43 implementation
+
+### Fresh authorization before remote actions
+
+`MainActivity.authorize()` no longer has the old cached-token fast path.
+
+Every flow already routed through `authorize()` now calls Google AuthorizationClient
+first:
+- Search start;
+- load existing playlists;
+- duplicate scan;
+- create new playlist;
+- add to existing playlist;
+- resume pending write;
+- manual URL video-info lookup.
+
+Behavior:
+- silent success updates `accessToken`;
+- known Google account / YouTube channel identity is preserved on silent refresh;
+- if Google requires resolution, the existing interactive authorization flow opens;
+- if refresh fails or returns no token, local/shared/persistent auth-ready state is
+  cleared so Step 2 does not remain misleadingly green.
+
+### Write-time auth invalidation
+
+`PlaylistWriteCoordinator` now returns
+`WriteOutcome.AuthorizationInvalidated` for HTTP 401 during:
+- playlist creation;
+- playlist item insertion.
+
+On write-time 401:
+- write stops immediately;
+- remaining tracks stay PENDING/retryable;
+- failedCount is not increased for auth invalidation;
+- pending job remains stored;
+- MainActivity invalidates shared authorization;
+- UI states that unfinished work remains in `Черга`.
+
+## 4. v1.4.43 phone acceptance
+
+Current phone result:
+- v1.4.43 installed over the prior build without clearing app data;
+- on app launch, Step 2 automatically refreshed/recovered authorization;
+- because that refresh occurs immediately, the old stale-token condition cannot be forced on demand right now;
+- primary BUG-013 stale-token acceptance is **DEFERRED until a naturally aged/invalid session occurs**;
+- do not mark BUG-013 closed from the startup observation alone.
+
+
+### Test 1 — primary stale-green scenario
+
+Precondition:
+- Step 2 green from existing session.
+
+Path:
+`Головна → 4. Створити / додати → додати в існуючий playlist`
+
+Expected:
+- auth refresh/check happens before live playlist-list use;
+- if Google can refresh silently, playlist list opens without the old surprise auth
+  failure;
+- if Google needs confirmation, auth UI appears before destination API failure;
+- Step 2 must not stay falsely green after refresh failure.
+
+### Test 2 — re-login recovery
+
+If Google asks for authorization:
+- complete it using the same account;
+- Step 2 becomes green;
+- repeat existing-playlist path;
+- playlist list loads normally.
+
+### Test 3 — Search smoke
+
+Path:
+`Головна → 3. Знайти / перевірити`
+
+Current House Dance cache previously showed:
+- 9 tracks;
+- 9 cached;
+- 0 new `search.list`.
+
+Do not intentionally consume Search quota just to test this release.
+
+### Test 4 — create/add smoke
+
+Open new private playlist destination and existing playlist destination.
+No need to complete a real remote write unless needed to reproduce auth behavior.
+
+If a natural write-time 401 occurs:
+- Step 2 turns red;
+- remaining tracks stay pending;
+- unfinished job stays in Queue.
+
+## 5. UI follow-ups kept separate
 
 ### UX-021 — Adaptive Landscape Action Layout
-
-Phone landscape evidence shows vertically stacked footer actions consume most of the
-height.
-
-Plan:
-- use available width as responsive trigger;
-- on wide/landscape layouts, action groups should move into one horizontal row when
-  they fit;
+- wide/landscape action groups should reflow horizontally when width allows;
 - apply to full-screen footer actions and modal action areas;
-- preserve UX-018 action ordering/semantics;
-- implement through shared UI helpers, not screen-specific hacks.
+- preserve UX-018 ordering/semantics.
 
 ### UX-022 — Unified Window Title Emphasis
+- title line inside dialogs/modal/utility windows needs stronger visual hierarchy;
+- use theme-aware color/emphasis;
+- apply through shared UI styling, not per-screen hardcoding.
 
-User observed that the first/title line inside windows does not stand out enough.
+## 6. Historical status that remains true
 
-Examples:
-- `Підтвердити Restore`
-- `План пошуку (Search plan)`
-- `Доступ до Download`
-
-Plan:
-- stronger theme-aware title color/emphasis;
-- consistent visual hierarchy between title and body;
-- apply across dialogs, modal windows and utility/full-screen panels through shared UI
-  styling;
-- do not hardcode one color that breaks Blue/Green/Neon themes.
-
-These are planned after the auth-freshness functional fix unless explicitly reprioritized.
-
-## 5. Historical status that remains true
-
-- BUG-004: destination-side real 401 invalidation is phone-confirmed; the
-  SearchCoordinator-specific real-401 retest remains pending.
-- BUG-010: CLOSED / phone PASS v1.4.41.
-- BUG-011: CLOSED / phone PASS v1.4.41-R1.
-- UX-017: CLOSED / phone PASS v1.4.41-R2.
-- UX-018: representative phone PASS, not exhaustive.
-- v1.4.39 populated-History Restore / `Відкотити` proof remains inconclusive/pending.
+- v1.4.42-R1 phone PASS; BUG-012 closed.
+- BUG-010 closed v1.4.41.
+- BUG-011 closed v1.4.41-R1.
+- UX-017 closed v1.4.41-R2.
+- UX-018 representative phone PASS, not exhaustive.
+- BUG-004 destination-side invalidation has phone evidence; Search-specific real-401
+  retest remains pending.
+- v1.4.39 populated-History Restore / rollback remains inconclusive/pending.
+- UX-009 Blue/Green workflow-state palettes remain open; Neon semantics stay locked.
 - UX-019 Home layout prototype alignment remains planned.
-- UX-009 Blue/Green workflow-state palettes remain open; Neon state semantics stay locked.
 
-## 6. Exact next execution step
+## 7. Exact next execution step
 
-1. Create a fresh branch from current `main` for **v1.4.43 auth freshness**.
-2. Audit every remote YouTube operation that calls `authorize()`.
-3. Implement centralized silent refresh/validation before destination list/create/write.
-4. Add static regression guards and v1.4.43 docs.
-5. Build signed APK.
-6. Phone reproduce stale-green scenario.
-7. Acceptance:
-   - no first-request surprise 401 while Step 2 remains green;
-   - silent refresh keeps flow moving when possible;
-   - if interactive authorization is needed, UI asks before destination API failure;
-   - after reauth, existing-playlist list loads normally.
-8. Keep UX-021/UX-022 as separate next UI work.
+1. Keep PR #14 open; do not claim BUG-013 closed yet.
+2. Re-run the stale-token destination test later when the session naturally ages or Google invalidates it.
+3. Continue product work with **UX-021 Adaptive Landscape Action Layout** as the next active implementation target.
+4. Keep UX-022 title emphasis separate after UX-021.
 
-## 7. Working contract
+## 8. Working contract
 
 **ChatGPT prepares → user runs exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
 
@@ -138,7 +183,7 @@ Rules:
 - signed builds come from `.github/workflows/build-apk.yml`;
 - use live branch/PR head immediately before build.
 
-## 8. Fresh-chat reading order
+## 9. Fresh-chat reading order
 
 1. `START_HERE_ASSISTANT.md`
 2. `CURRENT_HANDOFF.md`
@@ -147,4 +192,6 @@ Rules:
 5. `BACKLOG.md`
 6. `RELEASE_TEST_STATUS.md`
 7. `qa/BUG_REGISTER.md`
-8. live GitHub branch/PR state
+8. `docs/v.1.4.43/RELEASE.md`
+9. `docs/v.1.4.43/qa/PHONE_TEST.md`
+10. live GitHub branch/PR state

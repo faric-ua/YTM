@@ -26,9 +26,9 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.42-R1**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionName: **1.4.43**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **81**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionCode: **82**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
 grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 identity missing"
@@ -46,16 +46,16 @@ grep -Fq 'Historical status that remains true' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF historical status section missing"
 grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF current release candidate missing"
-grep -Fq 'feat/v1.4.42-recent-file-selector' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF active v1.4.42 branch missing"
+grep -Fq 'fix/v1.4.43-auth-freshness' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF active v1.4.43 branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'RecentFileChooserActivity' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF recent-file selector implementation missing"
-grep -Fq 'lastModified' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF newest-first sort contract missing"
-grep -Fq 'MANAGE_EXTERNAL_STORAGE' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF all-files access decision missing"
+grep -Fq 'BUG-013 auth freshness' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF BUG-013 focus missing"
+grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
+grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF fresh-authorization strategy missing"
 if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
 fi
@@ -103,9 +103,9 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.42-R1' PROJECT_STATUS.txt \
+grep -Fq 'Version: 1.4.43' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 81' PROJECT_STATUS.txt \
+grep -Fq 'Version code: 82' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"
@@ -118,14 +118,14 @@ grep -Fq 'BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.
 
 grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
-grep -Fq 'v1.4.42-R1 — Direct Download via All files access' BACKLOG.md \
-  || fail "BACKLOG current v1.4.42-R1 release missing"
-grep -Fq 'BUG-012 corrective build — direct Download via Android All files access' START_HERE_ASSISTANT.md \
-  || fail "START_HERE v1.4.42-R1 focus missing"
+grep -Fq 'v1.4.43 — Auth Freshness' BACKLOG.md \
+  || fail "BACKLOG current v1.4.43 release missing"
+grep -Fq 'BUG-013 auth freshness — refresh/validate Google authorization before remote actions' START_HERE_ASSISTANT.md \
+  || fail "START_HERE v1.4.43 focus missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
-grep -Fq 'all **four** Home workflow buttons need theme-aware Blue/Green state palettes' CURRENT_HANDOFF.md \
-  || fail "four-button theme-state decision missing from handoff"
+grep -Fq 'UX-009 Blue/Green workflow-state palettes remain open' CURRENT_HANDOFF.md \
+  || fail "theme-state follow-up missing from handoff"
 
 echo "PASS:"
 echo "- canonical START_HERE entry point"
