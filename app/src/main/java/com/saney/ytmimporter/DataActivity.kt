@@ -633,18 +633,34 @@ class DataActivity : Activity() {
     private fun launchJsonPicker(
         requestCode: Int
     ) {
-        val intent =
-            Intent(
-                Intent.ACTION_OPEN_DOCUMENT
-            ).apply {
-                addCategory(
-                    Intent.CATEGORY_OPENABLE
-                )
-                type = "application/json"
+        val title =
+            if (
+                requestCode ==
+                    restoreBackupRequestCode
+            ) {
+                "Вибрати backup"
+            } else {
+                "Вибрати History JSON"
             }
 
         startActivityForResult(
-            intent,
+            Intent(
+                this,
+                RecentFileChooserActivity::class.java
+            ).apply {
+                putExtra(
+                    RecentFileChooserActivity.EXTRA_TITLE,
+                    title
+                )
+                putExtra(
+                    RecentFileChooserActivity.EXTRA_MIME_TYPE,
+                    "application/json"
+                )
+                putExtra(
+                    RecentFileChooserActivity.EXTRA_ALLOWED_EXTENSIONS,
+                    arrayOf("json")
+                )
+            },
             requestCode
         )
     }
