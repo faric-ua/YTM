@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.47-R1**
-- versionCode: **88**
-- release focus: **v1.4.47-R1 — Home Prototype Layout + Playlist-Hub Corrections**
-- release status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — v1.4.47-R1 corrective retest**
+- versionName: **1.4.47-R2**
+- versionCode: **89**
+- release focus: **v1.4.47-R2 — Compact Home + Menu-owned Theme Picker**
+- release status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — v1.4.47-R2 compact Home retest**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.43 phone observation:
