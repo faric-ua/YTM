@@ -285,3 +285,21 @@ English technical terms may be used, but user-facing test instructions should in
 the visible in-app navigation path whenever it helps. Example:
 
 `rollback / Відкотити → Меню → Дані та резервні копії → Відкотити останній Restore`
+
+
+## Follow-up implementation after phone findings
+
+The installed v1.4.41 APK does not contain these changes yet.
+
+Active branch now includes:
+- BUG-011 repair: save/recreate Account modal visibility through Activity rotation;
+- UX-017 repair: strip service marker plus duplicate-download copy suffixes such as
+  `YTM-1`, `YTM_1`, and `YTM (1)`.
+
+Required next-build phone retest:
+- path: `Home → 2. Google / YTM → rotate portrait → landscape → portrait`;
+- Account modal must remain/reappear after both rotations;
+- import duplicate-named fallback files and verify playlist title remains
+  `House Dance Hit 2000 Vol.1`.
+
+These are implementation notes only, not PASS evidence.
