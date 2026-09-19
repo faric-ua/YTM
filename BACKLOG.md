@@ -45,8 +45,8 @@ v1.4.47-R2 — Compact Home + Menu-owned Theme Picker — IMPLEMENTED / STATIC +
 - [x] selecting theme recreates MenuActivity, not MainActivity
 - [x] shorten no-target playlist copy to `Створіть / виберіть плейлист`
 - [x] R2 docs + phone plan
-- [ ] dedicated R2 static audit
-- [ ] full release preflight
+- [x] dedicated R2 static audit
+- [x] full release preflight
 - [ ] stacked PR into R1 branch
 - [ ] signed APK
 - [ ] phone 1: portrait Home density
