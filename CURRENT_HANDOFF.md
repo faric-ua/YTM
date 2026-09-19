@@ -158,9 +158,9 @@ After install, begin with the zero/low-cost visual checks before spending YouTub
 - This is broad accumulated phone coverage, **not** proof that every path/corner case
   has been retested on v1.4.41.
 
-BUG-010 ordinary full Restore quota preservation is now PHONE PASS: 0/100 and 505/10000 (≈9495 remaining) stayed unchanged across Restore. Safety rollback remains pending.
+BUG-010 is now CLOSED — PHONE PASS v1.4.41. Full Restore and `Відкотити` both preserved 0/100, 505/10000 and ≈9495 remaining. Use `Відкотити` / `повернути стан до моменту перед Restore` in future user-facing instructions instead of the bare English term `rollback`.
 
-Pending targeted evidence remains BUG-004 real 401, BUG-010 safety rollback,
+Pending targeted evidence remains BUG-004 real 401,
 UX-017 fallback-title normalization, and additional UX-018 modal spot checks.
 
 ## 5. Exact v1.4.41 phone QA after signed build
@@ -261,12 +261,12 @@ Rules:
 If this mutable handoff conflicts with immutable historical evidence, verify live GitHub state and preserve the historical record.
 
 
-BUG-010 rollback phone update:
-- safety snapshot showed 5 groups / 117 values;
-- rollback applied 4 groups / 113 values;
-- confirmation and result both state that local quota estimate stays current;
-- rollback returned local state from before the last Restore;
-- final quota-screen readback still needed before closing BUG-010.
+BUG-010 final phone result:
+- ordinary full Restore: PASS;
+- `Відкотити` (return local state to the moment before Restore): PASS;
+- safety snapshot showed 5 groups / 117 values; `Відкотити` applied 4 groups / 113 values;
+- quota before/after both paths stayed 0/100, 505/10000, ≈9495;
+- BUG-010 closed on v1.4.41.
 
 
 UX-017 phone finding — duplicate filename suffix:
