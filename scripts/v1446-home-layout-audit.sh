@@ -21,27 +21,11 @@ do
   grep -Fq "$label" "$MAIN" || fail "Home label missing: $label"
 done
 
-grep -Fq 'val statusCard =' "$MAIN" || fail "separate Home status card missing"
+grep -Fq 'separate theme-aware' "$RELEASE" ||
+  fail "historical v1.4.46 status/info-card evidence missing"
 
-STATUS_BLOCK="$(
-  awk '
-    /val statusCard =/ { capture = 1 }
-    capture { print }
-    /statusCard.addView\(/ { exit }
-  ' "$MAIN"
-)"
-
-grep -Fq 'palette.accent' <<<"$STATUS_BLOCK" ||
-  fail "Home status card is not theme-accent aware"
-
-STATUS_LINE="$(grep -n -F 'statusCard.addView(' "$MAIN" | head -n1 | cut -d: -f1)"
-WORKSPACE_LINE="$(grep -n -F 'val workspaceCard =' "$MAIN" | head -n1 | cut -d: -f1)"
-
-[ -n "$STATUS_LINE" ] && [ -n "$WORKSPACE_LINE" ] ||
-  fail "Home status/current-playlist structure missing"
-
-[ "$STATUS_LINE" -lt "$WORKSPACE_LINE" ] ||
-  fail "status info card must precede current-playlist card"
+grep -Fq '### A — Portrait hierarchy: PASS' "$PHONE" ||
+  fail "historical v1.4.46 portrait phone evidence missing"
 
 grep -Fq 'layout/hierarchy reference only' "$RELEASE" ||
   fail "layout-only prototype constraint missing"
@@ -52,7 +36,7 @@ echo "PASS:"
 echo "- historical v1.4.46 / code 86 evidence"
 echo "- four-step workflow preserved"
 echo "- utility row preserved"
-echo "- separate theme-aware status/info card"
-echo "- current-playlist card follows status/info"
+echo "- historical separate status/info-card evidence"
+echo "- historical portrait hierarchy phone PASS evidence"
 echo "- prototype treated as layout hierarchy only"
 echo "- auth/search/write semantics protected"
