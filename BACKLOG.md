@@ -18,8 +18,9 @@ v1.4.41 — Auth/Search Recovery + UI Consistency — PARTIALLY PHONE-TESTED / N
 - UX-014 Selector Checkbox Alignment — CLOSED / PHONE PASS v1.4.38 R2; visible CheckBox drawable is visually balanced inside the 48dp touch column
 - UX-015 History JSON Restore — PARTIALLY PHONE-TESTED v1.4.39; file/Cancel/rotation/invalid-file PASS, populated restore + rollback remain inconclusive/pending
 - UX-016 In-app Release History — CLOSED FOR TESTED PHONE SCOPE v1.4.40; entry/rendering/scroll/readability/navigation/rotation-scroll PASS
-- BUG-009/Q-009 account-switch copy/action fit — FIX IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED
+- BUG-009/Q-009 account-switch copy/action fit — PHONE PORTRAIT PASS v1.4.41
 - BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — CLOSED / PHONE RETEST PASS v1.4.41
+- BUG-011/Q-011 Account modal disappears on phone rotation — OPEN / PHONE REPRO v1.4.41; preserve modal visibility across Activity recreation
 - UX-017 Import Filename → Playlist Display Name — PARTIAL PHONE FAIL v1.4.41; duplicate-download suffixes such as trailing `YTM-1` survive and leak into the playlist title. Follow-up must also strip typical duplicate suffix forms (`YTM-1`, `YTM_1`, `YTM (1)`) while keeping explicit in-file title authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
@@ -40,6 +41,7 @@ v1.4.41 — Auth/Search Recovery + UI Consistency — PARTIALLY PHONE-TESTED / N
 - [ ] phone: real/reproduced auth invalidation path
 - [ ] phone: re-login + retry search without stale FAILED rows
 - [x] phone: account dialog button/copy fit — portrait PASS
+- [ ] BUG-011 account modal rotation — FAIL: modal disappears on rotate; fix in corrective build
 - [x] phone: existing-target single-select list renders; row tap is selection, no footer buttons required; confirmation screen opens PASS
 - [x] phone: modal confirm-left / cancel-right spot checks — account + destructive History confirmation PASS
 - [x] phone: full Restore keeps current quota estimate — PASS (0/100; 505/10000; ≈9495 unchanged)
