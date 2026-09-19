@@ -303,3 +303,27 @@ Required next-build phone retest:
   `House Dance Hit 2000 Vol.1`.
 
 These are implementation notes only, not PASS evidence.
+
+
+## v1.4.41-R1 phone result
+
+User-reported targeted results:
+
+1. version badge `v1.4.41-R1`: **PASS**;
+2. BUG-011 Account modal rotation: **PASS**;
+3. UX-017 simple duplicate suffix `YTM-1`: **PASS**;
+4. UX-017 stacked duplicate suffix `YTM-1 (1)`: **FAIL**.
+
+Observed stacked-suffix title:
+
+`House Dance Hit 2000 Vol.1 YTM-1 (1)`
+
+Expected:
+
+`House Dance Hit 2000 Vol.1`
+
+Interpretation:
+- BUG-011 is closed on R1;
+- UX-017 is improved but not fully closed;
+- next corrective parser patch must strip repeated/stacked copy suffix tokens after
+  the service marker, not only one suffix token.
