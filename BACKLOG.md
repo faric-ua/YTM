@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.45 — Unified Window Title Emphasis — PHONE RETEST PASS / UX-022 CLOSED
+v1.4.46 — Home Layout Prototype Alignment Phase 1 — IMPLEMENTED / PHONE QA NEEDED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -24,9 +24,27 @@ v1.4.45 — Unified Window Title Emphasis — PHONE RETEST PASS / UX-022 CLOSED
 - BUG-013/Q-013 stale green auth freshness before remote API call — OPEN; app can keep Step 2 green while an in-memory access token has become invalid. The next real YouTube API request then returns 401, after which invalidation correctly turns Step 2 red. Need proactive token refresh/validation before remote destination/write flows instead of waiting for the first failing API call.
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
-- UX-019 Home Layout Prototype Alignment — PLANNED; use the approved top-left prototype as a **layout-only** reference for Home section hierarchy/placement; do not change existing themes/palettes/semantic state colors as part of this work
+- UX-019 Home Layout Prototype Alignment — PHASE 1 IMPLEMENTED v1.4.46 / PHONE QA NEEDED; compact Home header + dedicated accent/info status card above the separate current-playlist card. Prototype remains a **layout-only** reference; themes/palettes/semantic state colors are unchanged.
 - UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
+
+## v1.4.46 — Home Layout Prototype Alignment Phase 1
+- [x] versionCode 86 / versionName 1.4.46
+- [x] compact Home header
+- [x] preserve 4 workflow buttons and semantics
+- [x] preserve History / Queue / Quota / Menu utility row
+- [x] separate live status into theme-aware accent/info card
+- [x] keep `Поточний плейлист` as a separate card below status
+- [x] preserve Neon / Blue / Green themes
+- [x] preserve Home workflow-state colors
+- [x] no auth/search/write behavior changes
+- [x] dedicated v1.4.46 audit + docs
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [ ] phone portrait hierarchy
+- [ ] phone theme smoke
+- [ ] phone landscape/rotation smoke
+- [ ] UX-019 next phase: exact quick-actions / bottom-navigation alignment only after the repository has an explicit approved contract
 
 ## v1.4.45 — Unified Window Title Emphasis
 - [x] versionCode 85 / versionName 1.4.45
