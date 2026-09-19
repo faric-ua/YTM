@@ -127,7 +127,7 @@ Build gate update:
 - Node.js 20 deprecation lines were warnings, not the failure;
 - root cause: KDoc text in `ImportActivity.chooseFile()` contained literal MIME `*/*`, whose `*/` sequence prematurely closed the block comment;
 - fixed by rewriting the comment without the literal terminator sequence;
-- fix commit / live branch head at this point: `ba6312da80f205de6667da531cea28028cce5cf8`;
+- code-fix commit: `ba6312da80f205de6667da531cea28028cce5cf8`; fetch the live branch head immediately before dispatch because docs-only follow-up commits may advance it;
 - next action: dispatch a fresh signed workflow run for the new head; do not rerun the failed old-SHA job.
 
 ## 5. Phone QA for v1.4.42
