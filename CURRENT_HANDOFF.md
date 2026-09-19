@@ -259,3 +259,11 @@ Rules:
 9. live GitHub branch/PR state
 
 If this mutable handoff conflicts with immutable historical evidence, verify live GitHub state and preserve the historical record.
+
+
+BUG-010 rollback phone update:
+- safety snapshot showed 5 groups / 117 values;
+- rollback applied 4 groups / 113 values;
+- confirmation and result both state that local quota estimate stays current;
+- rollback returned local state from before the last Restore;
+- final quota-screen readback still needed before closing BUG-010.
