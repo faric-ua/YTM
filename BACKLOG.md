@@ -40,7 +40,7 @@ v1.4.41 — Auth/Search Recovery + UI Consistency — PARTIALLY PHONE-TESTED / N
 - [ ] phone: real/reproduced auth invalidation path
 - [ ] phone: re-login + retry search without stale FAILED rows
 - [x] phone: account dialog button/copy fit — portrait PASS
-- [x] phone: existing-target single-select list renders; row tap is selection, no footer buttons required
+- [x] phone: existing-target single-select list renders; row tap is selection, no footer buttons required; confirmation screen opens PASS
 - [ ] phone: modal confirm-left / cancel-right spot checks
 - [ ] phone: full Restore keeps current quota estimate
 - [ ] phone: House Dance title = House Dance Hit 2000 Vol.1
