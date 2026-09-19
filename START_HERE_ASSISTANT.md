@@ -34,8 +34,8 @@ Current application:
 
 - versionName: **1.4.44-R1**
 - versionCode: **84**
-- release focus: **UX-021 R1 — landscape action copy fit + boxed modal Close**
-- release status: **IMPLEMENTED / PHONE RETEST NEEDED — v1.4.44 landscape QA exposed label clipping + flat Close**
+- release focus: **UX-022 Unified Window Title Emphasis — next planned work**
+- release status: **v1.4.44-R1 PHONE RETEST PASS — UX-021 CLOSED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.43 phone observation:
