@@ -7,7 +7,7 @@
 - Existing per-screen title sizes and one/two-line limits are preserved.
 - Home workflow-state color semantics are intentionally unchanged.
 - versionCode 85 / versionName 1.4.45.
-- v1.4.45 = NOT PHONE-TESTED YET.
+- v1.4.45 phone retest PASS: full-screen and modal title emphasis, theme-accent switching, and rotation/navigation smoke passed. UX-022 closed.
 
 ## v1.4.44-R1
 - Corrective follow-up from real-phone v1.4.44 landscape QA.
