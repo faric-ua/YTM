@@ -327,3 +327,24 @@ Interpretation:
 - UX-017 is improved but not fully closed;
 - next corrective parser patch must strip repeated/stacked copy suffix tokens after
   the service marker, not only one suffix token.
+
+
+## v1.4.41-R2 phone result
+
+Targeted corrective test: **PASS**.
+
+Path:
+`Home → 1. Імпорт → імпортувати файл`
+
+Confirmed on phone:
+- `YTM-1` → clean playlist title;
+- `YTM-1 (1)` → clean playlist title;
+- `YTM-1 (1) (1)` → clean playlist title;
+- final displayed title:
+  `House Dance Hit 2000 Vol.1`.
+
+UX-017 is now closed.
+
+The file-picker screenshot also confirms the current import flow is the external Android
+document picker. It displays file timestamps but YTM Importer does not control its sort
+order. UX-020 remains planned for an in-app newest-first selector.
