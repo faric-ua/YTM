@@ -290,3 +290,11 @@ User-facing instruction preference:
 - always include a short in-app path showing where the control/screen is located;
 - for terms such as rollback, pair them with the visible app action when useful, e.g.
   `rollback / Відкотити → Меню → Дані та резервні копії → Відкотити останній Restore`.
+
+
+Follow-up code now implemented after v1.4.41 phone findings:
+- IMPORTANT: the currently installed phone APK is still v1.4.41 and does NOT include these latest code fixes;
+- BUG-011 fix: MainActivity persists `accountDialogOpen` through saved instance state and recreates the Account modal after rotation;
+- UX-017 fix: filename cleanup now also strips duplicate-download forms such as `YTM-1`, `YTM_1`, and `YTM (1)`;
+- both changes need one new signed corrective build and real-phone retest;
+- do not claim PASS until that new build is installed.
