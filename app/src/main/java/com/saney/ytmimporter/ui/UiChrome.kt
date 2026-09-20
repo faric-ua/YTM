@@ -70,6 +70,7 @@ object UiChrome {
         fill: Int,
         accentOverride: Int? = null,
         subtitleAccent: Boolean = false,
+        topPaddingDp: Int = 11,
         onClick: () -> Unit
     ): InteractiveSummaryCard {
         val palette =
@@ -81,7 +82,7 @@ object UiChrome {
                     LinearLayout.VERTICAL
                 setPadding(
                     dp(activity, 14),
-                    dp(activity, 11),
+                    dp(activity, topPaddingDp),
                     dp(activity, 14),
                     dp(activity, 11)
                 )
