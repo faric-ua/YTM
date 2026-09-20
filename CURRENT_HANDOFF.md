@@ -15,14 +15,16 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.47-R2**
-- versionCode: **89**
-- active branch: `fix/v1.4.47-r2-home-compact-theme-menu`
-- active PR: **#21 — v1.4.47-R2: compact Home + Menu-owned theme picker** → `fix/v1.4.47-r1-home-nav-dialog`; PR #20 remains open underneath, then PR #19
-- stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED — R2 after R1 phone UI findings**
+- versionName: **1.4.47-R3**
+- versionCode: **90**
+- active branch: `fix/v1.4.47-r3-bugfix-wave`
+- active R3 PR: **not opened yet**; branch is stacked on the R2 line whose PR #21 targets `fix/v1.4.47-r1-home-nav-dialog`
+- status: **IMPLEMENTED / CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING**
 - installed phone APK: **v1.4.47-R1**
-- focus: **v1.4.47-R2 — compact Home + Menu-owned theme picker**
+- focus: **v1.4.47-R3 — lifecycle + OAuth retry + History semantics**
+- Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
+- Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
+- Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
 
 R2 signed-build attempt evidence:
 - GitHub Actions run: **35476795879**
@@ -298,6 +300,19 @@ v1.4.47-R2 on `fix/v1.4.47-r2-home-compact-theme-menu`:
 - R1 Playlist-Hub navigation, modal-theme and rotation fixes remain carried forward.
 
 R2 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R2.md`.
+R2 was superseded by R3 before a signed R2 phone-QA build.
+
+## 5G. v1.4.47-R3 consolidation
+
+R3 on `fix/v1.4.47-r3-bugfix-wave`:
+- versionName `1.4.47-R3` / versionCode `90`;
+- Wave 1 makes selector/recent/storage Help, Review Project actions and Menu Theme picker lifecycle-safe;
+- Wave 2 adds silent HTTP-401 token recovery and exactly one retry of the same YouTube/Google HTTP request;
+- YTM Importer still does not persist OAuth access or refresh tokens;
+- Wave 3 makes History result wording operation-aware without changing the History JSON schema;
+- R2 compact Home + Menu-owned theme work is carried forward unchanged.
+
+R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 6. Historical status that remains true
 
@@ -306,21 +321,23 @@ R2 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R2.md`.
 - BUG-011 closed v1.4.41-R1.
 - UX-017 closed v1.4.41-R2.
 - UX-018 representative phone PASS, not exhaustive.
-- BUG-004 destination-side invalidation has phone evidence; Search-specific real-401
-  retest remains pending.
+- BUG-004 destination/Search invalidation history remains valid; R3 now adds silent
+  HTTP-401 recovery + one automatic retry, with real-phone/natural-401 acceptance pending.
+- BUG-021/022/023 are implemented in R3 and remain phone-QA pending.
 - v1.4.39 populated-History Restore / rollback remains inconclusive/pending.
 - UX-009 Blue/Green workflow-state palettes remain open; Neon semantics stay locked.
 - UX-019 Phase 2 is current; Home is becoming a dashboard and detailed playlist work moves behind Playlist Hub/Review.
 
 ## 7. Exact next execution step
 
-1. Open/verify the stacked R2 PR into `fix/v1.4.47-r1-home-nav-dialog`.
-2. Build signed v1.4.47-R2 APK from the exact R2 head.
-3. Verify APK SHA-256.
-4. Install over v1.4.47-R1 without uninstalling or clearing data.
-5. Phone-test portrait density, rounded nav, Menu-owned theme picker, quick actions, short no-target copy, and a short R1 regression smoke.
-6. Merge R2 only after targeted phone PASS.
-7. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
+1. Apply/verify the R3 consolidation metadata/version patch on `fix/v1.4.47-r3-bugfix-wave`.
+2. Run the complete release preflight and commit/push only if it passes.
+3. Open the R3 PR on top of the current stacked release line.
+4. Build the signed v1.4.47-R3 APK from the exact R3 head and verify APK SHA-256/signature.
+5. Install over v1.4.47-R1 without uninstalling or clearing data.
+6. Run `docs/v.1.4.47/qa/PHONE_TEST_R3.md`: R2 UI carry-forward, BUG-022/023 rotation, BUG-021 History semantics and normal auth smoke.
+7. Accept BUG-004 stale/401 behavior only if a natural real 401 occurs; otherwise record it as DEFERRED, not PASS.
+8. Merge R3 only after the required reproducible phone paths pass and any non-reproducible conditional case is explicitly recorded.
 
 ## 8. Working contract
 

@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.47-R3
+- Consolidated the R3 corrective waves on top of the R2 Home/UI work.
+- Help windows in ListSelector, Recent-file and Storage chooser now survive Activity recreation/rotation.
+- `Поточний YTM Project` and the Menu-owned Theme picker now preserve their open state through rotation without auto-running actions.
+- Live HTTP 401 now clears the rejected Google access-token cache entry, silently asks AuthorizationClient for a replacement token and retries the exact request once.
+- If silent recovery is unavailable or requires interaction, the existing disconnected/manual-auth fallback remains.
+- OAuth access and refresh tokens remain non-persistent.
+- History primary result wording is operation-aware: `Додано в YTM`, `Імпортовано`, or `Відновлено`.
+- History JSON schema remains unchanged.
+- versionCode 90 / versionName 1.4.47-R3.
+- Signed build + phone QA pending.
+
 ## v1.4.47-R2
 - R1 phone screenshots showed remaining Home density and theme-navigation polish issues.
 - Current-playlist heading moved inside the playlist card.

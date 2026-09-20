@@ -12,15 +12,16 @@ MENU="app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
 IMPORT="app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 DATA="app/src/main/java/com/saney/ytmimporter/DataActivity.kt"
 PLAYLIST="app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt"
-GRADLE="app/build.gradle.kts"
+WAVE_DOC="docs/v.1.4.47/qa/R3_LIFECYCLE_WAVE1.md"
 
-for f in "$UI" "$SELECTOR" "$RECENT" "$STORAGE" "$REVIEW" "$MENU" "$IMPORT" "$DATA" "$PLAYLIST" "$GRADLE"; do
+for f in "$UI" "$SELECTOR" "$RECENT" "$STORAGE" "$REVIEW" "$MENU" "$IMPORT" "$DATA" "$PLAYLIST" "$WAVE_DOC"; do
   test -f "$f" || fail "missing lifecycle audit file: $f"
 done
 
-# Wave 1 intentionally stays on the R2 application identity until the whole R3 fix wave is ready.
-grep -Fq 'versionCode = 89' "$GRADLE" || fail "Wave 1 unexpectedly changed versionCode"
-grep -Fq 'versionName = "1.4.47-R2"' "$GRADLE" || fail "Wave 1 unexpectedly changed versionName"
+# Historical Wave 1 intentionally did not bump the app identity. Keep that fact
+# in immutable wave documentation instead of pinning the current app forever to R2.
+grep -Fq 'does **not** change `versionName` / `versionCode` yet' "$WAVE_DOC" ||
+  fail "Wave 1 historical no-version-bump boundary missing"
 
 python - "$UI" "$SELECTOR" "$RECENT" "$STORAGE" "$REVIEW" "$MENU" <<'PY'
 from pathlib import Path
@@ -112,4 +113,4 @@ echo "- Current YTM Project modal restores over the same Review parent screen"
 echo "- Menu Theme picker restores over Menu"
 echo "- restore is state-only; explicit action callbacks remain click-driven"
 echo "- prior Data / Playlist / Import lifecycle-safe dialogs remain present"
-echo "- Wave 1 keeps app identity at v1.4.47-R2 / code 89 until full R3 scope is complete"
+echo "- Wave 1 historical no-version-bump boundary is documented without pinning the current app identity"

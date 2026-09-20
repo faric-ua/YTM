@@ -15,10 +15,10 @@ for f in "$GRADLE" "$MAIN" "$MENU" "$HOME_UI" "$R2" "$PHONE" "$STATUS"; do
   test -f "$f" || fail "missing v1.4.47-R2 file: $f"
 done
 
-grep -Fq 'versionCode = 89' "$GRADLE" ||
-  fail "versionCode 89 missing"
-grep -Fq 'versionName = "1.4.47-R2"' "$GRADLE" ||
-  fail "versionName 1.4.47-R2 missing"
+grep -Fq 'versionCode: **89**' "$R2" ||
+  fail "historical R2 versionCode evidence missing"
+grep -Fq 'versionName: **1.4.47-R2**' "$R2" ||
+  fail "historical R2 versionName evidence missing"
 
 LINES="$(wc -l < "$MAIN" | tr -d ' ')"
 [ "$LINES" -lt 4000 ] ||
@@ -118,11 +118,11 @@ grep -Fq 'PHONE QA NEEDED' "$PHONE" ||
   fail "R2 phone plan status missing"
 grep -Fq '| v1.4.47-R1 | **PHONE QA FAIL — HOME DENSITY / THEME-PICKER PARENT / NAV POLISH** |' "$STATUS" ||
   fail "R1 phone FAIL status missing"
-grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING** |' "$STATUS" ||
-  fail "R2 preflight PASS / build+phone pending status missing"
+grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA** |' "$STATUS" ||
+  fail "R2 preflight PASS / superseded status missing"
 
 echo "PASS:"
-echo "- v1.4.47-R2 / code 89"
+echo "- historical v1.4.47-R2 / code 89 evidence"
 echo "- MainActivity $LINES lines"
 echo "- current playlist heading lives inside playlist card"
 echo "- quick actions use compact section container + 58dp actions"

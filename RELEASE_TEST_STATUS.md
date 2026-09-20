@@ -2,7 +2,8 @@
 
 | Version | Status | Note |
 |---|---|---|
-| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING** | Compact Home follow-up: playlist heading moves inside its card; quick actions use a compact section container; tighter spacing; rounded bottom nav; Menu owns the theme picker so theme changes stay on Menu; short no-target playlist copy. |
+| v1.4.47-R3 | **IMPLEMENTED — CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING** | Consolidates lifecycle-safe Help/project/theme modals, silent HTTP-401 token recovery with one automatic request retry, and operation-aware History result wording; carries R2 compact Home forward. |
+| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA** | Compact Home follow-up passed static/full preflight but was superseded by R3 bug-fix consolidation before a signed phone-QA build. |
 | v1.4.47-R1 | **PHONE QA FAIL — HOME DENSITY / THEME-PICKER PARENT / NAV POLISH** | Signed R1 fixed the earlier modal/Hub/rotation issues enough for continued testing, but phone screenshots showed Home still too tall, square bottom-nav outer corners, and Menu closing before theme selection so the picker appeared over Home. Continued in R2. |
 | v1.4.47 | **PHONE QA FAIL — MODAL THEME / HUB BACK STACK / ROTATION / LANDSCAPE** | Signed build itself passed, but real-phone QA found BUG-014..017: partial modal theme migration, delegated Hub actions returning to Home, replacement dialog disappearing on rotation, and landscape hiding lower dashboard content. Continued in v1.4.47-R1. |
 | v1.4.46 | **PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS** | Real-phone portrait screenshot passed the new Home hierarchy; current playlist and Google/YTM state survived update-in-place. Theme/landscape smoke is carried into v1.4.47 combined QA. |
