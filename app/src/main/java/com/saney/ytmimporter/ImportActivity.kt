@@ -22,6 +22,10 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import com.google.android.gms.auth.api.identity.AuthorizationRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
 import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.auth.PersistentAuthStateStore
 import com.saney.ytmimporter.model.ImportedPlaylist
@@ -89,6 +93,9 @@ class ImportActivity : Activity() {
     private val manifestProjectSelectorRequestCode =
         2504
 
+    private val freshAuthRequestCode =
+        2601
+
     private var pendingDeltaChainPlan:
         DeltaChainPlan? =
         null
@@ -107,6 +114,20 @@ class ImportActivity : Activity() {
     private var clearWorkspaceDialog:
         Dialog? =
         null
+
+    private var pendingFreshAuthAction:
+        FreshAuthAction? =
+        null
+
+    private var pendingFreshAuthPayload:
+        String? =
+        null
+
+    private var awaitingFreshAuthResolution =
+        false
+
+    private var freshAuthCheckInFlight =
+        false
 
     private val executor =
         Executors.newSingleThreadExecutor()
@@ -150,6 +171,31 @@ class ImportActivity : Activity() {
                         STATE_SELECTIVE_EXPORT
                     )
             )
+
+        pendingFreshAuthAction =
+            savedInstanceState
+                ?.getString(
+                    STATE_PENDING_FRESH_AUTH_ACTION
+                )
+                ?.let { raw ->
+                    runCatching {
+                        FreshAuthAction.valueOf(raw)
+                    }.getOrNull()
+                }
+
+        pendingFreshAuthPayload =
+            savedInstanceState
+                ?.getString(
+                    STATE_PENDING_FRESH_AUTH_PAYLOAD
+                )
+
+        awaitingFreshAuthResolution =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_AWAITING_FRESH_AUTH_RESOLUTION,
+                    false
+                )
+                ?: false
 
         clearWorkspaceDialogOpen =
             savedInstanceState
@@ -205,6 +251,17 @@ class ImportActivity : Activity() {
                 }
             }
         }
+
+        if (
+            pendingFreshAuthAction != null &&
+            !awaitingFreshAuthResolution
+        ) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    requestPendingFreshAuthorization()
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(
@@ -220,6 +277,27 @@ class ImportActivity : Activity() {
         outState.putBoolean(
             STATE_CLEAR_WORKSPACE_DIALOG_OPEN,
             clearWorkspaceDialogOpen
+        )
+
+        pendingFreshAuthAction
+            ?.let { action ->
+                outState.putString(
+                    STATE_PENDING_FRESH_AUTH_ACTION,
+                    action.name
+                )
+            }
+
+        pendingFreshAuthPayload
+            ?.let { payload ->
+                outState.putString(
+                    STATE_PENDING_FRESH_AUTH_PAYLOAD,
+                    payload
+                )
+            }
+
+        outState.putBoolean(
+            STATE_AWAITING_FRESH_AUTH_RESOLUTION,
+            awaitingFreshAuthResolution
         )
 
         windowState.save(outState)
@@ -306,6 +384,308 @@ class ImportActivity : Activity() {
         }
     }
 
+    private fun requestFreshAuthorization(
+        action: FreshAuthAction,
+        payload: String? = null
+    ) {
+        if (
+            freshAuthCheckInFlight ||
+            awaitingFreshAuthResolution
+        ) {
+            toast(
+                "Перевірка авторизації Google/YTM вже виконується."
+            )
+            return
+        }
+
+        pendingFreshAuthAction = action
+        pendingFreshAuthPayload = payload
+        requestPendingFreshAuthorization()
+    }
+
+    private fun requestPendingFreshAuthorization() {
+        if (
+            pendingFreshAuthAction == null ||
+            freshAuthCheckInFlight ||
+            awaitingFreshAuthResolution
+        ) {
+            return
+        }
+
+        freshAuthCheckInFlight = true
+
+        Identity.getAuthorizationClient(this)
+            .authorize(
+                buildFreshAuthorizationRequest()
+            )
+            .addOnSuccessListener { result ->
+                freshAuthCheckInFlight = false
+
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@addOnSuccessListener
+                }
+
+                if (result.hasResolution()) {
+                    val pendingIntent =
+                        result.pendingIntent
+
+                    if (pendingIntent == null) {
+                        failFreshAuthorization(
+                            "Google не повернув вікно підтвердження авторизації."
+                        )
+                        return@addOnSuccessListener
+                    }
+
+                    awaitingFreshAuthResolution =
+                        true
+
+                    try {
+                        startIntentSenderForResult(
+                            pendingIntent.intentSender,
+                            freshAuthRequestCode,
+                            null,
+                            0,
+                            0,
+                            0
+                        )
+                    } catch (error: Exception) {
+                        awaitingFreshAuthResolution =
+                            false
+                        failFreshAuthorization(
+                            error.message
+                                ?: "Не вдалося відкрити Google авторизацію."
+                        )
+                    }
+
+                    return@addOnSuccessListener
+                }
+
+                val token =
+                    result.accessToken
+
+                if (token.isNullOrBlank()) {
+                    failFreshAuthorization(
+                        "Google не повернув актуальний access token."
+                    )
+                    return@addOnSuccessListener
+                }
+
+                applyFreshAuthorizationAndResume(
+                    token
+                )
+            }
+            .addOnFailureListener { error ->
+                freshAuthCheckInFlight = false
+
+                if (
+                    isFinishing ||
+                    isDestroyed
+                ) {
+                    return@addOnFailureListener
+                }
+
+                failFreshAuthorization(
+                    error.message
+                        ?: "Не вдалося оновити авторизацію Google/YTM."
+                )
+            }
+    }
+
+    private fun buildFreshAuthorizationRequest():
+        AuthorizationRequest =
+        AuthorizationRequest.builder()
+            .setRequestedScopes(
+                listOf(
+                    Scope(YOUTUBE_SCOPE),
+                    Scope(USERINFO_EMAIL_SCOPE),
+                    Scope(USERINFO_PROFILE_SCOPE)
+                )
+            )
+            .build()
+
+    private fun handleFreshAuthorizationResult(
+        data: Intent?
+    ) {
+        awaitingFreshAuthResolution = false
+
+        if (data == null) {
+            failFreshAuthorization(
+                "Google не повернув результат авторизації."
+            )
+            return
+        }
+
+        try {
+            val result =
+                Identity.getAuthorizationClient(this)
+                    .getAuthorizationResultFromIntent(
+                        data
+                    )
+
+            val token =
+                result.accessToken
+
+            if (token.isNullOrBlank()) {
+                failFreshAuthorization(
+                    "Google не повернув access token."
+                )
+                return
+            }
+
+            applyFreshAuthorizationAndResume(
+                token
+            )
+        } catch (error: ApiException) {
+            failFreshAuthorization(
+                "Авторизація Google/YTM не вдалася: " +
+                    error.statusCode +
+                    "."
+            )
+        } catch (error: Exception) {
+            failFreshAuthorization(
+                error.message
+                    ?: "Не вдалося завершити авторизацію Google/YTM."
+            )
+        }
+    }
+
+    private fun applyFreshAuthorizationAndResume(
+        token: String
+    ) {
+        val current =
+            AuthSessionStore.current()
+
+        AuthSessionStore.update(
+            accessToken = token,
+            googleAccountInfo =
+                current.googleAccountInfo,
+            youtubeChannelInfo =
+                current.youtubeChannelInfo
+        )
+
+        PersistentAuthStateStore(this)
+            .markSuccessfulAuthorization()
+
+        val action =
+            pendingFreshAuthAction
+
+        if (action == null) {
+            clearPendingFreshAuthorization()
+            return
+        }
+
+        val payload =
+            pendingFreshAuthPayload
+
+        clearPendingFreshAuthorization()
+
+        when (action) {
+            FreshAuthAction.IMPORT_PLAYLIST_LIST ->
+                loadYtmPlaylistList(token)
+
+            FreshAuthAction.SELECTIVE_EXPORT_LIST ->
+                loadSelectiveYtmExportList(token)
+
+            FreshAuthAction.LOAD_PLAYLIST -> {
+                val playlist =
+                    payload
+                        ?.let(
+                            ::decodePlaylistSelection
+                        )
+
+                if (playlist == null) {
+                    toast(
+                        "Не вдалося відновити вибраний плейлист."
+                    )
+                } else {
+                    loadYtmPlaylist(
+                        token = token,
+                        playlistInfo = playlist
+                    )
+                }
+            }
+
+            FreshAuthAction.EXPORT_ALL -> {
+                val treeUri =
+                    payload
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                        ?.let(Uri::parse)
+
+                if (treeUri == null) {
+                    toast(
+                        "Не вдалося відновити папку експорту."
+                    )
+                } else {
+                    exportAllYtmPlaylistsToFolderAuthorized(
+                        token = token,
+                        treeUri = treeUri
+                    )
+                }
+            }
+
+            FreshAuthAction.EXPORT_SELECTED -> {
+                val treeUri =
+                    payload
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                        ?.let(Uri::parse)
+
+                if (treeUri == null) {
+                    toast(
+                        "Не вдалося відновити папку експорту."
+                    )
+                } else {
+                    exportSelectedYtmPlaylistsToFolderAuthorized(
+                        token = token,
+                        treeUri = treeUri
+                    )
+                }
+            }
+
+            FreshAuthAction.PREPARE_INCREMENTAL -> {
+                val baseTreeUri =
+                    payload
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                        ?.let(Uri::parse)
+
+                if (baseTreeUri == null) {
+                    toast(
+                        "Не вдалося відновити папку baseline backup."
+                    )
+                } else {
+                    prepareIncrementalBackupAuthorized(
+                        token = token,
+                        baseTreeUri = baseTreeUri
+                    )
+                }
+            }
+        }
+    }
+
+    private fun failFreshAuthorization(
+        message: String
+    ) {
+        clearPendingFreshAuthorization()
+        toast(
+            "$message Локальний робочий список не змінено."
+        )
+    }
+
+    private fun clearPendingFreshAuthorization() {
+        pendingFreshAuthAction = null
+        pendingFreshAuthPayload = null
+        awaitingFreshAuthResolution = false
+        freshAuthCheckInFlight = false
+    }
+
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
@@ -316,6 +696,27 @@ class ImportActivity : Activity() {
             resultCode,
             data
         )
+
+        if (
+            requestCode ==
+                freshAuthRequestCode
+        ) {
+            freshAuthCheckInFlight = false
+            awaitingFreshAuthResolution = false
+
+            if (resultCode == RESULT_OK) {
+                handleFreshAuthorizationResult(
+                    data
+                )
+            } else {
+                clearPendingFreshAuthorization()
+                toast(
+                    "Авторизацію Google/YTM скасовано."
+                )
+            }
+
+            return
+        }
 
         if (resultCode != RESULT_OK) {
             return
@@ -777,18 +1178,14 @@ class ImportActivity : Activity() {
     }
 
     private fun importFromYtmAccount() {
-        val token =
-            AuthSessionStore
-                .current()
-                .accessToken
+        requestFreshAuthorization(
+            FreshAuthAction.IMPORT_PLAYLIST_LIST
+        )
+    }
 
-        if (token.isNullOrBlank()) {
-            toast(
-                "Спочатку підключіть Google/YTM у кроці 2 на головному екрані."
-            )
-            return
-        }
-
+    private fun loadYtmPlaylistList(
+        token: String
+    ) {
         toast(
             "Завантажую плейлисти YouTube/YTM…"
         )
@@ -944,18 +1341,14 @@ class ImportActivity : Activity() {
     }
 
     private fun chooseSelectiveYtmExport() {
-        val token =
-            AuthSessionStore
-                .current()
-                .accessToken
+        requestFreshAuthorization(
+            FreshAuthAction.SELECTIVE_EXPORT_LIST
+        )
+    }
 
-        if (token.isNullOrBlank()) {
-            toast(
-                "Спочатку підключіть Google/YTM у кроці 2 на головному екрані."
-            )
-            return
-        }
-
+    private fun loadSelectiveYtmExportList(
+        token: String
+    ) {
         toast(
             "Завантажую плейлисти для вибору…"
         )
@@ -1065,18 +1458,6 @@ class ImportActivity : Activity() {
             return
         }
 
-        val token =
-            AuthSessionStore
-                .current()
-                .accessToken
-
-        if (token.isNullOrBlank()) {
-            toast(
-                "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
-            )
-            return
-        }
-
         chooseSafTree(
             title =
                 "Папка для вибраного експорту",
@@ -1123,21 +1504,13 @@ class ImportActivity : Activity() {
                 )
                 ?: return
 
-        val token =
-            AuthSessionStore
-                .current()
-                .accessToken
-
-        if (token.isNullOrBlank()) {
-            toast(
-                "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
-            )
-            return
-        }
-
-        loadYtmPlaylist(
-            token = token,
-            playlistInfo = playlist
+        requestFreshAuthorization(
+            action =
+                FreshAuthAction.LOAD_PLAYLIST,
+            payload =
+                encodePlaylistSelection(
+                    playlist
+                )
         )
     }
 
@@ -1477,18 +1850,6 @@ class ImportActivity : Activity() {
     }
 
     private fun chooseYtmExportFolder() {
-        val token =
-            AuthSessionStore
-                .current()
-                .accessToken
-
-        if (token.isNullOrBlank()) {
-            toast(
-                "Спочатку підключіть Google/YTM у кроці 2 на головному екрані."
-            )
-            return
-        }
-
         chooseSafTree(
             title =
                 "Папка для експорту",
@@ -1502,18 +1863,18 @@ class ImportActivity : Activity() {
     private fun exportAllYtmPlaylistsToFolder(
         treeUri: Uri
     ) {
-        val token =
-            AuthSessionStore
-                .current()
-                .accessToken
+        requestFreshAuthorization(
+            action =
+                FreshAuthAction.EXPORT_ALL,
+            payload =
+                treeUri.toString()
+        )
+    }
 
-        if (token.isNullOrBlank()) {
-            toast(
-                "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
-            )
-            return
-        }
-
+    private fun exportAllYtmPlaylistsToFolderAuthorized(
+        token: String,
+        treeUri: Uri
+    ) {
         persistExportFolderPermission(
             treeUri
         )
@@ -1562,18 +1923,18 @@ class ImportActivity : Activity() {
     private fun exportSelectedYtmPlaylistsToFolder(
         treeUri: Uri
     ) {
-        val token =
-            AuthSessionStore
-                .current()
-                .accessToken
+        requestFreshAuthorization(
+            action =
+                FreshAuthAction.EXPORT_SELECTED,
+            payload =
+                treeUri.toString()
+        )
+    }
 
-        if (token.isNullOrBlank()) {
-            toast(
-                "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
-            )
-            return
-        }
-
+    private fun exportSelectedYtmPlaylistsToFolderAuthorized(
+        token: String,
+        treeUri: Uri
+    ) {
         val selected =
             pendingSelectiveExport
 
@@ -1918,18 +2279,6 @@ class ImportActivity : Activity() {
 
 
     private fun chooseIncrementalBackupBase() {
-        val token =
-            AuthSessionStore
-                .current()
-                .accessToken
-
-        if (token.isNullOrBlank()) {
-            toast(
-                "Спочатку підключіть Google/YTM у кроці 2 на головному екрані."
-            )
-            return
-        }
-
         chooseSafTree(
             title =
                 "Основа incremental backup",
@@ -1943,18 +2292,18 @@ class ImportActivity : Activity() {
     private fun prepareIncrementalBackup(
         baseTreeUri: Uri
     ) {
-        val token =
-            AuthSessionStore
-                .current()
-                .accessToken
+        requestFreshAuthorization(
+            action =
+                FreshAuthAction.PREPARE_INCREMENTAL,
+            payload =
+                baseTreeUri.toString()
+        )
+    }
 
-        if (token.isNullOrBlank()) {
-            toast(
-                "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
-            )
-            return
-        }
-
+    private fun prepareIncrementalBackupAuthorized(
+        token: String,
+        baseTreeUri: Uri
+    ) {
         pendingIncrementalBackupPlan =
             null
 
@@ -3589,12 +3938,27 @@ class ImportActivity : Activity() {
                     .density
         ).toInt()
 
+    private enum class FreshAuthAction {
+        IMPORT_PLAYLIST_LIST,
+        SELECTIVE_EXPORT_LIST,
+        LOAD_PLAYLIST,
+        EXPORT_ALL,
+        EXPORT_SELECTED,
+        PREPARE_INCREMENTAL
+    }
+
     companion object {
         private const val STATE_SELECTIVE_EXPORT =
             "selective_export_playlists"
 
         private const val STATE_CLEAR_WORKSPACE_DIALOG_OPEN =
             "clear_workspace_dialog_open"
+        private const val STATE_PENDING_FRESH_AUTH_ACTION =
+            "pending_fresh_auth_action"
+        private const val STATE_PENDING_FRESH_AUTH_PAYLOAD =
+            "pending_fresh_auth_payload"
+        private const val STATE_AWAITING_FRESH_AUTH_RESOLUTION =
+            "awaiting_fresh_auth_resolution"
         private const val STATE_WINDOW =
             "import_window"
         private const val WINDOW_AUTH_INVALIDATED =
@@ -3611,6 +3975,13 @@ class ImportActivity : Activity() {
 
         const val ACTION_SELECTIVE_EXPORT =
             "selective_export"
+
+        private const val YOUTUBE_SCOPE =
+            "https://www.googleapis.com/auth/youtube.force-ssl"
+        private const val USERINFO_EMAIL_SCOPE =
+            "https://www.googleapis.com/auth/userinfo.email"
+        private const val USERINFO_PROFILE_SCOPE =
+            "https://www.googleapis.com/auth/userinfo.profile"
 
         private val BACKGROUND =
             Color.rgb(
