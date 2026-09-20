@@ -640,7 +640,7 @@ class MainActivity : Activity() {
                 .quickActionButton(
                     activity = this,
                     label =
-                        "Імпортувати файл",
+                        "Імпорт",
                     icon =
                         R.drawable.ic_ytm_download
                 ) {
@@ -658,11 +658,11 @@ class MainActivity : Activity() {
                 .quickActionButton(
                     activity = this,
                     label =
-                        "Експорт плейлистів",
+                        "Експорт",
                     icon =
                         R.drawable.ic_ytm_playlist_add
                 ) {
-                openImportScreen()
+                openExportPlaylists()
             },
             LinearLayout.LayoutParams(
                 0,
@@ -921,6 +921,19 @@ class MainActivity : Activity() {
             Intent(
                 this,
                 ImportActivity::class.java
+            ),
+            importScreenRequestCode
+        )
+    }
+
+    private fun openExportPlaylists() {
+        startActivityForResult(
+            Intent(
+                this,
+                ImportActivity::class.java
+            ).putExtra(
+                ImportActivity.EXTRA_START_ACTION,
+                ImportActivity.ACTION_SELECTIVE_EXPORT
             ),
             importScreenRequestCode
         )
