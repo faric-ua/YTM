@@ -210,3 +210,43 @@ Requested direction:
   as a completed import.
 
 Status: **RECORDED / NOT FIXED YET**.
+
+
+### BUG-022 — Help windows disappear on rotation
+
+Terminology locked for this project:
+
+**Help window / вікно Help** =
+an informational modal opened from `?`, Help, explanation, or similar UI that
+explains the current screen/action but does not itself perform the primary operation.
+
+Observed on phone:
+- `Вибрати плейлист YouTube/YTM → ? → Що буде імпортовано?`;
+- rotate the phone;
+- the Help window disappears instead of being restored over the selector.
+
+Shared-code evidence:
+- `ListSelectorActivity.showHelp()` opens the modal through
+  `UiChrome.showMessageDialog()`;
+- `ListSelectorActivity` persists selected values across rotation;
+- it does **not** persist an open-help flag/state;
+- therefore selector Help windows created through the same mechanism share the same
+  lifecycle risk.
+
+Known selector Help windows already identified:
+- `Що буде імпортовано?` — single YTM playlist import;
+- `Що буде експортовано?` — selective playlist export;
+- `Що означає цей список?` — delta-chain head selector;
+- `Що це за список?` — backup/manifest project selector;
+- any other `ListSelectorActivity` call that supplies `helpTitle/helpMessage`.
+
+Requested direction:
+- audit **all Help windows** in the app, not only the reproduced one;
+- define one shared lifecycle contract:
+  - if Help is open before Activity recreation/rotation, reopen the same Help over the
+    same parent screen after recreation;
+  - rotation must not perform the underlying action;
+  - dismissing Help after rotation must return to the same parent screen;
+- prefer a reusable shared solution instead of per-screen one-off flags where possible.
+
+Status: **RECORDED / NOT FIXED YET**.
