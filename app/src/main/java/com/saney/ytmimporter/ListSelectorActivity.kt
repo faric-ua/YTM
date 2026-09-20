@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -23,6 +24,9 @@ class ListSelectorActivity : Activity() {
     private lateinit var content: LinearLayout
     private lateinit var selectionSummary: TextView
     private lateinit var confirmButton: Button
+
+    private var helpDialogOpen = false
+    private var helpDialog: Dialog? = null
 
     private var titleText: String = "Вибір"
     private var subtitleText: String = ""
@@ -112,7 +116,26 @@ class ListSelectorActivity : Activity() {
             }
         }
 
+        helpDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_HELP_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
         render()
+
+        if (
+            helpDialogOpen &&
+            helpMessage.isNotBlank()
+        ) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showHelp()
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(
@@ -132,7 +155,19 @@ class ListSelectorActivity : Activity() {
             selectedValues
         )
 
+        outState.putBoolean(
+            STATE_HELP_DIALOG_OPEN,
+            helpDialogOpen
+        )
+
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroy() {
+        helpDialog
+            ?.setOnDismissListener(null)
+        helpDialog = null
+        super.onDestroy()
     }
 
     @Deprecated("Deprecated in Java")
@@ -571,18 +606,33 @@ class ListSelectorActivity : Activity() {
     }
 
     private fun showHelp() {
-        UiChrome.showMessageDialog(
-            activity = this,
-            title = helpTitle,
-            message = helpMessage,
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label = "Зрозуміло",
-                        tone = UiChrome.ActionTone.ACCENT
-                    ) {}
-                )
-        )
+        if (
+            helpMessage.isBlank() ||
+            helpDialog?.isShowing == true
+        ) {
+            return
+        }
+
+        helpDialogOpen = true
+
+        helpDialog =
+            UiChrome.showMessageDialog(
+                activity = this,
+                title = helpTitle,
+                message = helpMessage,
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label = "Зрозуміло",
+                            tone = UiChrome.ActionTone.ACCENT
+                        ) {}
+                    )
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    helpDialogOpen = false
+                    helpDialog = null
+                }
+            }
     }
 
     private fun finishWithSelection() {
@@ -656,6 +706,9 @@ class ListSelectorActivity : Activity() {
 
         private const val STATE_SELECTED_VALUES =
             "selector_state_selected_values"
+
+        private const val STATE_HELP_DIALOG_OPEN =
+            "selector_state_help_dialog_open"
 
         private const val EXTRA_TITLE =
             "selector_title"

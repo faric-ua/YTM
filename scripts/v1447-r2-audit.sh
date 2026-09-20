@@ -59,12 +59,27 @@ required_menu = [
     'private fun showThemePicker()',
     'if (action == ACTION_THEME)',
     'showThemePicker()',
-    'AppThemeManager\n                                        .setStyle(',
     'recreate()',
 ]
 for needle in required_menu:
     if needle not in menu:
         raise SystemExit(f"FAIL: Menu-owned theme contract missing: {needle}")
+
+# R3 lifecycle state adds one nesting level around the Theme dialog body.
+# Verify the semantic setStyle contract inside showThemePicker instead of
+# coupling this historical R2 audit to a specific indentation width.
+theme_start = menu.find('private fun showThemePicker()')
+theme_end = menu.find('private fun addAction(', theme_start)
+if theme_start < 0 or theme_end < 0:
+    raise SystemExit("FAIL: Menu Theme picker block boundary missing")
+
+theme_block = menu[theme_start:theme_end]
+for needle in [
+    'AppThemeManager',
+    '.setStyle(',
+]:
+    if needle not in theme_block:
+        raise SystemExit(f"FAIL: Menu-owned theme contract missing in Theme picker: {needle}")
 
 start = menu.find('setOnClickListener {')
 while start >= 0:

@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -14,10 +15,47 @@ import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 
 class MenuActivity : Activity() {
+    private var themeDialogOpen = false
+    private var themeDialog: Dialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+
+        themeDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_THEME_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
         render()
+
+        if (themeDialogOpen) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showThemePicker()
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putBoolean(
+            STATE_THEME_DIALOG_OPEN,
+            themeDialogOpen
+        )
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroy() {
+        themeDialog
+            ?.setOnDismissListener(null)
+        themeDialog = null
+        super.onDestroy()
     }
 
     private fun render() {
@@ -180,43 +218,55 @@ class MenuActivity : Activity() {
         }
 
     private fun showThemePicker() {
+        if (themeDialog?.isShowing == true) {
+            return
+        }
+
         val active =
             AppThemeManager.currentStyle(this)
 
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = "Тема оформлення",
-            subtitle =
-                "Один інтерфейс — три палітри. Тема зберігається на пристрої.",
-            actions =
-                AppThemeManager.ThemeStyle
-                    .values()
-                    .map { style ->
-                        UiChrome.MenuAction(
-                            label =
-                                (
-                                    if (style == active) {
-                                        "✓ "
-                                    } else {
-                                        ""
+        themeDialogOpen = true
+
+        themeDialog =
+            UiChrome.showMenuDialog(
+                activity = this,
+                title = "Тема оформлення",
+                subtitle =
+                    "Один інтерфейс — три палітри. Тема зберігається на пристрої.",
+                actions =
+                    AppThemeManager.ThemeStyle
+                        .values()
+                        .map { style ->
+                            UiChrome.MenuAction(
+                                label =
+                                    (
+                                        if (style == active) {
+                                            "✓ "
+                                        } else {
+                                            ""
+                                        }
+                                    ) +
+                                        style.marker +
+                                        "  " +
+                                        style.label,
+                                onClick = {
+                                    if (style != active) {
+                                        AppThemeManager
+                                            .setStyle(
+                                                this,
+                                                style
+                                            )
+                                        recreate()
                                     }
-                                ) +
-                                    style.marker +
-                                    "  " +
-                                    style.label,
-                            onClick = {
-                                if (style != active) {
-                                    AppThemeManager
-                                        .setStyle(
-                                            this,
-                                            style
-                                        )
-                                    recreate()
                                 }
-                            }
-                        )
-                    }
-        )
+                            )
+                        }
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    themeDialogOpen = false
+                    themeDialog = null
+                }
+            }
     }
 
     private fun addAction(
@@ -295,6 +345,9 @@ class MenuActivity : Activity() {
         ).toInt()
 
     companion object {
+        private const val STATE_THEME_DIALOG_OPEN =
+            "menu_theme_dialog_open"
+
         const val EXTRA_ACTION =
             "menu_action"
 

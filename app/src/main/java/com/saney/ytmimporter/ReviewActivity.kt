@@ -3,6 +3,7 @@ import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.ClipData
 import android.content.Intent
 import android.graphics.Color
@@ -60,11 +61,25 @@ class ReviewActivity : Activity() {
     private val saveProjectFolderRequestCode =
         3302
 
+    private var projectDialogOpen =
+        false
+
+    private var projectDialog: Dialog? =
+        null
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+
+        projectDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_PROJECT_DIALOG_OPEN,
+                    false
+                )
+                ?: false
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
@@ -103,23 +118,33 @@ class ReviewActivity : Activity() {
             restoredTrackIndex
                 ?: requestedTrackIndex
 
+        var restoredTrackScreen = false
+
         if (focus != null) {
             findTrackByHistoryIndex(
                 focus
             )?.let { track ->
                 showTrackScreen(track)
-                return
+                restoredTrackScreen = true
             }
         }
 
-        showListScreen()
+        if (!restoredTrackScreen) {
+            showListScreen()
+        }
 
-        if (
-            intent.getBooleanExtra(
-                EXTRA_OPEN_PROJECT_ACTIONS,
-                false
-            )
-        ) {
+        val shouldOpenProjectActions =
+            projectDialogOpen ||
+                (
+                    savedInstanceState == null &&
+                        intent.getBooleanExtra(
+                            EXTRA_OPEN_PROJECT_ACTIONS,
+                            false
+                        )
+                )
+
+        if (shouldOpenProjectActions) {
+            projectDialogOpen = true
             window.decorView.post {
                 if (!isFinishing && !isDestroyed) {
                     showProjectActions()
@@ -182,9 +207,21 @@ class ReviewActivity : Activity() {
                 )
             }
 
+        outState.putBoolean(
+            STATE_PROJECT_DIALOG_OPEN,
+            projectDialogOpen
+        )
+
         super.onSaveInstanceState(
             outState
         )
+    }
+
+    override fun onDestroy() {
+        projectDialog
+            ?.setOnDismissListener(null)
+        projectDialog = null
+        super.onDestroy()
     }
 
     @Deprecated("Deprecated in Java")
@@ -944,23 +981,35 @@ class ReviewActivity : Activity() {
     }
 
     private fun showProjectActions() {
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = "Поточний YTM Project",
-            subtitle = "Збереження та обмін робочим проектом.",
-            actions = listOf(
-                UiChrome.MenuAction(
-                    "Зберегти YTM Project"
-                ) {
-                    saveCurrentProject()
-                },
-                UiChrome.MenuAction(
-                    "Поділитися YTM Project"
-                ) {
-                    shareCurrentProject()
+        if (projectDialog?.isShowing == true) {
+            return
+        }
+
+        projectDialogOpen = true
+
+        projectDialog =
+            UiChrome.showMenuDialog(
+                activity = this,
+                title = "Поточний YTM Project",
+                subtitle = "Збереження та обмін робочим проектом.",
+                actions = listOf(
+                    UiChrome.MenuAction(
+                        "Зберегти YTM Project"
+                    ) {
+                        saveCurrentProject()
+                    },
+                    UiChrome.MenuAction(
+                        "Поділитися YTM Project"
+                    ) {
+                        shareCurrentProject()
+                    }
+                )
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    projectDialogOpen = false
+                    projectDialog = null
                 }
-            )
-        )
+            }
     }
 
     private fun currentProjectJson(): String {
@@ -2020,6 +2069,9 @@ class ReviewActivity : Activity() {
 
         private const val KEY_TRACK_HISTORY_INDEX =
             "review_current_track_history_index"
+
+        private const val STATE_PROJECT_DIALOG_OPEN =
+            "review_project_dialog_open"
 
         private val BACKGROUND =
             Color.rgb(

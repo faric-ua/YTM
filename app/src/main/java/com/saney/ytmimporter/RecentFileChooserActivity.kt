@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
@@ -35,11 +36,25 @@ class RecentFileChooserActivity : Activity() {
     private var refreshAfterSettings =
         false
 
+    private var helpDialogOpen =
+        false
+
+    private var helpDialog: Dialog? =
+        null
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+
+        helpDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_HELP_DIALOG_OPEN,
+                    false
+                )
+                ?: false
 
         titleText =
             intent
@@ -72,6 +87,31 @@ class RecentFileChooserActivity : Activity() {
                 ?: emptySet()
 
         render()
+
+        if (helpDialogOpen) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showHelp()
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putBoolean(
+            STATE_HELP_DIALOG_OPEN,
+            helpDialogOpen
+        )
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroy() {
+        helpDialog
+            ?.setOnDismissListener(null)
+        helpDialog = null
+        super.onDestroy()
     }
 
     override fun onResume() {
@@ -621,29 +661,41 @@ class RecentFileChooserActivity : Activity() {
         }
 
     private fun showHelp() {
-        UiChrome.showMessageDialog(
-            activity = this,
-            title = "Останні файли",
-            message =
-                "На Android 11+ YTM Importer може напряму читати Download після того, " +
-                    "як ви вручну увімкнете спеціальний системний дозвіл «Доступ до всіх файлів».\n\n" +
-                    "Після цього файли з Download показуються автоматично й сортуються " +
-                    "за часом останньої зміни: найсвіжіші зверху.\n\n" +
-                    "«Додати SAF-папку…» лишається додатковим способом підключити іншу папку. " +
-                    "Корінь Download Android через SAF не дозволяє — для нього використовується " +
-                    "саме All files access.\n\n" +
-                    "«Системний вибір файла…» залишає стандартний Android picker як запасний варіант.\n\n" +
-                    "Справжній creation time доступний не у всіх файлових системах, " +
-                    "тому сортування використовує last modified.",
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label = "Зрозуміло",
-                        tone =
-                            UiChrome.ActionTone.ACCENT
-                    ) {}
-                )
-        )
+        if (helpDialog?.isShowing == true) {
+            return
+        }
+
+        helpDialogOpen = true
+
+        helpDialog =
+            UiChrome.showMessageDialog(
+                activity = this,
+                title = "Останні файли",
+                message =
+                    "На Android 11+ YTM Importer може напряму читати Download після того, " +
+                        "як ви вручну увімкнете спеціальний системний дозвіл «Доступ до всіх файлів».\n\n" +
+                        "Після цього файли з Download показуються автоматично й сортуються " +
+                        "за часом останньої зміни: найсвіжіші зверху.\n\n" +
+                        "«Додати SAF-папку…» лишається додатковим способом підключити іншу папку. " +
+                        "Корінь Download Android через SAF не дозволяє — для нього використовується " +
+                        "саме All files access.\n\n" +
+                        "«Системний вибір файла…» залишає стандартний Android picker як запасний варіант.\n\n" +
+                        "Справжній creation time доступний не у всіх файлових системах, " +
+                        "тому сортування використовує last modified.",
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label = "Зрозуміло",
+                            tone =
+                                UiChrome.ActionTone.ACCENT
+                        ) {}
+                    )
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    helpDialogOpen = false
+                    helpDialog = null
+                }
+            }
     }
 
     private fun explainAndRequestAllFilesAccess() {
@@ -825,6 +877,9 @@ class RecentFileChooserActivity : Activity() {
 
         const val RESULT_DOCUMENT =
             "DOCUMENT"
+
+        private const val STATE_HELP_DIALOG_OPEN =
+            "recent_file_chooser_help_dialog_open"
 
         private const val REQUEST_SYSTEM_TREE =
             8801
