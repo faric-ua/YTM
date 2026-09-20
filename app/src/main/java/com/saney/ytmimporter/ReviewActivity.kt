@@ -21,6 +21,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -28,6 +29,7 @@ import androidx.core.content.FileProvider
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.review.ReviewRemoteOperations
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
@@ -60,6 +62,21 @@ class ReviewActivity : Activity() {
 
     private val saveProjectFolderRequestCode =
         3302
+
+    private val destinationRequestCode =
+        3303
+
+    private var remoteProgressDialog:
+        Dialog? = null
+
+    private var remoteProgressText:
+        TextView? = null
+
+    private val remoteListener:
+        (ReviewRemoteOperations.State) -> Unit =
+        { state ->
+            handleRemoteState(state)
+        }
 
     private var projectDialogOpen =
         false
@@ -242,6 +259,36 @@ class ReviewActivity : Activity() {
                 }
             }
         }
+
+        if (
+            savedInstanceState == null &&
+            intent.getBooleanExtra(
+                EXTRA_AUTO_SEARCH,
+                false
+            )
+        ) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    requestInitialSearchIfNeeded()
+                }
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ReviewRemoteOperations
+            .addListener(
+                remoteListener
+            )
+    }
+
+    override fun onStop() {
+        ReviewRemoteOperations
+            .removeListener(
+                remoteListener
+            )
+        super.onStop()
     }
 
     override fun onActivityResult(
@@ -260,6 +307,22 @@ class ReviewActivity : Activity() {
         }
 
         when (requestCode) {
+            destinationRequestCode -> {
+                val result =
+                    data
+                        ?: return
+
+                setResult(
+                    RESULT_OK,
+                    Intent(result)
+                        .putExtra(
+                            EXTRA_DESTINATION_RESULT,
+                            true
+                        )
+                )
+                finish()
+            }
+
             saveProjectRequestCode ->
                 data
                     ?.data
@@ -352,6 +415,11 @@ class ReviewActivity : Activity() {
             ?.setOnDismissListener(null)
         manualUrlDialog = null
         manualUrlInput = null
+
+        remoteProgressDialog
+            ?.setOnDismissListener(null)
+        remoteProgressDialog = null
+        remoteProgressText = null
 
         super.onDestroy()
     }
@@ -577,14 +645,24 @@ class ReviewActivity : Activity() {
                     primary = true
                 ) {
                     saveSnapshot()
-                    setResult(
-                        RESULT_OK,
-                        Intent().putExtra(
-                            EXTRA_OPEN_DESTINATION,
-                            true
+
+                    if (
+                        intent.getBooleanExtra(
+                            EXTRA_RETURN_TO_PLAYLIST,
+                            false
                         )
-                    )
-                    finish()
+                    ) {
+                        openDestinationFromReview()
+                    } else {
+                        setResult(
+                            RESULT_OK,
+                            Intent().putExtra(
+                                EXTRA_OPEN_DESTINATION,
+                                true
+                            )
+                        )
+                        finish()
+                    }
                 },
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -998,9 +1076,8 @@ class ReviewActivity : Activity() {
                     "Ручне посилання"
                 )
                 .setMessage(
-                    "YTM Importer повернеться на головний екран, " +
-                        "отримає реальну назву та канал через YouTube API, " +
-                        "а потім знову відкриє цей трек."
+                    "YTM Importer отримає реальну назву та канал через YouTube API " +
+                        "і залишиться на екрані перевірки цього треку."
                 )
                 .setView(input)
                 .setNegativeButton(
@@ -1034,20 +1111,14 @@ class ReviewActivity : Activity() {
                         return@setPositiveButton
                     }
 
-                    setResult(
-                        RESULT_OK,
-                        Intent()
-                            .putExtra(
-                                EXTRA_MANUAL_VIDEO_ID,
+                    ReviewRemoteOperations
+                        .startManualLookup(
+                            context = this,
+                            historyIndex =
+                                historyIndex,
+                            videoId =
                                 videoId
-                            )
-                            .putExtra(
-                                EXTRA_MANUAL_HISTORY_INDEX,
-                                historyIndex
-                            )
-                    )
-
-                    finish()
+                        )
                 }
                 .show()
                 .also { dialog ->
@@ -1453,6 +1524,229 @@ class ReviewActivity : Activity() {
         return "$safeName.ytm.json"
     }
 
+    private fun requestInitialSearchIfNeeded() {
+        reloadSnapshot()
+
+        val needsSearch =
+            snapshot.playlist.tracks
+                .any {
+                    track ->
+                    track.status ==
+                        TrackStatus.NEW &&
+                        track.selectedVideoId
+                            .isNullOrBlank()
+                }
+
+        if (needsSearch) {
+            showSearchPlanDialog(
+                preserveExistingExact =
+                    true
+            )
+        }
+    }
+
+    private fun showSearchPlanDialog(
+        preserveExistingExact: Boolean
+    ) {
+        val plan =
+            ReviewRemoteOperations
+                .planSearch(
+                    context = this,
+                    preserveExistingExact =
+                        preserveExistingExact
+                )
+                ?: return toast(
+                    "Поточний плейлист уже недоступний"
+                )
+
+        UiChrome.alertBuilder(this)
+            .setTitle(
+                "План пошуку (Search plan)"
+            )
+            .setMessage(
+                "Треків у списку: ${plan.totalTracks}\n" +
+                    "Пошук потрібен для: ${plan.tracksToSearch}\n" +
+                    "Вже є в кеші: ${plan.cachedCount}\n" +
+                    "Потрібно нових search.list: ${plan.apiNeeded}\n\n" +
+                    "Локальна оцінка залишку: ${plan.quota.searchRemaining}"
+            )
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Почати"
+            ) { _, _ ->
+                ReviewRemoteOperations
+                    .startSearch(
+                        context = this,
+                        preserveExistingExact =
+                            preserveExistingExact
+                    )
+            }
+            .show()
+    }
+
+    private fun openDestinationFromReview() {
+        reloadSnapshot()
+
+        val targetIntent =
+            DestinationActivity
+                .startIntent(
+                    context = this,
+                    snapshot = snapshot
+                )
+                ?: return toast(
+                    "Немає треків для запису"
+                )
+
+        startActivityForResult(
+            targetIntent,
+            destinationRequestCode
+        )
+    }
+
+    private fun handleRemoteState(
+        state:
+            ReviewRemoteOperations.State
+    ) {
+        if (isFinishing || isDestroyed) {
+            return
+        }
+
+        if (state.running) {
+            showRemoteProgress(
+                state
+            )
+            return
+        }
+
+        remoteProgressDialog
+            ?.setOnDismissListener(null)
+        remoteProgressDialog
+            ?.dismiss()
+        remoteProgressDialog = null
+        remoteProgressText = null
+
+        val terminal =
+            state.terminalMessage
+                ?: return
+
+        ReviewRemoteOperations
+            .acknowledgeTerminal(
+                state.terminalSerial
+            )
+
+        reloadSnapshot()
+
+        val focus =
+            state.focusHistoryIndex
+
+        if (focus != null) {
+            val track =
+                findTrackByHistoryIndex(
+                    focus
+                )
+
+            if (track != null) {
+                showTrackScreen(
+                    track
+                )
+            } else {
+                showListScreen()
+            }
+        } else {
+            showListScreen()
+        }
+
+        toast(
+            terminal
+        )
+    }
+
+    private fun showRemoteProgress(
+        state:
+            ReviewRemoteOperations.State
+    ) {
+        if (
+            remoteProgressDialog
+                ?.isShowing == true
+        ) {
+            remoteProgressText
+                ?.text =
+                state.message
+            return
+        }
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(18),
+                    dp(8),
+                    dp(18),
+                    dp(12)
+                )
+            }
+
+        val message =
+            TextView(this).apply {
+                text =
+                    state.message
+                textSize =
+                    14f
+                setTextColor(
+                    Color.WHITE
+                )
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    dp(12)
+                )
+            }
+
+        remoteProgressText =
+            message
+
+        content.addView(
+            message
+        )
+        content.addView(
+            ProgressBar(this).apply {
+                isIndeterminate =
+                    true
+            }
+        )
+
+        remoteProgressDialog =
+            UiChrome
+                .alertBuilder(this)
+                .setTitle(
+                    if (
+                        state.kind ==
+                        ReviewRemoteOperations
+                            .Kind.MANUAL_URL
+                    ) {
+                        "Ручне посилання"
+                    } else {
+                        "Пошук треків"
+                    }
+                )
+                .setView(
+                    content
+                )
+                .create()
+                .also {
+                    dialog ->
+                    dialog.setCancelable(
+                        false
+                    )
+                    dialog.show()
+                }
+    }
+
     private fun requestRepeatSearch() {
         showRepeatSearchDialog()
     }
@@ -1468,7 +1762,7 @@ class ReviewActivity : Activity() {
             UiChrome.alertBuilder(this)
                 .setTitle("Повторити пошук?")
                 .setMessage(
-                    "YTM Importer повернеться на головний екран і повторить пошук " +
+                    "YTM Importer повторить пошук тут, без переходу через головний екран, " +
                         "лише для треків, яким він справді потрібен. " +
                         "Треки з точним videoId буде збережено без нового search.list. " +
                         "Кешовані результати також не витрачають search.list quota."
@@ -1480,15 +1774,10 @@ class ReviewActivity : Activity() {
                 .setPositiveButton(
                     "Повторити"
                 ) { _, _ ->
-                    setResult(
-                        RESULT_OK,
-                        Intent()
-                            .putExtra(
-                                EXTRA_REPEAT_SEARCH,
-                                true
-                            )
+                    showSearchPlanDialog(
+                        preserveExistingExact =
+                            true
                     )
-                    finish()
                 }
                 .show()
                 .also { dialog ->
@@ -2227,6 +2516,15 @@ class ReviewActivity : Activity() {
 
         const val EXTRA_OPEN_PROJECT_ACTIONS =
             "review_open_project_actions"
+
+        const val EXTRA_RETURN_TO_PLAYLIST =
+            "review_return_to_playlist"
+
+        const val EXTRA_AUTO_SEARCH =
+            "review_auto_search"
+
+        const val EXTRA_DESTINATION_RESULT =
+            "review_destination_result"
 
         const val EXTRA_REPEAT_SEARCH =
             "review_repeat_search"

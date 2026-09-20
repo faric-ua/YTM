@@ -43,6 +43,7 @@ import com.saney.ytmimporter.ui.WorkflowRelayOverlay
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.destination.DestinationCoordinator
+import com.saney.ytmimporter.destination.DestinationForwardedWritePlan
 import com.saney.ytmimporter.search.SearchCoordinator
 import com.saney.ytmimporter.write.PlaylistWriteCoordinator
 import com.saney.ytmimporter.youtube.SearchCache
@@ -635,7 +636,7 @@ class MainActivity : Activity() {
             HomeDashboardChrome
                 .sectionCard(
                     activity = this,
-                    title = "Швидкі дії"
+                    title = "Швидкі дії файл/плейлист"
                 )
 
         val quickRow =
@@ -650,7 +651,7 @@ class MainActivity : Activity() {
                 .quickActionButton(
                     activity = this,
                     label =
-                        "Імпортувати файл",
+                        "Імпорт",
                     icon =
                         R.drawable.ic_ytm_download
                 ) {
@@ -658,7 +659,7 @@ class MainActivity : Activity() {
             },
             LinearLayout.LayoutParams(
                 0,
-                dp(58),
+                dp(48),
                 1f
             )
         )
@@ -668,7 +669,7 @@ class MainActivity : Activity() {
                 .quickActionButton(
                     activity = this,
                     label =
-                        "Експорт плейлистів",
+                        "Експорт",
                     icon =
                         R.drawable.ic_ytm_playlist_add
                 ) {
@@ -676,7 +677,7 @@ class MainActivity : Activity() {
             },
             LinearLayout.LayoutParams(
                 0,
-                dp(58),
+                dp(48),
                 1f
             ).apply {
                 marginStart =
@@ -1397,6 +1398,11 @@ class MainActivity : Activity() {
             PlaylistActivity.ACTION_CREATE -> {
                 beginPlaylistRelay("Створити / додати", "Відкриваю вибір цільового плейлиста…")
                 createPlaylist()
+            }
+
+            PlaylistActivity.ACTION_DESTINATION_RESULT -> {
+                beginPlaylistRelay("Створити / додати", "Готую запис у YTM…")
+                handleDestinationResult(data)
             }
 
             PlaylistActivity.ACTION_REPLACEMENTS ->
@@ -2372,14 +2378,19 @@ class MainActivity : Activity() {
 
             DestinationActivity.ACTION_CONFIRM_EXISTING -> {
                 showWorkflowRelayOverlay("Створити / додати", "Готую додавання треків…")
-                finishExistingDestination(
-                    p = p,
-                    selected = selected,
-                    duplicateMode =
-                        data.getStringExtra(
-                            DestinationActivity.EXTRA_DUPLICATE_MODE
-                        ) ?: DestinationActivity.DUPLICATE_MODE_SKIP
-                )
+                val forwarded = DestinationForwardedWritePlan.from(data, selected)
+                if (forwarded != null) {
+                    actuallyAppendToExisting(p, forwarded.tracksToWrite, forwarded.target, forwarded.tracksToSkip)
+                } else {
+                    finishExistingDestination(
+                        p = p,
+                        selected = selected,
+                        duplicateMode =
+                            data.getStringExtra(
+                                DestinationActivity.EXTRA_DUPLICATE_MODE
+                            ) ?: DestinationActivity.DUPLICATE_MODE_SKIP
+                    )
+                }
             }
         }
     }

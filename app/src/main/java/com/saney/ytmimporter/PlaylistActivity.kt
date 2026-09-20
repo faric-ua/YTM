@@ -31,6 +31,9 @@ class PlaylistActivity : Activity() {
     private val reviewRequestCode =
         4701
 
+    private val destinationRequestCode =
+        4702
+
     private var replacementDialogOpen =
         false
 
@@ -106,56 +109,50 @@ class PlaylistActivity : Activity() {
         )
 
         if (
-            requestCode != reviewRequestCode ||
             resultCode != RESULT_OK ||
             data == null
         ) {
             return
         }
 
-        when {
-            data.getBooleanExtra(
-                ReviewActivity.EXTRA_REPEAT_SEARCH,
-                false
-            ) ->
-                finishWithAction(
-                    ACTION_REPEAT_SEARCH
+        when (requestCode) {
+            destinationRequestCode ->
+                forwardDestinationResult(
+                    data
                 )
 
-            data.getBooleanExtra(
-                ReviewActivity.EXTRA_OPEN_DESTINATION,
-                false
-            ) ->
-                finishWithAction(
-                    ACTION_CREATE
-                )
+            reviewRequestCode ->
+                when {
+                    data.getBooleanExtra(
+                        ReviewActivity.EXTRA_DESTINATION_RESULT,
+                        false
+                    ) ->
+                        forwardDestinationResult(
+                            data
+                        )
 
-            !data.getStringExtra(
-                ReviewActivity.EXTRA_MANUAL_VIDEO_ID
-            ).isNullOrBlank() -> {
-                setResult(
-                    RESULT_OK,
-                    Intent()
-                        .putExtra(
-                            EXTRA_ACTION,
-                            ACTION_MANUAL_VIDEO
+                    data.getBooleanExtra(
+                        ReviewActivity.EXTRA_REPEAT_SEARCH,
+                        false
+                    ) ->
+                        finishWithAction(
+                            ACTION_REPEAT_SEARCH
                         )
-                        .putExtra(
-                            ReviewActivity.EXTRA_MANUAL_VIDEO_ID,
-                            data.getStringExtra(
-                                ReviewActivity.EXTRA_MANUAL_VIDEO_ID
-                            )
+
+                    data.getBooleanExtra(
+                        ReviewActivity.EXTRA_OPEN_DESTINATION,
+                        false
+                    ) ->
+                        openDestination()
+
+                    !data.getStringExtra(
+                        ReviewActivity.EXTRA_MANUAL_VIDEO_ID
+                    ).isNullOrBlank() ->
+                        finishWithAction(
+                            ACTION_MANUAL_VIDEO,
+                            data
                         )
-                        .putExtra(
-                            ReviewActivity.EXTRA_MANUAL_HISTORY_INDEX,
-                            data.getIntExtra(
-                                ReviewActivity.EXTRA_MANUAL_HISTORY_INDEX,
-                                Int.MIN_VALUE
-                            )
-                        )
-                )
-                finish()
-            }
+                }
         }
     }
 
@@ -276,8 +273,8 @@ class PlaylistActivity : Activity() {
                 "Запустити пошук лише там, де він потрібен",
             primary = false
         ) {
-            finishWithAction(
-                ACTION_SEARCH
+            openReview(
+                autoSearch = true
             )
         }
 
@@ -288,9 +285,7 @@ class PlaylistActivity : Activity() {
                 "Новий плейлист або додавання в існуючий",
             primary = true
         ) {
-            finishWithAction(
-                ACTION_CREATE
-            )
+            openDestination()
         }
 
         addAction(
@@ -1031,7 +1026,8 @@ class PlaylistActivity : Activity() {
     }
 
     private fun openReview(
-        openProjectActions: Boolean = false
+        openProjectActions: Boolean = false,
+        autoSearch: Boolean = false
     ) {
         startActivityForResult(
             Intent(
@@ -1042,20 +1038,69 @@ class PlaylistActivity : Activity() {
                     ReviewActivity.EXTRA_OPEN_PROJECT_ACTIONS,
                     openProjectActions
                 )
+                putExtra(
+                    ReviewActivity.EXTRA_RETURN_TO_PLAYLIST,
+                    true
+                )
+                putExtra(
+                    ReviewActivity.EXTRA_AUTO_SEARCH,
+                    autoSearch
+                )
             },
             reviewRequestCode
         )
     }
 
-    private fun finishWithAction(
-        action: String
+    private fun openDestination() {
+        val current =
+            currentPlaylistStore
+                .load()
+                ?: return toast(
+                    "Немає активного плейлиста"
+                )
+
+        val targetIntent =
+            DestinationActivity
+                .startIntent(
+                    context = this,
+                    snapshot = current
+                )
+                ?: return toast(
+                    "Немає треків для запису"
+                )
+
+        startActivityForResult(
+            targetIntent,
+            destinationRequestCode
+        )
+    }
+
+    private fun forwardDestinationResult(
+        data: Intent
     ) {
         setResult(
             RESULT_OK,
-            Intent().putExtra(
-                EXTRA_ACTION,
-                action
-            )
+            Intent(data)
+                .putExtra(
+                    EXTRA_ACTION,
+                    ACTION_DESTINATION_RESULT
+                )
+        )
+        finish()
+        overridePendingTransition(0, 0)
+    }
+
+    private fun finishWithAction(
+        action: String,
+        source: Intent? = null
+    ) {
+        setResult(
+            RESULT_OK,
+            Intent(source)
+                .putExtra(
+                    EXTRA_ACTION,
+                    action
+                )
         )
         finish()
         overridePendingTransition(0, 0)
@@ -1081,6 +1126,8 @@ class PlaylistActivity : Activity() {
             "REPEAT_SEARCH"
         const val ACTION_CREATE =
             "CREATE"
+        const val ACTION_DESTINATION_RESULT =
+            "DESTINATION_RESULT"
         const val ACTION_REPLACEMENTS =
             "REPLACEMENTS"
         const val ACTION_OPEN_YTM =

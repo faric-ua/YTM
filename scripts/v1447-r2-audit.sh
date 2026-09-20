@@ -34,14 +34,25 @@ home = Path(sys.argv[3]).read_text(encoding="utf-8")
 
 required_main = [
     'eyebrow =\n                    "Поточний плейлист"',
-    'title = "Швидкі дії"',
-    'dp(58)',
     'HomeDashboardChrome\n                .bottomNavigation(',
     'toast("Створіть / виберіть плейлист")',
 ]
 for needle in required_main:
     if needle not in main:
         raise SystemExit(f"FAIL: Main R2 contract missing: {needle}")
+
+if 'title = "Швидкі дії файл/плейлист"' in main:
+    quick_start = main.index('title = "Швидкі дії файл/плейлист"')
+    quick_end = main.index('quickSection.addView(quickRow)', quick_start)
+    quick = main[quick_start:quick_end]
+    for needle in ['"Імпорт"', '"Експорт"', 'dp(48)']:
+        if needle not in quick:
+            raise SystemExit(f"FAIL: R3 compact quick-action override missing: {needle}")
+elif 'title = "Швидкі дії"' in main:
+    if 'dp(58)' not in main:
+        raise SystemExit("FAIL: historical R2 58dp quick actions missing")
+else:
+    raise SystemExit("FAIL: quick-actions section title missing")
 
 if 'toast("Спочатку створіть або виберіть плейлист")' in main:
     raise SystemExit("FAIL: old long no-target playlist copy remains")

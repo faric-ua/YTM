@@ -24,7 +24,34 @@ LINES="$(wc -l < "$MAIN" | tr -d ' ')"
 grep -Fq 'HomeDashboardChrome' "$MAIN" || fail "Main does not use HomeDashboardChrome"
 grep -Fq 'ScrollView(this)' "$MAIN" || fail "Home scrollable dashboard body missing"
 grep -Fq 'bottomNavigation(' "$MAIN" || fail "Home bottom navigation missing"
-grep -Fq '"Швидкі дії"' "$MAIN" || fail "Home quick-actions section missing"
+if grep -Fq '"Швидкі дії файл/плейлист"' "$MAIN"; then
+  python - "$MAIN" <<'PY'
+from pathlib import Path
+import sys
+
+main = Path(sys.argv[1]).read_text(encoding="utf-8")
+start = main.find('title = "Швидкі дії файл/плейлист"')
+end = main.find('quickSection.addView(quickRow)', start)
+
+if start < 0 or end < 0:
+    raise SystemExit("FAIL: R4 quick-actions block boundary missing")
+
+block = main[start:end]
+
+for needle in [
+    'label =\n                        "Імпорт"',
+    'label =\n                        "Експорт"',
+    'dp(48)',
+]:
+    if needle not in block:
+        raise SystemExit(
+            f"FAIL: R4 Home quick-actions successor contract missing: {needle}"
+        )
+PY
+else
+  grep -Fq '"Швидкі дії"' "$MAIN" ||
+    fail "Home quick-actions section missing"
+fi
 grep -Fq '"Поточний плейлист"' "$MAIN" || fail "Home current-playlist section missing"
 grep -Fq 'label = "Головна"' "$HOME_UI" || fail "Home nav action missing"
 grep -Fq 'label = "Пошук"' "$HOME_UI" || fail "Search nav action missing"
