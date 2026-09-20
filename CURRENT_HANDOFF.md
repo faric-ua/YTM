@@ -15,22 +15,26 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.47-R2**
-- versionCode: **89**
-- active branch: `fix/v1.4.47-r2-home-compact-theme-menu`
-- active PR: **#21 — v1.4.47-R2: compact Home + Menu-owned theme picker** → `fix/v1.4.47-r1-home-nav-dialog`; PR #20 remains open underneath, then PR #19
+- versionName: **1.4.47-R3**
+- versionCode: **90**
+- active branch: `fix/v1.4.47-r3-quick-export-home-blocks`
+- active PR: **none yet for R3**; PR #21 remains open underneath (R2 → R1), then PR #20 and PR #19
 - stacked from: **v1.4.43 PR #14 head**; PR #14 remains open because stale-token acceptance is time-dependent/deferred
-- status: **STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA NEEDED — R2 after R1 phone UI findings**
-- installed phone APK: **v1.4.47-R1**
-- focus: **v1.4.47-R2 — compact Home + Menu-owned theme picker**
+- status: **R3 WORK IN PROGRESS — PHONE FINDINGS COLLECTED / NO R3 PREFLIGHT OR BUILD YET**
+- installed phone APK: **v1.4.47-R2**
+- focus: **v1.4.47-R3 — batched phone findings, modal lifecycle, Import auth freshness, Home polish**
 
-R2 signed-build attempt evidence:
-- GitHub Actions run: **35476795879**
-- build head: `9c8d0095a7f0c5c37d8788c4593c0651942a298a`
-- result: **FAILED IN RELEASE PREFLIGHT — NO ANDROID BUILD STARTED**
-- exact cause: `scripts/v1447-r2-audit.sh` still expected the pre-PASS status literal `IMPLEMENTED — STATIC/FULL PREFLIGHT + PHONE QA PENDING`
-- repository status had correctly advanced to `STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING`
-- stale audit assertion fixed afterward; a new workflow_dispatch from the new branch HEAD is required
+Successful R2 signed-build evidence:
+- GitHub Actions run: **35476977582**
+- build head: `6608a1fce6f557882ec69af95cb5c01e8d43e72a`
+- conclusion: **success**
+- installed on the real phone as v1.4.47-R2
+
+Earlier R2 signed-build attempt:
+- run **35476795879**
+- head: `9c8d0095a7f0c5c37d8788c4593c0651942a298a`
+- failed in release preflight only because `scripts/v1447-r2-audit.sh` expected a stale status literal
+- Android build/signing did not start in that failed run
 
 Planned stable R1 build folder:
 
@@ -348,13 +352,14 @@ Do not treat BUG-018..020 as fixed yet.
 
 ## 7. Exact next execution step
 
-1. Open/verify the stacked R2 PR into `fix/v1.4.47-r1-home-nav-dialog`.
-2. Build signed v1.4.47-R2 APK from the exact R2 head.
-3. Verify APK SHA-256.
-4. Install over v1.4.47-R1 without uninstalling or clearing data.
-5. Phone-test portrait density, rounded nav, Menu-owned theme picker, quick actions, short no-target copy, and a short R1 regression smoke.
-6. Merge R2 only after targeted phone PASS.
-7. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
+1. Start the next chat from `START_HERE_ASSISTANT.md`, this file, and `docs/v.1.4.47/R3_PLAN.md`.
+2. Verify live R3 branch + PR stack before editing.
+3. Do **not** build or merge yet.
+4. Continue/finalize the batched R3 scope from BUG-018..023.
+5. Implement in this order: modal lifecycle → Import fresh-auth gate → SearchCache Actions container → History semantics → finish Home R3 polish/direct Export.
+6. Add dedicated R3 audits and full release preflight.
+7. Only after preflight PASS: open stacked R3 PR into R2, build signed code 90 APK, install over R2, run targeted phone QA.
+8. Keep UX-023 updater, BUG-004 real-401 and BUG-013 aged-token acceptance separate.
 
 ## 8. Working contract
 
@@ -372,11 +377,11 @@ Rules:
 
 1. `START_HERE_ASSISTANT.md`
 2. `CURRENT_HANDOFF.md`
-3. `YTM_ASSISTANT_WORKFLOW.md`
-4. `PROJECT_STATUS.txt`
-5. `BACKLOG.md`
-6. `RELEASE_TEST_STATUS.md`
-7. `qa/BUG_REGISTER.md`
-8. `docs/v.1.4.43/RELEASE.md`
-9. `docs/v.1.4.43/qa/PHONE_TEST.md`
-10. live GitHub branch/PR state
+3. `docs/v.1.4.47/R3_PLAN.md`
+4. `docs/v.1.4.47/HOME_BLOCKS.md`
+5. `YTM_ASSISTANT_WORKFLOW.md`
+6. `PROJECT_STATUS.txt`
+7. `BACKLOG.md`
+8. `RELEASE_TEST_STATUS.md`
+9. `docs/v.1.4.47/qa/BUG_REGISTER.md`
+10. live GitHub branch/PR/workflow state
