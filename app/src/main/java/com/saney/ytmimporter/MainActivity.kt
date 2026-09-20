@@ -1708,9 +1708,7 @@ class MainActivity : Activity() {
         )
         toast("Авторизацію Google/YTM потрібно відновити")
 
-        if (workflowRelayActive) {
-            reopenDelegatedParentAfterAction()
-        }
+        reopenDelegatedParentAfterAction()
     }
 
     private fun handleAuthorizedToken(
