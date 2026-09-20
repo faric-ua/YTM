@@ -312,7 +312,12 @@ Recorded so far:
 - BUG-020: the Import auth-invalidated message dialog is not restored on rotation;
 - BUG-021: History list/detail always shows `Додано X/Y`, even for completed
   import/restore operations where no YTM write occurred. The label must become
-  operation-aware (`Додано в YTM`, `Імпортовано`, `Відновлено`, etc.).
+  operation-aware (`Додано в YTM`, `Імпортовано`, `Відновлено`, etc.);
+- BUG-022: Help windows disappear on rotation. Project terminology is now locked:
+  **Help window / вікно Help** = informational modal opened from `?`/Help/explanation.
+  Reproduced on `Що буде імпортовано?`. Shared `ListSelectorActivity.showHelp()`
+  does not persist the open-help state, so all selector Help windows using
+  `helpTitle/helpMessage` need a shared lifecycle audit/fix.
 
 Likely BUG-020 dialog:
 - `Сесію Google/YTM завершено`;
