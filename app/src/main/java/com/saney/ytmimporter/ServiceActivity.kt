@@ -399,23 +399,54 @@ class ServiceActivity : Activity() {
             )
         )
 
-        content.addView(sectionTitle("Дії"))
         content.addView(
-            fullActionButton(
-                label = "Видалити прострочені записи",
-                danger = true
-            ) {
-                confirmClearExpiredSearchCache(
-                    stats.expiredEntries
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(12),
+                    dp(2),
+                    dp(12),
+                    dp(4)
                 )
-            }
-        )
-        content.addView(
-            fullActionButton(
-                label = "Очистити весь SearchCache",
-                danger = true
-            ) {
-                confirmClearSearchCache()
+                background =
+                    roundedBackground(
+                        SURFACE,
+                        16,
+                        BORDER
+                    )
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        bottomMargin =
+                            dp(8)
+                    }
+
+                addView(
+                    sectionTitle("Дії")
+                )
+                addView(
+                    fullActionButton(
+                        label =
+                            "Видалити прострочені записи",
+                        danger = true
+                    ) {
+                        confirmClearExpiredSearchCache(
+                            stats.expiredEntries
+                        )
+                    }
+                )
+                addView(
+                    fullActionButton(
+                        label =
+                            "Очистити весь SearchCache",
+                        danger = true
+                    ) {
+                        confirmClearSearchCache()
+                    }
+                )
             }
         )
 

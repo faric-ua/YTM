@@ -401,7 +401,7 @@ class HistoryActivity : Activity() {
             card().apply {
                 addView(
                     statLine(
-                        "Додано",
+                        "Додано в YTM",
                         "${entry.addedCount}/${entry.writeTargetCount}"
                     )
                 )
@@ -1125,7 +1125,7 @@ class HistoryActivity : Activity() {
                 "Джерело: ${entry.sourceLabel}\n"
             )
             append(
-                "Додано: ${entry.addedCount}/" +
+                "Додано в YTM: ${entry.addedCount}/" +
                     "${entry.writeTargetCount}\n"
             )
             append(
@@ -1922,7 +1922,7 @@ class HistoryActivity : Activity() {
                     )
                     append("\n")
                     append(
-                        "Додано " +
+                        "Додано в YTM " +
                             "${entry.addedCount}/" +
                             "${entry.writeTargetCount}"
                     )
@@ -1951,6 +1951,15 @@ class HistoryActivity : Activity() {
                         append(
                             " • Дублікати " +
                                 entry.duplicateCount
+                        )
+                    }
+
+                    if (
+                        entry.skippedCount > 0
+                    ) {
+                        append(
+                            " • Пропущено " +
+                                entry.skippedCount
                         )
                     }
                 }
