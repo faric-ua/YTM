@@ -85,3 +85,66 @@ Approved prototype usage:
 See:
 - `../R1.md`
 - `PHONE_TEST_R1.md`
+
+
+## v1.4.47-R2/R3 phone finding collection — IN PROGRESS
+
+Do not treat this section as a final R3 scope yet. The user is still collecting
+real-phone findings and asked to batch fixes afterward.
+
+### BUG-018 — SearchCache actions have no section container
+
+Observed on phone:
+- SearchCache screen shows `Дії` as a standalone heading;
+- the two destructive actions sit directly on the page;
+- unlike nearby statistic/info sections, there is no enclosing themed section/card.
+
+Requested direction:
+- wrap the `Дії` heading + action buttons in one themed container;
+- keep destructive action semantics/red coloring unchanged.
+
+Status: **RECORDED / NOT FIXED YET**.
+
+### BUG-019 — Import YTM flow can invalidate a stale Google/YTM session on first API use
+
+Observed sequence:
+1. Home/account appeared connected.
+2. In Import, user tapped `Вибрати плейлист з YTM`.
+3. A transient dialog appeared.
+4. After that flow, a repeated tap reported:
+   `Спочатку підключіть Google/YTM у кроці 2 на головному екрані.`
+
+Current code evidence:
+- `ImportActivity.importFromYtmAccount()` reads `AuthSessionStore.current().accessToken`
+  directly;
+- it does not run the MainActivity/AuthorizationClient proactive freshness check first;
+- a YouTube API HTTP 401 calls `invalidateAuthorizationIfNeeded()`, which clears both
+  `AuthSessionStore` and `PersistentAuthStateStore`.
+
+Interpretation:
+- this is consistent with a stale access token being trusted by ImportActivity until
+  the first real API request returns 401;
+- this is related to the broader BUG-013 freshness class, but is a distinct Import
+  entry-point gap and should be fixed/tested explicitly.
+
+Status: **RECORDED / NOT FIXED YET**.
+
+### BUG-020 — Import auth-invalidated dialog disappears on rotation
+
+Observed sequence:
+- after `Вибрати плейлист з YTM`, a dialog appeared;
+- rotating the phone caused the dialog to disappear;
+- afterward the next import attempt only showed the connect-Google/YTM hint.
+
+Current code evidence strongly indicates the transient dialog was:
+`Сесію Google/YTM завершено`
+
+because `ImportActivity.invalidateAuthorizationIfNeeded()`:
+- handles HTTP 401;
+- clears auth state;
+- immediately shows that UiChrome message dialog;
+- does not persist an open-dialog state through Activity recreation.
+
+This exact dialog therefore has no rotation restoration contract today.
+
+Status: **RECORDED / NOT FIXED YET**.
