@@ -309,7 +309,10 @@ Recorded so far:
 - BUG-018: SearchCache `Дії` section has no enclosing themed container;
 - BUG-019: Import `Вибрати плейлист з YTM` trusts `AuthSessionStore` token directly
   and can hit HTTP 401 before any proactive refresh/freshness check;
-- BUG-020: the Import auth-invalidated message dialog is not restored on rotation.
+- BUG-020: the Import auth-invalidated message dialog is not restored on rotation;
+- BUG-021: History list/detail always shows `Додано X/Y`, even for completed
+  import/restore operations where no YTM write occurred. The label must become
+  operation-aware (`Додано в YTM`, `Імпортовано`, `Відновлено`, etc.).
 
 Likely BUG-020 dialog:
 - `Сесію Google/YTM завершено`;
