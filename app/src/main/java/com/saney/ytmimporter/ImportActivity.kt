@@ -152,6 +152,19 @@ class ImportActivity : Activity() {
 
         buildUi()
 
+        if (
+            savedInstanceState == null &&
+            intent.getStringExtra(
+                EXTRA_START_ACTION
+            ) == ACTION_SELECTIVE_EXPORT
+        ) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    chooseSelectiveYtmExport()
+                }
+            }
+        }
+
         if (clearWorkspaceDialogOpen) {
             window.decorView.post {
                 val current =
@@ -3558,6 +3571,12 @@ class ImportActivity : Activity() {
 
         const val EXTRA_CLEAR_WORKSPACE =
             "clear_current_workspace"
+
+        const val EXTRA_START_ACTION =
+            "import_start_action"
+
+        const val ACTION_SELECTIVE_EXPORT =
+            "selective_export"
 
         private val BACKGROUND =
             Color.rgb(
