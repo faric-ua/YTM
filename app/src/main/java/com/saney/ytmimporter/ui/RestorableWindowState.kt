@@ -38,6 +38,7 @@ class RestorableWindowState(
     fun show(
         key: String,
         args: Bundle = Bundle(),
+        onDismiss: (() -> Unit)? = null,
         createDialog: () -> Dialog
     ): Dialog {
         activeKey = key
@@ -49,6 +50,7 @@ class RestorableWindowState(
                     if (activeKey == key) {
                         clear()
                     }
+                    onDismiss?.invoke()
                 }
             }
     }
