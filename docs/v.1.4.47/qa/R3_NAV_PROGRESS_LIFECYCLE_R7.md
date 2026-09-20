@@ -28,3 +28,9 @@ Phone acceptance after signed build:
 2. Playlist-owned path still returns to `[Поточний плейлист]`.
 3. Real write shows live `● Додаю…`, then `✓ Додано` / duplicate / error with correct semantic colors and truthful aggregate text.
 4. `Перевірка треків → ↻ Пошук → Повторити пошук?` survives horizontal and vertical rotation.
+
+Phone result on signed R7 (`3e330c97bd902f559fa52ca192227ca16f77bd59`):
+- tests 01–04: PASS;
+- test 05 live write progress/colors: FAIL — visible status/color behavior remained stale;
+- test 06 account card/modal: PASS;
+- R8 therefore narrows the remaining defect to explicit write-progress state propagation/rendering.

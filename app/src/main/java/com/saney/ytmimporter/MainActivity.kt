@@ -2910,8 +2910,9 @@ class MainActivity : Activity() {
                     onTrackStart = { track, _, _ ->
                         runOnUiThread {
                             workflowRelay.updateWriteTracks(
-                                displayTracks,
-                                track
+                                tracks = displayTracks,
+                                activeTrack = track,
+                                stateSourceTracks = tracks
                             )
                         }
                     },
@@ -2920,8 +2921,9 @@ class MainActivity : Activity() {
                             progress.progress =
                                 writeProgress.progressValue
                             workflowRelay.updateWriteProgress(
-                                writeProgress,
-                                displayTracks
+                                progress = writeProgress,
+                                tracks = displayTracks,
+                                stateSourceTracks = tracks
                             )
 
                             adapter.notifyDataSetChanged()

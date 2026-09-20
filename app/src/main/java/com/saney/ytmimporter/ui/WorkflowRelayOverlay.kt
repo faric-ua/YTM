@@ -26,6 +26,9 @@ class WorkflowRelayOverlay(
     private var statusText: TextView? = null
     private var writeRows: LinearLayout? = null
     private var writeScroll: ScrollView? = null
+    private var writeDisplayTracks: List<Track> = emptyList()
+    private val writeStateByIndex = mutableMapOf<Int, TrackStatus>()
+    private var activeWriteIndex: Int? = null
 
     init {
         if (active) {
@@ -169,10 +172,14 @@ class WorkflowRelayOverlay(
             )
         )
 
-        updateWriteTracks(
-            tracks = tracks,
-            activeTrack = null
-        )
+        writeDisplayTracks = tracks.toList()
+        writeStateByIndex.clear()
+        tracks.forEachIndexed { index, track ->
+            writeStateByIndex[index] = track.status
+        }
+        activeWriteIndex = null
+
+        renderWriteTracks()
 
         activity.addContentView(
             root,
@@ -186,8 +193,20 @@ class WorkflowRelayOverlay(
 
     fun updateWriteTracks(
         tracks: List<Track>,
-        activeTrack: Track?
+        activeTrack: Track?,
+        stateSourceTracks: List<Track> = tracks
     ) {
+        ensureWriteDisplayTracks(tracks)
+        syncWriteStates(stateSourceTracks)
+
+        activeWriteIndex =
+            activeTrack
+                ?.let(::resolveWriteIndex)
+
+        renderWriteTracks()
+    }
+
+    private fun renderWriteTracks() {
         val rows =
             writeRows
                 ?: return
@@ -197,34 +216,34 @@ class WorkflowRelayOverlay(
         rows.removeAllViews()
         var activeRow: View? = null
 
-        tracks.forEachIndexed { index, track ->
+        writeDisplayTracks.forEachIndexed { index, track ->
+            val effectiveStatus =
+                writeStateByIndex[index]
+                    ?: track.status
+
             val isActive =
-                track === activeTrack
+                activeWriteIndex == index
 
             val state =
                 when {
                     isActive ->
                         "● Додаю…"
 
-                    track.status ==
+                    effectiveStatus ==
                         TrackStatus.ADDED ->
                         "✓ Додано"
 
-                    track.status ==
+                    effectiveStatus ==
                         TrackStatus.DUPLICATE ->
                         "≋ Дублікат • пропущено"
 
-                    track.status ==
+                    effectiveStatus ==
                         TrackStatus.FAILED ->
                         "× Помилка"
 
-                    track.status ==
+                    effectiveStatus ==
                         TrackStatus.SKIPPED ->
                         "— Пропущено"
-
-                    track.status ==
-                        TrackStatus.PENDING ->
-                        "… Очікує"
 
                     else ->
                         "… Очікує"
@@ -235,20 +254,66 @@ class WorkflowRelayOverlay(
                     isActive ->
                         palette.accent
 
-                    track.status ==
+                    effectiveStatus ==
                         TrackStatus.ADDED ->
                         palette.success
 
-                    track.status ==
+                    effectiveStatus ==
                         TrackStatus.DUPLICATE ->
                         palette.duplicate
 
-                    track.status ==
+                    effectiveStatus ==
                         TrackStatus.FAILED ->
                         palette.danger
 
                     else ->
                         palette.muted
+                }
+
+            val rowFill =
+                when {
+                    isActive ->
+                        palette.accentFill
+
+                    effectiveStatus ==
+                        TrackStatus.ADDED ->
+                        palette.successFill
+
+                    effectiveStatus ==
+                        TrackStatus.DUPLICATE ->
+                        blendColor(
+                            palette.surface,
+                            palette.duplicate,
+                            0.22f
+                        )
+
+                    effectiveStatus ==
+                        TrackStatus.FAILED ->
+                        palette.dangerFill
+
+                    else ->
+                        palette.surface
+                }
+
+            val rowAccent =
+                when {
+                    isActive ->
+                        palette.accent
+
+                    effectiveStatus ==
+                        TrackStatus.ADDED ->
+                        palette.success
+
+                    effectiveStatus ==
+                        TrackStatus.DUPLICATE ->
+                        palette.duplicate
+
+                    effectiveStatus ==
+                        TrackStatus.FAILED ->
+                        palette.danger
+
+                    else ->
+                        null
                 }
 
             val row =
@@ -264,9 +329,12 @@ class WorkflowRelayOverlay(
                     background =
                         AppThemeManager.surfaceDrawable(
                             context = activity,
-                            fill = palette.surface,
+                            fill = rowFill,
                             radiusDp = 12,
-                            accentStroke = isActive
+                            accentStroke =
+                                rowAccent != null,
+                            accentOverride =
+                                rowAccent
                         )
                 }
 
@@ -277,19 +345,19 @@ class WorkflowRelayOverlay(
                             isActive ->
                                 "● "
 
-                            track.status ==
+                            effectiveStatus ==
                                 TrackStatus.ADDED ->
                                 "✓ "
 
-                            track.status ==
+                            effectiveStatus ==
                                 TrackStatus.DUPLICATE ->
                                 "≋ "
 
-                            track.status ==
+                            effectiveStatus ==
                                 TrackStatus.FAILED ->
                                 "× "
 
-                            track.status ==
+                            effectiveStatus ==
                                 TrackStatus.SKIPPED ->
                                 "— "
 
@@ -313,19 +381,19 @@ class WorkflowRelayOverlay(
                             isActive ->
                                 palette.accent
 
-                            track.status ==
+                            effectiveStatus ==
                                 TrackStatus.ADDED ->
                                 palette.success
 
-                            track.status ==
+                            effectiveStatus ==
                                 TrackStatus.DUPLICATE ->
                                 palette.duplicate
 
-                            track.status ==
+                            effectiveStatus ==
                                 TrackStatus.FAILED ->
                                 palette.danger
 
-                            track.status ==
+                            effectiveStatus ==
                                 TrackStatus.SKIPPED ->
                                 palette.muted
 
@@ -384,31 +452,175 @@ class WorkflowRelayOverlay(
     fun updateWriteProgress(
         progress:
             PlaylistWriteCoordinator.WriteProgress,
-        tracks: List<Track>
+        tracks: List<Track>,
+        stateSourceTracks: List<Track> = tracks
     ) {
+        ensureWriteDisplayTracks(tracks)
+        syncWriteStates(stateSourceTracks)
+        activeWriteIndex = null
+
         val skippedDuplicates =
-            tracks.count {
-                it.status ==
-                    TrackStatus.DUPLICATE
+            writeStateByIndex
+                .values
+                .count {
+                    it ==
+                        TrackStatus.DUPLICATE
+                }
+
+        val prefix =
+            if (progress.playlistCreated) {
+                "Плейлист створено. "
+            } else {
+                ""
             }
 
         val nextMessage =
-            if (
-                progress.playlistCreated
-            ) {
-                "Плейлист створено. Додаю треки…"
-            } else {
-                "Оброблено ${progress.processedTracks}/${progress.totalTracks} • " +
-                    "залишилось ${progress.job.remainingTracks.size}\n" +
-                    "Додано ${progress.job.addedCount} • " +
-                    "дублікатів пропущено $skippedDuplicates • " +
-                    "помилок ${progress.job.failedCount}"
-            }
+            prefix +
+                "Оброблено: ${progress.processedTracks}/${progress.totalTracks} • " +
+                "залишилось: ${progress.job.remainingTracks.size}\n" +
+                "Додано: ${progress.job.addedCount} • " +
+                "дублікатів пропущено: $skippedDuplicates • " +
+                "помилок: ${progress.job.failedCount}"
 
         update(nextMessage)
-        updateWriteTracks(
-            tracks = tracks,
-            activeTrack = null
+        renderWriteTracks()
+    }
+
+    private fun ensureWriteDisplayTracks(
+        tracks: List<Track>
+    ) {
+        if (
+            writeDisplayTracks.size == tracks.size &&
+            writeDisplayTracks.indices.all { index ->
+                sameTrack(
+                    writeDisplayTracks[index],
+                    tracks[index]
+                )
+            }
+        ) {
+            return
+        }
+
+        writeDisplayTracks = tracks.toList()
+        writeStateByIndex.clear()
+        tracks.forEachIndexed { index, track ->
+            writeStateByIndex[index] =
+                track.status
+        }
+        activeWriteIndex = null
+    }
+
+    private fun syncWriteStates(
+        sourceTracks: List<Track>
+    ) {
+        sourceTracks.forEach { track ->
+            resolveWriteIndex(track)
+                ?.let { index ->
+                    writeStateByIndex[index] =
+                        track.status
+                }
+        }
+    }
+
+    private fun resolveWriteIndex(
+        track: Track
+    ): Int? {
+        val byIdentity =
+            writeDisplayTracks
+                .indexOfFirst {
+                    it === track
+                }
+
+        if (byIdentity >= 0) {
+            return byIdentity
+        }
+
+        track.historyIndex
+            ?.let { historyIndex ->
+                val byHistory =
+                    writeDisplayTracks
+                        .indexOfFirst {
+                            it.historyIndex ==
+                                historyIndex
+                        }
+
+                if (byHistory >= 0) {
+                    return byHistory
+                }
+            }
+
+        val byValue =
+            writeDisplayTracks
+                .indexOfFirst {
+                    sameTrack(
+                        it,
+                        track
+                    )
+                }
+
+        return byValue
+            .takeIf {
+                it >= 0
+            }
+    }
+
+    private fun sameTrack(
+        first: Track,
+        second: Track
+    ): Boolean =
+        (
+            first.historyIndex != null &&
+                first.historyIndex ==
+                    second.historyIndex
+        ) ||
+            (
+                first.originalArtist ==
+                    second.originalArtist &&
+                    first.originalTitle ==
+                        second.originalTitle &&
+                    first.selectedVideoId ==
+                        second.selectedVideoId
+            )
+
+    private fun blendColor(
+        base: Int,
+        accent: Int,
+        amount: Float
+    ): Int {
+        val safeAmount =
+            amount.coerceIn(
+                0f,
+                1f
+            )
+
+        fun channel(
+            from: Int,
+            to: Int
+        ): Int =
+            (
+                from +
+                    (to - from) *
+                    safeAmount
+            )
+                .toInt()
+                .coerceIn(
+                    0,
+                    255
+                )
+
+        return android.graphics.Color.rgb(
+            channel(
+                android.graphics.Color.red(base),
+                android.graphics.Color.red(accent)
+            ),
+            channel(
+                android.graphics.Color.green(base),
+                android.graphics.Color.green(accent)
+            ),
+            channel(
+                android.graphics.Color.blue(base),
+                android.graphics.Color.blue(accent)
+            )
         )
     }
 
@@ -430,6 +642,9 @@ class WorkflowRelayOverlay(
         statusText = null
         writeRows = null
         writeScroll = null
+        writeDisplayTracks = emptyList()
+        writeStateByIndex.clear()
+        activeWriteIndex = null
     }
 
     private fun removeOverlay() {
@@ -441,6 +656,9 @@ class WorkflowRelayOverlay(
         statusText = null
         writeRows = null
         writeScroll = null
+        writeDisplayTracks = emptyList()
+        writeStateByIndex.clear()
+        activeWriteIndex = null
     }
 
     private fun dp(value: Int): Int =

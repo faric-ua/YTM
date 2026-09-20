@@ -55,9 +55,25 @@ for needle in [
     if needle not in write:
         raise SystemExit(f"FAIL: stable write UI contract missing: {needle}")
 
+semantic_groups = [
+    (
+        '"Оброблено ${progress.processedTracks}/${progress.totalTracks} • "',
+        '"Оброблено: ${progress.processedTracks}/${progress.totalTracks} • "',
+    ),
+    (
+        '"Додано ${progress.job.addedCount} • "',
+        '"Додано: ${progress.job.addedCount} • "',
+    ),
+]
+
+for alternatives in semantic_groups:
+    if not any(needle in relay for needle in alternatives):
+        raise SystemExit(
+            "FAIL: progress semantic state missing: "
+            + " OR ".join(alternatives)
+        )
+
 for needle in [
-    '"Оброблено ${progress.processedTracks}/${progress.totalTracks} • "',
-    '"Додано ${progress.job.addedCount} • "',
     "TrackStatus.DUPLICATE",
     "palette.duplicate",
     "TrackStatus.FAILED",
