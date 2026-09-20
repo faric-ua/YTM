@@ -299,6 +299,32 @@ v1.4.47-R2 on `fix/v1.4.47-r2-home-compact-theme-menu`:
 
 R2 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R2.md`.
 
+## 5G. R3 phone finding collection in progress
+
+The user is still collecting real-phone issues and explicitly asked to batch fixes
+afterward. Do not start another corrective build until the user says the list is
+complete.
+
+Recorded so far:
+- BUG-018: SearchCache `Дії` section has no enclosing themed container;
+- BUG-019: Import `Вибрати плейлист з YTM` trusts `AuthSessionStore` token directly
+  and can hit HTTP 401 before any proactive refresh/freshness check;
+- BUG-020: the Import auth-invalidated message dialog is not restored on rotation.
+
+Likely BUG-020 dialog:
+- `Сесію Google/YTM завершено`;
+- code path matches the observed sequence: first API call → HTTP 401 → auth stores
+  cleared → dialog shown → rotation destroys dialog → next tap sees no token and
+  shows the Step-2 connection hint.
+
+R3 already contains separate Home work in progress:
+- stable Home block numbering 1–7;
+- tighter block 2/5/6 title spacing;
+- Home quick actions renamed to `Імпорт` / `Експорт`;
+- Home `Експорт` is being routed directly into selective playlist export.
+
+Do not treat BUG-018..020 as fixed yet.
+
 ## 6. Historical status that remains true
 
 - v1.4.42-R1 phone PASS; BUG-012 closed.
