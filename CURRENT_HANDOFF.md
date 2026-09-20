@@ -303,39 +303,49 @@ v1.4.47-R2 on `fix/v1.4.47-r2-home-compact-theme-menu`:
 
 R2 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R2.md`.
 
-## 5G. R3 phone finding collection in progress
+## 5G. R3 phone finding collection / master plan
 
-The user is still collecting real-phone issues and explicitly asked to batch fixes
-afterward. Do not start another corrective build until the user says the list is
-complete.
+R3 is now the active work-in-progress branch. No R3 preflight, PR, signed build, or
+phone PASS exists yet.
 
-Recorded so far:
+Canonical implementation/continuation plan:
+`docs/v.1.4.47/R3_PLAN.md`
+
+Recorded phone findings:
 - BUG-018: SearchCache `Дії` section has no enclosing themed container;
-- BUG-019: Import `Вибрати плейлист з YTM` trusts `AuthSessionStore` token directly
-  and can hit HTTP 401 before any proactive refresh/freshness check;
-- BUG-020: the Import auth-invalidated message dialog is not restored on rotation;
-- BUG-021: History list/detail always shows `Додано X/Y`, even for completed
-  import/restore operations where no YTM write occurred. The label must become
-  operation-aware (`Додано в YTM`, `Імпортовано`, `Відновлено`, etc.);
-- BUG-022: Help windows disappear on rotation. Project terminology is now locked:
-  **Help window / вікно Help** = informational modal opened from `?`/Help/explanation.
-  Reproduced on `Що буде імпортовано?`. Shared `ListSelectorActivity.showHelp()`
-  does not persist the open-help state, so all selector Help windows using
-  `helpTitle/helpMessage` need a shared lifecycle audit/fix.
+- BUG-019: Import remote YTM flows read `AuthSessionStore.accessToken` directly and
+  can hit HTTP 401 before any fresh Google authorization check;
+- BUG-020: Import `Сесію Google/YTM завершено` notice is not restored on rotation;
+- BUG-021: History write-result summary is ambiguous. History is write-job based;
+  `COMPLETED` means the coordinator finished with no failedCount, not that all
+  targets were inserted. UI must explicitly show `Додано в YTM` plus
+  duplicate/skipped/pending/error composition;
+- BUG-022: Help windows disappear on rotation. Project terminology is locked:
+  **Help window / вікно Help** = informational modal opened from
+  `?` / Help / explanation;
+- BUG-023: non-Help modal windows also disappear on rotation. Confirmed example:
+  Review → `Проект` → `Поточний YTM Project`.
 
-Likely BUG-020 dialog:
-- `Сесію Google/YTM завершено`;
-- code path matches the observed sequence: first API call → HTTP 401 → auth stores
-  cleared → dialog shown → rotation destroys dialog → next tap sees no token and
-  shows the Step-2 connection hint.
+Modal code audit on the current R3 branch:
+- 50 active unified modal call sites across 12 Activities;
+- 31 direct `UiChrome.show*Dialog(...)` calls;
+- 19 `UiChrome.alertBuilder(...)` compatibility calls;
+- there is no project-wide recreation contract yet.
 
-R3 already contains separate Home work in progress:
+Likely BUG-020 sequence:
+- first remote Import request → HTTP 401;
+- auth stores cleared;
+- `Сесію Google/YTM завершено` shown;
+- rotation destroys the notice;
+- next tap sees no token and only shows the Step-2 connection hint.
+
+R3 code already contains and must preserve:
 - stable Home block numbering 1–7;
 - tighter block 2/5/6 title spacing;
 - Home quick actions renamed to `Імпорт` / `Експорт`;
-- Home `Експорт` is being routed directly into selective playlist export.
+- Home `Експорт` routes directly into selective playlist export.
 
-Do not treat BUG-018..020 as fixed yet.
+Do not treat BUG-018..023 as fixed until implementation + signed phone retest.
 
 ## 6. Historical status that remains true
 
