@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -50,6 +51,8 @@ class HistoryActivity : Activity() {
     private var pendingExportSuccessMessage: String? = null
     private var pendingExportFileName: String? = null
     private var pendingExportMimeType: String? = null
+    private lateinit var windowState:
+        RestorableWindowState
 
     private val saveExportRequestCode = 3201
     private val saveExportFolderRequestCode = 3202
@@ -57,6 +60,11 @@ class HistoryActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
 
         historyStore = HistoryStore(this)
         pendingJobStore = PendingJobStore(this)
@@ -64,16 +72,18 @@ class HistoryActivity : Activity() {
         val restoredEntryId =
             savedInstanceState?.getString(KEY_CURRENT_ENTRY_ID)
 
-        if (!restoredEntryId.isNullOrBlank()) {
-            val entry = historyStore.get(restoredEntryId)
+        val restoredEntry =
+            restoredEntryId
+                ?.takeIf { it.isNotBlank() }
+                ?.let(historyStore::get)
 
-            if (entry != null) {
-                showDetailScreen(entry)
-                return
-            }
+        if (restoredEntry != null) {
+            showDetailScreen(restoredEntry)
+        } else {
+            showListScreen()
         }
 
-        showListScreen()
+        restoreWindowIfNeeded()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -81,6 +91,7 @@ class HistoryActivity : Activity() {
             KEY_CURRENT_ENTRY_ID,
             currentEntryId
         )
+        windowState.save(outState)
         super.onSaveInstanceState(outState)
     }
 
@@ -599,10 +610,9 @@ class HistoryActivity : Activity() {
             ) {
                 confirmProjectScope(
                     entry = entry,
-                    actionLabel = "Зберегти"
-                ) {
-                    saveHistoryProject(entry)
-                }
+                    action =
+                        HistoryProjectAction.SAVE
+                )
             }
         )
 
@@ -612,10 +622,9 @@ class HistoryActivity : Activity() {
             ) {
                 confirmProjectScope(
                     entry = entry,
-                    actionLabel = "Поділитися"
-                ) {
-                    shareHistoryProject(entry)
-                }
+                    action =
+                        HistoryProjectAction.SHARE
+                )
             }
         )
 
@@ -635,6 +644,79 @@ class HistoryActivity : Activity() {
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
     }
+
+    private fun restoreWindowIfNeeded() {
+        window.decorView.post {
+            if (isFinishing || isDestroyed) {
+                return@post
+            }
+
+            when (windowState.key) {
+                WINDOW_ACTIONS,
+                WINDOW_PROBLEM_LOG,
+                WINDOW_DELETE_ENTRY -> {
+                    val entry =
+                        windowEntryFromArgs()
+                            ?: return@post windowState.clear()
+
+                    when (windowState.key) {
+                        WINDOW_ACTIONS ->
+                            showActions(entry)
+
+                        WINDOW_PROBLEM_LOG ->
+                            showProblemLog(entry)
+
+                        WINDOW_DELETE_ENTRY ->
+                            confirmDeleteHistoryEntry(entry)
+                    }
+                }
+
+                WINDOW_PROJECT_SCOPE -> {
+                    val entry =
+                        windowEntryFromArgs()
+                            ?: return@post windowState.clear()
+
+                    val action =
+                        windowState
+                            .args()
+                            .getString(ARG_PROJECT_ACTION)
+                            ?.let { raw ->
+                                runCatching {
+                                    HistoryProjectAction.valueOf(
+                                        raw
+                                    )
+                                }.getOrNull()
+                            }
+                            ?: return@post windowState.clear()
+
+                    confirmProjectScope(
+                        entry = entry,
+                        action = action
+                    )
+                }
+
+                WINDOW_CLEAR_HISTORY ->
+                    confirmClearHistory()
+            }
+        }
+    }
+
+    private fun windowEntryFromArgs():
+        HistoryEntry? =
+        windowState
+            .args()
+            .getString(ARG_ENTRY_ID)
+            ?.let(historyStore::get)
+
+    private fun entryWindowArgs(
+        entry: HistoryEntry
+    ): Bundle =
+        Bundle().apply {
+            putString(
+                ARG_ENTRY_ID,
+                entry.id
+            )
+        }
 
     private fun showActions(
         entry: HistoryEntry
@@ -699,12 +781,17 @@ class HistoryActivity : Activity() {
                 confirmDeleteHistoryEntry(entry)
             }
 
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = "Дії",
-            subtitle = "Дії з локальним записом історії.",
-            actions = actions
-        )
+        windowState.show(
+            key = WINDOW_ACTIONS,
+            args = entryWindowArgs(entry)
+        ) {
+            UiChrome.showMenuDialog(
+                activity = this,
+                title = "Дії",
+                subtitle = "Дії з локальним записом історії.",
+                actions = actions
+            )
+        }
     }
 
     private fun showProblemLog(
@@ -716,58 +803,101 @@ class HistoryActivity : Activity() {
                     "У цьому записі немає проблемних треків"
                 )
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Заміни та проблеми")
-            .setMessage(text)
-            .setNegativeButton(
-                "Закрити",
-                null
-            )
-            .setPositiveButton(
-                "Копіювати"
-            ) { _, _ ->
-                copyText(
-                    label = "YTM Importer history problems",
-                    text = text,
-                    message = "Журнал проблем скопійовано"
+        windowState.show(
+            key = WINDOW_PROBLEM_LOG,
+            args = entryWindowArgs(entry)
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle("Заміни та проблеми")
+                .setMessage(text)
+                .setNegativeButton(
+                    "Закрити",
+                    null
                 )
-            }
-            .show()
+                .setPositiveButton(
+                    "Копіювати"
+                ) { _, _ ->
+                    copyText(
+                        label = "YTM Importer history problems",
+                        text = text,
+                        message = "Журнал проблем скопійовано"
+                    )
+                }
+                .show()
+        }
     }
 
     private fun confirmProjectScope(
         entry: HistoryEntry,
-        actionLabel: String,
-        after: () -> Unit
+        action: HistoryProjectAction
     ) {
         if (
             entry.destination ==
                 PendingDestination.NEW_PLAYLIST
         ) {
-            after()
+            executeHistoryProjectAction(
+                entry = entry,
+                action = action
+            )
             return
         }
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "$actionLabel YTM Project?"
-            )
-            .setMessage(
-                "Цей History-запис стосується додавання до вже " +
-                    "існуючого плейлиста.\n\n" +
-                    "Project міститиме тільки треки цієї операції " +
-                    "імпорту, а не повний старий плейлист у YTM."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                actionLabel
-            ) { _, _ ->
-                after()
+        val actionLabel =
+            when (action) {
+                HistoryProjectAction.SAVE ->
+                    "Зберегти"
+
+                HistoryProjectAction.SHARE ->
+                    "Поділитися"
             }
-            .show()
+
+        windowState.show(
+            key = WINDOW_PROJECT_SCOPE,
+            args =
+                entryWindowArgs(entry).apply {
+                    putString(
+                        ARG_PROJECT_ACTION,
+                        action.name
+                    )
+                }
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "$actionLabel YTM Project?"
+                )
+                .setMessage(
+                    "Цей History-запис стосується додавання до вже " +
+                        "існуючого плейлиста.\n\n" +
+                        "Project міститиме тільки треки цієї операції " +
+                        "імпорту, а не повний старий плейлист у YTM."
+                )
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    actionLabel
+                ) { _, _ ->
+                    executeHistoryProjectAction(
+                        entry = entry,
+                        action = action
+                    )
+                }
+                .show()
+        }
+    }
+
+    private fun executeHistoryProjectAction(
+        entry: HistoryEntry,
+        action: HistoryProjectAction
+    ) {
+        when (action) {
+            HistoryProjectAction.SAVE ->
+                saveHistoryProject(entry)
+
+            HistoryProjectAction.SHARE ->
+                shareHistoryProject(entry)
+        }
     }
 
     private fun saveHistoryProject(
@@ -1050,10 +1180,14 @@ class HistoryActivity : Activity() {
     private fun confirmDeleteHistoryEntry(
         entry: HistoryEntry
     ) {
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Видалити запис історії?",
+        windowState.show(
+            key = WINDOW_DELETE_ENTRY,
+            args = entryWindowArgs(entry)
+        ) {
+            UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title =
+                    "Видалити запис історії?",
             message =
                 "Буде видалено тільки локальний History-запис " +
                     "«${entry.playlistName}».\n\n" +
@@ -1068,6 +1202,7 @@ class HistoryActivity : Activity() {
                 "Запис історії видалено"
             )
             showListScreen()
+            }
         }
     }
 
@@ -1082,10 +1217,13 @@ class HistoryActivity : Activity() {
             return
         }
 
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Очистити всю історію?",
+        windowState.show(
+            WINDOW_CLEAR_HISTORY
+        ) {
+            UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title =
+                    "Очистити всю історію?",
             message =
                 "Буде видалено ${entries.size} локальних записів History.\n\n" +
                     "Цю локальну історію можна повернути лише з повного backup, " +
@@ -1099,6 +1237,7 @@ class HistoryActivity : Activity() {
                 "Історію очищено"
             )
             showListScreen()
+            }
         }
     }
 
@@ -2022,9 +2161,30 @@ class HistoryActivity : Activity() {
             }
     }
 
+    private enum class HistoryProjectAction {
+        SAVE,
+        SHARE
+    }
+
     companion object {
         private const val KEY_CURRENT_ENTRY_ID =
             "current_history_entry_id"
+        private const val STATE_WINDOW =
+            "history_window"
+        private const val WINDOW_ACTIONS =
+            "actions"
+        private const val WINDOW_PROBLEM_LOG =
+            "problem_log"
+        private const val WINDOW_PROJECT_SCOPE =
+            "project_scope"
+        private const val WINDOW_DELETE_ENTRY =
+            "delete_entry"
+        private const val WINDOW_CLEAR_HISTORY =
+            "clear_history"
+        private const val ARG_ENTRY_ID =
+            "entry_id"
+        private const val ARG_PROJECT_ACTION =
+            "project_action"
 
         private val BACKGROUND =
             Color.rgb(
