@@ -232,7 +232,7 @@ class DestinationActivity : Activity() {
                 label = "Вибрати існуючий плейлист",
                 primary = false
             ) {
-                requestExistingPlaylists()
+                openExistingPlaylists()
             }
         )
         content.addView(existingCard)
@@ -735,19 +735,7 @@ class DestinationActivity : Activity() {
     }
 
     private fun backToExistingList() {
-        val ids =
-            intent.getStringArrayListExtra(
-                EXTRA_EXISTING_IDS
-            )
-
-        if (ids.isNullOrEmpty()) {
-            requestExistingPlaylists()
-        } else {
-            setMode(
-                MODE_EXISTING_LIST
-            )
-            showExistingListScreen()
-        }
+        openExistingPlaylists()
     }
 
     private fun finishExistingConfirm(mode: String) {
@@ -799,6 +787,21 @@ class DestinationActivity : Activity() {
         setResult(RESULT_OK, data)
         finish()
         overridePendingTransition(0, 0)
+    }
+
+    private fun openExistingPlaylists() {
+        if (
+            intent.hasExtra(
+                EXTRA_EXISTING_IDS
+            )
+        ) {
+            setMode(
+                MODE_EXISTING_LIST
+            )
+            showExistingListScreen()
+        } else {
+            requestExistingPlaylists()
+        }
     }
 
     private fun requestExistingPlaylists() {

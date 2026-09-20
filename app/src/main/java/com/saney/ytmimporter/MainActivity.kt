@@ -2837,6 +2837,8 @@ class MainActivity : Activity() {
         token: String,
         operationLabel: String
     ) {
+        workflowRelay.showWriteProgress(initialJob.playlistName, playlist?.tracks ?: tracks, statusText.text.toString())
+
         executor.execute {
             val outcome =
                 playlistWriteCoordinator.execute(
@@ -2853,22 +2855,16 @@ class MainActivity : Activity() {
                         createdPlaylistId = playlistId
                         persistCurrentWorkspace()
                     },
+                    onTrackStart = { track, _, _ ->
+                        runOnUiThread {
+                            workflowRelay.updateWriteTracks(playlist?.tracks ?: tracks, track)
+                        }
+                    },
                     onProgress = { writeProgress ->
                         runOnUiThread {
                             progress.progress =
                                 writeProgress.progressValue
-
-                            status(
-                                if (writeProgress.playlistCreated) {
-                                    "Плейлист створено. Додаю треки…"
-                                } else {
-                                    "Додаю " +
-                                        "${writeProgress.processedTracks}/" +
-                                        "${writeProgress.totalTracks}… " +
-                                        "залишилось " +
-                                        "${writeProgress.job.remainingTracks.size}"
-                                }
-                            )
+                            workflowRelay.updateWriteProgress(writeProgress, playlist?.tracks ?: tracks)
 
                             adapter.notifyDataSetChanged()
                             updateSummary()

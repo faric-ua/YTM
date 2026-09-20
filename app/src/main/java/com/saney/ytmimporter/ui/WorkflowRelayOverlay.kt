@@ -1,13 +1,18 @@
 package com.saney.ytmimporter.ui
 
 import android.app.Activity
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.ScrollView
 import android.widget.TextView
+import com.saney.ytmimporter.model.Track
+import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.write.PlaylistWriteCoordinator
 import kotlin.math.roundToInt
 
 class WorkflowRelayOverlay(
@@ -19,6 +24,7 @@ class WorkflowRelayOverlay(
     private var message = savedInstanceState?.getString(KEY_MESSAGE).orEmpty()
     private var overlay: View? = null
     private var statusText: TextView? = null
+    private var writeRows: LinearLayout? = null
 
     init {
         if (active) {
@@ -94,6 +100,243 @@ class WorkflowRelayOverlay(
         overlay = root
     }
 
+    fun showWriteProgress(
+        playlistName: String,
+        tracks: List<Track>,
+        message: String
+    ) {
+        active = true
+        title = "Створити / додати"
+        this.message = message
+        removeOverlay()
+
+        val palette = AppThemeManager.palette(activity)
+        val root = LinearLayout(activity).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.TOP
+            isClickable = true
+            isFocusable = true
+            setBackgroundColor(palette.background)
+            setPadding(dp(18), dp(34), dp(18), dp(24))
+        }
+
+        root.addView(
+            UiChrome.emphasizedTitle(
+                activity = activity,
+                label = "Створити / додати",
+                textSizeSp = 22f
+            )
+        )
+
+        root.addView(
+            TextView(activity).apply {
+                text = playlistName
+                textSize = 17f
+                setTypeface(typeface, Typeface.BOLD)
+                setTextColor(palette.text)
+                setPadding(0, dp(10), 0, dp(4))
+            }
+        )
+
+        val relayStatus = TextView(activity).apply {
+            text = message
+            textSize = 13.5f
+            setTextColor(palette.muted)
+            setPadding(0, 0, 0, dp(10))
+        }
+        statusText = relayStatus
+        root.addView(relayStatus)
+
+        val scroll = ScrollView(activity).apply {
+            isFillViewport = true
+        }
+        val rows = LinearLayout(activity).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, 0, 0, dp(10))
+        }
+        writeRows = rows
+        scroll.addView(rows)
+
+        root.addView(
+            scroll,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        updateWriteTracks(
+            tracks = tracks,
+            activeTrack = null
+        )
+
+        activity.addContentView(
+            root,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+        overlay = root
+    }
+
+    fun updateWriteTracks(
+        tracks: List<Track>,
+        activeTrack: Track?
+    ) {
+        val rows =
+            writeRows
+                ?: return
+        val palette =
+            AppThemeManager.palette(activity)
+
+        rows.removeAllViews()
+
+        tracks.forEachIndexed { index, track ->
+            val isActive =
+                track === activeTrack
+
+            val state =
+                when {
+                    isActive ->
+                        "● Додаю…"
+
+                    track.status ==
+                        TrackStatus.ADDED ->
+                        "✓ Додано"
+
+                    track.status ==
+                        TrackStatus.DUPLICATE ->
+                        "≋ Дублікат • пропущено"
+
+                    track.status ==
+                        TrackStatus.FAILED ->
+                        "× Помилка"
+
+                    track.status ==
+                        TrackStatus.SKIPPED ->
+                        "— Пропущено"
+
+                    track.status ==
+                        TrackStatus.PENDING ->
+                        "… Очікує"
+
+                    else ->
+                        "… Очікує"
+                }
+
+            val stateColor =
+                when {
+                    isActive ->
+                        palette.accent
+
+                    track.status ==
+                        TrackStatus.ADDED ->
+                        palette.success
+
+                    track.status ==
+                        TrackStatus.DUPLICATE ->
+                        palette.duplicate
+
+                    track.status ==
+                        TrackStatus.FAILED ->
+                        palette.danger
+
+                    else ->
+                        palette.muted
+                }
+
+            val row =
+                LinearLayout(activity).apply {
+                    orientation =
+                        LinearLayout.VERTICAL
+                    setPadding(
+                        dp(12),
+                        dp(9),
+                        dp(12),
+                        dp(9)
+                    )
+                    background =
+                        AppThemeManager.surfaceDrawable(
+                            context = activity,
+                            fill = palette.surface,
+                            radiusDp = 12,
+                            accentStroke = isActive
+                        )
+                }
+
+            row.addView(
+                TextView(activity).apply {
+                    text =
+                        "${index + 1}. " +
+                            track.originalArtist +
+                            " — " +
+                            track.originalTitle
+                    textSize = 13.5f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.text
+                    )
+                }
+            )
+
+            row.addView(
+                TextView(activity).apply {
+                    text = state
+                    textSize = 12.5f
+                    setTextColor(
+                        stateColor
+                    )
+                    setPadding(
+                        0,
+                        dp(4),
+                        0,
+                        0
+                    )
+                }
+            )
+
+            rows.addView(
+                row,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    if (index > 0) {
+                        topMargin =
+                            dp(6)
+                    }
+                }
+            )
+        }
+    }
+
+    fun updateWriteProgress(
+        progress:
+            PlaylistWriteCoordinator.WriteProgress,
+        tracks: List<Track>
+    ) {
+        val nextMessage =
+            if (
+                progress.playlistCreated
+            ) {
+                "Плейлист створено. Додаю треки…"
+            } else {
+                "Додано ${progress.processedTracks}/${progress.totalTracks}… " +
+                    "залишилось ${progress.job.remainingTracks.size}"
+            }
+
+        update(nextMessage)
+        updateWriteTracks(
+            tracks = tracks,
+            activeTrack = null
+        )
+    }
+
     fun hide() {
         active = false
         title = ""
@@ -110,20 +353,33 @@ class WorkflowRelayOverlay(
     fun detach() {
         overlay = null
         statusText = null
+        writeRows = null
     }
 
     private fun removeOverlay() {
-        overlay?.let { (it.parent as? ViewGroup)?.removeView(it) }
+        overlay?.let {
+            (it.parent as? ViewGroup)
+                ?.removeView(it)
+        }
         overlay = null
         statusText = null
+        writeRows = null
     }
 
     private fun dp(value: Int): Int =
-        (value * activity.resources.displayMetrics.density).roundToInt()
+        (
+            value *
+                activity.resources
+                    .displayMetrics
+                    .density
+        ).roundToInt()
 
     private companion object {
-        const val KEY_ACTIVE = "workflow_relay_active"
-        const val KEY_TITLE = "workflow_relay_title"
-        const val KEY_MESSAGE = "workflow_relay_message"
+        const val KEY_ACTIVE =
+            "workflow_relay_active"
+        const val KEY_TITLE =
+            "workflow_relay_title"
+        const val KEY_MESSAGE =
+            "workflow_relay_message"
     }
 }

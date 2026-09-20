@@ -59,8 +59,35 @@ if 'finish()' in manual_block:
 
 start_existing = dest.index('label = "Вибрати існуючий плейлист"')
 start_existing_end = dest.index('content.addView(existingCard)', start_existing)
-if 'requestExistingPlaylists()' not in dest[start_existing:start_existing_end]:
-    raise SystemExit("FAIL: Destination existing-list load still relays through parent")
+existing_entry = dest[start_existing:start_existing_end]
+
+if (
+    'requestExistingPlaylists()' not in existing_entry
+    and 'openExistingPlaylists()' not in existing_entry
+):
+    raise SystemExit(
+        "FAIL: Destination existing-list entry has no local load/open path"
+    )
+
+if 'openExistingPlaylists()' in existing_entry:
+    helper_start = dest.index('private fun openExistingPlaylists()')
+    helper_end = dest.index(
+        'private fun requestExistingPlaylists()',
+        helper_start
+    )
+    helper = dest[helper_start:helper_end]
+
+    for needle in [
+        'intent.hasExtra(',
+        'EXTRA_EXISTING_IDS',
+        'showExistingListScreen()',
+        'requestExistingPlaylists()',
+    ]:
+        if needle not in helper:
+            raise SystemExit(
+                "FAIL: Destination cached existing-list successor "
+                f"contract missing: {needle}"
+            )
 
 item_start = dest.index('list.setOnItemClickListener')
 item_end = dest.index('setContentView(root)', item_start)

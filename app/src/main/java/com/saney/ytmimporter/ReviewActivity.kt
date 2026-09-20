@@ -645,24 +645,7 @@ class ReviewActivity : Activity() {
                     primary = true
                 ) {
                     saveSnapshot()
-
-                    if (
-                        intent.getBooleanExtra(
-                            EXTRA_RETURN_TO_PLAYLIST,
-                            false
-                        )
-                    ) {
-                        openDestinationFromReview()
-                    } else {
-                        setResult(
-                            RESULT_OK,
-                            Intent().putExtra(
-                                EXTRA_OPEN_DESTINATION,
-                                true
-                            )
-                        )
-                        finish()
-                    }
+                    openDestinationFromReview()
                 },
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -1781,7 +1764,9 @@ class ReviewActivity : Activity() {
                 .show()
                 .also { dialog ->
                     dialog.setOnDismissListener {
-                        repeatSearchDialogOpen = false
+                        if (!isChangingConfigurations) {
+                            repeatSearchDialogOpen = false
+                        }
                         repeatSearchDialog = null
                     }
                 }
