@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -52,6 +53,8 @@ class DataActivity : Activity() {
     private var pendingExportMimeType: String? = null
     private var restoreConfirmationPending = false
     private var historyImportConfirmationPending = false
+    private lateinit var windowState:
+        RestorableWindowState
 
     private val saveExportRequestCode = 4201
     private val restoreBackupRequestCode = 4202
@@ -61,6 +64,11 @@ class DataActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
 
         historyStore = HistoryStore(this)
         pendingJobStore = PendingJobStore(this)
@@ -70,28 +78,29 @@ class DataActivity : Activity() {
 
         buildUi()
 
-        if (
+        when {
             savedInstanceState
                 ?.getBoolean(
                     STATE_RESTORE_CONFIRMATION_PENDING,
                     false
                 ) ==
-                true
-        ) {
-            restoreConfirmationPending = true
-            restorePendingBackupConfirmation()
-        }
+                true -> {
+                restoreConfirmationPending = true
+                restorePendingBackupConfirmation()
+            }
 
-        if (
             savedInstanceState
                 ?.getBoolean(
                     STATE_HISTORY_IMPORT_CONFIRMATION_PENDING,
                     false
                 ) ==
-                true
-        ) {
-            historyImportConfirmationPending = true
-            restorePendingHistoryImportConfirmation()
+                true -> {
+                historyImportConfirmationPending = true
+                restorePendingHistoryImportConfirmation()
+            }
+
+            windowState.key != null ->
+                restoreWindowIfNeeded()
         }
     }
 
@@ -108,6 +117,7 @@ class DataActivity : Activity() {
             historyImportConfirmationPending
         )
 
+        windowState.save(outState)
         super.onSaveInstanceState(outState)
     }
 
@@ -165,6 +175,114 @@ class DataActivity : Activity() {
                 }
             }
         }
+    }
+
+    private fun restoreWindowIfNeeded() {
+        window.decorView.post {
+            if (isFinishing || isDestroyed) {
+                return@post
+            }
+
+            when (windowState.key) {
+                WINDOW_CREATE_FULL_BACKUP ->
+                    createFullBackup()
+
+                WINDOW_CHOOSE_BACKUP_RESTORE ->
+                    chooseBackupForRestore()
+
+                WINDOW_CHOOSE_HISTORY_IMPORT ->
+                    chooseHistoryJsonForRestore()
+
+                WINDOW_DATA_STATUS ->
+                    showStoredDataStatus()
+
+                WINDOW_RESTORE_SAFETY ->
+                    confirmRestoreSafetySnapshot()
+
+                WINDOW_DELETE_SAFETY ->
+                    confirmDeleteSafetySnapshot()
+
+                WINDOW_SHARE_FULL_BACKUP ->
+                    confirmShareFullBackup()
+            }
+        }
+    }
+
+    private fun showDataStatus(
+        title: String,
+        message: String,
+        allowRollback: Boolean = false
+    ) {
+        windowState.show(
+            key = WINDOW_DATA_STATUS,
+            args =
+                Bundle().apply {
+                    putString(
+                        ARG_STATUS_TITLE,
+                        title
+                    )
+                    putString(
+                        ARG_STATUS_MESSAGE,
+                        message
+                    )
+                    putBoolean(
+                        ARG_STATUS_ALLOW_ROLLBACK,
+                        allowRollback
+                    )
+                }
+        ) {
+            val builder =
+                UiChrome.alertBuilder(this)
+                    .setTitle(title)
+                    .setMessage(message)
+
+            if (allowRollback) {
+                builder.setNeutralButton(
+                    "Відкотити"
+                ) { _, _ ->
+                    confirmRestoreSafetySnapshot()
+                }
+            }
+
+            builder
+                .setPositiveButton(
+                    "Готово",
+                    null
+                )
+                .show()
+        }
+    }
+
+    private fun showStoredDataStatus() {
+        val args =
+            windowState.args()
+
+        val title =
+            args.getString(
+                ARG_STATUS_TITLE
+            )
+        val message =
+            args.getString(
+                ARG_STATUS_MESSAGE
+            )
+
+        if (
+            title.isNullOrBlank() ||
+            message.isNullOrBlank()
+        ) {
+            windowState.clear()
+            return
+        }
+
+        showDataStatus(
+            title = title,
+            message = message,
+            allowRollback =
+                args.getBoolean(
+                    ARG_STATUS_ALLOW_ROLLBACK,
+                    false
+                )
+        )
     }
 
     private fun buildUi() {
@@ -534,6 +652,7 @@ class DataActivity : Activity() {
             runCatching {
                 localBackupManager.createBackupJson()
             }.getOrElse { error ->
+                windowState.clear()
                 toast(
                     error.message
                         ?: "Не вдалося створити backup"
@@ -541,93 +660,105 @@ class DataActivity : Activity() {
                 return
             }
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Зберегти повний backup?")
-            .setMessage(
-                "Буде збережено:\n" +
-                    "• History\n" +
-                    "• Pending Queue\n" +
-                    "• локальні quota counters (лише діагностика)\n" +
-                    "• SearchCache\n" +
-                    "• поточний робочий список\n\n" +
-                    "Backup може містити Google email, Channel ID " +
-                    "та назви плейлистів.\n\n" +
-                    "OAuth token, паролі та signing keys не входять.\n\n" +
-                    "Під час Restore quota counters з файла не застосовуються, " +
-                    "щоб стара копія не збільшувала оцінку доступної квоти.\n\n" +
-                    "Файл має SHA-256 integrity check."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Зберегти"
-            ) { _, _ ->
-                createDocumentForExport(
-                    fileName =
-                        "YTM_Backup_${exportTimestamp()}.json",
-                    mimeType =
-                        "application/json",
-                    content = content,
-                    successMessage =
-                        "Повний backup збережено"
+        windowState.show(
+            WINDOW_CREATE_FULL_BACKUP
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle("Зберегти повний backup?")
+                .setMessage(
+                    "Буде збережено:\n" +
+                        "• History\n" +
+                        "• Pending Queue\n" +
+                        "• локальні quota counters (лише діагностика)\n" +
+                        "• SearchCache\n" +
+                        "• поточний робочий список\n\n" +
+                        "Backup може містити Google email, Channel ID " +
+                        "та назви плейлистів.\n\n" +
+                        "OAuth token, паролі та signing keys не входять.\n\n" +
+                        "Під час Restore quota counters з файла не застосовуються, " +
+                        "щоб стара копія не збільшувала оцінку доступної квоти.\n\n" +
+                        "Файл має SHA-256 integrity check."
                 )
-            }
-            .show()
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Зберегти"
+                ) { _, _ ->
+                    createDocumentForExport(
+                        fileName =
+                            "YTM_Backup_${exportTimestamp()}.json",
+                        mimeType =
+                            "application/json",
+                        content = content,
+                        successMessage =
+                            "Повний backup збережено"
+                    )
+                }
+                .show()
+        }
     }
 
     private fun chooseBackupForRestore() {
-        UiChrome.alertBuilder(this)
-            .setTitle("Відновити backup?")
-            .setMessage(
-                "Restore замінить локальні:\n\n" +
-                    "• History\n" +
-                    "• Чергу\n" +
-                    "• SearchCache\n" +
-                    "• поточний робочий список\n\n" +
-                    "Поточна локальна оцінка квоти НЕ відкочується з backup.\n\n" +
-                    "YouTube/YTM плейлисти в інтернеті не змінюються.\n\n" +
-                    "Перед Restore буде створено safety snapshot."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Вибрати файл"
-            ) { _, _ ->
-                launchJsonPicker(
-                    restoreBackupRequestCode
+        windowState.show(
+            WINDOW_CHOOSE_BACKUP_RESTORE
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle("Відновити backup?")
+                .setMessage(
+                    "Restore замінить локальні:\n\n" +
+                        "• History\n" +
+                        "• Чергу\n" +
+                        "• SearchCache\n" +
+                        "• поточний робочий список\n\n" +
+                        "Поточна локальна оцінка квоти НЕ відкочується з backup.\n\n" +
+                        "YouTube/YTM плейлисти в інтернеті не змінюються.\n\n" +
+                        "Перед Restore буде створено safety snapshot."
                 )
-            }
-            .show()
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Вибрати файл"
+                ) { _, _ ->
+                    launchJsonPicker(
+                        restoreBackupRequestCode
+                    )
+                }
+                .show()
+        }
     }
 
     private fun chooseHistoryJsonForRestore() {
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Імпортувати History JSON?"
-            )
-            .setMessage(
-                "Буде замінено тільки локальну History.\n\n" +
-                    "Черга, локальна квота, SearchCache і поточний робочий список " +
-                    "не змінюються.\n\n" +
-                    "Очікується файл YTM_History_*.json, створений через «History JSON».\n\n" +
-                    "Перед імпортом буде створено safety snapshot повного локального стану."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Вибрати файл"
-            ) { _, _ ->
-                launchJsonPicker(
-                    historyImportRequestCode
+        windowState.show(
+            WINDOW_CHOOSE_HISTORY_IMPORT
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Імпортувати History JSON?"
                 )
-            }
-            .show()
+                .setMessage(
+                    "Буде замінено тільки локальну History.\n\n" +
+                        "Черга, локальна квота, SearchCache і поточний робочий список " +
+                        "не змінюються.\n\n" +
+                        "Очікується файл YTM_History_*.json, створений через «History JSON».\n\n" +
+                        "Перед імпортом буде створено safety snapshot повного локального стану."
+                )
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Вибрати файл"
+                ) { _, _ ->
+                    launchJsonPicker(
+                        historyImportRequestCode
+                    )
+                }
+                .show()
+        }
     }
 
     private fun launchJsonPicker(
@@ -876,11 +1007,10 @@ class DataActivity : Activity() {
 
         refreshSummary()
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "History відновлено"
-            )
-            .setMessage(
+        showDataStatus(
+            title =
+                "History відновлено",
+            message =
                 "Відновлено записів: ${summary.importEntries}\n" +
                     "Треків у History: ${summary.trackCount}\n\n" +
                     "Черга, quota, SearchCache і поточний робочий список не змінювалися.\n\n" +
@@ -890,18 +1020,9 @@ class DataActivity : Activity() {
                         "Safety snapshot стану ДО імпорту збережено."
                     } else {
                         ""
-                    }
-            )
-            .setNeutralButton(
-                "Відкотити"
-            ) { _, _ ->
-                confirmRestoreSafetySnapshot()
-            }
-            .setPositiveButton(
-                "Готово",
-                null
-            )
-            .show()
+                    },
+            allowRollback = true
+        )
     }
 
     private fun readJsonDocument(
@@ -1112,9 +1233,10 @@ class DataActivity : Activity() {
 
         refreshSummary()
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Backup відновлено")
-            .setMessage(
+        showDataStatus(
+            title =
+                "Backup відновлено",
+            message =
                 "Груп даних: ${result.preferenceGroups}\n" +
                     "Відновлено значень: ${result.restoredValues}\n\n" +
                     "History, Черга, робочий список та SearchCache вже відновлені.\n" +
@@ -1123,18 +1245,9 @@ class DataActivity : Activity() {
                         "Safety snapshot стану ДО Restore збережено."
                     } else {
                         ""
-                    }
-            )
-            .setNeutralButton(
-                "Відкотити"
-            ) { _, _ ->
-                confirmRestoreSafetySnapshot()
-            }
-            .setPositiveButton(
-                "Готово",
-                null
-            )
-            .show()
+                    },
+            allowRollback = true
+        )
     }
 
     private fun confirmRestoreSafetySnapshot() {
@@ -1142,6 +1255,7 @@ class DataActivity : Activity() {
             runCatching {
                 localBackupManager.inspectSafetySnapshot()
             }.getOrElse { error ->
+                windowState.clear()
                 toast(
                     "Safety snapshot пошкоджено: " +
                         (
@@ -1153,6 +1267,7 @@ class DataActivity : Activity() {
             }
 
         if (summary == null) {
+            windowState.clear()
             toast(
                 "Safety snapshot ще не створено. " +
                     "Він з'явиться автоматично перед Restore."
@@ -1160,29 +1275,33 @@ class DataActivity : Activity() {
             return
         }
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Відкотити останній Restore?"
-            )
-            .setMessage(
-                "Буде повернуто локальний стан ДО останнього Restore.\n\n" +
-                    "Дата: ${formatDate(summary.exportedAt)}\n" +
-                    "Версія: ${summary.appVersion}\n" +
-                    "Груп: ${summary.preferenceGroups}\n" +
-                    "Значень: ${summary.valueCount}\n\n" +
-                    "Локальна оцінка квоти залишиться поточною й не відкочуватиметься.\n\n" +
-                    "YouTube/YTM плейлисти в інтернеті не змінюються."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Відкотити"
-            ) { _, _ ->
-                restoreSafetySnapshotNow()
-            }
-            .show()
+        windowState.show(
+            WINDOW_RESTORE_SAFETY
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Відкотити останній Restore?"
+                )
+                .setMessage(
+                    "Буде повернуто локальний стан ДО останнього Restore.\n\n" +
+                        "Дата: ${formatDate(summary.exportedAt)}\n" +
+                        "Версія: ${summary.appVersion}\n" +
+                        "Груп: ${summary.preferenceGroups}\n" +
+                        "Значень: ${summary.valueCount}\n\n" +
+                        "Локальна оцінка квоти залишиться поточною й не відкочуватиметься.\n\n" +
+                        "YouTube/YTM плейлисти в інтернеті не змінюються."
+                )
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Відкотити"
+                ) { _, _ ->
+                    restoreSafetySnapshotNow()
+                }
+                .show()
+        }
     }
 
     private fun restoreSafetySnapshotNow() {
@@ -1202,21 +1321,17 @@ class DataActivity : Activity() {
 
         refreshSummary()
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Відкат виконано")
-            .setMessage(
+        showDataStatus(
+            title =
+                "Відкат виконано",
+            message =
                 "Локальний стан ДО останнього Restore повернуто.\n\n" +
                     "Груп: ${result.preferenceGroups}\n" +
                     "Відновлено значень: ${result.restoredValues}.\n" +
                     "Локальна оцінка квоти не змінювалася.\n\n" +
                     "Резервний знімок залишено. За потреби його можна видалити " +
                     "окремою кнопкою на екрані «Дані та резервні копії»."
-            )
-            .setPositiveButton(
-                "Готово",
-                null
-            )
-            .show()
+        )
     }
 
     private fun confirmDeleteSafetySnapshot() {
@@ -1226,6 +1341,7 @@ class DataActivity : Activity() {
             }.getOrNull()
 
         if (summary == null) {
+            windowState.clear()
             toast(
                 "Резервний знімок уже відсутній"
             )
@@ -1233,24 +1349,28 @@ class DataActivity : Activity() {
             return
         }
 
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Видалити резервний знімок?",
-            message =
-                "Буде безповоротно видалено локальний знімок стану ДО останнього Restore.\n\n" +
-                    "Дата: ${formatDate(summary.exportedAt)}\n" +
-                    "Версія: ${summary.appVersion}\n" +
-                    "Значень: ${summary.valueCount}\n\n" +
-                    "Після цього відкотити останній Restore через цей snapshot буде неможливо.",
-            confirmLabel =
-                "Так, видалити"
+        windowState.show(
+            WINDOW_DELETE_SAFETY
         ) {
-            localBackupManager.clearSafetySnapshot()
-            refreshSummary()
-            toast(
-                "Резервний знімок видалено"
-            )
+            UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title =
+                    "Видалити резервний знімок?",
+                message =
+                    "Буде безповоротно видалено локальний знімок стану ДО останнього Restore.\n\n" +
+                        "Дата: ${formatDate(summary.exportedAt)}\n" +
+                        "Версія: ${summary.appVersion}\n" +
+                        "Значень: ${summary.valueCount}\n\n" +
+                        "Після цього відкотити останній Restore через цей snapshot буде неможливо.",
+                confirmLabel =
+                    "Так, видалити"
+            ) {
+                localBackupManager.clearSafetySnapshot()
+                refreshSummary()
+                toast(
+                    "Резервний знімок видалено"
+                )
+            }
         }
     }
 
@@ -1329,45 +1449,49 @@ class DataActivity : Activity() {
     }
 
     private fun confirmShareFullBackup() {
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Поділитися повним backup?"
-            )
-            .setMessage(
-                "Backup може містити Google email, Channel ID, " +
-                    "назви плейлистів, History, Queue, поточний робочий список та SearchCache.\n\n" +
-                    "OAuth token, паролі та signing keys у файл не входять.\n\n" +
-                    "Надсилайте backup лише туди, де довіряєте одержувачу."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Поділитися"
-            ) { _, _ ->
-                val content =
-                    runCatching {
-                        localBackupManager.createBackupJson()
-                    }.getOrElse { error ->
-                        toast(
-                            error.message
-                                ?: "Не вдалося створити backup"
-                        )
-                        return@setPositiveButton
-                    }
-
-                shareTextFile(
-                    fileName =
-                        "YTM_Backup_${exportTimestamp()}.json",
-                    mimeType =
-                        "application/json",
-                    content = content,
-                    chooserTitle =
-                        "Поділитися повним backup"
+        windowState.show(
+            WINDOW_SHARE_FULL_BACKUP
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Поділитися повним backup?"
                 )
-            }
-            .show()
+                .setMessage(
+                    "Backup може містити Google email, Channel ID, " +
+                        "назви плейлистів, History, Queue, поточний робочий список та SearchCache.\n\n" +
+                        "OAuth token, паролі та signing keys у файл не входять.\n\n" +
+                        "Надсилайте backup лише туди, де довіряєте одержувачу."
+                )
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Поділитися"
+                ) { _, _ ->
+                    val content =
+                        runCatching {
+                            localBackupManager.createBackupJson()
+                        }.getOrElse { error ->
+                            toast(
+                                error.message
+                                    ?: "Не вдалося створити backup"
+                            )
+                            return@setPositiveButton
+                        }
+
+                    shareTextFile(
+                        fileName =
+                            "YTM_Backup_${exportTimestamp()}.json",
+                        mimeType =
+                            "application/json",
+                        content = content,
+                        chooserTitle =
+                            "Поділитися повним backup"
+                    )
+                }
+                .show()
+        }
     }
 
     private fun buildHistoryExportTxt(): String? {
@@ -2225,6 +2349,31 @@ class DataActivity : Activity() {
 
         private const val STATE_HISTORY_IMPORT_CONFIRMATION_PENDING =
             "history_import_confirmation_pending"
+
+        private const val STATE_WINDOW =
+            "data_window"
+
+        private const val WINDOW_CREATE_FULL_BACKUP =
+            "create_full_backup"
+        private const val WINDOW_CHOOSE_BACKUP_RESTORE =
+            "choose_backup_restore"
+        private const val WINDOW_CHOOSE_HISTORY_IMPORT =
+            "choose_history_import"
+        private const val WINDOW_DATA_STATUS =
+            "data_status"
+        private const val WINDOW_RESTORE_SAFETY =
+            "restore_safety"
+        private const val WINDOW_DELETE_SAFETY =
+            "delete_safety"
+        private const val WINDOW_SHARE_FULL_BACKUP =
+            "share_full_backup"
+
+        private const val ARG_STATUS_TITLE =
+            "status_title"
+        private const val ARG_STATUS_MESSAGE =
+            "status_message"
+        private const val ARG_STATUS_ALLOW_ROLLBACK =
+            "status_allow_rollback"
 
         private const val PENDING_RESTORE_CACHE_FILE =
             "pending_restore_confirmation_v1.json"
