@@ -713,6 +713,7 @@ class DestinationActivity : Activity() {
     private fun finishWith(data: Intent) {
         setResult(RESULT_OK, data)
         finish()
+        overridePendingTransition(0, 0)
     }
 
     private fun workspaceSummaryCard(): LinearLayout {

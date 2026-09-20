@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
@@ -11,16 +12,29 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
+import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ReplacementLogDialog
 import com.saney.ytmimporter.ui.UiChrome
 
 class MenuActivity : Activity() {
+    private lateinit var currentPlaylistStore:
+        CurrentPlaylistStore
+
     private var themeDialogOpen = false
     private var themeDialog: Dialog? = null
+
+    private var replacementDialogOpen = false
+    private var replacementDialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+
+        currentPlaylistStore =
+            CurrentPlaylistStore(this)
 
         themeDialogOpen =
             savedInstanceState
@@ -30,14 +44,30 @@ class MenuActivity : Activity() {
                 )
                 ?: false
 
+        replacementDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_REPLACEMENT_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
         render()
 
-        if (themeDialogOpen) {
-            window.decorView.post {
-                if (!isFinishing && !isDestroyed) {
-                    showThemePicker()
+        when {
+            themeDialogOpen ->
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed) {
+                        showThemePicker()
+                    }
                 }
-            }
+
+            replacementDialogOpen ->
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed) {
+                        showReplacementLog()
+                    }
+                }
         }
     }
 
@@ -48,6 +78,10 @@ class MenuActivity : Activity() {
             STATE_THEME_DIALOG_OPEN,
             themeDialogOpen
         )
+        outState.putBoolean(
+            STATE_REPLACEMENT_DIALOG_OPEN,
+            replacementDialogOpen
+        )
         super.onSaveInstanceState(outState)
     }
 
@@ -55,6 +89,11 @@ class MenuActivity : Activity() {
         themeDialog
             ?.setOnDismissListener(null)
         themeDialog = null
+
+        replacementDialog
+            ?.setOnDismissListener(null)
+        replacementDialog = null
+
         super.onDestroy()
     }
 
@@ -269,6 +308,138 @@ class MenuActivity : Activity() {
             }
     }
 
+    private fun showReplacementLog() {
+        val snapshot =
+            currentPlaylistStore
+                .load()
+                ?: return toast(
+                    "Немає імпортованого плейлиста"
+                )
+
+        replacementDialogOpen = true
+
+        replacementDialog =
+            ReplacementLogDialog.show(
+                activity = this,
+                playlist = snapshot.playlist
+            ) {
+                replacementDialogOpen = false
+                replacementDialog = null
+            }
+
+        if (replacementDialog == null) {
+            replacementDialogOpen = false
+        }
+    }
+
+    private fun openTargetInYtm() {
+        val playlistId =
+            currentPlaylistStore
+                .load()
+                ?.destinationPlaylistId
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+                ?: return toast(
+                    "Створіть / виберіть плейлист"
+                )
+
+        startActivity(
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(
+                    "https://music.youtube.com/playlist?list=$playlistId"
+                )
+            )
+        )
+    }
+
+    private fun openServiceTools() {
+        val auth =
+            AuthSessionStore.current()
+
+        startActivity(
+            Intent(
+                this,
+                ServiceActivity::class.java
+            ).apply {
+                putExtra(
+                    ServiceActivity.EXTRA_GOOGLE_CONNECTED,
+                    !auth.accessToken.isNullOrBlank()
+                )
+                putExtra(
+                    ServiceActivity.EXTRA_GOOGLE_EMAIL,
+                    maskedEmail(
+                        auth.googleAccountInfo
+                            ?.email
+                    )
+                )
+                putExtra(
+                    ServiceActivity.EXTRA_CHANNEL_TITLE,
+                    auth.youtubeChannelInfo
+                        ?.title
+                )
+                putExtra(
+                    ServiceActivity.EXTRA_CHANNEL_ID,
+                    maskedIdentifier(
+                        auth.youtubeChannelInfo
+                            ?.id
+                    )
+                )
+            }
+        )
+    }
+
+    private fun maskedEmail(
+        email: String?
+    ): String {
+        if (email.isNullOrBlank()) return "—"
+
+        val at =
+            email.indexOf('@')
+
+        if (at <= 0) {
+            return maskedIdentifier(email)
+        }
+
+        val local =
+            email.substring(0, at)
+        val domain =
+            email.substring(at)
+
+        return when {
+            local.length <= 1 ->
+                "*$domain"
+
+            local.length == 2 ->
+                "${local.first()}*$domain"
+
+            else ->
+                "${local.take(2)}***$domain"
+        }
+    }
+
+    private fun maskedIdentifier(
+        value: String?
+    ): String {
+        if (value.isNullOrBlank()) return "—"
+        if (value.length <= 8) return "***"
+
+        return value.take(4) +
+            "…" +
+            value.takeLast(4)
+    }
+
+    private fun toast(
+        message: String
+    ) {
+        Toast.makeText(
+            this,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
     private fun addAction(
         content: LinearLayout,
         title: String,
@@ -312,14 +483,36 @@ class MenuActivity : Activity() {
                     if (action == ACTION_THEME) {
                         showThemePicker()
                     } else {
-                        setResult(
-                            RESULT_OK,
-                            Intent().putExtra(
-                                EXTRA_ACTION,
-                                action
-                            )
-                        )
-                        finish()
+                        when (action) {
+                            ACTION_REPLACEMENTS ->
+                                showReplacementLog()
+
+                            ACTION_OPEN_YTM ->
+                                openTargetInYtm()
+
+                            ACTION_DATA ->
+                                startActivity(
+                                    Intent(
+                                        this@MenuActivity,
+                                        DataActivity::class.java
+                                    )
+                                )
+
+                            ACTION_SERVICE ->
+                                openServiceTools()
+
+                            else -> {
+                                setResult(
+                                    RESULT_OK,
+                                    Intent().putExtra(
+                                        EXTRA_ACTION,
+                                        action
+                                    )
+                                )
+                                finish()
+                                overridePendingTransition(0, 0)
+                            }
+                        }
                     }
                 }
             }
@@ -347,6 +540,9 @@ class MenuActivity : Activity() {
     companion object {
         private const val STATE_THEME_DIALOG_OPEN =
             "menu_theme_dialog_open"
+
+        private const val STATE_REPLACEMENT_DIALOG_OPEN =
+            "menu_replacement_dialog_open"
 
         const val EXTRA_ACTION =
             "menu_action"

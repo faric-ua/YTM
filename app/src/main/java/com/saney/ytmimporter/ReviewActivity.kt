@@ -67,6 +67,27 @@ class ReviewActivity : Activity() {
     private var projectDialog: Dialog? =
         null
 
+    private var repeatSearchDialogOpen =
+        false
+
+    private var repeatSearchDialog: Dialog? =
+        null
+
+    private var manualUrlDialogOpen =
+        false
+
+    private var manualUrlDialog: Dialog? =
+        null
+
+    private var manualUrlInput: EditText? =
+        null
+
+    private var manualUrlDraft =
+        ""
+
+    private var manualUrlHistoryIndex:
+        Int? = null
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -80,6 +101,39 @@ class ReviewActivity : Activity() {
                     false
                 )
                 ?: false
+
+        repeatSearchDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_REPEAT_SEARCH_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
+        manualUrlDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_MANUAL_URL_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
+        manualUrlDraft =
+            savedInstanceState
+                ?.getString(
+                    STATE_MANUAL_URL_DRAFT
+                )
+                .orEmpty()
+
+        manualUrlHistoryIndex =
+            savedInstanceState
+                ?.getInt(
+                    STATE_MANUAL_URL_HISTORY_INDEX,
+                    Int.MIN_VALUE
+                )
+                ?.takeIf {
+                    it != Int.MIN_VALUE
+                }
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
@@ -143,11 +197,48 @@ class ReviewActivity : Activity() {
                         )
                 )
 
-        if (shouldOpenProjectActions) {
-            projectDialogOpen = true
-            window.decorView.post {
-                if (!isFinishing && !isDestroyed) {
-                    showProjectActions()
+        when {
+            shouldOpenProjectActions -> {
+                projectDialogOpen = true
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed) {
+                        showProjectActions()
+                    }
+                }
+            }
+
+            repeatSearchDialogOpen -> {
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed) {
+                        showRepeatSearchDialog()
+                    }
+                }
+            }
+
+            manualUrlDialogOpen -> {
+                val manualTrack =
+                    (
+                        manualUrlHistoryIndex
+                            ?: currentTrackHistoryIndex
+                    )
+                        ?.let(
+                            ::findTrackByHistoryIndex
+                        )
+
+                if (manualTrack == null) {
+                    manualUrlDialogOpen = false
+                    manualUrlDraft = ""
+                    manualUrlHistoryIndex = null
+                } else {
+                    window.decorView.post {
+                        if (!isFinishing && !isDestroyed) {
+                            showManualUrlDialog(
+                                track = manualTrack,
+                                restoredValue =
+                                    manualUrlDraft
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -212,6 +303,37 @@ class ReviewActivity : Activity() {
             projectDialogOpen
         )
 
+        outState.putBoolean(
+            STATE_REPEAT_SEARCH_DIALOG_OPEN,
+            repeatSearchDialogOpen
+        )
+
+        if (manualUrlDialogOpen) {
+            manualUrlDraft =
+                manualUrlInput
+                    ?.text
+                    ?.toString()
+                    ?: manualUrlDraft
+        }
+
+        outState.putBoolean(
+            STATE_MANUAL_URL_DIALOG_OPEN,
+            manualUrlDialogOpen
+        )
+
+        outState.putString(
+            STATE_MANUAL_URL_DRAFT,
+            manualUrlDraft
+        )
+
+        manualUrlHistoryIndex
+            ?.let { value ->
+                outState.putInt(
+                    STATE_MANUAL_URL_HISTORY_INDEX,
+                    value
+                )
+            }
+
         super.onSaveInstanceState(
             outState
         )
@@ -221,6 +343,16 @@ class ReviewActivity : Activity() {
         projectDialog
             ?.setOnDismissListener(null)
         projectDialog = null
+
+        repeatSearchDialog
+            ?.setOnDismissListener(null)
+        repeatSearchDialog = null
+
+        manualUrlDialog
+            ?.setOnDismissListener(null)
+        manualUrlDialog = null
+        manualUrlInput = null
+
         super.onDestroy()
     }
 
@@ -831,8 +963,17 @@ class ReviewActivity : Activity() {
     }
 
     private fun showManualUrlDialog(
-        track: Track
+        track: Track,
+        restoredValue: String = ""
     ) {
+        if (manualUrlDialog?.isShowing == true) {
+            return
+        }
+
+        manualUrlDialogOpen = true
+        manualUrlHistoryIndex =
+            track.historyIndex
+
         val input =
             EditText(this).apply {
                 hint =
@@ -844,65 +985,80 @@ class ReviewActivity : Activity() {
                     dp(14),
                     dp(8)
                 )
+                setText(restoredValue)
+                setSelection(text.length)
             }
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Ручне посилання"
-            )
-            .setMessage(
-                "YTM Importer повернеться на головний екран, " +
-                    "отримає реальну назву та канал через YouTube API, " +
-                    "а потім знову відкриє цей трек."
-            )
-            .setView(input)
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Використати"
-            ) { _, _ ->
-                val videoId =
-                    extractVideoId(
-                        input
-                            .text
-                            .toString()
-                    )
+        manualUrlInput = input
+        manualUrlDraft = restoredValue
 
-                if (videoId == null) {
-                    toast(
-                        "Не бачу YouTube video ID"
-                    )
-                    return@setPositiveButton
-                }
-
-                val historyIndex =
-                    track.historyIndex
-
-                if (historyIndex == null) {
-                    toast(
-                        "Не вдалося визначити позицію треку"
-                    )
-                    return@setPositiveButton
-                }
-
-                setResult(
-                    RESULT_OK,
-                    Intent()
-                        .putExtra(
-                            EXTRA_MANUAL_VIDEO_ID,
-                            videoId
-                        )
-                        .putExtra(
-                            EXTRA_MANUAL_HISTORY_INDEX,
-                            historyIndex
-                        )
+        manualUrlDialog =
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Ручне посилання"
                 )
+                .setMessage(
+                    "YTM Importer повернеться на головний екран, " +
+                        "отримає реальну назву та канал через YouTube API, " +
+                        "а потім знову відкриє цей трек."
+                )
+                .setView(input)
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Використати"
+                ) { _, _ ->
+                    val videoId =
+                        extractVideoId(
+                            input
+                                .text
+                                .toString()
+                        )
 
-                finish()
-            }
-            .show()
+                    if (videoId == null) {
+                        toast(
+                            "Не бачу YouTube video ID"
+                        )
+                        return@setPositiveButton
+                    }
+
+                    val historyIndex =
+                        track.historyIndex
+
+                    if (historyIndex == null) {
+                        toast(
+                            "Не вдалося визначити позицію треку"
+                        )
+                        return@setPositiveButton
+                    }
+
+                    setResult(
+                        RESULT_OK,
+                        Intent()
+                            .putExtra(
+                                EXTRA_MANUAL_VIDEO_ID,
+                                videoId
+                            )
+                            .putExtra(
+                                EXTRA_MANUAL_HISTORY_INDEX,
+                                historyIndex
+                            )
+                    )
+
+                    finish()
+                }
+                .show()
+                .also { dialog ->
+                    dialog.setOnDismissListener {
+                        manualUrlDialogOpen = false
+                        manualUrlDialog = null
+                        manualUrlInput = null
+                        manualUrlDraft = ""
+                        manualUrlHistoryIndex = null
+                    }
+                }
     }
 
     private fun extractVideoId(
@@ -1298,32 +1454,49 @@ class ReviewActivity : Activity() {
     }
 
     private fun requestRepeatSearch() {
-        UiChrome.alertBuilder(this)
-            .setTitle("Повторити пошук?")
-            .setMessage(
-                "YTM Importer повернеться на головний екран і повторить пошук " +
-                    "лише для треків, яким він справді потрібен. " +
-                    "Треки з точним videoId буде збережено без нового search.list. " +
-                    "Кешовані результати також не витрачають search.list quota."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Повторити"
-            ) { _, _ ->
-                setResult(
-                    RESULT_OK,
-                    Intent()
-                        .putExtra(
-                            EXTRA_REPEAT_SEARCH,
-                            true
-                        )
+        showRepeatSearchDialog()
+    }
+
+    private fun showRepeatSearchDialog() {
+        if (repeatSearchDialog?.isShowing == true) {
+            return
+        }
+
+        repeatSearchDialogOpen = true
+
+        repeatSearchDialog =
+            UiChrome.alertBuilder(this)
+                .setTitle("Повторити пошук?")
+                .setMessage(
+                    "YTM Importer повернеться на головний екран і повторить пошук " +
+                        "лише для треків, яким він справді потрібен. " +
+                        "Треки з точним videoId буде збережено без нового search.list. " +
+                        "Кешовані результати також не витрачають search.list quota."
                 )
-                finish()
-            }
-            .show()
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Повторити"
+                ) { _, _ ->
+                    setResult(
+                        RESULT_OK,
+                        Intent()
+                            .putExtra(
+                                EXTRA_REPEAT_SEARCH,
+                                true
+                            )
+                    )
+                    finish()
+                }
+                .show()
+                .also { dialog ->
+                    dialog.setOnDismissListener {
+                        repeatSearchDialogOpen = false
+                        repeatSearchDialog = null
+                    }
+                }
     }
 
     private fun reloadSnapshot() {
@@ -2072,6 +2245,18 @@ class ReviewActivity : Activity() {
 
         private const val STATE_PROJECT_DIALOG_OPEN =
             "review_project_dialog_open"
+
+        private const val STATE_REPEAT_SEARCH_DIALOG_OPEN =
+            "review_repeat_search_dialog_open"
+
+        private const val STATE_MANUAL_URL_DIALOG_OPEN =
+            "review_manual_url_dialog_open"
+
+        private const val STATE_MANUAL_URL_DRAFT =
+            "review_manual_url_draft"
+
+        private const val STATE_MANUAL_URL_HISTORY_INDEX =
+            "review_manual_url_history_index"
 
         private val BACKGROUND =
             Color.rgb(

@@ -1058,6 +1058,7 @@ class PlaylistActivity : Activity() {
             )
         )
         finish()
+        overridePendingTransition(0, 0)
     }
 
     private fun dp(
