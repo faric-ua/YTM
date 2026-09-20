@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.saney.ytmimporter.model.HistoryEntry
+import com.saney.ytmimporter.model.HistoryResultSemantics
 import com.saney.ytmimporter.model.HistoryStatus
 import com.saney.ytmimporter.model.HistoryTrack
 import com.saney.ytmimporter.model.TrackStatus
@@ -1443,9 +1444,12 @@ class DataActivity : Activity() {
             append(
                 "Джерело: ${entry.sourceLabel}\n"
             )
+            val primaryResult =
+                HistoryResultSemantics.primary(entry)
+
             append(
-                "Додано: ${entry.addedCount}/" +
-                    "${entry.writeTargetCount}\n"
+                "${primaryResult.label}: " +
+                    "${primaryResult.value}\n"
             )
             append(
                 "Помилок: ${entry.failedCount}\n"

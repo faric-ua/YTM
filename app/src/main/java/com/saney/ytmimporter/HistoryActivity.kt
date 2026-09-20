@@ -27,6 +27,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.saney.ytmimporter.model.HistoryEntry
+import com.saney.ytmimporter.model.HistoryResultSemantics
 import com.saney.ytmimporter.model.HistoryStatus
 import com.saney.ytmimporter.model.HistoryTrack
 import com.saney.ytmimporter.model.PendingDestination
@@ -399,10 +400,13 @@ class HistoryActivity : Activity() {
 
         content.addView(
             card().apply {
+                val primaryResult =
+                    HistoryResultSemantics.primary(entry)
+
                 addView(
                     statLine(
-                        "Додано",
-                        "${entry.addedCount}/${entry.writeTargetCount}"
+                        primaryResult.label,
+                        primaryResult.value
                     )
                 )
 
@@ -1124,9 +1128,12 @@ class HistoryActivity : Activity() {
             append(
                 "Джерело: ${entry.sourceLabel}\n"
             )
+            val primaryResult =
+                HistoryResultSemantics.primary(entry)
+
             append(
-                "Додано: ${entry.addedCount}/" +
-                    "${entry.writeTargetCount}\n"
+                "${primaryResult.label}: " +
+                    "${primaryResult.value}\n"
             )
             append(
                 "Помилок: ${entry.failedCount}\n"
@@ -1921,10 +1928,15 @@ class HistoryActivity : Activity() {
                         )
                     )
                     append("\n")
+                    val primaryResult =
+                        HistoryResultSemantics.primary(
+                            entry
+                        )
+
                     append(
-                        "Додано " +
-                            "${entry.addedCount}/" +
-                            "${entry.writeTargetCount}"
+                        primaryResult.label +
+                            " " +
+                            primaryResult.value
                     )
 
                     if (
