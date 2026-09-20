@@ -11,13 +11,37 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.UiChrome
 
 class MenuActivity : Activity() {
+    private lateinit var windowState:
+        RestorableWindowState
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
         render()
+
+        if (windowState.key == WINDOW_THEME_PICKER) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showThemePicker()
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        windowState.save(outState)
+        super.onSaveInstanceState(outState)
     }
 
     private fun render() {
@@ -183,40 +207,42 @@ class MenuActivity : Activity() {
         val active =
             AppThemeManager.currentStyle(this)
 
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = "Тема оформлення",
-            subtitle =
-                "Один інтерфейс — три палітри. Тема зберігається на пристрої.",
-            actions =
-                AppThemeManager.ThemeStyle
-                    .values()
-                    .map { style ->
-                        UiChrome.MenuAction(
-                            label =
-                                (
-                                    if (style == active) {
-                                        "✓ "
-                                    } else {
-                                        ""
+        windowState.show(WINDOW_THEME_PICKER) {
+            UiChrome.showMenuDialog(
+                activity = this,
+                title = "Тема оформлення",
+                subtitle =
+                    "Один інтерфейс — три палітри. Тема зберігається на пристрої.",
+                actions =
+                    AppThemeManager.ThemeStyle
+                        .values()
+                        .map { style ->
+                            UiChrome.MenuAction(
+                                label =
+                                    (
+                                        if (style == active) {
+                                            "✓ "
+                                        } else {
+                                            ""
+                                        }
+                                    ) +
+                                        style.marker +
+                                        "  " +
+                                        style.label,
+                                onClick = {
+                                    if (style != active) {
+                                        AppThemeManager
+                                            .setStyle(
+                                                this,
+                                                style
+                                            )
+                                        recreate()
                                     }
-                                ) +
-                                    style.marker +
-                                    "  " +
-                                    style.label,
-                            onClick = {
-                                if (style != active) {
-                                    AppThemeManager
-                                        .setStyle(
-                                            this,
-                                            style
-                                        )
-                                    recreate()
                                 }
-                            }
-                        )
-                    }
-        )
+                            )
+                        }
+            )
+        }
     }
 
     private fun addAction(
@@ -295,6 +321,11 @@ class MenuActivity : Activity() {
         ).toInt()
 
     companion object {
+        private const val STATE_WINDOW =
+            "menu_window"
+        private const val WINDOW_THEME_PICKER =
+            "theme_picker"
+
         const val EXTRA_ACTION =
             "menu_action"
 

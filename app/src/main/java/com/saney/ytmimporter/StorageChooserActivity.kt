@@ -13,6 +13,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import com.saney.ytmimporter.storage.SafTreeAccess
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.UiChrome
 
 class StorageChooserActivity : Activity() {
@@ -21,10 +22,17 @@ class StorageChooserActivity : Activity() {
     private var titleText: String = "Вибір папки"
     private var suggestedFileName: String? = null
     private var mimeType: String = "text/plain"
+    private lateinit var windowState:
+        RestorableWindowState
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
 
         access =
             runCatching {
@@ -67,6 +75,21 @@ class StorageChooserActivity : Activity() {
                 ?: "text/plain"
 
         render()
+
+        if (windowState.key == WINDOW_HELP) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showHelp()
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        windowState.save(outState)
+        super.onSaveInstanceState(outState)
     }
 
     @Deprecated("Deprecated in Java")
@@ -461,9 +484,10 @@ class StorageChooserActivity : Activity() {
                 "Для цієї дії достатньо дозволу на читання."
             }
 
-        UiChrome.showMessageDialog(
-            activity = this,
-            title = "Що це за список?",
+        windowState.show(WINDOW_HELP) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title = "Що це за список?",
             message =
                 "Це папки, до яких ви раніше надали YTM Importer доступ " +
                     "через системний Android picker. Android зберігає ці SAF-дозволи, " +
@@ -481,7 +505,8 @@ class StorageChooserActivity : Activity() {
                             UiChrome.ActionTone.ACCENT
                     ) {}
                 )
-        )
+            )
+        }
     }
 
     private fun openSystemTreePicker() {
@@ -612,6 +637,11 @@ class StorageChooserActivity : Activity() {
     }
 
     companion object {
+        private const val STATE_WINDOW =
+            "storage_chooser_window"
+        private const val WINDOW_HELP =
+            "help"
+
         const val EXTRA_TITLE =
             "storage_chooser_title"
         const val EXTRA_ACCESS =

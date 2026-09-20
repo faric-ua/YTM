@@ -455,7 +455,7 @@ object UiChrome {
         negativeLabel: String = "Закрити",
         subtitle: String? = null,
         onNegative: (() -> Unit)? = null
-    ) {
+    ): Dialog {
         val palette =
             AppThemeManager.palette(activity)
 
@@ -503,7 +503,7 @@ object UiChrome {
             }
         )
 
-        showCustomDialog(
+        return showCustomDialog(
             activity = activity,
             dialog = dialog,
             card = card

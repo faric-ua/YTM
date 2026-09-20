@@ -16,6 +16,7 @@ import com.saney.ytmimporter.storage.DirectDownloadFileQuery
 import com.saney.ytmimporter.storage.SafRecentFileQuery
 import com.saney.ytmimporter.storage.SafTreeAccess
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.UiChrome
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -35,11 +36,19 @@ class RecentFileChooserActivity : Activity() {
     private var refreshAfterSettings =
         false
 
+    private lateinit var windowState:
+        RestorableWindowState
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
 
         titleText =
             intent
@@ -72,6 +81,21 @@ class RecentFileChooserActivity : Activity() {
                 ?: emptySet()
 
         render()
+
+        if (windowState.key == WINDOW_HELP) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showHelp()
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        windowState.save(outState)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -621,9 +645,10 @@ class RecentFileChooserActivity : Activity() {
         }
 
     private fun showHelp() {
-        UiChrome.showMessageDialog(
-            activity = this,
-            title = "Останні файли",
+        windowState.show(WINDOW_HELP) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title = "Останні файли",
             message =
                 "На Android 11+ YTM Importer може напряму читати Download після того, " +
                     "як ви вручну увімкнете спеціальний системний дозвіл «Доступ до всіх файлів».\n\n" +
@@ -643,7 +668,8 @@ class RecentFileChooserActivity : Activity() {
                             UiChrome.ActionTone.ACCENT
                     ) {}
                 )
-        )
+            )
+        }
     }
 
     private fun explainAndRequestAllFilesAccess() {
@@ -811,6 +837,11 @@ class RecentFileChooserActivity : Activity() {
         ).toInt()
 
     companion object {
+        private const val STATE_WINDOW =
+            "recent_file_chooser_window"
+        private const val WINDOW_HELP =
+            "help"
+
         const val EXTRA_TITLE =
             "recent_file_chooser_title"
 

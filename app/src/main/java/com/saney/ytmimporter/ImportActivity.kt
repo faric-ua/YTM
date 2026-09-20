@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -122,6 +123,9 @@ class ImportActivity : Activity() {
     private lateinit var tracksInput:
         EditText
 
+    private lateinit var windowState:
+        RestorableWindowState
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -130,6 +134,11 @@ class ImportActivity : Activity() {
         )
 
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
@@ -185,6 +194,17 @@ class ImportActivity : Activity() {
                 }
             }
         }
+
+        if (
+            windowState.key ==
+                WINDOW_AUTH_INVALIDATED
+        ) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showAuthorizationInvalidatedNotice()
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(
@@ -201,6 +221,8 @@ class ImportActivity : Activity() {
             STATE_CLEAR_WORKSPACE_DIALOG_OPEN,
             clearWorkspaceDialogOpen
         )
+
+        windowState.save(outState)
 
         super.onSaveInstanceState(
             outState
@@ -251,29 +273,37 @@ class ImportActivity : Activity() {
         PersistentAuthStateStore(this)
             .clear()
 
-        UiChrome.showMessageDialog(
-            activity = this,
-            title =
-                "Сесію Google/YTM завершено",
-            message =
-                "Google відхилив поточну авторизацію (HTTP 401).\n\n" +
-                    "Стан підключення скинуто. Локальний робочий список не видалено.\n\n" +
-                    "Поверніться до кроку 2 і підключіть Google/YTM знову.",
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label =
-                            "До кроку 2",
-                        tone =
-                            UiChrome.ActionTone.ACCENT,
-                        onClick = {
-                            finish()
-                        }
-                    )
-                )
-        )
+        showAuthorizationInvalidatedNotice()
 
         return true
+    }
+
+    private fun showAuthorizationInvalidatedNotice() {
+        windowState.show(
+            WINDOW_AUTH_INVALIDATED
+        ) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title =
+                    "Сесію Google/YTM завершено",
+                message =
+                    "Google відхилив поточну авторизацію (HTTP 401).\n\n" +
+                        "Стан підключення скинуто. Локальний робочий список не видалено.\n\n" +
+                        "Поверніться до кроку 2 і підключіть Google/YTM знову.",
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label =
+                                "До кроку 2",
+                            tone =
+                                UiChrome.ActionTone.ACCENT,
+                            onClick = {
+                                finish()
+                            }
+                        )
+                    )
+            )
+        }
     }
 
     override fun onActivityResult(
@@ -3565,6 +3595,10 @@ class ImportActivity : Activity() {
 
         private const val STATE_CLEAR_WORKSPACE_DIALOG_OPEN =
             "clear_workspace_dialog_open"
+        private const val STATE_WINDOW =
+            "import_window"
+        private const val WINDOW_AUTH_INVALIDATED =
+            "auth_invalidated"
 
         const val EXTRA_IMPORT_MESSAGE =
             "import_message"

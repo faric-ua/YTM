@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.UiChrome
 
 class ListSelectorActivity : Activity() {
@@ -23,6 +24,7 @@ class ListSelectorActivity : Activity() {
     private lateinit var content: LinearLayout
     private lateinit var selectionSummary: TextView
     private lateinit var confirmButton: Button
+    private lateinit var windowState: RestorableWindowState
 
     private var titleText: String = "Вибір"
     private var subtitleText: String = ""
@@ -33,6 +35,11 @@ class ListSelectorActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
 
         mode = runCatching {
             Mode.valueOf(
@@ -113,6 +120,14 @@ class ListSelectorActivity : Activity() {
         }
 
         render()
+
+        if (windowState.key == WINDOW_HELP) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showHelp()
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(
@@ -132,6 +147,7 @@ class ListSelectorActivity : Activity() {
             selectedValues
         )
 
+        windowState.save(outState)
         super.onSaveInstanceState(outState)
     }
 
@@ -571,18 +587,20 @@ class ListSelectorActivity : Activity() {
     }
 
     private fun showHelp() {
-        UiChrome.showMessageDialog(
-            activity = this,
-            title = helpTitle,
-            message = helpMessage,
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label = "Зрозуміло",
-                        tone = UiChrome.ActionTone.ACCENT
-                    ) {}
-                )
-        )
+        windowState.show(WINDOW_HELP) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title = helpTitle,
+                message = helpMessage,
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label = "Зрозуміло",
+                            tone = UiChrome.ActionTone.ACCENT
+                        ) {}
+                    )
+            )
+        }
     }
 
     private fun finishWithSelection() {
@@ -656,6 +674,10 @@ class ListSelectorActivity : Activity() {
 
         private const val STATE_SELECTED_VALUES =
             "selector_state_selected_values"
+        private const val STATE_WINDOW =
+            "selector_window"
+        private const val WINDOW_HELP =
+            "help"
 
         private const val EXTRA_TITLE =
             "selector_title"

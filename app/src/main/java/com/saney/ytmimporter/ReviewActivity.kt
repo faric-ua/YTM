@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -60,11 +61,19 @@ class ReviewActivity : Activity() {
     private val saveProjectFolderRequestCode =
         3302
 
+    private lateinit var windowState:
+        RestorableWindowState
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
@@ -114,11 +123,20 @@ class ReviewActivity : Activity() {
 
         showListScreen()
 
+        val restoreProjectActions =
+            windowState.key ==
+                WINDOW_PROJECT_ACTIONS
+
+        val openProjectActionsOnLaunch =
+            savedInstanceState == null &&
+                intent.getBooleanExtra(
+                    EXTRA_OPEN_PROJECT_ACTIONS,
+                    false
+                )
+
         if (
-            intent.getBooleanExtra(
-                EXTRA_OPEN_PROJECT_ACTIONS,
-                false
-            )
+            restoreProjectActions ||
+            openProjectActionsOnLaunch
         ) {
             window.decorView.post {
                 if (!isFinishing && !isDestroyed) {
@@ -181,6 +199,8 @@ class ReviewActivity : Activity() {
                     value
                 )
             }
+
+        windowState.save(outState)
 
         super.onSaveInstanceState(
             outState
@@ -944,23 +964,27 @@ class ReviewActivity : Activity() {
     }
 
     private fun showProjectActions() {
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = "Поточний YTM Project",
-            subtitle = "Збереження та обмін робочим проектом.",
-            actions = listOf(
-                UiChrome.MenuAction(
-                    "Зберегти YTM Project"
-                ) {
-                    saveCurrentProject()
-                },
-                UiChrome.MenuAction(
-                    "Поділитися YTM Project"
-                ) {
-                    shareCurrentProject()
-                }
+        windowState.show(
+            WINDOW_PROJECT_ACTIONS
+        ) {
+            UiChrome.showMenuDialog(
+                activity = this,
+                title = "Поточний YTM Project",
+                subtitle = "Збереження та обмін робочим проектом.",
+                actions = listOf(
+                    UiChrome.MenuAction(
+                        "Зберегти YTM Project"
+                    ) {
+                        saveCurrentProject()
+                    },
+                    UiChrome.MenuAction(
+                        "Поділитися YTM Project"
+                    ) {
+                        shareCurrentProject()
+                    }
+                )
             )
-        )
+        }
     }
 
     private fun currentProjectJson(): String {
@@ -2020,6 +2044,10 @@ class ReviewActivity : Activity() {
 
         private const val KEY_TRACK_HISTORY_INDEX =
             "review_current_track_history_index"
+        private const val STATE_WINDOW =
+            "review_window"
+        private const val WINDOW_PROJECT_ACTIONS =
+            "project_actions"
 
         private val BACKGROUND =
             Color.rgb(
