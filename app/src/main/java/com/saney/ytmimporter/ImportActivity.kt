@@ -104,6 +104,10 @@ class ImportActivity : Activity() {
         IncrementalBackupPlan? =
         null
 
+    private var pendingIncrementalBackupPreflight:
+        IncrementalBackupPreflight? =
+        null
+
     private var pendingSelectiveExport:
         List<YouTubePlaylistInfo> =
         emptyList()
@@ -163,6 +167,20 @@ class ImportActivity : Activity() {
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
+
+        val retainedState =
+            lastNonConfigurationInstance
+                as? ImportNonConfigState
+
+        pendingIncrementalBackupPlan =
+            retainedState
+                ?.incrementalPlan
+        pendingIncrementalBackupPreflight =
+            retainedState
+                ?.incrementalPreflight
+        pendingDeltaChainPlan =
+            retainedState
+                ?.deltaChainPlan
 
         pendingSelectiveExport =
             decodeSelectiveExportState(
@@ -241,16 +259,7 @@ class ImportActivity : Activity() {
             }
         }
 
-        if (
-            windowState.key ==
-                WINDOW_AUTH_INVALIDATED
-        ) {
-            window.decorView.post {
-                if (!isFinishing && !isDestroyed) {
-                    showAuthorizationInvalidatedNotice()
-                }
-            }
-        }
+        restoreWindowIfNeeded()
 
         if (
             pendingFreshAuthAction != null &&
@@ -307,6 +316,17 @@ class ImportActivity : Activity() {
         )
     }
 
+    override fun onRetainNonConfigurationInstance():
+        Any? =
+        ImportNonConfigState(
+            incrementalPlan =
+                pendingIncrementalBackupPlan,
+            incrementalPreflight =
+                pendingIncrementalBackupPreflight,
+            deltaChainPlan =
+                pendingDeltaChainPlan
+        )
+
     override fun onDestroy() {
         clearWorkspaceDialog
             ?.setOnDismissListener(
@@ -317,6 +337,127 @@ class ImportActivity : Activity() {
 
         executor.shutdownNow()
         super.onDestroy()
+    }
+
+    private fun restoreWindowIfNeeded() {
+        if (windowState.key == null) {
+            return
+        }
+
+        window.decorView.post {
+            if (isFinishing || isDestroyed) {
+                return@post
+            }
+
+            when (windowState.key) {
+                WINDOW_AUTH_INVALIDATED ->
+                    showAuthorizationInvalidatedNotice()
+
+                WINDOW_STATUS_MESSAGE ->
+                    showStoredStatusMessage()
+
+                WINDOW_INCREMENTAL_SCAN_CONFIRM -> {
+                    val preflight =
+                        pendingIncrementalBackupPreflight
+
+                    if (preflight == null) {
+                        windowState.clear()
+                    } else {
+                        showIncrementalBackupScanConfirmation(
+                            preflight
+                        )
+                    }
+                }
+
+                WINDOW_INCREMENTAL_PREVIEW -> {
+                    val plan =
+                        pendingIncrementalBackupPlan
+
+                    if (plan == null) {
+                        windowState.clear()
+                    } else {
+                        showIncrementalBackupPreview(
+                            plan
+                        )
+                    }
+                }
+
+                WINDOW_DELTA_CHAIN_PREVIEW -> {
+                    val plan =
+                        pendingDeltaChainPlan
+
+                    if (plan == null) {
+                        windowState.clear()
+                    } else {
+                        showDeltaChainPreview(
+                            plan
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showStatusMessage(
+        title: String,
+        message: String
+    ) {
+        windowState.show(
+            key = WINDOW_STATUS_MESSAGE,
+            args =
+                Bundle().apply {
+                    putString(
+                        ARG_STATUS_TITLE,
+                        title
+                    )
+                    putString(
+                        ARG_STATUS_MESSAGE,
+                        message
+                    )
+                }
+        ) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title = title,
+                message = message,
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label = "Закрити",
+                            tone =
+                                UiChrome.ActionTone.ACCENT,
+                            onClick = {}
+                        )
+                    )
+            )
+        }
+    }
+
+    private fun showStoredStatusMessage() {
+        val args =
+            windowState.args()
+
+        val title =
+            args.getString(
+                ARG_STATUS_TITLE
+            )
+        val message =
+            args.getString(
+                ARG_STATUS_MESSAGE
+            )
+
+        if (
+            title.isNullOrBlank() ||
+            message.isNullOrBlank()
+        ) {
+            windowState.clear()
+            return
+        }
+
+        showStatusMessage(
+            title = title,
+            message = message
+        )
     }
 
     private fun isAuthorizationFailure(
@@ -2211,8 +2352,7 @@ class ImportActivity : Activity() {
                         "Плейлистів акаунта"
                     }
 
-                UiChrome.showMessageDialog(
-                    activity = this,
+                showStatusMessage(
                     title =
                         "Експорт завершено",
                     message =
@@ -2222,17 +2362,7 @@ class ImportActivity : Activity() {
                             "Помилок: ${summary.failedPlaylists}\n" +
                             "playlistItems.list: ${summary.playlistItemsRequests} request(s)\n\n" +
                             "Папка: ${summary.folderName}\n" +
-                            "Індекс: ${summary.manifestFile}",
-                    actions =
-                        listOf(
-                            UiChrome.DialogAction(
-                                label =
-                                    "Закрити",
-                                tone =
-                                    UiChrome.ActionTone.ACCENT,
-                                onClick = {}
-                            )
-                        )
+                            "Індекс: ${summary.manifestFile}"
                 )
             }.onFailure { error ->
                 if (
@@ -2243,23 +2373,12 @@ class ImportActivity : Activity() {
                     return@onFailure
                 }
 
-                UiChrome.showMessageDialog(
-                    activity = this,
+                showStatusMessage(
                     title =
                         "Експорт не завершено",
                     message =
                         error.message
-                            ?: "Невідома помилка експорту",
-                    actions =
-                        listOf(
-                            UiChrome.DialogAction(
-                                label =
-                                    "Закрити",
-                                tone =
-                                    UiChrome.ActionTone.ACCENT,
-                                onClick = {}
-                            )
-                        )
+                            ?: "Невідома помилка експорту"
                 )
             }
         }
@@ -2379,9 +2498,7 @@ class ImportActivity : Activity() {
                         preflight ->
 
                     showIncrementalBackupScanConfirmation(
-                        token = token,
-                        preflight =
-                            preflight
+                        preflight
                     )
                 }.onFailure {
                         error ->
@@ -2404,9 +2521,11 @@ class ImportActivity : Activity() {
     }
 
     private fun showIncrementalBackupScanConfirmation(
-        token: String,
         preflight: IncrementalBackupPreflight
     ) {
+        pendingIncrementalBackupPreflight =
+            preflight
+
         val scopeText =
             if (
                 preflight.baseline
@@ -2418,42 +2537,63 @@ class ImportActivity : Activity() {
                 "ALL"
             }
 
-        UiChrome.showMessageDialog(
-            activity = this,
-            title =
-                "Інкрементальний backup — перевірка",
-            message =
-                "Основа: ${preflight.baseline.folderName}\n" +
-                    "Режим: $scopeText\n" +
-                    "Поточних плейлистів у режимі: ${preflight.playlists.size}\n" +
-                    "Оцінка playlistItems.list: ${preflight.estimatedPlaylistItemsRequests} request(s)\n\n" +
-                    "Щоб надійно знайти зміни навіть при тій самій кількості треків, " +
-                    "застосунок прочитає вміст кожного непорожнього плейлиста у scope.\n\n" +
-                    "search.list: 0 • write API: 0",
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label =
-                            "Перевірити",
-                        tone =
-                            UiChrome.ActionTone.ACCENT,
-                        onClick = {
-                            scanIncrementalBackup(
-                                token = token,
-                                preflight =
-                                    preflight
-                            )
-                        }
-                    ),
-                    UiChrome.DialogAction(
-                        label =
-                            "Скасувати",
-                        tone =
-                            UiChrome.ActionTone.NORMAL,
-                        onClick = {}
+        windowState.show(
+            WINDOW_INCREMENTAL_SCAN_CONFIRM
+        ) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title =
+                    "Інкрементальний backup — перевірка",
+                message =
+                    "Основа: ${preflight.baseline.folderName}\n" +
+                        "Режим: $scopeText\n" +
+                        "Поточних плейлистів у режимі: ${preflight.playlists.size}\n" +
+                        "Оцінка playlistItems.list: ${preflight.estimatedPlaylistItemsRequests} request(s)\n\n" +
+                        "Щоб надійно знайти зміни навіть при тій самій кількості треків, " +
+                        "застосунок прочитає вміст кожного непорожнього плейлиста у scope.\n\n" +
+                        "search.list: 0 • write API: 0",
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label =
+                                "Перевірити",
+                            tone =
+                                UiChrome.ActionTone.ACCENT,
+                            onClick = {
+                                val token =
+                                    AuthSessionStore
+                                        .current()
+                                        .accessToken
+
+                                if (token.isNullOrBlank()) {
+                                    toast(
+                                        "Авторизація Google/YTM недоступна. Підключіть акаунт ще раз."
+                                    )
+                                } else {
+                                    pendingIncrementalBackupPreflight =
+                                        null
+
+                                    scanIncrementalBackup(
+                                        token = token,
+                                        preflight =
+                                            preflight
+                                    )
+                                }
+                            }
+                        ),
+                        UiChrome.DialogAction(
+                            label =
+                                "Скасувати",
+                            tone =
+                                UiChrome.ActionTone.NORMAL,
+                            onClick = {
+                                pendingIncrementalBackupPreflight =
+                                    null
+                            }
+                        )
                     )
-                )
-        )
+            )
+        }
     }
 
     private fun scanIncrementalBackup(
@@ -2666,44 +2806,51 @@ class ImportActivity : Activity() {
     private fun showIncrementalBackupPreview(
         plan: IncrementalBackupPlan
     ) {
-        UiChrome.showMessageDialog(
-            activity = this,
-            title =
-                "Інкрементальний backup — попередній перегляд",
-            message =
-                "Нові: ${plan.newCount}\n" +
-                    "Змінені: ${plan.updatedCount}\n" +
-                    "Без змін: ${plan.unchangedCount}\n" +
-                    "Зникли / недоступні в режимі: ${plan.missingCount}\n" +
-                    "Помилки читання: ${plan.failedCount}\n" +
-                    "playlistItems.list: ${plan.playlistItemsRequests} request(s)\n\n" +
-                    "Буде створено нову delta-папку. " +
-                    "Старий backup не змінюється і не видаляється.\n\n" +
-                    "Для збереження виберіть спільну батьківську папку, " +
-                    "а не саму папку baseline або delta.",
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label =
-                            "Зберегти delta",
-                        tone =
-                            UiChrome.ActionTone.ACCENT,
-                        onClick = {
-                            chooseIncrementalBackupTarget()
-                        }
-                    ),
-                    UiChrome.DialogAction(
-                        label =
-                            "Скасувати",
-                        tone =
-                            UiChrome.ActionTone.NORMAL,
-                        onClick = {
-                            pendingIncrementalBackupPlan =
-                                null
-                        }
+        pendingIncrementalBackupPlan =
+            plan
+
+        windowState.show(
+            WINDOW_INCREMENTAL_PREVIEW
+        ) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title =
+                    "Інкрементальний backup — попередній перегляд",
+                message =
+                    "Нові: ${plan.newCount}\n" +
+                        "Змінені: ${plan.updatedCount}\n" +
+                        "Без змін: ${plan.unchangedCount}\n" +
+                        "Зникли / недоступні в режимі: ${plan.missingCount}\n" +
+                        "Помилки читання: ${plan.failedCount}\n" +
+                        "playlistItems.list: ${plan.playlistItemsRequests} request(s)\n\n" +
+                        "Буде створено нову delta-папку. " +
+                        "Старий backup не змінюється і не видаляється.\n\n" +
+                        "Для збереження виберіть спільну батьківську папку, " +
+                        "а не саму папку baseline або delta.",
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label =
+                                "Зберегти delta",
+                            tone =
+                                UiChrome.ActionTone.ACCENT,
+                            onClick = {
+                                chooseIncrementalBackupTarget()
+                            }
+                        ),
+                        UiChrome.DialogAction(
+                            label =
+                                "Скасувати",
+                            tone =
+                                UiChrome.ActionTone.NORMAL,
+                            onClick = {
+                                pendingIncrementalBackupPlan =
+                                    null
+                            }
+                        )
                     )
-                )
-        )
+            )
+        }
     }
 
     private fun chooseIncrementalBackupTarget() {
@@ -2796,8 +2943,7 @@ class ImportActivity : Activity() {
     private fun showIncrementalBackupResult(
         summary: IncrementalBackupWriteResult
     ) {
-        UiChrome.showMessageDialog(
-            activity = this,
+        showStatusMessage(
             title =
                 "Інкрементальний backup збережено",
             message =
@@ -2811,17 +2957,7 @@ class ImportActivity : Activity() {
                     "playlistItems.list: ${summary.playlistItemsRequests} request(s)\n\n" +
                     "Папка delta: ${summary.folderName}\n" +
                     "Індекс: ${summary.manifestFile}\n\n" +
-                    "Старий backup не змінено.",
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label =
-                            "Закрити",
-                        tone =
-                            UiChrome.ActionTone.ACCENT,
-                        onClick = {}
-                    )
-                )
+                    "Старий backup не змінено."
         )
     }
 
@@ -2994,23 +3130,12 @@ class ImportActivity : Activity() {
                     pendingDeltaChainPlan =
                         null
 
-                    UiChrome.showMessageDialog(
-                        activity = this,
+                    showStatusMessage(
                         title =
                             "Ланцюжок backup — помилка",
                         message =
                             error.message
-                                ?: "Не вдалося відновити ланцюжок",
-                        actions =
-                            listOf(
-                                UiChrome.DialogAction(
-                                    label =
-                                        "Закрити",
-                                    tone =
-                                        UiChrome.ActionTone.ACCENT,
-                                    onClick = {}
-                                )
-                            )
+                                ?: "Не вдалося відновити ланцюжок"
                     )
                 }
             }
@@ -3020,6 +3145,9 @@ class ImportActivity : Activity() {
     private fun showDeltaChainPreview(
         plan: DeltaChainPlan
     ) {
+        pendingDeltaChainPlan =
+            plan
+
         val scopeText =
             if (
                 plan.scopeMode ==
@@ -3030,44 +3158,48 @@ class ImportActivity : Activity() {
                 "ALL"
             }
 
-        UiChrome.showMessageDialog(
-            activity = this,
-            title =
-                "Ланцюжок backup — попередній перегляд",
-            message =
-                "Основа: ${plan.baseFolderName}\n" +
-                    "Кінцева сесія: ${plan.headFolderName}\n" +
-                    "Ланок у ланцюжку: ${plan.chainLength}\n" +
-                    "Режим: $scopeText\n\n" +
-                    "Плейлистів у фінальному стані: ${plan.playlistCount}\n" +
-                    "Джерел YTM Project: ${plan.projectCount}\n" +
-                    "Порожніх плейлистів: ${plan.emptyCount}\n" +
-                    "Застосовано подій MISSING: ${plan.missingEvents}\n\n" +
-                    "Локально: YouTube API = 0.\n" +
-                    "Вихідні папки backup не змінюються.",
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label =
-                            "Створити",
-                        tone =
-                            UiChrome.ActionTone.ACCENT,
-                        onClick = {
-                            chooseDeltaChainTarget()
-                        }
-                    ),
-                    UiChrome.DialogAction(
-                        label =
-                            "Скасувати",
-                        tone =
-                            UiChrome.ActionTone.NORMAL,
-                        onClick = {
-                            pendingDeltaChainPlan =
-                                null
-                        }
+        windowState.show(
+            WINDOW_DELTA_CHAIN_PREVIEW
+        ) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title =
+                    "Ланцюжок backup — попередній перегляд",
+                message =
+                    "Основа: ${plan.baseFolderName}\n" +
+                        "Кінцева сесія: ${plan.headFolderName}\n" +
+                        "Ланок у ланцюжку: ${plan.chainLength}\n" +
+                        "Режим: $scopeText\n\n" +
+                        "Плейлистів у фінальному стані: ${plan.playlistCount}\n" +
+                        "Джерел YTM Project: ${plan.projectCount}\n" +
+                        "Порожніх плейлистів: ${plan.emptyCount}\n" +
+                        "Застосовано подій MISSING: ${plan.missingEvents}\n\n" +
+                        "Локально: YouTube API = 0.\n" +
+                        "Вихідні папки backup не змінюються.",
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label =
+                                "Створити",
+                            tone =
+                                UiChrome.ActionTone.ACCENT,
+                            onClick = {
+                                chooseDeltaChainTarget()
+                            }
+                        ),
+                        UiChrome.DialogAction(
+                            label =
+                                "Скасувати",
+                            tone =
+                                UiChrome.ActionTone.NORMAL,
+                            onClick = {
+                                pendingDeltaChainPlan =
+                                    null
+                            }
+                        )
                     )
-                )
-        )
+            )
+        }
     }
 
     private fun chooseDeltaChainTarget() {
@@ -3148,23 +3280,12 @@ class ImportActivity : Activity() {
                 }.onFailure {
                         error ->
 
-                    UiChrome.showMessageDialog(
-                        activity = this,
+                    showStatusMessage(
                         title =
                             "Зведений backup — помилка",
                         message =
                             error.message
-                                ?: "Не вдалося створити зведений backup із ланцюжка",
-                        actions =
-                            listOf(
-                                UiChrome.DialogAction(
-                                    label =
-                                        "Закрити",
-                                    tone =
-                                        UiChrome.ActionTone.ACCENT,
-                                    onClick = {}
-                                )
-                            )
+                                ?: "Не вдалося створити зведений backup із ланцюжка"
                     )
                 }
             }
@@ -3174,8 +3295,7 @@ class ImportActivity : Activity() {
     private fun showDeltaChainResult(
         summary: DeltaChainMaterializeResult
     ) {
-        UiChrome.showMessageDialog(
-            activity = this,
+        showStatusMessage(
             title =
                 "Зведений backup збережено",
             message =
@@ -3187,17 +3307,7 @@ class ImportActivity : Activity() {
                     "Індекс: ${summary.manifestFile}\n\n" +
                     "Це самодостатній повний backup. " +
                     "Його можна відкрити через «Відкрити backup / manifest.json» " +
-                    "або використати як основу для наступного інкрементального backup.",
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label =
-                            "Закрити",
-                        tone =
-                            UiChrome.ActionTone.ACCENT,
-                        onClick = {}
-                    )
-                )
+                    "або використати як основу для наступного інкрементального backup."
         )
     }
 
@@ -3271,8 +3381,7 @@ class ImportActivity : Activity() {
     }
 
     private fun showIncrementalDeltaBoundary() {
-        UiChrome.showMessageDialog(
-            activity = this,
+        showStatusMessage(
             title =
                 "Інкрементальний delta backup",
             message =
@@ -3281,17 +3390,7 @@ class ImportActivity : Activity() {
                     "«Зібрати повний backup з ланцюжка» і виберіть " +
                     "спільну батьківську папку.\n\n" +
                     "Для наступного інкрементального backup виберіть цю папку через " +
-                    "«Оновити backup (incremental)».",
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label =
-                            "Закрити",
-                        tone =
-                            UiChrome.ActionTone.ACCENT,
-                        onClick = {}
-                    )
-                )
+                    "«Оновити backup (incremental)»."
         )
     }
 
@@ -3938,6 +4037,15 @@ class ImportActivity : Activity() {
                     .density
         ).toInt()
 
+    private data class ImportNonConfigState(
+        val incrementalPlan:
+            IncrementalBackupPlan?,
+        val incrementalPreflight:
+            IncrementalBackupPreflight?,
+        val deltaChainPlan:
+            DeltaChainPlan?
+    )
+
     private enum class FreshAuthAction {
         IMPORT_PLAYLIST_LIST,
         SELECTIVE_EXPORT_LIST,
@@ -3963,6 +4071,19 @@ class ImportActivity : Activity() {
             "import_window"
         private const val WINDOW_AUTH_INVALIDATED =
             "auth_invalidated"
+        private const val WINDOW_STATUS_MESSAGE =
+            "status_message"
+        private const val WINDOW_INCREMENTAL_SCAN_CONFIRM =
+            "incremental_scan_confirm"
+        private const val WINDOW_INCREMENTAL_PREVIEW =
+            "incremental_preview"
+        private const val WINDOW_DELTA_CHAIN_PREVIEW =
+            "delta_chain_preview"
+
+        private const val ARG_STATUS_TITLE =
+            "status_title"
+        private const val ARG_STATUS_MESSAGE =
+            "status_message"
 
         const val EXTRA_IMPORT_MESSAGE =
             "import_message"
