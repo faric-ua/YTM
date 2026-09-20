@@ -1,18 +1,22 @@
 YTM Importer
-Version: 1.4.47-R2
-Version code: 89
+Version: 1.4.47-R3
+Version code: 90
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.47-R2 focus:
-- R1 real-phone screenshots found remaining Home density + theme-parent polish issues
-- current-playlist heading moves inside its interactive card
-- quick actions use one compact accent section container
-- Home section spacing is tighter; quick actions use 58dp height
-- bottom Home navigation has rounded outer corners
-- MenuActivity owns the Theme picker; Menu no longer disappears before theme selection
-- theme changes recreate MenuActivity and keep Menu as the visible parent
-- no-target playlist copy is `Створіть / виберіть плейлист`
-- R1 Hub/modal/rotation fixes remain carried forward
+Current v1.4.47-R3 focus:
+- R3 is WORK IN PROGRESS; no R3 preflight, PR, signed build or phone PASS yet
+- phone currently runs signed v1.4.47-R2 / code 89 from Actions run 35476977582
+- preserve stable Home block numbering from docs/v.1.4.47/HOME_BLOCKS.md
+- already in R3: tighter Home block 2/5/6 title spacing
+- already in R3: Home quick actions renamed to Import / Export
+- already in R3: Home Export enters selective playlist export directly
+- pending BUG-018: SearchCache Actions needs themed container
+- pending BUG-019: Import remote YTM flows need a fresh-auth gate before API use
+- pending BUG-020: auth-invalidated notice must survive rotation
+- pending BUG-021: History write-result summary needs unambiguous YTM-add/outcome semantics
+- pending BUG-022: Help windows must survive rotation
+- pending BUG-023: non-Help modal windows also need a project-wide recreation contract
+- master continuation plan: docs/v.1.4.47/R3_PLAN.md
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -54,7 +58,8 @@ v1.4.45 PHONE RETEST PASS — UX-022 CLOSED
 v1.4.46 PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS / THEME+LANDSCAPE CARRIED TO v1.4.47
 v1.4.47 PHONE QA FAIL — BUG-014..017
 v1.4.47-R1 PHONE QA FAIL — HOME DENSITY / THEME-PICKER PARENT / NAV POLISH
-v1.4.47-R2 IMPLEMENTED — STATIC + PHONE QA NEEDED
+v1.4.47-R2 PARTIALLY PHONE-TESTED — FINDINGS CONTINUE IN R3
+v1.4.47-R3 WORK IN PROGRESS — NO PREFLIGHT/BUILD YET
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
