@@ -25,6 +25,7 @@ class WorkflowRelayOverlay(
     private var overlay: View? = null
     private var statusText: TextView? = null
     private var writeRows: LinearLayout? = null
+    private var writeScroll: ScrollView? = null
 
     init {
         if (active) {
@@ -150,6 +151,8 @@ class WorkflowRelayOverlay(
         val scroll = ScrollView(activity).apply {
             isFillViewport = true
         }
+        writeScroll = scroll
+
         val rows = LinearLayout(activity).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(0, 0, 0, dp(10))
@@ -192,6 +195,7 @@ class WorkflowRelayOverlay(
             AppThemeManager.palette(activity)
 
         rows.removeAllViews()
+        var activeRow: View? = null
 
         tracks.forEachIndexed { index, track ->
             val isActive =
@@ -268,8 +272,22 @@ class WorkflowRelayOverlay(
 
             row.addView(
                 TextView(activity).apply {
+                    val prefix =
+                        when {
+                            isActive ->
+                                "● "
+
+                            track.status ==
+                                TrackStatus.ADDED ->
+                                "✓ "
+
+                            else ->
+                                ""
+                        }
+
                     text =
-                        "${index + 1}. " +
+                        prefix +
+                            "${index + 1}. " +
                             track.originalArtist +
                             " — " +
                             track.originalTitle
@@ -279,7 +297,17 @@ class WorkflowRelayOverlay(
                         Typeface.BOLD
                     )
                     setTextColor(
-                        palette.text
+                        when {
+                            isActive ->
+                                palette.accent
+
+                            track.status ==
+                                TrackStatus.ADDED ->
+                                palette.success
+
+                            else ->
+                                palette.text
+                        }
                     )
                 }
             )
@@ -312,6 +340,20 @@ class WorkflowRelayOverlay(
                     }
                 }
             )
+
+            if (isActive) {
+                activeRow = row
+            }
+        }
+
+        activeRow?.let { row ->
+            writeScroll?.post {
+                writeScroll?.smoothScrollTo(
+                    0,
+                    (row.top - dp(12))
+                        .coerceAtLeast(0)
+                )
+            }
         }
     }
 
@@ -354,6 +396,7 @@ class WorkflowRelayOverlay(
         overlay = null
         statusText = null
         writeRows = null
+        writeScroll = null
     }
 
     private fun removeOverlay() {
@@ -364,6 +407,7 @@ class WorkflowRelayOverlay(
         overlay = null
         statusText = null
         writeRows = null
+        writeScroll = null
     }
 
     private fun dp(value: Int): Int =

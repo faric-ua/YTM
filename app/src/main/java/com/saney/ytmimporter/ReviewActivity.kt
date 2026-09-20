@@ -408,6 +408,8 @@ class ReviewActivity : Activity() {
         projectDialog = null
 
         repeatSearchDialog
+            ?.setOnCancelListener(null)
+        repeatSearchDialog
             ?.setOnDismissListener(null)
         repeatSearchDialog = null
 
@@ -1750,12 +1752,16 @@ class ReviewActivity : Activity() {
                         "Кешовані результати також не витрачають search.list quota."
                 )
                 .setNegativeButton(
-                    "Скасувати",
-                    null
-                )
+                    "Скасувати"
+                ) { _, _ ->
+                    repeatSearchDialogOpen = false
+                    repeatSearchDialog = null
+                }
                 .setPositiveButton(
                     "Повторити"
                 ) { _, _ ->
+                    repeatSearchDialogOpen = false
+                    repeatSearchDialog = null
                     showSearchPlanDialog(
                         preserveExistingExact =
                             true
@@ -1763,10 +1769,12 @@ class ReviewActivity : Activity() {
                 }
                 .show()
                 .also { dialog ->
+                    dialog.setCanceledOnTouchOutside(false)
+                    dialog.setOnCancelListener {
+                        repeatSearchDialogOpen = false
+                        repeatSearchDialog = null
+                    }
                     dialog.setOnDismissListener {
-                        if (!isChangingConfigurations) {
-                            repeatSearchDialogOpen = false
-                        }
                         repeatSearchDialog = null
                     }
                 }

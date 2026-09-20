@@ -543,7 +543,11 @@ class MainActivity : Activity() {
         statusText =
             requireNotNull(
                 accountCard.subtitle
-            )
+            ).apply {
+                maxLines = 1
+                ellipsize =
+                    android.text.TextUtils.TruncateAt.END
+            }
 
         content.addView(
             accountCard.root,
@@ -1303,6 +1307,16 @@ class MainActivity : Activity() {
         reloadCurrentWorkspace(
             force = true
         )
+
+        if (
+            data.getBooleanExtra(
+                ReviewActivity.EXTRA_DESTINATION_RESULT,
+                false
+            )
+        ) {
+            handleDestinationResult(data)
+            return
+        }
 
         if (
             data.getBooleanExtra(

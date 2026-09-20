@@ -32,12 +32,29 @@ if 'openDestinationFromReview()' not in block:
 if 'EXTRA_OPEN_DESTINATION' in block or 'finish()' in block:
     raise SystemExit("FAIL: Review still relays Destination through Main")
 
-# Repeat confirmation must not clear its lifecycle flag during rotation dismissal.
+# Repeat confirmation must not let generic dismiss own the open-state flag.
 repeat_start = review.index('private fun showRepeatSearchDialog()')
 repeat_end = review.index('private fun reloadSnapshot()', repeat_start)
 repeat = review[repeat_start:repeat_end]
-if '!isChangingConfigurations' not in repeat:
-    raise SystemExit("FAIL: repeat-search dismiss is not configuration-aware")
+
+for needle in [
+    'repeatSearchDialogOpen = false',
+    'setOnCancelListener {',
+    'setOnDismissListener {',
+]:
+    if needle not in repeat:
+        raise SystemExit(
+            f"FAIL: repeat-search explicit lifecycle contract missing: {needle}"
+        )
+
+dismiss_start = repeat.index('dialog.setOnDismissListener {')
+dismiss_end = repeat.index('}', dismiss_start)
+dismiss_block = repeat[dismiss_start:dismiss_end]
+
+if 'repeatSearchDialogOpen = false' in dismiss_block:
+    raise SystemExit(
+        "FAIL: generic repeat-search dismiss still clears lifecycle-open state"
+    )
 
 # Existing playlist list must be cache-aware on internal re-entry/back.
 if 'private fun openExistingPlaylists()' not in dest:
