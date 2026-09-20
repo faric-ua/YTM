@@ -52,7 +52,7 @@ object HomeDashboardChrome {
                 LinearLayout.VERTICAL
             setPadding(
                 dp(activity, 12),
-                dp(activity, 9),
+                dp(activity, 4),
                 dp(activity, 12),
                 dp(activity, 10)
             )
@@ -81,7 +81,7 @@ object HomeDashboardChrome {
                         dp(activity, 2),
                         0,
                         0,
-                        dp(activity, 5)
+                        dp(activity, 4)
                     )
                 }
             )
