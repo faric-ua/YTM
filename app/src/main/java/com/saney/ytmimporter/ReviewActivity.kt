@@ -12,6 +12,8 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -64,6 +66,9 @@ class ReviewActivity : Activity() {
     private lateinit var windowState:
         RestorableWindowState
 
+    private var manualUrlDraft =
+        ""
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -74,6 +79,12 @@ class ReviewActivity : Activity() {
                 savedInstanceState,
                 STATE_WINDOW
             )
+        manualUrlDraft =
+            savedInstanceState
+                ?.getString(
+                    STATE_MANUAL_URL_DRAFT
+                )
+                .orEmpty()
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
@@ -117,33 +128,17 @@ class ReviewActivity : Activity() {
                 focus
             )?.let { track ->
                 showTrackScreen(track)
+                restoreWindowIfNeeded(
+                    savedInstanceState
+                )
                 return
             }
         }
 
         showListScreen()
-
-        val restoreProjectActions =
-            windowState.key ==
-                WINDOW_PROJECT_ACTIONS
-
-        val openProjectActionsOnLaunch =
-            savedInstanceState == null &&
-                intent.getBooleanExtra(
-                    EXTRA_OPEN_PROJECT_ACTIONS,
-                    false
-                )
-
-        if (
-            restoreProjectActions ||
-            openProjectActionsOnLaunch
-        ) {
-            window.decorView.post {
-                if (!isFinishing && !isDestroyed) {
-                    showProjectActions()
-                }
-            }
-        }
+        restoreWindowIfNeeded(
+            savedInstanceState
+        )
     }
 
     override fun onActivityResult(
@@ -199,6 +194,11 @@ class ReviewActivity : Activity() {
                     value
                 )
             }
+
+        outState.putString(
+            STATE_MANUAL_URL_DRAFT,
+            manualUrlDraft
+        )
 
         windowState.save(outState)
 
@@ -813,9 +813,62 @@ class ReviewActivity : Activity() {
         showListScreen()
     }
 
+    private fun restoreWindowIfNeeded(
+        savedInstanceState: Bundle?
+    ) {
+        val openProjectActionsOnLaunch =
+            savedInstanceState == null &&
+                intent.getBooleanExtra(
+                    EXTRA_OPEN_PROJECT_ACTIONS,
+                    false
+                )
+
+        window.decorView.post {
+            if (isFinishing || isDestroyed) {
+                return@post
+            }
+
+            when (windowState.key) {
+                WINDOW_PROJECT_ACTIONS ->
+                    showProjectActions()
+
+                WINDOW_MANUAL_URL -> {
+                    currentTrackHistoryIndex
+                        ?.let(
+                            ::findTrackByHistoryIndex
+                        )
+                        ?.let(
+                            ::showManualUrlDialog
+                        )
+                        ?: windowState.clear()
+                }
+
+                WINDOW_REPEAT_SEARCH ->
+                    requestRepeatSearch()
+
+                null -> {
+                    if (
+                        openProjectActionsOnLaunch &&
+                        currentTrackHistoryIndex == null
+                    ) {
+                        showProjectActions()
+                    }
+                }
+            }
+        }
+    }
+
     private fun showManualUrlDialog(
         track: Track
     ) {
+        val restoring =
+            windowState.key ==
+                WINDOW_MANUAL_URL
+
+        if (!restoring) {
+            manualUrlDraft = ""
+        }
+
         val input =
             EditText(this).apply {
                 hint =
@@ -827,65 +880,97 @@ class ReviewActivity : Activity() {
                     dp(14),
                     dp(8)
                 )
-            }
+                setText(manualUrlDraft)
+                addTextChangedListener(
+                    object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) = Unit
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Ручне посилання"
-            )
-            .setMessage(
-                "YTM Importer повернеться на головний екран, " +
-                    "отримає реальну назву та канал через YouTube API, " +
-                    "а потім знову відкриє цей трек."
-            )
-            .setView(input)
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Використати"
-            ) { _, _ ->
-                val videoId =
-                    extractVideoId(
-                        input
-                            .text
-                            .toString()
-                    )
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            manualUrlDraft =
+                                s?.toString().orEmpty()
+                        }
 
-                if (videoId == null) {
-                    toast(
-                        "Не бачу YouTube video ID"
-                    )
-                    return@setPositiveButton
-                }
-
-                val historyIndex =
-                    track.historyIndex
-
-                if (historyIndex == null) {
-                    toast(
-                        "Не вдалося визначити позицію треку"
-                    )
-                    return@setPositiveButton
-                }
-
-                setResult(
-                    RESULT_OK,
-                    Intent()
-                        .putExtra(
-                            EXTRA_MANUAL_VIDEO_ID,
-                            videoId
-                        )
-                        .putExtra(
-                            EXTRA_MANUAL_HISTORY_INDEX,
-                            historyIndex
-                        )
+                        override fun afterTextChanged(
+                            s: Editable?
+                        ) = Unit
+                    }
                 )
-
-                finish()
             }
-            .show()
+
+        windowState.show(
+            WINDOW_MANUAL_URL
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Ручне посилання"
+                )
+                .setMessage(
+                    "YTM Importer повернеться на головний екран, " +
+                        "отримає реальну назву та канал через YouTube API, " +
+                        "а потім знову відкриє цей трек."
+                )
+                .setView(input)
+                .setNegativeButton(
+                    "Скасувати"
+                ) { _, _ ->
+                    manualUrlDraft = ""
+                }
+                .setPositiveButton(
+                    "Використати"
+                ) { _, _ ->
+                    val videoId =
+                        extractVideoId(
+                            input
+                                .text
+                                .toString()
+                        )
+
+                    if (videoId == null) {
+                        toast(
+                            "Не бачу YouTube video ID"
+                        )
+                        return@setPositiveButton
+                    }
+
+                    val historyIndex =
+                        track.historyIndex
+
+                    if (historyIndex == null) {
+                        toast(
+                            "Не вдалося визначити позицію треку"
+                        )
+                        return@setPositiveButton
+                    }
+
+                    manualUrlDraft = ""
+
+                    setResult(
+                        RESULT_OK,
+                        Intent()
+                            .putExtra(
+                                EXTRA_MANUAL_VIDEO_ID,
+                                videoId
+                            )
+                            .putExtra(
+                                EXTRA_MANUAL_HISTORY_INDEX,
+                                historyIndex
+                            )
+                    )
+
+                    finish()
+                }
+                .show()
+        }
     }
 
     private fun extractVideoId(
@@ -1273,32 +1358,36 @@ class ReviewActivity : Activity() {
     }
 
     private fun requestRepeatSearch() {
-        UiChrome.alertBuilder(this)
-            .setTitle("Повторити пошук?")
-            .setMessage(
-                "YTM Importer повернеться на головний екран і повторить пошук " +
-                    "лише для треків, яким він справді потрібен. " +
-                    "Треки з точним videoId буде збережено без нового search.list. " +
-                    "Кешовані результати також не витрачають search.list quota."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Повторити"
-            ) { _, _ ->
-                setResult(
-                    RESULT_OK,
-                    Intent()
-                        .putExtra(
-                            EXTRA_REPEAT_SEARCH,
-                            true
-                        )
+        windowState.show(
+            WINDOW_REPEAT_SEARCH
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle("Повторити пошук?")
+                .setMessage(
+                    "YTM Importer повернеться на головний екран і повторить пошук " +
+                        "лише для треків, яким він справді потрібен. " +
+                        "Треки з точним videoId буде збережено без нового search.list. " +
+                        "Кешовані результати також не витрачають search.list quota."
                 )
-                finish()
-            }
-            .show()
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Повторити"
+                ) { _, _ ->
+                    setResult(
+                        RESULT_OK,
+                        Intent()
+                            .putExtra(
+                                EXTRA_REPEAT_SEARCH,
+                                true
+                            )
+                    )
+                    finish()
+                }
+                .show()
+        }
     }
 
     private fun reloadSnapshot() {
@@ -2044,10 +2133,16 @@ class ReviewActivity : Activity() {
 
         private const val KEY_TRACK_HISTORY_INDEX =
             "review_current_track_history_index"
+        private const val STATE_MANUAL_URL_DRAFT =
+            "review_manual_url_draft"
         private const val STATE_WINDOW =
             "review_window"
         private const val WINDOW_PROJECT_ACTIONS =
             "project_actions"
+        private const val WINDOW_MANUAL_URL =
+            "manual_url"
+        private const val WINDOW_REPEAT_SEARCH =
+            "repeat_search"
 
         private val BACKGROUND =
             Color.rgb(
