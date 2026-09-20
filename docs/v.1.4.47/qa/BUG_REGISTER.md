@@ -148,3 +148,29 @@ because `ImportActivity.invalidateAuthorizationIfNeeded()`:
 This exact dialog therefore has no rotation restoration contract today.
 
 Status: **RECORDED / NOT FIXED YET**.
+
+
+### BUG-021 — History `Додано X/Y` is semantically ambiguous
+
+Observed on phone:
+- successful-looking History rows (`✓ Завершено`) can show `Додано 0/9`;
+- failed rows can show the same `Додано 0/9` line;
+- the list therefore does not clearly distinguish a completed YTM write from a
+  local/legacy/restored History record or a failed write.
+
+Current code evidence:
+- `HistoryListAdapter` always renders:
+  `Додано {addedCount}/{writeTargetCount}`;
+- `addedCount` is the count of History tracks whose status is `ADDED`;
+- `writeTargetCount` is the write-operation target count;
+- `HistoryStatus.COMPLETED` is displayed independently from this line.
+
+Requested direction:
+- make the list row explicitly describe the operation/result instead of always using
+  one generic `Додано X/Y` line;
+- a real successful YTM write should clearly say that tracks were added to YTM;
+- failed/incomplete writes should show their failure/pending result;
+- records that do not represent a completed remote write should not look like
+  `0/9` failed uploads by default.
+
+Status: **RECORDED / NOT FIXED YET**.
