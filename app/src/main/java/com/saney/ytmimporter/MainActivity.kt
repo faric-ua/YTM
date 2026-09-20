@@ -37,6 +37,7 @@ import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.HomeDashboardChrome
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.util.ErrorMessages
@@ -93,6 +94,9 @@ class MainActivity : Activity() {
     private var returnToPlaylistHubAfterDelegatedAction =
         false
 
+    private lateinit var windowState:
+        RestorableWindowState
+
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
     }
@@ -102,6 +106,12 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
+
         val searchCache =
             SearchCache(this)
         quotaTracker =
@@ -176,6 +186,8 @@ class MainActivity : Activity() {
             window.decorView.post {
                 maybeShowWelcome()
             }
+        } else if (windowState.key != null) {
+            restoreWindowIfNeeded()
         } else if (accountDialogOpen) {
             window.decorView.post {
                 if (!isFinishing && !isDestroyed) {
@@ -196,6 +208,7 @@ class MainActivity : Activity() {
             STATE_RETURN_TO_PLAYLIST_HUB,
             returnToPlaylistHubAfterDelegatedAction
         )
+        windowState.save(outState)
         super.onSaveInstanceState(outState)
     }
 
@@ -1933,61 +1946,77 @@ class MainActivity : Activity() {
         var searchStarted =
             false
 
-        val searchPlanDialog =
-            UiChrome.alertBuilder(this)
-            .setTitle(
-                "План пошуку (Search plan)"
-            )
-            .setMessage(
-                "Треків у списку: ${plan.totalTracks}\n" +
-                    "Пошук потрібен для: ${plan.tracksToSearch}\n" +
-                    "Вже є в кеші: ${plan.cachedCount}\n" +
-                    "Потрібно нових search.list: ${plan.apiNeeded}\n\n" +
-                    "Локально використано сьогодні: " +
-                    "${plan.quota.searchCalls}/" +
-                    "${QuotaTracker.SEARCH_DAILY_LIMIT}\n" +
-                    "Локальна оцінка залишку: " +
-                    "${plan.quota.searchRemaining}" +
-                    warning +
-                    "\n\nЦе не точний залишок Google Cloud. " +
-                    "Інші пристрої або клієнти того самого API project " +
-                    "(проєкту API) можуть теж витрачати квоту."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Почати"
-            ) { _, _ ->
-                searchStarted =
-                    true
-
-                startSearch(
-                    p = p,
-                    openReviewAfter =
-                        openReviewAfter,
-                    preserveExistingExact =
+        windowState.show(
+            key = WINDOW_SEARCH_PLAN,
+            args =
+                Bundle().apply {
+                    putBoolean(
+                        ARG_OPEN_REVIEW_AFTER,
+                        openReviewAfter
+                    )
+                    putBoolean(
+                        ARG_PRESERVE_EXISTING_EXACT,
                         preserveExistingExact
-                )
-            }
-            .show()
-
-        if (
-            returnToPlaylistHubAfterDelegatedAction
-        ) {
-            searchPlanDialog.setOnDismissListener {
-                window.decorView.post {
-                    if (
-                        !searchStarted &&
-                        returnToPlaylistHubAfterDelegatedAction &&
-                        !isFinishing &&
-                        !isDestroyed
-                    ) {
-                        reopenPlaylistHubAfterDelegatedAction()
+                    )
+                },
+            onDismiss = {
+                if (
+                    !isChangingConfigurations &&
+                    !searchStarted &&
+                    returnToPlaylistHubAfterDelegatedAction &&
+                    !isFinishing &&
+                    !isDestroyed
+                ) {
+                    window.decorView.post {
+                        if (
+                            returnToPlaylistHubAfterDelegatedAction &&
+                            !isFinishing &&
+                            !isDestroyed
+                        ) {
+                            reopenPlaylistHubAfterDelegatedAction()
+                        }
                     }
                 }
             }
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "План пошуку (Search plan)"
+                )
+                .setMessage(
+                    "Треків у списку: ${plan.totalTracks}\n" +
+                        "Пошук потрібен для: ${plan.tracksToSearch}\n" +
+                        "Вже є в кеші: ${plan.cachedCount}\n" +
+                        "Потрібно нових search.list: ${plan.apiNeeded}\n\n" +
+                        "Локально використано сьогодні: " +
+                        "${plan.quota.searchCalls}/" +
+                        "${QuotaTracker.SEARCH_DAILY_LIMIT}\n" +
+                        "Локальна оцінка залишку: " +
+                        "${plan.quota.searchRemaining}" +
+                        warning +
+                        "\n\nЦе не точний залишок Google Cloud. " +
+                        "Інші пристрої або клієнти того самого API project " +
+                        "(проєкту API) можуть теж витрачати квоту."
+                )
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Почати"
+                ) { _, _ ->
+                    searchStarted =
+                        true
+
+                    startSearch(
+                        p = p,
+                        openReviewAfter =
+                            openReviewAfter,
+                        preserveExistingExact =
+                            preserveExistingExact
+                    )
+                }
+                .show()
         }
     }
 
@@ -2861,7 +2890,9 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun showQuotaPausedDialog(job: PendingJob) {
+    private fun showQuotaPausedDialog(
+        job: PendingJob
+    ) {
         val playlistInfo =
             if (job.playlistId.isNullOrBlank()) {
                 "Плейлист ще не створений."
@@ -2869,23 +2900,39 @@ class MainActivity : Activity() {
                 "Playlist ID (ID плейлиста): ${job.playlistId}"
             }
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Операцію призупинено")
-            .setMessage(
-                "YouTube API повідомив про вичерпання квоти.\n\n" +
-                    "Вже додано: ${job.addedCount}/${job.totalCount}\n" +
-                    "Помилок: ${job.failedCount}\n" +
-                    "У черзі: ${job.remainingTracks.size}\n" +
-                    "$playlistInfo\n\n" +
-                    "Невиконані треки збережені локально. " +
-                    "Відкрийте «Черга» і натисніть «Продовжити», " +
-                    "коли квота відновиться."
-            )
-            .setNegativeButton("Закрити", null)
-            .setPositiveButton("Відкрити чергу") { _, _ ->
-                showPendingJobs()
-            }
-            .show()
+        windowState.show(
+            key = WINDOW_QUOTA_PAUSED,
+            args =
+                Bundle().apply {
+                    putString(
+                        ARG_PENDING_JOB_ID,
+                        job.id
+                    )
+                }
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle("Операцію призупинено")
+                .setMessage(
+                    "YouTube API повідомив про вичерпання квоти.\n\n" +
+                        "Вже додано: ${job.addedCount}/${job.totalCount}\n" +
+                        "Помилок: ${job.failedCount}\n" +
+                        "У черзі: ${job.remainingTracks.size}\n" +
+                        "$playlistInfo\n\n" +
+                        "Невиконані треки збережені локально. " +
+                        "Відкрийте «Черга» і натисніть «Продовжити», " +
+                        "коли квота відновиться."
+                )
+                .setNegativeButton(
+                    "Закрити",
+                    null
+                )
+                .setPositiveButton(
+                    "Відкрити чергу"
+                ) { _, _ ->
+                    showPendingJobs()
+                }
+                .show()
+        }
     }
 
     private fun showPendingJobs() {
@@ -2916,23 +2963,7 @@ class MainActivity : Activity() {
                     !job.googleEmail.equals(currentEmail, ignoreCase = true)
 
             if (channelMismatch || emailMismatch) {
-                UiChrome.alertBuilder(this)
-                    .setTitle("Потрібен інший акаунт")
-                    .setMessage(
-                        "Це завдання було створено для:\n" +
-                            "Google: ${job.googleEmail ?: "—"}\n" +
-                            "YouTube/YTM: ${job.youtubeChannelTitle ?: "—"}\n" +
-                            "Channel ID: ${job.youtubeChannelId ?: "—"}\n\n" +
-                            "Зараз підключений інший акаунт або канал."
-                    )
-                    .setNegativeButton("Скасувати", null)
-                    .setPositiveButton("Змінити") { _, _ ->
-                        authorize(forceAccountPicker = true) {
-                            resumePendingJob(job)
-                        }
-                    }
-                    .show()
-
+                showPendingAccountMismatch(job)
                 return@authorize
             }
 
@@ -2971,6 +3002,47 @@ class MainActivity : Activity() {
                 token = token,
                 operationLabel = "продовжено з черги"
             )
+        }
+    }
+
+    private fun showPendingAccountMismatch(
+        job: PendingJob
+    ) {
+        windowState.show(
+            key = WINDOW_PENDING_ACCOUNT_MISMATCH,
+            args =
+                Bundle().apply {
+                    putString(
+                        ARG_PENDING_JOB_ID,
+                        job.id
+                    )
+                }
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Потрібен інший акаунт"
+                )
+                .setMessage(
+                    "Це завдання було створено для:\n" +
+                        "Google: ${job.googleEmail ?: "—"}\n" +
+                        "YouTube/YTM: ${job.youtubeChannelTitle ?: "—"}\n" +
+                        "Channel ID: ${job.youtubeChannelId ?: "—"}\n\n" +
+                        "Зараз підключений інший акаунт або канал."
+                )
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Змінити"
+                ) { _, _ ->
+                    authorize(
+                        forceAccountPicker = true
+                    ) {
+                        resumePendingJob(job)
+                    }
+                }
+                .show()
         }
     }
 
@@ -3026,6 +3098,118 @@ class MainActivity : Activity() {
     }
 
 
+    private fun restoreWindowIfNeeded() {
+        window.decorView.post {
+            if (isFinishing || isDestroyed) {
+                return@post
+            }
+
+            when (windowState.key) {
+                WINDOW_SEARCH_PLAN -> {
+                    val args =
+                        windowState.args()
+
+                    if (playlist == null) {
+                        windowState.clear()
+                    } else {
+                        searchAll(
+                            openReviewAfter =
+                                args.getBoolean(
+                                    ARG_OPEN_REVIEW_AFTER,
+                                    false
+                                ),
+                            preserveExistingExact =
+                                args.getBoolean(
+                                    ARG_PRESERVE_EXISTING_EXACT,
+                                    true
+                                )
+                        )
+                    }
+                }
+
+                WINDOW_QUOTA_PAUSED,
+                WINDOW_PENDING_ACCOUNT_MISMATCH -> {
+                    val job =
+                        windowState
+                            .args()
+                            .getString(
+                                ARG_PENDING_JOB_ID
+                            )
+                            ?.let(
+                                pendingJobStore::get
+                            )
+
+                    if (job == null) {
+                        windowState.clear()
+                    } else if (
+                        windowState.key ==
+                            WINDOW_QUOTA_PAUSED
+                    ) {
+                        showQuotaPausedDialog(
+                            job
+                        )
+                    } else {
+                        showPendingAccountMismatch(
+                            job
+                        )
+                    }
+                }
+
+                WINDOW_QUICK_START ->
+                    showQuickStartDialog(
+                        firstRun =
+                            windowState
+                                .args()
+                                .getBoolean(
+                                    ARG_FIRST_RUN,
+                                    false
+                                )
+                    )
+
+                WINDOW_PRIVACY ->
+                    showPrivacyDialog()
+
+                WINDOW_THEME_PICKER ->
+                    showThemePicker()
+
+                WINDOW_PLAYLIST_RESULT -> {
+                    val args =
+                        windowState.args()
+
+                    val name =
+                        args.getString(
+                            ARG_PLAYLIST_RESULT_NAME
+                        )
+                    val details =
+                        args.getString(
+                            ARG_PLAYLIST_RESULT_DETAILS
+                        )
+                    val playlistId =
+                        args.getString(
+                            ARG_PLAYLIST_RESULT_ID
+                        )
+
+                    if (
+                        name.isNullOrBlank() ||
+                        details.isNullOrBlank() ||
+                        playlistId.isNullOrBlank()
+                    ) {
+                        windowState.clear()
+                    } else {
+                        showPlaylistResultWindow(
+                            playlistName = name,
+                            details = details,
+                            playlistId = playlistId
+                        )
+                    }
+                }
+
+                WINDOW_REPLACEMENT_LOG ->
+                    showReplacementLog()
+            }
+        }
+    }
+
     private fun maybeShowWelcome() {
         if (
             uiPrefs.getBoolean(
@@ -3046,10 +3230,14 @@ class MainActivity : Activity() {
     ) {
         val actions =
             mutableListOf(
-                UiChrome.DialogAction("Почати") {
+                UiChrome.DialogAction(
+                    "Почати"
+                ) {
                     markWelcomeSeen()
                 },
-                UiChrome.DialogAction("Приватність") {
+                UiChrome.DialogAction(
+                    "Приватність"
+                ) {
                     if (firstRun) {
                         markWelcomeSeen()
                     }
@@ -3065,25 +3253,38 @@ class MainActivity : Activity() {
                     } else {
                         "Закрити"
                     },
-                tone = UiChrome.ActionTone.ACCENT
+                tone =
+                    UiChrome.ActionTone.ACCENT
             ) {}
 
-        UiChrome.showMessageDialog(
-            activity = this,
-            title = "Вітаємо в YTM Importer",
-            message =
-                "Створити плейлист можна у 4 кроки:\n\n" +
-                    "1. Імпортуйте CSV/TXT/YTM Project або вставте текст.\n" +
-                    "2. Підключіть Google / YouTube Music.\n" +
-                    "3. Знайдіть треки та перевірте сумнівні результати.\n" +
-                    "4. Створіть новий плейлист або додайте треки " +
-                    "до існуючого.\n\n" +
-                    "Порада: жовті треки краще переглянути вручну. " +
-                    "SearchCache зменшує повторні API-пошуки.\n\n" +
-                    "YTM Importer не має власного сервера, реклами " +
-                    "або вбудованої аналітики.",
-            actions = actions
-        )
+        windowState.show(
+            key = WINDOW_QUICK_START,
+            args =
+                Bundle().apply {
+                    putBoolean(
+                        ARG_FIRST_RUN,
+                        firstRun
+                    )
+                }
+        ) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title =
+                    "Вітаємо в YTM Importer",
+                message =
+                    "Створити плейлист можна у 4 кроки:\n\n" +
+                        "1. Імпортуйте CSV/TXT/YTM Project або вставте текст.\n" +
+                        "2. Підключіть Google / YouTube Music.\n" +
+                        "3. Знайдіть треки та перевірте сумнівні результати.\n" +
+                        "4. Створіть новий плейлист або додайте треки " +
+                        "до існуючого.\n\n" +
+                        "Порада: жовті треки краще переглянути вручну. " +
+                        "SearchCache зменшує повторні API-пошуки.\n\n" +
+                        "YTM Importer не має власного сервера, реклами " +
+                        "або вбудованої аналітики.",
+                actions = actions
+            )
+        }
     }
 
     private fun markWelcomeSeen() {
@@ -3097,52 +3298,86 @@ class MainActivity : Activity() {
     }
 
     private fun showPrivacyDialog() {
-        UiChrome.alertBuilder(this)
-            .setTitle("Приватність")
-            .setMessage(
-                "YTM Importer працює без власного сервера.\n\n" +
-                    "Застосунок використовує Google OAuth та YouTube Data API " +
-                    "лише для дій, які ви запускаєте: читання інформації " +
-                    "про акаунт/канал, пошук, створення плейлистів і " +
-                    "додавання треків.\n\n" +
-                    "Локально на телефоні можуть зберігатися History, " +
-                    "Pending Queue, SearchCache та локальна оцінка quota.\n\n" +
-                    "OAuth access token не входить у backup, YTM Project " +
-                    "або Diagnostics. Diagnostics маскує email та Channel ID.\n\n" +
-                    "Full Backup може містити персональні метадані, наприклад " +
-                    "email, Channel ID, назви плейлистів та History. " +
-                    "Зберігайте та надсилайте backup лише туди, де йому довіряєте.\n\n" +
-                    "Android Share не завантажує файли на сервер YTM Importer: " +
-                    "після вибору іншого застосунку подальша передача залежить " +
-                    "від нього.\n\n" +
-                    "YTM Importer — незалежний інструмент і не є офіційним " +
-                    "застосунком Google або YouTube."
-            )
-            .setNegativeButton("Закрити", null)
-            .setPositiveButton("Швидкий старт") { _, _ ->
-                showQuickStartDialog()
-            }
-            .show()
+        windowState.show(
+            WINDOW_PRIVACY
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle("Приватність")
+                .setMessage(
+                    "YTM Importer працює без власного сервера.\n\n" +
+                        "Застосунок використовує Google OAuth та YouTube Data API " +
+                        "лише для дій, які ви запускаєте: читання інформації " +
+                        "про акаунт/канал, пошук, створення плейлистів і " +
+                        "додавання треків.\n\n" +
+                        "Локально на телефоні можуть зберігатися History, " +
+                        "Pending Queue, SearchCache та локальна оцінка quota.\n\n" +
+                        "OAuth access token не входить у backup, YTM Project " +
+                        "або Diagnostics. Diagnostics маскує email та Channel ID.\n\n" +
+                        "Full Backup може містити персональні метадані, наприклад " +
+                        "email, Channel ID, назви плейлистів та History. " +
+                        "Зберігайте та надсилайте backup лише туди, де йому довіряєте.\n\n" +
+                        "Android Share не завантажує файли на сервер YTM Importer: " +
+                        "після вибору іншого застосунку подальша передача залежить " +
+                        "від нього.\n\n" +
+                        "YTM Importer — незалежний інструмент і не є офіційним " +
+                        "застосунком Google або YouTube."
+                )
+                .setNegativeButton(
+                    "Закрити",
+                    null
+                )
+                .setPositiveButton(
+                    "Швидкий старт"
+                ) { _, _ ->
+                    showQuickStartDialog()
+                }
+                .show()
+        }
     }
 
     private fun showThemePicker() {
-        val active = AppThemeManager.currentStyle(this)
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = "Тема оформлення",
-            subtitle = "Один інтерфейс — три палітри. Тема зберігається на пристрої.",
-            actions = AppThemeManager.ThemeStyle.values().map { style ->
-                UiChrome.MenuAction(
-                    label = (if (style == active) "✓ " else "") + style.marker + "  " + style.label,
-                    onClick = {
-                        if (style != active) {
-                            AppThemeManager.setStyle(this, style)
-                            recreate()
+        val active =
+            AppThemeManager.currentStyle(this)
+
+        windowState.show(
+            WINDOW_THEME_PICKER
+        ) {
+            UiChrome.showMenuDialog(
+                activity = this,
+                title = "Тема оформлення",
+                subtitle =
+                    "Один інтерфейс — три палітри. Тема зберігається на пристрої.",
+                actions =
+                    AppThemeManager.ThemeStyle
+                        .values()
+                        .map { style ->
+                            UiChrome.MenuAction(
+                                label =
+                                    (
+                                        if (style == active) {
+                                            "✓ "
+                                        } else {
+                                            ""
+                                        }
+                                    ) +
+                                        style.marker +
+                                        "  " +
+                                        style.label,
+                                onClick = {
+                                    if (style != active) {
+                                        windowState.clear()
+                                        AppThemeManager
+                                            .setStyle(
+                                                this,
+                                                style
+                                            )
+                                        recreate()
+                                    }
+                                }
+                            )
                         }
-                    }
-                )
-            }
-        )
+            )
+        }
     }
 
     private fun showServiceTools() {
@@ -3499,9 +3734,12 @@ class MainActivity : Activity() {
         privacyStatus: String,
         operationLabel: String
     ) {
-        val url =
-            playlistUrl()
+        val playlistId =
+            createdPlaylistId
                 ?: return
+
+        val url =
+            playlistUrl(playlistId)
 
         val duplicateCount =
             playlist
@@ -3514,7 +3752,9 @@ class MainActivity : Activity() {
 
         val details =
             buildString {
-                append("Додано: $addedCount")
+                append(
+                    "Додано: $addedCount"
+                )
 
                 if (failedCount > 0) {
                     append(
@@ -3548,37 +3788,75 @@ class MainActivity : Activity() {
                 )
             }
 
-        UiChrome.showMessageDialog(
-            activity = this,
-            title = "✓ $playlistName",
-            subtitle =
-                "Операцію завершено",
-            message = details,
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label = "Відкрити в YTM"
-                    ) {
-                        openInYtm()
-                        reopenPlaylistHubAfterDelegatedAction()
-                    },
-                    UiChrome.DialogAction(
-                        label = "Копіювати посилання"
-                    ) {
-                        copyPlaylistLink()
-                        reopenPlaylistHubAfterDelegatedAction()
-                    },
-                    UiChrome.DialogAction(
-                        label = "Закрити",
-                        tone =
-                            UiChrome.ActionTone.ACCENT
-                    ) {
-                        reopenPlaylistHubAfterDelegatedAction()
-                    }
-                ),
-            actionLayout =
-                UiChrome.DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
+        showPlaylistResultWindow(
+            playlistName = playlistName,
+            details = details,
+            playlistId = playlistId
         )
+    }
+
+    private fun showPlaylistResultWindow(
+        playlistName: String,
+        details: String,
+        playlistId: String
+    ) {
+        windowState.show(
+            key = WINDOW_PLAYLIST_RESULT,
+            args =
+                Bundle().apply {
+                    putString(
+                        ARG_PLAYLIST_RESULT_NAME,
+                        playlistName
+                    )
+                    putString(
+                        ARG_PLAYLIST_RESULT_DETAILS,
+                        details
+                    )
+                    putString(
+                        ARG_PLAYLIST_RESULT_ID,
+                        playlistId
+                    )
+                }
+        ) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title = "✓ $playlistName",
+                subtitle =
+                    "Операцію завершено",
+                message = details,
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label =
+                                "Відкрити в YTM"
+                        ) {
+                            openPlaylistIdInYtm(
+                                playlistId
+                            )
+                            reopenPlaylistHubAfterDelegatedAction()
+                        },
+                        UiChrome.DialogAction(
+                            label =
+                                "Копіювати посилання"
+                        ) {
+                            copyPlaylistLink(
+                                playlistId
+                            )
+                            reopenPlaylistHubAfterDelegatedAction()
+                        },
+                        UiChrome.DialogAction(
+                            label = "Закрити",
+                            tone =
+                                UiChrome.ActionTone.ACCENT
+                        ) {
+                            reopenPlaylistHubAfterDelegatedAction()
+                        }
+                    ),
+                actionLayout =
+                    UiChrome.DialogActionLayout
+                        .VERTICAL_WITH_TEXT_CLOSE
+            )
+        }
     }
 
     private fun playlistUrl(): String? {
@@ -3620,20 +3898,44 @@ class MainActivity : Activity() {
     }
 
     private fun copyPlaylistLink() {
-        val url = playlistUrl() ?: return toast("Створіть / виберіть плейлист")
+        val id =
+            createdPlaylistId
+                ?: return toast(
+                    "Створіть / виберіть плейлист"
+                )
+
+        copyPlaylistLink(id)
+    }
+
+    private fun copyPlaylistLink(
+        playlistId: String
+    ) {
+        val url =
+            playlistUrl(playlistId)
 
         val clipboard =
-            getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            getSystemService(
+                CLIPBOARD_SERVICE
+            ) as ClipboardManager
 
         clipboard.setPrimaryClip(
-            ClipData.newPlainText("YTM playlist", url)
+            ClipData.newPlainText(
+                "YTM playlist",
+                url
+            )
         )
 
-        toast("Посилання на плейлист скопійовано")
+        toast(
+            "Посилання на плейлист скопійовано"
+        )
     }
 
     private fun showReplacementLog() {
-        val p = playlist ?: return toast("Немає імпортованого плейлиста")
+        val p =
+            playlist
+                ?: return toast(
+                    "Немає імпортованого плейлиста"
+                )
 
         val problemTracks =
             p.tracks.filter { track ->
@@ -3646,55 +3948,91 @@ class MainActivity : Activity() {
             }
 
         if (problemTracks.isEmpty()) {
-            return toast("Замін, пропусків або проблемних треків поки немає")
+            windowState.clear()
+            return toast(
+                "Замін, пропусків або проблемних треків поки немає"
+            )
         }
 
-        val shortText = buildShortReplacementText(problemTracks)
-        val fullText = buildFullReplacementText(problemTracks)
+        val shortText =
+            buildShortReplacementText(
+                problemTracks
+            )
+        val fullText =
+            buildFullReplacementText(
+                problemTracks
+            )
 
-        UiChrome.showRecordDialog(
-            activity = this,
-            title = "Заміни / проблемні треки: ${problemTracks.size}",
-            subtitle = "Кожна позиція показана окремою плиткою.",
-            records =
-                problemTracks.mapIndexed { index, track ->
-                    UiChrome.DialogRecord(
-                        title =
-                            "${index + 1}. " +
-                                "${track.originalArtist} — ${track.originalTitle}",
-                        detail =
-                            replacementRecordLabel(track),
-                        tone =
-                            if (track.manuallySelected) {
+        windowState.show(
+            WINDOW_REPLACEMENT_LOG
+        ) {
+            UiChrome.showRecordDialog(
+                activity = this,
+                title =
+                    "Заміни / проблемні треки: " +
+                        problemTracks.size,
+                subtitle =
+                    "Кожна позиція показана окремою плиткою.",
+                records =
+                    problemTracks.mapIndexed {
+                            index,
+                            track ->
+                        UiChrome.DialogRecord(
+                            title =
+                                "${index + 1}. " +
+                                    "${track.originalArtist} — " +
+                                    track.originalTitle,
+                            detail =
+                                replacementRecordLabel(
+                                    track
+                                ),
+                            tone =
+                                if (
+                                    track.manuallySelected
+                                ) {
+                                    UiChrome.ActionTone.ACCENT
+                                } else {
+                                    UiChrome.ActionTone.NORMAL
+                                }
+                        )
+                    },
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            "TikTok список"
+                        ) {
+                            copyText(
+                                label =
+                                    "YTM Importer TikTok replacements",
+                                text =
+                                    shortText,
+                                successMessage =
+                                    "Короткий список для TikTok скопійовано"
+                            )
+                        },
+                        UiChrome.DialogAction(
+                            "Повний текст"
+                        ) {
+                            copyText(
+                                label =
+                                    "YTM Importer replacement log",
+                                text =
+                                    fullText,
+                                successMessage =
+                                    "Повний журнал скопійовано"
+                            )
+                        },
+                        UiChrome.DialogAction(
+                            label = "Закрити",
+                            tone =
                                 UiChrome.ActionTone.ACCENT
-                            } else {
-                                UiChrome.ActionTone.NORMAL
-                            }
-                    )
-                },
-            actions = listOf(
-                UiChrome.DialogAction("TikTok список") {
-                    copyText(
-                        label = "YTM Importer TikTok replacements",
-                        text = shortText,
-                        successMessage = "Короткий список для TikTok скопійовано"
-                    )
-                },
-                UiChrome.DialogAction("Повний текст") {
-                    copyText(
-                        label = "YTM Importer replacement log",
-                        text = fullText,
-                        successMessage = "Повний журнал скопійовано"
-                    )
-                },
-                UiChrome.DialogAction(
-                    label = "Закрити",
-                    tone = UiChrome.ActionTone.ACCENT
-                ) {}
-            ),
-            actionLayout =
-                UiChrome.DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
-        )
+                        ) {}
+                    ),
+                actionLayout =
+                    UiChrome.DialogActionLayout
+                        .VERTICAL_WITH_TEXT_CLOSE
+            )
+        }
     }
 
     private fun replacementRecordLabel(track: Track): String =
@@ -3896,6 +4234,41 @@ class MainActivity : Activity() {
 
         private const val STATE_RETURN_TO_PLAYLIST_HUB =
             "state_return_to_playlist_hub"
+
+        private const val STATE_WINDOW =
+            "main_window"
+
+        private const val WINDOW_SEARCH_PLAN =
+            "search_plan"
+        private const val WINDOW_QUOTA_PAUSED =
+            "quota_paused"
+        private const val WINDOW_PENDING_ACCOUNT_MISMATCH =
+            "pending_account_mismatch"
+        private const val WINDOW_QUICK_START =
+            "quick_start"
+        private const val WINDOW_PRIVACY =
+            "privacy"
+        private const val WINDOW_THEME_PICKER =
+            "theme_picker"
+        private const val WINDOW_PLAYLIST_RESULT =
+            "playlist_result"
+        private const val WINDOW_REPLACEMENT_LOG =
+            "replacement_log"
+
+        private const val ARG_OPEN_REVIEW_AFTER =
+            "open_review_after"
+        private const val ARG_PRESERVE_EXISTING_EXACT =
+            "preserve_existing_exact"
+        private const val ARG_PENDING_JOB_ID =
+            "pending_job_id"
+        private const val ARG_FIRST_RUN =
+            "first_run"
+        private const val ARG_PLAYLIST_RESULT_NAME =
+            "playlist_result_name"
+        private const val ARG_PLAYLIST_RESULT_DETAILS =
+            "playlist_result_details"
+        private const val ARG_PLAYLIST_RESULT_ID =
+            "playlist_result_id"
 
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"
