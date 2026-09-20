@@ -231,6 +231,7 @@ class MenuActivity : Activity() {
                                         style.label,
                                 onClick = {
                                     if (style != active) {
+                                        windowState.clear()
                                         AppThemeManager
                                             .setStyle(
                                                 this,

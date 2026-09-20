@@ -191,7 +191,9 @@ class MainActivity : Activity() {
         } else if (accountDialogOpen) {
             window.decorView.post {
                 if (!isFinishing && !isDestroyed) {
-                    showAccountDialog()
+                    showAccountDialog(
+                        allowAuthorizeIfMissing = false
+                    )
                 }
             }
         }
@@ -1440,10 +1442,18 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun showAccountDialog() {
+    private fun showAccountDialog(
+        allowAuthorizeIfMissing: Boolean = true
+    ) {
         if (accessToken.isNullOrBlank()) {
             accountDialogOpen = false
-            authorize()
+
+            if (allowAuthorizeIfMissing) {
+                authorize()
+            } else {
+                updateAccountPanel()
+            }
+
             return
         }
 
