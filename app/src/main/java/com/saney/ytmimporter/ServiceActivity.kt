@@ -24,6 +24,7 @@ import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.SafTreeFileWriter
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.youtube.SearchCache
@@ -43,6 +44,8 @@ class ServiceActivity : Activity() {
     private var pendingExportContent: String? = null
     private var pendingExportFileName: String? = null
     private var changelogScrollY: Int = 0
+    private lateinit var windowState:
+        RestorableWindowState
 
     private val saveDiagnosticsRequestCode = 6101
     private val saveDiagnosticsFolderRequestCode = 6102
@@ -50,6 +53,11 @@ class ServiceActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
 
         searchCache = SearchCache(this)
         quotaTracker = QuotaTracker(this)
@@ -71,11 +79,13 @@ class ServiceActivity : Activity() {
                 ?: 0
 
         buildUi()
+        restoreWindowIfNeeded()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(KEY_PAGE, page.name)
         outState.putInt(KEY_CHANGELOG_SCROLL_Y, changelogScrollY)
+        windowState.save(outState)
         super.onSaveInstanceState(outState)
     }
 
@@ -922,6 +932,26 @@ class ServiceActivity : Activity() {
                 ).apply { bottomMargin = dp(8) }
         }
 
+    private fun restoreWindowIfNeeded() {
+        when (windowState.key) {
+            WINDOW_CLEAR_EXPIRED_CACHE ->
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed) {
+                        confirmClearExpiredSearchCache(
+                            searchCache.stats().expiredEntries
+                        )
+                    }
+                }
+
+            WINDOW_CLEAR_ALL_CACHE ->
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed) {
+                        confirmClearSearchCache()
+                    }
+                }
+        }
+    }
+
     private fun confirmClearExpiredSearchCache(
         expiredCount: Int
     ) {
@@ -932,10 +962,13 @@ class ServiceActivity : Activity() {
             return
         }
 
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Видалити прострочені записи?",
+        windowState.show(
+            WINDOW_CLEAR_EXPIRED_CACHE
+        ) {
+            UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title =
+                    "Видалити прострочені записи?",
             message =
                 "Буде видалено $expiredCount прострочених записів SearchCache.\n\n" +
                     "History, Pending Queue та плейлисти YouTube/YTM не змінюються. " +
@@ -951,11 +984,15 @@ class ServiceActivity : Activity() {
             )
 
             buildUi()
+            }
         }
     }
 
     private fun confirmClearSearchCache() {
-        UiChrome.showDangerConfirmDialog(
+        windowState.show(
+            WINDOW_CLEAR_ALL_CACHE
+        ) {
+            UiChrome.showDangerConfirmDialog(
             activity = this,
             title =
                 "Очистити весь SearchCache?",
@@ -978,6 +1015,7 @@ class ServiceActivity : Activity() {
             )
 
             buildUi()
+            }
         }
     }
 
@@ -1269,6 +1307,13 @@ class ServiceActivity : Activity() {
     }
 
     companion object {
+        private const val STATE_WINDOW =
+            "service_window"
+        private const val WINDOW_CLEAR_EXPIRED_CACHE =
+            "clear_expired_cache"
+        private const val WINDOW_CLEAR_ALL_CACHE =
+            "clear_all_cache"
+
         private const val CHANGELOG_ASSET =
             "CHANGELOG.md"
 

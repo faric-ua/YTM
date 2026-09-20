@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableWindowState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -35,12 +36,19 @@ class PendingActivity : Activity() {
     private lateinit var pendingJobStore: PendingJobStore
 
     private var currentJobId: String? = null
+    private lateinit var windowState:
+        RestorableWindowState
 
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        windowState =
+            RestorableWindowState(
+                savedInstanceState,
+                STATE_WINDOW
+            )
 
         pendingJobStore =
             PendingJobStore(this)
@@ -51,19 +59,18 @@ class PendingActivity : Activity() {
                     KEY_CURRENT_JOB_ID
                 )
 
-        if (!restoredId.isNullOrBlank()) {
-            val job =
-                pendingJobStore.get(
-                    restoredId
-                )
+        val restoredJob =
+            restoredId
+                ?.takeIf { it.isNotBlank() }
+                ?.let(pendingJobStore::get)
 
-            if (job != null) {
-                showDetailScreen(job)
-                return
-            }
+        if (restoredJob != null) {
+            showDetailScreen(restoredJob)
+        } else {
+            showListScreen()
         }
 
-        showListScreen()
+        restoreWindowIfNeeded()
     }
 
     override fun onSaveInstanceState(
@@ -73,6 +80,8 @@ class PendingActivity : Activity() {
             KEY_CURRENT_JOB_ID,
             currentJobId
         )
+
+        windowState.save(outState)
 
         super.onSaveInstanceState(
             outState
@@ -592,10 +601,39 @@ class PendingActivity : Activity() {
         finish()
     }
 
+    private fun restoreWindowIfNeeded() {
+        if (windowState.key != WINDOW_DELETE_JOB) {
+            return
+        }
+
+        val jobId =
+            windowState
+                .args()
+                .getString(ARG_JOB_ID)
+                ?: return windowState.clear()
+
+        val job =
+            pendingJobStore.get(jobId)
+                ?: return windowState.clear()
+
+        window.decorView.post {
+            if (!isFinishing && !isDestroyed) {
+                confirmDelete(job)
+            }
+        }
+    }
+
     private fun confirmDelete(
         job: PendingJob
     ) {
-        UiChrome.showDangerConfirmDialog(
+        windowState.show(
+            key = WINDOW_DELETE_JOB,
+            args =
+                Bundle().apply {
+                    putString(ARG_JOB_ID, job.id)
+                }
+        ) {
+            UiChrome.showDangerConfirmDialog(
             activity = this,
             title =
                 "Видалити завдання з черги?",
@@ -615,6 +653,7 @@ class PendingActivity : Activity() {
             )
 
             showListScreen()
+            }
         }
     }
 
@@ -1311,6 +1350,13 @@ class PendingActivity : Activity() {
     }
 
     companion object {
+        private const val STATE_WINDOW =
+            "pending_window"
+        private const val WINDOW_DELETE_JOB =
+            "delete_job"
+        private const val ARG_JOB_ID =
+            "job_id"
+
         const val EXTRA_RESUME_JOB_ID =
             "pending_resume_job_id"
 

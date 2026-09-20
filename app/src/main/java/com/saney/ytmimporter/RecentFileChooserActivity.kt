@@ -82,13 +82,7 @@ class RecentFileChooserActivity : Activity() {
 
         render()
 
-        if (windowState.key == WINDOW_HELP) {
-            window.decorView.post {
-                if (!isFinishing && !isDestroyed) {
-                    showHelp()
-                }
-            }
-        }
+        restoreWindowIfNeeded()
     }
 
     override fun onSaveInstanceState(
@@ -644,6 +638,25 @@ class RecentFileChooserActivity : Activity() {
                 dp(8)
         }
 
+    private fun restoreWindowIfNeeded() {
+        window.decorView.post {
+            if (isFinishing || isDestroyed) {
+                return@post
+            }
+
+            when (windowState.key) {
+                WINDOW_HELP ->
+                    showHelp()
+
+                WINDOW_ALL_FILES_ACCESS ->
+                    explainAndRequestAllFilesAccess()
+
+                WINDOW_SETTINGS_ERROR ->
+                    showAllFilesSettingsError()
+            }
+        }
+    }
+
     private fun showHelp() {
         windowState.show(WINDOW_HELP) {
             UiChrome.showMessageDialog(
@@ -673,7 +686,10 @@ class RecentFileChooserActivity : Activity() {
     }
 
     private fun explainAndRequestAllFilesAccess() {
-        UiChrome.showMessageDialog(
+        windowState.show(
+            WINDOW_ALL_FILES_ACCESS
+        ) {
+            UiChrome.showMessageDialog(
             activity = this,
             title = "Доступ до Download",
             message =
@@ -699,21 +715,7 @@ class RecentFileChooserActivity : Activity() {
                                 )
                             }.onFailure {
                                 refreshAfterSettings = false
-                                UiChrome.showMessageDialog(
-                                    activity = this,
-                                    title = "Не вдалося відкрити налаштування",
-                                    message =
-                                        "Відкрийте системні Налаштування → Спеціальний доступ → " +
-                                            "Доступ до всіх файлів → YTM Importer.",
-                                    actions =
-                                        listOf(
-                                            UiChrome.DialogAction(
-                                                label = "Закрити",
-                                                tone =
-                                                    UiChrome.ActionTone.NORMAL
-                                            ) {}
-                                        )
-                                )
+                                showAllFilesSettingsError()
                             }
                         }
                     ),
@@ -723,7 +725,31 @@ class RecentFileChooserActivity : Activity() {
                             UiChrome.ActionTone.NORMAL
                     ) {}
                 )
-        )
+            )
+        }
+    }
+
+    private fun showAllFilesSettingsError() {
+        windowState.show(
+            WINDOW_SETTINGS_ERROR
+        ) {
+            UiChrome.showMessageDialog(
+                activity = this,
+                title =
+                    "Не вдалося відкрити налаштування",
+                message =
+                    "Відкрийте системні Налаштування → Спеціальний доступ → " +
+                        "Доступ до всіх файлів → YTM Importer.",
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label = "Закрити",
+                            tone =
+                                UiChrome.ActionTone.NORMAL
+                        ) {}
+                    )
+            )
+        }
     }
 
     private fun openSystemTreePicker() {
@@ -841,6 +867,10 @@ class RecentFileChooserActivity : Activity() {
             "recent_file_chooser_window"
         private const val WINDOW_HELP =
             "help"
+        private const val WINDOW_ALL_FILES_ACCESS =
+            "all_files_access"
+        private const val WINDOW_SETTINGS_ERROR =
+            "settings_error"
 
         const val EXTRA_TITLE =
             "recent_file_chooser_title"
