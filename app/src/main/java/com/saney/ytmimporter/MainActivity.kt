@@ -345,7 +345,7 @@ class MainActivity : Activity() {
 
         val flowCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(12), dp(12), dp(12), dp(12))
+            setPadding(dp(12), dp(6), dp(12), dp(12))
             background =
                 AppThemeManager.surfaceDrawable(
                     context = this@MainActivity,
@@ -361,7 +361,7 @@ class MainActivity : Activity() {
                 textSize = 12f
                 setTextColor(palette.muted)
                 setTypeface(typeface, Typeface.BOLD)
-                setPadding(dp(2), 0, 0, dp(5))
+                setPadding(dp(2), 0, 0, dp(4))
             }
         )
 
@@ -561,6 +561,7 @@ class MainActivity : Activity() {
                 fill =
                     palette.surface,
                 subtitleAccent = true,
+                topPaddingDp = 5,
                 onClick = {
                     openPlaylistHub()
                 }
