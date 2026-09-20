@@ -150,64 +150,39 @@ This exact dialog therefore has no rotation restoration contract today.
 Status: **RECORDED / NOT FIXED YET**.
 
 
-### BUG-021 — History `Додано X/Y` is semantically ambiguous
+### BUG-021 — History result summary is semantically ambiguous
 
 Observed on phone:
-- successful-looking History rows (`✓ Завершено`) can show `Додано 0/9`;
-- failed rows can show the same `Додано 0/9` line;
-- the list therefore does not clearly distinguish a completed YTM write from a
-  local/legacy/restored History record or a failed write.
+- green `✓ Завершено` rows can show `Додано 0/9`;
+- failed/partial-looking records can expose the same generic count pattern;
+- the user cannot tell from the list why a completed write job added zero new tracks.
 
-Current code evidence:
-- `HistoryListAdapter` always renders:
-  `Додано {addedCount}/{writeTargetCount}`;
-- `addedCount` is the count of History tracks whose status is `ADDED`;
-- `writeTargetCount` is the write-operation target count;
-- `HistoryStatus.COMPLETED` is displayed independently from this line.
-
-Requested direction:
-- make the list row explicitly describe the operation/result instead of always using
-  one generic `Додано X/Y` line;
-- a real successful YTM write should clearly say that tracks were added to YTM;
-- failed/incomplete writes should show their failure/pending result;
-- records that do not represent a completed remote write should not look like
-  `0/9` failed uploads by default.
-
-Status: **RECORDED / NOT FIXED YET**.
-
-
-### BUG-021 — History card always shows `Додано X/Y`, even when the operation was not a YTM write
-
-Observed on phone:
-- green `✓ Завершено` entries can show `Додано 0/9`;
-- failed entries can show the same `Додано 0/9`;
-- from the list row alone, the user cannot tell whether 9 tracks were imported,
-  restored, written to YouTube/YTM, or merely present in the workspace.
-
-Current code evidence:
-- History list rows always render:
-  `Додано ${entry.addedCount}/${entry.writeTargetCount}`;
-- History detail `Результат` also always renders the same metric;
-- `HistoryStatus.COMPLETED` only means the recorded operation completed, not
-  necessarily that tracks were added to a destination playlist.
-
-Meaning of the fields:
-- `addedCount` = tracks actually written/added to the destination playlist;
-- `writeTargetCount` = tracks targeted for the write operation.
+Corrected code interpretation:
+- History entries are synchronized from `PendingJob` / write jobs;
+- `addedCount` = tracks actually inserted into the destination playlist;
+- `writeTargetCount` = the job's target count;
+- `HistoryStatus.COMPLETED` currently means the write coordinator reached the end
+  with `failedCount == 0`; it does **not** guarantee
+  `addedCount == writeTargetCount`;
+- therefore `✓ Завершено + Додано 0/9` can be technically valid, for example when
+  the job finishes without write failures but no new inserts are required/eligible.
 
 Problem:
-- this metric is meaningful for create/add-to-playlist writes;
-- it is misleading for import/restore/project-history entries where no destination
-  write occurred.
+- the UI exposes only `Додано X/Y` as the primary summary and hides the composition
+  of the result;
+- duplicate / skipped / pending / failed counts are not visible unless nonzero and
+  the meaning of `Завершено` is easy to misread as "all added".
 
 Requested direction:
-- make History summary/result context-aware;
-- for actual YTM writes use an explicit label such as
-  `Додано в YTM: 9/9`;
-- for import/restore operations show a relevant metric such as
-  `Імпортовано: 9 треків` / `Відновлено: 9 треків`;
-- failed writes should clearly show write result + errors instead of looking the same
-  as a completed import.
+- keep History tied to write-job semantics;
+- rename the metric explicitly to `Додано в YTM: X/Y`;
+- list relevant nonzero outcome counts on the row:
+  `Дублікати`, `Пропущено`, `Очікує`, `Помилки`;
+- consider a clearer completed label when zero new inserts occurred, e.g.
+  `Завершено без нових додавань`, if the outcome composition supports it;
+- detail view and copied summary must use the same semantics;
+- do not infer import/restore operation kinds that the current History model does not
+  actually store.
 
 Status: **RECORDED / NOT FIXED YET**.
 
@@ -248,5 +223,45 @@ Requested direction:
   - rotation must not perform the underlying action;
   - dismissing Help after rotation must return to the same parent screen;
 - prefer a reusable shared solution instead of per-screen one-off flags where possible.
+
+Status: **RECORDED / NOT FIXED YET**.
+
+
+### BUG-023 — Non-Help modal windows also disappear on rotation
+
+Observed on phone:
+- Review screen → `Проект` → `Поточний YTM Project`;
+- rotate the phone;
+- the project-action window disappears.
+
+Current code evidence:
+- `ReviewActivity.showProjectActions()` uses `UiChrome.showMenuDialog()`;
+- `ReviewActivity.onSaveInstanceState()` currently persists only the focused track
+  history index;
+- there is no explicit "project actions open" saved state;
+- if Review was initially launched with `EXTRA_OPEN_PROJECT_ACTIONS=true`, the
+  intent can incidentally reopen the window after recreation;
+- if the same window is opened manually from Review, there is no equivalent restore
+  path. The same modal therefore behaves differently depending on how it was opened.
+
+Broader modal audit on the current R3 branch:
+- **50** active unified modal call sites across **12 Activities**;
+- **31** direct `UiChrome.show*Dialog(...)` calls;
+- **19** `UiChrome.alertBuilder(...)` compatibility calls;
+- explicit/specialized recreation coverage exists only for selected paths
+  (for example Main Account, Playlist replacement log, Import clear-current-list,
+  and specialized Data restore confirmation state);
+- there is no project-wide lifecycle contract saying that an open user-visible modal
+  must be reconstructed after Activity recreation.
+
+Requested direction:
+- treat BUG-022 Help windows as one category inside a broader modal lifecycle fix;
+- audit every active unified modal call site;
+- introduce a reusable restorable-window state mechanism;
+- restore the same window over the same parent screen after rotation;
+- restoration must rebuild presentation only and must never replay a destructive,
+  network, file-write, or navigation side effect;
+- callbacks remain owned by the Activity/screen, while saved state should contain
+  only a stable window key plus minimal reconstructible arguments.
 
 Status: **RECORDED / NOT FIXED YET**.
