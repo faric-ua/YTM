@@ -1737,13 +1737,12 @@ class ReviewActivity : Activity() {
                 .setView(
                     content
                 )
-                .create()
+                .show()
                 .also {
                     dialog ->
                     dialog.setCancelable(
                         false
                     )
-                    dialog.show()
                 }
     }
 

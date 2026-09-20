@@ -69,11 +69,12 @@ object DestinationForwardedWritePlan {
                     .DUPLICATE_MODE_SKIP
 
         val skippedPositions =
-            data.getIntArrayExtra(
-                DestinationActivity
-                    .EXTRA_LOCAL_SKIP_POSITIONS
+            (
+                data.getIntArrayExtra(
+                    DestinationActivity
+                        .EXTRA_LOCAL_SKIP_POSITIONS
+                ) ?: IntArray(0)
             )
-                .orEmpty()
                 .toSet()
 
         val tracksToSkip =

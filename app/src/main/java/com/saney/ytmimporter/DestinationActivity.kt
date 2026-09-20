@@ -32,6 +32,7 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 
 class DestinationActivity : Activity() {
     private var currentMode: String = MODE_START
@@ -1019,13 +1020,12 @@ class DestinationActivity : Activity() {
                 .setView(
                     content
                 )
-                .create()
+                .show()
                 .also {
                     dialog ->
                     dialog.setCancelable(
                         false
                     )
-                    dialog.show()
                 }
     }
 
@@ -1477,6 +1477,18 @@ class DestinationActivity : Activity() {
             accentStroke = useAccentStroke,
             accentOverride = accentOverride
         )
+    }
+
+    private fun toast(
+        message: String
+    ) {
+        Toast
+            .makeText(
+                this,
+                message,
+                Toast.LENGTH_LONG
+            )
+            .show()
     }
 
     private fun dp(value: Int): Int =

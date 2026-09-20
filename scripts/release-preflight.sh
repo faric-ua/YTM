@@ -199,6 +199,7 @@ bash scripts/v1447-r3-oauth-retry-audit.sh
 bash scripts/v1447-r3-history-semantics-audit.sh
 bash scripts/v1447-r3-consolidation-audit.sh
 bash scripts/v1447-r3-navigation-ownership-audit.sh
+bash scripts/v1447-r3-navigation-ownership-r4-fix2-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -284,6 +285,7 @@ check_file "scripts/v1447-r3-history-semantics-audit.sh"
 check_file "scripts/v1447-r3-history-semantics-selftest.py"
 check_file "scripts/v1447-r3-consolidation-audit.sh"
 check_file "scripts/v1447-r3-navigation-ownership-audit.sh"
+check_file "scripts/v1447-r3-navigation-ownership-r4-fix2-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/review/ReviewRemoteOperations.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationRemoteOperations.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationForwardedWritePlan.kt"
