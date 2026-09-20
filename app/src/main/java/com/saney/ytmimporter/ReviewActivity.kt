@@ -1771,8 +1771,10 @@ class ReviewActivity : Activity() {
                 .also { dialog ->
                     dialog.setCanceledOnTouchOutside(false)
                     dialog.setOnCancelListener {
-                        repeatSearchDialogOpen = false
-                        repeatSearchDialog = null
+                        if (!isChangingConfigurations) {
+                            repeatSearchDialogOpen = false
+                            repeatSearchDialog = null
+                        }
                     }
                     dialog.setOnDismissListener {
                         repeatSearchDialog = null

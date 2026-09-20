@@ -10,10 +10,10 @@ fail() {
 
 test -f "$MAIN" || fail "MainActivity.kt missing"
 
-LINES="$(wc -l < "$MAIN" | tr -d ' ')"
+MAIN_LINES="$(wc -l < "$MAIN" | tr -d ' ')"
 
 echo "YTM Importer MainActivity audit"
-echo "Lines: $LINES"
+echo "Lines: $MAIN_LINES"
 
 for removed in \
   chooseDestination \

@@ -281,6 +281,18 @@ class WorkflowRelayOverlay(
                                 TrackStatus.ADDED ->
                                 "✓ "
 
+                            track.status ==
+                                TrackStatus.DUPLICATE ->
+                                "≋ "
+
+                            track.status ==
+                                TrackStatus.FAILED ->
+                                "× "
+
+                            track.status ==
+                                TrackStatus.SKIPPED ->
+                                "— "
+
                             else ->
                                 ""
                         }
@@ -304,6 +316,18 @@ class WorkflowRelayOverlay(
                             track.status ==
                                 TrackStatus.ADDED ->
                                 palette.success
+
+                            track.status ==
+                                TrackStatus.DUPLICATE ->
+                                palette.duplicate
+
+                            track.status ==
+                                TrackStatus.FAILED ->
+                                palette.danger
+
+                            track.status ==
+                                TrackStatus.SKIPPED ->
+                                palette.muted
 
                             else ->
                                 palette.text
@@ -362,14 +386,23 @@ class WorkflowRelayOverlay(
             PlaylistWriteCoordinator.WriteProgress,
         tracks: List<Track>
     ) {
+        val skippedDuplicates =
+            tracks.count {
+                it.status ==
+                    TrackStatus.DUPLICATE
+            }
+
         val nextMessage =
             if (
                 progress.playlistCreated
             ) {
                 "Плейлист створено. Додаю треки…"
             } else {
-                "Додано ${progress.processedTracks}/${progress.totalTracks}… " +
-                    "залишилось ${progress.job.remainingTracks.size}"
+                "Оброблено ${progress.processedTracks}/${progress.totalTracks} • " +
+                    "залишилось ${progress.job.remainingTracks.size}\n" +
+                    "Додано ${progress.job.addedCount} • " +
+                    "дублікатів пропущено $skippedDuplicates • " +
+                    "помилок ${progress.job.failedCount}"
             }
 
         update(nextMessage)

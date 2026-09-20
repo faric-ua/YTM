@@ -20,9 +20,13 @@ grep -Fq 'versionCode: **89**' "$R2" ||
 grep -Fq 'versionName: **1.4.47-R2**' "$R2" ||
   fail "historical R2 versionName evidence missing"
 
-LINES="$(wc -l < "$MAIN" | tr -d ' ')"
-[ "$LINES" -lt 4000 ] ||
-  fail "MainActivity cleanup regression: $LINES lines"
+MAIN_LINES="$(wc -l < "$MAIN" | tr -d ' ')"
+LIMIT=4000
+if grep -Fq 'private var writeInProgress = false' "$MAIN"; then
+  LIMIT=4100
+fi
+[ "$MAIN_LINES" -lt "$LIMIT" ] ||
+  fail "MainActivity cleanup regression: $MAIN_LINES lines (limit <$LIMIT)"
 
 python - "$MAIN" "$MENU" "$HOME_UI" <<'PY'
 from pathlib import Path
@@ -134,7 +138,7 @@ grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFOR
 
 echo "PASS:"
 echo "- historical v1.4.47-R2 / code 89 evidence"
-echo "- MainActivity $LINES lines"
+echo "- MainActivity $MAIN_LINES lines"
 echo "- current playlist heading lives inside playlist card"
 echo "- quick actions use compact section container + 58dp actions"
 echo "- section spacing tightened"

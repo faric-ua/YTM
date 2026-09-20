@@ -104,6 +104,7 @@ class MainActivity : Activity() {
     private var returnToPlaylistHubAfterDelegatedAction = false
     private var returnToMenuAfterDelegatedAction = false
     private lateinit var workflowRelay: WorkflowRelayOverlay
+    private var writeInProgress = false
 
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
@@ -214,7 +215,10 @@ class MainActivity : Activity() {
 
         syncAuthorizationInvalidationFromMemory()
 
-        if (::adapter.isInitialized) {
+        if (
+            ::adapter.isInitialized &&
+            !writeInProgress
+        ) {
             reloadCurrentWorkspace()
         }
 
@@ -403,7 +407,7 @@ class MainActivity : Activity() {
                     label = "3. Знайти / перевірити",
                     primary = true
                 ) {
-                    searchOrReview()
+                    openDirectSearchOrReview()
                 }.apply {
                 isEnabled = false
                 alpha = 0.55f
@@ -416,7 +420,7 @@ class MainActivity : Activity() {
                     label = "4. Створити / додати",
                     primary = true
                 ) {
-                    createPlaylist()
+                    openDirectDestination()
                 }.apply {
                 isEnabled = false
                 alpha = 0.55f
@@ -577,7 +581,7 @@ class MainActivity : Activity() {
                     palette.surface,
                 subtitleAccent = true,
                 onClick = {
-                    openPlaylistHub()
+                    openDirectPlaylistHub()
                 }
             )
 
@@ -728,10 +732,10 @@ class MainActivity : Activity() {
                 .bottomNavigation(
                     activity = this,
                     onSearch = {
-                        searchOrReview()
+                        openDirectSearchOrReview()
                     },
                     onPlaylist = {
-                        openPlaylistHub()
+                        openDirectPlaylistHub()
                     },
                     onService = {
                         showServiceTools()
@@ -1252,6 +1256,30 @@ class MainActivity : Activity() {
             ),
             menuScreenRequestCode
         )
+    }
+
+    private fun clearDelegatedReturnRoute() {
+        returnToPlaylistHubAfterDelegatedAction = false
+        returnToMenuAfterDelegatedAction = false
+
+        if (::workflowRelay.isInitialized) {
+            hideWorkflowRelayOverlay()
+        }
+    }
+
+    private fun openDirectSearchOrReview() {
+        clearDelegatedReturnRoute()
+        searchOrReview()
+    }
+
+    private fun openDirectDestination() {
+        clearDelegatedReturnRoute()
+        createPlaylist()
+    }
+
+    private fun openDirectPlaylistHub() {
+        clearDelegatedReturnRoute()
+        openPlaylistHub()
     }
 
     private fun openPlaylistHub() {
@@ -2851,7 +2879,17 @@ class MainActivity : Activity() {
         token: String,
         operationLabel: String
     ) {
-        workflowRelay.showWriteProgress(initialJob.playlistName, playlist?.tracks ?: tracks, statusText.text.toString())
+        writeInProgress = true
+
+        val displayTracks =
+            playlist?.tracks
+                ?: tracks
+
+        workflowRelay.showWriteProgress(
+            initialJob.playlistName,
+            displayTracks,
+            statusText.text.toString()
+        )
 
         executor.execute {
             val outcome =
@@ -2871,14 +2909,20 @@ class MainActivity : Activity() {
                     },
                     onTrackStart = { track, _, _ ->
                         runOnUiThread {
-                            workflowRelay.updateWriteTracks(playlist?.tracks ?: tracks, track)
+                            workflowRelay.updateWriteTracks(
+                                displayTracks,
+                                track
+                            )
                         }
                     },
                     onProgress = { writeProgress ->
                         runOnUiThread {
                             progress.progress =
                                 writeProgress.progressValue
-                            workflowRelay.updateWriteProgress(writeProgress, playlist?.tracks ?: tracks)
+                            workflowRelay.updateWriteProgress(
+                                writeProgress,
+                                displayTracks
+                            )
 
                             adapter.notifyDataSetChanged()
                             updateSummary()
@@ -2889,6 +2933,9 @@ class MainActivity : Activity() {
                 )
 
             runOnUiThread {
+                writeInProgress = false
+                persistCurrentWorkspace()
+
                 progress.visibility = View.GONE
                 adapter.notifyDataSetChanged()
                 updateSummary()
