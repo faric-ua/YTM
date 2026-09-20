@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.47-R2 — Compact Home + Menu-owned Theme Picker — IMPLEMENTED / STATIC + PHONE QA NEEDED
+v1.4.47-R3 — Batched Phone Findings / Modal Lifecycle / Import Auth / Home Polish — WORK IN PROGRESS
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -26,11 +26,41 @@ v1.4.47-R2 — Compact Home + Menu-owned Theme Picker — IMPLEMENTED / STATIC +
 - BUG-015 Playlist Hub delegated actions lose parent/back-stack — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
 - BUG-016 replacement/clear confirmation modal rotation persistence gap — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
 - BUG-017 Home landscape hides lower dashboard sections — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
+- BUG-023 non-Help modal windows also lack a project-wide rotation contract — RECORDED / R3 PENDING
+- BUG-022 Help windows disappear on rotation — RECORDED / R3 PENDING
+- BUG-021 History write-result summary `Додано X/Y` is ambiguous — RECORDED / R3 PENDING
+- BUG-020 Import auth-invalidated notice disappears on rotation — RECORDED / R3 PENDING
+- BUG-019 Import remote YTM flows trust cached token until HTTP 401 — RECORDED / R3 PENDING
+- BUG-018 SearchCache Actions section lacks a themed container — RECORDED / R3 PENDING
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — v1.4.47 phone QA found layout/navigation regressions; v1.4.47-R1 now uses the approved prototype as a **layout-only** contract: header → workflow → utility row → account/status → current playlist → quick actions → bottom navigation. Existing Neon/Blue/Green theme system remains authoritative.
 - UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
+
+## v1.4.47-R3 — Batched Phone Findings / Modal Lifecycle / Import Auth / Home Polish
+- [x] versionCode 90 / versionName 1.4.47-R3
+- [x] stable Home block numbering 1–7 documented
+- [x] tighten Home block 2/5/6 title spacing
+- [x] Home quick actions renamed to `Імпорт` / `Експорт`
+- [x] Home Export routes into existing selective-playlist export flow
+- [x] BUG-018..023 recorded
+- [x] master continuation plan: `docs/v.1.4.47/R3_PLAN.md`
+- [ ] freeze final R3 scope after user says finding collection is complete
+- [ ] shared modal lifecycle tracker / restore contract
+- [ ] Help-window rotation coverage
+- [ ] Review Project/action window rotation coverage
+- [ ] Import fresh-auth gate across remote YTM flows
+- [ ] Import auth-invalidated notice rotation restoration
+- [ ] SearchCache Actions themed container
+- [ ] History write-result semantics
+- [ ] dedicated R3 audits
+- [ ] full release preflight
+- [ ] deletion diff vs R2
+- [ ] stacked R3 PR into R2
+- [ ] signed APK
+- [ ] targeted phone QA
+- [ ] merge only after phone PASS
 
 ## v1.4.47-R2 — Compact Home + Menu-owned Theme Picker
 - [x] versionCode 89 / versionName 1.4.47-R2
@@ -49,7 +79,8 @@ v1.4.47-R2 — Compact Home + Menu-owned Theme Picker — IMPLEMENTED / STATIC +
 - [x] full release preflight
 - [x] PR #21 opened into `fix/v1.4.47-r1-home-nav-dialog`
 - [x] stacked PR into R1 branch
-- [ ] signed APK
+- [x] signed APK — Actions run 35476977582
+- [x] phone: R2 installed; additional findings collected into R3
 - [ ] phone 1: portrait Home density
 - [ ] phone 2: landscape + rounded nav
 - [ ] phone 3: theme picker stays over Menu
