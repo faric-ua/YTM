@@ -32,7 +32,20 @@ class YouTubeApiException(
         }
 }
 
-class YouTubeApi {
+interface YouTubeAccessTokenRecovery {
+    fun currentAccessToken(
+        fallbackToken: String
+    ): String
+
+    fun refreshAfterUnauthorized(
+        rejectedToken: String
+    ): String?
+}
+
+class YouTubeApi(
+    private val accessTokenRecovery:
+        YouTubeAccessTokenRecovery? = null
+) {
     data class ApiResponse(val code: Int, val body: String)
 
     data class PlaylistVideoIdsResult(
@@ -515,32 +528,114 @@ class YouTubeApi {
         accessToken: String,
         body: String? = null
     ): ApiResponse {
-        val connection = URL(url).openConnection() as HttpURLConnection
+        val initialToken =
+            accessTokenRecovery
+                ?.currentAccessToken(
+                    accessToken
+                )
+                ?.takeIf { it.isNotBlank() }
+                ?: accessToken
+
+        val firstResponse =
+            requestOnce(
+                method = method,
+                url = url,
+                accessToken = initialToken,
+                body = body
+            )
+
+        if (
+            firstResponse.code != 401 ||
+            accessTokenRecovery == null
+        ) {
+            return firstResponse
+        }
+
+        val refreshedToken =
+            accessTokenRecovery
+                .refreshAfterUnauthorized(
+                    initialToken
+                )
+                ?.takeIf {
+                    it.isNotBlank() &&
+                        it != initialToken
+                }
+                ?: return firstResponse
+
+        return requestOnce(
+            method = method,
+            url = url,
+            accessToken = refreshedToken,
+            body = body
+        )
+    }
+
+    private fun requestOnce(
+        method: String,
+        url: String,
+        accessToken: String,
+        body: String? = null
+    ): ApiResponse {
+        val connection =
+            URL(url)
+                .openConnection()
+                as HttpURLConnection
+
         connection.requestMethod = method
         connection.connectTimeout = 20_000
         connection.readTimeout = 30_000
-        connection.setRequestProperty("Authorization", "Bearer $accessToken")
-        connection.setRequestProperty("Accept", "application/json")
+        connection.setRequestProperty(
+            "Authorization",
+            "Bearer $accessToken"
+        )
+        connection.setRequestProperty(
+            "Accept",
+            "application/json"
+        )
 
         if (body != null) {
             connection.doOutput = true
-            connection.setRequestProperty("Content-Type", "application/json; charset=utf-8")
+            connection.setRequestProperty(
+                "Content-Type",
+                "application/json; charset=utf-8"
+            )
             connection.outputStream.use {
-                it.write(body.toByteArray(Charsets.UTF_8))
+                it.write(
+                    body.toByteArray(
+                        Charsets.UTF_8
+                    )
+                )
             }
         }
 
-        val code = connection.responseCode
-        val input =
-            if (code in 200..299) connection.inputStream
-            else connection.errorStream
+        val code =
+            connection.responseCode
 
-        val text = input?.use { stream ->
-            BufferedReader(InputStreamReader(stream, Charsets.UTF_8)).readText()
-        }.orEmpty()
+        val input =
+            if (code in 200..299) {
+                connection.inputStream
+            } else {
+                connection.errorStream
+            }
+
+        val text =
+            input
+                ?.use { stream ->
+                    BufferedReader(
+                        InputStreamReader(
+                            stream,
+                            Charsets.UTF_8
+                        )
+                    ).readText()
+                }
+                .orEmpty()
 
         connection.disconnect()
-        return ApiResponse(code, text)
+
+        return ApiResponse(
+            code = code,
+            body = text
+        )
     }
 
     private fun requireSuccess(response: ApiResponse, action: String) {

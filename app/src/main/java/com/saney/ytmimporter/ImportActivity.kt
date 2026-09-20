@@ -22,6 +22,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.auth.PersistentAuthStateStore
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
@@ -110,8 +111,14 @@ class ImportActivity : Activity() {
     private val executor =
         Executors.newSingleThreadExecutor()
 
-    private val api =
-        YouTubeApi()
+    private val api by lazy {
+        YouTubeApi(
+            accessTokenRecovery =
+                GoogleAccessTokenRecovery(
+                    this
+                )
+        )
+    }
 
     private lateinit var currentPlaylistStore:
         CurrentPlaylistStore

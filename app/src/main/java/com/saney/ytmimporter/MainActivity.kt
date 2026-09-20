@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.auth.PersistentAuthStateStore
 import com.saney.ytmimporter.model.GoogleAccountInfo
 import com.saney.ytmimporter.model.HistoryEntry
@@ -59,7 +60,15 @@ class MainActivity : Activity() {
     private val playlistScreenRequestCode = 1601
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
-    private val api = YouTubeApi()
+
+    private val api by lazy {
+        YouTubeApi(
+            accessTokenRecovery =
+                GoogleAccessTokenRecovery(
+                    this
+                )
+        )
+    }
 
     private lateinit var searchCoordinator: SearchCoordinator
     private lateinit var destinationCoordinator: DestinationCoordinator
@@ -1741,7 +1750,20 @@ class MainActivity : Activity() {
 
                 googleAccountInfo = googleResult.getOrNull()
                 youtubeChannelInfo = channelResult.getOrNull()
-                syncAuthSessionToMemory()
+
+                AuthSessionStore.updateIdentity(
+                    googleAccountInfo =
+                        googleAccountInfo,
+                    youtubeChannelInfo =
+                        youtubeChannelInfo
+                )
+
+                accessToken =
+                    AuthSessionStore
+                        .current()
+                        .accessToken
+                        ?: accessToken
+
                 updateAccountPanel()
                 updateQuotaPanel()
 
