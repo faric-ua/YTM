@@ -174,3 +174,39 @@ Requested direction:
   `0/9` failed uploads by default.
 
 Status: **RECORDED / NOT FIXED YET**.
+
+
+### BUG-021 — History card always shows `Додано X/Y`, even when the operation was not a YTM write
+
+Observed on phone:
+- green `✓ Завершено` entries can show `Додано 0/9`;
+- failed entries can show the same `Додано 0/9`;
+- from the list row alone, the user cannot tell whether 9 tracks were imported,
+  restored, written to YouTube/YTM, or merely present in the workspace.
+
+Current code evidence:
+- History list rows always render:
+  `Додано ${entry.addedCount}/${entry.writeTargetCount}`;
+- History detail `Результат` also always renders the same metric;
+- `HistoryStatus.COMPLETED` only means the recorded operation completed, not
+  necessarily that tracks were added to a destination playlist.
+
+Meaning of the fields:
+- `addedCount` = tracks actually written/added to the destination playlist;
+- `writeTargetCount` = tracks targeted for the write operation.
+
+Problem:
+- this metric is meaningful for create/add-to-playlist writes;
+- it is misleading for import/restore/project-history entries where no destination
+  write occurred.
+
+Requested direction:
+- make History summary/result context-aware;
+- for actual YTM writes use an explicit label such as
+  `Додано в YTM: 9/9`;
+- for import/restore operations show a relevant metric such as
+  `Імпортовано: 9 треків` / `Відновлено: 9 треків`;
+- failed writes should clearly show write result + errors instead of looking the same
+  as a completed import.
+
+Status: **RECORDED / NOT FIXED YET**.
