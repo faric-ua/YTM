@@ -2956,6 +2956,11 @@ class MainActivity : Activity() {
                                 "помилок ${outcome.job.failedCount}."
                         )
 
+                        workflowRelay
+                            .showWriteCompletedAction {
+                                reopenDelegatedParentAfterAction()
+                            }
+
                         showPlaylistResult(
                             playlistName = outcome.job.playlistName,
                             addedCount = outcome.job.addedCount,
@@ -3680,6 +3685,15 @@ class MainActivity : Activity() {
                         TrackStatus.DUPLICATE
                 }
 
+        val failedTracks =
+            playlist
+                ?.tracks
+                .orEmpty()
+                .filter {
+                    it.status ==
+                        TrackStatus.FAILED
+                }
+
         val details =
             buildString {
                 append("Додано: $addedCount")
@@ -3702,6 +3716,36 @@ class MainActivity : Activity() {
                 append(
                     " • $operationLabel"
                 )
+
+                if (failedTracks.isNotEmpty()) {
+                    append(
+                        "\n\nНе додано:"
+                    )
+
+                    failedTracks
+                        .take(8)
+                        .forEach { track ->
+                            append(
+                                "\n• ${track.originalArtist} — ${track.originalTitle}"
+                            )
+
+                            track.error
+                                ?.takeIf {
+                                    it.isNotBlank()
+                                }
+                                ?.let { reason ->
+                                    append(
+                                        "\n  Причина: $reason"
+                                    )
+                                }
+                        }
+
+                    if (failedTracks.size > 8) {
+                        append(
+                            "\n• …ще ${failedTracks.size - 8}"
+                        )
+                    }
+                }
 
                 youtubeChannelInfo
                     ?.title
@@ -3728,21 +3772,17 @@ class MainActivity : Activity() {
                         label = "Відкрити в YTM"
                     ) {
                         openInYtm()
-                        reopenDelegatedParentAfterAction()
                     },
                     UiChrome.DialogAction(
                         label = "Копіювати посилання"
                     ) {
                         copyPlaylistLink()
-                        reopenDelegatedParentAfterAction()
                     },
                     UiChrome.DialogAction(
                         label = "Закрити",
                         tone =
                             UiChrome.ActionTone.ACCENT
-                    ) {
-                        reopenDelegatedParentAfterAction()
-                    }
+                    ) {}
                 ),
             actionLayout =
                 UiChrome.DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE

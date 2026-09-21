@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
@@ -29,6 +30,7 @@ class WorkflowRelayOverlay(
     private var writeDisplayTracks: List<Track> = emptyList()
     private val writeStateByIndex = mutableMapOf<Int, TrackStatus>()
     private var activeWriteIndex: Int? = null
+    private var writeDoneButton: Button? = null
 
     init {
         if (active) {
@@ -371,7 +373,10 @@ class WorkflowRelayOverlay(
 
                             effectiveStatus ==
                                 TrackStatus.FAILED ->
-                                "Помилка"
+                                track.error
+                                    ?.takeIf { it.isNotBlank() }
+                                    ?.let { "Помилка: $it" }
+                                    ?: "Помилка"
 
                             effectiveStatus ==
                                 TrackStatus.SKIPPED ->
@@ -457,6 +462,60 @@ class WorkflowRelayOverlay(
 
         update(nextMessage)
         renderWriteTracks()
+    }
+
+    fun showWriteCompletedAction(
+        onDone: () -> Unit
+    ) {
+        activeWriteIndex = null
+        renderWriteTracks()
+
+        val root =
+            overlay as? LinearLayout
+                ?: return
+
+        writeDoneButton
+            ?.let { existing ->
+                (existing.parent as? ViewGroup)
+                    ?.removeView(existing)
+            }
+
+        val palette =
+            AppThemeManager.palette(activity)
+
+        val button =
+            Button(activity).apply {
+                text = "Готово"
+                isAllCaps = false
+                textSize = 15f
+                setTypeface(
+                    typeface,
+                    Typeface.BOLD
+                )
+                setTextColor(
+                    palette.text
+                )
+                background =
+                    AppThemeManager
+                        .accentButtonDrawable(
+                            activity
+                        )
+                setOnClickListener {
+                    onDone()
+                }
+            }
+
+        root.addView(
+            button,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(54)
+            ).apply {
+                topMargin = dp(10)
+            }
+        )
+
+        writeDoneButton = button
     }
 
     private fun ensureWriteDisplayTracks(
@@ -576,6 +635,7 @@ class WorkflowRelayOverlay(
         writeDisplayTracks = emptyList()
         writeStateByIndex.clear()
         activeWriteIndex = null
+        writeDoneButton = null
     }
 
     private fun removeOverlay() {
@@ -590,6 +650,7 @@ class WorkflowRelayOverlay(
         writeDisplayTracks = emptyList()
         writeStateByIndex.clear()
         activeWriteIndex = null
+        writeDoneButton = null
     }
 
     private fun dp(value: Int): Int =
