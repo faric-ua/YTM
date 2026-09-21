@@ -3,6 +3,7 @@ import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.ClipData
 import android.content.Intent
 import android.graphics.Color
@@ -20,6 +21,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -27,6 +29,7 @@ import androidx.core.content.FileProvider
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.review.ReviewRemoteOperations
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
@@ -60,11 +63,94 @@ class ReviewActivity : Activity() {
     private val saveProjectFolderRequestCode =
         3302
 
+    private val destinationRequestCode =
+        3303
+
+    private var remoteProgressDialog:
+        Dialog? = null
+
+    private var remoteProgressText:
+        TextView? = null
+
+    private val remoteListener:
+        (ReviewRemoteOperations.State) -> Unit =
+        { state ->
+            handleRemoteState(state)
+        }
+
+    private var projectDialogOpen =
+        false
+
+    private var projectDialog: Dialog? =
+        null
+
+    private var repeatSearchDialogOpen =
+        false
+
+    private var repeatSearchDialog: Dialog? =
+        null
+
+    private var manualUrlDialogOpen =
+        false
+
+    private var manualUrlDialog: Dialog? =
+        null
+
+    private var manualUrlInput: EditText? =
+        null
+
+    private var manualUrlDraft =
+        ""
+
+    private var manualUrlHistoryIndex:
+        Int? = null
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+
+        projectDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_PROJECT_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
+        repeatSearchDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_REPEAT_SEARCH_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
+        manualUrlDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_MANUAL_URL_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
+        manualUrlDraft =
+            savedInstanceState
+                ?.getString(
+                    STATE_MANUAL_URL_DRAFT
+                )
+                .orEmpty()
+
+        manualUrlHistoryIndex =
+            savedInstanceState
+                ?.getInt(
+                    STATE_MANUAL_URL_HISTORY_INDEX,
+                    Int.MIN_VALUE
+                )
+                ?.takeIf {
+                    it != Int.MIN_VALUE
+                }
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
@@ -103,29 +189,106 @@ class ReviewActivity : Activity() {
             restoredTrackIndex
                 ?: requestedTrackIndex
 
+        var restoredTrackScreen = false
+
         if (focus != null) {
             findTrackByHistoryIndex(
                 focus
             )?.let { track ->
                 showTrackScreen(track)
-                return
+                restoredTrackScreen = true
             }
         }
 
-        showListScreen()
+        if (!restoredTrackScreen) {
+            showListScreen()
+        }
+
+        val shouldOpenProjectActions =
+            projectDialogOpen ||
+                (
+                    savedInstanceState == null &&
+                        intent.getBooleanExtra(
+                            EXTRA_OPEN_PROJECT_ACTIONS,
+                            false
+                        )
+                )
+
+        when {
+            shouldOpenProjectActions -> {
+                projectDialogOpen = true
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed) {
+                        showProjectActions()
+                    }
+                }
+            }
+
+            repeatSearchDialogOpen -> {
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed) {
+                        showRepeatSearchDialog()
+                    }
+                }
+            }
+
+            manualUrlDialogOpen -> {
+                val manualTrack =
+                    (
+                        manualUrlHistoryIndex
+                            ?: currentTrackHistoryIndex
+                    )
+                        ?.let(
+                            ::findTrackByHistoryIndex
+                        )
+
+                if (manualTrack == null) {
+                    manualUrlDialogOpen = false
+                    manualUrlDraft = ""
+                    manualUrlHistoryIndex = null
+                } else {
+                    window.decorView.post {
+                        if (!isFinishing && !isDestroyed) {
+                            showManualUrlDialog(
+                                track = manualTrack,
+                                restoredValue =
+                                    manualUrlDraft
+                            )
+                        }
+                    }
+                }
+            }
+        }
 
         if (
+            savedInstanceState == null &&
             intent.getBooleanExtra(
-                EXTRA_OPEN_PROJECT_ACTIONS,
+                EXTRA_AUTO_SEARCH,
                 false
             )
         ) {
             window.decorView.post {
                 if (!isFinishing && !isDestroyed) {
-                    showProjectActions()
+                    requestInitialSearchIfNeeded()
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ReviewRemoteOperations
+            .addListener(
+                remoteListener
+            )
+    }
+
+    override fun onStop() {
+        ReviewRemoteOperations
+            .removeListener(
+                remoteListener
+            )
+        super.onStop()
     }
 
     override fun onActivityResult(
@@ -144,6 +307,22 @@ class ReviewActivity : Activity() {
         }
 
         when (requestCode) {
+            destinationRequestCode -> {
+                val result =
+                    data
+                        ?: return
+
+                setResult(
+                    RESULT_OK,
+                    Intent(result)
+                        .putExtra(
+                            EXTRA_DESTINATION_RESULT,
+                            true
+                        )
+                )
+                finish()
+            }
+
             saveProjectRequestCode ->
                 data
                     ?.data
@@ -182,9 +361,69 @@ class ReviewActivity : Activity() {
                 )
             }
 
+        outState.putBoolean(
+            STATE_PROJECT_DIALOG_OPEN,
+            projectDialogOpen
+        )
+
+        outState.putBoolean(
+            STATE_REPEAT_SEARCH_DIALOG_OPEN,
+            repeatSearchDialogOpen
+        )
+
+        if (manualUrlDialogOpen) {
+            manualUrlDraft =
+                manualUrlInput
+                    ?.text
+                    ?.toString()
+                    ?: manualUrlDraft
+        }
+
+        outState.putBoolean(
+            STATE_MANUAL_URL_DIALOG_OPEN,
+            manualUrlDialogOpen
+        )
+
+        outState.putString(
+            STATE_MANUAL_URL_DRAFT,
+            manualUrlDraft
+        )
+
+        manualUrlHistoryIndex
+            ?.let { value ->
+                outState.putInt(
+                    STATE_MANUAL_URL_HISTORY_INDEX,
+                    value
+                )
+            }
+
         super.onSaveInstanceState(
             outState
         )
+    }
+
+    override fun onDestroy() {
+        projectDialog
+            ?.setOnDismissListener(null)
+        projectDialog = null
+
+        repeatSearchDialog
+            ?.setOnCancelListener(null)
+        repeatSearchDialog
+            ?.setOnDismissListener(null)
+        repeatSearchDialog = null
+
+        manualUrlDialog
+            ?.setOnDismissListener(null)
+        manualUrlDialog = null
+        manualUrlInput = null
+
+        remoteProgressDialog
+            ?.setOnDismissListener(null)
+        remoteProgressDialog = null
+        remoteProgressText = null
+
+        super.onDestroy()
     }
 
     @Deprecated("Deprecated in Java")
@@ -408,14 +647,7 @@ class ReviewActivity : Activity() {
                     primary = true
                 ) {
                     saveSnapshot()
-                    setResult(
-                        RESULT_OK,
-                        Intent().putExtra(
-                            EXTRA_OPEN_DESTINATION,
-                            true
-                        )
-                    )
-                    finish()
+                    openDestinationFromReview()
                 },
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -794,8 +1026,17 @@ class ReviewActivity : Activity() {
     }
 
     private fun showManualUrlDialog(
-        track: Track
+        track: Track,
+        restoredValue: String = ""
     ) {
+        if (manualUrlDialog?.isShowing == true) {
+            return
+        }
+
+        manualUrlDialogOpen = true
+        manualUrlHistoryIndex =
+            track.historyIndex
+
         val input =
             EditText(this).apply {
                 hint =
@@ -807,65 +1048,73 @@ class ReviewActivity : Activity() {
                     dp(14),
                     dp(8)
                 )
+                setText(restoredValue)
+                setSelection(text.length)
             }
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Ручне посилання"
-            )
-            .setMessage(
-                "YTM Importer повернеться на головний екран, " +
-                    "отримає реальну назву та канал через YouTube API, " +
-                    "а потім знову відкриє цей трек."
-            )
-            .setView(input)
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Використати"
-            ) { _, _ ->
-                val videoId =
-                    extractVideoId(
-                        input
-                            .text
-                            .toString()
-                    )
+        manualUrlInput = input
+        manualUrlDraft = restoredValue
 
-                if (videoId == null) {
-                    toast(
-                        "Не бачу YouTube video ID"
-                    )
-                    return@setPositiveButton
-                }
-
-                val historyIndex =
-                    track.historyIndex
-
-                if (historyIndex == null) {
-                    toast(
-                        "Не вдалося визначити позицію треку"
-                    )
-                    return@setPositiveButton
-                }
-
-                setResult(
-                    RESULT_OK,
-                    Intent()
-                        .putExtra(
-                            EXTRA_MANUAL_VIDEO_ID,
-                            videoId
-                        )
-                        .putExtra(
-                            EXTRA_MANUAL_HISTORY_INDEX,
-                            historyIndex
-                        )
+        manualUrlDialog =
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Ручне посилання"
                 )
+                .setMessage(
+                    "YTM Importer отримає реальну назву та канал через YouTube API " +
+                        "і залишиться на екрані перевірки цього треку."
+                )
+                .setView(input)
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Використати"
+                ) { _, _ ->
+                    val videoId =
+                        extractVideoId(
+                            input
+                                .text
+                                .toString()
+                        )
 
-                finish()
-            }
-            .show()
+                    if (videoId == null) {
+                        toast(
+                            "Не бачу YouTube video ID"
+                        )
+                        return@setPositiveButton
+                    }
+
+                    val historyIndex =
+                        track.historyIndex
+
+                    if (historyIndex == null) {
+                        toast(
+                            "Не вдалося визначити позицію треку"
+                        )
+                        return@setPositiveButton
+                    }
+
+                    ReviewRemoteOperations
+                        .startManualLookup(
+                            context = this,
+                            historyIndex =
+                                historyIndex,
+                            videoId =
+                                videoId
+                        )
+                }
+                .show()
+                .also { dialog ->
+                    dialog.setOnDismissListener {
+                        manualUrlDialogOpen = false
+                        manualUrlDialog = null
+                        manualUrlInput = null
+                        manualUrlDraft = ""
+                        manualUrlHistoryIndex = null
+                    }
+                }
     }
 
     private fun extractVideoId(
@@ -944,23 +1193,35 @@ class ReviewActivity : Activity() {
     }
 
     private fun showProjectActions() {
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = "Поточний YTM Project",
-            subtitle = "Збереження та обмін робочим проектом.",
-            actions = listOf(
-                UiChrome.MenuAction(
-                    "Зберегти YTM Project"
-                ) {
-                    saveCurrentProject()
-                },
-                UiChrome.MenuAction(
-                    "Поділитися YTM Project"
-                ) {
-                    shareCurrentProject()
+        if (projectDialog?.isShowing == true) {
+            return
+        }
+
+        projectDialogOpen = true
+
+        projectDialog =
+            UiChrome.showMenuDialog(
+                activity = this,
+                title = "Поточний YTM Project",
+                subtitle = "Збереження та обмін робочим проектом.",
+                actions = listOf(
+                    UiChrome.MenuAction(
+                        "Зберегти YTM Project"
+                    ) {
+                        saveCurrentProject()
+                    },
+                    UiChrome.MenuAction(
+                        "Поділитися YTM Project"
+                    ) {
+                        shareCurrentProject()
+                    }
+                )
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    projectDialogOpen = false
+                    projectDialog = null
                 }
-            )
-        )
+            }
     }
 
     private fun currentProjectJson(): String {
@@ -1248,33 +1509,277 @@ class ReviewActivity : Activity() {
         return "$safeName.ytm.json"
     }
 
-    private fun requestRepeatSearch() {
+    private fun requestInitialSearchIfNeeded() {
+        reloadSnapshot()
+
+        val needsSearch =
+            snapshot.playlist.tracks
+                .any {
+                    track ->
+                    track.status ==
+                        TrackStatus.NEW &&
+                        track.selectedVideoId
+                            .isNullOrBlank()
+                }
+
+        if (needsSearch) {
+            showSearchPlanDialog(
+                preserveExistingExact =
+                    true
+            )
+        }
+    }
+
+    private fun showSearchPlanDialog(
+        preserveExistingExact: Boolean
+    ) {
+        val plan =
+            ReviewRemoteOperations
+                .planSearch(
+                    context = this,
+                    preserveExistingExact =
+                        preserveExistingExact
+                )
+                ?: return toast(
+                    "Поточний плейлист уже недоступний"
+                )
+
         UiChrome.alertBuilder(this)
-            .setTitle("Повторити пошук?")
+            .setTitle(
+                "План пошуку (Search plan)"
+            )
             .setMessage(
-                "YTM Importer повернеться на головний екран і повторить пошук " +
-                    "лише для треків, яким він справді потрібен. " +
-                    "Треки з точним videoId буде збережено без нового search.list. " +
-                    "Кешовані результати також не витрачають search.list quota."
+                "Треків у списку: ${plan.totalTracks}\n" +
+                    "Пошук потрібен для: ${plan.tracksToSearch}\n" +
+                    "Вже є в кеші: ${plan.cachedCount}\n" +
+                    "Потрібно нових search.list: ${plan.apiNeeded}\n\n" +
+                    "Локальна оцінка залишку: ${plan.quota.searchRemaining}"
             )
             .setNegativeButton(
                 "Скасувати",
                 null
             )
             .setPositiveButton(
-                "Повторити"
+                "Почати"
             ) { _, _ ->
-                setResult(
-                    RESULT_OK,
-                    Intent()
-                        .putExtra(
-                            EXTRA_REPEAT_SEARCH,
-                            true
-                        )
-                )
-                finish()
+                ReviewRemoteOperations
+                    .startSearch(
+                        context = this,
+                        preserveExistingExact =
+                            preserveExistingExact
+                    )
             }
             .show()
+    }
+
+    private fun openDestinationFromReview() {
+        reloadSnapshot()
+
+        val targetIntent =
+            DestinationActivity
+                .startIntent(
+                    context = this,
+                    snapshot = snapshot
+                )
+                ?: return toast(
+                    "Немає треків для запису"
+                )
+
+        startActivityForResult(
+            targetIntent,
+            destinationRequestCode
+        )
+    }
+
+    private fun handleRemoteState(
+        state:
+            ReviewRemoteOperations.State
+    ) {
+        if (isFinishing || isDestroyed) {
+            return
+        }
+
+        if (state.running) {
+            showRemoteProgress(
+                state
+            )
+            return
+        }
+
+        remoteProgressDialog
+            ?.setOnDismissListener(null)
+        remoteProgressDialog
+            ?.dismiss()
+        remoteProgressDialog = null
+        remoteProgressText = null
+
+        val terminal =
+            state.terminalMessage
+                ?: return
+
+        ReviewRemoteOperations
+            .acknowledgeTerminal(
+                state.terminalSerial
+            )
+
+        reloadSnapshot()
+
+        val focus =
+            state.focusHistoryIndex
+
+        if (focus != null) {
+            val track =
+                findTrackByHistoryIndex(
+                    focus
+                )
+
+            if (track != null) {
+                showTrackScreen(
+                    track
+                )
+            } else {
+                showListScreen()
+            }
+        } else {
+            showListScreen()
+        }
+
+        toast(
+            terminal
+        )
+    }
+
+    private fun showRemoteProgress(
+        state:
+            ReviewRemoteOperations.State
+    ) {
+        if (
+            remoteProgressDialog
+                ?.isShowing == true
+        ) {
+            remoteProgressText
+                ?.text =
+                state.message
+            return
+        }
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(18),
+                    dp(8),
+                    dp(18),
+                    dp(12)
+                )
+            }
+
+        val message =
+            TextView(this).apply {
+                text =
+                    state.message
+                textSize =
+                    14f
+                setTextColor(
+                    Color.WHITE
+                )
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    dp(12)
+                )
+            }
+
+        remoteProgressText =
+            message
+
+        content.addView(
+            message
+        )
+        content.addView(
+            ProgressBar(this).apply {
+                isIndeterminate =
+                    true
+            }
+        )
+
+        remoteProgressDialog =
+            UiChrome
+                .alertBuilder(this)
+                .setTitle(
+                    if (
+                        state.kind ==
+                        ReviewRemoteOperations
+                            .Kind.MANUAL_URL
+                    ) {
+                        "Ручне посилання"
+                    } else {
+                        "Пошук треків"
+                    }
+                )
+                .setView(
+                    content
+                )
+                .show()
+                .also {
+                    dialog ->
+                    dialog.setCancelable(
+                        false
+                    )
+                }
+    }
+
+    private fun requestRepeatSearch() {
+        showRepeatSearchDialog()
+    }
+
+    private fun showRepeatSearchDialog() {
+        if (repeatSearchDialog?.isShowing == true) {
+            return
+        }
+
+        repeatSearchDialogOpen = true
+
+        repeatSearchDialog =
+            UiChrome.alertBuilder(this)
+                .setTitle("Повторити пошук?")
+                .setMessage(
+                    "YTM Importer повторить пошук тут, без переходу через головний екран, " +
+                        "лише для треків, яким він справді потрібен. " +
+                        "Треки з точним videoId буде збережено без нового search.list. " +
+                        "Кешовані результати також не витрачають search.list quota."
+                )
+                .setNegativeButton(
+                    "Скасувати"
+                ) { _, _ ->
+                    repeatSearchDialogOpen = false
+                    repeatSearchDialog = null
+                }
+                .setPositiveButton(
+                    "Повторити"
+                ) { _, _ ->
+                    repeatSearchDialogOpen = false
+                    repeatSearchDialog = null
+                    showSearchPlanDialog(
+                        preserveExistingExact =
+                            true
+                    )
+                }
+                .show()
+                .also { dialog ->
+                    dialog.setCanceledOnTouchOutside(false)
+                    dialog.setOnCancelListener {
+                        if (!isChangingConfigurations) {
+                            repeatSearchDialogOpen = false
+                            repeatSearchDialog = null
+                        }
+                    }
+                    dialog.setOnDismissListener {
+                        repeatSearchDialog = null
+                    }
+                }
     }
 
     private fun reloadSnapshot() {
@@ -2006,6 +2511,15 @@ class ReviewActivity : Activity() {
         const val EXTRA_OPEN_PROJECT_ACTIONS =
             "review_open_project_actions"
 
+        const val EXTRA_RETURN_TO_PLAYLIST =
+            "review_return_to_playlist"
+
+        const val EXTRA_AUTO_SEARCH =
+            "review_auto_search"
+
+        const val EXTRA_DESTINATION_RESULT =
+            "review_destination_result"
+
         const val EXTRA_REPEAT_SEARCH =
             "review_repeat_search"
 
@@ -2020,6 +2534,21 @@ class ReviewActivity : Activity() {
 
         private const val KEY_TRACK_HISTORY_INDEX =
             "review_current_track_history_index"
+
+        private const val STATE_PROJECT_DIALOG_OPEN =
+            "review_project_dialog_open"
+
+        private const val STATE_REPEAT_SEARCH_DIALOG_OPEN =
+            "review_repeat_search_dialog_open"
+
+        private const val STATE_MANUAL_URL_DIALOG_OPEN =
+            "review_manual_url_dialog_open"
+
+        private const val STATE_MANUAL_URL_DRAFT =
+            "review_manual_url_draft"
+
+        private const val STATE_MANUAL_URL_HISTORY_INDEX =
+            "review_manual_url_history_index"
 
         private val BACKGROUND =
             Color.rgb(

@@ -1,13 +1,13 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.47-R2 — Compact Home + Menu-owned Theme Picker — IMPLEMENTED / STATIC + PHONE QA NEEDED
+v1.4.47-R3 — lifecycle + OAuth retry + History semantics — PARTIALLY PHONE-TESTED / STABILIZATION CHECKPOINT PASS / BROADER QA DEFERRED
 
 ## Known
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 v1.4.32 partial PASS; v1.4.33 unified modal fix carried into v1.4.34 — representative phone retest required
 - BUG-003/Q-003 CLOSED — phone retest PASS on v1.4.20
-- BUG-004/Q-004 stale green authorization state — FIX IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED
+- BUG-004/Q-004 stale/invalid authorization — R3 SILENT HTTP-401 RECOVERY + ONE RETRY IMPLEMENTED / PHONE RETEST NEEDED
 - BUG-005/Q-005 redundant manual search for exact videoId tracks — CLOSED, PHONE RETEST PASS v1.4.27
 - UX-008 File Picker Escape / Unified SAF Navigation — Phase 1 folder trees + Phase 2A saves complete; Phase 2B open-file selector IMPLEMENTED v1.4.42 / PHONE QA NEEDED
 - UX-009 Theme State Contrast — OPEN; Neon Dark is the accepted reference for the **four Home workflow buttons** (Import / Google-YTM / Search-Review / Create-Add). Keep Neon state semantics intact; redesign Blue Dark and Green Dark workflow-state palettes separately so ready / attention / error / inactive states remain clear without mechanically reusing Neon red/green/orange.
@@ -21,16 +21,44 @@ v1.4.47-R2 — Compact Home + Menu-owned Theme Picker — IMPLEMENTED / STATIC +
 - BUG-009/Q-009 account-switch copy/action fit — PHONE PORTRAIT PASS v1.4.41
 - BUG-010/Q-010 full Restore rewinds local quota estimate via `quota_tracker_v1` — CLOSED / PHONE RETEST PASS v1.4.41
 - BUG-011/Q-011 Account modal disappears on phone rotation — CLOSED / PHONE RETEST PASS v1.4.41-R1
-- BUG-013/Q-013 stale green auth freshness before remote API call — OPEN; app can keep Step 2 green while an in-memory access token has become invalid. The next real YouTube API request then returns 401, after which invalidation correctly turns Step 2 red. Need proactive token refresh/validation before remote destination/write flows instead of waiting for the first failing API call.
+- BUG-013/Q-013 aged/stale-token acceptance — PARTIAL/DEFERRED; v1.4.43 pre-action AuthorizationClient refresh remains, and R3 additionally recovers a live HTTP 401 silently and retries once when Google can issue a replacement token. Natural aged-token phone acceptance is still required.
 - BUG-014 custom dialog chrome only partially follows active theme — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
 - BUG-015 Playlist Hub delegated actions lose parent/back-stack — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
 - BUG-016 replacement/clear confirmation modal rotation persistence gap — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
 - BUG-017 Home landscape hides lower dashboard sections — FIX IMPLEMENTED v1.4.47-R1 / PHONE RETEST NEEDED
+- BUG-021 History uses unconditional `Додано X/Y` semantics for non-write operations — R3 FIX IMPLEMENTED / PHONE RETEST NEEDED
+- BUG-022 Help windows disappear on rotation — R3 FIX IMPLEMENTED / PHONE RETEST NEEDED
+- BUG-023 `Поточний YTM Project` action modal disappears on rotation — R3 FIX IMPLEMENTED / PHONE RETEST NEEDED
+- BUG-027 playlist-delete confirmation disappears on rotation — CLOSED / PHONE RETEST PASS v1.4.47-R3
+- BUG-028 existing-playlist search/filter disappears on rotation — CLOSED / PHONE RETEST PASS v1.4.47-R3
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — v1.4.47 phone QA found layout/navigation regressions; v1.4.47-R1 now uses the approved prototype as a **layout-only** contract: header → workflow → utility row → account/status → current playlist → quick actions → bottom navigation. Existing Neon/Blue/Green theme system remains authoritative.
 - UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
+
+## v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics
+- [x] versionCode 90 / versionName 1.4.47-R3
+- [x] BUG-022 selector/recent/storage Help lifecycle fix
+- [x] BUG-023 Current YTM Project modal lifecycle fix
+- [x] Menu Theme picker lifecycle fix
+- [x] BUG-004 silent HTTP-401 replacement-token recovery
+- [x] retry exact failed HTTP request once
+- [x] keep OAuth tokens non-persistent
+- [x] BUG-021 operation-aware History primary result wording
+- [x] preserve History JSON schema compatibility
+- [x] R3 docs + unified phone plan
+- [x] dedicated R3 consolidation audit
+- [ ] consolidation full release preflight
+- [ ] commit/push R3 consolidation metadata
+- [ ] open R3 PR
+- [x] signed R3 APK — GitHub Actions run 35667160072 / source 197da0c6afd7c1f41544e0d39b1dc17e2c7c156f
+- [x] targeted stabilization checkpoint — playlist create/delete + BUG-027/028 phone PASS
+- [ ] phone lifecycle tests
+- [ ] phone History semantics tests
+- [ ] normal auth smoke
+- [ ] natural HTTP-401 acceptance if reproducible; otherwise explicit DEFERRED
+- [ ] merge R3 after accepted phone scope
 
 ## v1.4.47-R2 — Compact Home + Menu-owned Theme Picker
 - [x] versionCode 89 / versionName 1.4.47-R2

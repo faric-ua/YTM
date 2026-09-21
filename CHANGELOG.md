@@ -1,5 +1,22 @@
 # Журнал змін (Changelog)
 
+## v1.4.47-R3
+- Consolidated the R3 corrective waves on top of the R2 Home/UI work.
+- Help windows in ListSelector, Recent-file and Storage chooser now survive Activity recreation/rotation.
+- `Поточний YTM Project` and the Menu-owned Theme picker now preserve their open state through rotation without auto-running actions.
+- Live HTTP 401 now clears the rejected Google access-token cache entry, silently asks AuthorizationClient for a replacement token and retries the exact request once.
+- If silent recovery is unavailable or requires interaction, the existing disconnected/manual-auth fallback remains.
+- OAuth access and refresh tokens remain non-persistent.
+- History primary result wording is operation-aware: `Додано в YTM`, `Імпортовано`, or `Відновлено`.
+- History JSON schema remains unchanged.
+- versionCode 90 / versionName 1.4.47-R3.
+- Signed GitHub Actions build `35667160072` from app-source HEAD `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f` completed successfully.
+- Targeted real-phone stabilization QA passed: version badge → About, editable/IME-safe playlist name, playlist deletion and rotation continuity.
+- Write-state reset produced a clean 13/13 new-playlist result after a previous all-duplicate state; another opportunistic repeat smoke remains deferred.
+- BUG-027 closed: playlist-delete confirmation survives Activity recreation/rotation without auto-deleting.
+- BUG-028 closed: existing-playlist search text and active filter survive Activity recreation/rotation.
+- Broader R3 QA and natural stale/live-401 acceptance remain explicitly deferred.
+
 ## v1.4.47-R2
 - R1 phone screenshots showed remaining Home density and theme-navigation polish issues.
 - Current-playlist heading moved inside the playlist card.

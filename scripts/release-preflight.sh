@@ -105,6 +105,11 @@ check_file "docs/v.1.4.47/R1.md"
 check_file "docs/v.1.4.47/qa/PHONE_TEST_R1.md"
 check_file "docs/v.1.4.47/R2.md"
 check_file "docs/v.1.4.47/qa/PHONE_TEST_R2.md"
+check_file "docs/v.1.4.47/R3.md"
+check_file "docs/v.1.4.47/qa/PHONE_TEST_R3.md"
+check_file "docs/v.1.4.47/qa/R3_LIFECYCLE_WAVE1.md"
+check_file "docs/v.1.4.47/qa/R3_OAUTH_RETRY.md"
+check_file "docs/v.1.4.47/qa/R3_HISTORY_SEMANTICS.md"
 
 check_file "app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
@@ -138,10 +143,18 @@ check_file "scripts/service-navigation-audit.sh"
 check_file "scripts/dialog-bounds-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/model/HistoryResultSemantics.kt"
 check_file "scripts/configuration-state-audit.sh"
 check_file "scripts/rotation-layout-audit.sh"
 check_file "scripts/dialog-animation-audit.sh"
 check_file "scripts/project-handoff-audit.sh"
+check_file "scripts/v1447-r3-runtime-lifecycle-r5-audit.sh"
+check_file "scripts/v1447-r3-flow-result-lifecycle-r6-audit.sh"
+check_file "scripts/v1447-r3-navigation-progress-r7-audit.sh"
+check_file "scripts/v1447-r3-write-progress-r8-audit.sh"
+check_file "scripts/v1447-r3-history-lifecycle-polish-r9-audit.sh"
+check_file "scripts/v1447-r3-history-counters-r9-fix5-audit.sh"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
@@ -187,6 +200,18 @@ bash scripts/v1446-home-layout-audit.sh
 bash scripts/v1447-playlist-hub-audit.sh
 bash scripts/v1447-r1-audit.sh
 bash scripts/v1447-r2-audit.sh
+bash scripts/v1447-r3-lifecycle-wave1-audit.sh
+bash scripts/v1447-r3-oauth-retry-audit.sh
+bash scripts/v1447-r3-history-semantics-audit.sh
+bash scripts/v1447-r3-consolidation-audit.sh
+bash scripts/v1447-r3-navigation-ownership-audit.sh
+bash scripts/v1447-r3-navigation-ownership-r4-fix2-audit.sh
+bash scripts/v1447-r3-runtime-lifecycle-r5-audit.sh
+bash scripts/v1447-r3-flow-result-lifecycle-r6-audit.sh
+bash scripts/v1447-r3-navigation-progress-r7-audit.sh
+bash scripts/v1447-r3-write-progress-r8-audit.sh
+bash scripts/v1447-r3-history-lifecycle-polish-r9-audit.sh
+bash scripts/v1447-r3-history-counters-r9-fix5-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -265,6 +290,17 @@ check_file "scripts/v1446-home-layout-audit.sh"
 check_file "scripts/v1447-playlist-hub-audit.sh"
 check_file "scripts/v1447-r1-audit.sh"
 check_file "scripts/v1447-r2-audit.sh"
+check_file "scripts/v1447-r3-lifecycle-wave1-audit.sh"
+check_file "scripts/v1447-r3-oauth-retry-audit.sh"
+check_file "scripts/v1447-r3-oauth-retry-selftest.py"
+check_file "scripts/v1447-r3-history-semantics-audit.sh"
+check_file "scripts/v1447-r3-history-semantics-selftest.py"
+check_file "scripts/v1447-r3-consolidation-audit.sh"
+check_file "scripts/v1447-r3-navigation-ownership-audit.sh"
+check_file "scripts/v1447-r3-navigation-ownership-r4-fix2-audit.sh"
+check_file "app/src/main/java/com/saney/ytmimporter/review/ReviewRemoteOperations.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationRemoteOperations.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationForwardedWritePlan.kt"
 check_file "scripts/v1426-selective-export-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt"
@@ -415,11 +451,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 89' app/build.gradle.kts \
-  || fail "Expected versionCode = 89"
+grep -q 'versionCode = 90' app/build.gradle.kts \
+  || fail "Expected versionCode = 90"
 
-grep -q 'versionName = "1.4.47-R2"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.47-R2"'
+grep -q 'versionName = "1.4.47-R3"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.47-R3"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

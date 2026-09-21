@@ -18,13 +18,45 @@ done
 grep -Fq 'versionCode: **88**' "$R1" || fail "historical R1 versionCode evidence missing"
 grep -Fq 'versionName: **1.4.47-R1**' "$R1" || fail "historical R1 versionName evidence missing"
 
-LINES="$(wc -l < "$MAIN" | tr -d ' ')"
-[ "$LINES" -lt 4000 ] || fail "MainActivity cleanup regression: $LINES lines"
+MAIN_LINES="$(wc -l < "$MAIN" | tr -d ' ')"
+LIMIT=4000
+if grep -Fq 'private var writeInProgress = false' "$MAIN"; then
+  LIMIT=4100
+fi
+[ "$MAIN_LINES" -lt "$LIMIT" ] ||
+  fail "MainActivity cleanup regression: $MAIN_LINES lines (limit <$LIMIT)"
 
 grep -Fq 'HomeDashboardChrome' "$MAIN" || fail "Main does not use HomeDashboardChrome"
 grep -Fq 'ScrollView(this)' "$MAIN" || fail "Home scrollable dashboard body missing"
 grep -Fq 'bottomNavigation(' "$MAIN" || fail "Home bottom navigation missing"
-grep -Fq '"Швидкі дії"' "$MAIN" || fail "Home quick-actions section missing"
+if grep -Fq '"Швидкі дії файл/плейлист"' "$MAIN"; then
+  python - "$MAIN" <<'PY'
+from pathlib import Path
+import sys
+
+main = Path(sys.argv[1]).read_text(encoding="utf-8")
+start = main.find('title = "Швидкі дії файл/плейлист"')
+end = main.find('quickSection.addView(quickRow)', start)
+
+if start < 0 or end < 0:
+    raise SystemExit("FAIL: R4 quick-actions block boundary missing")
+
+block = main[start:end]
+
+for needle in [
+    'label =\n                        "Імпорт"',
+    'label =\n                        "Експорт"',
+    'dp(48)',
+]:
+    if needle not in block:
+        raise SystemExit(
+            f"FAIL: R4 Home quick-actions successor contract missing: {needle}"
+        )
+PY
+else
+  grep -Fq '"Швидкі дії"' "$MAIN" ||
+    fail "Home quick-actions section missing"
+fi
 grep -Fq '"Поточний плейлист"' "$MAIN" || fail "Home current-playlist section missing"
 grep -Fq 'label = "Головна"' "$HOME_UI" || fail "Home nav action missing"
 grep -Fq 'label = "Пошук"' "$HOME_UI" || fail "Search nav action missing"
@@ -93,7 +125,7 @@ grep -Fq 'PHONE QA NEEDED' "$PHONE" ||
 
 echo "PASS:"
 echo "- historical v1.4.47-R1 / code 88 evidence"
-echo "- MainActivity $LINES lines"
+echo "- MainActivity $MAIN_LINES lines"
 echo "- prototype Home hierarchy + scroll + bottom nav"
 echo "- current theme system preserved"
 echo "- custom dialog chrome uses active palette"

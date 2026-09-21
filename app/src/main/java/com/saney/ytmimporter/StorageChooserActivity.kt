@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
@@ -22,9 +23,20 @@ class StorageChooserActivity : Activity() {
     private var suggestedFileName: String? = null
     private var mimeType: String = "text/plain"
 
+    private var helpDialogOpen = false
+    private var helpDialog: Dialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+
+        helpDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_HELP_DIALOG_OPEN,
+                    false
+                )
+                ?: false
 
         access =
             runCatching {
@@ -67,6 +79,31 @@ class StorageChooserActivity : Activity() {
                 ?: "text/plain"
 
         render()
+
+        if (helpDialogOpen) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showHelp()
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putBoolean(
+            STATE_HELP_DIALOG_OPEN,
+            helpDialogOpen
+        )
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroy() {
+        helpDialog
+            ?.setOnDismissListener(null)
+        helpDialog = null
+        super.onDestroy()
     }
 
     @Deprecated("Deprecated in Java")
@@ -461,27 +498,39 @@ class StorageChooserActivity : Activity() {
                 "Для цієї дії достатньо дозволу на читання."
             }
 
-        UiChrome.showMessageDialog(
-            activity = this,
-            title = "Що це за список?",
-            message =
-                "Це папки, до яких ви раніше надали YTM Importer доступ " +
-                    "через системний Android picker. Android зберігає ці SAF-дозволи, " +
-                    "тому застосунок може повторно використовувати папку без нового " +
-                    "переходу в системний файловий провідник.\n\n" +
-                    accessDescription +
-                    "\n\n«Читання» означає, що застосунок може відкрити дані. " +
-                    "«Читання і запис» також дозволяє створювати файли в папці. " +
-                    "Якщо потрібної папки немає, скористайтеся кнопкою внизу.",
-            actions =
-                listOf(
-                    UiChrome.DialogAction(
-                        label = "Зрозуміло",
-                        tone =
-                            UiChrome.ActionTone.ACCENT
-                    ) {}
-                )
-        )
+        if (helpDialog?.isShowing == true) {
+            return
+        }
+
+        helpDialogOpen = true
+
+        helpDialog =
+            UiChrome.showMessageDialog(
+                activity = this,
+                title = "Що це за список?",
+                message =
+                    "Це папки, до яких ви раніше надали YTM Importer доступ " +
+                        "через системний Android picker. Android зберігає ці SAF-дозволи, " +
+                        "тому застосунок може повторно використовувати папку без нового " +
+                        "переходу в системний файловий провідник.\n\n" +
+                        accessDescription +
+                        "\n\n«Читання» означає, що застосунок може відкрити дані. " +
+                        "«Читання і запис» також дозволяє створювати файли в папці. " +
+                        "Якщо потрібної папки немає, скористайтеся кнопкою внизу.",
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label = "Зрозуміло",
+                            tone =
+                                UiChrome.ActionTone.ACCENT
+                        ) {}
+                    )
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    helpDialogOpen = false
+                    helpDialog = null
+                }
+            }
     }
 
     private fun openSystemTreePicker() {
@@ -629,6 +678,9 @@ class StorageChooserActivity : Activity() {
             "TREE"
         const val RESULT_DOCUMENT =
             "DOCUMENT"
+
+        private const val STATE_HELP_DIALOG_OPEN =
+            "storage_chooser_help_dialog_open"
 
         private const val REQUEST_SYSTEM_TREE =
             8701

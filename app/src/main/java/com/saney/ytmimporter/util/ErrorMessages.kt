@@ -22,7 +22,15 @@ object ErrorMessages {
 
             return when (apiError.httpCode) {
                 400 ->
-                    "YouTube відхилив запит. Перевірте вибраний трек або плейлист."
+                    if (
+                        reason.contains(
+                            "playlistoperationunsupported"
+                        )
+                    ) {
+                        "Цей системний плейлист YouTube не можна видалити."
+                    } else {
+                        "YouTube відхилив запит. Перевірте вибраний трек або плейлист."
+                    }
 
                 401 ->
                     "Авторизація Google більше не дійсна. " +

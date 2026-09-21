@@ -104,9 +104,15 @@ class PlaylistWriteCoordinator(
         initialJob: PendingJob,
         tracks: List<Track>,
         onHistoryState: (PendingJob, HistoryStatus) -> Unit,
+        onTrackStart: (Track, Int, Int) -> Unit = { _, _, _ -> },
         onProgress: (WriteProgress) -> Unit = {},
         onPlaylistIdAvailable: (String) -> Unit = {}
     ): WriteOutcome {
+        tracks.forEach { track ->
+            track.status = TrackStatus.PENDING
+            track.error = null
+        }
+
         var job = initialJob
         onHistoryState(job, HistoryStatus.RUNNING)
 
@@ -222,6 +228,12 @@ class PlaylistWriteCoordinator(
             if (job.destination == PendingDestination.NEW_PLAYLIST) 1 else 0
 
         for ((index, track) in tracks.withIndex()) {
+            onTrackStart(
+                track,
+                index,
+                tracks.size
+            )
+
             val videoId = track.selectedVideoId
 
             if (videoId.isNullOrBlank()) {

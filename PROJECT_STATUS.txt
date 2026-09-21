@@ -1,18 +1,19 @@
 YTM Importer
-Version: 1.4.47-R2
-Version code: 89
+Version: 1.4.47-R3
+Version code: 90
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.47-R2 focus:
-- R1 real-phone screenshots found remaining Home density + theme-parent polish issues
-- current-playlist heading moves inside its interactive card
-- quick actions use one compact accent section container
-- Home section spacing is tighter; quick actions use 58dp height
-- bottom Home navigation has rounded outer corners
-- MenuActivity owns the Theme picker; Menu no longer disappears before theme selection
-- theme changes recreate MenuActivity and keep Menu as the visible parent
-- no-target playlist copy is `Створіть / виберіть плейлист`
-- R1 Hub/modal/rotation fixes remain carried forward
+Current v1.4.47-R3 focus:
+- R2 compact Home + Menu-owned Theme picker are carried forward
+- BUG-022 selector/recent/storage Help windows preserve open state through rotation
+- BUG-023 Current YTM Project action modal preserves open state through rotation
+- Menu Theme picker also preserves open state through rotation
+- BUG-004 HTTP 401 path silently clears the rejected cached token, requests a replacement token and retries the exact request once
+- failed silent token recovery still falls back to disconnected/manual authorization
+- OAuth access/refresh tokens remain non-persistent
+- BUG-021 History primary result wording is operation-aware: YTM write / import / restore
+- History JSON schema is unchanged; no migration is required
+- signed R3 build + targeted stabilization phone QA PASS; broader R3 matrix / natural stale-401 acceptance remain deferred
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -54,7 +55,8 @@ v1.4.45 PHONE RETEST PASS — UX-022 CLOSED
 v1.4.46 PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS / THEME+LANDSCAPE CARRIED TO v1.4.47
 v1.4.47 PHONE QA FAIL — BUG-014..017
 v1.4.47-R1 PHONE QA FAIL — HOME DENSITY / THEME-PICKER PARENT / NAV POLISH
-v1.4.47-R2 IMPLEMENTED — STATIC + PHONE QA NEEDED
+v1.4.47-R2 STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA
+v1.4.47-R3 PARTIALLY PHONE-TESTED — STABILIZATION CHECKPOINT PASS / BROADER R3 QA DEFERRED
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
@@ -439,10 +441,13 @@ BUG-010/Q-010 CLOSED — PHONE RETEST PASS v1.4.41
 BUG-001/Q-001 OPEN
 BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34
 BUG-003/Q-003 CLOSED — PHONE RETEST PASS v1.4.20
-BUG-004/Q-004 FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41
+BUG-004/Q-004 R3 SILENT 401 RECOVERY IMPLEMENTED — PHONE RETEST NEEDED
 BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27
 BUG-006/Q-006 CLOSED — PHONE RETEST PASS v1.4.29 R2
 BUG-007/Q-007 CLOSED — PHONE RETEST PASS v1.4.30 R2
+BUG-021 R3 FIX IMPLEMENTED — PHONE RETEST NEEDED
+BUG-022 R3 FIX IMPLEMENTED — PHONE RETEST NEEDED
+BUG-023 R3 FIX IMPLEMENTED — PHONE RETEST NEEDED
 
 QA:
 root qa/ = current definitions/policy

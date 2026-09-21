@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.auth.PersistentAuthStateStore
 import com.saney.ytmimporter.model.GoogleAccountInfo
 import com.saney.ytmimporter.model.HistoryEntry
@@ -38,9 +39,11 @@ import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.HomeDashboardChrome
 import com.saney.ytmimporter.ui.TrackAdapter
+import com.saney.ytmimporter.ui.WorkflowRelayOverlay
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.destination.DestinationCoordinator
+import com.saney.ytmimporter.destination.DestinationForwardedWritePlan
 import com.saney.ytmimporter.search.SearchCoordinator
 import com.saney.ytmimporter.write.PlaylistWriteCoordinator
 import com.saney.ytmimporter.youtube.SearchCache
@@ -59,7 +62,15 @@ class MainActivity : Activity() {
     private val playlistScreenRequestCode = 1601
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
-    private val api = YouTubeApi()
+
+    private val api by lazy {
+        YouTubeApi(
+            accessTokenRecovery =
+                GoogleAccessTokenRecovery(
+                    this
+                )
+        )
+    }
 
     private lateinit var searchCoordinator: SearchCoordinator
     private lateinit var destinationCoordinator: DestinationCoordinator
@@ -90,8 +101,10 @@ class MainActivity : Activity() {
     private lateinit var pendingButton: Button
     private lateinit var progress: ProgressBar
     private var accountDialogOpen = false
-    private var returnToPlaylistHubAfterDelegatedAction =
-        false
+    private var returnToPlaylistHubAfterDelegatedAction = false
+    private var returnToMenuAfterDelegatedAction = false
+    private lateinit var workflowRelay: WorkflowRelayOverlay
+    private var writeInProgress = false
 
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
@@ -143,14 +156,13 @@ class MainActivity : Activity() {
             ) == true
 
         returnToPlaylistHubAfterDelegatedAction =
-            savedInstanceState
-                ?.getBoolean(
-                    STATE_RETURN_TO_PLAYLIST_HUB,
-                    false
-                )
-                ?: false
+            savedInstanceState?.getBoolean(STATE_RETURN_TO_PLAYLIST_HUB, false) ?: false
+        returnToMenuAfterDelegatedAction =
+            savedInstanceState?.getBoolean(STATE_RETURN_TO_MENU, false) ?: false
 
         buildUi()
+        workflowRelay = WorkflowRelayOverlay(this, savedInstanceState)
+
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
 
@@ -192,10 +204,9 @@ class MainActivity : Activity() {
             STATE_ACCOUNT_DIALOG_OPEN,
             accountDialogOpen
         )
-        outState.putBoolean(
-            STATE_RETURN_TO_PLAYLIST_HUB,
-            returnToPlaylistHubAfterDelegatedAction
-        )
+        outState.putBoolean(STATE_RETURN_TO_PLAYLIST_HUB, returnToPlaylistHubAfterDelegatedAction)
+        outState.putBoolean(STATE_RETURN_TO_MENU, returnToMenuAfterDelegatedAction)
+        workflowRelay.save(outState)
         super.onSaveInstanceState(outState)
     }
 
@@ -204,7 +215,11 @@ class MainActivity : Activity() {
 
         syncAuthorizationInvalidationFromMemory()
 
-        if (::adapter.isInitialized) {
+        if (
+            ::adapter.isInitialized &&
+            !writeInProgress &&
+            pendingAfterAuth == null
+        ) {
             reloadCurrentWorkspace()
         }
 
@@ -220,6 +235,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        if (::workflowRelay.isInitialized) workflowRelay.detach()
         executor.shutdownNow()
         super.onDestroy()
     }
@@ -323,13 +339,13 @@ class MainActivity : Activity() {
                 1f
             )
         )
-
         header.addView(
             TextView(this).apply {
                 text = "v${BuildConfig.VERSION_NAME}"
                 textSize = 11.5f
                 setTextColor(Color.rgb(220, 222, 228))
                 gravity = android.view.Gravity.CENTER
+                setOnClickListener { startActivity(Intent(this@MainActivity, ServiceActivity::class.java).putExtra(ServiceActivity.EXTRA_START_PAGE, ServiceActivity.START_PAGE_ABOUT)) }
                 setPadding(dp(10), dp(6), dp(10), dp(6))
                 background =
                     AppThemeManager.surfaceDrawable(
@@ -392,7 +408,7 @@ class MainActivity : Activity() {
                     label = "3. Знайти / перевірити",
                     primary = true
                 ) {
-                    searchOrReview()
+                    openDirectSearchOrReview()
                 }.apply {
                 isEnabled = false
                 alpha = 0.55f
@@ -405,7 +421,7 @@ class MainActivity : Activity() {
                     label = "4. Створити / додати",
                     primary = true
                 ) {
-                    createPlaylist()
+                    openDirectDestination()
                 }.apply {
                 isEnabled = false
                 alpha = 0.55f
@@ -532,7 +548,11 @@ class MainActivity : Activity() {
         statusText =
             requireNotNull(
                 accountCard.subtitle
-            )
+            ).apply {
+                maxLines = 1
+                ellipsize =
+                    android.text.TextUtils.TruncateAt.END
+            }
 
         content.addView(
             accountCard.root,
@@ -562,7 +582,7 @@ class MainActivity : Activity() {
                     palette.surface,
                 subtitleAccent = true,
                 onClick = {
-                    openPlaylistHub()
+                    openDirectPlaylistHub()
                 }
             )
 
@@ -625,7 +645,7 @@ class MainActivity : Activity() {
             HomeDashboardChrome
                 .sectionCard(
                     activity = this,
-                    title = "Швидкі дії"
+                    title = "Швидкі дії файл/плейлист"
                 )
 
         val quickRow =
@@ -640,7 +660,7 @@ class MainActivity : Activity() {
                 .quickActionButton(
                     activity = this,
                     label =
-                        "Імпортувати файл",
+                        "Імпорт",
                     icon =
                         R.drawable.ic_ytm_download
                 ) {
@@ -648,7 +668,7 @@ class MainActivity : Activity() {
             },
             LinearLayout.LayoutParams(
                 0,
-                dp(58),
+                dp(48),
                 1f
             )
         )
@@ -658,7 +678,7 @@ class MainActivity : Activity() {
                 .quickActionButton(
                     activity = this,
                     label =
-                        "Експорт плейлистів",
+                        "Експорт",
                     icon =
                         R.drawable.ic_ytm_playlist_add
                 ) {
@@ -666,7 +686,7 @@ class MainActivity : Activity() {
             },
             LinearLayout.LayoutParams(
                 0,
-                dp(58),
+                dp(48),
                 1f
             ).apply {
                 marginStart =
@@ -713,10 +733,10 @@ class MainActivity : Activity() {
                 .bottomNavigation(
                     activity = this,
                     onSearch = {
-                        searchOrReview()
+                        openDirectSearchOrReview()
                     },
                     onPlaylist = {
-                        openPlaylistHub()
+                        openDirectPlaylistHub()
                     },
                     onService = {
                         showServiceTools()
@@ -1091,19 +1111,28 @@ class MainActivity : Activity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (
-            resultCode != RESULT_OK ||
-            data == null
-        ) {
-            if (
+        if (resultCode != RESULT_OK || data == null) {
+            when {
                 returnToPlaylistHubAfterDelegatedAction &&
-                requestCode in
-                    setOf(
-                        reviewScreenRequestCode,
-                        destinationScreenRequestCode
-                    )
-            ) {
-                reopenPlaylistHubAfterDelegatedAction()
+                    requestCode in setOf(reviewScreenRequestCode, destinationScreenRequestCode) -> {
+                    showWorkflowRelayOverlay("Поточний плейлист", "Повертаюся до плейлиста…")
+                    reopenPlaylistHubAfterDelegatedAction()
+                }
+                returnToMenuAfterDelegatedAction &&
+                    requestCode in setOf(reviewScreenRequestCode, destinationScreenRequestCode) -> {
+                    showWorkflowRelayOverlay("Меню", "Повертаюся до меню…")
+                    reopenMenuAfterDelegatedAction()
+                }
+                requestCode == playlistScreenRequestCode -> {
+                    returnToPlaylistHubAfterDelegatedAction = false
+                    hideWorkflowRelayOverlay()
+                }
+                requestCode == menuScreenRequestCode -> {
+                    returnToMenuAfterDelegatedAction = false
+                    hideWorkflowRelayOverlay()
+                }
+                requestCode in setOf(reviewScreenRequestCode, destinationScreenRequestCode) ->
+                    hideWorkflowRelayOverlay()
             }
             return
         }
@@ -1230,6 +1259,30 @@ class MainActivity : Activity() {
         )
     }
 
+    private fun clearDelegatedReturnRoute() {
+        returnToPlaylistHubAfterDelegatedAction = false
+        returnToMenuAfterDelegatedAction = false
+
+        if (::workflowRelay.isInitialized) {
+            hideWorkflowRelayOverlay()
+        }
+    }
+
+    private fun openDirectSearchOrReview() {
+        clearDelegatedReturnRoute()
+        searchOrReview()
+    }
+
+    private fun openDirectDestination() {
+        clearDelegatedReturnRoute()
+        createPlaylist()
+    }
+
+    private fun openDirectPlaylistHub() {
+        clearDelegatedReturnRoute()
+        openPlaylistHub()
+    }
+
     private fun openPlaylistHub() {
         startActivityForResult(
             Intent(
@@ -1240,20 +1293,40 @@ class MainActivity : Activity() {
         )
     }
 
+    private fun showWorkflowRelayOverlay(title: String, message: String) =
+        workflowRelay.show(title, message)
+
+    private fun hideWorkflowRelayOverlay() = workflowRelay.hide()
+
+    private fun beginPlaylistRelay(title: String, message: String) {
+        returnToMenuAfterDelegatedAction = false
+        returnToPlaylistHubAfterDelegatedAction = true
+        showWorkflowRelayOverlay(title, message)
+    }
+
+    private fun beginMenuRelay(title: String, message: String) {
+        returnToPlaylistHubAfterDelegatedAction = false
+        returnToMenuAfterDelegatedAction = true
+        showWorkflowRelayOverlay(title, message)
+    }
+
     private fun reopenPlaylistHubAfterDelegatedAction() {
-        if (
-            !returnToPlaylistHubAfterDelegatedAction
-        ) {
-            return
-        }
+        if (!returnToPlaylistHubAfterDelegatedAction) return
+        returnToPlaylistHubAfterDelegatedAction = false
+        window.decorView.post { if (!isFinishing && !isDestroyed) openPlaylistHub() }
+    }
 
-        returnToPlaylistHubAfterDelegatedAction =
-            false
+    private fun reopenMenuAfterDelegatedAction() {
+        if (!returnToMenuAfterDelegatedAction) return
+        returnToMenuAfterDelegatedAction = false
+        window.decorView.post { if (!isFinishing && !isDestroyed) openMenuScreen() }
+    }
 
-        window.decorView.post {
-            if (!isFinishing && !isDestroyed) {
-                openPlaylistHub()
-            }
+    private fun reopenDelegatedParentAfterAction() {
+        when {
+            returnToPlaylistHubAfterDelegatedAction -> reopenPlaylistHubAfterDelegatedAction()
+            returnToMenuAfterDelegatedAction -> reopenMenuAfterDelegatedAction()
+            else -> hideWorkflowRelayOverlay()
         }
     }
 
@@ -1263,6 +1336,16 @@ class MainActivity : Activity() {
         reloadCurrentWorkspace(
             force = true
         )
+
+        if (
+            data.getBooleanExtra(
+                ReviewActivity.EXTRA_DESTINATION_RESULT,
+                false
+            )
+        ) {
+            handleDestinationResult(data)
+            return
+        }
 
         if (
             data.getBooleanExtra(
@@ -1346,24 +1429,23 @@ class MainActivity : Activity() {
             )
         ) {
             PlaylistActivity.ACTION_SEARCH -> {
-                returnToPlaylistHubAfterDelegatedAction =
-                    true
+                beginPlaylistRelay("Поточний плейлист", "Відкриваю пошук / перевірку…")
                 searchOrReview()
             }
 
             PlaylistActivity.ACTION_REPEAT_SEARCH -> {
-                returnToPlaylistHubAfterDelegatedAction =
-                    true
-                searchAll(
-                    openReviewAfter = true,
-                    preserveExistingExact = true
-                )
+                beginPlaylistRelay("Поточний плейлист", "Повторюю пошук потрібних треків…")
+                searchAll(openReviewAfter = true, preserveExistingExact = true)
             }
 
             PlaylistActivity.ACTION_CREATE -> {
-                returnToPlaylistHubAfterDelegatedAction =
-                    true
+                beginPlaylistRelay("Створити / додати", "Відкриваю вибір цільового плейлиста…")
                 createPlaylist()
+            }
+
+            PlaylistActivity.ACTION_DESTINATION_RESULT -> {
+                beginPlaylistRelay("Створити / додати", "Готую запис у YTM…")
+                handleDestinationResult(data)
             }
 
             PlaylistActivity.ACTION_REPLACEMENTS ->
@@ -1375,8 +1457,10 @@ class MainActivity : Activity() {
             PlaylistActivity.ACTION_COPY_LINK ->
                 copyPlaylistLink()
 
-            PlaylistActivity.ACTION_MANUAL_VIDEO ->
+            PlaylistActivity.ACTION_MANUAL_VIDEO -> {
+                beginPlaylistRelay("Перевірка треків", "Отримую дані ручної заміни…")
                 handleManualVideoResult(data)
+            }
         }
     }
 
@@ -1391,8 +1475,10 @@ class MainActivity : Activity() {
             MenuActivity.ACTION_THEME ->
                 showThemePicker()
 
-            MenuActivity.ACTION_PROJECT ->
+            MenuActivity.ACTION_PROJECT -> {
+                beginMenuRelay("Поточний проєкт", "Відкриваю перевірку проєкту…")
                 openReviewScreen()
+            }
 
             MenuActivity.ACTION_REPLACEMENTS ->
                 showReplacementLog()
@@ -1670,6 +1756,8 @@ class MainActivity : Activity() {
             "$message Натисніть «2. Google / YTM» і підключіть акаунт знову."
         )
         toast("Авторизацію Google/YTM потрібно відновити")
+
+        reopenDelegatedParentAfterAction()
     }
 
     private fun handleAuthorizedToken(
@@ -1695,9 +1783,9 @@ class MainActivity : Activity() {
         updateAccountPanel()
 
         val action = pendingAfterAuth
-        pendingAfterAuth = null
 
         if (identityReady) {
+            pendingAfterAuth = null
             status("Авторизацію Google/YTM оновлено.")
             action?.invoke()
         } else {
@@ -1741,7 +1829,20 @@ class MainActivity : Activity() {
 
                 googleAccountInfo = googleResult.getOrNull()
                 youtubeChannelInfo = channelResult.getOrNull()
-                syncAuthSessionToMemory()
+
+                AuthSessionStore.updateIdentity(
+                    googleAccountInfo =
+                        googleAccountInfo,
+                    youtubeChannelInfo =
+                        youtubeChannelInfo
+                )
+
+                accessToken =
+                    AuthSessionStore
+                        .current()
+                        .accessToken
+                        ?: accessToken
+
                 updateAccountPanel()
                 updateQuotaPanel()
 
@@ -1761,6 +1862,7 @@ class MainActivity : Activity() {
                     }
                 )
 
+                pendingAfterAuth = null
                 after?.invoke()
             }
         }
@@ -2085,6 +2187,12 @@ class MainActivity : Activity() {
                     updateQuotaPanel()
 
                     if (
+                        result.authorizationInvalidated
+                    ) {
+                        reopenDelegatedParentAfterAction()
+                    }
+
+                    if (
                         openReviewAfter &&
                         !result.authorizationInvalidated
                     ) {
@@ -2223,19 +2331,21 @@ class MainActivity : Activity() {
             )
         ) {
             DestinationActivity.ACTION_CREATE_NEW -> {
+                showWorkflowRelayOverlay("Створити / додати", "Створюю плейлист і готую запис…")
                 val privacy =
                     data.getStringExtra(
                         DestinationActivity.EXTRA_PRIVACY
                     ) ?: "private"
 
                 actuallyCreatePlaylist(
-                    p = p,
+                    playlistName = data.getStringExtra(DestinationActivity.EXTRA_PLAYLIST_NAME).orEmpty().trim().ifBlank { p.name },
                     selected = selected,
                     privacyStatus = privacy
                 )
             }
 
             DestinationActivity.ACTION_LOAD_EXISTING -> {
+                showWorkflowRelayOverlay("Існуючий плейлист", "Завантажую ваші плейлисти…")
                 loadExistingPlaylistsForDestination(
                     p = p,
                     selected = selected
@@ -2243,6 +2353,7 @@ class MainActivity : Activity() {
             }
 
             DestinationActivity.ACTION_BACK_TO_START -> {
+                showWorkflowRelayOverlay("Створити / додати", "Повертаюся до вибору способу…")
                 openDestinationStart(
                     p = p,
                     selected = selected
@@ -2250,6 +2361,7 @@ class MainActivity : Activity() {
             }
 
             DestinationActivity.ACTION_BACK_TO_EXISTING_LIST -> {
+                showWorkflowRelayOverlay("Існуючий плейлист", "Повертаюся до списку плейлистів…")
                 val cachedPlaylists =
                     destinationCoordinator.cachedPlaylists()
 
@@ -2268,6 +2380,7 @@ class MainActivity : Activity() {
             }
 
             DestinationActivity.ACTION_SELECT_EXISTING -> {
+                showWorkflowRelayOverlay("Перевірка перед додаванням", "Перевіряю дублікати у вибраному плейлисті…")
                 val id =
                     data.getStringExtra(
                         DestinationActivity.EXTRA_TARGET_ID
@@ -2308,14 +2421,20 @@ class MainActivity : Activity() {
             }
 
             DestinationActivity.ACTION_CONFIRM_EXISTING -> {
-                finishExistingDestination(
-                    p = p,
-                    selected = selected,
-                    duplicateMode =
-                        data.getStringExtra(
-                            DestinationActivity.EXTRA_DUPLICATE_MODE
-                        ) ?: DestinationActivity.DUPLICATE_MODE_SKIP
-                )
+                showWorkflowRelayOverlay("Створити / додати", "Готую додавання треків…")
+                val forwarded = DestinationForwardedWritePlan.from(data, selected)
+                if (forwarded != null) {
+                    actuallyAppendToExisting(p, forwarded.tracksToWrite, forwarded.target, forwarded.tracksToSkip)
+                } else {
+                    finishExistingDestination(
+                        p = p,
+                        selected = selected,
+                        duplicateMode =
+                            data.getStringExtra(
+                                DestinationActivity.EXTRA_DUPLICATE_MODE
+                            ) ?: DestinationActivity.DUPLICATE_MODE_SKIP
+                    )
+                }
             }
         }
     }
@@ -2353,6 +2472,10 @@ class MainActivity : Activity() {
                             toast(
                                 "У цьому YouTube/YTM профілі немає доступних плейлистів."
                             )
+                            openDestinationStart(
+                                p = p,
+                                selected = selected
+                            )
                         } else {
                             openDestinationExistingList(
                                 p = p,
@@ -2362,6 +2485,7 @@ class MainActivity : Activity() {
                         }
                     }.onFailure { error ->
                         if (invalidateAuthorizationIfNeeded(error)) {
+                            reopenDelegatedParentAfterAction()
                             return@onFailure
                         }
 
@@ -2370,6 +2494,10 @@ class MainActivity : Activity() {
                                 error,
                                 "Не вдалося завантажити плейлисти"
                             )
+                        )
+                        openDestinationStart(
+                            p = p,
+                            selected = selected
                         )
                     }
                 }
@@ -2690,7 +2818,7 @@ class MainActivity : Activity() {
     }
 
     private fun actuallyCreatePlaylist(
-        p: ImportedPlaylist,
+        playlistName: String,
         selected: List<Track>,
         privacyStatus: String
     ) {
@@ -2700,7 +2828,7 @@ class MainActivity : Activity() {
             val job =
                 playlistWriteCoordinator.buildPendingJob(
                     sourceLabel = currentImportSourceLabel,
-                    playlistName = p.name,
+                    playlistName = playlistName,
                     playlistId = null,
                     privacyStatus = privacyStatus,
                     destination = PendingDestination.NEW_PLAYLIST,
@@ -2753,6 +2881,18 @@ class MainActivity : Activity() {
         token: String,
         operationLabel: String
     ) {
+        writeInProgress = true
+
+        val displayTracks =
+            playlist?.tracks
+                ?: tracks
+
+        workflowRelay.showWriteProgress(
+            initialJob.playlistName,
+            displayTracks,
+            statusText.text.toString()
+        )
+
         executor.execute {
             val outcome =
                 playlistWriteCoordinator.execute(
@@ -2761,29 +2901,32 @@ class MainActivity : Activity() {
                     tracks = tracks,
                     onHistoryState = { job, historyStatus ->
                         syncHistoryFromJob(
-                            job,
-                            historyStatus
+                            job = job,
+                            historyStatus = historyStatus,
+                            stateSourceTracks = tracks
                         )
                     },
                     onPlaylistIdAvailable = { playlistId ->
                         createdPlaylistId = playlistId
                         persistCurrentWorkspace()
                     },
+                    onTrackStart = { track, _, _ ->
+                        runOnUiThread {
+                            workflowRelay.updateWriteTracks(
+                                tracks = displayTracks,
+                                activeTrack = track,
+                                stateSourceTracks = tracks
+                            )
+                        }
+                    },
                     onProgress = { writeProgress ->
                         runOnUiThread {
                             progress.progress =
                                 writeProgress.progressValue
-
-                            status(
-                                if (writeProgress.playlistCreated) {
-                                    "Плейлист створено. Додаю треки…"
-                                } else {
-                                    "Додаю " +
-                                        "${writeProgress.processedTracks}/" +
-                                        "${writeProgress.totalTracks}… " +
-                                        "залишилось " +
-                                        "${writeProgress.job.remainingTracks.size}"
-                                }
+                            workflowRelay.updateWriteProgress(
+                                progress = writeProgress,
+                                tracks = displayTracks,
+                                stateSourceTracks = tracks
                             )
 
                             adapter.notifyDataSetChanged()
@@ -2795,6 +2938,9 @@ class MainActivity : Activity() {
                 )
 
             runOnUiThread {
+                writeInProgress = false
+                persistCurrentWorkspace()
+
                 progress.visibility = View.GONE
                 adapter.notifyDataSetChanged()
                 updateSummary()
@@ -2811,6 +2957,11 @@ class MainActivity : Activity() {
                                 "додано ${outcome.job.addedCount}, " +
                                 "помилок ${outcome.job.failedCount}."
                         )
+
+                        workflowRelay
+                            .showWriteCompletedAction {
+                                reopenDelegatedParentAfterAction()
+                            }
 
                         showPlaylistResult(
                             playlistName = outcome.job.playlistName,
@@ -2837,10 +2988,12 @@ class MainActivity : Activity() {
                                     "Незавершене завдання збережено в «Черзі»."
                             )
                         }
+                        reopenDelegatedParentAfterAction()
                     }
 
                     is PlaylistWriteCoordinator.WriteOutcome.Failed -> {
                         toast(outcome.userMessage)
+                        reopenDelegatedParentAfterAction()
                     }
                 }
             }
@@ -2867,8 +3020,11 @@ class MainActivity : Activity() {
                     "Відкрийте «Черга» і натисніть «Продовжити», " +
                     "коли квота відновиться."
             )
-            .setNegativeButton("Закрити", null)
+            .setNegativeButton("Закрити") { _, _ ->
+                reopenDelegatedParentAfterAction()
+            }
             .setPositiveButton("Відкрити чергу") { _, _ ->
+                hideWorkflowRelayOverlay()
                 showPendingJobs()
             }
             .show()
@@ -3196,7 +3352,8 @@ class MainActivity : Activity() {
 
     private fun syncHistoryFromJob(
         job: PendingJob,
-        historyStatus: HistoryStatus
+        historyStatus: HistoryStatus,
+        stateSourceTracks: List<Track>
     ) {
         val existing = historyStore.get(job.id)
         val liveTracks = playlist?.tracks.orEmpty()
@@ -3240,6 +3397,43 @@ class MainActivity : Activity() {
                     .toMutableList()
             }
 
+        stateSourceTracks.forEachIndexed {
+                fallbackIndex,
+                track ->
+
+            val authoritative =
+                historyTrackFromTrack(
+                    track = track,
+                    fallbackIndex = fallbackIndex
+                )
+
+            val targetIndex =
+                track.historyIndex
+                    ?.let { historyIndex ->
+                        merged.indexOfFirst {
+                            it.index == historyIndex
+                        }
+                    }
+                    ?.takeIf { it >= 0 }
+                    ?: merged.indexOfFirst {
+                        it.originalTitle ==
+                            authoritative.originalTitle &&
+                            it.originalArtist ==
+                                authoritative.originalArtist &&
+                            it.videoId ==
+                                authoritative.videoId
+                    }
+
+            if (targetIndex >= 0) {
+                merged[targetIndex] =
+                    authoritative
+            } else {
+                merged += authoritative
+            }
+        }
+
+        merged.sortBy { it.index }
+
         val now = System.currentTimeMillis()
 
         val entry =
@@ -3261,16 +3455,11 @@ class MainActivity : Activity() {
                         ?: merged.size
                         .coerceAtLeast(job.totalCount),
                 writeTargetCount =
-                    existing?.writeTargetCount
-                        ?: job.totalCount,
+                    job.totalCount,
                 addedCount =
-                    merged.count {
-                        it.status == TrackStatus.ADDED.name
-                    },
+                    job.addedCount,
                 failedCount =
-                    merged.count {
-                        it.status == TrackStatus.FAILED.name
-                    },
+                    job.failedCount,
                 pendingCount =
                     merged.count {
                         it.status == TrackStatus.PENDING.name
@@ -3498,6 +3687,10 @@ class MainActivity : Activity() {
                         TrackStatus.DUPLICATE
                 }
 
+        val failedTracks =
+            playlist?.tracks.orEmpty()
+                .filter { it.status == TrackStatus.FAILED }
+
         val details =
             buildString {
                 append("Додано: $addedCount")
@@ -3520,6 +3713,19 @@ class MainActivity : Activity() {
                 append(
                     " • $operationLabel"
                 )
+
+                if (failedTracks.isNotEmpty()) {
+                    append("\n\nНе додано:")
+                    failedTracks.take(8).forEach { track ->
+                        append("\n• ${track.originalArtist} — ${track.originalTitle}")
+                        track.error
+                            ?.takeIf { it.isNotBlank() }
+                            ?.let { append("\n  Причина: $it") }
+                    }
+                    if (failedTracks.size > 8) {
+                        append("\n• …ще ${failedTracks.size - 8}")
+                    }
+                }
 
                 youtubeChannelInfo
                     ?.title
@@ -3546,21 +3752,17 @@ class MainActivity : Activity() {
                         label = "Відкрити в YTM"
                     ) {
                         openInYtm()
-                        reopenPlaylistHubAfterDelegatedAction()
                     },
                     UiChrome.DialogAction(
                         label = "Копіювати посилання"
                     ) {
                         copyPlaylistLink()
-                        reopenPlaylistHubAfterDelegatedAction()
                     },
                     UiChrome.DialogAction(
                         label = "Закрити",
                         tone =
                             UiChrome.ActionTone.ACCENT
-                    ) {
-                        reopenPlaylistHubAfterDelegatedAction()
-                    }
+                    ) {}
                 ),
             actionLayout =
                 UiChrome.DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
@@ -3863,6 +4065,7 @@ class MainActivity : Activity() {
 
     private fun status(message: String) {
         statusText.text = message
+        if (::workflowRelay.isInitialized) workflowRelay.update(message)
     }
 
     private fun toast(message: String) {
@@ -3882,6 +4085,7 @@ class MainActivity : Activity() {
 
         private const val STATE_RETURN_TO_PLAYLIST_HUB =
             "state_return_to_playlist_hub"
+        private const val STATE_RETURN_TO_MENU = "state_return_to_menu"
 
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"

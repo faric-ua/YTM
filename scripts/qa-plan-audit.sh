@@ -120,8 +120,10 @@ grep -Fq '| v1.4.47 | **PHONE QA FAIL — MODAL THEME / HUB BACK STACK / ROTATIO
   || fail "v1.4.47 phone FAIL status missing"
 grep -Fq '| v1.4.47-R1 | **PHONE QA FAIL — HOME DENSITY / THEME-PICKER PARENT / NAV POLISH** |' "$STATUS" \
   || fail "v1.4.47-R1 phone FAIL status missing"
-grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING** |' "$STATUS" \
-  || fail "v1.4.47-R2 preflight PASS / build+phone pending status missing"
+grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA** |' "$STATUS" \
+  || fail "v1.4.47-R2 superseded status missing"
+grep -Fq '| v1.4.47-R3 | **IMPLEMENTED — CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING** |' "$STATUS" \
+  || fail "v1.4.47-R3 consolidation status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \
@@ -133,8 +135,13 @@ grep -Fq '| BUG-008 / Q-008 | CLOSED — PHONE RETEST PASS v1.4.38 R1 |' "$BUG" 
 grep -Fq '| BUG-002 / Q-002 | FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.34 |' "$BUG" \
   || fail "BUG-002 v1.4.34 retest status missing"
 grep -F '| BUG-004 / Q-004 |' "$BUG" | \
-  grep -Fq 'FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.41' \
-  || fail "BUG-004 v1.4.41 fix status missing"
+  grep -Fq 'R3 SILENT 401 RECOVERY IMPLEMENTED — PHONE RETEST NEEDED' \
+  || fail "BUG-004 R3 recovery status missing"
+for id in BUG-021 BUG-022 BUG-023; do
+  grep -F "| $id |" "$BUG" |
+    grep -Fq 'R3 FIX IMPLEMENTED — PHONE RETEST NEEDED' ||
+    fail "$id R3 status missing"
+done
 grep -F '| BUG-009 / Q-009 |' "$BUG" | \
   grep -Fq 'PHONE PORTRAIT PASS v1.4.41' \
   || fail "BUG-009 v1.4.41 portrait phone PASS missing"

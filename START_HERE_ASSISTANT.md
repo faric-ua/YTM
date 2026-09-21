@@ -32,10 +32,13 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.47-R2**
-- versionCode: **89**
-- release focus: **v1.4.47-R2 — Compact Home + Menu-owned Theme Picker**
-- release status: **IMPLEMENTED / STATIC + PHONE QA NEEDED — v1.4.47-R2 compact Home retest**
+- versionName: **1.4.47-R3**
+- versionCode: **90**
+- release focus: **v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics**
+- release status: **IMPLEMENTED / CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING**
+- active branch: `fix/v1.4.47-r3-bugfix-wave`
+- BUG-004 / Q-004: **R3 SILENT 401 RECOVERY IMPLEMENTED — PHONE RETEST NEEDED**
+- BUG-021 / BUG-022 / BUG-023: **R3 FIX IMPLEMENTED — PHONE RETEST NEEDED**
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.43 phone observation:

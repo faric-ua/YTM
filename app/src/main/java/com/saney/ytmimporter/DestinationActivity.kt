@@ -1,8 +1,16 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.destination.DestinationRemoteOperations
+import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.model.YouTubePlaylistInfo
+import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
+import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
+import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -19,21 +27,97 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.ProgressBar
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 
 class DestinationActivity : Activity() {
     private var currentMode: String = MODE_START
+    private var newPlaylistName: String = ""
+    private var existingPlaylistQuery: String = ""
+
+    private var pendingDeleteConfirmation:
+        ExistingItem? = null
+
+    private var deleteConfirmationDialog:
+        Dialog? = null
+
+    private var remoteProgressDialog:
+        Dialog? = null
+
+    private var remoteProgressText:
+        TextView? = null
+
+    private val remoteListener:
+        (DestinationRemoteOperations.State) -> Unit =
+        { state ->
+            handleRemoteState(state)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
 
         currentMode =
-            intent.getStringExtra(EXTRA_MODE)
+            savedInstanceState
+                ?.getString(
+                    STATE_CURRENT_MODE
+                )
+                ?: intent.getStringExtra(EXTRA_MODE)
                 ?: MODE_START
+
+        newPlaylistName =
+            savedInstanceState
+                ?.getString(STATE_NEW_PLAYLIST_NAME)
+                ?: intent.getStringExtra(EXTRA_PLAYLIST_NAME)
+                    .orEmpty()
+
+        existingPlaylistQuery =
+            savedInstanceState
+                ?.getString(
+                    STATE_EXISTING_PLAYLIST_QUERY
+                )
+                .orEmpty()
+
+        pendingDeleteConfirmation =
+            savedInstanceState
+                ?.let { state ->
+                    state
+                        .getString(
+                            STATE_DELETE_CONFIRM_ID
+                        )
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                        ?.let { id ->
+                            ExistingItem(
+                                id = id,
+                                title =
+                                    state
+                                        .getString(
+                                            STATE_DELETE_CONFIRM_TITLE
+                                        )
+                                        .orEmpty()
+                                        .ifBlank {
+                                            "Плейлист"
+                                        },
+                                privacy =
+                                    state
+                                        .getString(
+                                            STATE_DELETE_CONFIRM_PRIVACY
+                                        )
+                                        ?: "private",
+                                itemCount =
+                                    state.getLong(
+                                        STATE_DELETE_CONFIRM_COUNT,
+                                        0L
+                                    )
+                            )
+                        }
+                }
 
         when (currentMode) {
             MODE_EXISTING_LIST ->
@@ -48,6 +132,92 @@ class DestinationActivity : Activity() {
             else ->
                 showStartScreen()
         }
+
+        pendingDeleteConfirmation
+            ?.let { item ->
+                window.decorView.post {
+                    if (
+                        !isFinishing &&
+                        !isDestroyed &&
+                        pendingDeleteConfirmation
+                            ?.id == item.id
+                    ) {
+                        showDeleteConfirmationDialog(
+                            item
+                        )
+                    }
+                }
+            }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        DestinationRemoteOperations
+            .addListener(
+                remoteListener
+            )
+    }
+
+    override fun onStop() {
+        DestinationRemoteOperations
+            .removeListener(
+                remoteListener
+            )
+        super.onStop()
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putString(
+            STATE_CURRENT_MODE,
+            currentMode
+        )
+        outState.putString(
+            STATE_NEW_PLAYLIST_NAME,
+            newPlaylistName
+        )
+        outState.putString(
+            STATE_EXISTING_PLAYLIST_QUERY,
+            existingPlaylistQuery
+        )
+
+        pendingDeleteConfirmation
+            ?.let { item ->
+                outState.putString(
+                    STATE_DELETE_CONFIRM_ID,
+                    item.id
+                )
+                outState.putString(
+                    STATE_DELETE_CONFIRM_TITLE,
+                    item.title
+                )
+                outState.putString(
+                    STATE_DELETE_CONFIRM_PRIVACY,
+                    item.privacy
+                )
+                outState.putLong(
+                    STATE_DELETE_CONFIRM_COUNT,
+                    item.itemCount
+                )
+            }
+
+        super.onSaveInstanceState(
+            outState
+        )
+    }
+
+    override fun onDestroy() {
+        remoteProgressDialog
+            ?.setOnDismissListener(null)
+        remoteProgressDialog = null
+        remoteProgressText = null
+
+        deleteConfirmationDialog
+            ?.setOnDismissListener(null)
+        deleteConfirmationDialog = null
+
+        super.onDestroy()
     }
 
     private fun showStartScreen() {
@@ -83,9 +253,60 @@ class DestinationActivity : Activity() {
         )
         newCard.addView(
             infoText(
-                "Виберіть приватність. Назва нового плейлиста буде взята " +
-                    "з поточного Project / імпортованого списку."
+                "Назву можна змінити перед створенням плейлиста."
             )
+        )
+
+        val playlistNameInput =
+            EditText(this).apply {
+                setText(newPlaylistName)
+                hint = "Назва плейлиста"
+                setSingleLine(true)
+                textSize = 14f
+                setTextColor(Color.WHITE)
+                setHintTextColor(Color.rgb(120, 123, 130))
+                setPadding(dp(14), 0, dp(14), 0)
+                background =
+                    roundedBackground(
+                        color = SURFACE,
+                        radiusDp = 12,
+                        strokeColor = BORDER
+                    )
+                addTextChangedListener(
+                    object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) = Unit
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            newPlaylistName =
+                                s?.toString().orEmpty()
+                        }
+
+                        override fun afterTextChanged(
+                            s: Editable?
+                        ) = Unit
+                    }
+                )
+            }
+
+        newCard.addView(
+            playlistNameInput,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(48)
+            ).apply {
+                topMargin = dp(8)
+                bottomMargin = dp(10)
+            }
         )
 
         val privacyGroup = RadioGroup(this).apply {
@@ -123,6 +344,14 @@ class DestinationActivity : Activity() {
                 label = "Створити новий плейлист",
                 primary = true
             ) {
+                val playlistName =
+                    playlistNameInput.text.toString().trim()
+
+                if (playlistName.isBlank()) {
+                    toast("Вкажіть назву плейлиста")
+                    return@actionButton
+                }
+
                 val checked =
                     privacyGroup.findViewById<RadioButton>(
                         privacyGroup.checkedRadioButtonId
@@ -141,6 +370,10 @@ class DestinationActivity : Activity() {
                         .putExtra(
                             EXTRA_PRIVACY,
                             privacy
+                        )
+                        .putExtra(
+                            EXTRA_PLAYLIST_NAME,
+                            playlistName
                         )
                 )
             }
@@ -170,13 +403,7 @@ class DestinationActivity : Activity() {
                 label = "Вибрати існуючий плейлист",
                 primary = false
             ) {
-                finishWith(
-                    Intent()
-                        .putExtra(
-                            EXTRA_ACTION,
-                            ACTION_LOAD_EXISTING
-                        )
-                )
+                openExistingPlaylists()
             }
         )
         content.addView(existingCard)
@@ -192,7 +419,7 @@ class DestinationActivity : Activity() {
         )
 
         setContentView(root)
-        UiChrome.applyScreenInsets(this, root)
+        UiChrome.applyScreenInsets(this, root, includeIme = true)
     }
 
     private fun showExistingListScreen() {
@@ -207,7 +434,7 @@ class DestinationActivity : Activity() {
         root.addView(
             TextView(this).apply {
                 text =
-                    "Оберіть playlist, до якого потрібно додати поточні треки."
+                    "Натисніть — вибрати плейлист. Утримуйте — видалити його з YouTube/YTM."
                 textSize = 13f
                 setTextColor(MUTED)
                 setPadding(dp(18), 0, dp(18), dp(10))
@@ -268,6 +495,8 @@ class DestinationActivity : Activity() {
 
         val search = EditText(this).apply {
             hint = "Пошук плейлиста за назвою"
+            setText(existingPlaylistQuery)
+            setSelection(text.length)
             setSingleLine(true)
             textSize = 14f
             setTextColor(Color.WHITE)
@@ -361,25 +590,38 @@ class DestinationActivity : Activity() {
                     before: Int,
                     count: Int
                 ) {
-                    applyFilter(s?.toString().orEmpty())
+                    existingPlaylistQuery =
+                        s?.toString().orEmpty()
+
+                    applyFilter(
+                        existingPlaylistQuery
+                    )
                 }
 
                 override fun afterTextChanged(s: Editable?) = Unit
             }
         )
 
+        applyFilter(
+            existingPlaylistQuery
+        )
+
         list.setOnItemClickListener { _, _, position, _ ->
             val item = visible.getOrNull(position)
                 ?: return@setOnItemClickListener
 
-            finishWith(
-                Intent()
-                    .putExtra(EXTRA_ACTION, ACTION_SELECT_EXISTING)
-                    .putExtra(EXTRA_TARGET_ID, item.id)
-                    .putExtra(EXTRA_TARGET_TITLE, item.title)
-                    .putExtra(EXTRA_TARGET_PRIVACY, item.privacy)
-                    .putExtra(EXTRA_TARGET_COUNT, item.itemCount)
+            requestDuplicateScan(
+                item
             )
+        }
+
+        list.setOnItemLongClickListener { _, _, position, _ ->
+            val item =
+                visible.getOrNull(position)
+                    ?: return@setOnItemLongClickListener false
+
+            confirmDeletePlaylist(item)
+            true
         }
 
         setContentView(root)
@@ -677,23 +919,14 @@ class DestinationActivity : Activity() {
     }
 
     private fun backToStart() {
-        finishWith(
-            Intent()
-                .putExtra(
-                    EXTRA_ACTION,
-                    ACTION_BACK_TO_START
-                )
+        setMode(
+            MODE_START
         )
+        showStartScreen()
     }
 
     private fun backToExistingList() {
-        finishWith(
-            Intent()
-                .putExtra(
-                    EXTRA_ACTION,
-                    ACTION_BACK_TO_EXISTING_LIST
-                )
-        )
+        openExistingPlaylists()
     }
 
     private fun finishExistingConfirm(mode: String) {
@@ -707,12 +940,600 @@ class DestinationActivity : Activity() {
                     EXTRA_DUPLICATE_MODE,
                     mode
                 )
+                .putExtra(
+                    EXTRA_TARGET_ID,
+                    intent.getStringExtra(
+                        EXTRA_TARGET_ID
+                    )
+                )
+                .putExtra(
+                    EXTRA_TARGET_TITLE,
+                    intent.getStringExtra(
+                        EXTRA_TARGET_TITLE
+                    )
+                )
+                .putExtra(
+                    EXTRA_TARGET_PRIVACY,
+                    intent.getStringExtra(
+                        EXTRA_TARGET_PRIVACY
+                    )
+                )
+                .putExtra(
+                    EXTRA_TARGET_COUNT,
+                    intent.getLongExtra(
+                        EXTRA_TARGET_COUNT,
+                        0L
+                    )
+                )
+                .putExtra(
+                    EXTRA_LOCAL_SKIP_POSITIONS,
+                    intent.getIntArrayExtra(
+                        EXTRA_LOCAL_SKIP_POSITIONS
+                    ) ?: IntArray(0)
+                )
         )
     }
 
     private fun finishWith(data: Intent) {
         setResult(RESULT_OK, data)
         finish()
+        overridePendingTransition(0, 0)
+    }
+
+    private fun openExistingPlaylists() {
+        if (
+            intent.hasExtra(
+                EXTRA_EXISTING_IDS
+            )
+        ) {
+            setMode(
+                MODE_EXISTING_LIST
+            )
+            showExistingListScreen()
+        } else {
+            requestExistingPlaylists()
+        }
+    }
+
+    private fun requestExistingPlaylists() {
+        DestinationRemoteOperations
+            .startLoad(
+                this
+            )
+    }
+
+    private fun confirmDeletePlaylist(
+        item: ExistingItem
+    ) {
+        pendingDeleteConfirmation =
+            item
+
+        showDeleteConfirmationDialog(
+            item
+        )
+    }
+
+    private fun showDeleteConfirmationDialog(
+        item: ExistingItem
+    ) {
+        if (
+            deleteConfirmationDialog
+                ?.isShowing == true
+        ) {
+            return
+        }
+
+        val dialog =
+            UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title = "Видалити плейлист?",
+                message =
+                    "«${item.title}» буде видалено з YouTube / YTM.\n\n" +
+                        "Цю дію неможливо скасувати.",
+                confirmLabel = "Видалити"
+            ) {
+                pendingDeleteConfirmation =
+                    null
+                deleteConfirmationDialog =
+                    null
+
+                requestPlaylistDelete(
+                    item
+                )
+            }
+
+        deleteConfirmationDialog =
+            dialog
+
+        dialog.setOnDismissListener {
+            if (
+                deleteConfirmationDialog ===
+                    dialog
+            ) {
+                deleteConfirmationDialog =
+                    null
+            }
+
+            if (
+                pendingDeleteConfirmation
+                    ?.id == item.id
+            ) {
+                pendingDeleteConfirmation =
+                    null
+            }
+        }
+    }
+
+    private fun requestPlaylistDelete(
+        item: ExistingItem
+    ) {
+        DestinationRemoteOperations.startDelete(
+            context = this,
+            target =
+                YouTubePlaylistInfo(
+                    id = item.id,
+                    title = item.title,
+                    privacyStatus = item.privacy,
+                    itemCount = item.itemCount
+                )
+        )
+    }
+
+    private fun requestDuplicateScan(
+        item: ExistingItem
+    ) {
+        DestinationRemoteOperations
+            .startScan(
+                context = this,
+                target =
+                    YouTubePlaylistInfo(
+                        id = item.id,
+                        title = item.title,
+                        privacyStatus =
+                            item.privacy,
+                        itemCount =
+                            item.itemCount
+                    )
+            )
+    }
+
+    private fun handleRemoteState(
+        state:
+            DestinationRemoteOperations.State
+    ) {
+        if (isFinishing || isDestroyed) {
+            return
+        }
+
+        if (state.running) {
+            showRemoteProgress(
+                state
+            )
+            return
+        }
+
+        remoteProgressDialog
+            ?.setOnDismissListener(null)
+        remoteProgressDialog
+            ?.dismiss()
+        remoteProgressDialog = null
+        remoteProgressText = null
+
+        if (state.terminalSerial == 0L) {
+            return
+        }
+
+        DestinationRemoteOperations
+            .acknowledgeTerminal(
+                state.terminalSerial
+            )
+
+        when {
+            state.kind ==
+                DestinationRemoteOperations.Kind.DELETE_PLAYLIST &&
+                state.target != null &&
+                state.successMessage != null -> {
+                removeStoredPlaylist(
+                    state.target.id
+                )
+                toast(
+                    state.successMessage
+                )
+                setMode(
+                    MODE_EXISTING_LIST
+                )
+                showExistingListScreen()
+            }
+
+            state.playlists != null -> {
+                val playlists =
+                    state.playlists
+
+                if (playlists.isEmpty()) {
+                    toast(
+                        "У цьому YouTube/YTM профілі немає доступних плейлистів."
+                    )
+                    setMode(
+                        MODE_START
+                    )
+                    showStartScreen()
+                } else {
+                    storeExistingPlaylists(
+                        playlists
+                    )
+                    setMode(
+                        MODE_EXISTING_LIST
+                    )
+                    showExistingListScreen()
+                }
+            }
+
+            state.scan != null -> {
+                storeScan(
+                    state.scan
+                )
+                setMode(
+                    MODE_EXISTING_CONFIRM
+                )
+                showExistingConfirmScreen()
+            }
+
+            state.errorMessage != null -> {
+                if (
+                    state.authorizationInvalidated
+                ) {
+                    toast(
+                        "Авторизацію Google / YTM потрібно відновити на головному екрані"
+                    )
+                    finish()
+                    return
+                }
+
+                val target =
+                    state.target
+
+                if (
+                    state.kind ==
+                        DestinationRemoteOperations
+                            .Kind.DELETE_PLAYLIST
+                ) {
+                    toast(
+                        state.errorMessage
+                    )
+                    setMode(
+                        MODE_EXISTING_LIST
+                    )
+                    showExistingListScreen()
+                } else if (
+                    state.kind ==
+                        DestinationRemoteOperations
+                            .Kind.SCAN_DUPLICATES &&
+                    target != null
+                ) {
+                    storeTarget(
+                        target
+                    )
+                    intent.putExtra(
+                        EXTRA_SCAN_ERROR,
+                        state.errorMessage
+                    )
+                    intent.putExtra(
+                        EXTRA_QUOTA_ALL,
+                        quotaPlanForWrite(
+                            trackCount =
+                                intent.getIntExtra(
+                                    EXTRA_SELECTED_COUNT,
+                                    0
+                                ),
+                            createPlaylist =
+                                false
+                        )
+                    )
+                    setMode(
+                        MODE_EXISTING_SCAN_FAILED
+                    )
+                    showExistingScanFailedScreen()
+                } else {
+                    toast(
+                        state.errorMessage
+                    )
+                    setMode(
+                        MODE_START
+                    )
+                    showStartScreen()
+                }
+            }
+        }
+    }
+
+    private fun showRemoteProgress(
+        state:
+            DestinationRemoteOperations.State
+    ) {
+        if (
+            remoteProgressDialog
+                ?.isShowing == true
+        ) {
+            remoteProgressText
+                ?.text =
+                state.message
+            return
+        }
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(18),
+                    dp(8),
+                    dp(18),
+                    dp(12)
+                )
+            }
+
+        val message =
+            TextView(this).apply {
+                text =
+                    state.message
+                textSize =
+                    14f
+                setTextColor(
+                    Color.WHITE
+                )
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    dp(12)
+                )
+            }
+
+        remoteProgressText =
+            message
+
+        content.addView(
+            message
+        )
+        content.addView(
+            ProgressBar(this).apply {
+                isIndeterminate =
+                    true
+            }
+        )
+
+        remoteProgressDialog =
+            UiChrome
+                .alertBuilder(this)
+                .setTitle(
+                    when (
+                        state.kind
+                    ) {
+                        DestinationRemoteOperations.Kind.LOAD_PLAYLISTS ->
+                            "Існуючий плейлист"
+
+                        DestinationRemoteOperations.Kind.DELETE_PLAYLIST ->
+                            "Видалення плейлиста"
+
+                        else ->
+                            "Перевірка перед додаванням"
+                    }
+                )
+                .setView(
+                    content
+                )
+                .show()
+                .also {
+                    dialog ->
+                    dialog.setCancelable(
+                        false
+                    )
+                }
+    }
+
+    private fun removeStoredPlaylist(
+        playlistId: String
+    ) {
+        val ids =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_IDS
+            ) ?: arrayListOf()
+
+        val index =
+            ids.indexOf(playlistId)
+
+        if (index < 0) {
+            return
+        }
+
+        val titles =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_TITLES
+            ) ?: arrayListOf()
+        val privacy =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_PRIVACY
+            ) ?: arrayListOf()
+        val counts =
+            intent.getLongArrayExtra(
+                EXTRA_EXISTING_COUNTS
+            ) ?: LongArray(0)
+
+        ids.removeAt(index)
+        if (index < titles.size) {
+            titles.removeAt(index)
+        }
+        if (index < privacy.size) {
+            privacy.removeAt(index)
+        }
+
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_IDS,
+            ids
+        )
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_TITLES,
+            titles
+        )
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_PRIVACY,
+            privacy
+        )
+        intent.putExtra(
+            EXTRA_EXISTING_COUNTS,
+            counts.filterIndexed {
+                    itemIndex, _ ->
+                    itemIndex != index
+                }
+                .toLongArray()
+        )
+    }
+
+    private fun storeExistingPlaylists(
+        playlists:
+            List<YouTubePlaylistInfo>
+    ) {
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_IDS,
+            ArrayList(
+                playlists.map {
+                    it.id
+                }
+            )
+        )
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_TITLES,
+            ArrayList(
+                playlists.map {
+                    it.title
+                }
+            )
+        )
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_PRIVACY,
+            ArrayList(
+                playlists.map {
+                    it.privacyStatus
+                }
+            )
+        )
+        intent.putExtra(
+            EXTRA_EXISTING_COUNTS,
+            playlists
+                .map {
+                    it.itemCount
+                }
+                .toLongArray()
+        )
+    }
+
+    private fun storeScan(
+        scan:
+            DestinationRemoteOperations.ScanPayload
+    ) {
+        storeTarget(
+            scan.target
+        )
+
+        intent.putExtra(
+            EXTRA_ALREADY_COUNT,
+            scan.alreadyCount
+        )
+        intent.putExtra(
+            EXTRA_REPEATED_COUNT,
+            scan.repeatedCount
+        )
+        intent.putExtra(
+            EXTRA_NEW_COUNT,
+            scan.newCount
+        )
+        intent.putExtra(
+            EXTRA_SCAN_REQUESTS,
+            scan.requestCount
+        )
+        intent.putExtra(
+            EXTRA_LOCAL_SKIP_POSITIONS,
+            scan.skipPositions
+        )
+        intent.putExtra(
+            EXTRA_QUOTA_SKIP,
+            quotaPlanForWrite(
+                trackCount =
+                    scan.newCount,
+                createPlaylist =
+                    false
+            )
+        )
+        intent.putExtra(
+            EXTRA_QUOTA_ALL,
+            quotaPlanForWrite(
+                trackCount =
+                    intent.getIntExtra(
+                        EXTRA_SELECTED_COUNT,
+                        0
+                    ),
+                createPlaylist =
+                    false
+            )
+        )
+    }
+
+    private fun storeTarget(
+        target:
+            YouTubePlaylistInfo
+    ) {
+        intent.putExtra(
+            EXTRA_TARGET_ID,
+            target.id
+        )
+        intent.putExtra(
+            EXTRA_TARGET_TITLE,
+            target.title
+        )
+        intent.putExtra(
+            EXTRA_TARGET_PRIVACY,
+            target.privacyStatus
+        )
+        intent.putExtra(
+            EXTRA_TARGET_COUNT,
+            target.itemCount
+        )
+    }
+
+    private fun setMode(
+        mode: String
+    ) {
+        currentMode =
+            mode
+        intent.putExtra(
+            EXTRA_MODE,
+            mode
+        )
+    }
+
+    private fun quotaPlanForWrite(
+        trackCount: Int,
+        createPlaylist: Boolean
+    ): String {
+        val required =
+            trackCount *
+                QuotaTracker
+                    .PLAYLIST_ITEM_INSERT_COST +
+                if (createPlaylist) {
+                    QuotaTracker
+                        .PLAYLIST_CREATE_COST
+                } else {
+                    0
+                }
+
+        val quota =
+            QuotaTracker(this)
+                .snapshot()
+
+        return "Квота API (оцінка):\n" +
+            "Потрібно приблизно: $required units (одиниць)\n" +
+            "Локально залишилось приблизно: ${quota.generalRemaining}/" +
+            "${QuotaTracker.GENERAL_DAILY_LIMIT}"
     }
 
     private fun workspaceSummaryCard(): LinearLayout {
@@ -1018,6 +1839,18 @@ class DestinationActivity : Activity() {
         )
     }
 
+    private fun toast(
+        message: String
+    ) {
+        Toast
+            .makeText(
+                this,
+                message,
+                Toast.LENGTH_LONG
+            )
+            .show()
+    }
+
     private fun dp(value: Int): Int =
         (
             value *
@@ -1032,6 +1865,102 @@ class DestinationActivity : Activity() {
     )
 
     companion object {
+        fun startIntent(
+            context: Context,
+            snapshot:
+                CurrentPlaylistSnapshot
+        ): Intent? {
+            val selected =
+                snapshot
+                    .playlist
+                    .tracks
+                    .filter {
+                        track ->
+                        !track.selectedVideoId
+                            .isNullOrBlank() &&
+                            track.status !=
+                                TrackStatus.SKIPPED
+                    }
+
+            if (selected.isEmpty()) {
+                return null
+            }
+
+            val questionable =
+                selected.count {
+                    it.status ==
+                        TrackStatus.REVIEW
+                }
+
+            val auth =
+                AuthSessionStore.current()
+
+            val quota =
+                QuotaTracker(context)
+                    .snapshot()
+
+            val required =
+                selected.size *
+                    QuotaTracker
+                        .PLAYLIST_ITEM_INSERT_COST +
+                    QuotaTracker
+                        .PLAYLIST_CREATE_COST
+
+            val quotaText =
+                "Квота API (оцінка):\n" +
+                    "Потрібно приблизно: $required units (одиниць)\n" +
+                    "Локально залишилось приблизно: ${quota.generalRemaining}/" +
+                    "${QuotaTracker.GENERAL_DAILY_LIMIT}"
+
+            return Intent(
+                context,
+                DestinationActivity::class.java
+            ).apply {
+                putExtra(
+                    EXTRA_MODE,
+                    MODE_START
+                )
+                putExtra(
+                    EXTRA_PLAYLIST_NAME,
+                    snapshot.playlist.name
+                )
+                putExtra(
+                    EXTRA_IMPORTED_COUNT,
+                    snapshot.playlist.tracks.size
+                )
+                putExtra(
+                    EXTRA_SELECTED_COUNT,
+                    selected.size
+                )
+                putExtra(
+                    EXTRA_QUESTIONABLE_COUNT,
+                    questionable
+                )
+                putExtra(
+                    EXTRA_GOOGLE_LABEL,
+                    auth.googleAccountInfo
+                        ?.email
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                        ?: "буде перевірено перед записом"
+                )
+                putExtra(
+                    EXTRA_CHANNEL_LABEL,
+                    auth.youtubeChannelInfo
+                        ?.title
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                        ?: "буде перевірено перед записом"
+                )
+                putExtra(
+                    EXTRA_NEW_QUOTA_PLAN,
+                    quotaText
+                )
+            }
+        }
+
         const val EXTRA_MODE = "destination_mode"
         const val EXTRA_ACTION = "destination_action"
         const val EXTRA_PRIVACY = "destination_privacy"
@@ -1061,6 +1990,7 @@ class DestinationActivity : Activity() {
         const val EXTRA_QUOTA_SKIP = "destination_quota_skip"
         const val EXTRA_QUOTA_ALL = "destination_quota_all"
         const val EXTRA_DUPLICATE_MODE = "destination_duplicate_mode"
+        const val EXTRA_LOCAL_SKIP_POSITIONS = "destination_local_skip_positions"
 
         const val MODE_START = "start"
         const val MODE_EXISTING_LIST = "existing_list"
@@ -1077,6 +2007,21 @@ class DestinationActivity : Activity() {
         const val DUPLICATE_MODE_SKIP = "skip"
         const val DUPLICATE_MODE_ALL = "all"
         const val DUPLICATE_MODE_NO_SCAN = "no_scan"
+
+        private const val STATE_CURRENT_MODE =
+            "destination_current_mode"
+        private const val STATE_NEW_PLAYLIST_NAME =
+            "destination_new_playlist_name"
+        private const val STATE_EXISTING_PLAYLIST_QUERY =
+            "destination_existing_playlist_query"
+        private const val STATE_DELETE_CONFIRM_ID =
+            "destination_delete_confirm_id"
+        private const val STATE_DELETE_CONFIRM_TITLE =
+            "destination_delete_confirm_title"
+        private const val STATE_DELETE_CONFIRM_PRIVACY =
+            "destination_delete_confirm_privacy"
+        private const val STATE_DELETE_CONFIRM_COUNT =
+            "destination_delete_confirm_count"
 
         private val BACKGROUND = Color.rgb(15, 16, 19)
         private val SURFACE = Color.rgb(25, 27, 32)

@@ -36,6 +36,20 @@ object AuthSessionStore {
     }
 
     @Synchronized
+    fun updateIdentity(
+        googleAccountInfo: GoogleAccountInfo?,
+        youtubeChannelInfo: YouTubeChannelInfo?
+    ) {
+        snapshot =
+            snapshot.copy(
+                googleAccountInfo =
+                    googleAccountInfo,
+                youtubeChannelInfo =
+                    youtubeChannelInfo
+            )
+    }
+
+    @Synchronized
     fun clear() {
         snapshot = Snapshot()
     }

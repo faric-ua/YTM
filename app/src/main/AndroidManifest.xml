@@ -58,10 +58,12 @@
         <activity
             android:name=".DestinationActivity"
             android:exported="false"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".ReviewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize"
             android:exported="false"
             android:screenOrientation="unspecified" />
 
@@ -87,6 +89,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize"
             android:exported="true"
             android:screenOrientation="unspecified">
             <intent-filter>

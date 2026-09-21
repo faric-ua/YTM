@@ -22,7 +22,11 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.auth.PersistentAuthStateStore
+import com.saney.ytmimporter.model.HistoryEntry
+import com.saney.ytmimporter.model.HistoryStatus
+import com.saney.ytmimporter.model.HistoryTrack
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
@@ -36,6 +40,7 @@ import com.saney.ytmimporter.storage.AccountLibraryManifestImport
 import com.saney.ytmimporter.storage.AccountLibraryManifestImporter
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.DeltaChainHead
+import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.DeltaChainMaterializeResult
 import com.saney.ytmimporter.storage.DeltaChainPlan
 import com.saney.ytmimporter.storage.IncrementalBackupPlan
@@ -47,6 +52,7 @@ import com.saney.ytmimporter.storage.PlaylistProjectImport
 import com.saney.ytmimporter.storage.SafTreeAccess
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
+import java.util.UUID
 import java.util.concurrent.Executors
 import org.json.JSONArray
 import org.json.JSONObject
@@ -110,11 +116,20 @@ class ImportActivity : Activity() {
     private val executor =
         Executors.newSingleThreadExecutor()
 
-    private val api =
-        YouTubeApi()
+    private val api by lazy {
+        YouTubeApi(
+            accessTokenRecovery =
+                GoogleAccessTokenRecovery(
+                    this
+                )
+        )
+    }
 
     private lateinit var currentPlaylistStore:
         CurrentPlaylistStore
+
+    private lateinit var historyStore:
+        HistoryStore
 
     private lateinit var playlistNameInput:
         EditText
@@ -133,6 +148,9 @@ class ImportActivity : Activity() {
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
+
+        historyStore =
+            HistoryStore(this)
 
         pendingSelectiveExport =
             decodeSelectiveExportState(
@@ -3231,6 +3249,13 @@ class ImportActivity : Activity() {
             sourceLabel = sourceLabel
         )
 
+        historyStore.upsert(
+            localImportHistoryEntry(
+                imported = imported,
+                sourceLabel = sourceLabel
+            )
+        )
+
         setResult(
             RESULT_OK,
             Intent()
@@ -3241,6 +3266,71 @@ class ImportActivity : Activity() {
         )
 
         finish()
+    }
+
+    private fun localImportHistoryEntry(
+        imported: ImportedPlaylist,
+        sourceLabel: String
+    ): HistoryEntry {
+        val now =
+            System.currentTimeMillis()
+
+        return HistoryEntry(
+            id =
+                "local-import-" +
+                    UUID.randomUUID()
+                        .toString(),
+            createdAt = now,
+            updatedAt = now,
+            status =
+                HistoryStatus.COMPLETED,
+            sourceLabel = sourceLabel,
+            playlistName =
+                imported.name,
+            playlistId = null,
+            privacyStatus = "local",
+            destination =
+                PendingDestination.NEW_PLAYLIST,
+            googleEmail = null,
+            youtubeChannelId = null,
+            youtubeChannelTitle = null,
+            totalImportedCount =
+                imported.tracks.size,
+            writeTargetCount = 0,
+            addedCount = 0,
+            failedCount = 0,
+            pendingCount = 0,
+            skippedCount = 0,
+            duplicateCount = 0,
+            missingCount = 0,
+            lastError = null,
+            tracks =
+                imported.tracks
+                    .mapIndexed {
+                            fallbackIndex,
+                            track ->
+
+                        HistoryTrack(
+                            index =
+                                track.historyIndex
+                                    ?: fallbackIndex,
+                            originalTitle =
+                                track.originalTitle,
+                            originalArtist =
+                                track.originalArtist,
+                            videoId =
+                                track.selectedVideoId,
+                            selectedTitle =
+                                track.selectedTitle,
+                            selectedChannel =
+                                track.selectedChannel,
+                            status = "IMPORTED",
+                            manuallySelected =
+                                track.manuallySelected,
+                            error = null
+                        )
+                    }
+        )
     }
 
     private fun confirmClearWorkspace(
