@@ -36,6 +36,7 @@ import android.widget.Toast
 
 class DestinationActivity : Activity() {
     private var currentMode: String = MODE_START
+    private var newPlaylistName: String = ""
 
     private var remoteProgressDialog:
         Dialog? = null
@@ -60,6 +61,12 @@ class DestinationActivity : Activity() {
                 )
                 ?: intent.getStringExtra(EXTRA_MODE)
                 ?: MODE_START
+
+        newPlaylistName =
+            savedInstanceState
+                ?.getString(STATE_NEW_PLAYLIST_NAME)
+                ?: intent.getStringExtra(EXTRA_PLAYLIST_NAME)
+                    .orEmpty()
 
         when (currentMode) {
             MODE_EXISTING_LIST ->
@@ -98,6 +105,10 @@ class DestinationActivity : Activity() {
         outState.putString(
             STATE_CURRENT_MODE,
             currentMode
+        )
+        outState.putString(
+            STATE_NEW_PLAYLIST_NAME,
+            newPlaylistName
         )
         super.onSaveInstanceState(
             outState
@@ -145,9 +156,60 @@ class DestinationActivity : Activity() {
         )
         newCard.addView(
             infoText(
-                "Виберіть приватність. Назва нового плейлиста буде взята " +
-                    "з поточного Project / імпортованого списку."
+                "Назву можна змінити перед створенням плейлиста."
             )
+        )
+
+        val playlistNameInput =
+            EditText(this).apply {
+                setText(newPlaylistName)
+                hint = "Назва плейлиста"
+                setSingleLine(true)
+                textSize = 14f
+                setTextColor(Color.WHITE)
+                setHintTextColor(Color.rgb(120, 123, 130))
+                setPadding(dp(14), 0, dp(14), 0)
+                background =
+                    roundedBackground(
+                        color = SURFACE,
+                        radiusDp = 12,
+                        strokeColor = BORDER
+                    )
+                addTextChangedListener(
+                    object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) = Unit
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            newPlaylistName =
+                                s?.toString().orEmpty()
+                        }
+
+                        override fun afterTextChanged(
+                            s: Editable?
+                        ) = Unit
+                    }
+                )
+            }
+
+        newCard.addView(
+            playlistNameInput,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(48)
+            ).apply {
+                topMargin = dp(8)
+                bottomMargin = dp(10)
+            }
         )
 
         val privacyGroup = RadioGroup(this).apply {
@@ -185,6 +247,14 @@ class DestinationActivity : Activity() {
                 label = "Створити новий плейлист",
                 primary = true
             ) {
+                val playlistName =
+                    playlistNameInput.text.toString().trim()
+
+                if (playlistName.isBlank()) {
+                    toast("Вкажіть назву плейлиста")
+                    return@actionButton
+                }
+
                 val checked =
                     privacyGroup.findViewById<RadioButton>(
                         privacyGroup.checkedRadioButtonId
@@ -203,6 +273,10 @@ class DestinationActivity : Activity() {
                         .putExtra(
                             EXTRA_PRIVACY,
                             privacy
+                        )
+                        .putExtra(
+                            EXTRA_PLAYLIST_NAME,
+                            playlistName
                         )
                 )
             }
@@ -1653,6 +1727,8 @@ class DestinationActivity : Activity() {
 
         private const val STATE_CURRENT_MODE =
             "destination_current_mode"
+        private const val STATE_NEW_PLAYLIST_NAME =
+            "destination_new_playlist_name"
 
         private val BACKGROUND = Color.rgb(15, 16, 19)
         private val SURFACE = Color.rgb(25, 27, 32)

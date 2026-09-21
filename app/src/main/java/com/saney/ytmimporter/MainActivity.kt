@@ -217,7 +217,8 @@ class MainActivity : Activity() {
 
         if (
             ::adapter.isInitialized &&
-            !writeInProgress
+            !writeInProgress &&
+            pendingAfterAuth == null
         ) {
             reloadCurrentWorkspace()
         }
@@ -1782,9 +1783,9 @@ class MainActivity : Activity() {
         updateAccountPanel()
 
         val action = pendingAfterAuth
-        pendingAfterAuth = null
 
         if (identityReady) {
+            pendingAfterAuth = null
             status("Авторизацію Google/YTM оновлено.")
             action?.invoke()
         } else {
@@ -1861,6 +1862,7 @@ class MainActivity : Activity() {
                     }
                 )
 
+                pendingAfterAuth = null
                 after?.invoke()
             }
         }
@@ -2336,7 +2338,7 @@ class MainActivity : Activity() {
                     ) ?: "private"
 
                 actuallyCreatePlaylist(
-                    p = p,
+                    playlistName = data.getStringExtra(DestinationActivity.EXTRA_PLAYLIST_NAME).orEmpty().trim().ifBlank { p.name },
                     selected = selected,
                     privacyStatus = privacy
                 )
@@ -2816,7 +2818,7 @@ class MainActivity : Activity() {
     }
 
     private fun actuallyCreatePlaylist(
-        p: ImportedPlaylist,
+        playlistName: String,
         selected: List<Track>,
         privacyStatus: String
     ) {
@@ -2826,7 +2828,7 @@ class MainActivity : Activity() {
             val job =
                 playlistWriteCoordinator.buildPendingJob(
                     sourceLabel = currentImportSourceLabel,
-                    playlistName = p.name,
+                    playlistName = playlistName,
                     playlistId = null,
                     privacyStatus = privacyStatus,
                     destination = PendingDestination.NEW_PLAYLIST,
