@@ -3686,13 +3686,8 @@ class MainActivity : Activity() {
                 }
 
         val failedTracks =
-            playlist
-                ?.tracks
-                .orEmpty()
-                .filter {
-                    it.status ==
-                        TrackStatus.FAILED
-                }
+            playlist?.tracks.orEmpty()
+                .filter { it.status == TrackStatus.FAILED }
 
         val details =
             buildString {
@@ -3718,32 +3713,15 @@ class MainActivity : Activity() {
                 )
 
                 if (failedTracks.isNotEmpty()) {
-                    append(
-                        "\n\nНе додано:"
-                    )
-
-                    failedTracks
-                        .take(8)
-                        .forEach { track ->
-                            append(
-                                "\n• ${track.originalArtist} — ${track.originalTitle}"
-                            )
-
-                            track.error
-                                ?.takeIf {
-                                    it.isNotBlank()
-                                }
-                                ?.let { reason ->
-                                    append(
-                                        "\n  Причина: $reason"
-                                    )
-                                }
-                        }
-
+                    append("\n\nНе додано:")
+                    failedTracks.take(8).forEach { track ->
+                        append("\n• ${track.originalArtist} — ${track.originalTitle}")
+                        track.error
+                            ?.takeIf { it.isNotBlank() }
+                            ?.let { append("\n  Причина: $it") }
+                    }
                     if (failedTracks.size > 8) {
-                        append(
-                            "\n• …ще ${failedTracks.size - 8}"
-                        )
+                        append("\n• …ще ${failedTracks.size - 8}")
                     }
                 }
 
