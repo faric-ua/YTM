@@ -322,7 +322,7 @@ class DestinationActivity : Activity() {
         )
 
         setContentView(root)
-        UiChrome.applyScreenInsets(this, root)
+        UiChrome.applyScreenInsets(this, root, includeIme = true)
     }
 
     private fun showExistingListScreen() {

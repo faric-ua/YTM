@@ -108,6 +108,11 @@ class PlaylistWriteCoordinator(
         onProgress: (WriteProgress) -> Unit = {},
         onPlaylistIdAvailable: (String) -> Unit = {}
     ): WriteOutcome {
+        tracks.forEach { track ->
+            track.status = TrackStatus.PENDING
+            track.error = null
+        }
+
         var job = initialJob
         onHistoryState(job, HistoryStatus.RUNNING)
 

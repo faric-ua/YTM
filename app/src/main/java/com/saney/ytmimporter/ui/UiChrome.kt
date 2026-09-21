@@ -417,7 +417,8 @@ object UiChrome {
         activity: Activity,
         root: View,
         extraTopDp: Int = 8,
-        extraBottomDp: Int = 10
+        extraBottomDp: Int = 10,
+        includeIme: Boolean = false
     ) {
         WindowCompat.setDecorFitsSystemWindows(
             activity.window,
@@ -430,9 +431,10 @@ object UiChrome {
         val initialBottom = root.paddingBottom
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
-            val bars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-            )
+            val insetTypes =
+                WindowInsetsCompat.Type.systemBars() or
+                    (if (includeIme) WindowInsetsCompat.Type.ime() else 0)
+            val bars = insets.getInsets(insetTypes)
 
             view.setPadding(
                 initialLeft,

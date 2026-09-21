@@ -58,7 +58,8 @@
         <activity
             android:name=".DestinationActivity"
             android:exported="false"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".ReviewActivity"
