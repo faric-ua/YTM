@@ -66,13 +66,27 @@ for needle in ['maxLines = 1', 'TextUtils.TruncateAt.END']:
 for needle in [
     'private var writeScroll: ScrollView? = null',
     'writeScroll = scroll',
-    '"✓ "',
     'palette.success',
     'activeRow = row',
     'smoothScrollTo(',
 ]:
     if needle not in relay:
         raise SystemExit(f"FAIL: write progress visibility contract missing: {needle}")
+
+success_marker_ok = (
+    '"✓ "' in relay or
+    (
+        'val semanticIcon =' in relay and
+        '"✓"' in relay and
+        'semanticIconColor' in relay
+    )
+)
+
+if not success_marker_ok:
+    raise SystemExit(
+        'FAIL: write progress visibility contract missing: '
+        'historical "✓ " or R9 semantic success icon'
+    )
 
 lines = len(main.splitlines())
 line_limit = 4100 if "private var writeInProgress = false" in main else 4000

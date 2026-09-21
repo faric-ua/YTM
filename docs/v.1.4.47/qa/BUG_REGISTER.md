@@ -118,6 +118,63 @@ keeping the same Review parent/context. Save/Share execute only from an explicit
 
 Status: **R3 FIX IMPLEMENTED — PHONE RETEST NEEDED**.
 
+### BUG-024 — History `Дії` modal disappears on rotation
+
+Phone finding on signed R8:
+- `Головна → Історія → запис → Дії`;
+- rotating the device closes the `Дії` modal;
+- the parent History detail remains, but modal ownership is lost.
+
+R9 target:
+- persist semantic open-state of `Дії`;
+- recreate it over the same History entry after rotation;
+- never auto-run Copy/Delete/Problem-log actions.
+
+Status: **R9 FIX PREPARED — PHONE RETEST NEEDED**.
+
+### BUG-025 — local import does not create a History entry
+
+Phone finding on signed R8:
+- History contains YTM write operations;
+- a plain file/text/YTM read-only import only updates CurrentPlaylistStore;
+- therefore `HistoryResultSemantics` cannot be phone-tested for a newly-created local
+  `Імпортовано: N треків` record.
+
+R9 target:
+- every successful local import creates its own completed History entry;
+- local import has no remote playlist id / write counters;
+- History detail presents `Тип: Локальний імпорт`;
+- later YTM writes remain separate History operations.
+
+Status: **R9 FIX PREPARED — PHONE RETEST NEEDED**.
+
+### BUG-026 — completed YTM write can show `Додано в YTM 0/N`
+
+Phone evidence:
+- completed new-playlist write displayed `Додано в YTM 0/28`;
+- the operation was completed and the playlist has a remote YTM id;
+- the History denominator was present, but its numerator was derived from a stale
+  `playlist?.tracks` snapshot instead of the coordinator's authoritative `PendingJob`.
+
+Root cause:
+- R8 already made write-progress UI use the coordinator's `tracks` as
+  `stateSourceTracks`;
+- History still reconstructed `addedCount` / `failedCount` by counting status values
+  from the display/workspace track list;
+- on paths where the write subset and workspace list are different object graphs,
+  History can therefore remain at zero even while `PendingJob.addedCount` is correct.
+
+R9 FIX5 target:
+- pass the coordinator write subset into `syncHistoryFromJob`;
+- overlay those states into History track details;
+- use `PendingJob.addedCount`, `PendingJob.failedCount`, and `PendingJob.totalCount`
+  as the authoritative remote-write counters;
+- for already-stored legacy `COMPLETED + NEW_PLAYLIST + 0/N` entries with no
+  failure/pending evidence, render `N/N` without rewriting stored JSON;
+- existing-playlist duplicate cases are not guessed by this legacy fallback.
+
+Status: **R9 FIX5 PREPARED — PHONE RETEST NEEDED**.
+
 ### BUG-004 R3 hardening
 
 A live HTTP 401 now first attempts silent Google token replacement and retries the exact

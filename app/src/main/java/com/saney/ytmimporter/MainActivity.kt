@@ -2899,8 +2899,9 @@ class MainActivity : Activity() {
                     tracks = tracks,
                     onHistoryState = { job, historyStatus ->
                         syncHistoryFromJob(
-                            job,
-                            historyStatus
+                            job = job,
+                            historyStatus = historyStatus,
+                            stateSourceTracks = tracks
                         )
                     },
                     onPlaylistIdAvailable = { playlistId ->
@@ -3344,7 +3345,8 @@ class MainActivity : Activity() {
 
     private fun syncHistoryFromJob(
         job: PendingJob,
-        historyStatus: HistoryStatus
+        historyStatus: HistoryStatus,
+        stateSourceTracks: List<Track>
     ) {
         val existing = historyStore.get(job.id)
         val liveTracks = playlist?.tracks.orEmpty()
@@ -3388,6 +3390,43 @@ class MainActivity : Activity() {
                     .toMutableList()
             }
 
+        stateSourceTracks.forEachIndexed {
+                fallbackIndex,
+                track ->
+
+            val authoritative =
+                historyTrackFromTrack(
+                    track = track,
+                    fallbackIndex = fallbackIndex
+                )
+
+            val targetIndex =
+                track.historyIndex
+                    ?.let { historyIndex ->
+                        merged.indexOfFirst {
+                            it.index == historyIndex
+                        }
+                    }
+                    ?.takeIf { it >= 0 }
+                    ?: merged.indexOfFirst {
+                        it.originalTitle ==
+                            authoritative.originalTitle &&
+                            it.originalArtist ==
+                                authoritative.originalArtist &&
+                            it.videoId ==
+                                authoritative.videoId
+                    }
+
+            if (targetIndex >= 0) {
+                merged[targetIndex] =
+                    authoritative
+            } else {
+                merged += authoritative
+            }
+        }
+
+        merged.sortBy { it.index }
+
         val now = System.currentTimeMillis()
 
         val entry =
@@ -3409,16 +3448,11 @@ class MainActivity : Activity() {
                         ?: merged.size
                         .coerceAtLeast(job.totalCount),
                 writeTargetCount =
-                    existing?.writeTargetCount
-                        ?: job.totalCount,
+                    job.totalCount,
                 addedCount =
-                    merged.count {
-                        it.status == TrackStatus.ADDED.name
-                    },
+                    job.addedCount,
                 failedCount =
-                    merged.count {
-                        it.status == TrackStatus.FAILED.name
-                    },
+                    job.failedCount,
                 pendingCount =
                     merged.count {
                         it.status == TrackStatus.PENDING.name

@@ -29,22 +29,67 @@ for n in [
     "private fun syncWriteStates(",
     "private fun resolveWriteIndex(",
     "private fun sameTrack(",
-    "private fun blendColor(",
-    "palette.successFill",
     "palette.duplicate",
-    "palette.dangerFill",
     '"Оброблено: ${progress.processedTracks}/${progress.totalTracks} • "',
     '"Додано: ${progress.job.addedCount} • "',
 ]:
     if n not in relay: raise SystemExit(f"FAIL: R8 relay contract missing: {n}")
 
+legacy_fill_contract = all(
+    n in relay
+    for n in [
+        "private fun blendColor(",
+        "palette.successFill",
+        "palette.dangerFill",
+    ]
+)
+
+r9_icon_contract = all(
+    n in relay
+    for n in [
+        "val semanticIcon =",
+        '"○"',
+        '"✓"',
+        '"≋"',
+        '"×"',
+        "semanticIconColor",
+        "fill = palette.surface",
+        "accentStroke = false",
+    ]
+)
+
+if not (legacy_fill_contract or r9_icon_contract):
+    raise SystemExit(
+        "FAIL: neither historical R8 fill semantics nor R9 icon semantics are present"
+    )
+
+diagram_contract_groups = [
+    (
+        "`✓ Додано` — зелений",
+        "`✓` + `Додано` — зелена галочка",
+    ),
+    (
+        "`≋ Дублікат • пропущено` — синій",
+        "`≋` + `Дублікат • пропущено` — сині хвилі",
+    ),
+    (
+        "`× Помилка` — червоний",
+        "`×` + `Помилка` — червоний знак помилки",
+    ),
+]
+
+for alternatives in diagram_contract_groups:
+    if not any(needle in standard for needle in alternatives):
+        raise SystemExit(
+            "FAIL: diagram contract missing: "
+            + " OR ".join(alternatives)
+        )
+
 for n in [
-    "`✓ Додано` — зелений",
-    "`≋ Дублікат • пропущено` — синій",
-    "`× Помилка` — червоний",
     "## 10. Легенда / умовні позначення",
 ]:
-    if n not in standard: raise SystemExit(f"FAIL: diagram contract missing: {n}")
+    if n not in standard:
+        raise SystemExit(f"FAIL: diagram contract missing: {n}")
 
 for n in ["05 FAIL","blue-tinted fill","diagram legend is mandatory"]:
     if n not in doc: raise SystemExit(f"FAIL: R8 QA evidence missing: {n}")

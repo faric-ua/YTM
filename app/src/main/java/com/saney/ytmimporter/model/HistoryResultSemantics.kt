@@ -28,7 +28,7 @@ object HistoryResultSemantics {
                 kind = HistoryResultKind.YTM_WRITE,
                 label = "Додано в YTM",
                 value =
-                    "${entry.addedCount}/${entry.writeTargetCount}"
+                    "${effectiveRemoteAddedCount(entry)}/${entry.writeTargetCount}"
             )
         }
 
@@ -50,6 +50,50 @@ object HistoryResultSemantics {
                 label = "Імпортовано",
                 value = "$localCount треків"
             )
+        }
+    }
+
+    private fun effectiveRemoteAddedCount(
+        entry: HistoryEntry
+    ): Int {
+        val safeLegacyNewPlaylistRecovery =
+            entry.destination ==
+                PendingDestination.NEW_PLAYLIST &&
+                entry.status ==
+                    HistoryStatus.COMPLETED &&
+                entry.addedCount == 0 &&
+                entry.writeTargetCount > 0 &&
+                entry.failedCount == 0 &&
+                entry.pendingCount == 0
+
+        return if (
+            safeLegacyNewPlaylistRecovery
+        ) {
+            entry.writeTargetCount
+        } else {
+            entry.addedCount
+        }
+    }
+
+    private fun effectiveRemoteAddedCount(
+        entry: HistoryEntry
+    ): Int {
+        val safeLegacyNewPlaylistRecovery =
+            entry.destination ==
+                PendingDestination.NEW_PLAYLIST &&
+                entry.status ==
+                    HistoryStatus.COMPLETED &&
+                entry.addedCount == 0 &&
+                entry.writeTargetCount > 0 &&
+                entry.failedCount == 0 &&
+                entry.pendingCount == 0
+
+        return if (
+            safeLegacyNewPlaylistRecovery
+        ) {
+            entry.writeTargetCount
+        } else {
+            entry.addedCount
         }
     }
 

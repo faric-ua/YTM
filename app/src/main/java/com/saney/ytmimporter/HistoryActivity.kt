@@ -3,6 +3,7 @@ import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -27,6 +28,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.saney.ytmimporter.model.HistoryEntry
+import com.saney.ytmimporter.model.HistoryResultKind
 import com.saney.ytmimporter.model.HistoryResultSemantics
 import com.saney.ytmimporter.model.HistoryStatus
 import com.saney.ytmimporter.model.HistoryTrack
@@ -51,6 +53,8 @@ class HistoryActivity : Activity() {
     private var pendingExportSuccessMessage: String? = null
     private var pendingExportFileName: String? = null
     private var pendingExportMimeType: String? = null
+    private var actionsDialogOpen = false
+    private var actionsDialog: Dialog? = null
 
     private val saveExportRequestCode = 3201
     private val saveExportFolderRequestCode = 3202
@@ -65,15 +69,38 @@ class HistoryActivity : Activity() {
         val restoredEntryId =
             savedInstanceState?.getString(KEY_CURRENT_ENTRY_ID)
 
+        actionsDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    KEY_ACTIONS_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
         if (!restoredEntryId.isNullOrBlank()) {
             val entry = historyStore.get(restoredEntryId)
 
             if (entry != null) {
                 showDetailScreen(entry)
+
+                if (actionsDialogOpen) {
+                    window.decorView.post {
+                        if (
+                            !isFinishing &&
+                            !isDestroyed &&
+                            currentEntryId ==
+                                entry.id
+                        ) {
+                            showActions(entry)
+                        }
+                    }
+                }
+
                 return
             }
         }
 
+        actionsDialogOpen = false
         showListScreen()
     }
 
@@ -81,6 +108,10 @@ class HistoryActivity : Activity() {
         outState.putString(
             KEY_CURRENT_ENTRY_ID,
             currentEntryId
+        )
+        outState.putBoolean(
+            KEY_ACTIONS_DIALOG_OPEN,
+            actionsDialogOpen
         )
         super.onSaveInstanceState(outState)
     }
@@ -132,8 +163,25 @@ class HistoryActivity : Activity() {
         }
     }
 
+    override fun onDestroy() {
+        actionsDialog
+            ?.setOnDismissListener(
+                null
+            )
+        actionsDialog = null
+        super.onDestroy()
+    }
+
     private fun showListScreen() {
         currentEntryId = null
+        actionsDialogOpen = false
+        actionsDialog
+            ?.setOnDismissListener(
+                null
+            )
+        actionsDialog
+            ?.dismiss()
+        actionsDialog = null
 
         val root = baseRoot()
 
@@ -363,7 +411,13 @@ class HistoryActivity : Activity() {
             )
         }
 
-        val status = effectiveHistoryStatus(entry)
+        val status =
+            effectiveHistoryStatus(entry)
+
+        val primaryResult =
+            HistoryResultSemantics.primary(
+                entry
+            )
 
         content.addView(
             card().apply {
@@ -385,10 +439,25 @@ class HistoryActivity : Activity() {
 
                 addView(
                     metaText(
-                        "Дата: ${formatHistoryDate(entry.updatedAt)}\n" +
-                            "Джерело: ${entry.sourceLabel}\n" +
-                            "Тип: ${destinationLabel(entry.destination)}\n" +
-                            "Приватність: ${privacyLabel(entry.privacyStatus)}"
+                        when (
+                            primaryResult.kind
+                        ) {
+                            HistoryResultKind.YTM_WRITE ->
+                                "Дата: ${formatHistoryDate(entry.updatedAt)}\n" +
+                                    "Джерело: ${entry.sourceLabel}\n" +
+                                    "Тип: ${destinationLabel(entry.destination)}\n" +
+                                    "Приватність: ${privacyLabel(entry.privacyStatus)}"
+
+                            HistoryResultKind.IMPORT ->
+                                "Дата: ${formatHistoryDate(entry.updatedAt)}\n" +
+                                    "Джерело: ${entry.sourceLabel}\n" +
+                                    "Тип: Локальний імпорт"
+
+                            HistoryResultKind.RESTORE ->
+                                "Дата: ${formatHistoryDate(entry.updatedAt)}\n" +
+                                    "Джерело: ${entry.sourceLabel}\n" +
+                                    "Тип: Відновлення"
+                        }
                     )
                 )
             }
@@ -400,9 +469,6 @@ class HistoryActivity : Activity() {
 
         content.addView(
             card().apply {
-                val primaryResult =
-                    HistoryResultSemantics.primary(entry)
-
                 addView(
                     statLine(
                         primaryResult.label,
@@ -703,12 +769,24 @@ class HistoryActivity : Activity() {
                 confirmDeleteHistoryEntry(entry)
             }
 
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = "Дії",
-            subtitle = "Дії з локальним записом історії.",
-            actions = actions
-        )
+        actionsDialogOpen = true
+
+        actionsDialog =
+            UiChrome.showMenuDialog(
+                activity = this,
+                title = "Дії",
+                subtitle =
+                    "Дії з локальним записом історії.",
+                actions = actions
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    if (!isChangingConfigurations) {
+                        actionsDialogOpen = false
+                    }
+
+                    actionsDialog = null
+                }
+            }
     }
 
     private fun showProblemLog(
@@ -2028,6 +2106,9 @@ class HistoryActivity : Activity() {
     companion object {
         private const val KEY_CURRENT_ENTRY_ID =
             "current_history_entry_id"
+
+        private const val KEY_ACTIONS_DIALOG_OPEN =
+            "history_actions_dialog_open"
 
         private val BACKGROUND =
             Color.rgb(

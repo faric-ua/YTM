@@ -249,7 +249,32 @@ class WorkflowRelayOverlay(
                         "… Очікує"
                 }
 
-            val stateColor =
+            val semanticIcon =
+                when {
+                    isActive ->
+                        "●"
+
+                    effectiveStatus ==
+                        TrackStatus.ADDED ->
+                        "✓"
+
+                    effectiveStatus ==
+                        TrackStatus.DUPLICATE ->
+                        "≋"
+
+                    effectiveStatus ==
+                        TrackStatus.FAILED ->
+                        "×"
+
+                    effectiveStatus ==
+                        TrackStatus.SKIPPED ->
+                        "—"
+
+                    else ->
+                        "○"
+                }
+
+            val semanticIconColor =
                 when {
                     isActive ->
                         palette.accent
@@ -270,52 +295,6 @@ class WorkflowRelayOverlay(
                         palette.muted
                 }
 
-            val rowFill =
-                when {
-                    isActive ->
-                        palette.accentFill
-
-                    effectiveStatus ==
-                        TrackStatus.ADDED ->
-                        palette.successFill
-
-                    effectiveStatus ==
-                        TrackStatus.DUPLICATE ->
-                        blendColor(
-                            palette.surface,
-                            palette.duplicate,
-                            0.22f
-                        )
-
-                    effectiveStatus ==
-                        TrackStatus.FAILED ->
-                        palette.dangerFill
-
-                    else ->
-                        palette.surface
-                }
-
-            val rowAccent =
-                when {
-                    isActive ->
-                        palette.accent
-
-                    effectiveStatus ==
-                        TrackStatus.ADDED ->
-                        palette.success
-
-                    effectiveStatus ==
-                        TrackStatus.DUPLICATE ->
-                        palette.duplicate
-
-                    effectiveStatus ==
-                        TrackStatus.FAILED ->
-                        palette.danger
-
-                    else ->
-                        null
-                }
-
             val row =
                 LinearLayout(activity).apply {
                     orientation =
@@ -329,76 +308,47 @@ class WorkflowRelayOverlay(
                     background =
                         AppThemeManager.surfaceDrawable(
                             context = activity,
-                            fill = rowFill,
+                            fill = palette.surface,
                             radiusDp = 12,
-                            accentStroke =
-                                rowAccent != null,
-                            accentOverride =
-                                rowAccent
+                            accentStroke = false
                         )
                 }
 
             row.addView(
-                TextView(activity).apply {
-                    val prefix =
-                        when {
-                            isActive ->
-                                "● "
+                LinearLayout(activity).apply {
+                    orientation =
+                        LinearLayout.HORIZONTAL
 
-                            effectiveStatus ==
-                                TrackStatus.ADDED ->
-                                "✓ "
-
-                            effectiveStatus ==
-                                TrackStatus.DUPLICATE ->
-                                "≋ "
-
-                            effectiveStatus ==
-                                TrackStatus.FAILED ->
-                                "× "
-
-                            effectiveStatus ==
-                                TrackStatus.SKIPPED ->
-                                "— "
-
-                            else ->
-                                ""
+                    addView(
+                        TextView(activity).apply {
+                            text =
+                                "$semanticIcon "
+                            textSize = 13.5f
+                            setTypeface(
+                                typeface,
+                                Typeface.BOLD
+                            )
+                            setTextColor(
+                                semanticIconColor
+                            )
                         }
-
-                    text =
-                        prefix +
-                            "${index + 1}. " +
-                            track.originalArtist +
-                            " — " +
-                            track.originalTitle
-                    textSize = 13.5f
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
                     )
-                    setTextColor(
-                        when {
-                            isActive ->
-                                palette.accent
 
-                            effectiveStatus ==
-                                TrackStatus.ADDED ->
-                                palette.success
-
-                            effectiveStatus ==
-                                TrackStatus.DUPLICATE ->
-                                palette.duplicate
-
-                            effectiveStatus ==
-                                TrackStatus.FAILED ->
-                                palette.danger
-
-                            effectiveStatus ==
-                                TrackStatus.SKIPPED ->
-                                palette.muted
-
-                            else ->
+                    addView(
+                        TextView(activity).apply {
+                            text =
+                                "${index + 1}. " +
+                                    track.originalArtist +
+                                    " — " +
+                                    track.originalTitle
+                            textSize = 13.5f
+                            setTypeface(
+                                typeface,
+                                Typeface.BOLD
+                            )
+                            setTextColor(
                                 palette.text
+                            )
                         }
                     )
                 }
@@ -406,10 +356,33 @@ class WorkflowRelayOverlay(
 
             row.addView(
                 TextView(activity).apply {
-                    text = state
+                    text =
+                        when {
+                            isActive ->
+                                "Додаю…"
+
+                            effectiveStatus ==
+                                TrackStatus.ADDED ->
+                                "Додано"
+
+                            effectiveStatus ==
+                                TrackStatus.DUPLICATE ->
+                                "Дублікат • пропущено"
+
+                            effectiveStatus ==
+                                TrackStatus.FAILED ->
+                                "Помилка"
+
+                            effectiveStatus ==
+                                TrackStatus.SKIPPED ->
+                                "Пропущено"
+
+                            else ->
+                                "Очікує"
+                        }
                     textSize = 12.5f
                     setTextColor(
-                        stateColor
+                        palette.muted
                     )
                     setPadding(
                         0,
@@ -581,48 +554,6 @@ class WorkflowRelayOverlay(
                     first.selectedVideoId ==
                         second.selectedVideoId
             )
-
-    private fun blendColor(
-        base: Int,
-        accent: Int,
-        amount: Float
-    ): Int {
-        val safeAmount =
-            amount.coerceIn(
-                0f,
-                1f
-            )
-
-        fun channel(
-            from: Int,
-            to: Int
-        ): Int =
-            (
-                from +
-                    (to - from) *
-                    safeAmount
-            )
-                .toInt()
-                .coerceIn(
-                    0,
-                    255
-                )
-
-        return android.graphics.Color.rgb(
-            channel(
-                android.graphics.Color.red(base),
-                android.graphics.Color.red(accent)
-            ),
-            channel(
-                android.graphics.Color.green(base),
-                android.graphics.Color.green(accent)
-            ),
-            channel(
-                android.graphics.Color.blue(base),
-                android.graphics.Color.blue(accent)
-            )
-        )
-    }
 
     fun hide() {
         active = false
