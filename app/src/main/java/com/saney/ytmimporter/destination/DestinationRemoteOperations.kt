@@ -10,6 +10,7 @@ import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.QuotaTracker
+import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
 import java.util.concurrent.CopyOnWriteArraySet
@@ -24,7 +25,8 @@ import java.util.concurrent.Executors
 object DestinationRemoteOperations {
     enum class Kind {
         LOAD_PLAYLISTS,
-        SCAN_DUPLICATES
+        SCAN_DUPLICATES,
+        DELETE_PLAYLIST
     }
 
     data class ScanPayload(
@@ -50,7 +52,9 @@ object DestinationRemoteOperations {
         val errorMessage:
             String? = null,
         val authorizationInvalidated:
-            Boolean = false
+            Boolean = false,
+        val successMessage:
+            String? = null
     )
 
     private val mainHandler =
@@ -331,6 +335,87 @@ object DestinationRemoteOperations {
     }
 
     @Synchronized
+    fun startDelete(
+        context: Context,
+        target: YouTubePlaylistInfo
+    ): Boolean {
+        if (state.running) {
+            return false
+        }
+
+        val appContext =
+            context.applicationContext
+
+        val token =
+            currentToken()
+                ?: return terminalError(
+                    kind = Kind.DELETE_PLAYLIST,
+                    message = "Підключіть Google / YTM на головному екрані",
+                    target = target,
+                    authorizationInvalidated = true
+                )
+
+        publish(
+            State(
+                kind = Kind.DELETE_PLAYLIST,
+                running = true,
+                message = "Видаляю «${target.title}»…",
+                target = target
+            )
+        )
+
+        executor.execute {
+            val api =
+                YouTubeApi(
+                    accessTokenRecovery =
+                        GoogleAccessTokenRecovery(
+                            appContext
+                        )
+                )
+
+            runCatching {
+                QuotaTracker(appContext)
+                    .recordGeneralUnits(
+                        QuotaTracker.PLAYLIST_DELETE_COST
+                    )
+
+                api.deletePlaylist(
+                    accessToken = token,
+                    playlistId = target.id
+                )
+            }.onSuccess {
+                terminalDeleted(target)
+            }.onFailure { error ->
+                val authFailure =
+                    isAuthorizationFailure(error)
+
+                if (authFailure) {
+                    invalidateAuthorization(
+                        appContext
+                    )
+                }
+
+                terminalError(
+                    kind = Kind.DELETE_PLAYLIST,
+                    message =
+                        if (authFailure) {
+                            "Авторизацію Google / YTM потрібно відновити."
+                        } else {
+                            ErrorMessages.userMessage(
+                                error,
+                                "Не вдалося видалити плейлист"
+                            )
+                        },
+                    target = target,
+                    authorizationInvalidated = authFailure
+                )
+            }
+        }
+
+        return true
+    }
+
+    @Synchronized
     fun acknowledgeTerminal(
         serial: Long
     ) {
@@ -437,6 +522,23 @@ object DestinationRemoteOperations {
                     scan,
                 target =
                     scan.target
+            )
+        )
+    }
+
+    @Synchronized
+    private fun terminalDeleted(
+        target: YouTubePlaylistInfo
+    ) {
+        serialCounter += 1
+
+        publish(
+            State(
+                kind = Kind.DELETE_PLAYLIST,
+                terminalSerial = serialCounter,
+                target = target,
+                successMessage =
+                    "Плейлист «${target.title}» видалено."
             )
         )
     }

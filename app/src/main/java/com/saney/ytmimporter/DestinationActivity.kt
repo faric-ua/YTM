@@ -337,7 +337,7 @@ class DestinationActivity : Activity() {
         root.addView(
             TextView(this).apply {
                 text =
-                    "Оберіть playlist, до якого потрібно додати поточні треки."
+                    "Натисніть — вибрати плейлист. Утримуйте — видалити його з YouTube/YTM."
                 textSize = 13f
                 setTextColor(MUTED)
                 setPadding(dp(18), 0, dp(18), dp(10))
@@ -505,6 +505,15 @@ class DestinationActivity : Activity() {
             requestDuplicateScan(
                 item
             )
+        }
+
+        list.setOnItemLongClickListener { _, _, position, _ ->
+            val item =
+                visible.getOrNull(position)
+                    ?: return@setOnItemLongClickListener false
+
+            confirmDeletePlaylist(item)
+            true
         }
 
         setContentView(root)
@@ -885,6 +894,36 @@ class DestinationActivity : Activity() {
             )
     }
 
+    private fun confirmDeletePlaylist(
+        item: ExistingItem
+    ) {
+        UiChrome.showDangerConfirmDialog(
+            activity = this,
+            title = "Видалити плейлист?",
+            message =
+                "«${item.title}» буде видалено з YouTube / YTM.\n\n" +
+                    "Цю дію неможливо скасувати.",
+            confirmLabel = "Видалити"
+        ) {
+            requestPlaylistDelete(item)
+        }
+    }
+
+    private fun requestPlaylistDelete(
+        item: ExistingItem
+    ) {
+        DestinationRemoteOperations.startDelete(
+            context = this,
+            target =
+                YouTubePlaylistInfo(
+                    id = item.id,
+                    title = item.title,
+                    privacyStatus = item.privacy,
+                    itemCount = item.itemCount
+                )
+        )
+    }
+
     private fun requestDuplicateScan(
         item: ExistingItem
     ) {
@@ -935,6 +974,22 @@ class DestinationActivity : Activity() {
             )
 
         when {
+            state.kind ==
+                DestinationRemoteOperations.Kind.DELETE_PLAYLIST &&
+                state.target != null &&
+                state.successMessage != null -> {
+                removeStoredPlaylist(
+                    state.target.id
+                )
+                toast(
+                    state.successMessage
+                )
+                setMode(
+                    MODE_EXISTING_LIST
+                )
+                showExistingListScreen()
+            }
+
             state.playlists != null -> {
                 val playlists =
                     state.playlists
@@ -983,6 +1038,18 @@ class DestinationActivity : Activity() {
                     state.target
 
                 if (
+                    state.kind ==
+                        DestinationRemoteOperations
+                            .Kind.DELETE_PLAYLIST
+                ) {
+                    toast(
+                        state.errorMessage
+                    )
+                    setMode(
+                        MODE_EXISTING_LIST
+                    )
+                    showExistingListScreen()
+                } else if (
                     state.kind ==
                         DestinationRemoteOperations
                             .Kind.SCAN_DUPLICATES &&
@@ -1084,14 +1151,17 @@ class DestinationActivity : Activity() {
             UiChrome
                 .alertBuilder(this)
                 .setTitle(
-                    if (
-                        state.kind ==
-                        DestinationRemoteOperations
-                            .Kind.LOAD_PLAYLISTS
+                    when (
+                        state.kind
                     ) {
-                        "Існуючий плейлист"
-                    } else {
-                        "Перевірка перед додаванням"
+                        DestinationRemoteOperations.Kind.LOAD_PLAYLISTS ->
+                            "Існуючий плейлист"
+
+                        DestinationRemoteOperations.Kind.DELETE_PLAYLIST ->
+                            "Видалення плейлиста"
+
+                        else ->
+                            "Перевірка перед додаванням"
                     }
                 )
                 .setView(
@@ -1104,6 +1174,64 @@ class DestinationActivity : Activity() {
                         false
                     )
                 }
+    }
+
+    private fun removeStoredPlaylist(
+        playlistId: String
+    ) {
+        val ids =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_IDS
+            ) ?: arrayListOf()
+
+        val index =
+            ids.indexOf(playlistId)
+
+        if (index < 0) {
+            return
+        }
+
+        val titles =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_TITLES
+            ) ?: arrayListOf()
+        val privacy =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_PRIVACY
+            ) ?: arrayListOf()
+        val counts =
+            intent.getLongArrayExtra(
+                EXTRA_EXISTING_COUNTS
+            ) ?: LongArray(0)
+
+        ids.removeAt(index)
+        if (index < titles.size) {
+            titles.removeAt(index)
+        }
+        if (index < privacy.size) {
+            privacy.removeAt(index)
+        }
+
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_IDS,
+            ids
+        )
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_TITLES,
+            titles
+        )
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_PRIVACY,
+            privacy
+        )
+        intent.putExtra(
+            EXTRA_EXISTING_COUNTS,
+            counts.filterIndexed {
+                    itemIndex, _ ->
+                    itemIndex != index
+                }
+                .toLongArray()
+        )
     }
 
     private fun storeExistingPlaylists(
