@@ -37,6 +37,7 @@ import android.widget.Toast
 class DestinationActivity : Activity() {
     private var currentMode: String = MODE_START
     private var newPlaylistName: String = ""
+    private var existingPlaylistQuery: String = ""
 
     private var pendingDeleteConfirmation:
         ExistingItem? = null
@@ -73,6 +74,13 @@ class DestinationActivity : Activity() {
                 ?.getString(STATE_NEW_PLAYLIST_NAME)
                 ?: intent.getStringExtra(EXTRA_PLAYLIST_NAME)
                     .orEmpty()
+
+        existingPlaylistQuery =
+            savedInstanceState
+                ?.getString(
+                    STATE_EXISTING_PLAYLIST_QUERY
+                )
+                .orEmpty()
 
         pendingDeleteConfirmation =
             savedInstanceState
@@ -168,6 +176,10 @@ class DestinationActivity : Activity() {
         outState.putString(
             STATE_NEW_PLAYLIST_NAME,
             newPlaylistName
+        )
+        outState.putString(
+            STATE_EXISTING_PLAYLIST_QUERY,
+            existingPlaylistQuery
         )
 
         pendingDeleteConfirmation
@@ -483,6 +495,8 @@ class DestinationActivity : Activity() {
 
         val search = EditText(this).apply {
             hint = "Пошук плейлиста за назвою"
+            setText(existingPlaylistQuery)
+            setSelection(text.length)
             setSingleLine(true)
             textSize = 14f
             setTextColor(Color.WHITE)
@@ -576,11 +590,20 @@ class DestinationActivity : Activity() {
                     before: Int,
                     count: Int
                 ) {
-                    applyFilter(s?.toString().orEmpty())
+                    existingPlaylistQuery =
+                        s?.toString().orEmpty()
+
+                    applyFilter(
+                        existingPlaylistQuery
+                    )
                 }
 
                 override fun afterTextChanged(s: Editable?) = Unit
             }
+        )
+
+        applyFilter(
+            existingPlaylistQuery
         )
 
         list.setOnItemClickListener { _, _, position, _ ->
@@ -1989,6 +2012,8 @@ class DestinationActivity : Activity() {
             "destination_current_mode"
         private const val STATE_NEW_PLAYLIST_NAME =
             "destination_new_playlist_name"
+        private const val STATE_EXISTING_PLAYLIST_QUERY =
+            "destination_existing_playlist_query"
         private const val STATE_DELETE_CONFIRM_ID =
             "destination_delete_confirm_id"
         private const val STATE_DELETE_CONFIRM_TITLE =
