@@ -40,6 +40,24 @@ class DestinationActivity : Activity() {
     private var newPlaylistName: String = ""
     private var existingPlaylistQuery: String = ""
 
+    private var pendingPlaylistActions:
+        ExistingItem? = null
+
+    private var playlistActionsDialog:
+        Dialog? = null
+
+    private var pendingPlaylistEdit:
+        ExistingItem? = null
+
+    private var playlistEditDialog:
+        Dialog? = null
+
+    private var playlistEditDraftTitle:
+        String = ""
+
+    private var playlistEditDraftPrivacy:
+        String = "private"
+
     private var pendingDeleteConfirmation:
         ExistingItem? = null
 
@@ -120,6 +138,69 @@ class DestinationActivity : Activity() {
                         }
                 }
 
+        pendingPlaylistActions =
+            savedInstanceState
+                ?.getString(
+                    STATE_PLAYLIST_ACTIONS_ID
+                )
+                ?.let {
+                    id ->
+                    storedExistingItem(
+                        id
+                    )
+                }
+
+        pendingPlaylistEdit =
+            savedInstanceState
+                ?.getString(
+                    STATE_PLAYLIST_EDIT_ID
+                )
+                ?.let {
+                    id ->
+                    storedExistingItem(
+                        id
+                    )
+                }
+
+        playlistEditDraftTitle =
+            if (
+                savedInstanceState
+                    ?.containsKey(
+                        STATE_PLAYLIST_EDIT_TITLE
+                    ) == true
+            ) {
+                savedInstanceState
+                    .getString(
+                        STATE_PLAYLIST_EDIT_TITLE
+                    )
+                    .orEmpty()
+            } else {
+                pendingPlaylistEdit
+                    ?.title
+                    .orEmpty()
+            }
+
+        playlistEditDraftPrivacy =
+            if (
+                savedInstanceState
+                    ?.containsKey(
+                        STATE_PLAYLIST_EDIT_PRIVACY
+                    ) == true
+            ) {
+                savedInstanceState
+                    .getString(
+                        STATE_PLAYLIST_EDIT_PRIVACY
+                    )
+                    .orEmpty()
+                    .ifBlank {
+                        "private"
+                    }
+            } else {
+                pendingPlaylistEdit
+                    ?.privacy
+                    ?: "private"
+            }
+
         when (currentMode) {
             MODE_EXISTING_LIST ->
                 showExistingListScreen()
@@ -134,8 +215,33 @@ class DestinationActivity : Activity() {
                 showStartScreen()
         }
 
-        pendingDeleteConfirmation
-            ?.let { item ->
+        when {
+            pendingPlaylistEdit != null -> {
+                val item =
+                    requireNotNull(
+                        pendingPlaylistEdit
+                    )
+
+                window.decorView.post {
+                    if (
+                        !isFinishing &&
+                        !isDestroyed &&
+                        pendingPlaylistEdit
+                            ?.id == item.id
+                    ) {
+                        showPlaylistEditDialog(
+                            item
+                        )
+                    }
+                }
+            }
+
+            pendingDeleteConfirmation != null -> {
+                val item =
+                    requireNotNull(
+                        pendingDeleteConfirmation
+                    )
+
                 window.decorView.post {
                     if (
                         !isFinishing &&
@@ -149,6 +255,27 @@ class DestinationActivity : Activity() {
                     }
                 }
             }
+
+            pendingPlaylistActions != null -> {
+                val item =
+                    requireNotNull(
+                        pendingPlaylistActions
+                    )
+
+                window.decorView.post {
+                    if (
+                        !isFinishing &&
+                        !isDestroyed &&
+                        pendingPlaylistActions
+                            ?.id == item.id
+                    ) {
+                        showPlaylistActionsDialog(
+                            item
+                        )
+                    }
+                }
+            }
+        }
     }
 
     override fun onStart() {
@@ -182,6 +309,32 @@ class DestinationActivity : Activity() {
             STATE_EXISTING_PLAYLIST_QUERY,
             existingPlaylistQuery
         )
+
+        pendingPlaylistActions
+            ?.let {
+                item ->
+                outState.putString(
+                    STATE_PLAYLIST_ACTIONS_ID,
+                    item.id
+                )
+            }
+
+        pendingPlaylistEdit
+            ?.let {
+                item ->
+                outState.putString(
+                    STATE_PLAYLIST_EDIT_ID,
+                    item.id
+                )
+                outState.putString(
+                    STATE_PLAYLIST_EDIT_TITLE,
+                    playlistEditDraftTitle
+                )
+                outState.putString(
+                    STATE_PLAYLIST_EDIT_PRIVACY,
+                    playlistEditDraftPrivacy
+                )
+            }
 
         pendingDeleteConfirmation
             ?.let { item ->
@@ -217,6 +370,14 @@ class DestinationActivity : Activity() {
         deleteConfirmationDialog
             ?.setOnDismissListener(null)
         deleteConfirmationDialog = null
+
+        playlistActionsDialog
+            ?.setOnDismissListener(null)
+        playlistActionsDialog = null
+
+        playlistEditDialog
+            ?.setOnDismissListener(null)
+        playlistEditDialog = null
 
         super.onDestroy()
     }
@@ -676,6 +837,19 @@ class DestinationActivity : Activity() {
                 listOf(
                     UiChrome.TileAction(
                         iconRes =
+                            R.drawable.ic_ytm_edit,
+                        contentDescription =
+                            "Редагувати ${item.title}",
+                        tone =
+                            UiChrome.ActionTone.ACCENT,
+                        onClick = {
+                            openPlaylistEditor(
+                                item
+                            )
+                        }
+                    ),
+                    UiChrome.TileAction(
+                        iconRes =
                             R.drawable.ic_ytm_delete,
                         contentDescription =
                             "Видалити ${item.title}",
@@ -711,39 +885,511 @@ class DestinationActivity : Activity() {
             }
         )
 
+    private fun storedExistingItem(
+        playlistId: String
+    ): ExistingItem? {
+        val ids =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_IDS
+            ) ?: return null
+
+        val index =
+            ids.indexOf(
+                playlistId
+            )
+
+        if (index < 0) {
+            return null
+        }
+
+        val titles =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_TITLES
+            ) ?: arrayListOf()
+
+        val privacy =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_PRIVACY
+            ) ?: arrayListOf()
+
+        val counts =
+            intent.getLongArrayExtra(
+                EXTRA_EXISTING_COUNTS
+            ) ?: LongArray(0)
+
+        return ExistingItem(
+            id =
+                playlistId,
+            title =
+                titles.getOrNull(
+                    index
+                ) ?: "Без назви",
+            privacy =
+                privacy.getOrNull(
+                    index
+                ) ?: "private",
+            itemCount =
+                counts.getOrNull(
+                    index
+                ) ?: 0L
+        )
+    }
+
     private fun showPlaylistActions(
         item: ExistingItem
     ) {
-        UiChrome.showMenuDialog(
-            activity = this,
-            title = item.title,
-            subtitle =
-                "${item.itemCount} треків • " +
-                    privacyLabel(
-                        item.privacy
-                    ),
-            actions =
-                listOf(
-                    UiChrome.MenuAction(
-                        label =
-                            "Вибрати для додавання",
-                        onClick = {
-                            requestDuplicateScan(
-                                item
-                            )
-                        }
-                    ),
-                    UiChrome.MenuAction(
-                        label =
-                            "Видалити",
-                        onClick = {
-                            confirmDeletePlaylist(
-                                item
-                            )
-                        }
-                    )
-                )
+        pendingPlaylistActions =
+            item
+
+        showPlaylistActionsDialog(
+            item
         )
+    }
+
+    private fun showPlaylistActionsDialog(
+        item: ExistingItem
+    ) {
+        if (
+            playlistActionsDialog
+                ?.isShowing == true
+        ) {
+            return
+        }
+
+        val dialog =
+            UiChrome.showMenuDialog(
+                activity = this,
+                title = item.title,
+                subtitle =
+                    "${item.itemCount} треків • " +
+                        privacyLabel(
+                            item.privacy
+                        ),
+                actions =
+                    listOf(
+                        UiChrome.MenuAction(
+                            label =
+                                "Редагувати",
+                            onClick = {
+                                openPlaylistEditor(
+                                    item
+                                )
+                            }
+                        ),
+                        UiChrome.MenuAction(
+                            label =
+                                "Вибрати для додавання",
+                            onClick = {
+                                requestDuplicateScan(
+                                    item
+                                )
+                            }
+                        ),
+                        UiChrome.MenuAction(
+                            label =
+                                "Видалити",
+                            onClick = {
+                                confirmDeletePlaylist(
+                                    item
+                                )
+                            }
+                        )
+                    )
+            )
+
+        playlistActionsDialog =
+            dialog
+
+        dialog.setOnDismissListener {
+            if (
+                playlistActionsDialog ===
+                    dialog
+            ) {
+                playlistActionsDialog =
+                    null
+            }
+
+            if (
+                pendingPlaylistActions
+                    ?.id == item.id
+            ) {
+                pendingPlaylistActions =
+                    null
+            }
+        }
+    }
+
+    private fun openPlaylistEditor(
+        item: ExistingItem
+    ) {
+        pendingPlaylistEdit =
+            item
+        playlistEditDraftTitle =
+            item.title
+        playlistEditDraftPrivacy =
+            item.privacy
+
+        showPlaylistEditDialog(
+            item
+        )
+    }
+
+    private fun showPlaylistEditDialog(
+        item: ExistingItem
+    ) {
+        if (
+            playlistEditDialog
+                ?.isShowing == true
+        ) {
+            return
+        }
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+            }
+
+        content.addView(
+            TextView(this).apply {
+                text =
+                    "Назва"
+                textSize =
+                    12.5f
+                setTextColor(
+                    MUTED
+                )
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    dp(5)
+                )
+            }
+        )
+
+        val titleField =
+            EditText(this).apply {
+                setSingleLine(
+                    true
+                )
+                setText(
+                    playlistEditDraftTitle
+                )
+                setSelection(
+                    text.length
+                )
+                textSize =
+                    15f
+                setTextColor(
+                    Color.WHITE
+                )
+                setHintTextColor(
+                    MUTED
+                )
+                hint =
+                    "Назва плейлиста"
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    0
+                )
+                background =
+                    roundedBackground(
+                        color =
+                            SURFACE,
+                        radiusDp =
+                            12,
+                        strokeColor =
+                            BORDER
+                    )
+
+                addTextChangedListener(
+                    object :
+                        TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) = Unit
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            playlistEditDraftTitle =
+                                s
+                                    ?.toString()
+                                    .orEmpty()
+                        }
+
+                        override fun afterTextChanged(
+                            s: Editable?
+                        ) = Unit
+                    }
+                )
+            }
+
+        content.addView(
+            titleField,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(46)
+            )
+        )
+
+        content.addView(
+            TextView(this).apply {
+                text =
+                    "Приватність"
+                textSize =
+                    12.5f
+                setTextColor(
+                    MUTED
+                )
+                setPadding(
+                    0,
+                    dp(14),
+                    0,
+                    dp(4)
+                )
+            }
+        )
+
+        val privacyGroup =
+            RadioGroup(this).apply {
+                orientation =
+                    RadioGroup.VERTICAL
+            }
+
+        val publicRadio =
+            privacyRadio(
+                label = "Публічний",
+                value = "public"
+            )
+
+        val unlistedRadio =
+            privacyRadio(
+                label = "За посиланням",
+                value = "unlisted"
+            )
+
+        val privateRadio =
+            privacyRadio(
+                label = "Приватний",
+                value = "private"
+            )
+
+        privacyGroup.addView(
+            publicRadio
+        )
+        privacyGroup.addView(
+            unlistedRadio
+        )
+        privacyGroup.addView(
+            privateRadio
+        )
+
+        when (
+            playlistEditDraftPrivacy
+        ) {
+            "public" ->
+                privacyGroup.check(
+                    publicRadio.id
+                )
+
+            "unlisted" ->
+                privacyGroup.check(
+                    unlistedRadio.id
+                )
+
+            else -> {
+                playlistEditDraftPrivacy =
+                    "private"
+                privacyGroup.check(
+                    privateRadio.id
+                )
+            }
+        }
+
+        privacyGroup
+            .setOnCheckedChangeListener {
+                    group,
+                    checkedId ->
+                val radio =
+                    group.findViewById<RadioButton>(
+                        checkedId
+                    )
+
+                playlistEditDraftPrivacy =
+                    (
+                        radio.tag
+                            as? String
+                    ) ?: "private"
+            }
+
+        content.addView(
+            privacyGroup
+        )
+
+        val dialog =
+            UiChrome.showContentDialog(
+                activity = this,
+                title =
+                    "Редагувати плейлист",
+                message =
+                    "Зміни буде записано безпосередньо в YouTube / YTM.",
+                content =
+                    content,
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label =
+                                "Зберегти",
+                            tone =
+                                UiChrome
+                                    .ActionTone
+                                    .ACCENT,
+                            onClick =
+                                save@{
+                                    val title =
+                                        titleField
+                                            .text
+                                            ?.toString()
+                                            .orEmpty()
+                                            .trim()
+
+                                    val privacy =
+                                        (
+                                            privacyGroup
+                                                .findViewById<RadioButton>(
+                                                    privacyGroup
+                                                        .checkedRadioButtonId
+                                                )
+                                                ?.tag
+                                                as? String
+                                        )
+                                            ?.takeIf {
+                                                it in setOf(
+                                                    "public",
+                                                    "unlisted",
+                                                    "private"
+                                                )
+                                            }
+                                            ?: "private"
+
+                                    playlistEditDraftTitle =
+                                        title
+                                    playlistEditDraftPrivacy =
+                                        privacy
+
+                                    if (
+                                        title.isBlank()
+                                    ) {
+                                        pendingPlaylistEdit =
+                                            item
+
+                                        toast(
+                                            "Введіть назву плейлиста."
+                                        )
+
+                                        window.decorView.post {
+                                            if (
+                                                !isFinishing &&
+                                                !isDestroyed
+                                            ) {
+                                                showPlaylistEditDialog(
+                                                    item
+                                                )
+                                            }
+                                        }
+
+                                        return@save
+                                    }
+
+                                    if (
+                                        title == item.title &&
+                                        privacy == item.privacy
+                                    ) {
+                                        toast(
+                                            "Змін немає."
+                                        )
+                                        return@save
+                                    }
+
+                                    requestPlaylistUpdate(
+                                        item =
+                                            item,
+                                        title =
+                                            title,
+                                        privacy =
+                                            privacy
+                                    )
+                                }
+                        ),
+                        UiChrome.DialogAction(
+                            label =
+                                "Скасувати",
+                            onClick = {}
+                        )
+                    )
+            )
+
+        playlistEditDialog =
+            dialog
+
+        dialog.setOnDismissListener {
+            if (
+                playlistEditDialog ===
+                    dialog
+            ) {
+                playlistEditDialog =
+                    null
+            }
+
+            if (
+                pendingPlaylistEdit
+                    ?.id == item.id
+            ) {
+                pendingPlaylistEdit =
+                    null
+                playlistEditDraftTitle =
+                    ""
+                playlistEditDraftPrivacy =
+                    "private"
+            }
+        }
+    }
+
+    private fun requestPlaylistUpdate(
+        item: ExistingItem,
+        title: String,
+        privacy: String
+    ) {
+        DestinationRemoteOperations
+            .startUpdate(
+                context =
+                    this,
+                target =
+                    YouTubePlaylistInfo(
+                        id =
+                            item.id,
+                        title =
+                            item.title,
+                        privacyStatus =
+                            item.privacy,
+                        itemCount =
+                            item.itemCount
+                    ),
+                title =
+                    title,
+                privacyStatus =
+                    privacy
+            )
     }
 
     private fun showExistingConfirmScreen() {
@@ -1248,6 +1894,22 @@ class DestinationActivity : Activity() {
 
         when {
             state.kind ==
+                DestinationRemoteOperations.Kind.UPDATE_PLAYLIST &&
+                state.target != null &&
+                state.successMessage != null -> {
+                updateStoredPlaylist(
+                    state.target
+                )
+                toast(
+                    state.successMessage
+                )
+                setMode(
+                    MODE_EXISTING_LIST
+                )
+                showExistingListScreen()
+            }
+
+            state.kind ==
                 DestinationRemoteOperations.Kind.DELETE_PLAYLIST &&
                 state.target != null &&
                 state.successMessage != null -> {
@@ -1313,7 +1975,10 @@ class DestinationActivity : Activity() {
                 if (
                     state.kind ==
                         DestinationRemoteOperations
-                            .Kind.DELETE_PLAYLIST
+                            .Kind.DELETE_PLAYLIST ||
+                    state.kind ==
+                        DestinationRemoteOperations
+                            .Kind.UPDATE_PLAYLIST
                 ) {
                     toast(
                         state.errorMessage
@@ -1430,6 +2095,9 @@ class DestinationActivity : Activity() {
                         DestinationRemoteOperations.Kind.LOAD_PLAYLISTS ->
                             "Існуючий плейлист"
 
+                        DestinationRemoteOperations.Kind.UPDATE_PLAYLIST ->
+                            "Оновлення плейлиста"
+
                         DestinationRemoteOperations.Kind.DELETE_PLAYLIST ->
                             "Видалення плейлиста"
 
@@ -1447,6 +2115,55 @@ class DestinationActivity : Activity() {
                         false
                     )
                 }
+    }
+
+    private fun updateStoredPlaylist(
+        playlist:
+            YouTubePlaylistInfo
+    ) {
+        val ids =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_IDS
+            ) ?: return
+
+        val index =
+            ids.indexOf(
+                playlist.id
+            )
+
+        if (index < 0) {
+            return
+        }
+
+        val titles =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_TITLES
+            ) ?: arrayListOf()
+
+        val privacy =
+            intent.getStringArrayListExtra(
+                EXTRA_EXISTING_PRIVACY
+            ) ?: arrayListOf()
+
+        if (index < titles.size) {
+            titles[index] =
+                playlist.title
+        }
+
+        if (index < privacy.size) {
+            privacy[index] =
+                playlist.privacyStatus
+        }
+
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_TITLES,
+            titles
+        )
+
+        intent.putStringArrayListExtra(
+            EXTRA_EXISTING_PRIVACY,
+            privacy
+        )
     }
 
     private fun removeStoredPlaylist(
@@ -2132,6 +2849,14 @@ class DestinationActivity : Activity() {
             "destination_new_playlist_name"
         private const val STATE_EXISTING_PLAYLIST_QUERY =
             "destination_existing_playlist_query"
+        private const val STATE_PLAYLIST_ACTIONS_ID =
+            "destination_playlist_actions_id"
+        private const val STATE_PLAYLIST_EDIT_ID =
+            "destination_playlist_edit_id"
+        private const val STATE_PLAYLIST_EDIT_TITLE =
+            "destination_playlist_edit_title"
+        private const val STATE_PLAYLIST_EDIT_PRIVACY =
+            "destination_playlist_edit_privacy"
         private const val STATE_DELETE_CONFIRM_ID =
             "destination_delete_confirm_id"
         private const val STATE_DELETE_CONFIRM_TITLE =

@@ -88,6 +88,7 @@ class QuotaTracker(context: Context) {
         const val GENERAL_DAILY_LIMIT = 10_000
 
         const val PLAYLIST_CREATE_COST = 50
+        const val PLAYLIST_UPDATE_COST = 50
         const val PLAYLIST_DELETE_COST = 50
         const val PLAYLIST_ITEM_INSERT_COST = 50
         const val SIMPLE_LIST_COST = 1

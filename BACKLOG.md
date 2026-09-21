@@ -45,11 +45,11 @@ v1.4.48 — Generic Tiles + Playlist Management — IMPLEMENTING / TILE FOUNDATI
 - [x] tile tap keeps the primary select/add action
 - [x] `⋮` and long press open the same playlist action menu
 - [x] destructive shortcut still requires explicit confirmation
-- [ ] add direct Edit action
-- [ ] edit playlist title
-- [ ] edit privacy: Public / Unlisted / Private
-- [ ] preserve existing YouTube playlist metadata during update
-- [ ] editor + action-menu rotation lifecycle
+- [x] add direct Edit action
+- [x] edit playlist title
+- [x] edit privacy: Public / Unlisted / Private
+- [x] preserve existing YouTube playlist metadata during update
+- [x] editor + action-menu rotation lifecycle
 - [ ] signed APK + targeted phone QA
 
 ## v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics

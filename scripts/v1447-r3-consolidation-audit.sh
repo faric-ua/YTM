@@ -18,10 +18,10 @@ for f in "$GRADLE" "$STATUS" "$START" "$HANDOFF" "$PROJECT" "$BACKLOG" "$BUGS" "
   test -f "$f" || fail "missing R3 consolidation file: $f"
 done
 
-grep -Fq 'versionCode = 90' "$GRADLE" || fail "versionCode 90 missing"
-grep -Fq 'versionName = "1.4.47-R3"' "$GRADLE" || fail "versionName 1.4.47-R3 missing"
 grep -Fq 'versionName: **1.4.47-R3**' "$R3" || fail "R3 release doc version missing"
 grep -Fq 'versionCode: **90**' "$R3" || fail "R3 release doc versionCode missing"
+grep -Fq 'app-source commit: `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f`' "$CHECKPOINT" ||
+  fail "R3 tested application source missing"
 
 for wave in \
   docs/v.1.4.47/qa/R3_LIFECYCLE_WAVE1.md \
@@ -40,12 +40,12 @@ grep -Fq '| v1.4.47-R3 | **PARTIALLY PHONE-TESTED — STABILIZATION CHECKPOINT P
 grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA** |' "$STATUS" ||
   fail "R2 superseded status missing"
 
-grep -Fq 'Version: 1.4.47-R3' "$PROJECT" || fail "PROJECT_STATUS R3 version missing"
-grep -Fq 'Version code: 90' "$PROJECT" || fail "PROJECT_STATUS code 90 missing"
-grep -Fq 'v1.4.47-R3 — lifecycle + OAuth retry + History semantics' "$BACKLOG" ||
-  fail "BACKLOG R3 current focus missing"
-grep -Fq 'versionName: **1.4.47-R3**' "$START" || fail "START_HERE R3 version missing"
-grep -Fq 'fix/v1.4.47-r3-bugfix-wave' "$HANDOFF" || fail "CURRENT_HANDOFF active R3 branch missing"
+grep -Fq '## v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics' "$BACKLOG" ||
+  fail "BACKLOG historical R3 section missing"
+grep -Fq 'checkpoint-v1.4.47-R3-phone-pass' "$START" ||
+  fail "START_HERE stable R3 checkpoint reference missing"
+grep -Fq 'tested R3 app checkpoint remains' "$HANDOFF" ||
+  fail "CURRENT_HANDOFF R3 checkpoint history missing"
 
 grep -F '| BUG-004 / Q-004 |' "$BUGS" |
   grep -Fq 'R3 SILENT 401 RECOVERY IMPLEMENTED — PHONE RETEST NEEDED' ||

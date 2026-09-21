@@ -1,19 +1,18 @@
 YTM Importer
-Version: 1.4.47-R3
-Version code: 90
+Version: 1.4.48
+Version code: 91
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.47-R3 focus:
-- R2 compact Home + Menu-owned Theme picker are carried forward
-- BUG-022 selector/recent/storage Help windows preserve open state through rotation
-- BUG-023 Current YTM Project action modal preserves open state through rotation
-- Menu Theme picker also preserves open state through rotation
-- BUG-004 HTTP 401 path silently clears the rejected cached token, requests a replacement token and retries the exact request once
-- failed silent token recovery still falls back to disconnected/manual authorization
-- OAuth access/refresh tokens remain non-persistent
-- BUG-021 History primary result wording is operation-aware: YTM write / import / restore
-- History JSON schema is unchanged; no migration is required
-- signed R3 build + targeted stabilization phone QA PASS; broader R3 matrix / natural stale-401 acceptance remain deferred
+Current v1.4.48 focus:
+- generic project-wide Tile / «плитка» UI contract
+- existing YouTube/YTM playlist rows are now reusable action tiles
+- tile tap preserves select/add behavior
+- Edit/Delete/overflow quick actions live on each playlist tile
+- long press and overflow open the same playlist action menu
+- playlist title/privacy editor survives rotation with its draft
+- playlists.update preserves existing metadata through a fresh pre-update read
+- destructive Delete remains explicitly confirmed
+- signed build + targeted phone QA are pending
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED

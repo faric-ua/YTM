@@ -26,6 +26,7 @@ object DestinationRemoteOperations {
     enum class Kind {
         LOAD_PLAYLISTS,
         SCAN_DUPLICATES,
+        UPDATE_PLAYLIST,
         DELETE_PLAYLIST
     }
 
@@ -335,6 +336,152 @@ object DestinationRemoteOperations {
     }
 
     @Synchronized
+    fun startUpdate(
+        context: Context,
+        target: YouTubePlaylistInfo,
+        title: String,
+        privacyStatus: String
+    ): Boolean {
+        if (state.running) {
+            return false
+        }
+
+        val safeTitle =
+            title
+                .trim()
+                .take(150)
+
+        if (safeTitle.isBlank()) {
+            return terminalError(
+                kind =
+                    Kind.UPDATE_PLAYLIST,
+                message =
+                    "Назва плейлиста не може бути порожньою",
+                target =
+                    target
+            )
+        }
+
+        val safePrivacy =
+            when (
+                privacyStatus
+            ) {
+                "public",
+                "unlisted",
+                "private" ->
+                    privacyStatus
+
+                else ->
+                    "private"
+            }
+
+        val appContext =
+            context.applicationContext
+
+        val token =
+            currentToken()
+                ?: return terminalError(
+                    kind =
+                        Kind.UPDATE_PLAYLIST,
+                    message =
+                        "Підключіть Google / YTM на головному екрані",
+                    target =
+                        target,
+                    authorizationInvalidated =
+                        true
+                )
+
+        publish(
+            State(
+                kind =
+                    Kind.UPDATE_PLAYLIST,
+                running =
+                    true,
+                message =
+                    "Оновлюю «${target.title}»…",
+                target =
+                    target
+            )
+        )
+
+        executor.execute {
+            val api =
+                YouTubeApi(
+                    accessTokenRecovery =
+                        GoogleAccessTokenRecovery(
+                            appContext
+                        )
+                )
+
+            runCatching {
+                QuotaTracker(
+                    appContext
+                ).recordGeneralUnits(
+                    QuotaTracker
+                        .SIMPLE_LIST_COST +
+                        QuotaTracker
+                            .PLAYLIST_UPDATE_COST
+                )
+
+                api.updatePlaylistPreservingMetadata(
+                    accessToken =
+                        token,
+                    playlistId =
+                        target.id,
+                    title =
+                        safeTitle,
+                    privacyStatus =
+                        safePrivacy
+                )
+
+                target.copy(
+                    title =
+                        safeTitle,
+                    privacyStatus =
+                        safePrivacy
+                )
+            }.onSuccess {
+                updated ->
+                terminalUpdated(
+                    updated
+                )
+            }.onFailure {
+                error ->
+                val authFailure =
+                    isAuthorizationFailure(
+                        error
+                    )
+
+                if (authFailure) {
+                    invalidateAuthorization(
+                        appContext
+                    )
+                }
+
+                terminalError(
+                    kind =
+                        Kind.UPDATE_PLAYLIST,
+                    message =
+                        if (authFailure) {
+                            "Авторизацію Google / YTM потрібно відновити."
+                        } else {
+                            ErrorMessages.userMessage(
+                                error,
+                                "Не вдалося оновити плейлист"
+                            )
+                        },
+                    target =
+                        target,
+                    authorizationInvalidated =
+                        authFailure
+                )
+            }
+        }
+
+        return true
+    }
+
+    @Synchronized
     fun startDelete(
         context: Context,
         target: YouTubePlaylistInfo
@@ -522,6 +669,26 @@ object DestinationRemoteOperations {
                     scan,
                 target =
                     scan.target
+            )
+        )
+    }
+
+    @Synchronized
+    private fun terminalUpdated(
+        target: YouTubePlaylistInfo
+    ) {
+        serialCounter += 1
+
+        publish(
+            State(
+                kind =
+                    Kind.UPDATE_PLAYLIST,
+                terminalSerial =
+                    serialCounter,
+                target =
+                    target,
+                successMessage =
+                    "Плейлист «${target.title}» оновлено."
             )
         )
     }

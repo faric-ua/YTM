@@ -27,7 +27,7 @@ object ErrorMessages {
                             "playlistoperationunsupported"
                         )
                     ) {
-                        "Цей системний плейлист YouTube не можна видалити."
+                        "Цей системний плейлист YouTube не підтримує цю операцію."
                     } else {
                         "YouTube відхилив запит. Перевірте вибраний трек або плейлист."
                     }

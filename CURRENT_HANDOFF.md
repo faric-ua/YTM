@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-20**
+Last updated: **2026-09-22**
 
 ## 1. Resume point
 
@@ -20,9 +20,9 @@ Current release candidate:
 - active branch: `feat/v1.4.48-playlist-edit`
 - base checkpoint docs HEAD: `8955f8f188c516c604f4f4b611602ff7b4dd8e27`
 - tested R3 app checkpoint remains: `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f`
-- status: **IMPLEMENTING — GENERIC TILE FOUNDATION**
+- status: **IMPLEMENTED — TILE + PLAYLIST EDIT / SIGNED BUILD + PHONE QA PENDING**
 - installed phone APK remains: **v1.4.47-R3**, signed run `35667160072`
-- focus: **generic Tile UI contract → playlist tiles/actions → rename/privacy editor**
+- focus: **v1.4.48 playlist tiles + rename/privacy editor implemented; signed phone QA next**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -331,12 +331,13 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. Treat `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f` as the exact application source used by signed run `35667160072`.
-2. BUG-027 and BUG-028 are closed from phone evidence.
-3. Keep natural stale/live-401 acceptance and explicitly untested broader R3 cases deferred.
-4. Do not modify stabilized R3 application source for unrelated cleanup.
-5. Start the next feature/fix on a new branch from this stabilization line.
-6. Build another signed APK only after application-source changes.
+1. Keep v1.4.48 work on `feat/v1.4.48-playlist-edit`.
+2. Run v1.4.48 Tile + playlist-editor audits and the full release preflight.
+3. Commit/push only after static preflight passes.
+4. Build one signed v1.4.48 APK from the exact committed HEAD.
+5. Phone-test playlist Tile tap, Edit/Delete/overflow, long press, rename/privacy, and rotation continuity.
+6. Record phone evidence before extending playlist management further.
+
 
 ## 8. Working contract
 

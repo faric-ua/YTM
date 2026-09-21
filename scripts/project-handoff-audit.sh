@@ -26,9 +26,9 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.47-R3**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionName: **1.4.48**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **90**' START_HERE_ASSISTANT.md \
+grep -Fq 'versionCode: **91**' START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
 grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 identity missing"
@@ -46,12 +46,12 @@ grep -Fq 'Historical status that remains true' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF historical status section missing"
 grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF current release candidate missing"
-grep -Fq 'fix/v1.4.47-r3-bugfix-wave' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF active v1.4.47-R3 branch missing"
+grep -Fq 'feat/v1.4.48-playlist-edit' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF active v1.4.48 branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'v1.4.47-R3 — lifecycle + OAuth retry + History semantics' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF v1.4.47-R3 focus missing"
+grep -Fq 'v1.4.48 playlist tiles + rename/privacy editor implemented' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF v1.4.48 focus missing"
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
 grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
@@ -103,9 +103,9 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.47-R3' PROJECT_STATUS.txt \
+grep -Fq 'Version: 1.4.48' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 90' PROJECT_STATUS.txt \
+grep -Fq 'Version code: 91' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"
@@ -118,10 +118,10 @@ grep -Fq 'BUG-002/Q-002 FIX IMPLEMENTED — FULL MODAL PHONE RETEST NEEDED v1.4.
 
 grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
-grep -Fq 'v1.4.47-R3 — lifecycle + OAuth retry + History semantics' BACKLOG.md \
-  || fail "BACKLOG current v1.4.47-R3 release missing"
-grep -Fq 'v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics' START_HERE_ASSISTANT.md \
-  || fail "START_HERE v1.4.47-R3 focus missing"
+grep -Fq 'v1.4.48 — Generic Tiles + Playlist Management' BACKLOG.md \
+  || fail "BACKLOG current v1.4.48 release missing"
+grep -Fq 'v1.4.48 — Generic Tiles + Playlist Management' START_HERE_ASSISTANT.md \
+  || fail "START_HERE v1.4.48 focus missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
 grep -Fq 'UX-009 Blue/Green workflow-state palettes remain open' CURRENT_HANDOFF.md \

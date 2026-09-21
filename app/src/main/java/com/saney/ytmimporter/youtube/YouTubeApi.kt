@@ -502,6 +502,191 @@ class YouTubeApi(
         return JSONObject(response.body).getString("id")
     }
 
+    fun updatePlaylistPreservingMetadata(
+        accessToken: String,
+        playlistId: String,
+        title: String,
+        privacyStatus: String
+    ) {
+        val encodedId =
+            URLEncoder.encode(
+                playlistId,
+                Charsets.UTF_8.name()
+            )
+
+        val lookup =
+            request(
+                method = "GET",
+                url =
+                    "https://www.googleapis.com/youtube/v3/playlists" +
+                        "?part=snippet,status" +
+                        "&id=$encodedId" +
+                        "&maxResults=1",
+                accessToken = accessToken
+            )
+
+        requireSuccess(
+            lookup,
+            "Завантаження метаданих плейлиста"
+        )
+
+        val items =
+            JSONObject(
+                lookup.body
+            ).optJSONArray(
+                "items"
+            )
+
+        if (
+            items == null ||
+            items.length() == 0
+        ) {
+            throw YouTubeApiException(
+                httpCode = 404,
+                reason = "playlistNotFound",
+                message =
+                    "Плейлист не знайдено"
+            )
+        }
+
+        val existing =
+            items.getJSONObject(0)
+
+        val existingSnippet =
+            existing
+                .optJSONObject(
+                    "snippet"
+                )
+                ?: JSONObject()
+
+        val existingStatus =
+            existing
+                .optJSONObject(
+                    "status"
+                )
+                ?: JSONObject()
+
+        val safeTitle =
+            title
+                .trim()
+                .take(150)
+
+        if (safeTitle.isBlank()) {
+            throw IllegalArgumentException(
+                "Назва плейлиста не може бути порожньою"
+            )
+        }
+
+        val safePrivacy =
+            when (
+                privacyStatus
+            ) {
+                "public",
+                "unlisted",
+                "private" ->
+                    privacyStatus
+
+                else ->
+                    "private"
+            }
+
+        val snippet =
+            JSONObject()
+                .put(
+                    "title",
+                    safeTitle
+                )
+                .put(
+                    "description",
+                    existingSnippet
+                        .optString(
+                            "description"
+                        )
+                )
+
+        existingSnippet
+            .optString(
+                "defaultLanguage"
+            )
+            .trim()
+            .takeIf {
+                it.isNotBlank()
+            }
+            ?.let {
+                defaultLanguage ->
+                snippet.put(
+                    "defaultLanguage",
+                    defaultLanguage
+                )
+            }
+
+        existingSnippet
+            .optJSONArray(
+                "tags"
+            )
+            ?.let {
+                tags ->
+                snippet.put(
+                    "tags",
+                    tags
+                )
+            }
+
+        val status =
+            JSONObject()
+                .put(
+                    "privacyStatus",
+                    safePrivacy
+                )
+
+        existingStatus
+            .optString(
+                "podcastStatus"
+            )
+            .trim()
+            .takeIf {
+                it.isNotBlank()
+            }
+            ?.let {
+                podcastStatus ->
+                status.put(
+                    "podcastStatus",
+                    podcastStatus
+                )
+            }
+
+        val body =
+            JSONObject()
+                .put(
+                    "id",
+                    playlistId
+                )
+                .put(
+                    "snippet",
+                    snippet
+                )
+                .put(
+                    "status",
+                    status
+                )
+                .toString()
+
+        val response =
+            request(
+                method = "PUT",
+                url =
+                    "https://www.googleapis.com/youtube/v3/playlists" +
+                        "?part=snippet,status",
+                accessToken = accessToken,
+                body = body
+            )
+
+        requireSuccess(
+            response,
+            "Оновлення плейлиста"
+        )
+    }
+
     fun deletePlaylist(
         accessToken: String,
         playlistId: String

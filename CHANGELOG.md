@@ -7,7 +7,11 @@
 - Tapping the playlist tile preserves the existing select/add flow.
 - Long press and the `⋮` action open the same playlist action menu.
 - Direct delete remains protected by the existing explicit destructive confirmation.
-- Rename/privacy editing is the next v1.4.48 wave before signed phone QA.
+- Playlist tiles now include direct Edit, Delete and overflow actions.
+- Edit changes playlist title and privacy (`public` / `unlisted` / `private`).
+- Playlist update performs a fresh metadata read before PUT so description/default language/tags/podcast status are not accidentally cleared.
+- Playlist action menu and editor draft survive Activity recreation/rotation without auto-running remote changes.
+- Rename/privacy editing is implemented; signed phone QA is next.
 - versionCode 91 / versionName 1.4.48.
 
 ## v1.4.47-R3

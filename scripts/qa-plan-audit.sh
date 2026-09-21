@@ -122,8 +122,8 @@ grep -Fq '| v1.4.47-R1 | **PHONE QA FAIL — HOME DENSITY / THEME-PICKER PARENT 
   || fail "v1.4.47-R1 phone FAIL status missing"
 grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA** |' "$STATUS" \
   || fail "v1.4.47-R2 superseded status missing"
-grep -Fq '| v1.4.47-R3 | **IMPLEMENTED — CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING** |' "$STATUS" \
-  || fail "v1.4.47-R3 consolidation status missing"
+grep -Fq '| v1.4.47-R3 | **PARTIALLY PHONE-TESTED — STABILIZATION CHECKPOINT PASS / BROADER R3 QA DEFERRED** |' "$STATUS" \
+  || fail "v1.4.47-R3 stabilization status missing"
 grep -Fq '| BUG-005 / Q-005 | CLOSED — PHONE RETEST PASS v1.4.27 |' "$BUG" \
   || fail "BUG-005 v1.4.27 closed phone-retest status missing"
 grep -Fq '| BUG-006 / Q-006 | CLOSED — PHONE RETEST PASS v1.4.29 R2 |' "$BUG" \

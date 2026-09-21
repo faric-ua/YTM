@@ -155,6 +155,9 @@ check_file "scripts/v1447-r3-navigation-progress-r7-audit.sh"
 check_file "scripts/v1447-r3-write-progress-r8-audit.sh"
 check_file "scripts/v1447-r3-history-lifecycle-polish-r9-audit.sh"
 check_file "scripts/v1447-r3-history-counters-r9-fix5-audit.sh"
+check_file "docs/design/TILE_UI_CONTRACT.md"
+check_file "scripts/v1448-tile-foundation-audit.sh"
+check_file "scripts/v1448-playlist-edit-audit.sh"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
@@ -212,6 +215,8 @@ bash scripts/v1447-r3-navigation-progress-r7-audit.sh
 bash scripts/v1447-r3-write-progress-r8-audit.sh
 bash scripts/v1447-r3-history-lifecycle-polish-r9-audit.sh
 bash scripts/v1447-r3-history-counters-r9-fix5-audit.sh
+bash scripts/v1448-tile-foundation-audit.sh
+bash scripts/v1448-playlist-edit-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh
@@ -451,11 +456,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 90' app/build.gradle.kts \
-  || fail "Expected versionCode = 90"
+grep -q 'versionCode = 91' app/build.gradle.kts \
+  || fail "Expected versionCode = 91"
 
-grep -q 'versionName = "1.4.47-R3"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.47-R3"'
+grep -q 'versionName = "1.4.48"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.48"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

@@ -89,10 +89,42 @@ if 'openExistingPlaylists()' in existing_entry:
                 f"contract missing: {needle}"
             )
 
-item_start = dest.index('list.setOnItemClickListener')
-item_end = dest.index('setContentView(root)', item_start)
-if 'requestDuplicateScan(' not in dest[item_start:item_end]:
-    raise SystemExit("FAIL: Destination selection still relays through parent")
+if 'list.setOnItemClickListener' in dest:
+    item_start = dest.index(
+        'list.setOnItemClickListener'
+    )
+    item_end = dest.index(
+        'setContentView(root)',
+        item_start
+    )
+    item_block = dest[
+        item_start:item_end
+    ]
+elif 'private fun playlistTile(' in dest:
+    item_start = dest.index(
+        'private fun playlistTile('
+    )
+    item_end = dest.index(
+        'private fun showPlaylistActions(',
+        item_start
+    )
+    item_block = dest[
+        item_start:item_end
+    ]
+
+    if 'onClick = {' not in item_block:
+        raise SystemExit(
+            "FAIL: Destination Tile lost primary selection action"
+        )
+else:
+    raise SystemExit(
+        "FAIL: Destination existing-playlist selection UI missing"
+    )
+
+if 'requestDuplicateScan(' not in item_block:
+    raise SystemExit(
+        "FAIL: Destination selection still relays through parent"
+    )
 
 for name in ['backToStart', 'backToExistingList']:
     start = dest.index(f'private fun {name}(')
