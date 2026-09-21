@@ -190,6 +190,12 @@ class WorkflowRelayOverlay(
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
         )
+        UiChrome.applyScreenInsets(
+            activity = activity,
+            root = root,
+            extraTopDp = 0,
+            extraBottomDp = 0
+        )
         overlay = root
     }
 
