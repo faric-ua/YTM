@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.47-R3 — lifecycle + OAuth retry + History semantics — IMPLEMENTED / CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING
+v1.4.47-R3 — lifecycle + OAuth retry + History semantics — PARTIALLY PHONE-TESTED / STABILIZATION CHECKPOINT PASS / BROADER QA DEFERRED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -29,6 +29,8 @@ v1.4.47-R3 — lifecycle + OAuth retry + History semantics — IMPLEMENTED / CON
 - BUG-021 History uses unconditional `Додано X/Y` semantics for non-write operations — R3 FIX IMPLEMENTED / PHONE RETEST NEEDED
 - BUG-022 Help windows disappear on rotation — R3 FIX IMPLEMENTED / PHONE RETEST NEEDED
 - BUG-023 `Поточний YTM Project` action modal disappears on rotation — R3 FIX IMPLEMENTED / PHONE RETEST NEEDED
+- BUG-027 playlist-delete confirmation disappears on rotation — CLOSED / PHONE RETEST PASS v1.4.47-R3
+- BUG-028 existing-playlist search/filter disappears on rotation — CLOSED / PHONE RETEST PASS v1.4.47-R3
 - UX-017 Import Filename → Playlist Display Name — CLOSED / PHONE RETEST PASS v1.4.41-R2; simple and stacked duplicate-download suffixes (`YTM-1`, `YTM-1 (1)`, `YTM-1 (1) (1)`) normalize to the clean playlist title; explicit in-file title remains authoritative
 - UX-018 Modal Action Position Consistency — IMPLEMENTED v1.4.41 / PHONE RETEST NEEDED; horizontal confirmation modals use action/confirm on the left and cancel/close/no-op on the right; vertical action sheets keep explicit top-to-bottom order
 - UX-019 Home Layout Prototype Alignment — v1.4.47 phone QA found layout/navigation regressions; v1.4.47-R1 now uses the approved prototype as a **layout-only** contract: header → workflow → utility row → account/status → current playlist → quick actions → bottom navigation. Existing Neon/Blue/Green theme system remains authoritative.
@@ -50,7 +52,8 @@ v1.4.47-R3 — lifecycle + OAuth retry + History semantics — IMPLEMENTED / CON
 - [ ] consolidation full release preflight
 - [ ] commit/push R3 consolidation metadata
 - [ ] open R3 PR
-- [ ] signed R3 APK
+- [x] signed R3 APK — GitHub Actions run 35667160072 / source 197da0c6afd7c1f41544e0d39b1dc17e2c7c156f
+- [x] targeted stabilization checkpoint — playlist create/delete + BUG-027/028 phone PASS
 - [ ] phone lifecycle tests
 - [ ] phone History semantics tests
 - [ ] normal auth smoke

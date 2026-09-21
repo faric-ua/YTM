@@ -18,6 +18,8 @@
 | BUG-021 | R3 FIX IMPLEMENTED — PHONE RETEST NEEDED | P2 | History no longer uses universal `Додано X/Y` for clean non-write records; primary wording becomes `Додано в YTM`, `Імпортовано`, or `Відновлено` according to operation evidence. | v1.4.47-R3 History semantics |
 | BUG-022 | R3 FIX IMPLEMENTED — PHONE RETEST NEEDED | P2 | Selector/Recent-file/Storage Help windows preserve open state through Activity recreation/rotation without side effects. | v1.4.47-R3 lifecycle Wave 1 |
 | BUG-023 | R3 FIX IMPLEMENTED — PHONE RETEST NEEDED | P2 | `Поточний YTM Project` action modal preserves open state/context through rotation; Save/Share never auto-run. | v1.4.47-R3 lifecycle Wave 1 |
+| BUG-027 | CLOSED — PHONE RETEST PASS v1.4.47-R3 | P2 | Existing-playlist delete confirmation survives Activity recreation/rotation and never starts deletion until the user explicitly confirms. | v1.4.47-R3 stabilization checkpoint |
+| BUG-028 | CLOSED — PHONE RETEST PASS v1.4.47-R3 | P2 | Existing-playlist search query and active filter survive Activity recreation/rotation. | v1.4.47-R3 stabilization checkpoint |
 
 ## BUG-002 current evidence
 

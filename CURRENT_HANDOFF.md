@@ -19,9 +19,9 @@ Current release candidate:
 - versionCode: **90**
 - active branch: `fix/v1.4.47-r3-bugfix-wave`
 - active R3 PR: **not opened yet**; branch is stacked on the R2 line whose PR #21 targets `fix/v1.4.47-r1-home-nav-dialog`
-- status: **IMPLEMENTED / CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING**
-- installed phone APK: **v1.4.47-R1**
-- focus: **v1.4.47-R3 — lifecycle + OAuth retry + History semantics**
+- status: **PARTIALLY PHONE-TESTED / STABILIZATION CHECKPOINT PASS; BROADER R3 QA DEFERRED**
+- installed phone APK: **v1.4.47-R3**, signed run `35667160072`, app-source `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f`
+- focus: **v1.4.47-R3 stabilization checkpoint complete; next feature work starts from this stable line**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -330,14 +330,12 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. Apply/verify the R3 consolidation metadata/version patch on `fix/v1.4.47-r3-bugfix-wave`.
-2. Run the complete release preflight and commit/push only if it passes.
-3. Open the R3 PR on top of the current stacked release line.
-4. Build the signed v1.4.47-R3 APK from the exact R3 head and verify APK SHA-256/signature.
-5. Install over v1.4.47-R1 without uninstalling or clearing data.
-6. Run `docs/v.1.4.47/qa/PHONE_TEST_R3.md`: R2 UI carry-forward, BUG-022/023 rotation, BUG-021 History semantics and normal auth smoke.
-7. Accept BUG-004 stale/401 behavior only if a natural real 401 occurs; otherwise record it as DEFERRED, not PASS.
-8. Merge R3 only after the required reproducible phone paths pass and any non-reproducible conditional case is explicitly recorded.
+1. Treat `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f` as the exact application source used by signed run `35667160072`.
+2. BUG-027 and BUG-028 are closed from phone evidence.
+3. Keep natural stale/live-401 acceptance and explicitly untested broader R3 cases deferred.
+4. Do not modify stabilized R3 application source for unrelated cleanup.
+5. Start the next feature/fix on a new branch from this stabilization line.
+6. Build another signed APK only after application-source changes.
 
 ## 8. Working contract
 

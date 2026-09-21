@@ -2,7 +2,7 @@
 
 | Version | Status | Note |
 |---|---|---|
-| v1.4.47-R3 | **IMPLEMENTED — CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING** | Consolidates lifecycle-safe Help/project/theme modals, silent HTTP-401 token recovery with one automatic request retry, and operation-aware History result wording; carries R2 compact Home forward. |
+| v1.4.47-R3 | **PARTIALLY PHONE-TESTED — STABILIZATION CHECKPOINT PASS / BROADER R3 QA DEFERRED** | Signed build `35667160072` from `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f` installed and targeted stabilization paths passed, including playlist deletion plus BUG-027/028 rotation continuity. Write-state reset reached 13/13 on the tested new-playlist run. Full R3 matrix and natural stale/live-401 acceptance were not exhaustively rerun. |
 | v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA** | Compact Home follow-up passed static/full preflight but was superseded by R3 bug-fix consolidation before a signed phone-QA build. |
 | v1.4.47-R1 | **PHONE QA FAIL — HOME DENSITY / THEME-PICKER PARENT / NAV POLISH** | Signed R1 fixed the earlier modal/Hub/rotation issues enough for continued testing, but phone screenshots showed Home still too tall, square bottom-nav outer corners, and Menu closing before theme selection so the picker appeared over Home. Continued in R2. |
 | v1.4.47 | **PHONE QA FAIL — MODAL THEME / HUB BACK STACK / ROTATION / LANDSCAPE** | Signed build itself passed, but real-phone QA found BUG-014..017: partial modal theme migration, delegated Hub actions returning to Home, replacement dialog disappearing on rotation, and landscape hiding lower dashboard content. Continued in v1.4.47-R1. |

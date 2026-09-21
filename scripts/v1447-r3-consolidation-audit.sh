@@ -12,8 +12,9 @@ BACKLOG="BACKLOG.md"
 BUGS="qa/BUG_REGISTER.md"
 R3="docs/v.1.4.47/R3.md"
 PHONE="docs/v.1.4.47/qa/PHONE_TEST_R3.md"
+CHECKPOINT="docs/v.1.4.47/qa/R3_STABILIZATION_CHECKPOINT.md"
 
-for f in "$GRADLE" "$STATUS" "$START" "$HANDOFF" "$PROJECT" "$BACKLOG" "$BUGS" "$R3" "$PHONE"; do
+for f in "$GRADLE" "$STATUS" "$START" "$HANDOFF" "$PROJECT" "$BACKLOG" "$BUGS" "$R3" "$PHONE" "$CHECKPOINT"; do
   test -f "$f" || fail "missing R3 consolidation file: $f"
 done
 
@@ -34,7 +35,7 @@ grep -Fq 'dd7e8d5e984200b9c2cdca993bc8378a2db4198b' "$R3" || fail "Wave 1 commit
 grep -Fq 'f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14' "$R3" || fail "Wave 2 commit evidence missing"
 grep -Fq 'e1fee8ed989acfd1209e53873910bf3f362e5ec0' "$R3" || fail "Wave 3 commit evidence missing"
 
-grep -Fq '| v1.4.47-R3 | **IMPLEMENTED — CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING** |' "$STATUS" ||
+grep -Fq '| v1.4.47-R3 | **PARTIALLY PHONE-TESTED — STABILIZATION CHECKPOINT PASS / BROADER R3 QA DEFERRED** |' "$STATUS" ||
   fail "R3 release status row missing"
 grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA** |' "$STATUS" ||
   fail "R2 superseded status missing"
@@ -52,6 +53,10 @@ grep -F '| BUG-004 / Q-004 |' "$BUGS" |
 grep -Fq '| BUG-021 | R3 FIX IMPLEMENTED — PHONE RETEST NEEDED |' "$BUGS" || fail "BUG-021 status missing"
 grep -Fq '| BUG-022 | R3 FIX IMPLEMENTED — PHONE RETEST NEEDED |' "$BUGS" || fail "BUG-022 status missing"
 grep -Fq '| BUG-023 | R3 FIX IMPLEMENTED — PHONE RETEST NEEDED |' "$BUGS" || fail "BUG-023 status missing"
+grep -Fq '| BUG-027 | CLOSED — PHONE RETEST PASS v1.4.47-R3 |' "$BUGS" || fail "BUG-027 checkpoint PASS missing"
+grep -Fq '| BUG-028 | CLOSED — PHONE RETEST PASS v1.4.47-R3 |' "$BUGS" || fail "BUG-028 checkpoint PASS missing"
+grep -Fq "197da0c6afd7c1f41544e0d39b1dc17e2c7c156f" "$CHECKPOINT" || fail "tested source SHA missing"
+grep -Fq "35667160072" "$CHECKPOINT" || fail "signed run evidence missing"
 
 grep -Fq 'DEFERRED — NATURAL 401 NOT REPRODUCED' "$PHONE" || fail "natural-401 deferred rule missing"
 grep -Fq 'BLOCKED — NO REPRESENTATIVE HISTORY RECORD' "$PHONE" || fail "History BLOCKED rule missing"

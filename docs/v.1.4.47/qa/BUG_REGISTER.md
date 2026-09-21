@@ -175,6 +175,31 @@ R9 FIX5 target:
 
 Status: **R9 FIX5 PREPARED — PHONE RETEST NEEDED**.
 
+### BUG-027 — playlist delete confirmation disappears on rotation
+
+Phone finding:
+- destructive confirmation disappeared after Activity recreation.
+
+Fix:
+- pending playlist target is stored in Activity state;
+- rotation recreates the same confirmation;
+- recreation never starts the delete API call;
+- only explicit `Видалити` starts deletion.
+
+Status: **CLOSED — PHONE RETEST PASS v1.4.47-R3**.
+
+### BUG-028 — existing-playlist search/filter disappears on rotation
+
+Phone finding:
+- search text and active filtering were View-only state.
+
+Fix:
+- DestinationActivity owns the query;
+- query is saved/restored through instance state;
+- restored text is immediately reapplied to the list filter.
+
+Status: **CLOSED — PHONE RETEST PASS v1.4.47-R3**.
+
 ### BUG-004 R3 hardening
 
 A live HTTP 401 now first attempts silent Google token replacement and retries the exact

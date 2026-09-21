@@ -10,7 +10,12 @@
 - History primary result wording is operation-aware: `Додано в YTM`, `Імпортовано`, or `Відновлено`.
 - History JSON schema remains unchanged.
 - versionCode 90 / versionName 1.4.47-R3.
-- Signed build + phone QA pending.
+- Signed GitHub Actions build `35667160072` from app-source HEAD `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f` completed successfully.
+- Targeted real-phone stabilization QA passed: version badge → About, editable/IME-safe playlist name, playlist deletion and rotation continuity.
+- Write-state reset produced a clean 13/13 new-playlist result after a previous all-duplicate state; another opportunistic repeat smoke remains deferred.
+- BUG-027 closed: playlist-delete confirmation survives Activity recreation/rotation without auto-deleting.
+- BUG-028 closed: existing-playlist search text and active filter survive Activity recreation/rotation.
+- Broader R3 QA and natural stale/live-401 acceptance remain explicitly deferred.
 
 ## v1.4.47-R2
 - R1 phone screenshots showed remaining Home density and theme-navigation polish issues.

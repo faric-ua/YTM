@@ -131,4 +131,17 @@ Suggested compact result:
 
 Use `-` for FAIL and `BLOCKED`/`DEFERRED` where the prerequisite is unavailable.
 
-Status: **PHONE QA NEEDED**.
+## Stabilization checkpoint evidence
+
+- signed run: `35667160072`;
+- tested application source: `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f`;
+- version badge → About: PASS;
+- playlist-name / keyboard behavior: PASS;
+- write-state reset tested successfully with a clean 13/13 result;
+- playlist deletion: PASS;
+- BUG-027 delete-confirm rotation: PASS;
+- BUG-028 playlist search/filter rotation: PASS;
+- natural stale/live-401 acceptance remains deferred;
+- this is targeted stabilization evidence, not an exhaustive full-app regression.
+
+Status: **PARTIAL PHONE QA — STABILIZATION CHECKPOINT PASS; FULL MATRIX NOT EXHAUSTIVELY RERUN**.

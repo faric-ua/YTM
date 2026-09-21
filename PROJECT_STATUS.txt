@@ -13,7 +13,7 @@ Current v1.4.47-R3 focus:
 - OAuth access/refresh tokens remain non-persistent
 - BUG-021 History primary result wording is operation-aware: YTM write / import / restore
 - History JSON schema is unchanged; no migration is required
-- signed R3 build + unified phone QA remain pending
+- signed R3 build + targeted stabilization phone QA PASS; broader R3 matrix / natural stale-401 acceptance remain deferred
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
@@ -56,7 +56,7 @@ v1.4.46 PARTIALLY PHONE-TESTED — PORTRAIT HOME PASS / THEME+LANDSCAPE CARRIED 
 v1.4.47 PHONE QA FAIL — BUG-014..017
 v1.4.47-R1 PHONE QA FAIL — HOME DENSITY / THEME-PICKER PARENT / NAV POLISH
 v1.4.47-R2 STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA
-v1.4.47-R3 IMPLEMENTED — CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING
+v1.4.47-R3 PARTIALLY PHONE-TESTED — STABILIZATION CHECKPOINT PASS / BROADER R3 QA DEFERRED
 
 Current cleanup:
 DestinationCoordinator extracted from MainActivity.
