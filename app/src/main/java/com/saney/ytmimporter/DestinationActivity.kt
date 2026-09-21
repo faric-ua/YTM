@@ -14,6 +14,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
@@ -22,7 +23,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
-import android.widget.ArrayAdapter
+import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -434,7 +435,7 @@ class DestinationActivity : Activity() {
         root.addView(
             TextView(this).apply {
                 text =
-                    "Натисніть — вибрати плейлист. Утримуйте — видалити його з YouTube/YTM."
+                    "Натисніть плитку — вибрати. Утримуйте або ⋮ — дії з плейлистом."
                 textSize = 13f
                 setTextColor(MUTED)
                 setPadding(dp(18), 0, dp(18), dp(10))
@@ -527,8 +528,11 @@ class DestinationActivity : Activity() {
         root.addView(countText)
 
         val list = ListView(this).apply {
-            divider = null
-            dividerHeight = dp(6)
+            divider =
+                ColorDrawable(
+                    Color.TRANSPARENT
+                )
+            dividerHeight = dp(8)
             clipToPadding = false
             setPadding(dp(10), 0, dp(10), dp(14))
             setBackgroundColor(AppThemeManager.palette(this@DestinationActivity).background)
@@ -542,33 +546,77 @@ class DestinationActivity : Activity() {
             )
         )
 
-        val visible = items.toMutableList()
-        val adapter = ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_list_item_1,
-            visible.map(::existingItemLabel).toMutableList()
-        )
-        list.adapter = adapter
-        countText.text = "${visible.size} плейлистів"
+        val visible =
+            items.toMutableList()
 
-        fun applyFilter(query: String) {
-            val normalized = query.trim().lowercase()
+        val adapter =
+            object : BaseAdapter() {
+                override fun getCount():
+                    Int =
+                    visible.size
+
+                override fun getItem(
+                    position: Int
+                ): ExistingItem =
+                    visible[position]
+
+                override fun getItemId(
+                    position: Int
+                ): Long =
+                    position.toLong()
+
+                override fun getView(
+                    position: Int,
+                    convertView: View?,
+                    parent: ViewGroup?
+                ): View =
+                    playlistTile(
+                        getItem(
+                            position
+                        )
+                    )
+            }
+
+        list.adapter =
+            adapter
+
+        countText.text =
+            "${visible.size} плейлистів"
+
+        fun applyFilter(
+            query: String
+        ) {
+            val normalized =
+                query
+                    .trim()
+                    .lowercase()
+
             visible.clear()
+
             visible.addAll(
-                if (normalized.isBlank()) {
+                if (
+                    normalized.isBlank()
+                ) {
                     items
                 } else {
                     items.filter {
-                        it.title.lowercase().contains(normalized)
+                        item ->
+                        item.title
+                            .lowercase()
+                            .contains(
+                                normalized
+                            )
                     }
                 }
             )
 
-            adapter.clear()
-            adapter.addAll(visible.map(::existingItemLabel))
-            adapter.notifyDataSetChanged()
+            adapter
+                .notifyDataSetChanged()
+
             countText.text =
-                if (normalized.isBlank()) {
+                if (
+                    normalized.isBlank()
+                ) {
                     "${visible.size} плейлистів"
                 } else {
                     "Знайдено: ${visible.size}"
@@ -598,7 +646,9 @@ class DestinationActivity : Activity() {
                     )
                 }
 
-                override fun afterTextChanged(s: Editable?) = Unit
+                override fun afterTextChanged(
+                    s: Editable?
+                ) = Unit
             }
         )
 
@@ -606,26 +656,94 @@ class DestinationActivity : Activity() {
             existingPlaylistQuery
         )
 
-        list.setOnItemClickListener { _, _, position, _ ->
-            val item = visible.getOrNull(position)
-                ?: return@setOnItemClickListener
-
-            requestDuplicateScan(
-                item
-            )
-        }
-
-        list.setOnItemLongClickListener { _, _, position, _ ->
-            val item =
-                visible.getOrNull(position)
-                    ?: return@setOnItemLongClickListener false
-
-            confirmDeletePlaylist(item)
-            true
-        }
-
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+    }
+
+
+    private fun playlistTile(
+        item: ExistingItem
+    ): View =
+        UiChrome.actionTile(
+            activity = this,
+            title = item.title,
+            subtitle =
+                "${item.itemCount} треків • " +
+                    privacyLabel(
+                        item.privacy
+                    ),
+            actions =
+                listOf(
+                    UiChrome.TileAction(
+                        iconRes =
+                            R.drawable.ic_ytm_delete,
+                        contentDescription =
+                            "Видалити ${item.title}",
+                        tone =
+                            UiChrome.ActionTone.DANGER,
+                        onClick = {
+                            confirmDeletePlaylist(
+                                item
+                            )
+                        }
+                    ),
+                    UiChrome.TileAction(
+                        iconRes =
+                            R.drawable.ic_ytm_more,
+                        contentDescription =
+                            "Дії для ${item.title}",
+                        onClick = {
+                            showPlaylistActions(
+                                item
+                            )
+                        }
+                    )
+                ),
+            onClick = {
+                requestDuplicateScan(
+                    item
+                )
+            },
+            onLongClick = {
+                showPlaylistActions(
+                    item
+                )
+            }
+        )
+
+    private fun showPlaylistActions(
+        item: ExistingItem
+    ) {
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = item.title,
+            subtitle =
+                "${item.itemCount} треків • " +
+                    privacyLabel(
+                        item.privacy
+                    ),
+            actions =
+                listOf(
+                    UiChrome.MenuAction(
+                        label =
+                            "Вибрати для додавання",
+                        onClick = {
+                            requestDuplicateScan(
+                                item
+                            )
+                        }
+                    ),
+                    UiChrome.MenuAction(
+                        label =
+                            "Видалити",
+                        onClick = {
+                            confirmDeletePlaylist(
+                                item
+                            )
+                        }
+                    )
+                )
+        )
     }
 
     private fun showExistingConfirmScreen() {

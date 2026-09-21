@@ -32,13 +32,13 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.47-R3**
-- versionCode: **90**
-- release focus: **v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics**
-- release status: **IMPLEMENTED / CONSOLIDATION PREFLIGHT + SIGNED BUILD + PHONE QA PENDING**
-- active branch: `fix/v1.4.47-r3-bugfix-wave`
-- BUG-004 / Q-004: **R3 SILENT 401 RECOVERY IMPLEMENTED — PHONE RETEST NEEDED**
-- BUG-021 / BUG-022 / BUG-023: **R3 FIX IMPLEMENTED — PHONE RETEST NEEDED**
+- versionName: **1.4.48**
+- versionCode: **91**
+- release focus: **v1.4.48 — Generic Tiles + Playlist Management**
+- release status: **IMPLEMENTING — TILE FOUNDATION**
+- active branch: `feat/v1.4.48-playlist-edit`
+- stable app checkpoint underneath: `checkpoint-v1.4.47-R3-phone-pass`
+- UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
 v1.4.43 phone observation:

@@ -15,13 +15,14 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.47-R3**
-- versionCode: **90**
-- active branch: `fix/v1.4.47-r3-bugfix-wave`
-- active R3 PR: **not opened yet**; branch is stacked on the R2 line whose PR #21 targets `fix/v1.4.47-r1-home-nav-dialog`
-- status: **PARTIALLY PHONE-TESTED / STABILIZATION CHECKPOINT PASS; BROADER R3 QA DEFERRED**
-- installed phone APK: **v1.4.47-R3**, signed run `35667160072`, app-source `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f`
-- focus: **v1.4.47-R3 stabilization checkpoint complete; next feature work starts from this stable line**
+- versionName: **1.4.48**
+- versionCode: **91**
+- active branch: `feat/v1.4.48-playlist-edit`
+- base checkpoint docs HEAD: `8955f8f188c516c604f4f4b611602ff7b4dd8e27`
+- tested R3 app checkpoint remains: `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f`
+- status: **IMPLEMENTING — GENERIC TILE FOUNDATION**
+- installed phone APK remains: **v1.4.47-R3**, signed run `35667160072`
+- focus: **generic Tile UI contract → playlist tiles/actions → rename/privacy editor**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`

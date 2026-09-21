@@ -1,5 +1,15 @@
 # Журнал змін (Changelog)
 
+## v1.4.48
+- Started a project-wide generic Tile UI vocabulary and reusable action-tile primitive.
+- A **Tile / плитка** is a generic container for any entity or content group, not a playlist-specific widget.
+- Existing YouTube/YTM playlist rows now render as theme-aware tiles with metadata and quick actions.
+- Tapping the playlist tile preserves the existing select/add flow.
+- Long press and the `⋮` action open the same playlist action menu.
+- Direct delete remains protected by the existing explicit destructive confirmation.
+- Rename/privacy editing is the next v1.4.48 wave before signed phone QA.
+- versionCode 91 / versionName 1.4.48.
+
 ## v1.4.47-R3
 - Consolidated the R3 corrective waves on top of the R2 Home/UI work.
 - Help windows in ListSelector, Recent-file and Storage chooser now survive Activity recreation/rotation.

@@ -56,6 +56,13 @@ object UiChrome {
         val onClick: () -> Unit
     )
 
+    data class TileAction(
+        val iconRes: Int,
+        val contentDescription: String,
+        val tone: ActionTone = ActionTone.NORMAL,
+        val onClick: () -> Unit
+    )
+
     data class InteractiveSummaryCard(
         val root: LinearLayout,
         val title: TextView,
@@ -165,6 +172,202 @@ object UiChrome {
             title = titleView,
             subtitle = subtitleView
         )
+    }
+
+
+    fun actionTile(
+        activity: Activity,
+        title: CharSequence,
+        subtitle: CharSequence? = null,
+        actions: List<TileAction> = emptyList(),
+        onClick: (() -> Unit)? = null,
+        onLongClick: (() -> Unit)? = null
+    ): LinearLayout {
+        val palette =
+            AppThemeManager.palette(
+                activity
+            )
+
+        val root =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+
+                setPadding(
+                    dp(activity, 14),
+                    dp(activity, 10),
+                    dp(activity, 10),
+                    dp(activity, 11)
+                )
+
+                background =
+                    AppThemeManager
+                        .largeCardDrawable(
+                            context = activity,
+                            fill = palette.surface,
+                            radiusDp = 14
+                        )
+
+                isClickable =
+                    onClick != null
+
+                isFocusable =
+                    onClick != null
+
+                if (onClick != null) {
+                    setOnClickListener {
+                        onClick()
+                    }
+                }
+
+                if (onLongClick != null) {
+                    setOnLongClickListener {
+                        onLongClick()
+                        true
+                    }
+                }
+            }
+
+        val header =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.HORIZONTAL
+                gravity =
+                    Gravity.CENTER_VERTICAL
+                isBaselineAligned =
+                    false
+            }
+
+        header.addView(
+            TextView(activity).apply {
+                text =
+                    title
+                textSize =
+                    15f
+                maxLines =
+                    2
+
+                setTypeface(
+                    typeface,
+                    Typeface.BOLD
+                )
+
+                setTextColor(
+                    palette.text
+                )
+
+                setPadding(
+                    0,
+                    dp(activity, 2),
+                    dp(activity, 8),
+                    dp(activity, 2)
+                )
+            },
+            LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        )
+
+        actions.forEachIndexed {
+                index,
+                action ->
+
+            header.addView(
+                ImageButton(activity).apply {
+                    contentDescription =
+                        action.contentDescription
+
+                    setImageResource(
+                        action.iconRes
+                    )
+
+                    imageTintList =
+                        android.content.res
+                            .ColorStateList
+                            .valueOf(
+                                when (
+                                    action.tone
+                                ) {
+                                    ActionTone.DANGER ->
+                                        palette.danger
+
+                                    ActionTone.ACCENT ->
+                                        palette.accent
+
+                                    else ->
+                                        palette.text
+                                }
+                            )
+
+                    scaleType =
+                        android.widget
+                            .ImageView
+                            .ScaleType
+                            .CENTER
+
+                    setPadding(
+                        dp(activity, 8),
+                        dp(activity, 8),
+                        dp(activity, 8),
+                        dp(activity, 8)
+                    )
+
+                    minimumWidth = 0
+                    minimumHeight = 0
+
+                    background =
+                        AppThemeManager
+                            .surfaceDrawable(
+                                context = activity,
+                                fill =
+                                    palette.surfaceAlt,
+                                radiusDp = 10,
+                                accentStroke = false
+                            )
+
+                    setOnClickListener {
+                        action.onClick()
+                    }
+                },
+                LinearLayout.LayoutParams(
+                    dp(activity, 40),
+                    dp(activity, 40)
+                ).apply {
+                    if (index > 0) {
+                        marginStart =
+                            dp(activity, 6)
+                    }
+                }
+            )
+        }
+
+        root.addView(
+            header
+        )
+
+        if (!subtitle.isNullOrBlank()) {
+            root.addView(
+                TextView(activity).apply {
+                    text =
+                        subtitle
+                    textSize =
+                        12.5f
+                    setTextColor(
+                        palette.muted
+                    )
+                    setPadding(
+                        0,
+                        dp(activity, 5),
+                        0,
+                        0
+                    )
+                }
+            )
+        }
+
+        return root
     }
 
     fun useHorizontalActionRow(

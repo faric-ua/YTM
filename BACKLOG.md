@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.47-R3 — lifecycle + OAuth retry + History semantics — PARTIALLY PHONE-TESTED / STABILIZATION CHECKPOINT PASS / BROADER QA DEFERRED
+v1.4.48 — Generic Tiles + Playlist Management — IMPLEMENTING / TILE FOUNDATION
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -36,6 +36,21 @@ v1.4.47-R3 — lifecycle + OAuth retry + History semantics — PARTIALLY PHONE-T
 - UX-019 Home Layout Prototype Alignment — v1.4.47 phone QA found layout/navigation regressions; v1.4.47-R1 now uses the approved prototype as a **layout-only** contract: header → workflow → utility row → account/status → current playlist → quick actions → bottom navigation. Existing Neon/Blue/Green theme system remains authoritative.
 - UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
+
+## v1.4.48 — Generic Tiles + Playlist Management
+- [x] start from v1.4.47-R3 stabilization checkpoint
+- [x] define project-wide Tile terminology/UX contract
+- [x] reusable theme-aware `UiChrome.actionTile`
+- [x] existing-playlist list migrates from text rows to tiles
+- [x] tile tap keeps the primary select/add action
+- [x] `⋮` and long press open the same playlist action menu
+- [x] destructive shortcut still requires explicit confirmation
+- [ ] add direct Edit action
+- [ ] edit playlist title
+- [ ] edit privacy: Public / Unlisted / Private
+- [ ] preserve existing YouTube playlist metadata during update
+- [ ] editor + action-menu rotation lifecycle
+- [ ] signed APK + targeted phone QA
 
 ## v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics
 - [x] versionCode 90 / versionName 1.4.47-R3
