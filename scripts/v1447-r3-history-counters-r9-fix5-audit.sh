@@ -54,6 +54,11 @@ for n in [
     if n not in sem:
         raise SystemExit(f"FAIL: legacy 0/N recovery guard missing: {n}")
 
+if sem.count("private fun effectiveRemoteAddedCount(") != 1:
+    raise SystemExit(
+        "FAIL: effectiveRemoteAddedCount must be declared exactly once"
+    )
+
 if '"${effectiveRemoteAddedCount(entry)}/${entry.writeTargetCount}"' not in sem:
     raise SystemExit("FAIL: HistoryResultSemantics does not use effective added count")
 
