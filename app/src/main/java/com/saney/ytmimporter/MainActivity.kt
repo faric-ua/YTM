@@ -339,13 +339,13 @@ class MainActivity : Activity() {
                 1f
             )
         )
-
         header.addView(
             TextView(this).apply {
                 text = "v${BuildConfig.VERSION_NAME}"
                 textSize = 11.5f
                 setTextColor(Color.rgb(220, 222, 228))
                 gravity = android.view.Gravity.CENTER
+                setOnClickListener { startActivity(Intent(this@MainActivity, ServiceActivity::class.java).putExtra(ServiceActivity.EXTRA_START_PAGE, ServiceActivity.START_PAGE_ABOUT)) }
                 setPadding(dp(10), dp(6), dp(10), dp(6))
                 background =
                     AppThemeManager.surfaceDrawable(

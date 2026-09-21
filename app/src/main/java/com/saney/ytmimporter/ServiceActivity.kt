@@ -63,6 +63,10 @@ class ServiceActivity : Activity() {
                 ?.let { raw ->
                     runCatching { Page.valueOf(raw) }.getOrNull()
                 }
+                ?: intent.getStringExtra(EXTRA_START_PAGE)
+                    ?.let { raw ->
+                        runCatching { Page.valueOf(raw) }.getOrNull()
+                    }
                 ?: Page.HOME
 
         changelogScrollY =
@@ -1245,6 +1249,8 @@ class ServiceActivity : Activity() {
         const val EXTRA_GOOGLE_EMAIL = "service_google_email"
         const val EXTRA_CHANNEL_TITLE = "service_channel_title"
         const val EXTRA_CHANNEL_ID = "service_channel_id"
+        const val EXTRA_START_PAGE = "service_start_page"
+        const val START_PAGE_ABOUT = "ABOUT"
 
         private const val KEY_PAGE = "service_page"
         private const val KEY_CHANGELOG_SCROLL_Y =
