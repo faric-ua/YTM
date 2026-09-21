@@ -38,6 +38,12 @@ class DestinationActivity : Activity() {
     private var currentMode: String = MODE_START
     private var newPlaylistName: String = ""
 
+    private var pendingDeleteConfirmation:
+        ExistingItem? = null
+
+    private var deleteConfirmationDialog:
+        Dialog? = null
+
     private var remoteProgressDialog:
         Dialog? = null
 
@@ -68,6 +74,43 @@ class DestinationActivity : Activity() {
                 ?: intent.getStringExtra(EXTRA_PLAYLIST_NAME)
                     .orEmpty()
 
+        pendingDeleteConfirmation =
+            savedInstanceState
+                ?.let { state ->
+                    state
+                        .getString(
+                            STATE_DELETE_CONFIRM_ID
+                        )
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                        ?.let { id ->
+                            ExistingItem(
+                                id = id,
+                                title =
+                                    state
+                                        .getString(
+                                            STATE_DELETE_CONFIRM_TITLE
+                                        )
+                                        .orEmpty()
+                                        .ifBlank {
+                                            "Плейлист"
+                                        },
+                                privacy =
+                                    state
+                                        .getString(
+                                            STATE_DELETE_CONFIRM_PRIVACY
+                                        )
+                                        ?: "private",
+                                itemCount =
+                                    state.getLong(
+                                        STATE_DELETE_CONFIRM_COUNT,
+                                        0L
+                                    )
+                            )
+                        }
+                }
+
         when (currentMode) {
             MODE_EXISTING_LIST ->
                 showExistingListScreen()
@@ -81,6 +124,22 @@ class DestinationActivity : Activity() {
             else ->
                 showStartScreen()
         }
+
+        pendingDeleteConfirmation
+            ?.let { item ->
+                window.decorView.post {
+                    if (
+                        !isFinishing &&
+                        !isDestroyed &&
+                        pendingDeleteConfirmation
+                            ?.id == item.id
+                    ) {
+                        showDeleteConfirmationDialog(
+                            item
+                        )
+                    }
+                }
+            }
     }
 
     override fun onStart() {
@@ -110,6 +169,27 @@ class DestinationActivity : Activity() {
             STATE_NEW_PLAYLIST_NAME,
             newPlaylistName
         )
+
+        pendingDeleteConfirmation
+            ?.let { item ->
+                outState.putString(
+                    STATE_DELETE_CONFIRM_ID,
+                    item.id
+                )
+                outState.putString(
+                    STATE_DELETE_CONFIRM_TITLE,
+                    item.title
+                )
+                outState.putString(
+                    STATE_DELETE_CONFIRM_PRIVACY,
+                    item.privacy
+                )
+                outState.putLong(
+                    STATE_DELETE_CONFIRM_COUNT,
+                    item.itemCount
+                )
+            }
+
         super.onSaveInstanceState(
             outState
         )
@@ -120,6 +200,11 @@ class DestinationActivity : Activity() {
             ?.setOnDismissListener(null)
         remoteProgressDialog = null
         remoteProgressText = null
+
+        deleteConfirmationDialog
+            ?.setOnDismissListener(null)
+        deleteConfirmationDialog = null
+
         super.onDestroy()
     }
 
@@ -897,15 +982,62 @@ class DestinationActivity : Activity() {
     private fun confirmDeletePlaylist(
         item: ExistingItem
     ) {
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title = "Видалити плейлист?",
-            message =
-                "«${item.title}» буде видалено з YouTube / YTM.\n\n" +
-                    "Цю дію неможливо скасувати.",
-            confirmLabel = "Видалити"
+        pendingDeleteConfirmation =
+            item
+
+        showDeleteConfirmationDialog(
+            item
+        )
+    }
+
+    private fun showDeleteConfirmationDialog(
+        item: ExistingItem
+    ) {
+        if (
+            deleteConfirmationDialog
+                ?.isShowing == true
         ) {
-            requestPlaylistDelete(item)
+            return
+        }
+
+        val dialog =
+            UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title = "Видалити плейлист?",
+                message =
+                    "«${item.title}» буде видалено з YouTube / YTM.\n\n" +
+                        "Цю дію неможливо скасувати.",
+                confirmLabel = "Видалити"
+            ) {
+                pendingDeleteConfirmation =
+                    null
+                deleteConfirmationDialog =
+                    null
+
+                requestPlaylistDelete(
+                    item
+                )
+            }
+
+        deleteConfirmationDialog =
+            dialog
+
+        dialog.setOnDismissListener {
+            if (
+                deleteConfirmationDialog ===
+                    dialog
+            ) {
+                deleteConfirmationDialog =
+                    null
+            }
+
+            if (
+                pendingDeleteConfirmation
+                    ?.id == item.id
+            ) {
+                pendingDeleteConfirmation =
+                    null
+            }
         }
     }
 
@@ -1857,6 +1989,14 @@ class DestinationActivity : Activity() {
             "destination_current_mode"
         private const val STATE_NEW_PLAYLIST_NAME =
             "destination_new_playlist_name"
+        private const val STATE_DELETE_CONFIRM_ID =
+            "destination_delete_confirm_id"
+        private const val STATE_DELETE_CONFIRM_TITLE =
+            "destination_delete_confirm_title"
+        private const val STATE_DELETE_CONFIRM_PRIVACY =
+            "destination_delete_confirm_privacy"
+        private const val STATE_DELETE_CONFIRM_COUNT =
+            "destination_delete_confirm_count"
 
         private val BACKGROUND = Color.rgb(15, 16, 19)
         private val SURFACE = Color.rgb(25, 27, 32)
