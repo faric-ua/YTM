@@ -6,4 +6,7 @@
     <external-path
         name="shared_download"
         path="Download/" />
+    <files-path
+        name="verified_updates"
+        path="updates/" />
 </paths>

@@ -39,8 +39,8 @@ flowchart TD
 ## Wave status
 
 Wave 1 implements the route through `Up to date` / `Update available` / `Error`.
-Wave 2 implements explicit `Download` → `Downloading` → `Verifying SHA-256` → `Ready to install`.
-`Explicit Install` and Android package-installer handoff remain later work and are never auto-entered in Wave 2.
+Wave 2 implements explicit `Download` → `Downloading` → `Verifying SHA-256` → `Ready to install` and passed targeted phone Tests 2/3/4.
+Wave 3 implements `Explicit Install` → Android package installer. Permission Settings and installer UI are entered only from an explicit user tap; recreation never auto-enters either system flow.
 
 ## Version relation contract
 

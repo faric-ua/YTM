@@ -5,7 +5,7 @@ This file is generated from the repository audit scripts.
 Do not hand-edit the inventory; update scripts or
 `docs/assistant-kit/PORTABLE_AUDITS.txt`, then regenerate.
 
-Total audit scripts: **96**
+Total audit scripts: **97**
 
 ## Portable/system subset
 
@@ -153,6 +153,7 @@ contracts.
 - `scripts/v1449-updater-qa-harness-audit.sh`
 - `scripts/v1449-updater-wave1-audit.sh`
 - `scripts/v1449-updater-wave2-audit.sh`
+- `scripts/v1449-updater-wave3-audit.sh`
 
 ## Usage rule
 

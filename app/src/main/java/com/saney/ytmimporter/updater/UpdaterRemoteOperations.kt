@@ -247,7 +247,7 @@ object UpdaterRemoteOperations {
                         phase = Phase.READY_TO_INSTALL,
                         message =
                             "SHA-256 збігається з офіційним маніфестом. " +
-                                "APK перевірено й готово до наступного етапу встановлення.",
+                                "Натисніть «Встановити», щоб відкрити системне встановлення Android.",
                         remoteVersionName = manifest.versionName,
                         remoteVersionCode = manifest.versionCode,
                         manifest = manifest,

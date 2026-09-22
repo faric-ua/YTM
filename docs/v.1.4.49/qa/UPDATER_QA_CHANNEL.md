@@ -77,3 +77,37 @@ This stable-channel smoke is not Download/SHA phone PASS.
 
 QA fixture/client run IDs and phone results are recorded only after they
 actually occur.
+
+## Wave 2 executed evidence
+
+- fixture source: `ec95686236a6e9e44e42e65807688b5ada5dd621`
+- fixture signed run: `35741969929`
+- QA tag: `v1.4.49-updater-qa1`
+- QA client source: `93ebc2af7b73d7bbbfd7ec4d43613a1596654f0d`
+- QA client signed run: `35742342582`
+- stable `latest` remained `v1.4.48`
+- phone results: Test 2=`2+`, Test 3=`3+`, Test 4=`4+`
+- endpoint: `APK перевірено`; no installer launch
+
+A non-blocking phone observation was recorded: Google/YTM state recovery after
+the same-package Wave 2 QA-client installation took noticeably long but
+eventually completed.
+
+## Wave 3 isolated installer QA
+
+Wave 3 uses a separate application identity so installer testing cannot raise
+the versionCode of the production package:
+
+- applicationId: `com.saney.ytmimporter.updaterqa`
+- label: `YTM Importer QA`
+- QA client: versionCode `92`
+- QA fixture: `1.4.49-updater-qa2` / versionCode `93`
+- tag: `v1.4.49-updater-qa2`
+
+Both QA builds use the normal release signing key and the same QA package ID,
+so Android exercises a real in-place `92 → 93` update. The production
+`com.saney.ytmimporter` package remains separate.
+
+The fixture also points back to the qa2 manifest, allowing the post-install
+equal-version check in Test 6. The qa2 release is a prerelease and stable
+`latest` must remain `v1.4.48`.

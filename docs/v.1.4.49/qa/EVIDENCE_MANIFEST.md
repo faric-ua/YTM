@@ -23,8 +23,17 @@
 | CHAT-04 | Wave 2 Version-screen screenshot in development conversation | installed `1.4.49 (92)` + Ukrainian SDK label on signed Wave 2 build | not committed |
 | CHAT-05 | Wave 2 production-channel result screenshot in development conversation | stable `1.4.48 (91)` correctly remains informational `Оновлень немає` | not committed |
 | QA-PLAN-01 | `qa/UPDATER_QA_CHANNEL.md` | isolated prerelease harness for real newer-version Download/SHA acceptance | repository |
+| CI-04 | fixture run `35741969929` / `ec95686236a6e9e44e42e65807688b5ada5dd621` | signed code-93 qa1 updater fixture built successfully | GitHub Actions |
+| CI-05 | QA client run `35742342582` / `93ebc2af7b73d7bbbfd7ec4d43613a1596654f0d` | signed code-92 qa1 client built successfully | GitHub Actions |
+| CHAT-06 | QA client Version / Update available screenshots | QA source label and remote `1.4.49-updater-qa1 (93)` | not committed |
+| CHAT-07 | final `APK перевірено` screenshot | SHA-256 Ready state reached without installer launch | not committed |
+| RUN-03 | user result `2+` | newer-version / explicit-download acceptance | text evidence |
+| RUN-04 | user result `3+` | download/recreation acceptance | text evidence |
+| RUN-05 | user result `4+` | SHA-256 verified Ready-state acceptance | text + screenshot evidence |
+| PLAN-04 | `scripts/v1449-updater-wave3-audit.sh` | explicit installer/FileProvider/permission lifecycle contract | repository source |
+| PLAN-05 | `scripts/v1449-wave3-qa-workflow.py` | isolated package-id QA plan for real installer Tests 5/6 | repository source |
 
 The screenshot binaries were supplied in the development conversation and were
 not stored in the public Git repository.
 
-Wave 1 Test 1 is accepted. Wave 2 has a successful signed build and production-channel phone smoke, but Download/SHA Test 2/3/4 remain pending. This is not a final v1.4.49 release PASS.
+Wave 1 Test 1 and Wave 2 Tests 2/3/4 are accepted for the targeted phone scope. Wave 3 installer implementation is pending signed-build and phone Tests 5/6, so this is not a final v1.4.49 release PASS.

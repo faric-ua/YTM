@@ -142,4 +142,35 @@ Before application code:
 
 ## Status
 
-**DEVELOPMENT — WAVE 1 TEST 1 PASS / WAVE 2 DOWNLOAD+SHA IMPLEMENTED — SIGNED BUILD PENDING**
+**DEVELOPMENT — WAVE 1 TEST 1 PASS / WAVE 2 TESTS 2+ 3+ 4+ PASS / WAVE 3 INSTALLER IMPLEMENTED — SIGNED BUILD + PHONE 5/6 NEXT**
+
+## Wave 2 phone acceptance
+
+The isolated qa1 prerelease path produced phone results:
+
+- Test 2 `2+` — newer version and explicit Download action;
+- Test 3 `3+` — download survives Activity recreation without observed duplicate;
+- Test 4 `4+` — SHA-256 verified, `APK перевірено`, no installer launch.
+
+Wave 2 is accepted for its targeted scope.
+
+## Wave 3 implementation
+
+Wave 3 adds the explicit installation boundary:
+
+- Ready state button becomes `Встановити`;
+- the button is enabled only after the APK reached verified Ready state;
+- `REQUEST_INSTALL_PACKAGES` is declared;
+- the verified `filesDir/updates/` APK is exposed only through FileProvider;
+- if Android has not granted "install unknown apps" permission, the explicit tap
+  opens that Settings page;
+- returning from Settings does not auto-launch the installer; the user taps
+  `Встановити` again;
+- Android's package installer is opened only from the explicit button handler;
+- Activity recreation does not relaunch Settings or package installer;
+- cancelling installer leaves the in-process Ready state inspectable.
+
+Wave 3 phone Tests 5/6 use a separate signed
+`com.saney.ytmimporter.updaterqa` clone. This avoids changing the production
+package versionCode while still exercising a real signed in-place `92 → 93`
+package update.

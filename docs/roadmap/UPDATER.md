@@ -8,9 +8,9 @@ state ownership. Targeted phone Test 1 passed on signed run `35730023317` /
 `4d30672c700d2fc2a32255465f555c0fd64acdc3` with result `1+`.
 
 Wave 2 implements explicit APK download plus downloaded-file SHA-256 verification.
-The download is owned outside the transient Activity, writes to app-private storage via a `.part` file, rejects oversized/failed downloads, verifies the manifest SHA-256, and promotes only a verified file to the final APK path.
+The download is owned outside the transient Activity, writes to app-private storage via a `.part` file, rejects oversized/failed downloads, verifies the manifest SHA-256, and promotes only a verified file to the final APK path. Real-phone QA passed Tests 2/3/4.
 
-Installer handoff remains a later explicit-user-action wave. Wave 2 never launches Android's installer.
+Wave 3 exposes installation only from the verified Ready state. The user explicitly presses `Встановити`; Android may first require permission to install from this source, and returning from that Settings screen never auto-launches installation. The verified app-private APK is shared through FileProvider and Android owns the final install/cancel confirmation.
 
 
 ## Entry point

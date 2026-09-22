@@ -3,10 +3,10 @@ Version: 1.4.49
 Version code: 92
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current development focus (installed phone app is v1.4.49 / code 92 Wave 2 signed build):
+Current development focus (installed phone app is v1.4.49 / code 92 Wave 2 QA client):
 - v1.4.48 targeted phone checkpoint remains the accepted stable checkpoint;
 - active development branch is feat/v1.4.49-updater;
-- Wave 1 result `1+` remains accepted; Wave 2 signed run 35736216442 / 0fe4312e41495a9e42f828cb9cf0ee4c41ce330b is installed and production-channel stable-check smoke passed; isolated QA prerelease Download + SHA-256 phone acceptance is next;
+- Wave 1 result `1+` remains accepted; Wave 2 qa1 fixture/client runs 35741969929 / 35742342582 produced phone results `2+`, `3+`, `4+`; Wave 3 explicit Android installer handoff is implemented and isolated package-id QA Tests 5/6 are next;
 - ASSISTANT_CONTEXT_INDEX.md + docs/assistant-kit/CONTEXT_FILES.txt are the assistant recovery map;
 - portable system/lifecycle/navigation contracts and audit inventory are first-class project artifacts;
 - next application feature: v1.4.49 in-app Updater;

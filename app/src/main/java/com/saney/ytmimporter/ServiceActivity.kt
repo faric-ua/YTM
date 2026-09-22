@@ -10,6 +10,7 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
@@ -588,6 +589,9 @@ class ServiceActivity : Activity() {
                         state.downloadRetryAvailable
                     )
 
+        val installAction =
+            state.phase == UpdaterRemoteOperations.Phase.READY_TO_INSTALL
+
         val actionLabel =
             when (state.phase) {
                 UpdaterRemoteOperations.Phase.CHECKING ->
@@ -603,7 +607,7 @@ class ServiceActivity : Activity() {
                     "Перевіряю SHA-256…"
 
                 UpdaterRemoteOperations.Phase.READY_TO_INSTALL ->
-                    "APK перевірено"
+                    "Встановити"
 
                 UpdaterRemoteOperations.Phase.ERROR ->
                     if (state.downloadRetryAvailable) {
@@ -620,8 +624,7 @@ class ServiceActivity : Activity() {
             when (state.phase) {
                 UpdaterRemoteOperations.Phase.CHECKING,
                 UpdaterRemoteOperations.Phase.DOWNLOADING,
-                UpdaterRemoteOperations.Phase.VERIFYING,
-                UpdaterRemoteOperations.Phase.READY_TO_INSTALL ->
+                UpdaterRemoteOperations.Phase.VERIFYING ->
                     false
 
                 else ->
@@ -630,16 +633,21 @@ class ServiceActivity : Activity() {
 
         val actionButton =
             fullActionButton(actionLabel) {
-                if (downloadAction) {
-                    UpdaterRemoteOperations.startDownload(
-                        applicationContext
-                    )
-                } else {
-                    UpdaterRemoteOperations.startCheck(
-                        localVersionCode =
-                            BuildConfig.VERSION_CODE,
-                        deviceSdk = Build.VERSION.SDK_INT
-                    )
+                when {
+                    installAction ->
+                        installVerifiedUpdate()
+
+                    downloadAction ->
+                        UpdaterRemoteOperations.startDownload(
+                            applicationContext
+                        )
+
+                    else ->
+                        UpdaterRemoteOperations.startCheck(
+                            localVersionCode =
+                                BuildConfig.VERSION_CODE,
+                            deviceSdk = Build.VERSION.SDK_INT
+                        )
                 }
             }
 
@@ -650,6 +658,109 @@ class ServiceActivity : Activity() {
         content.addView(actionButton)
 
         setScreen(root, content)
+    }
+
+    private fun installVerifiedUpdate() {
+        val state =
+            UpdaterRemoteOperations.current()
+
+        if (
+            state.phase !=
+            UpdaterRemoteOperations.Phase.READY_TO_INSTALL
+        ) {
+            toast(
+                "Спочатку перевірте та завантажте оновлення."
+            )
+            return
+        }
+
+        val apkFile =
+            state.downloadedFilePath
+                ?.let(::File)
+
+        if (
+            apkFile == null ||
+            !apkFile.isFile ||
+            apkFile.length() <= 0L
+        ) {
+            toast(
+                "Перевірений APK не знайдено. Завантажте оновлення ще раз."
+            )
+            return
+        }
+
+        if (
+            Build.VERSION.SDK_INT >=
+            Build.VERSION_CODES.O &&
+            !packageManager.canRequestPackageInstalls()
+        ) {
+            val settingsIntent =
+                Intent(
+                    Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                    Uri.parse(
+                        "package:$packageName"
+                    )
+                )
+
+            runCatching {
+                startActivity(
+                    settingsIntent
+                )
+            }.onSuccess {
+                toast(
+                    "Дозвольте встановлення з YTM Importer, " +
+                        "поверніться сюди й натисніть «Встановити» ще раз."
+                )
+            }.onFailure {
+                toast(
+                    "Не вдалося відкрити системний дозвіл на встановлення."
+                )
+            }
+
+            return
+        }
+
+        val apkUri =
+            runCatching {
+                FileProvider.getUriForFile(
+                    this,
+                    "$packageName.fileprovider",
+                    apkFile
+                )
+            }.getOrElse {
+                toast(
+                    "Не вдалося підготувати перевірений APK до встановлення."
+                )
+                return
+            }
+
+        val installIntent =
+            Intent(
+                Intent.ACTION_VIEW
+            ).apply {
+                setDataAndType(
+                    apkUri,
+                    "application/vnd.android.package-archive"
+                )
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                clipData =
+                    ClipData.newRawUri(
+                        "YTM Importer update",
+                        apkUri
+                    )
+            }
+
+        runCatching {
+            startActivity(
+                installIntent
+            )
+        }.onFailure {
+            toast(
+                "Не вдалося відкрити системне встановлення Android."
+            )
+        }
     }
 
     private fun buildChangelog() {

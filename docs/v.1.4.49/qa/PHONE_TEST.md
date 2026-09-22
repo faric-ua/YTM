@@ -101,26 +101,54 @@ Expected:
 
 Result format: `4+` / `4-`
 
+## Wave 2 executed result
+
+- Test 2 — newer release available: `2+`
+- Test 3 — download/recreation: `3+`
+- Test 4 — SHA-256 / Ready state: `4+`
+
+The final Wave 2 phone state was `APK перевірено`; no installer was launched.
+
 ## Test 5 — installer cancel
 
-Cancel Android installation.
+Use only the separate **YTM Importer QA** app (`com.saney.ytmimporter.updaterqa`)
+built by the Wave 3 QA harness. Do not connect the production Google/YTM
+account just to test the installer.
 
-Expected:
+From `APK перевірено`, tap `Встановити`.
 
-- app remains usable;
-- updater returns to a safe inspectable state;
-- installer is not relaunched automatically.
+If Android first opens the "install unknown apps" permission screen:
+
+- enable permission for YTM Importer QA;
+- return to the app;
+- confirm the package installer did **not** auto-open;
+- tap `Встановити` again.
+
+When Android's package installer opens:
+
+- cancel installation;
+- return to YTM Importer QA;
+- updater remains usable and inspectable;
+- `APK перевірено` / `Встановити` remains available;
+- rotate once and confirm the installer is not relaunched.
 
 Result format: `5+` / `5-`
 
 ## Test 6 — successful update
 
-When a newer signed release is intentionally available:
+Still in the separate YTM Importer QA app:
 
-- install it;
-- relaunch;
-- verify new version;
-- repeat check and confirm Up to date.
+- before installation, switch the QA app to a non-default theme as a simple local-data persistence marker;
+- return to Version and install the signed QA fixture;
+- approve installation in Android's package installer;
+- relaunch YTM Importer QA;
+- verify `1.4.49-updater-qa2 (93)`;
+- verify the selected QA theme survived the in-place update;
+- repeat `Перевірити оновлення`;
+- confirm the QA manifest reports no newer version / current QA build is up to date.
+
+The production `com.saney.ytmimporter` app and its account/local data are not
+replaced by this isolated QA test.
 
 Result format: `6+` / `6-`
 
