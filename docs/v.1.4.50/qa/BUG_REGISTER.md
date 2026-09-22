@@ -7,7 +7,7 @@ Do not silently close historical/global bugs without evidence.
 
 ## BUG-031 — Home only partially refreshes after Skin change
 
-Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.50 R1**
+Status: **CLOSED — PHONE RETEST PASS v1.4.50 R1**
 
 Initial signed evidence:
 
@@ -32,7 +32,7 @@ R1 fix:
 
 ## BUG-032 — History clear confirmation disappears on rotation
 
-Status: **FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.50 R1**
+Status: **CLOSED — PHONE RETEST PASS v1.4.50 R1**
 
 Initial signed evidence:
 
@@ -57,3 +57,21 @@ R1 fix:
   reopened;
 - `historyStore.clear()` remains only inside the explicit confirm callback;
 - dismiss/cancel clears only the dialog-open state.
+
+## R1 closeout evidence
+
+Exact tested corrective APK:
+- source `81d5ebd988d08d3ddb80d78b73fd94e20280c980`;
+- signed run `35782627453`;
+- result `R1-1+ / R1-2+ / R1-3+`.
+
+BUG-031 closeout:
+- full Home chrome follows Neon/Blue/Green after returning from Menu;
+- the earlier partial-refresh behavior is no longer reproduced.
+
+BUG-032 closeout:
+- History clear confirmation remains/reappears through rotation;
+- no destructive action executes during restoration;
+- Cancel leaves History unchanged and returns to the same History screen.
+
+Both bugs are closed only for these tested paths.

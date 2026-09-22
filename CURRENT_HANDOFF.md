@@ -22,7 +22,8 @@ Current release state:
 - active branch: `feat/v1.4.50-skin-system`
 - release-start base HEAD: `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`
 - accepted stable checkpoint: `checkpoint-v1.4.49-phone-pass` → `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
-- status: **v1.4.50 PHONE QA FAIL — WAVE 1 1-/2+/3- / BUG-031+032 R1 FIX STATIC+FULL PREFLIGHT PASS / SIGNED RETEST PENDING**
+- status: **v1.4.50 TARGETED PHONE PASS — WAVE 1 R1 / BUG-031+032 CLOSED / NEXT SKIN WAVE PENDING**
+- current phone QA APK: **v1.4.50 / code 93**, source `81d5ebd988d08d3ddb80d78b73fd94e20280c980`, signed run `35782627453`; targeted result `R1-1+ / R1-2+ / R1-3+`; BUG-031/032 closed for tested paths.
 - installed production APK: **v1.4.49 / code 92 exact final RC** from run `35755925563` / source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; `RC+` preserved Google/YTM connection and the current 13-track playlist; `FINAL+` confirmed installed/stable `1.4.49 (92)` and `Оновлень немає`.
 - accepted stable checkpoint is `checkpoint-v1.4.49-phone-pass` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; previous v1.4.48 checkpoint remains historical evidence.
 - focus: **v1.4.50 Skin System — define the reusable Skin contract first, then migrate Neon/Blue/Green without changing business semantics. YouTube/YTM URL/Mix → local snapshot remains future development.**
@@ -335,15 +336,15 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 ## 7. Exact next execution step
 
 1. Keep work on `feat/v1.4.50-skin-system`.
-2. Initial signed Wave 1 evidence is run `35772192953` / source `c3939849516124cd66c6a72b04f1683f5c6e161c`.
-3. Initial phone result is `1- / 2+ / 3-`.
-4. BUG-031 R1 fix: AppThemeManager detects Skin drift and MainActivity uses a one-line recreate guard, preserving the R7 budget.
-5. BUG-032 R1 fix: History clear-confirm restores through rotation without auto-clearing History.
-6. Dedicated R1 audit and full release preflight pass before commit.
-7. Next: build a signed APK from the exact R1 fix commit.
-8. Install over the current v1.4.50 (93) build without clearing app data.
-9. Run `PHONE_TEST.md` R1 retest: `R1-1+`, `R1-2+`, `R1-3+`.
-10. Do not close BUG-031/032 or claim v1.4.50 phone PASS before that real-phone retest.
+2. Accepted Wave 1/R1 phone-tested app source is `81d5ebd988d08d3ddb80d78b73fd94e20280c980`.
+3. Signed corrective run `35782627453` passed `R1-1+ / R1-2+ / R1-3+`.
+4. BUG-031 and BUG-032 are closed for their tested phone paths.
+5. Initial semantic-state test `2+` remains accepted evidence from run `35772192953`; do not broaden it beyond that scope.
+6. v1.4.50 remains `development`; do not create the final release/tag/checkpoint yet.
+7. Next implementation wave: define the skin preview/selection lifecycle without changing business semantics.
+8. Preserve the common lifecycle contract: no remote restart, no destructive auto-action, same parent screen after recreation.
+9. After the next implementation wave, run static/full preflight and produce an exact signed APK.
+10. Before final v1.4.50 closeout, complete representative screen/modal/tile phone QA and the remaining release checklist.
 
 ## 8. Working contract
 

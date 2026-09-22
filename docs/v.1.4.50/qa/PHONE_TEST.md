@@ -98,3 +98,24 @@ Corrective R1 targets:
   confirmation remains/reappears and History is unchanged until explicit confirm.
 - `R1-3+`: press Cancel after rotation; History remains unchanged and user stays on
   History.
+
+## R1 signed result
+
+Exact corrective package:
+- source: `81d5ebd988d08d3ddb80d78b73fd94e20280c980`;
+- signed run: `35782627453`;
+- installed version: `1.4.50 (93)`.
+
+Real-phone result:
+- `R1-1+` — Neon → Blue → Green refreshes the whole Home, not only workflow buttons;
+- `R1-2+` — `History → Очистити` confirmation survives portrait → landscape → portrait and History does not auto-clear;
+- `R1-3+` — Cancel after rotation closes only the confirmation, keeps the user on History and leaves History unchanged.
+
+Combined Wave 1 evidence:
+- initial semantic-state test remains `2+` from signed run `35772192953`;
+- corrective R1 scope is `R1-1+ / R1-2+ / R1-3+`.
+
+Scope note:
+- this closes BUG-031 and BUG-032 for their tested phone paths;
+- this does not claim a full-app regression PASS;
+- no R1 screenshot/video was committed; the R1 result is conversation-reported phone evidence.
