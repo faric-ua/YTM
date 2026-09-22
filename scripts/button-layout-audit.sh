@@ -19,7 +19,7 @@ grep -q '≡ Усі' "$REVIEW" || fail "compact icon filter row missing"
 grep -q 'filters.forEachIndexed' "$REVIEW" || fail "filters are not rendered in one adaptive row"
 grep -q 'private lateinit var importButton' "$MAIN" || fail "import step state is not tracked"
 grep -q 'StepState.READY' "$MAIN" || fail "step-state colors missing"
-grep -q 'palette.success' "$MAIN" || fail "theme success ready accent missing"
+grep -q 'palette.semantic.success' "$MAIN" || fail "theme success ready accent missing"
 grep -q 'palette.surfaceAlt' "$MAIN" || fail "dark ready/attention surface missing"
 grep -Fq 'HomeDashboardChrome' "$MAIN" ||
   fail "Main does not use Home dashboard chrome"

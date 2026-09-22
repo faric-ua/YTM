@@ -66,7 +66,7 @@ grep -Fq 'label = "Сервіс"' "$HOME_UI" || fail "Service nav action missing
 grep -Fq 'palette.surfaceAlt' "$UI" || fail "theme-aware dialog row surface missing"
 grep -Fq 'palette.border' "$UI" || fail "theme-aware dialog border missing"
 grep -Fq 'ActionTone.ACCENT -> palette.accent' "$UI" || fail "theme-aware dialog accent action missing"
-grep -Fq 'ActionTone.DANGER -> palette.danger' "$UI" || fail "semantic danger action missing"
+grep -Fq 'ActionTone.DANGER -> palette.semantic.danger' "$UI" || fail "semantic danger action missing"
 
 grep -Fq 'STATE_REPLACEMENT_DIALOG_OPEN' "$PLAYLIST" ||
   fail "Playlist replacement dialog rotation state missing"

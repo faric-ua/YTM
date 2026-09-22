@@ -2,7 +2,7 @@
 
 | Version | Status | Note |
 |---|---|---|
-| v1.4.50 | **DEVELOPMENT — RELEASE BASELINE READY / SKIN CONTRACT WAVE NEXT / PHONE QA PENDING** | Dedicated branch and release package are active. App identity is 1.4.50 / 93; Skin implementation and phone QA have not started yet. |
+| v1.4.50 | **DEVELOPMENT — SKIN CONTRACT WAVE 1 STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA PENDING** | Common Skin registry + SemanticPalette split implemented with exact existing RGB values preserved. Phone QA has not started. |
 | v1.4.49 | **PHONE QA PASS — TARGETED UPDATER / PRODUCTION FINAL RC / EQUAL-VERSION** | Exact final source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`, signed run `35755925563`, release tag `v1.4.49`. Updater `1+..6+`, final RC `RC+`, and stable equal-version `FINAL+` passed. BUG-030 remains an open non-blocking Play Protect distribution/reputation finding. |
 | v1.4.48 | **PHONE QA PASS — TARGETED STABILIZATION CHECKPOINT** | Functional tests 1+–4+ passed on signed run `35671741464` / `0e5620204e475495dd08468e8d00987eba7c4f75`. That run found UX-023. The narrow multiline-title fix was then phone-retested as 5+ on signed run `35673239632` / final source `ada8038f51834f8ae4874cd9c13485645f5f72b6`. Full historical regression was not rerun on the successor build. |
 | v1.4.47-R3 | **PARTIALLY PHONE-TESTED — STABILIZATION CHECKPOINT PASS / BROADER R3 QA DEFERRED** | Signed build `35667160072` from `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f` installed and targeted stabilization paths passed, including playlist deletion plus BUG-027/028 rotation continuity. Write-state reset reached 13/13 on the tested new-playlist run. Full R3 matrix and natural stale/live-401 acceptance were not exhaustively rerun. |

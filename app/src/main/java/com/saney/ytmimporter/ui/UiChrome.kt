@@ -335,7 +335,7 @@ object UiChrome {
                                         action.tone
                                     ) {
                                         ActionTone.DANGER ->
-                                            palette.danger
+                                            palette.semantic.danger
 
                                         ActionTone.ACCENT ->
                                             palette.accent
@@ -1403,7 +1403,7 @@ object UiChrome {
                         when (record.tone) {
                             ActionTone.NORMAL -> palette.text
                             ActionTone.ACCENT -> palette.accent
-                            ActionTone.DANGER -> palette.danger
+                            ActionTone.DANGER -> palette.semantic.danger
                         }
                     )
                     setLineSpacing(0f, 1.05f)
@@ -1758,7 +1758,7 @@ object UiChrome {
                 when (action.tone) {
                     ActionTone.NORMAL -> palette.text
                     ActionTone.ACCENT -> palette.accent
-                    ActionTone.DANGER -> palette.danger
+                    ActionTone.DANGER -> palette.semantic.danger
                 }
             )
             background = roundedBackground(

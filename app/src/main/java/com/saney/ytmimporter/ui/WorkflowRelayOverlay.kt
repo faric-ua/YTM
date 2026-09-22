@@ -289,15 +289,15 @@ class WorkflowRelayOverlay(
 
                     effectiveStatus ==
                         TrackStatus.ADDED ->
-                        palette.success
+                        palette.semantic.success
 
                     effectiveStatus ==
                         TrackStatus.DUPLICATE ->
-                        palette.duplicate
+                        palette.semantic.duplicate
 
                     effectiveStatus ==
                         TrackStatus.FAILED ->
-                        palette.danger
+                        palette.semantic.danger
 
                     else ->
                         palette.muted

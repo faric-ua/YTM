@@ -885,10 +885,10 @@ class MainActivity : Activity() {
         val accentColor =
             when (state) {
                 StepState.READY ->
-                    palette.success
+                    palette.semantic.success
 
                 StepState.ATTENTION ->
-                    palette.warning
+                    palette.semantic.warning
 
                 StepState.REQUIRED ->
                     palette.accent

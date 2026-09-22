@@ -2666,10 +2666,10 @@ class DestinationActivity : Activity() {
         val accentOverride =
             when (strokeColor) {
                 Color.rgb(95, 48, 52) ->
-                    palette.danger
+                    palette.semantic.danger
 
                 Color.rgb(83, 68, 37) ->
-                    palette.warning
+                    palette.semantic.warning
 
                 else ->
                     null

@@ -94,9 +94,9 @@ v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
 - [x] dedicated `feat/v1.4.50-skin-system` branch
 - [x] app identity v1.4.50 / versionCode 93
 - [x] release metadata phase `development`
-- [ ] define reusable Skin contract before broad UI migration
-- [ ] migrate Neon/Blue/Green into common Skin contract
-- [ ] separate semantic state colors from skin visuals
+- [x] define reusable Skin contract before broad UI migration — Wave 1 static/full preflight PASS
+- [x] migrate Neon/Blue/Green into common Skin contract — exact existing RGB values preserved
+- [x] separate semantic state colors from skin visuals — `SemanticPalette` role group
 - [ ] skin preview/selection lifecycle
 - [ ] phone QA across representative screens/modals/tiles
 

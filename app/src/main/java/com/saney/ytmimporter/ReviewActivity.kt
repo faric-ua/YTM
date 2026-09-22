@@ -1895,18 +1895,18 @@ class ReviewActivity : Activity() {
         return when (status) {
             TrackStatus.MATCHED,
             TrackStatus.ADDED ->
-                palette.success
+                palette.semantic.success
 
             TrackStatus.REVIEW,
             TrackStatus.PENDING ->
-                palette.warning
+                palette.semantic.warning
 
             TrackStatus.DUPLICATE ->
-                palette.duplicate
+                palette.semantic.duplicate
 
             TrackStatus.MISSING,
             TrackStatus.FAILED ->
-                palette.danger
+                palette.semantic.danger
 
             else ->
                 palette.muted
@@ -2213,10 +2213,10 @@ class ReviewActivity : Activity() {
         val accentOverride =
             when (strokeColor) {
                 Color.rgb(95, 48, 52) ->
-                    palette.danger
+                    palette.semantic.danger
 
                 Color.rgb(83, 68, 37) ->
-                    palette.warning
+                    palette.semantic.warning
 
                 else ->
                     null

@@ -333,10 +333,10 @@ class DataActivity : Activity() {
         snapshotDeleteButton.background =
             roundedBackground(
                 color =
-                    palette.dangerFill,
+                    palette.semantic.dangerFill,
                 radiusDp = 11,
                 strokeColor =
-                    palette.danger
+                    palette.semantic.danger
             )
 
         rollbackCard.addView(
@@ -2130,10 +2130,10 @@ class DataActivity : Activity() {
         val accentOverride =
             when (strokeColor) {
                 Color.rgb(95, 48, 52) ->
-                    palette.danger
+                    palette.semantic.danger
 
                 Color.rgb(83, 68, 37) ->
-                    palette.warning
+                    palette.semantic.warning
 
                 else ->
                     null

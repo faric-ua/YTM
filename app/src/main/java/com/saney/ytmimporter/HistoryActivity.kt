@@ -1444,15 +1444,15 @@ class HistoryActivity : Activity() {
 
         return when (status) {
             HistoryStatus.COMPLETED ->
-                palette.success
+                palette.semantic.success
 
             HistoryStatus.RUNNING,
             HistoryStatus.PARTIAL,
             HistoryStatus.PENDING_QUOTA ->
-                palette.warning
+                palette.semantic.warning
 
             HistoryStatus.FAILED ->
-                palette.danger
+                palette.semantic.danger
         }
     }
 
@@ -1846,10 +1846,10 @@ class HistoryActivity : Activity() {
         val accentOverride =
             when (strokeColor) {
                 Color.rgb(95, 48, 52) ->
-                    palette.danger
+                    palette.semantic.danger
 
                 Color.rgb(83, 68, 37) ->
-                    palette.warning
+                    palette.semantic.warning
 
                 else ->
                     null

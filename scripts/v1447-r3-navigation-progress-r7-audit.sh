@@ -75,9 +75,9 @@ for alternatives in semantic_groups:
 
 for needle in [
     "TrackStatus.DUPLICATE",
-    "palette.duplicate",
+    "palette.semantic.duplicate",
     "TrackStatus.FAILED",
-    "palette.danger",
+    "palette.semantic.danger",
 ]:
     if needle not in relay:
         raise SystemExit(f"FAIL: progress semantic state missing: {needle}")

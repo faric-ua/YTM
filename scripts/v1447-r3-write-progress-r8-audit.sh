@@ -29,7 +29,7 @@ for n in [
     "private fun syncWriteStates(",
     "private fun resolveWriteIndex(",
     "private fun sameTrack(",
-    "palette.duplicate",
+    "palette.semantic.duplicate",
     '"Оброблено: ${progress.processedTracks}/${progress.totalTracks} • "',
     '"Додано: ${progress.job.addedCount} • "',
 ]:
@@ -39,8 +39,8 @@ legacy_fill_contract = all(
     n in relay
     for n in [
         "private fun blendColor(",
-        "palette.successFill",
-        "palette.dangerFill",
+        "palette.semantic.successFill",
+        "palette.semantic.dangerFill",
     ]
 )
 

@@ -22,7 +22,7 @@ Current release state:
 - active branch: `feat/v1.4.50-skin-system`
 - release-start base HEAD: `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`
 - accepted stable checkpoint: `checkpoint-v1.4.49-phone-pass` → `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
-- status: **v1.4.50 DEVELOPMENT — RELEASE BASELINE READY / SKIN CONTRACT WAVE NEXT / PHONE QA PENDING**
+- status: **v1.4.50 DEVELOPMENT — SKIN CONTRACT WAVE 1 STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA PENDING**
 - installed production APK: **v1.4.49 / code 92 exact final RC** from run `35755925563` / source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; `RC+` preserved Google/YTM connection and the current 13-track playlist; `FINAL+` confirmed installed/stable `1.4.49 (92)` and `Оновлень немає`.
 - accepted stable checkpoint is `checkpoint-v1.4.49-phone-pass` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; previous v1.4.48 checkpoint remains historical evidence.
 - focus: **v1.4.50 Skin System — define the reusable Skin contract first, then migrate Neon/Blue/Green without changing business semantics. YouTube/YTM URL/Mix → local snapshot remains future development.**
@@ -335,15 +335,15 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 ## 7. Exact next execution step
 
 1. Keep work on `feat/v1.4.50-skin-system`.
-2. Treat v1.4.49 as the accepted stable release; do not rewrite its final evidence.
-3. v1.4.50 release-start base is `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`.
-4. Current source identity is v1.4.50 / versionCode 93.
-5. First implementation wave: define a reusable Skin contract before broad UI migration.
-6. Migrate Neon/Blue/Green representation without intentionally changing accepted appearance or behavior.
-7. Keep semantic ready / attention / error / duplicate / disabled meaning independent from Skin visuals.
-8. Add a dedicated v1.4.50 static audit with the first Skin implementation wave.
-9. Do not claim phone PASS until a signed v1.4.50 APK is installed and the defined Skin/lifecycle matrix is executed.
-10. Keep YouTube/YTM URL/Mix → local snapshot as future backlog outside this release.
+2. Treat v1.4.49 as the accepted stable release and preserve its final evidence.
+3. Wave 1 common Skin contract is implemented with exact existing RGB values preserved.
+4. Semantic success/warning/danger/duplicate roles are grouped under `SemanticPalette`.
+5. Dedicated `v1450-skin-contract-wave1-audit.sh` and full release preflight pass.
+6. Next: produce a signed v1.4.50 / code 93 APK from the exact Wave 1 commit.
+7. Install over v1.4.49 without clearing data.
+8. Execute `docs/v.1.4.50/qa/PHONE_TEST.md` Tests 1–3.
+9. Do not claim phone PASS before real-phone evidence.
+10. Keep preview/selection enhancements and any Blue/Green visual redesign as later v1.4.50 waves.
 
 ## 8. Working contract
 

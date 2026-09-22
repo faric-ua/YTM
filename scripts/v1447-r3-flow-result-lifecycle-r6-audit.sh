@@ -66,7 +66,7 @@ for needle in ['maxLines = 1', 'TextUtils.TruncateAt.END']:
 for needle in [
     'private var writeScroll: ScrollView? = null',
     'writeScroll = scroll',
-    'palette.success',
+    'palette.semantic.success',
     'activeRow = row',
     'smoothScrollTo(',
 ]:
