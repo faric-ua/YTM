@@ -26,6 +26,9 @@ class MenuActivity : Activity() {
     private var themeDialogOpen = false
     private var themeDialog: Dialog? = null
 
+    private var skinPreviewStyleKey: String? = null
+    private var skinPreviewDialog: Dialog? = null
+
     private var replacementDialogOpen = false
     private var replacementDialog: Dialog? = null
 
@@ -44,6 +47,12 @@ class MenuActivity : Activity() {
                 )
                 ?: false
 
+        skinPreviewStyleKey =
+            savedInstanceState
+                ?.getString(
+                    STATE_SKIN_PREVIEW_STYLE
+                )
+
         replacementDialogOpen =
             savedInstanceState
                 ?.getBoolean(
@@ -54,7 +63,26 @@ class MenuActivity : Activity() {
 
         render()
 
+        val restoredSkinPreview =
+            skinPreviewStyle()
+
+        if (
+            skinPreviewStyleKey != null &&
+            restoredSkinPreview == null
+        ) {
+            skinPreviewStyleKey = null
+        }
+
         when {
+            restoredSkinPreview != null ->
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed) {
+                        showSkinPreview(
+                            restoredSkinPreview
+                        )
+                    }
+                }
+
             themeDialogOpen ->
                 window.decorView.post {
                     if (!isFinishing && !isDestroyed) {
@@ -78,6 +106,10 @@ class MenuActivity : Activity() {
             STATE_THEME_DIALOG_OPEN,
             themeDialogOpen
         )
+        outState.putString(
+            STATE_SKIN_PREVIEW_STYLE,
+            skinPreviewStyleKey
+        )
         outState.putBoolean(
             STATE_REPLACEMENT_DIALOG_OPEN,
             replacementDialogOpen
@@ -89,6 +121,10 @@ class MenuActivity : Activity() {
         themeDialog
             ?.setOnDismissListener(null)
         themeDialog = null
+
+        skinPreviewDialog
+            ?.setOnDismissListener(null)
+        skinPreviewDialog = null
 
         replacementDialog
             ?.setOnDismissListener(null)
@@ -256,6 +292,15 @@ class MenuActivity : Activity() {
             )
         }
 
+    private fun skinPreviewStyle():
+        AppThemeManager.ThemeStyle? =
+        AppThemeManager.ThemeStyle
+            .values()
+            .firstOrNull {
+                it.storageKey ==
+                    skinPreviewStyleKey
+            }
+
     private fun showThemePicker() {
         if (themeDialog?.isShowing == true) {
             return
@@ -271,7 +316,8 @@ class MenuActivity : Activity() {
                 activity = this,
                 title = "Тема оформлення",
                 subtitle =
-                    "Один інтерфейс — три палітри. Тема зберігається на пристрої.",
+                    "Оберіть Skin для попереднього перегляду. " +
+                        "Зміна збережеться тільки після «Застосувати».",
                 actions =
                     AppThemeManager.ThemeStyle
                         .values()
@@ -289,14 +335,10 @@ class MenuActivity : Activity() {
                                         "  " +
                                         style.label,
                                 onClick = {
-                                    if (style != active) {
-                                        AppThemeManager
-                                            .setStyle(
-                                                this,
-                                                style
-                                            )
-                                        recreate()
-                                    }
+                                    themeDialogOpen = false
+                                    showSkinPreview(
+                                        style
+                                    )
                                 }
                             )
                         }
@@ -306,6 +348,259 @@ class MenuActivity : Activity() {
                     themeDialog = null
                 }
             }
+    }
+
+    private fun showSkinPreview(
+        style: AppThemeManager.ThemeStyle
+    ) {
+        if (
+            skinPreviewDialog
+                ?.isShowing == true
+        ) {
+            return
+        }
+
+        skinPreviewStyleKey =
+            style.storageKey
+
+        skinPreviewDialog =
+            UiChrome.showContentDialog(
+                activity = this,
+                title = "Попередній перегляд Skin",
+                subtitle =
+                    "${style.marker} ${style.label}",
+                message =
+                    "Активна тема не зміниться, доки ви явно не натиснете «Застосувати».",
+                content =
+                    buildSkinPreview(
+                        style
+                    ),
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label = "Застосувати",
+                            tone =
+                                UiChrome.ActionTone.ACCENT
+                        ) {
+                            applySelectedSkin(
+                                style
+                            )
+                        },
+                        UiChrome.DialogAction(
+                            label = "Скасувати",
+                            tone =
+                                UiChrome.ActionTone.NORMAL,
+                            onClick = {}
+                        )
+                    )
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    skinPreviewStyleKey = null
+                    skinPreviewDialog = null
+                }
+            }
+    }
+
+    private fun applySelectedSkin(
+        style: AppThemeManager.ThemeStyle
+    ) {
+        skinPreviewStyleKey = null
+
+        if (
+            AppThemeManager.currentStyle(this) ==
+            style
+        ) {
+            return
+        }
+
+        AppThemeManager
+            .setStyle(
+                this,
+                style
+            )
+
+        recreate()
+    }
+
+    private fun buildSkinPreview(
+        style: AppThemeManager.ThemeStyle
+    ): LinearLayout {
+        val palette =
+            AppThemeManager.palette(
+                style
+            )
+
+        return LinearLayout(this).apply {
+            orientation =
+                LinearLayout.VERTICAL
+            setPadding(
+                dp(12),
+                dp(12),
+                dp(12),
+                dp(12)
+            )
+            background =
+                AppThemeManager
+                    .skinSurfaceDrawable(
+                        context =
+                            this@MenuActivity,
+                        style = style,
+                        fill =
+                            palette.background,
+                        radiusDp = 14,
+                        accentStroke = true
+                    )
+
+            addView(
+                TextView(
+                    this@MenuActivity
+                ).apply {
+                    text =
+                        "${style.marker} ${style.label}"
+                    textSize = 16f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.accent
+                    )
+                    setPadding(
+                        dp(4),
+                        0,
+                        dp(4),
+                        dp(4)
+                    )
+                }
+            )
+
+            addView(
+                TextView(
+                    this@MenuActivity
+                ).apply {
+                    text =
+                        "Preview використовує палітру кандидата, " +
+                            "але не змінює збережений Skin."
+                    textSize = 12.5f
+                    setTextColor(
+                        palette.muted
+                    )
+                    setPadding(
+                        dp(4),
+                        0,
+                        dp(4),
+                        dp(4)
+                    )
+                }
+            )
+
+            addPreviewToken(
+                parent = this,
+                style = style,
+                label = "Поверхня · акцент",
+                fill = palette.surface,
+                accent = palette.accent
+            )
+
+            addPreviewToken(
+                parent = this,
+                style = style,
+                label = "Готово · success",
+                fill =
+                    palette.semantic
+                        .successFill,
+                accent =
+                    palette.semantic
+                        .success
+            )
+
+            addPreviewToken(
+                parent = this,
+                style = style,
+                label = "Увага · warning",
+                fill =
+                    palette.semantic
+                        .warningFill,
+                accent =
+                    palette.semantic
+                        .warning
+            )
+
+            addPreviewToken(
+                parent = this,
+                style = style,
+                label = "Помилка · danger",
+                fill =
+                    palette.semantic
+                        .dangerFill,
+                accent =
+                    palette.semantic
+                        .danger
+            )
+
+            addPreviewToken(
+                parent = this,
+                style = style,
+                label = "Дублікат · duplicate",
+                fill =
+                    palette.surfaceAlt,
+                accent =
+                    palette.semantic
+                        .duplicate
+            )
+        }
+    }
+
+    private fun addPreviewToken(
+        parent: LinearLayout,
+        style: AppThemeManager.ThemeStyle,
+        label: String,
+        fill: Int,
+        accent: Int
+    ) {
+        val palette =
+            AppThemeManager.palette(
+                style
+            )
+
+        parent.addView(
+            TextView(this).apply {
+                text = label
+                textSize = 13.5f
+                setTypeface(
+                    typeface,
+                    Typeface.BOLD
+                )
+                setTextColor(
+                    palette.text
+                )
+                setPadding(
+                    dp(12),
+                    dp(10),
+                    dp(12),
+                    dp(10)
+                )
+                background =
+                    AppThemeManager
+                        .skinSurfaceDrawable(
+                            context =
+                                this@MenuActivity,
+                            style = style,
+                            fill = fill,
+                            radiusDp = 10,
+                            accentStroke = true,
+                            accentOverride =
+                                accent
+                        )
+            },
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin =
+                    dp(8)
+            }
+        )
     }
 
     private fun showReplacementLog() {
@@ -540,6 +835,9 @@ class MenuActivity : Activity() {
     companion object {
         private const val STATE_THEME_DIALOG_OPEN =
             "menu_theme_dialog_open"
+
+        private const val STATE_SKIN_PREVIEW_STYLE =
+            "menu_skin_preview_style"
 
         private const val STATE_REPLACEMENT_DIALOG_OPEN =
             "menu_replacement_dialog_open"

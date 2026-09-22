@@ -72,11 +72,27 @@ It does not intentionally change:
 - remote-operation ownership;
 - theme preference storage keys.
 
+## Wave 2 — preview / selection lifecycle
+
+The selector now separates **preview** from **commit**:
+
+- tapping Neon/Blue/Green opens a candidate preview;
+- preview reads the candidate `SkinPalette` directly and does not write prefs;
+- `Застосувати` is the only path that commits `ThemeStyle`;
+- `Скасувати`, system Back and dialog dismissal leave the active Skin unchanged;
+- rotation stores only the candidate style key and rebuilds the same preview over
+  `MenuActivity`;
+- applying a different Skin recreates Menu, and the existing Home resume guard
+  rebuilds Home when the user returns;
+- preview is visual-only and must not start remote work or destructive actions.
+
+The preview card exposes representative visual and semantic tokens:
+background/surface/accent plus success/warning/danger/duplicate.
+
 ## Next waves
 
 Later v1.4.50 work may add:
 
-- explicit skin preview/selection lifecycle;
 - richer packaged skin data;
 - controlled visual redesign of Blue/Green semantic palettes;
 - optional safe visual assets.

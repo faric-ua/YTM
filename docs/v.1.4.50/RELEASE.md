@@ -54,4 +54,21 @@ v1.4.50 release closeout.
 
 ## Status
 
-**TARGETED PHONE PASS — WAVE 1 R1 / BUG-031+032 CLOSED / NEXT SKIN WAVE PENDING**
+**DEVELOPMENT — WAVE 2 SKIN PREVIEW STATIC/FULL PREFLIGHT PASS / SIGNED PHONE QA PENDING; WAVE 1 R1 TARGETED PASS PRESERVED**
+
+## Wave 2 implementation
+
+Skin selection now has an explicit preview/commit boundary.
+
+Candidate preview:
+- reads the selected built-in Skin without writing preferences;
+- shows surface/accent and representative semantic-state tokens;
+- survives rotation by storing the candidate style key;
+- treats Cancel/Back/dismiss as no-op.
+
+Commit:
+- only `Застосувати` calls `AppThemeManager.setStyle(...)`;
+- Menu recreates after a real Skin change;
+- Home continues to use the Wave 1 R1 resume guard when the user returns.
+
+Wave 2 does not change the built-in RGB values or business semantics.

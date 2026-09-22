@@ -26,3 +26,19 @@
 - [ ] cancel/no-op behavior
 - [ ] error path
 - [ ] no accidental duplicate operation
+
+## Wave 2 — Skin preview / selection
+
+- [x] selector opens candidate preview instead of committing immediately
+- [x] preview reads candidate Skin palette without changing prefs
+- [x] Apply is the only persisted Skin-change path
+- [x] Cancel / Back / dismiss are no-op for persisted Skin
+- [x] candidate preview style key is saved/restored across Activity recreation
+- [x] candidate preview exposes surface/accent + success/warning/danger/duplicate
+- [x] Wave 1 exact RGB values remain unchanged
+- [x] dedicated Wave 2 static audit passes
+- [x] full release preflight passes
+- [ ] signed Wave 2 APK
+- [ ] phone W2-1 preview + Cancel no-op
+- [ ] phone W2-2 Apply + Menu/Home refresh
+- [ ] phone W2-3 preview rotation continuity

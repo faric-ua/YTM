@@ -8,7 +8,8 @@ Current development focus (v1.4.50 Skin System — DEVELOPMENT):
 - release documentation phase: development;
 - app identity: v1.4.50 / versionCode 93;
 - Skin contract Wave 1 R1 targeted phone PASS: `R1-1+ / R1-2+ / R1-3+` on run 35782627453;
-- BUG-031/032 CLOSED for tested paths on source 81d5ebd988d08d3ddb80d78b73fd94e20280c980; next Skin wave pending;
+- BUG-031/032 CLOSED for tested paths on source 81d5ebd988d08d3ddb80d78b73fd94e20280c980;
+- Wave 2 Skin preview/selection lifecycle implemented; static/full preflight PASS; signed phone QA pending;
 - semantic success/warning/danger/duplicate colors are grouped under `SemanticPalette`; initial Wave 1 semantic phone smoke is `2+`;
 - accepted stable release remains v1.4.49 In-app Updater;
 - v1.4.49 updater matrix `1+ 2+ 3+ 4+ 5+ 6+`, RC+, and FINAL+ remain accepted evidence;

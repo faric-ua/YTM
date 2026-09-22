@@ -190,13 +190,25 @@ object AppThemeManager {
     }
 
     fun skin(
-        context: Context
+        style: ThemeStyle
     ): Skin =
         requireNotNull(
             BUILT_IN_SKINS[
-                currentStyle(context)
+                style
             ]
         )
+
+    fun skin(
+        context: Context
+    ): Skin =
+        skin(
+            currentStyle(context)
+        )
+
+    fun palette(
+        style: ThemeStyle
+    ): SkinPalette =
+        skin(style).palette
 
     fun palette(
         context: Context
@@ -261,11 +273,42 @@ object AppThemeManager {
         radiusDp: Int = 14,
         accentStroke: Boolean = false,
         accentOverride: Int? = null
-    ): Drawable {
-        val palette =
-            palette(context)
+    ): Drawable =
+        surfaceDrawable(
+            context = context,
+            palette = palette(context),
+            fill = fill,
+            radiusDp = radiusDp,
+            accentStroke = accentStroke,
+            accentOverride = accentOverride
+        )
 
-        return SketchRoundedDrawable(
+    fun skinSurfaceDrawable(
+        context: Context,
+        style: ThemeStyle,
+        fill: Int = palette(style).surface,
+        radiusDp: Int = 14,
+        accentStroke: Boolean = false,
+        accentOverride: Int? = null
+    ): Drawable =
+        surfaceDrawable(
+            context = context,
+            palette = palette(style),
+            fill = fill,
+            radiusDp = radiusDp,
+            accentStroke = accentStroke,
+            accentOverride = accentOverride
+        )
+
+    private fun surfaceDrawable(
+        context: Context,
+        palette: SkinPalette,
+        fill: Int,
+        radiusDp: Int,
+        accentStroke: Boolean,
+        accentOverride: Int?
+    ): Drawable =
+        SketchRoundedDrawable(
             density =
                 context.resources
                     .displayMetrics
@@ -278,7 +321,6 @@ object AppThemeManager {
             radiusDp = radiusDp,
             accentStroke = accentStroke
         )
-    }
 
     fun largeCardDrawable(
         context: Context,

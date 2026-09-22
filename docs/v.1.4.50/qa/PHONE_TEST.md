@@ -119,3 +119,56 @@ Scope note:
 - this closes BUG-031 and BUG-032 for their tested phone paths;
 - this does not claim a full-app regression PASS;
 - no R1 screenshot/video was committed; the R1 result is conversation-reported phone evidence.
+
+## Wave 2 — Skin preview / selection
+
+Use the exact signed Wave 2 APK produced from the Wave 2 source commit.
+
+### W2-1 — preview does not commit
+
+1. note the currently active Skin and its `✓` marker;
+2. open `Меню → Тема`;
+3. tap a different Skin;
+4. inspect the candidate preview;
+5. press `Скасувати`;
+6. reopen `Тема`.
+
+Expected:
+- preview shows candidate background/surface/accent and semantic role samples;
+- before Apply, persisted/active Skin does not change;
+- after Cancel, the old Skin still has the `✓` marker;
+- Menu/Home remain on the old Skin.
+
+Result: `W2-1+` / `W2-1-`
+
+### W2-2 — explicit Apply commits
+
+1. open preview for a different Skin;
+2. press `Застосувати`;
+3. confirm Menu recreates into the selected Skin;
+4. reopen `Тема` and confirm the new Skin has `✓`;
+5. return to Home.
+
+Expected:
+- only Apply changes the active Skin;
+- Menu uses the new Skin after recreation;
+- Home fully refreshes to the same Skin through the accepted R1 resume guard;
+- no navigation or business behavior changes.
+
+Result: `W2-2+` / `W2-2-`
+
+### W2-3 — preview rotation continuity
+
+1. open preview for a Skin that is not active;
+2. rotate portrait → landscape → portrait before Apply;
+3. verify the same candidate preview remains/reappears;
+4. press system Back or `Скасувати`;
+5. reopen `Тема`.
+
+Expected:
+- the same candidate Skin preview survives Activity recreation;
+- rotation never commits the candidate;
+- Back/Cancel leaves the previously active Skin selected;
+- no remote operation or destructive action starts.
+
+Result: `W2-3+` / `W2-3-`
