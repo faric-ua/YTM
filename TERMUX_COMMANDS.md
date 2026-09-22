@@ -381,3 +381,28 @@ bash scripts/release-close-audit.sh X.Y.Z
 
 If the close gate fails, do not bypass it; repair the missing or inconsistent
 release evidence/status first.
+
+## `ytm-code` package handoff
+
+The user's normal code-delivery command is:
+
+```bash
+ytm-code
+```
+
+For substantial changes, ChatGPT should prepare a `YTM_*.zip` package compatible
+with that runner instead of asking the user to paste a long multiline shell
+script.
+
+The ZIP must contain exactly one top-level folder. The executable `.sh` and its
+matching `.sha256` live inside that folder.
+
+Normal flow:
+
+1. download the supplied `YTM_*.zip` package;
+2. run `ytm-code`;
+3. return the final PASS/FAIL output to ChatGPT.
+
+Canonical contract:
+
+`docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md`

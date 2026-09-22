@@ -442,3 +442,11 @@ v1.4.43 current scope:
 - propagate write-time HTTP 401 without converting pending tracks into ordinary failures;
 - preserve unfinished write in Queue;
 - BUG-013 phone retest required before close.
+
+## Code delivery contract
+
+For substantial phone-side repository changes, use
+`docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md`.
+
+Default delivery is a correctly structured `YTM_*.zip` package executed by the
+user's existing `ytm-code` command, not a long multiline script pasted into chat.

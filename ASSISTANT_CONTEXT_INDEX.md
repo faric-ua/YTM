@@ -179,3 +179,10 @@ The repository must contain enough information for another assistant to
 understand what the project is, how work is performed, what must never regress,
 what is actually phone-tested, which audits protect which contracts, how
 build/release works, and what comes next.
+
+## Phone-side code handoff
+
+- `docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md`
+
+Substantial repository changes should normally be delivered as correctly
+structured `YTM_*.zip` packages for the user's `ytm-code` runner.

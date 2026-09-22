@@ -51,3 +51,4 @@ docs/v.1.4.49/qa/BUG_REGISTER.md
 docs/v.1.4.49/qa/EVIDENCE_MANIFEST.md
 docs/v.1.4.49/diagrams/README.md
 docs/v.1.4.49/diagrams/UPDATER_FLOW.md
+docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md

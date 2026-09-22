@@ -365,3 +365,22 @@ CURRENT_HANDOFF and PROJECT_STATUS.
 
 Do not weaken the gate to make a release pass. Fix the documentation/state that
 the gate identifies.
+
+## 26. `ytm-code` package delivery
+
+The established phone-side delivery mechanism is the user's `ytm-code` command.
+
+For substantial repository mutations, the assistant should normally provide a
+descriptive `YTM_*.zip` package conforming to
+`docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md`.
+
+The ZIP must contain exactly one top-level folder.
+
+Do not default back to long pasted shell programs when the same operation can be
+packaged safely.
+
+The normal user-facing execution instruction is:
+
+```bash
+ytm-code
+```
