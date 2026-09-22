@@ -17,12 +17,12 @@ Latest merged release:
 Current release candidate:
 - versionName: **1.4.48**
 - versionCode: **91**
-- active branch: `feat/v1.4.48-playlist-edit`
-- base checkpoint docs HEAD: `8955f8f188c516c604f4f4b611602ff7b4dd8e27`
-- tested R3 app checkpoint remains: `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f`
-- status: **v1.4.48 PHONE QA PASS — STABILIZATION CHECKPOINT COMPLETE**
-- installed phone APK: **v1.4.48**, signed run `35673239632`, source `ada8038f51834f8ae4874cd9c13485645f5f72b6`; Tile/Edit/privacy/menu/delete/rotation/UX-023 tested PASS
-- focus: **v1.4.48 closed; next release is v1.4.49 Updater**
+- active branch: `feat/v1.4.49-updater`
+- pre-recovery documentation HEAD: `33d1a04e4b295e80f02446944cdde2b4cfba8e6a`
+- stable app checkpoint: `checkpoint-v1.4.48-phone-pass` → `ada8038f51834f8ae4874cd9c13485645f5f72b6`
+- status: **DOCUMENTATION SYSTEM RECOVERY BEFORE v1.4.49 UPDATER CODE**
+- installed phone APK: **v1.4.48**; functional tests 1–4 were established on run `35671741464` / `0e5620204e475495dd08468e8d00987eba7c4f75`; UX-023-only successor test 5 passed on run `35673239632` / final source `ada8038f51834f8ae4874cd9c13485645f5f72b6`
+- focus: **documentation recovery before v1.4.49 Updater; no app-source change in this recovery wave**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -331,13 +331,15 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. Keep v1.4.48 work on `feat/v1.4.48-playlist-edit`.
-2. Run v1.4.48 Tile + playlist-editor audits and the full release preflight.
-3. Commit/push only after static preflight passes.
-4. Build one signed v1.4.48 APK from the exact committed HEAD.
-5. Phone-test playlist Tile tap, Edit/Delete/overflow, long press, rename/privacy, and rotation continuity.
-6. Record phone evidence before extending playlist management further.
-
+1. Keep work on `feat/v1.4.49-updater`.
+2. Recover the complete v1.4.48 release/QA/diagram package.
+3. Add `ASSISTANT_CONTEXT_INDEX.md` and the machine-readable context manifest.
+4. Add portable system/lifecycle/navigation/modal/IME/remote-operation contracts.
+5. Add complete audit inventory plus a portable audit subset.
+6. Add release-documentation and file-manifest gates.
+7. Add the reusable project-skeleton migration exporter.
+8. Commit/push this documentation-only recovery with no APK build.
+9. Start v1.4.49 Updater application code only after the documentation system passes.
 
 ## 8. Working contract
 
@@ -354,12 +356,8 @@ Rules:
 ## 9. Fresh-chat reading order
 
 1. `START_HERE_ASSISTANT.md`
-2. `CURRENT_HANDOFF.md`
-3. `YTM_ASSISTANT_WORKFLOW.md`
-4. `PROJECT_STATUS.txt`
-5. `BACKLOG.md`
-6. `RELEASE_TEST_STATUS.md`
-7. `qa/BUG_REGISTER.md`
-8. `docs/v.1.4.43/RELEASE.md`
-9. `docs/v.1.4.43/qa/PHONE_TEST.md`
-10. live GitHub branch/PR state
+2. `ASSISTANT_CONTEXT_INDEX.md`
+3. every file in `docs/assistant-kit/CONTEXT_FILES.txt`
+4. `docs/assistant-kit/AUDIT_CATALOG.md`
+5. relevant exact source/audit files
+6. live GitHub branch / HEAD / Actions state

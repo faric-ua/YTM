@@ -3,16 +3,18 @@ Version: 1.4.48
 Version code: 91
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current v1.4.48 focus:
-- generic project-wide Tile / «плитка» UI contract
-- existing YouTube/YTM playlist rows are now reusable action tiles
-- tile tap preserves select/add behavior
-- Edit/Delete/overflow quick actions live on each playlist tile
-- long press and overflow open the same playlist action menu
-- playlist title/privacy editor survives rotation with its draft
-- playlists.update preserves existing metadata through a fresh pre-update read
-- destructive Delete remains explicitly confirmed
-- final signed run 35673239632 / ada8038f51834f8ae4874cd9c13485645f5f72b6 passed targeted v1.4.48 phone QA, including UX-023 multiline-title rotation continuity
+Current development focus (installed app remains v1.4.48 / code 91):
+- v1.4.48 targeted phone checkpoint is complete;
+- active development branch is feat/v1.4.49-updater;
+- documentation-system recovery runs before updater application code;
+- ASSISTANT_CONTEXT_INDEX.md + docs/assistant-kit/CONTEXT_FILES.txt are the assistant recovery map;
+- portable system/lifecycle/navigation contracts and audit inventory are first-class project artifacts;
+- next application feature: v1.4.49 in-app Updater;
+- following planned architecture wave: v1.4.50 Skin System;
+- stable app checkpoint: checkpoint-v1.4.48-phone-pass;
+- final v1.4.48 source: ada8038f51834f8ae4874cd9c13485645f5f72b6;
+- functional tests 1–4: run 35671741464 / 0e5620204e475495dd08468e8d00987eba7c4f75;
+- UX-023 test 5: run 35673239632 / ada8038f51834f8ae4874cd9c13485645f5f72b6.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED

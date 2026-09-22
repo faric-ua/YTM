@@ -42,10 +42,12 @@ grep -Fq '| v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFOR
 
 grep -Fq '## v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics' "$BACKLOG" ||
   fail "BACKLOG historical R3 section missing"
-grep -Fq 'checkpoint-v1.4.47-R3-phone-pass' "$START" ||
-  fail "START_HERE stable R3 checkpoint reference missing"
-grep -Fq 'tested R3 app checkpoint remains' "$HANDOFF" ||
-  fail "CURRENT_HANDOFF R3 checkpoint history missing"
+# Historical R3 verification must use immutable R3 evidence, not mutable
+# START_HERE/CURRENT_HANDOFF files that advance with later releases.
+grep -Fq 'The checkpoint tag points directly to the tested application-source commit.' "$CHECKPOINT" ||
+  fail "R3 checkpoint tag/source contract missing"
+grep -Fq '197da0c6afd7c1f41544e0d39b1dc17e2c7c156f' "$CHECKPOINT" ||
+  fail "R3 historical tested source missing"
 
 grep -F '| BUG-004 / Q-004 |' "$BUGS" |
   grep -Fq 'R3 SILENT 401 RECOVERY IMPLEMENTED — PHONE RETEST NEEDED' ||
@@ -71,5 +73,5 @@ echo "- R3 lifecycle Wave 1 contract"
 echo "- BUG-004 silent HTTP-401 token recovery + one retry"
 echo "- BUG-021 operation-aware History semantics"
 echo "- R2 UI work carried forward and marked superseded before signed QA"
-echo "- current handoff/status/backlog/bug register point to R3"
+echo "- historical R3 checkpoint remains verifiable without pinning current mutable handoff"
 echo "- unified R3 phone acceptance plan documented"

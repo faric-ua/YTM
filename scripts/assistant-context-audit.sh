@@ -1,0 +1,53 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+fail() {
+  echo "FAIL: $1" >&2
+  exit 1
+}
+
+INDEX="ASSISTANT_CONTEXT_INDEX.md"
+LIST="docs/assistant-kit/CONTEXT_FILES.txt"
+AUDITS="docs/assistant-kit/PORTABLE_AUDITS.txt"
+
+test -f "$INDEX" || fail "assistant context index missing"
+test -f "$LIST" || fail "assistant context manifest missing"
+test -f "$AUDITS" || fail "portable audit manifest missing"
+
+count=0
+while IFS= read -r path; do
+  case "$path" in
+    ""|\#*) continue ;;
+  esac
+  test -f "$path" || fail "context file missing: $path"
+  count=$((count + 1))
+done < "$LIST"
+
+[ "$count" -ge 20 ] ||
+  fail "assistant context manifest is unexpectedly small: $count"
+
+while IFS= read -r path; do
+  case "$path" in
+    ""|\#*) continue ;;
+  esac
+  test -f "$path" || fail "portable audit missing: $path"
+done < "$AUDITS"
+
+grep -Fq 'ASSISTANT_CONTEXT_INDEX.md' START_HERE_ASSISTANT.md ||
+  fail "START_HERE does not route through context index"
+
+grep -Fq 'CONTEXT_FILES.txt' ASSISTANT_CONTEXT_INDEX.md ||
+  fail "context index does not route through context manifest"
+
+grep -Fq 'SYSTEM_BEHAVIOR_CONTRACT.md' ASSISTANT_CONTEXT_INDEX.md ||
+  fail "system behavior contract missing from context index"
+
+grep -Fq 'Portable project skeleton' YTM_ASSISTANT_WORKFLOW.md ||
+  fail "workflow does not preserve migration-kit contract"
+
+echo "PASS:"
+echo "- assistant context index"
+echo "- $count mandatory context files"
+echo "- portable system audit inventory"
+echo "- portable system behavior contract"
+echo "- migration-kit workflow contract"

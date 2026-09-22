@@ -342,3 +342,19 @@ If this guide and an older release-specific command block differ:
 - use the current `YTM_ASSISTANT_WORKFLOW.md` for policy;
 - use the current package's exact block for the specific release;
 - keep historical release instructions as historical evidence, not current policy.
+
+
+## Assistant migration kit
+
+Validate the portable/current context package:
+
+```bash
+python -B scripts/export-assistant-project-skeleton.py --check
+```
+
+Create a migration archive outside the repository:
+
+```bash
+python -B scripts/export-assistant-project-skeleton.py \
+  --output "$HOME/storage/shared/Download/YTM-Assistant-Migration-Kit.zip"
+```

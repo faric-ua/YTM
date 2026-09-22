@@ -159,6 +159,16 @@ check_file "docs/design/TILE_UI_CONTRACT.md"
 check_file "scripts/v1448-tile-foundation-audit.sh"
 check_file "scripts/v1448-playlist-edit-audit.sh"
 check_file "scripts/v1448-unit-test-foundation-audit.sh"
+check_file "ASSISTANT_CONTEXT_INDEX.md"
+check_file "docs/assistant-kit/CONTEXT_FILES.txt"
+check_file "docs/assistant-kit/RELEASE_DOCUMENTATION_CONTRACT.md"
+check_file "docs/assistant-kit/portable/SYSTEM_BEHAVIOR_CONTRACT.md"
+check_file "scripts/assistant-context-audit.sh"
+check_file "scripts/release-documentation-audit.sh"
+check_file "scripts/documentation-system-audit.sh"
+check_file "scripts/generate-audit-catalog.py"
+check_file "scripts/generate-file-manifest.py"
+check_file "scripts/export-assistant-project-skeleton.py"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
@@ -219,6 +229,7 @@ bash scripts/v1447-r3-history-counters-r9-fix5-audit.sh
 bash scripts/v1448-tile-foundation-audit.sh
 bash scripts/v1448-playlist-edit-audit.sh
 bash scripts/v1448-unit-test-foundation-audit.sh
+bash scripts/documentation-system-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh

@@ -2,7 +2,7 @@
 
 This is the canonical entry point for a new ChatGPT node/session working on YTM Importer.
 
-Do not begin by guessing from the code. Read this file, then follow the reading order below.
+Do not begin by guessing from the code. Read this file, then `ASSISTANT_CONTEXT_INDEX.md`, then every path in `docs/assistant-kit/CONTEXT_FILES.txt` before code-changing work.
 
 For a mid-release/chat-crash resume, read `CURRENT_HANDOFF.md` immediately after this file. It is the short mutable snapshot of the exact active branch/PR/QA/next-step state.
 
@@ -34,10 +34,10 @@ Current application:
 
 - versionName: **1.4.48**
 - versionCode: **91**
-- release focus: **v1.4.48 — Generic Tiles + Playlist Management**
-- release status: **PHONE QA PASS — STABILIZATION CHECKPOINT COMPLETE**
-- active branch: `feat/v1.4.48-playlist-edit`
-- stable app checkpoint underneath: `checkpoint-v1.4.47-R3-phone-pass`
+- release focus: **v1.4.49 — In-app Updater (documentation recovery first)**
+- release status: **v1.4.48 TARGETED PHONE QA PASS; v1.4.49 APP CODE NOT STARTED YET**
+- active branch: `feat/v1.4.49-updater`
+- stable app checkpoint: `checkpoint-v1.4.48-phone-pass`
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
@@ -118,24 +118,22 @@ For the freshest exact resume point, read `CURRENT_HANDOFF.md` first, then verif
 
 ## 3. Mandatory reading order
 
-Before changing the project, read in this order:
+Before changing the project:
 
-1. `START_HERE_ASSISTANT.md` — this file.
-2. `CURRENT_HANDOFF.md` — exact mutable crash-recovery/resume point.
-3. `YTM_ASSISTANT_WORKFLOW.md` — collaboration and safety contract.
-4. `PROJECT_STATUS.txt` — current technical/product state.
-5. `BACKLOG.md` — roadmap and unfinished work.
-6. `RELEASE_TEST_STATUS.md` — what is actually phone-tested.
-7. `qa/BUG_REGISTER.md` and `OPEN_QUESTIONS.md` — known bugs and deferred decisions.
-8. `docs/ASSISTANT_TOOL_MAP.md` — available workflow tools and when to use them.
-9. `TERMUX_COMMANDS.md` — reusable phone/Git commands.
-10. `docs/WORKFLOW_LESSONS.md` — mistakes that must not be repeated.
-11. `docs/BUILD_ARTIFACT_CONVENTION.md` — stable APK/download folder convention.
-12. Relevant current release folder under `docs/v.X.Y.Z/`.
-13. `docs/tutorial/ROADMAP.md` and the relevant tutorial chapter.
-14. If working on exclusive skins/avatars, read `docs/design/exclusive/README.md` and `ASSET_MANIFEST.md`.
+1. `START_HERE_ASSISTANT.md`
+2. `ASSISTANT_CONTEXT_INDEX.md`
+3. every non-comment path in `docs/assistant-kit/CONTEXT_FILES.txt`, in order
+4. live GitHub branch / HEAD
+5. exact source files for the task
+6. relevant audit scripts from `docs/assistant-kit/AUDIT_CATALOG.md`
 
-If these sources disagree, prefer the newest current root status/policy files over an older historical release snapshot.
+Do not depend on hidden conversation history to reconstruct system behavior.
+
+For historical investigation, follow links from the context/index files into the
+relevant `docs/v.*` release snapshot.
+
+If sources disagree, use the precedence defined in
+`ASSISTANT_CONTEXT_INDEX.md`.
 
 ## 4. Roles
 

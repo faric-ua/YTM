@@ -46,12 +46,12 @@ grep -Fq 'Historical status that remains true' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF historical status section missing"
 grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF current release candidate missing"
-grep -Fq 'feat/v1.4.48-playlist-edit' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF active v1.4.48 branch missing"
+grep -Fq 'feat/v1.4.49-updater' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF active updater branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'vertical Tile action rail + first real JUnit test foundation' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF v1.4.48 focus missing"
+grep -Fq 'documentation recovery before v1.4.49 Updater' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF documentation-recovery focus missing"
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
 grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
@@ -60,8 +60,8 @@ if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
 fi
 
-grep -Fq 'Version: 1.1' YTM_ASSISTANT_WORKFLOW.md \
-  || fail "assistant workflow version 1.1 missing"
+grep -Fq 'Version: 1.2' YTM_ASSISTANT_WORKFLOW.md \
+  || fail "assistant workflow version 1.2 missing"
 grep -Fq 'Stable phone-side build artifact convention' YTM_ASSISTANT_WORKFLOW.md \
   || fail "artifact convention missing from workflow policy"
 grep -Fq 'New assistant handoff' YTM_ASSISTANT_WORKFLOW.md \
@@ -120,8 +120,10 @@ grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
 grep -Fq 'v1.4.48 — Generic Tiles + Playlist Management' BACKLOG.md \
   || fail "BACKLOG current v1.4.48 release missing"
-grep -Fq 'v1.4.48 — Generic Tiles + Playlist Management' START_HERE_ASSISTANT.md \
-  || fail "START_HERE v1.4.48 focus missing"
+grep -Fq 'v1.4.49 — In-app Updater' START_HERE_ASSISTANT.md \
+  || fail "START_HERE next-release updater focus missing"
+grep -Fq 'ASSISTANT_CONTEXT_INDEX.md' START_HERE_ASSISTANT.md \
+  || fail "START_HERE assistant context index missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
 grep -Fq 'UX-009 Blue/Green workflow-state palettes remain open' CURRENT_HANDOFF.md \

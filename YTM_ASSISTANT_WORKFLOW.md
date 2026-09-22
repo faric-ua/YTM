@@ -1,6 +1,6 @@
 # YTM Importer — Assistant Workflow Settings
 
-Version: 1.1
+Version: 1.2
 Created: 2026-09-17  
 Purpose: persistent collaboration rules for ChatGPT + user while developing and testing YTM Importer.
 
@@ -283,3 +283,60 @@ For every version that reaches a successful signed GitHub Actions build:
 5. never describe an uninstalled build as the user's current app version.
 
 Repository version, signed-build version, and phone-installed version are three separate states and must be tracked separately.
+
+## 22. Assistant context manifest
+
+`ASSISTANT_CONTEXT_INDEX.md` is the project cognition map.
+
+`docs/assistant-kit/CONTEXT_FILES.txt` is the machine-readable mandatory context
+set.
+
+Before a code-changing session, release operation, architectural change,
+system/lifecycle change or crash recovery, a new assistant must read the index
+and every listed context file.
+
+Do not rely on hidden chat memory for project contracts that belong in Git.
+
+## 23. Portable project skeleton
+
+The reusable development method must remain exportable independently of YTM
+business logic.
+
+Portable contracts live under:
+
+`docs/assistant-kit/portable/`
+
+The repository must retain an exporter capable of producing a migration ZIP
+containing:
+
+- generic assistant workflow templates;
+- lifecycle/navigation/modal/system contracts;
+- release/QA templates;
+- YTM context as a worked reference;
+- the portable/system audit subset.
+
+Generated ZIP artifacts are not committed.
+
+## 24. System behavior portability
+
+Rotation/recreation, navigation ownership, modal lifetime, Back/Cancel, form
+drafts, IME behavior, remote-operation ownership, result/progress separation,
+SAF/system UI boundaries and destructive confirmation are reusable architecture
+contracts.
+
+Their portable source of truth is:
+
+`docs/assistant-kit/portable/SYSTEM_BEHAVIOR_CONTRACT.md`
+
+When a feature changes one of these invariants, update the contract and its
+audit rather than keeping the decision only in release notes or chat.
+
+## 25. Release documentation gate
+
+Every new release must satisfy:
+
+`docs/assistant-kit/RELEASE_DOCUMENTATION_CONTRACT.md`
+
+Release preflight runs the documentation-system audit.
+
+Missing historical evidence must be recorded as a gap, never invented.

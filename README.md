@@ -70,3 +70,16 @@ Do not delete or rewrite historical QA/evidence merely to simplify the repositor
 Current v1.4.42 work adds a YTM Importer **Recent file selector** before generic Android
 open-file flows. Remembered SAF files are ordered by provider `lastModified` newest-first,
 while Android's system picker remains available as an explicit fallback.
+
+
+## Assistant / project recovery
+
+For a new ChatGPT session or project recovery start with:
+
+1. `START_HERE_ASSISTANT.md`
+2. `ASSISTANT_CONTEXT_INDEX.md`
+3. `docs/assistant-kit/CONTEXT_FILES.txt`
+
+The reusable cross-project skeleton lives under:
+
+`docs/assistant-kit/portable/`

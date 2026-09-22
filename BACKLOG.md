@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.48 — Generic Tiles + Playlist Management — IMPLEMENTING / TILE POLISH + TEST FOUNDATION
+v1.4.49 — In-app Updater — DOCUMENTATION SYSTEM RECOVERY BEFORE CODE
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -37,6 +37,34 @@ v1.4.48 — Generic Tiles + Playlist Management — IMPLEMENTING / TILE POLISH +
 - UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
 - UX-023 Playlist Editor Long Title Visibility — CLOSED / PHONE RETEST PASS v1.4.48; long titles wrap across the required number of lines and the draft survives rotation.
+
+
+## v1.4.49 — In-app Updater
+- [x] publish bootstrap stable GitHub Release v1.4.48
+- [x] signed APK + SHA-256 + `YTM-Importer-update.json`
+- [x] recover release-documentation system before updater code
+- [x] add assistant context index + machine-readable context manifest
+- [x] add portable system/lifecycle/navigation contract
+- [x] add complete audit inventory + portable system-audit list
+- [x] add portable project-skeleton exporter
+- [x] add documentation/file-manifest gates to release preflight
+- [ ] bump app version to v1.4.49 / next versionCode
+- [ ] About → version → Перевірити оновлення
+- [ ] fetch/validate stable update manifest
+- [ ] compare versionCode
+- [ ] download APK
+- [ ] SHA-256 verification
+- [ ] Android package-installer handoff
+- [ ] updater lifecycle/rotation state ownership
+- [ ] JVM tests for manifest/version/hash policy
+- [ ] signed APK + targeted phone QA
+
+## v1.4.50 — Skin System
+- [x] roadmap recorded
+- [ ] migrate Neon/Blue/Green into common Skin contract
+- [ ] separate semantic state colors from skin visuals
+- [ ] skin preview/selection lifecycle
+- [ ] phone QA across representative screens/modals/tiles
 
 ## v1.4.48 — Generic Tiles + Playlist Management
 - [x] start from v1.4.47-R3 stabilization checkpoint
