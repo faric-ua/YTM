@@ -4,7 +4,7 @@ Generated deterministically from repository files.
 FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
-ca3f307350308366  .github/workflows/build-apk.yml
+957b553c7b6dec80  .github/workflows/build-apk.yml
 6cc7d3ae20eee52b  .gitignore
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -1331,7 +1331,7 @@ f0bb595ec4d1478c  docs/v.1.4.49/REGRESSION_CHECKLIST.md
 db3557b325332ba9  docs/v.1.4.49/qa/PHONE_TEST.md
 c5dc370b17d54306  docs/v.1.4.49/qa/PHONE_TEST_REPORT_2026-09-22.md
 eb1e670be5c1e23f  docs/v.1.4.49/qa/TEST_RUN_2026-09-22.md
-88b442e6c16926c0  docs/v.1.4.49/qa/UPDATER_QA_CHANNEL.md
+4bcdca20aea9d47c  docs/v.1.4.49/qa/UPDATER_QA_CHANNEL.md
 01da8846c4eb24fe  docs/v.1.4.5/REGRESSION_CHECKLIST.md
 990d42763cff59f7  docs/v.1.4.5/RELEASE.md
 4a383a01f4a20a76  docs/v.1.4.5/diagrams/QUOTA_ACTION_LAYOUT.md
@@ -1561,7 +1561,8 @@ d6c3e9ce36f07799  scripts/v1447-r3-runtime-lifecycle-r5-selftest.py
 2a7742ae78f95743  scripts/v1448-playlist-edit-audit.sh
 014ab82ce2a764b1  scripts/v1448-tile-foundation-audit.sh
 e46729024d7d050e  scripts/v1448-unit-test-foundation-audit.sh
-216950296281ed81  scripts/v1449-updater-qa-harness-audit.sh
+3fd2fabba50a52f7  scripts/v1449-updater-qa-harness-audit.sh
+36dd561668aca7e5  scripts/v1449-updater-qa-workflow.py
 c6594275b3a5a637  scripts/v1449-updater-wave1-audit.sh
 4a14eb428a9d818d  scripts/v1449-updater-wave2-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
