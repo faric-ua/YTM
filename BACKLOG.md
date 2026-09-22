@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.49 — In-app Updater — WAVE 1 TEST 1 PASS / WAVE 2 TESTS 2+ 3+ 4+ PASS / WAVE 3 INSTALLER IMPLEMENTED
+v1.4.49 — In-app Updater — TARGETED 1+..6+ PASS / PRODUCTION SMOKE PASS / FINAL RC NEXT
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -70,7 +70,12 @@ v1.4.49 — In-app Updater — WAVE 1 TEST 1 PASS / WAVE 2 TESTS 2+ 3+ 4+ PASS /
 - [x] JVM tests for manifest/version/minSdk policy
 - [x] JVM tests for downloaded-file SHA policy
 - [x] Wave 2 targeted phone QA — `2+`, `3+`, `4+`
-- [ ] Wave 3 signed APK + installer phone QA — Test 5/6
+- [x] Wave 3 isolated signed installer phone QA — Test 5=`5+`, Test 6=`6+`
+- [x] production Wave 3 package/account/local-data/stable-channel smoke
+- [ ] final changelog-bearing RC phone smoke
+- [ ] publish stable v1.4.49 + equal-version recheck
+- [ ] production Wave 3 package/account/local-data/stable-channel smoke
+- [ ] publish stable v1.4.49 + final equal-version recheck
 
 ## Future — Import playlist / Mix by URL
 

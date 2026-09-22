@@ -32,8 +32,17 @@
 | RUN-05 | user result `4+` | SHA-256 verified Ready-state acceptance | text + screenshot evidence |
 | PLAN-04 | `scripts/v1449-updater-wave3-audit.sh` | explicit installer/FileProvider/permission lifecycle contract | repository source |
 | PLAN-05 | `scripts/v1449-wave3-qa-workflow.py` | isolated package-id QA plan for real installer Tests 5/6 | repository source |
+| CI-06 | production run `35746655972` / `40c6f919bd2309eb958890c37a31cdfd9ec3039e` | Wave 3 production source passed preflight, JVM tests, signing and APK verification | GitHub Actions |
+| CI-07 | qa2 fixture run `35747066080` / `532afa658aac3aea0f8f847fd186db5423334987` | signed isolated code-93 installer fixture built successfully | GitHub Actions |
+| CI-08 | qa2 client run `35747507662` / `4e2b071c2e4f1235fb28830d7be349016392dc03` | signed isolated code-92 installer client built successfully | GitHub Actions |
+| RUN-06 | user result `5+` | installer cancel returns safely; no automatic relaunch | text + phone screenshot evidence |
+| CHAT-08 | Ready-state phone screenshot | verified APK exposes explicit `Встановити` action | not committed |
+| RUN-07 | user result `6+` | real signed isolated `92 → 93` update succeeds | text + phone screenshot evidence |
+| CHAT-09 | qa2 Home + Version screenshots after update | version 93, Blue theme persisted, equal-version `Оновлень немає` | not committed |
 
 The screenshot binaries were supplied in the development conversation and were
 not stored in the public Git repository.
 
-Wave 1 Test 1 and Wave 2 Tests 2/3/4 are accepted for the targeted phone scope. Wave 3 installer implementation is pending signed-build and phone Tests 5/6, so this is not a final v1.4.49 release PASS.
+| RUN-08 | production smoke `+` | production account/current-playlist state preserved; official stable channel correct | text + phone screenshots |
+
+Updater Tests 1–6 and production same-package smoke are accepted. Final stable PASS remains gated on the changelog-bearing RC smoke and post-publication equal-version check.

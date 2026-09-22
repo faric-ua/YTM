@@ -111,3 +111,25 @@ so Android exercises a real in-place `92 → 93` update. The production
 The fixture also points back to the qa2 manifest, allowing the post-install
 equal-version check in Test 6. The qa2 release is a prerelease and stable
 `latest` must remain `v1.4.48`.
+
+## Wave 3 executed evidence
+
+- production source: `40c6f919bd2309eb958890c37a31cdfd9ec3039e`
+- production signed run: `35746655972`
+- qa2 fixture source/run: `532afa658aac3aea0f8f847fd186db5423334987` / `35747066080`
+- qa2 client source/run: `4e2b071c2e4f1235fb28830d7be349016392dc03` / `35747507662`
+- qa2 tag: `v1.4.49-updater-qa2`
+- stable latest remained `v1.4.48`
+
+Phone acceptance:
+
+- Test 5 = `5+`
+- Test 6 = `6+`
+
+Test 6 confirmed a real signed isolated `92 → 93` Android update, retained Blue
+theme/local app state and returned `Оновлень немає` against an equal-version
+qa2 manifest.
+
+The QA clone intentionally remained disconnected from Google/YTM. Production
+account/session persistence is therefore a separate final production-package
+smoke, not inferred from qa2.

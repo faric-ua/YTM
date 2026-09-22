@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.49
+- Додано безпечний in-app Updater через офіційні GitHub Releases.
+- Перевірка версії використовує `versionCode`; downgrade не пропонується.
+- APK завантажується лише після явного натискання користувача.
+- Завантажений APK перевіряється SHA-256 до стану `APK перевірено`.
+- Кнопка `Встановити` доступна лише після успішної перевірки.
+- Android package installer відкривається тільки після явної дії користувача.
+- Rotation/recreation не дублює Check/Download і не перезапускає installer.
+- Скасування installer безпечне; signed in-place update перевірено на телефоні.
+- versionCode 92 / versionName 1.4.49.
+
+
 ## v1.4.48
 - Started a project-wide generic Tile UI vocabulary and reusable action-tile primitive.
 - A **Tile / плитка** is a generic container for any entity or content group, not a playlist-specific widget.

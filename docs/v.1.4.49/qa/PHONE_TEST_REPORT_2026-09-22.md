@@ -2,13 +2,13 @@
 
 ## Conclusion
 
-**PARTIALLY PHONE-TESTED — WAVE 1 TEST 1 PASS / WAVE 2 TESTS 2+ 3+ 4+ PASS**
+**PARTIALLY PHONE-TESTED — UPDATER 1+..6+ PASS / PRODUCTION SMOKE PASS / FINAL RC NEXT**
 
-Wave 1 Check plus Wave 2 newer-version / Download / recreation / SHA-256 Ready
-state are accepted for the targeted phone scope.
+Wave 1 Check, Wave 2 Download/SHA lifecycle and isolated Wave 3 installer
+cancel/success paths are accepted for the targeted phone scope.
 
-This is not a final v1.4.49 release PASS because installer cancel and successful
-in-place installation remain Wave 3.
+This is not a final stable v1.4.49 release PASS until the production package
+smoke and post-publication equal-version check pass.
 
 ## Tested build
 
@@ -110,3 +110,42 @@ reproduction.
 Wave 3 adds only explicit installer handoff and uses a separate
 `com.saney.ytmimporter.updaterqa` QA package for Tests 5/6 so the production
 app/version/account data are not displaced by the test update.
+
+## Wave 3 installer acceptance
+
+Signed evidence:
+
+- production Wave 3: run `35746655972` / source `40c6f919bd2309eb958890c37a31cdfd9ec3039e`;
+- qa2 fixture: run `35747066080` / source `532afa658aac3aea0f8f847fd186db5423334987`;
+- qa2 client: run `35747507662` / source `4e2b071c2e4f1235fb28830d7be349016392dc03`;
+- prerelease: `v1.4.49-updater-qa2`;
+- stable latest remained `v1.4.48`.
+
+Phone result:
+
+- Test 5 installer cancel/no-auto-relaunch: `5+`;
+- Test 6 signed isolated in-place `92 → 93` update: `6+`;
+- Blue theme/local state survived;
+- qa2 equal-version recheck returned `Оновлень немає`;
+- no automatic interactive Google/YTM login was triggered in the QA clone.
+
+Targeted updater matrix is now:
+
+`1+ / 2+ / 3+ / 4+ / 5+ / 6+`
+
+This remains a **partial release PASS**, not final stable acceptance, until the
+production package from run `35746655972` is installed over the existing
+production app and its account/local-data/official-channel smoke passes.
+
+## Production Wave 3 same-package smoke
+
+Production run `35746655972` / source
+`40c6f919bd2309eb958890c37a31cdfd9ec3039e` preserved the connected Google/YTM
+account, the current 13-track playlist and normal local app state without
+opening forced login. The official updater channel correctly treated stable
+1.4.48/91 as older than installed 1.4.49/92.
+
+Result: **PASS**
+
+Final stable acceptance still requires the changelog-bearing RC smoke and the
+post-publication equal-version check.

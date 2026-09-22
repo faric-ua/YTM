@@ -142,7 +142,7 @@ Before application code:
 
 ## Status
 
-**DEVELOPMENT — WAVE 1 TEST 1 PASS / WAVE 2 TESTS 2+ 3+ 4+ PASS / WAVE 3 INSTALLER IMPLEMENTED — SIGNED BUILD + PHONE 5/6 NEXT**
+**DEVELOPMENT — UPDATER 1+..6+ PASS / PRODUCTION SMOKE PASS / FINAL CHANGELOG-BEARING RC NEXT**
 
 ## Wave 2 phone acceptance
 
@@ -174,3 +174,35 @@ Wave 3 phone Tests 5/6 use a separate signed
 `com.saney.ytmimporter.updaterqa` clone. This avoids changing the production
 package versionCode while still exercising a real signed in-place `92 → 93`
 package update.
+
+## Wave 3 phone acceptance
+
+Wave 3 production implementation source `40c6f919bd2309eb958890c37a31cdfd9ec3039e` passed signed build run
+`35746655972`.
+
+Installer behavior was then exercised with the isolated qa2 package:
+
+- Test 5 `5+`: cancel returns safely and does not auto-relaunch installer;
+- Test 6 `6+`: signed `92 → 93` update succeeds;
+- Blue theme/local app state persists across the update;
+- repeat check at code 93 returns `Оновлень немає`;
+- no automatic interactive Google/YTM login is launched in the QA clone.
+
+The updater's targeted Tests 1–6 are accepted.
+
+Before stable publication, the production Wave 3 APK from run `35746655972` must
+still be installed over the current production package to verify existing
+production account/local state and official stable-channel behavior.
+
+## Production Wave 3 smoke
+
+Production source `40c6f919bd2309eb958890c37a31cdfd9ec3039e` / signed run
+`35746655972` passed same-package phone smoke:
+
+- Google/YTM stayed connected;
+- current 13-track playlist stayed present;
+- no forced interactive login opened;
+- official stable 1.4.48/91 remained correctly older than installed 1.4.49/92.
+
+A final RC is rebuilt only to embed the v1.4.49 changelog into the signed APK.
+Updater implementation code is unchanged.
