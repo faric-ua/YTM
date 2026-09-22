@@ -44,11 +44,30 @@ The first implementation wave stops after the stable-release check:
 - About → Version becomes an explicit updater page;
 - user-triggered Check fetches `YTM-Importer-update.json` from the official latest GitHub Release;
 - schema/version/tag/APK-name/SHA-format/minSdk fields are validated;
-- `versionCode` decides Up to date / Update available / downgrade rejection;
+- `versionCode` decides Up to date / installed build newer / Update available;
+- an older stable manifest is informational and never becomes an Error or downgrade offer;
 - the remote check is owned by a process-local operation owner so Activity recreation reattaches instead of starting another request;
 - JVM tests cover the deterministic manifest/version policy.
 
 APK download, downloaded-file SHA verification and installer handoff remain later waves.
+
+## Wave 1 R1 phone finding
+
+The first signed Wave 1 build was GitHub Actions run `35727790033` from source
+`d92bfc5231794deee833c4a14c11819de8244e84`.
+
+Real-phone checking successfully read the bootstrap stable v1.4.48 manifest,
+but exposed two UI issues:
+
+- the older stable manifest was rendered as `Error` instead of an informational
+  no-update state;
+- internal English diagnostic text and `Android target SDK` leaked into the
+  Ukrainian user interface.
+
+R1 keeps the version comparison itself, maps an older stable manifest to
+`UP_TO_DATE`, and localizes all updater user-facing diagnostic text. Technical
+names and abbreviations such as YTM, SDK, APK, JSON, SHA-256, HTTP, GitHub and
+Android remain unchanged.
 
 ## System/lifecycle impact
 
@@ -82,4 +101,4 @@ Before application code:
 
 ## Status
 
-**DEVELOPMENT — WAVE 1 CHECK-ONLY IMPLEMENTED / STATIC + SIGNED + PHONE QA PENDING**
+**DEVELOPMENT — WAVE 1 R1 LOCALIZATION/STATUS FIX IMPLEMENTED / SIGNED BUILD + PHONE RETEST PENDING**

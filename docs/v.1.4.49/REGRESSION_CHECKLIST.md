@@ -8,9 +8,9 @@
 - [x] pure schema/version/asset policy extracted
 - [x] process-local Check owner rejects duplicate active checks
 - [x] JVM tests added for manifest/version/minSdk policy
-- [ ] static/full release preflight
-- [ ] signed APK
-- [ ] real-phone Wave 1 check/rotation QA
+- [x] static/full release preflight
+- [x] signed Wave 1 APK — run `35727790033`
+- [ ] real-phone Wave 1 R1 check/rotation QA
 
 
 ## Identity / release source
@@ -23,9 +23,9 @@
 
 ## Updater behavior
 
-- [ ] same installed version → Up to date
+- [ ] equal remote `versionCode` → Up to date
+- [ ] lower remote `versionCode` → informational no-update state, never Error/upgrade
 - [ ] newer `versionCode` → Update available
-- [ ] lower/equal version is not offered as an upgrade
 - [ ] malformed manifest rejected
 - [ ] unsupported schema rejected
 - [ ] missing APK rejected

@@ -13,6 +13,10 @@ Expected:
 - state becomes Checking;
 - stable manifest is read;
 - if remote `versionCode` equals installed version, show Up to date;
+- if stable remote `versionCode` is lower than installed, show `Оновлень немає`
+  and explain in Ukrainian that the installed build is newer;
+- ordinary user-facing updater prose is Ukrainian; technical names/abbreviations
+  such as YTM, SDK, APK, JSON, SHA-256, HTTP, GitHub and Android may remain;
 - no download starts.
 
 Rotation point:
@@ -20,6 +24,19 @@ Rotation point:
 Rotate while Checking and again on the result.
 
 Result format: `1+` / `1-`
+
+### Initial Wave 1 observation — R1 required
+
+Signed run `35727790033`, source
+`d92bfc5231794deee833c4a14c11819de8244e84`:
+
+- manifest fetch/version comparison worked;
+- installed `1.4.49 (92)` correctly compared as newer than stable `1.4.48 (91)`;
+- UI incorrectly rendered that relation as `Не вдалося перевірити`;
+- English internal text was visible;
+- `Android target SDK` was also visible in English.
+
+This is not a Test 1 PASS. R1 phone retest is required.
 
 ## Test 2 — newer release available
 

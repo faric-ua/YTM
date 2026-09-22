@@ -41,6 +41,13 @@ flowchart TD
 Wave 1 implements the route through `Up to date` / `Update available` / `Error`.
 The Download → Verify → Install branch remains planned and is not auto-entered.
 
+## Version relation contract
+
+- remote `versionCode` == installed → Up to date;
+- remote `versionCode` < installed → installed build is newer; informational
+  no-update state, never Error and never downgrade;
+- remote `versionCode` > installed → Update available.
+
 ## Lifecycle contract
 
 Recreation restores updater state but is never treated as another Check,

@@ -56,7 +56,9 @@ grep -Fq 'YTM-Importer-update.json' "$REMOTE" ||
 grep -Fq 'SUPPORTED_SCHEMA = 1' "$POLICY" ||
   fail "manifest schema contract missing"
 grep -Fq 'manifest.versionCode < localVersionCode' "$POLICY" ||
-  fail "downgrade rejection missing"
+  fail "older-stable comparison missing"
+grep -Fq 'UpdateDecision.InstalledBuildNewer' "$POLICY" ||
+  fail "older stable must map to installed-build-newer state"
 grep -Fq 'manifest.versionCode == localVersionCode' "$POLICY" ||
   fail "same-version path missing"
 grep -Fq 'YTM-Importer-v${versionName}-release.apk' "$POLICY" ||
@@ -65,6 +67,30 @@ grep -Fq 'YTM-Importer-v${versionName}-release.apk' "$POLICY" ||
 TEST_COUNT="$(grep -c '@Test' "$TEST" || true)"
 [ "$TEST_COUNT" -ge 9 ] ||
   fail "expected at least 9 updater JVM tests, found $TEST_COUNT"
+
+grep -Fq 'olderStableManifestMeansInstalledBuildNewer' "$TEST" ||
+  fail "older-stable JVM policy test missing"
+
+grep -Fq 'Встановлена версія новіша за поточну стабільну версію.' "$REMOTE" ||
+  fail "older-stable Ukrainian result missing"
+
+SDK_LABEL_COUNT="$(
+  grep -Fc 'Цільовий SDK Android:' "$SERVICE" || true
+)"
+
+[ "$SDK_LABEL_COUNT" -eq 2 ] ||
+  fail "expected two Ukrainian SDK labels, found $SDK_LABEL_COUNT"
+
+if grep -Fq 'Android target SDK:' "$SERVICE"; then
+  fail "English SDK label leaked into user UI"
+fi
+
+for leaked in   'Stable manifest is older than the installed build'   'Manifest JSON is malformed'   'Unsupported manifest schema'   'Update requires Android API'   'Missing or invalid string field'   'Missing or invalid integer field'   'Unexpected APK asset'   'Update manifest is unexpectedly large'
+do
+  if grep -Fq "$leaked" "$POLICY" "$REMOTE"; then
+    fail "English updater user-facing text remains: $leaked"
+  fi
+done
 
 grep -Fq '"phase": "development"' "$META" ||
   fail "v1.4.49 release metadata phase is not development"

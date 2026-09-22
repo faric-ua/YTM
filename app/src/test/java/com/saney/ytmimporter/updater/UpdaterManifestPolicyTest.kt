@@ -62,7 +62,7 @@ class UpdaterManifestPolicyTest {
     }
 
     @Test
-    fun olderStableManifestIsRejected() {
+    fun olderStableManifestMeansInstalledBuildNewer() {
         val decision =
             UpdaterManifestPolicy.decide(
                 manifest =
@@ -77,7 +77,7 @@ class UpdaterManifestPolicyTest {
             )
 
         assertTrue(
-            decision is UpdateDecision.Rejected
+            decision is UpdateDecision.InstalledBuildNewer
         )
     }
 

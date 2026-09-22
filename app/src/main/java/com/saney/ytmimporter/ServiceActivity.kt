@@ -462,7 +462,7 @@ class ServiceActivity : Activity() {
             serviceCard(
                 "Версія",
                 "YTM Importer ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
-                    "Android target SDK: ${applicationInfo.targetSdkVersion}"
+                    "Цільовий SDK Android: ${applicationInfo.targetSdkVersion}"
             ) {
                 open(Page.VERSION)
             }
@@ -531,7 +531,7 @@ class ServiceActivity : Activity() {
             infoCard(
                 "Встановлено",
                 "YTM Importer ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
-                    "Android target SDK: ${applicationInfo.targetSdkVersion}"
+                    "Цільовий SDK Android: ${applicationInfo.targetSdkVersion}"
             )
         )
 

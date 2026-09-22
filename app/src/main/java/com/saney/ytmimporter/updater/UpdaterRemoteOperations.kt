@@ -106,7 +106,21 @@ object UpdaterRemoteOperations {
                             State(
                                 phase = Phase.UP_TO_DATE,
                                 message =
-                                    "Встановлена версія актуальна.",
+                                    "Встановлена версія відповідає поточній стабільній версії.",
+                                remoteVersionName =
+                                    manifest.versionName,
+                                remoteVersionCode =
+                                    manifest.versionCode,
+                                manifest = manifest
+                            )
+                        )
+
+                    UpdateDecision.InstalledBuildNewer ->
+                        publish(
+                            State(
+                                phase = Phase.UP_TO_DATE,
+                                message =
+                                    "Встановлена версія новіша за поточну стабільну версію.",
                                 remoteVersionName =
                                     manifest.versionName,
                                 remoteVersionCode =
@@ -182,7 +196,7 @@ object UpdaterRemoteOperations {
 
             if (responseCode !in 200..299) {
                 throw IOException(
-                    "GitHub Release manifest HTTP $responseCode"
+                    "Маніфест GitHub Release повернув HTTP $responseCode"
                 )
             }
 
@@ -199,7 +213,7 @@ object UpdaterRemoteOperations {
 
             if (body.length > MAX_MANIFEST_CHARS) {
                 throw IOException(
-                    "Update manifest is unexpectedly large"
+                    "Маніфест оновлення має неочікувано великий розмір"
                 )
             }
 
@@ -214,16 +228,15 @@ object UpdaterRemoteOperations {
     ): String =
         when (error) {
             is IOException ->
-                "Не вдалося отримати маніфест оновлення: " +
-                    (error.message ?: "мережева помилка")
+                "Не вдалося отримати маніфест оновлення. " +
+                    "Перевірте підключення до інтернету та спробуйте ще раз."
 
             is IllegalArgumentException ->
                 "Маніфест оновлення відхилено: " +
-                    (error.message ?: "невірний формат")
+                    (error.message ?: "некоректний формат")
 
             else ->
-                "Не вдалося перевірити оновлення: " +
-                    (error.message ?: "невідома помилка")
+                "Не вдалося перевірити оновлення через невідому помилку."
         }
 
     private fun publish(

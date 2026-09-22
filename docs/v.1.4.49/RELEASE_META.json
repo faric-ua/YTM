@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.49-updater",
   "appSourceSha": null,
   "signedRun": null,
-  "qaStatus": "DEVELOPMENT — WAVE 1 CHECK-ONLY IMPLEMENTED / STATIC + SIGNED + PHONE QA PENDING",
+  "qaStatus": "DEVELOPMENT — WAVE 1 R1 FIX IMPLEMENTED / SIGNED BUILD + PHONE RETEST PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null

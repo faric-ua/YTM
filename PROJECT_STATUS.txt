@@ -3,10 +3,10 @@ Version: 1.4.49
 Version code: 92
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current development focus (installed app remains v1.4.48 / code 91):
+Current development focus (installed phone app is v1.4.49 / code 92 Wave 1):
 - v1.4.48 targeted phone checkpoint is complete;
 - active development branch is feat/v1.4.49-updater;
-- v1.4.49 Wave 1 check-only updater code is implemented; preflight/signed build/phone QA remain pending;
+- signed Wave 1 run 35727790033 / d92bfc5231794deee833c4a14c11819de8244e84 passed preflight/JVM/signing; phone QA found BUG-029; R1 localization/status fix is implemented and signed build + phone retest are pending;
 - ASSISTANT_CONTEXT_INDEX.md + docs/assistant-kit/CONTEXT_FILES.txt are the assistant recovery map;
 - portable system/lifecycle/navigation contracts and audit inventory are first-class project artifacts;
 - next application feature: v1.4.49 in-app Updater;

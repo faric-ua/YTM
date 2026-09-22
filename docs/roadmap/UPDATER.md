@@ -57,7 +57,9 @@ Schema 1 fields:
 2. App fetches the stable update manifest.
 3. Manifest is parsed and validated.
 4. Compare remote `versionCode` with local `BuildConfig.VERSION_CODE`.
-5. If current: show that the installed version is current.
+5. If equal: show that the installed version matches the stable release.
+   If the stable release is older than the installed build, show an informational
+   no-update state and never offer a downgrade.
 6. If newer: show version/release information and explicit download action.
 7. Download APK.
 8. Calculate SHA-256.
@@ -84,7 +86,6 @@ Reject:
 
 - malformed manifest;
 - unsupported schema;
-- downgrade/non-newer version;
 - missing expected APK;
 - SHA mismatch;
 - unsupported platform constraints.
@@ -95,7 +96,7 @@ SHA mismatch is a hard stop.
 
 - version comparison;
 - same-version behavior;
-- downgrade rejection;
+- older-stable / no-downgrade-offer behavior;
 - manifest parsing;
 - unsupported schema;
 - asset selection;

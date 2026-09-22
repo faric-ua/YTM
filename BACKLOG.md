@@ -59,6 +59,7 @@ v1.4.49 — In-app Updater — WAVE 1 CHECK-ONLY IMPLEMENTED / PREFLIGHT + SIGNE
 - [x] About → version → Перевірити оновлення
 - [x] fetch/validate stable update manifest
 - [x] compare versionCode
+- [x] older stable manifest → informational no-update state; updater user-facing prose localized
 - [ ] download APK
 - [ ] downloaded-file SHA-256 verification
 - [ ] Android package-installer handoff
