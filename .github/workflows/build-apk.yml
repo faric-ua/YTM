@@ -1,5 +1,7 @@
 name: Build Signed Android APK
 
+# WAVE3 QA TEMP MODE: fixture
+
 on: [workflow_dispatch]
 
 permissions:
@@ -16,6 +18,65 @@ jobs:
       - name: Release preflight
         shell: bash
         run: bash scripts/release-preflight.sh
+
+      - name: Apply Wave 3 QA clone channel
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts
+          sed -i 's/applicationId = "com.saney.ytmimporter"/applicationId = "com.saney.ytmimporter.updaterqa"/' app/build.gradle.kts
+          grep -Fq 'android:label="YTM Importer"' app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="YTM Importer"/android:label="YTM Importer QA"/' app/src/main/AndroidManifest.xml
+
+          python - <<'PY_QA'
+          from pathlib import Path
+
+          remote = Path(
+              "app/src/main/java/com/saney/ytmimporter/"
+              "updater/UpdaterRemoteOperations.kt"
+          )
+          text = remote.read_text()
+
+          old = (
+              '    const val MANIFEST_URL =\n'
+              '        "https://github.com/faric-ua/YTM/releases/latest/download/" +\n'
+              '            "YTM-Importer-update.json"'
+          )
+          new = (
+              '    const val MANIFEST_URL =\n'
+              '        "https://github.com/faric-ua/YTM/releases/download/'
+              'v1.4.49-updater-qa2/YTM-Importer-update.json"'
+          )
+
+          if text.count(old) != 1:
+              raise SystemExit("stable manifest URL anchor changed")
+
+          remote.write_text(text.replace(old, new, 1))
+
+          service = Path(
+              "app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt"
+          )
+          text = service.read_text()
+
+          old = '"Джерело: офіційний GitHub Release faric-ua/YTM."'
+          new = '"Джерело: QA GitHub prerelease faric-ua/YTM."'
+
+          if text.count(old) != 1:
+              raise SystemExit("stable source-label anchor changed")
+
+          service.write_text(text.replace(old, new, 1))
+          PY_QA
+
+      - name: Apply Wave 3 QA fixture identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'versionCode = 92' app/build.gradle.kts
+          grep -Fq 'versionName = "1.4.49"' app/build.gradle.kts
+          sed -i 's/versionCode = 92/versionCode = 93/' app/build.gradle.kts
+          sed -i 's/versionName = "1.4.49"/versionName = "1.4.49-updater-qa2"/' app/build.gradle.kts
+          grep -Fq 'versionCode = 93' app/build.gradle.kts
+          grep -Fq 'versionName = "1.4.49-updater-qa2"' app/build.gradle.kts
 
       - name: Setup Java
         uses: actions/setup-java@v5
