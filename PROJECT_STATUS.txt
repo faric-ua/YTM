@@ -12,7 +12,7 @@ Current v1.4.48 focus:
 - playlist title/privacy editor survives rotation with its draft
 - playlists.update preserves existing metadata through a fresh pre-update read
 - destructive Delete remains explicitly confirmed
-- signed build + targeted phone QA are pending
+- signed run 35671741464 passed targeted playlist-management phone QA; only UX-023 multiline-title successor-build retest remains
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED

@@ -60,6 +60,59 @@ done
 grep -Fq 'PLAYLIST_UPDATE_COST = 50' "$QUOTA" ||
   fail "playlist update quota cost missing"
 
+python - "$DEST" <<'PY_AUDIT'
+from pathlib import Path
+import sys
+
+text = Path(
+    sys.argv[1]
+).read_text()
+
+start = text.index(
+    "        val titleField ="
+)
+
+end = text.index(
+    "        content.addView(",
+    start
+)
+
+block = text[
+    start:end
+]
+
+for needle in [
+    "setSingleLine(\n                    false",
+    "minLines =\n                    2",
+    "setHorizontallyScrolling(\n                    false",
+    "minimumHeight =\n                    dp(76)",
+]:
+    if needle not in block:
+        raise SystemExit(
+            "FAIL: multiline title-field contract missing: "
+            + needle
+        )
+
+layout_start = text.index(
+    "            titleField,",
+    end
+)
+
+layout_end = text.index(
+    "        )",
+    layout_start
+) + len("        )")
+
+layout = text[
+    layout_start:layout_end
+]
+
+if "ViewGroup.LayoutParams.WRAP_CONTENT" not in layout:
+    raise SystemExit(
+        "FAIL: title field still has fixed height"
+    )
+PY_AUDIT
+
 grep -Fq 'Edit → title/privacy editor.' "$DOC" ||
   fail "Tile playlist edit rule missing"
 

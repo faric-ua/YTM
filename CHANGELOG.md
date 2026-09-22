@@ -14,6 +14,8 @@
 - Edit changes playlist title and privacy (`public` / `unlisted` / `private`).
 - Playlist update performs a fresh metadata read before PUT so description/default language/tags/podcast status are not accidentally cleared.
 - Playlist action menu and editor draft survive Activity recreation/rotation without auto-running remote changes.
+- UX-023: the playlist-name editor now wraps long titles across multiple visible lines and grows vertically instead of hiding text in a fixed single-line field.
+- Real-phone functional playlist-management QA passed on signed run `35671741464`: Edit, privacy persistence, overflow/long-press lifecycle and confirmed remote deletion.
 - Rename/privacy editing is implemented; signed phone QA is next.
 - versionCode 91 / versionName 1.4.48.
 

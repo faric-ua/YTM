@@ -36,6 +36,7 @@ v1.4.48 — Generic Tiles + Playlist Management — IMPLEMENTING / TILE POLISH +
 - UX-019 Home Layout Prototype Alignment — v1.4.47 phone QA found layout/navigation regressions; v1.4.47-R1 now uses the approved prototype as a **layout-only** contract: header → workflow → utility row → account/status → current playlist → quick actions → bottom navigation. Existing Neon/Blue/Green theme system remains authoritative.
 - UX-021 Adaptive Landscape Action Layout — CLOSED / PHONE RETEST PASS v1.4.44-R1; wide Recent-file footer uses readable `Системний вибір…`, Storage save actions remain readable, and modal `Закрити` uses boxed chrome.
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
+- UX-023 Playlist Editor Long Title Visibility — FIX IMPLEMENTED v1.4.48 / QUICK PHONE RETEST NEEDED; title editor uses a wrapping multiline field instead of a fixed-height single line.
 
 ## v1.4.48 — Generic Tiles + Playlist Management
 - [x] start from v1.4.47-R3 stabilization checkpoint
@@ -54,9 +55,14 @@ v1.4.48 — Generic Tiles + Playlist Management — IMPLEMENTING / TILE POLISH +
 - [x] first JVM JUnit unit-test foundation
 - [x] playlist-update policy covered by unit tests
 - [x] signed-build workflow runs unit tests before signing
-- [ ] phone test: Edit title/privacy
-- [ ] phone test: Delete confirmation + remote delete
-- [ ] signed APK + targeted phone QA
+- [x] phone test: Edit title/privacy
+- [x] phone test: Delete confirmation + remote delete
+- [x] phone test: `⋮` / long press / rotation
+- [x] phone test: vertical right-side action rail
+- [x] signed functional QA build `35671741464` / `0e5620204e475495dd08468e8d00987eba7c4f75`
+- [x] UX-023 multiline long-title editor implementation
+- [ ] UX-023 quick phone retest on successor signed build
+- [ ] final v1.4.48 stabilization checkpoint
 
 ## v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics
 - [x] versionCode 90 / versionName 1.4.47-R3

@@ -1071,8 +1071,23 @@ class DestinationActivity : Activity() {
         val titleField =
             EditText(this).apply {
                 setSingleLine(
-                    true
+                    false
                 )
+
+                minLines =
+                    2
+
+                setHorizontallyScrolling(
+                    false
+                )
+
+                gravity =
+                    Gravity.TOP or
+                        Gravity.START
+
+                minimumHeight =
+                    dp(76)
+
                 setText(
                     playlistEditDraftTitle
                 )
@@ -1091,9 +1106,9 @@ class DestinationActivity : Activity() {
                     "Назва плейлиста"
                 setPadding(
                     dp(12),
-                    0,
+                    dp(10),
                     dp(12),
-                    0
+                    dp(10)
                 )
                 background =
                     roundedBackground(
@@ -1138,7 +1153,7 @@ class DestinationActivity : Activity() {
             titleField,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(46)
+                ViewGroup.LayoutParams.WRAP_CONTENT
             )
         )
 

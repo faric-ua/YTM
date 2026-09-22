@@ -20,8 +20,8 @@ Current release candidate:
 - active branch: `feat/v1.4.48-playlist-edit`
 - base checkpoint docs HEAD: `8955f8f188c516c604f4f4b611602ff7b4dd8e27`
 - tested R3 app checkpoint remains: `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f`
-- status: **PARTIAL PHONE QA — TILE LIST/ROTATION PASS; ACTION-RAIL + EDIT/DELETE RETEST NEXT**
-- installed phone APK observed: **v1.4.48**; playlist Tile list + rotation PASS, Edit/Delete not yet exercised
+- status: **PLAYLIST MANAGEMENT PHONE PASS; UX-023 MULTILINE TITLE QUICK RETEST NEXT**
+- installed phone APK: **v1.4.48**, signed run `35671741464`, source `0e5620204e475495dd08468e8d00987eba7c4f75`; Edit/privacy/menu/delete/rotation tested PASS
 - focus: **vertical Tile action rail + first real JUnit test foundation; then Edit/Delete phone QA**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
