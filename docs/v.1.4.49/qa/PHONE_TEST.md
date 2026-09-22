@@ -56,6 +56,14 @@ Signed run `35730023317`, source
 
 BUG-029 is closed for this tested scope.
 
+## QA channel for Tests 2–4
+
+Use only the signed QA-client build documented in
+`docs/v.1.4.49/qa/UPDATER_QA_CHANNEL.md`.
+
+The QA fixture is a GitHub prerelease and must not replace the stable `latest`
+channel.
+
 ## Test 2 — newer release available
 
 Expected:

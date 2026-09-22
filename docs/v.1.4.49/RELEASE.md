@@ -101,7 +101,14 @@ Wave 2 adds only Download + Verify:
 - rotation/recreation reattaches to Downloading/Verifying state;
 - installer launch remains intentionally absent from Wave 2.
 
-Signed build and phone QA for Wave 2 remain pending.
+Signed Wave 2 run `35736216442` from `0fe4312e41495a9e42f828cb9cf0ee4c41ce330b` passed release preflight,
+JVM tests, signing, APK verification and artifact upload. The build was installed
+on the phone and production-channel smoke confirmed `1.4.49 (92)` against
+stable `1.4.48 (91)` with `Оновлень немає`.
+
+Download/SHA phone acceptance remains pending because the stable channel is
+older than the installed development build. An isolated signed QA prerelease
+harness is used for Test 2/3/4 without changing stable `latest`.
 
 ## System/lifecycle impact
 

@@ -63,6 +63,7 @@ Chat memory must never silently override current repository truth.
 - `docs/v.1.4.47/navigation/TEST_DIAGRAM_STANDARD.md`
 - `docs/design/TILE_UI_CONTRACT.md`
 - `docs/testing/AUTOMATED_TEST_STRATEGY.md`
+- `docs/testing/YOUTUBE_URL_FIXTURES.md`
 
 These rules cover Activity recreation, rotation, navigation ownership, modal
 lifecycle, form drafts, remote-operation ownership, progress/result separation,
@@ -106,6 +107,7 @@ retrospective gaps rather than invented evidence.
 - `docs/v.1.4.49/RELEASE.md`
 - `docs/v.1.4.49/REGRESSION_CHECKLIST.md`
 - `docs/v.1.4.49/qa/PHONE_TEST.md`
+- `docs/v.1.4.49/qa/UPDATER_QA_CHANNEL.md`
 - `docs/v.1.4.49/qa/TEST_RUN_2026-09-22.md`
 - `docs/v.1.4.49/qa/PHONE_TEST_REPORT_2026-09-22.md`
 - `docs/v.1.4.49/qa/BUG_REGISTER.md`

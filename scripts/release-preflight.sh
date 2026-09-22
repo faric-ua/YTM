@@ -161,6 +161,7 @@ check_file "scripts/v1448-playlist-edit-audit.sh"
 check_file "scripts/v1448-unit-test-foundation-audit.sh"
 check_file "scripts/v1449-updater-wave1-audit.sh"
 check_file "scripts/v1449-updater-wave2-audit.sh"
+check_file "scripts/v1449-updater-qa-harness-audit.sh"
 check_file "ASSISTANT_CONTEXT_INDEX.md"
 check_file "docs/assistant-kit/CONTEXT_FILES.txt"
 check_file "docs/assistant-kit/RELEASE_DOCUMENTATION_CONTRACT.md"
@@ -239,6 +240,7 @@ bash scripts/v1448-playlist-edit-audit.sh
 bash scripts/v1448-unit-test-foundation-audit.sh
 bash scripts/v1449-updater-wave1-audit.sh
 bash scripts/v1449-updater-wave2-audit.sh
+bash scripts/v1449-updater-qa-harness-audit.sh
 bash scripts/documentation-system-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh

@@ -69,3 +69,13 @@ Still pending:
 - successful updater-driven in-place installation.
 
 Wave 2 starts with explicit APK download plus SHA-256 verification.
+
+## Wave 2 build observation
+
+Signed run `35736216442` from `0fe4312e41495a9e42f828cb9cf0ee4c41ce330b` was installed on the phone.
+
+Screenshots in the development conversation confirm the installed identity and
+the production stable-channel result `1.4.48 (91)` → `Оновлень немає`.
+
+This is a stable-channel smoke observation, not Download/SHA acceptance.
+Wave 2 Test 2/3/4 remain pending until the isolated QA prerelease path is run.

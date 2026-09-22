@@ -71,6 +71,15 @@ v1.4.49 — In-app Updater — WAVE 1 TEST 1 PASS / WAVE 2 DOWNLOAD+SHA IMPLEMEN
 - [x] JVM tests for downloaded-file SHA policy
 - [ ] signed APK + targeted phone QA
 
+## Future — Import playlist / Mix by URL
+
+- [ ] accept a YouTube or YTM playlist/Mix URL
+- [ ] detect playlist vs dynamic Mix
+- [ ] read currently available tracks
+- [ ] show preview before import
+- [ ] save as a stable local playlist snapshot
+- [ ] use development reference: `https://music.youtube.com/playlist?list=RDREDRRxBLCgTn4p2e5sfWmEpQ&playnext=1&si=fCmcHgsLZstGHeXj`
+
 ## v1.4.50 — Skin System
 - [x] roadmap recorded
 - [ ] migrate Neon/Blue/Green into common Skin contract

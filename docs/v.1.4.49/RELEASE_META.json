@@ -5,9 +5,9 @@
   "phase": "development",
   "feature": "In-app Updater",
   "branch": "feat/v1.4.49-updater",
-  "appSourceSha": "4d30672c700d2fc2a32255465f555c0fd64acdc3",
-  "signedRun": "35730023317",
-  "qaStatus": "DEVELOPMENT — WAVE 1 TEST 1 PASS / WAVE 2 DOWNLOAD/SHA IMPLEMENTED — SIGNED BUILD PENDING",
+  "appSourceSha": "0fe4312e41495a9e42f828cb9cf0ee4c41ce330b",
+  "signedRun": "35736216442",
+  "qaStatus": "PARTIALLY PHONE-TESTED — WAVE 1 PASS / WAVE 2 DOWNLOAD/SHA IMPLEMENTED — SIGNED BUILD + STABLE CHECK PASS / QA DOWNLOAD NEXT",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": "2026-09-22"

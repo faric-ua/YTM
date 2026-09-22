@@ -14,6 +14,7 @@ docs/BUILD_ARTIFACT_CONVENTION.md
 qa/MASTER_TEST_PLAN.md
 qa/TEST_EVIDENCE_POLICY.md
 docs/testing/AUTOMATED_TEST_STRATEGY.md
+docs/testing/YOUTUBE_URL_FIXTURES.md
 docs/design/TILE_UI_CONTRACT.md
 docs/v.1.4.47/navigation/NAVIGATION_ORIGIN_CONTRACT_R7.md
 docs/v.1.4.47/navigation/TEST_DIAGRAM_STANDARD.md
@@ -42,6 +43,7 @@ docs/v.1.4.49/RELEASE_META.json
 docs/v.1.4.49/RELEASE.md
 docs/v.1.4.49/REGRESSION_CHECKLIST.md
 docs/v.1.4.49/qa/PHONE_TEST.md
+docs/v.1.4.49/qa/UPDATER_QA_CHANNEL.md
 docs/v.1.4.49/qa/TEST_RUN_2026-09-22.md
 docs/v.1.4.49/qa/PHONE_TEST_REPORT_2026-09-22.md
 docs/v.1.4.49/qa/BUG_REGISTER.md

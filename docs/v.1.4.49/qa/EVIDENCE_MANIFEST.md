@@ -18,9 +18,13 @@
 | REPORT-01 | `qa/PHONE_TEST_REPORT_2026-09-22.md` | targeted phone conclusion and BUG-029 lineage | repository |
 | CODE-03 | `app/src/main/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicy.kt` | exact release-asset URL and downloaded-file SHA-256 policy | repository source |
 | CODE-04 | `app/src/main/java/com/saney/ytmimporter/updater/UpdaterRemoteOperations.kt` | process-owned Wave 2 Downloading/Verifying/Ready state and app-private `.part` download | repository source |
-| TEST-02 | `app/src/test/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicyTest.kt` | Wave 2 URL/hash policy has JVM coverage; execution result awaits signed build | repository source |
+| TEST-02 | `app/src/test/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicyTest.kt` | Wave 2 URL/hash policy has JVM coverage | repository source |
+| CI-03 | GitHub Actions run `35736216442` / `0fe4312e41495a9e42f828cb9cf0ee4c41ce330b` | Wave 2 release preflight, JVM tests, signing, APK verification and artifact upload passed | GitHub Actions |
+| CHAT-04 | Wave 2 Version-screen screenshot in development conversation | installed `1.4.49 (92)` + Ukrainian SDK label on signed Wave 2 build | not committed |
+| CHAT-05 | Wave 2 production-channel result screenshot in development conversation | stable `1.4.48 (91)` correctly remains informational `Оновлень немає` | not committed |
+| QA-PLAN-01 | `qa/UPDATER_QA_CHANNEL.md` | isolated prerelease harness for real newer-version Download/SHA acceptance | repository |
 
 The screenshot binaries were supplied in the development conversation and were
 not stored in the public Git repository.
 
-Wave 1 Test 1 is accepted. Wave 2 code is implemented but has no signed-build or phone PASS yet. This is not a final v1.4.49 release PASS.
+Wave 1 Test 1 is accepted. Wave 2 has a successful signed build and production-channel phone smoke, but Download/SHA Test 2/3/4 remain pending. This is not a final v1.4.49 release PASS.
