@@ -52,3 +52,10 @@ docs/v.1.4.49/qa/EVIDENCE_MANIFEST.md
 docs/v.1.4.49/diagrams/README.md
 docs/v.1.4.49/diagrams/UPDATER_FLOW.md
 docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md
+docs/v.1.4.50/RELEASE_META.json
+docs/v.1.4.50/RELEASE.md
+docs/v.1.4.50/REGRESSION_CHECKLIST.md
+docs/v.1.4.50/qa/PHONE_TEST.md
+docs/v.1.4.50/qa/BUG_REGISTER.md
+docs/v.1.4.50/qa/EVIDENCE_MANIFEST.md
+docs/v.1.4.50/diagrams/README.md

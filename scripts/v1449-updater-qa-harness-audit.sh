@@ -9,7 +9,6 @@ fail() {
 WORKFLOW=".github/workflows/build-apk.yml"
 REMOTE="app/src/main/java/com/saney/ytmimporter/updater/UpdaterRemoteOperations.kt"
 SERVICE="app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt"
-GRADLE="app/build.gradle.kts"
 HELPER="scripts/v1449-updater-qa-workflow.py"
 DOC="docs/v.1.4.49/qa/UPDATER_QA_CHANNEL.md"
 
@@ -17,17 +16,11 @@ for file in \
   "$WORKFLOW" \
   "$REMOTE" \
   "$SERVICE" \
-  "$GRADLE" \
   "$HELPER" \
   "$DOC"
 do
   test -f "$file" || fail "missing QA harness file: $file"
 done
-
-grep -Fq 'versionCode = 92' "$GRADLE" ||
-  fail "production versionCode changed"
-grep -Fq 'versionName = "1.4.49"' "$GRADLE" ||
-  fail "production versionName changed"
 
 grep -Fq \
   '"https://github.com/faric-ua/YTM/releases/latest/download/" +' \
@@ -84,7 +77,7 @@ grep -Fq 'stable `latest` remains untouched' "$DOC" ||
 
 echo "PASS:"
 echo "- production updater source remains stable/latest"
-echo "- production app identity remains 1.4.49 / 92"
+echo "- historical v1.4.49 QA harness is independent of current app identity"
 echo "- default workflow keeps ordinary workflow_dispatch"
 echo "- QA fixture/client generation is isolated to temporary branches"
 echo "- temporary branch workflow mode is statically validated"

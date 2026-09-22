@@ -13,6 +13,27 @@ check_file() {
   [ -f "$1" ] || fail "Missing required file: $1"
 }
 
+ACTIVE_VERSION="$(
+  sed -n \
+    '/^## Current$/{
+      n
+      s/^v\([^ ]*\).*/\1/p
+      q
+    }' \
+    BACKLOG.md
+)"
+
+test -n "$ACTIVE_VERSION" || fail "Cannot resolve active release"
+
+ACTIVE_META="docs/v.$ACTIVE_VERSION/RELEASE_META.json"
+check_file "$ACTIVE_META"
+
+ACTIVE_CODE="$(
+  python -c 'import json,sys; print(json.load(open(sys.argv[1]))["versionCode"])' "$ACTIVE_META"
+)"
+
+test -n "$ACTIVE_CODE" || fail "Cannot resolve active release versionCode"
+
 check_file "app/build.gradle.kts"
 check_file "app/src/main/AndroidManifest.xml"
 check_file ".github/workflows/build-apk.yml"
@@ -483,11 +504,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 92' app/build.gradle.kts \
-  || fail "Expected versionCode = 92"
+grep -q "versionCode = $ACTIVE_CODE" app/build.gradle.kts \
+  || fail "Expected versionCode = $ACTIVE_CODE"
 
-grep -q 'versionName = "1.4.49"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.49"'
+grep -q "versionName = \"$ACTIVE_VERSION\"" app/build.gradle.kts \
+  || fail "Expected versionName = \"$ACTIVE_VERSION\""
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

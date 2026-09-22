@@ -11,11 +11,11 @@
 
 ## Version
 
-- planned versionName: `1.4.50`
-- planned versionCode: `93`
+- versionName: `1.4.50`
+- versionCode: `93`
 - branch: `feat/v1.4.50-skin-system`
 
 
 ## Status
 
-**PLANNED — DOCUMENTATION SKELETON READY / APP CODE NOT STARTED**
+**DEVELOPMENT — RELEASE BASELINE READY / SKIN CONTRACT WAVE NEXT / PHONE QA PENDING**

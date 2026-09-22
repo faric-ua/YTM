@@ -17,15 +17,15 @@ Latest stable release:
 - result: **PHONE QA PASS — targeted updater + production RC + equal-version stable check**
 
 Current release state:
-- versionName: **1.4.49**
-- versionCode: **92**
-- active branch: `feat/v1.4.49-updater`
-- pre-recovery documentation HEAD: `33d1a04e4b295e80f02446944cdde2b4cfba8e6a`
-- stable app checkpoint: `checkpoint-v1.4.48-phone-pass` → `ada8038f51834f8ae4874cd9c13485645f5f72b6`
-- status: **v1.4.49 RELEASED — PHONE QA PASS / FINAL+**
+- versionName: **1.4.50**
+- versionCode: **93**
+- active branch: `feat/v1.4.50-skin-system`
+- release-start base HEAD: `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`
+- accepted stable checkpoint: `checkpoint-v1.4.49-phone-pass` → `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
+- status: **v1.4.50 DEVELOPMENT — RELEASE BASELINE READY / SKIN CONTRACT WAVE NEXT / PHONE QA PENDING**
 - installed production APK: **v1.4.49 / code 92 exact final RC** from run `35755925563` / source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; `RC+` preserved Google/YTM connection and the current 13-track playlist; `FINAL+` confirmed installed/stable `1.4.49 (92)` and `Оновлень немає`.
 - accepted stable checkpoint is `checkpoint-v1.4.49-phone-pass` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; previous v1.4.48 checkpoint remains historical evidence.
-- focus: **v1.4.49 Updater CLOSED; next planned wave is v1.4.50 Skin System. YouTube/YTM URL/Mix → local snapshot remains future development.**
+- focus: **v1.4.50 Skin System — define the reusable Skin contract first, then migrate Neon/Blue/Green without changing business semantics. YouTube/YTM URL/Mix → local snapshot remains future development.**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -334,19 +334,20 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. Keep work on `feat/v1.4.49-updater`.
-2. Treat documentation recovery + hardening as complete.
-3. Wave 1 Test 1 is accepted on signed run `35730023317` / `4d30672c700d2fc2a32255465f555c0fd64acdc3` with result `1+`.
-4. BUG-029 is closed for the tested scope: older stable is informational and updater user-facing prose is Ukrainian.
-5. v1.4.49 is released and accepted: updater matrix `1+..6+`, production RC smoke `RC+`, equal-version stable check `FINAL+`.
-6. Preserve release tag `v1.4.49` and checkpoint `checkpoint-v1.4.49-phone-pass` on exact source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`.
-7. Keep BUG-030 open as a non-blocking Play Protect distribution/reputation finding; do not weaken updater security to hide the warning.
-8. Start v1.4.50 Skin System only from a fresh branch/context read; the recorded YouTube/YTM URL/Mix local-snapshot feature remains future backlog.
-9. Do not reinterpret targeted v1.4.49 phone PASS as exhaustive historical regression coverage.
+1. Keep work on `feat/v1.4.50-skin-system`.
+2. Treat v1.4.49 as the accepted stable release; do not rewrite its final evidence.
+3. v1.4.50 release-start base is `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`.
+4. Current source identity is v1.4.50 / versionCode 93.
+5. First implementation wave: define a reusable Skin contract before broad UI migration.
+6. Migrate Neon/Blue/Green representation without intentionally changing accepted appearance or behavior.
+7. Keep semantic ready / attention / error / duplicate / disabled meaning independent from Skin visuals.
+8. Add a dedicated v1.4.50 static audit with the first Skin implementation wave.
+9. Do not claim phone PASS until a signed v1.4.50 APK is installed and the defined Skin/lifecycle matrix is executed.
+10. Keep YouTube/YTM URL/Mix → local snapshot as future backlog outside this release.
 
 ## 8. Working contract
 
-**ChatGPT prepares → user runs exact Termux block → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
+**ChatGPT prepares a `YTM_*.zip` package → user runs `ytm-code` → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
 
 Rules:
 - GitHub/repository truth beats chat memory;

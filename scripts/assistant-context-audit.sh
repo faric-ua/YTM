@@ -10,6 +10,14 @@ INDEX="ASSISTANT_CONTEXT_INDEX.md"
 LIST="docs/assistant-kit/CONTEXT_FILES.txt"
 AUDITS="docs/assistant-kit/PORTABLE_AUDITS.txt"
 
+APP_VERSION="$(
+  sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' \
+    app/build.gradle.kts |
+    head -n 1
+)"
+
+test -n "$APP_VERSION" || fail "cannot resolve current app version"
+
 test -f "$INDEX" || fail "assistant context index missing"
 test -f "$LIST" || fail "assistant context manifest missing"
 test -f "$AUDITS" || fail "portable audit manifest missing"
@@ -45,7 +53,7 @@ grep -Fq 'SYSTEM_BEHAVIOR_CONTRACT.md' ASSISTANT_CONTEXT_INDEX.md ||
 grep -Fq 'HISTORICAL_RELEASE_MATRIX.md' ASSISTANT_CONTEXT_INDEX.md ||
   fail "historical release matrix missing from context index"
 
-grep -Fq 'docs/v.1.4.49/RELEASE_META.json' "$LIST" ||
+grep -Fq "docs/v.$APP_VERSION/RELEASE_META.json" "$LIST" ||
   fail "active release metadata missing from context manifest"
 
 grep -Fq 'docs/v.1.4.48/qa/TEST_RUN_2026-09-22.md' "$LIST" ||

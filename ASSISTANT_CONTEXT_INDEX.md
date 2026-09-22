@@ -115,6 +115,16 @@ retrospective gaps rather than invented evidence.
 - `docs/v.1.4.49/qa/EVIDENCE_MANIFEST.md`
 - `docs/v.1.4.49/diagrams/UPDATER_FLOW.md`
 
+### Active development release package
+
+- `docs/v.1.4.50/RELEASE_META.json`
+- `docs/v.1.4.50/RELEASE.md`
+- `docs/v.1.4.50/REGRESSION_CHECKLIST.md`
+- `docs/v.1.4.50/qa/PHONE_TEST.md`
+- `docs/v.1.4.50/qa/BUG_REGISTER.md`
+- `docs/v.1.4.50/qa/EVIDENCE_MANIFEST.md`
+- `docs/v.1.4.50/diagrams/README.md`
+
 ## Audit rule
 
 Do not guess which old audit matters.

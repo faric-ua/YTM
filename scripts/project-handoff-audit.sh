@@ -6,6 +6,32 @@ fail() {
   exit 1
 }
 
+APP_VERSION="$(
+  sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' \
+    app/build.gradle.kts |
+    head -n 1
+)"
+
+APP_CODE="$(
+  sed -n 's/.*versionCode = \([0-9][0-9]*\).*/\1/p' \
+    app/build.gradle.kts |
+    head -n 1
+)"
+
+META="docs/v.$APP_VERSION/RELEASE_META.json"
+
+test -n "$APP_VERSION" || fail "cannot resolve app version"
+test -n "$APP_CODE" || fail "cannot resolve app versionCode"
+test -f "$META" || fail "current release metadata missing: $META"
+
+ACTIVE_BRANCH="$(
+  python -c 'import json,sys; print(json.load(open(sys.argv[1]))["branch"])' "$META"
+)"
+
+ACTIVE_FEATURE="$(
+  python -c 'import json,sys; print(json.load(open(sys.argv[1]))["feature"])' "$META"
+)"
+
 for f in \
   START_HERE_ASSISTANT.md \
   CURRENT_HANDOFF.md \
@@ -26,9 +52,9 @@ done
 
 grep -Fq 'Repository: `faric-ua/YTM`' START_HERE_ASSISTANT.md \
   || fail "START_HERE repository identity missing"
-grep -Fq 'versionName: **1.4.49**' START_HERE_ASSISTANT.md \
+grep -Fq "versionName: **$APP_VERSION**" START_HERE_ASSISTANT.md \
   || fail "START_HERE current version missing"
-grep -Fq 'versionCode: **92**' START_HERE_ASSISTANT.md \
+grep -Fq "versionCode: **$APP_CODE**" START_HERE_ASSISTANT.md \
   || fail "START_HERE current versionCode missing"
 grep -Fq 'BUG-005 / Q-005' START_HERE_ASSISTANT.md \
   || fail "START_HERE BUG-005 identity missing"
@@ -51,17 +77,12 @@ elif grep -Fq 'Current release state:' CURRENT_HANDOFF.md; then
 else
   fail "CURRENT_HANDOFF current release candidate/state missing"
 fi
-grep -Fq 'feat/v1.4.49-updater' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF active updater branch missing"
+grep -Fq "$ACTIVE_BRANCH" CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF active branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-if grep -Fq 'v1.4.49 Updater Wave 1: stable-manifest Check + lifecycle-safe operation ownership' CURRENT_HANDOFF.md; then
-  :
-elif grep -Fq 'v1.4.49 Updater CLOSED;' CURRENT_HANDOFF.md; then
-  :
-else
-  fail "CURRENT_HANDOFF updater development/released focus missing"
-fi
+grep -Fq "$ACTIVE_FEATURE" CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF active release feature missing"
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
 grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
@@ -113,9 +134,9 @@ grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
   || fail "build artifact standard path missing"
 
-grep -Fq 'Version: 1.4.49' PROJECT_STATUS.txt \
+grep -Fq "Version: $APP_VERSION" PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"
-grep -Fq 'Version code: 92' PROJECT_STATUS.txt \
+grep -Fq "Version code: $APP_CODE" PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS versionCode drift"
 grep -Fq 'BUG-005/Q-005 CLOSED — PHONE RETEST PASS v1.4.27' PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS BUG-005 state drift"
@@ -130,8 +151,8 @@ grep -Fq 'Project handoff / documentation hardening — COMPLETE' BACKLOG.md \
   || fail "BACKLOG handoff completion missing"
 grep -Fq 'v1.4.48 — Generic Tiles + Playlist Management' BACKLOG.md \
   || fail "BACKLOG current v1.4.48 release missing"
-grep -Fq 'v1.4.49 — In-app Updater' START_HERE_ASSISTANT.md \
-  || fail "START_HERE next-release updater focus missing"
+grep -Fq "$ACTIVE_FEATURE" START_HERE_ASSISTANT.md \
+  || fail "START_HERE active release feature missing"
 grep -Fq 'ASSISTANT_CONTEXT_INDEX.md' START_HERE_ASSISTANT.md \
   || fail "START_HERE assistant context index missing"
 grep -Fq 'UX-019' CURRENT_HANDOFF.md \
@@ -141,7 +162,7 @@ grep -Fq 'UX-009 Blue/Green workflow-state palettes remain open' CURRENT_HANDOFF
 
 test -f docs/documentation/HISTORICAL_RELEASE_MATRIX.md \
   || fail "historical release matrix missing"
-test -f docs/v.1.4.49/RELEASE_META.json \
+test -f "$META" \
   || fail "active release metadata missing"
 
 echo "PASS:"

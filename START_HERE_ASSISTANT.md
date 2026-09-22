@@ -30,15 +30,16 @@ The working method is unusual but intentional:
 Repository: `faric-ua/YTM`
 Primary branch: `main`
 
-Current application:
+Current development application:
 
-- versionName: **1.4.49**
-- versionCode: **92**
-- release focus: **v1.4.49 — In-app Updater — RELEASED / TARGETED PHONE QA PASS**
-- release status: **v1.4.49 accepted stable; updater `1+..6+`, RC+, FINAL+ passed**
-- active branch: `feat/v1.4.49-updater`
+- versionName: **1.4.50**
+- versionCode: **93**
+- release focus: **v1.4.50 — Skin System — DEVELOPMENT**
+- release status: **release baseline ready; Skin contract wave next; phone QA pending**
+- active branch: `feat/v1.4.50-skin-system`
+- accepted stable release: **v1.4.49 — In-app Updater**
 - stable app checkpoint: `checkpoint-v1.4.49-phone-pass`
-- next planned architecture wave: **v1.4.50 Skin System**
+- current architecture wave: **v1.4.50 Skin System**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 

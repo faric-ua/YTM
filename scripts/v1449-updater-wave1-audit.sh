@@ -6,7 +6,6 @@ fail() {
   exit 1
 }
 
-GRADLE="app/build.gradle.kts"
 SERVICE="app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt"
 POLICY="app/src/main/java/com/saney/ytmimporter/updater/UpdaterManifestPolicy.kt"
 REMOTE="app/src/main/java/com/saney/ytmimporter/updater/UpdaterRemoteOperations.kt"
@@ -14,7 +13,6 @@ TEST="app/src/test/java/com/saney/ytmimporter/updater/UpdaterManifestPolicyTest.
 META="docs/v.1.4.49/RELEASE_META.json"
 
 for file in \
-  "$GRADLE" \
   "$SERVICE" \
   "$POLICY" \
   "$REMOTE" \
@@ -23,11 +21,6 @@ for file in \
 do
   test -f "$file" || fail "missing updater Wave 1 file: $file"
 done
-
-grep -Fq 'versionCode = 92' "$GRADLE" ||
-  fail "v1.4.49 versionCode missing"
-grep -Fq 'versionName = "1.4.49"' "$GRADLE" ||
-  fail "v1.4.49 versionName missing"
 
 grep -Fq 'Page.VERSION -> buildVersion()' "$SERVICE" ||
   fail "Version page is not routed"
@@ -109,7 +102,7 @@ if grep -Fq 'PackageInstaller' "$REMOTE"; then
 fi
 
 echo "PASS:"
-echo "- v1.4.49 / code 92 identity"
+echo "- historical v1.4.49 updater contract preserved"
 echo "- About -> Version -> Check update entry"
 echo "- process-local updater check ownership"
 echo "- duplicate active check guard"

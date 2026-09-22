@@ -1,20 +1,21 @@
 YTM Importer
-Version: 1.4.49
-Version code: 92
+Version: 1.4.50
+Version code: 93
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current development focus (v1.4.49 RELEASED / v1.4.50 Skin System planned next):
-- v1.4.49 is the accepted stable release and targeted phone checkpoint;
-- v1.4.49 closeout branch remains `feat/v1.4.49-updater`; start v1.4.50 work on a new branch;
-- updater matrix `1+ 2+ 3+ 4+ 5+ 6+`, exact final RC `RC+`, and equal-version `FINAL+` all PASS;
-- ASSISTANT_CONTEXT_INDEX.md + docs/assistant-kit/CONTEXT_FILES.txt are the assistant recovery map;
-- portable system/lifecycle/navigation contracts and audit inventory are first-class project artifacts;
-- current stable release: v1.4.49 In-app Updater;
-- next planned architecture wave: v1.4.50 Skin System;
+Current development focus (v1.4.50 Skin System — DEVELOPMENT):
+- active branch: `feat/v1.4.50-skin-system`;
+- release documentation phase: development;
+- app identity: v1.4.50 / versionCode 93;
+- first implementation target: reusable Skin contract for existing Neon/Blue/Green themes;
+- first Skin release is an architecture migration, not a visual redesign;
+- semantic ready / attention / error / duplicate / disabled meaning remains independent from skin visuals;
+- accepted stable release remains v1.4.49 In-app Updater;
+- v1.4.49 updater matrix `1+ 2+ 3+ 4+ 5+ 6+`, RC+, and FINAL+ remain accepted evidence;
 - stable app checkpoint: checkpoint-v1.4.49-phone-pass;
 - final v1.4.49 source: 3f2add44a43889c8119ae7a9289e2cd4e1d40dd2;
-- functional tests 1–4: run 35671741464 / 0e5620204e475495dd08468e8d00987eba7c4f75;
-- UX-023 test 5: run 35673239632 / ada8038f51834f8ae4874cd9c13485645f5f72b6.
+- substantial phone-side code changes are delivered through `ytm-code` packages;
+- YouTube/YTM URL/Mix → local snapshot remains future backlog.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED

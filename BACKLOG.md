@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.50 — Skin System — PLANNED NEXT
+v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -90,6 +90,11 @@ v1.4.50 — Skin System — PLANNED NEXT
 
 ## v1.4.50 — Skin System
 - [x] roadmap recorded
+- [x] release documentation skeleton
+- [x] dedicated `feat/v1.4.50-skin-system` branch
+- [x] app identity v1.4.50 / versionCode 93
+- [x] release metadata phase `development`
+- [ ] define reusable Skin contract before broad UI migration
 - [ ] migrate Neon/Blue/Green into common Skin contract
 - [ ] separate semantic state colors from skin visuals
 - [ ] skin preview/selection lifecycle
