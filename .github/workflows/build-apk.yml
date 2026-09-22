@@ -1,5 +1,7 @@
 name: Build Signed Android APK
 
+# QA TEMP BRANCH MODE: fixture
+
 on: [workflow_dispatch]
 
 permissions:
@@ -16,6 +18,17 @@ jobs:
       - name: Release preflight
         shell: bash
         run: bash scripts/release-preflight.sh
+
+      - name: Apply QA fixture identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'versionCode = 92' app/build.gradle.kts
+          grep -Fq 'versionName = "1.4.49"' app/build.gradle.kts
+          sed -i 's/versionCode = 92/versionCode = 93/' app/build.gradle.kts
+          sed -i 's/versionName = "1.4.49"/versionName = "1.4.49-updater-qa1"/' app/build.gradle.kts
+          grep -Fq 'versionCode = 93' app/build.gradle.kts
+          grep -Fq 'versionName = "1.4.49-updater-qa1"' app/build.gradle.kts
 
       - name: Setup Java
         uses: actions/setup-java@v5
