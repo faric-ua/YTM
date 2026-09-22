@@ -76,8 +76,15 @@ fi
 
 grep -Fq 'Wave 2' "$ROADMAP" ||
   fail "Wave 2 roadmap status missing"
-grep -Fq 'WAVE 2 DOWNLOAD/SHA IMPLEMENTED' "$META" ||
-  fail "Wave 2 release metadata status missing"
+if grep -Fq '"phase": "development"' "$META"; then
+  grep -Fq 'WAVE 2 DOWNLOAD/SHA IMPLEMENTED' "$META" ||
+    fail "Wave 2 development metadata status missing"
+elif grep -Fq '"phase": "final"' "$META"; then
+  grep -Fq 'PASS' "$META" ||
+    fail "Wave 2 final metadata does not preserve release PASS evidence"
+else
+  fail "Wave 2 release metadata phase must be development or final"
+fi
 
 echo "PASS:"
 echo "- explicit APK download action"

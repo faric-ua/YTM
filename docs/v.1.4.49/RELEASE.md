@@ -142,7 +142,7 @@ Before application code:
 
 ## Status
 
-**DEVELOPMENT — UPDATER 1+..6+ PASS / PRODUCTION SMOKE PASS / FINAL CHANGELOG-BEARING RC NEXT**
+**RELEASED — TARGETED PHONE QA PASS / v1.4.49 STABLE**
 
 ## Wave 2 phone acceptance
 
@@ -206,3 +206,22 @@ Production source `40c6f919bd2309eb958890c37a31cdfd9ec3039e` / signed run
 
 A final RC is rebuilt only to embed the v1.4.49 changelog into the signed APK.
 Updater implementation code is unchanged.
+
+## FINAL+ — final stable acceptance
+
+- versionName `1.4.49`
+- versionCode `92`
+- exact source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
+- signed run `35755925563`
+- release tag `v1.4.49`
+- checkpoint `checkpoint-v1.4.49-phone-pass`
+
+Phone evidence:
+
+`1+ / 2+ / 3+ / 4+ / 5+ / 6+ / RC+ / FINAL+`
+
+The final RC preserved Google/YTM connection and the current 13-track playlist.
+After publication, installed and stable versions both reported `1.4.49 (92)`
+with `Оновлень немає`.
+
+BUG-030 is a separate non-blocking Play Protect distribution/reputation finding.

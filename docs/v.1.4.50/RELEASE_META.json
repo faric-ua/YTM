@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "versionName": "1.4.50",
+  "versionCode": 93,
+  "phase": "planned",
+  "feature": "Skin System",
+  "branch": "feat/v1.4.50-skin-system",
+  "appSourceSha": null,
+  "signedRun": null,
+  "qaStatus": "PLANNED — DOCUMENTATION SKELETON READY / APP CODE NOT STARTED",
+  "tag": null,
+  "checkpointTag": null,
+  "phoneTestDate": null
+}

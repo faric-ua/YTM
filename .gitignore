@@ -12,3 +12,6 @@ release-signing.properties
 
 .DS_Store
 Thumbs.db
+
+# Generated assistant migration package
+YTM-Assistant-Migration-Kit.zip

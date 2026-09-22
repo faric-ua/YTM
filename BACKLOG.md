@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.49 — In-app Updater — TARGETED 1+..6+ PASS / PRODUCTION SMOKE PASS / FINAL RC NEXT
+v1.4.50 — Skin System — PLANNED NEXT
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -38,6 +38,8 @@ v1.4.49 — In-app Updater — TARGETED 1+..6+ PASS / PRODUCTION SMOKE PASS / FI
 - UX-022 Unified Window Title Emphasis — CLOSED / PHONE RETEST PASS v1.4.45; shared `UiChrome.emphasizedTitle(...)` applies the active theme accent to dialog headers and major full-screen title bars while preserving body/action semantics.
 - UX-023 Playlist Editor Long Title Visibility — CLOSED / PHONE RETEST PASS v1.4.48; long titles wrap across the required number of lines and the draft survives rotation.
 
+- BUG-030 Play Protect blocks/warns on the sideloaded updater-enabled APK — OPEN NON-BLOCKING DISTRIBUTION/REPUTATION FOLLOW-UP; exact final RC installed successfully after explicit user override; root cause/false-positive review remains separate from functional updater PASS.
+
 
 ## v1.4.49 — In-app Updater
 - [x] publish bootstrap stable GitHub Release v1.4.48
@@ -72,10 +74,10 @@ v1.4.49 — In-app Updater — TARGETED 1+..6+ PASS / PRODUCTION SMOKE PASS / FI
 - [x] Wave 2 targeted phone QA — `2+`, `3+`, `4+`
 - [x] Wave 3 isolated signed installer phone QA — Test 5=`5+`, Test 6=`6+`
 - [x] production Wave 3 package/account/local-data/stable-channel smoke
-- [ ] final changelog-bearing RC phone smoke
-- [ ] publish stable v1.4.49 + equal-version recheck
-- [ ] production Wave 3 package/account/local-data/stable-channel smoke
-- [ ] publish stable v1.4.49 + final equal-version recheck
+- [x] final changelog-bearing RC phone smoke — `RC+`
+- [x] publish stable v1.4.49 + equal-version recheck — `FINAL+`
+- [x] final release documentation/checkpoint closeout
+- [x] publish stable v1.4.49 + final equal-version recheck — `FINAL+`
 
 ## Future — Import playlist / Mix by URL
 

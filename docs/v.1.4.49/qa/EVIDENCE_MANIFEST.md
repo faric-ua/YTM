@@ -45,4 +45,11 @@ not stored in the public Git repository.
 
 | RUN-08 | production smoke `+` | production account/current-playlist state preserved; official stable channel correct | text + phone screenshots |
 
-Updater Tests 1–6 and production same-package smoke are accepted. Final stable PASS remains gated on the changelog-bearing RC smoke and post-publication equal-version check.
+| CI-09 | run `35755925563` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2` | exact signed changelog-bearing final RC | GitHub Actions |
+| RUN-09 | user result `RC+` | exact final RC same-package production smoke PASS | text + phone screenshots |
+| REL-01 | GitHub Release `v1.4.49` | stable tag/assets point to exact final RC source | GitHub Release |
+| CHAT-10 | final Version screenshot | installed `1.4.49 (92)` equals stable `1.4.49 (92)` → `Оновлень немає` | not committed |
+| RUN-10 | user result `FINAL+` | post-publication equal-version acceptance | screenshot evidence |
+| CHAT-11 | Play Protect screenshot | `Шкідливий додаток заблоковано` warning while sideloading exact final RC | not committed |
+
+Updater Tests 1–6, exact final RC `RC+`, and post-publication `FINAL+` are accepted. v1.4.49 targeted release scope is PHONE QA PASS. BUG-030 remains non-blocking.

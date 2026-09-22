@@ -21,6 +21,7 @@
 | BUG-027 | CLOSED — PHONE RETEST PASS v1.4.47-R3 | P2 | Existing-playlist delete confirmation survives Activity recreation/rotation and never starts deletion until the user explicitly confirms. | v1.4.47-R3 stabilization checkpoint |
 | BUG-028 | CLOSED — PHONE RETEST PASS v1.4.47-R3 | P2 | Existing-playlist search query and active filter survive Activity recreation/rotation. | v1.4.47-R3 stabilization checkpoint |
 | BUG-029 | CLOSED FOR TESTED SCOPE — PHONE RETEST PASS v1.4.49 R1 | P2 | Updater correctly detected installed 1.4.49/92 as newer than stable 1.4.48/91. R1 renders the relation as informational `Оновлень немає`, keeps updater prose Ukrainian, preserves the result through rotation and returns Back to About. | signed run 35730023317 / 4d30672c700d2fc2a32255465f555c0fd64acdc3 / result 1+ |
+| BUG-030 | OPEN — NON-BLOCKING DISTRIBUTION/REPUTATION FINDING | P2 | Google Play Protect displayed `Шкідливий додаток заблоковано` while sideloading the exact v1.4.49 final RC. The user explicitly chose `Усе одно встановити`; installation and all final functional updater checks then passed. Treat as a Play Protect/reputation/false-positive follow-up, not evidence that the updater flow itself failed. Do not solve by globally disabling Play Protect. | v1.4.49 final RC / conversation screenshot / FINAL+ |
 
 ## BUG-002 current evidence
 

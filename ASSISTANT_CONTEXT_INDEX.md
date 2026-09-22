@@ -89,7 +89,7 @@ Back/Cancel semantics, SAF/system UI boundaries and destructive actions.
 The matrix is generated from the repository and marks missing old artifacts as
 retrospective gaps rather than invented evidence.
 
-### Current accepted release evidence
+### Previous accepted release evidence
 
 - `docs/v.1.4.48/RELEASE_META.json`
 - `docs/v.1.4.48/RELEASE.md`
@@ -101,11 +101,12 @@ retrospective gaps rather than invented evidence.
 - `docs/v.1.4.48/qa/EVIDENCE_MANIFEST.md`
 - `docs/v.1.4.48/diagrams/README.md`
 
-### Active release package
+### Current accepted release evidence
 
 - `docs/v.1.4.49/RELEASE_META.json`
 - `docs/v.1.4.49/RELEASE.md`
 - `docs/v.1.4.49/REGRESSION_CHECKLIST.md`
+- `docs/v.1.4.49/qa/STABILIZATION_CHECKPOINT.md`
 - `docs/v.1.4.49/qa/PHONE_TEST.md`
 - `docs/v.1.4.49/qa/UPDATER_QA_CHANNEL.md`
 - `docs/v.1.4.49/qa/TEST_RUN_2026-09-22.md`

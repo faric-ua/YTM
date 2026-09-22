@@ -2,7 +2,7 @@
 
 ## Conclusion
 
-**PARTIALLY PHONE-TESTED — UPDATER 1+..6+ PASS / PRODUCTION SMOKE PASS / FINAL RC NEXT**
+**PHONE QA PASS — TARGETED UPDATER / PRODUCTION FINAL RC / EQUAL-VERSION STABLE CHECK**
 
 Wave 1 Check, Wave 2 Download/SHA lifecycle and isolated Wave 3 installer
 cancel/success paths are accepted for the targeted phone scope.
@@ -14,8 +14,10 @@ smoke and post-publication equal-version check pass.
 
 - versionName: `1.4.49`
 - versionCode: `92`
-- source: `4d30672c700d2fc2a32255465f555c0fd64acdc3`
-- signed GitHub Actions run: `35730023317`
+- exact final source: `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
+- exact signed final RC run: `35755925563`
+- release tag: `v1.4.49`
+- checkpoint: `checkpoint-v1.4.49-phone-pass`
 
 ## Result
 
@@ -149,3 +151,23 @@ Result: **PASS**
 
 Final stable acceptance still requires the changelog-bearing RC smoke and the
 post-publication equal-version check.
+
+## FINAL+ — stable equal-version acceptance
+
+Exact final RC:
+
+- source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`;
+- signed run `35755925563`;
+- production smoke result `RC+`.
+
+After stable publication:
+
+- installed `1.4.49 (92)`;
+- stable `1.4.49 (92)`;
+- updater result `Оновлень немає`;
+- result `FINAL+`.
+
+Google/YTM connection and the current 13-track playlist remained intact through
+the exact final RC install. BUG-030 tracks the separate Play Protect warning.
+
+**v1.4.49 targeted release scope: PHONE QA PASS.**

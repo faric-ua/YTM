@@ -126,3 +126,31 @@ Future stable workflow should eventually generate/update the same three release
 assets automatically after an accepted release build.
 
 v1.4.48 is the bootstrap stable release for this contract.
+
+## Release acceptance
+
+v1.4.49 is released.
+
+Final identity:
+
+- source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`;
+- signed run `35755925563`;
+- release tag `v1.4.49`;
+- checkpoint `checkpoint-v1.4.49-phone-pass`.
+
+Targeted phone matrix:
+
+`1+ / 2+ / 3+ / 4+ / 5+ / 6+ / RC+ / FINAL+`
+
+The updater remains user-initiated. No background forced-update or silent
+installation behavior is claimed.
+
+## FINAL+ release acceptance
+
+v1.4.49 is released.
+
+- source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
+- signed run `35755925563`
+- release tag `v1.4.49`
+- checkpoint `checkpoint-v1.4.49-phone-pass`
+- phone results `1+ / 2+ / 3+ / 4+ / 5+ / 6+ / RC+ / FINAL+`

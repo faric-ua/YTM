@@ -92,8 +92,13 @@ do
   fi
 done
 
-grep -Fq '"phase": "development"' "$META" ||
-  fail "v1.4.49 release metadata phase is not development"
+if grep -Fq '"phase": "development"' "$META"; then
+  META_PHASE="development"
+elif grep -Fq '"phase": "final"' "$META"; then
+  META_PHASE="final"
+else
+  fail "v1.4.49 release metadata phase must be development or final"
+fi
 
 if grep -Fq 'Intent.ACTION_VIEW' "$REMOTE"; then
   fail "Wave 1 remote owner unexpectedly launches external installer UI"
@@ -111,4 +116,4 @@ echo "- duplicate active check guard"
 echo "- official GitHub Release manifest source"
 echo "- schema/version/asset policy"
 echo "- >= 9 updater JVM tests"
-echo "- release metadata phase development"
+echo "- release metadata phase $META_PHASE"

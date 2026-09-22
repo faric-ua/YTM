@@ -41,3 +41,34 @@ Phone retest:
 
 Global historical bugs remain in `qa/BUG_REGISTER.md`; do not silently close
 them here.
+
+## BUG-030 — Play Protect blocks/warns on sideloaded updater-enabled APK
+
+Status:
+
+**OPEN — NON-BLOCKING DISTRIBUTION / REPUTATION FOLLOW-UP**
+
+Observed while installing the exact final v1.4.49 RC on the real phone:
+
+- Google Play Protect showed `Шкідливий додаток заблоковано`;
+- the UI offered `Усе одно встановити`;
+- the user explicitly overrode the warning;
+- the exact final RC then installed successfully;
+- RC production state preservation passed;
+- post-publication equal-version updater check also passed.
+
+This observation does **not** establish that the APK contains malicious code,
+nor does it establish the exact heuristic that triggered Play Protect.
+
+Relevant follow-up:
+
+- retain Play Protect rather than instructing users to disable it globally;
+- investigate false-positive/reputation review options for the signed APK;
+- investigate Android developer verification / distribution reputation;
+- assess whether updater-related install permission/behavior contributes, without
+  weakening SHA-256 verification, explicit-user-action semantics or Android's
+  package-installer boundary.
+
+Evidence:
+
+- development-conversation screenshot only; screenshot binary is not committed.

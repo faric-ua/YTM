@@ -34,10 +34,11 @@ Current application:
 
 - versionName: **1.4.49**
 - versionCode: **92**
-- release focus: **v1.4.49 — In-app Updater (Wave 1 Test 1 PASS; Wave 2 download/SHA implemented)**
-- release status: **v1.4.48 remains the accepted stable checkpoint; v1.4.49 Wave 1 Test 1 passed and Wave 2 Download+SHA is implemented with signed build/phone QA pending**
+- release focus: **v1.4.49 — In-app Updater — RELEASED / TARGETED PHONE QA PASS**
+- release status: **v1.4.49 accepted stable; updater `1+..6+`, RC+, FINAL+ passed**
 - active branch: `feat/v1.4.49-updater`
-- stable app checkpoint: `checkpoint-v1.4.48-phone-pass`
+- stable app checkpoint: `checkpoint-v1.4.49-phone-pass`
+- next planned architecture wave: **v1.4.50 Skin System**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 

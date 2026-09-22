@@ -24,8 +24,8 @@
 - [x] SHA mismatch hard-stop implementation
 - [x] verified file promotion to final APK path
 - [x] installer launch absent from Wave 2
-- [ ] signed Wave 2 APK
-- [ ] real-phone newer-version / download / rotation / verify QA
+- [x] signed Wave 2 APK — run `35736216442`
+- [x] real-phone newer-version / download / rotation / verify QA — `2+`, `3+`, `4+`
 
 ## Identity / release source
 
@@ -33,27 +33,27 @@
 - [x] versionCode `92`
 - [x] official GitHub Release manifest selected
 - [x] APK asset name matches manifest
-- [ ] SHA-256 asset/manifest contract matches downloaded APK
+- [x] SHA-256 asset/manifest contract matches downloaded APK
 
 ## Updater behavior
 
-- [ ] equal remote `versionCode` → Up to date
+- [x] equal remote `versionCode` → Up to date — `FINAL+`
 - [x] lower remote `versionCode` → informational no-update state, never Error/upgrade
-- [ ] newer `versionCode` → Update available
+- [x] newer `versionCode` → Update available — `2+`
 - [ ] malformed manifest rejected
 - [ ] unsupported schema rejected
 - [ ] missing APK rejected
-- [ ] SHA mismatch is a hard stop
-- [ ] Android package installer opens only after successful verification
-- [ ] installer cancellation is safe
+- [x] SHA mismatch is a hard stop — JVM policy coverage
+- [x] Android package installer opens only after successful verification — `5+` / `6+`
+- [x] installer cancellation is safe — `5+`
 
 ## Lifecycle
 
 - [x] Checking survives rotation without observed duplicate request
-- [ ] Downloading survives/reconnects after rotation without duplicate download
+- [x] Downloading survives/reconnects after rotation without duplicate download — `3+`
 - [ ] Verifying survives recreation safely
-- [ ] Ready to install survives recreation
-- [ ] installer is not relaunched automatically by recreation
+- [x] Ready to install remains inspectable after installer cancel/recreation — `5+`
+- [x] installer is not relaunched automatically by recreation — `5+`
 - [x] Back/Cancel returns to the correct About/Service parent
 
 ## Existing behavior smoke
@@ -61,3 +61,30 @@
 - [x] About page still opens
 - [ ] Release History still opens
 - [ ] existing v1.4.48 playlist-management behavior not changed by updater work
+
+## Final release acceptance
+
+- [x] exact final RC source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
+- [x] exact signed final RC run `35755925563`
+- [x] final RC same-package production smoke — `RC+`
+- [x] release tag `v1.4.49` points to exact tested source
+- [x] stable release assets: APK + SHA-256 + update manifest
+- [x] post-publication equal-version phone check — `FINAL+`
+- [x] connected Google/YTM state preserved through final RC install
+- [x] current 13-track playlist/local state preserved through final RC install
+
+Broad historical regression items not explicitly executed remain outside this
+targeted release acceptance.
+
+## Final release acceptance — FINAL+
+
+- [x] exact final source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
+- [x] signed final RC run `35755925563`
+- [x] final production RC smoke — `RC+`
+- [x] stable `v1.4.49` release on exact tested source
+- [x] equal-version phone check — `FINAL+`
+- [x] Google/YTM connection preserved
+- [x] current 13-track playlist/local state preserved
+
+Broader historical regression items not explicitly executed remain outside this
+targeted release acceptance.

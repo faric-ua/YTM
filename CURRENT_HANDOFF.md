@@ -8,22 +8,24 @@ Last updated: **2026-09-22**
 
 Repository: `faric-ua/YTM`
 
-Latest merged release:
-- **v1.4.42-R1 / versionCode 81**
-- PR #13 merged to `main`
-- merge commit: `7376c326d55cde5df9b289bff2bf571a47f67ef0`
-- BUG-012 CLOSED — PHONE RETEST PASS
+Latest stable release:
+- **v1.4.49 / versionCode 92**
+- GitHub Release/tag: `v1.4.49`
+- exact final app source: `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
+- exact signed run: `35755925563`
+- stabilization checkpoint: `checkpoint-v1.4.49-phone-pass`
+- result: **PHONE QA PASS — targeted updater + production RC + equal-version stable check**
 
-Current release candidate:
+Current release state:
 - versionName: **1.4.49**
 - versionCode: **92**
 - active branch: `feat/v1.4.49-updater`
 - pre-recovery documentation HEAD: `33d1a04e4b295e80f02446944cdde2b4cfba8e6a`
 - stable app checkpoint: `checkpoint-v1.4.48-phone-pass` → `ada8038f51834f8ae4874cd9c13485645f5f72b6`
-- status: **v1.4.49 PARTIALLY PHONE-TESTED — UPDATER 1+..6+ PASS / PRODUCTION SMOKE PASS / FINAL RC NEXT**
-- installed production APK: **v1.4.49 / code 92 Wave 3** from run `35746655972` / source `40c6f919bd2309eb958890c37a31cdfd9ec3039e`; phone smoke confirmed Google/YTM remained connected as `faric`, the current 13-track Prodigy playlist remained present, no forced login opened, and Version correctly showed stable 1.4.48 older than installed 1.4.49. Installer Tests `5+` / `6+` remain accepted.
-- accepted v1.4.48 checkpoint remains `checkpoint-v1.4.48-phone-pass` / `ada8038f51834f8ae4874cd9c13485645f5f72b6`
-- focus: **v1.4.49 Updater Wave 1: stable-manifest Check + lifecycle-safe operation ownership — Test 1 PASS; Wave 2 explicit APK download + SHA-256 verification is implemented with process-owned lifecycle; installer handoff remains later**
+- status: **v1.4.49 RELEASED — PHONE QA PASS / FINAL+**
+- installed production APK: **v1.4.49 / code 92 exact final RC** from run `35755925563` / source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; `RC+` preserved Google/YTM connection and the current 13-track playlist; `FINAL+` confirmed installed/stable `1.4.49 (92)` and `Оновлень немає`.
+- accepted stable checkpoint is `checkpoint-v1.4.49-phone-pass` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; previous v1.4.48 checkpoint remains historical evidence.
+- focus: **v1.4.49 Updater CLOSED; next planned wave is v1.4.50 Skin System. YouTube/YTM URL/Mix → local snapshot remains future development.**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -336,11 +338,11 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 2. Treat documentation recovery + hardening as complete.
 3. Wave 1 Test 1 is accepted on signed run `35730023317` / `4d30672c700d2fc2a32255465f555c0fd64acdc3` with result `1+`.
 4. BUG-029 is closed for the tested scope: older stable is informational and updater user-facing prose is Ukrainian.
-5. Updater targeted matrix is accepted: `1+ 2+ 3+ 4+ 5+ 6+`.
-6. Production same-package smoke passed with account and current-playlist state preserved.
-7. Build one final RC containing the v1.4.49 changelog; updater implementation is unchanged.
-8. Install that exact RC and repeat the short production account/local-state/Version smoke.
-9. After RC smoke PASS: publish that exact artifact as stable `v1.4.49`, run equal-version phone check, then final release-close audit.
+5. v1.4.49 is released and accepted: updater matrix `1+..6+`, production RC smoke `RC+`, equal-version stable check `FINAL+`.
+6. Preserve release tag `v1.4.49` and checkpoint `checkpoint-v1.4.49-phone-pass` on exact source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`.
+7. Keep BUG-030 open as a non-blocking Play Protect distribution/reputation finding; do not weaken updater security to hide the warning.
+8. Start v1.4.50 Skin System only from a fresh branch/context read; the recorded YouTube/YTM URL/Mix local-snapshot feature remains future backlog.
+9. Do not reinterpret targeted v1.4.49 phone PASS as exhaustive historical regression coverage.
 
 ## 8. Working contract
 

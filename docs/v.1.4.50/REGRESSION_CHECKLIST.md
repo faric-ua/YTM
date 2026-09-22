@@ -1,0 +1,11 @@
+
+# v1.4.50 — Regression Checklist
+
+- [ ] version/build identity
+- [ ] primary feature path
+- [ ] Back/navigation ownership
+- [ ] rotation/recreation
+- [ ] modal lifecycle
+- [ ] cancel/no-op behavior
+- [ ] error path
+- [ ] no accidental duplicate operation

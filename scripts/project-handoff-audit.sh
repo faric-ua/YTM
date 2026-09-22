@@ -44,14 +44,24 @@ grep -Fq 'mutable crash-recovery snapshot' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF purpose missing"
 grep -Fq 'Historical status that remains true' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF historical status section missing"
-grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF current release candidate missing"
+if grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md; then
+  :
+elif grep -Fq 'Current release state:' CURRENT_HANDOFF.md; then
+  :
+else
+  fail "CURRENT_HANDOFF current release candidate/state missing"
+fi
 grep -Fq 'feat/v1.4.49-updater' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF active updater branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'v1.4.49 Updater Wave 1: stable-manifest Check + lifecycle-safe operation ownership' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF updater Wave 1 focus missing"
+if grep -Fq 'v1.4.49 Updater Wave 1: stable-manifest Check + lifecycle-safe operation ownership' CURRENT_HANDOFF.md; then
+  :
+elif grep -Fq 'v1.4.49 Updater CLOSED;' CURRENT_HANDOFF.md; then
+  :
+else
+  fail "CURRENT_HANDOFF updater development/released focus missing"
+fi
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
 grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
