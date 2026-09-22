@@ -1,6 +1,11 @@
 
 # Roadmap — v1.4.49 In-app Updater
 
+## Implementation status
+
+Wave 1 implements the user-initiated stable-manifest check and lifecycle-safe state ownership. Download, downloaded-file SHA verification and installer handoff remain later waves.
+
+
 ## Entry point
 
 `Меню → Сервіс → Про YTM Importer → Версія → Перевірити оновлення`

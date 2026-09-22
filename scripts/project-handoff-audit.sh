@@ -50,8 +50,8 @@ grep -Fq 'feat/v1.4.49-updater' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF active updater branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'documentation hardening complete; next operation is v1.4.49 Updater application code' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF hardened updater next-step missing"
+grep -Fq 'v1.4.49 Updater Wave 1: stable-manifest Check + lifecycle-safe operation ownership' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF updater Wave 1 focus missing"
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
 grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \

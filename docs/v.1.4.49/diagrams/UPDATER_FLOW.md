@@ -36,6 +36,11 @@ flowchart TD
     P -. "rotation/recreation: do not auto-launch installer" .-> P
 ```
 
+## Wave status
+
+Wave 1 implements the route through `Up to date` / `Update available` / `Error`.
+The Download → Verify → Install branch remains planned and is not auto-entered.
+
 ## Lifecycle contract
 
 Recreation restores updater state but is never treated as another Check,

@@ -15,14 +15,14 @@ Latest merged release:
 - BUG-012 CLOSED — PHONE RETEST PASS
 
 Current release candidate:
-- versionName: **1.4.48**
-- versionCode: **91**
+- versionName: **1.4.49**
+- versionCode: **92**
 - active branch: `feat/v1.4.49-updater`
 - pre-recovery documentation HEAD: `33d1a04e4b295e80f02446944cdde2b4cfba8e6a`
 - stable app checkpoint: `checkpoint-v1.4.48-phone-pass` → `ada8038f51834f8ae4874cd9c13485645f5f72b6`
-- status: **DOCUMENTATION HARDENING COMPLETE — v1.4.49 UPDATER CODE NEXT**
+- status: **v1.4.49 WAVE 1 CHECK-ONLY IMPLEMENTED — PREFLIGHT/SIGNED/PHONE QA PENDING**
 - installed phone APK: **v1.4.48**; functional tests 1–4 were established on run `35671741464` / `0e5620204e475495dd08468e8d00987eba7c4f75`; UX-023-only successor test 5 passed on run `35673239632` / final source `ada8038f51834f8ae4874cd9c13485645f5f72b6`
-- focus: **documentation hardening complete; next operation is v1.4.49 Updater application code**
+- focus: **v1.4.49 Updater Wave 1: stable-manifest Check + lifecycle-safe operation ownership; download/install remain out of scope**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -333,12 +333,12 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 1. Keep work on `feat/v1.4.49-updater`.
 2. Treat documentation recovery + hardening as complete.
-3. Use `docs/v.1.4.49/` as the live release package from the first code change.
-4. Bump app identity to planned v1.4.49 / code 92 when implementation starts.
-5. Implement the Updater against `docs/roadmap/UPDATER.md` and the system behavior contract.
-6. Keep `RELEASE_META.json`, QA/evidence and diagrams current as implementation evolves.
-7. Run the normal release preflight before every signed APK.
-8. Final release closeout must pass `scripts/release-close-audit.sh 1.4.49`.
+3. Wave 1 code owns only Check: manifest fetch/validation/version decision and lifecycle-safe state reattachment.
+4. Run package/self-tests, generated-document checks and full release preflight.
+5. Commit/push Wave 1 only after exact-path staging and deletion/leftover guards pass.
+6. Build a signed v1.4.49 APK from that exact commit.
+7. Phone-test current-release Check plus rotation before starting Download/Install Wave 2.
+8. Final release closeout still requires `scripts/release-close-audit.sh 1.4.49`.
 
 ## 8. Working contract
 

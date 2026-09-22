@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.49 — In-app Updater — DOCUMENTATION HARDENING COMPLETE / CODE NEXT
+v1.4.49 — In-app Updater — WAVE 1 CHECK-ONLY IMPLEMENTED / PREFLIGHT + SIGNED + PHONE QA PENDING
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -55,15 +55,17 @@ v1.4.49 — In-app Updater — DOCUMENTATION HARDENING COMPLETE / CODE NEXT
 - [x] add final release-close gate for history/status/evidence/tag consistency
 - [x] expand fresh-chat context to accepted-release QA/evidence/diagrams
 - [x] create v1.4.49 release/QA/evidence/diagram skeleton before app code
-- [ ] bump app version to v1.4.49 / next versionCode
-- [ ] About → version → Перевірити оновлення
-- [ ] fetch/validate stable update manifest
-- [ ] compare versionCode
+- [x] bump app version to v1.4.49 / versionCode 92
+- [x] About → version → Перевірити оновлення
+- [x] fetch/validate stable update manifest
+- [x] compare versionCode
 - [ ] download APK
-- [ ] SHA-256 verification
+- [ ] downloaded-file SHA-256 verification
 - [ ] Android package-installer handoff
-- [ ] updater lifecycle/rotation state ownership
-- [ ] JVM tests for manifest/version/hash policy
+- [x] Check lifecycle/rotation state ownership
+- [ ] Download/verify/install lifecycle ownership
+- [x] JVM tests for manifest/version/minSdk policy
+- [ ] JVM tests for downloaded-file SHA policy
 - [ ] signed APK + targeted phone QA
 
 ## v1.4.50 — Skin System

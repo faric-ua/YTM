@@ -1,4 +1,4 @@
-YTM Importer v1.4.48 — FILE MANIFEST v2
+YTM Importer v1.4.49 — FILE MANIFEST v2
 
 Generated deterministically from repository files.
 FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
@@ -11,21 +11,21 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 47f83c482a625b76  ASSISTANT_CONTEXT_INDEX.md
-e40f9c928ce89b98  BACKLOG.md
+ec81ecb025b20a3f  BACKLOG.md
 b6173f7dc6b8716d  CHANGELOG.md
-af3d1994e64e16ab  CURRENT_HANDOFF.md
+0b6ea2a9ff6a4b1b  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
-fa2576080e22157d  PROJECT_STATUS.txt
+653c156aa79914ed  PROJECT_STATUS.txt
 ce775606933d5b6f  PUBLIC_RELEASE_CHECKLIST.md
 a3aa1abb963a13e6  README.md
 48b7e9718ed807af  README_G01A.md
 7b00d1251f822b57  README_GUARD_FIX.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
-2f16b7fba8f8f294  RELEASE_TEST_STATUS.md
-e9a0b8528b8664f0  START_HERE_ASSISTANT.md
+8c7dac7e2e0df0de  RELEASE_TEST_STATUS.md
+ba61c06c74360077  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
@@ -84,7 +84,7 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 a94c6b97c5387250  TERMUX_COMMANDS.md
 55cdc8a68f1e48f2  TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt
 7cf3122a62c60092  YTM_ASSISTANT_WORKFLOW.md
-2e4deb96a280e556  app/build.gradle.kts
+ebb80a1c65ea9a8c  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 7ed06001f6a192d6  app/src/main/AndroidManifest.xml
 02f933ae66b1ce52  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
@@ -99,7 +99,7 @@ a2fec94705c2afe0  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 e2ade4094c534ac3  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 a1f449578ea55ef1  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 dc08eba3ebd2abff  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
-eae03ac402fcef89  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
+edb52583f4ae073f  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 1d2285e95fb0bf60  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 99e25606f1e7db96  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
@@ -138,6 +138,8 @@ dd764f64c2e7db77  app/src/main/java/com/saney/ytmimporter/ui/AppThemeManager.kt
 d3343b4bd89cf956  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
 8ba593f56408ee20  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 75fdb1a6dc620f97  app/src/main/java/com/saney/ytmimporter/ui/WorkflowRelayOverlay.kt
+c7c052f44f22f8fb  app/src/main/java/com/saney/ytmimporter/updater/UpdaterManifestPolicy.kt
+4f59fceddc59e388  app/src/main/java/com/saney/ytmimporter/updater/UpdaterRemoteOperations.kt
 e649b253ebcce362  app/src/main/java/com/saney/ytmimporter/util/ErrorMessages.kt
 da71e4020359da61  app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt
 49ea39322f16188f  app/src/main/java/com/saney/ytmimporter/youtube/MatchScorer.kt
@@ -171,6 +173,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 7c794e3e8b44bad5  app/src/main/res/values/strings.xml
 9d05e1fd1b661172  app/src/main/res/values/styles.xml
 c5bf1b1e5def6ac4  app/src/main/res/xml/file_paths.xml
+1e07e573cbdbb1ff  app/src/test/java/com/saney/ytmimporter/updater/UpdaterManifestPolicyTest.kt
 c303067db2c6dcab  app/src/test/java/com/saney/ytmimporter/youtube/PlaylistEditPolicyTest.kt
 1ad29e43e790095c  build.gradle.kts
 03fc725ca9b1f89a  docs/ASSISTANT_TOOL_MAP.md
@@ -178,7 +181,7 @@ c303067db2c6dcab  app/src/test/java/com/saney/ytmimporter/youtube/PlaylistEditPo
 3c8c6e273019f706  docs/HANDOFF_HARDENING_2026-09-17.md
 da6db67c9017a470  docs/README.md
 0eb6d1512dc9b142  docs/WORKFLOW_LESSONS.md
-f665e158fe7f0f75  docs/assistant-kit/AUDIT_CATALOG.md
+869f0b712cb81373  docs/assistant-kit/AUDIT_CATALOG.md
 656dd11908a545cd  docs/assistant-kit/CONTEXT_FILES.txt
 32b0a039d0111864  docs/assistant-kit/PORTABLE_AUDITS.txt
 b07c7177d0a2b73e  docs/assistant-kit/README.md
@@ -237,10 +240,10 @@ bda0e19ca6c2e07d  docs/design/exclusive/skins/prototypes/polyglot-ku-japanese-me
 896621664e5d5f19  docs/issues/BUG-009/PHONE_REPRO_v1.4.40_2026-09-19.md
 f0b2bc4a157dcf09  docs/plans/YTM_ACCOUNT_LIBRARY_IMPORT_EXPORT.md
 b899bbc8a360bb81  docs/roadmap/SKINS.md
-eff0a760e0fa1192  docs/roadmap/UPDATER.md
+a2635a236a67df26  docs/roadmap/UPDATER.md
 b6489bea87909d95  docs/test-data/collections/House_Dance_Hit_2000/House_Dance_Hit_2000_Vol1_YTM.txt
 ddf191c57cc1a296  docs/test-data/collections/House_Dance_Hit_2000/README.md
-a39218e57bad981b  docs/testing/AUTOMATED_TEST_STRATEGY.md
+9959dd6db2ac2751  docs/testing/AUTOMATED_TEST_STRATEGY.md
 94008ecf541443cf  docs/tutorial/00_START_HERE.md
 bd17b93929a401fb  docs/tutorial/01_PROJECT_EVOLUTION.md
 bab4310bae2a420f  docs/tutorial/02_DEVELOPMENT_LOOP.md
@@ -1315,13 +1318,13 @@ f462df250c2e71d4  docs/v.1.4.47/qa/R3_WRITE_PROGRESS_R8.md
 76c069d5477a19cb  docs/v.1.4.48/qa/PHONE_TEST_REPORT_2026-09-22.md
 173c9b4bbb8f8712  docs/v.1.4.48/qa/STABILIZATION_CHECKPOINT.md
 e564b1a25d0f3c77  docs/v.1.4.48/qa/TEST_RUN_2026-09-22.md
-e342e40a545f6063  docs/v.1.4.49/REGRESSION_CHECKLIST.md
-9dbfe1c7d09ebf1e  docs/v.1.4.49/RELEASE.md
-5332bb0ccd9e37b2  docs/v.1.4.49/RELEASE_META.json
+0efa35132f9ed21d  docs/v.1.4.49/REGRESSION_CHECKLIST.md
+c8b05d90acc34ec7  docs/v.1.4.49/RELEASE.md
+0f88019af9fea7c2  docs/v.1.4.49/RELEASE_META.json
 7a1a84cfa026afca  docs/v.1.4.49/diagrams/README.md
-49632943be3a842b  docs/v.1.4.49/diagrams/UPDATER_FLOW.md
+b37db37b9b6b05d7  docs/v.1.4.49/diagrams/UPDATER_FLOW.md
 9c52b601da51919c  docs/v.1.4.49/qa/BUG_REGISTER.md
-f2dcee11864a1432  docs/v.1.4.49/qa/EVIDENCE_MANIFEST.md
+73599422b49f129b  docs/v.1.4.49/qa/EVIDENCE_MANIFEST.md
 d8f63d669afd68fc  docs/v.1.4.49/qa/PHONE_TEST.md
 01da8846c4eb24fe  docs/v.1.4.5/REGRESSION_CHECKLIST.md
 990d42763cff59f7  docs/v.1.4.5/RELEASE.md
@@ -1430,17 +1433,17 @@ a70421aa086a5c61  scripts/generate-file-manifest.py
 7d7193fd9798ed62  scripts/mainactivity-audit.sh
 8fe538a35721c634  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
-b892ba26287423e3  scripts/project-handoff-audit.sh
+45a512fdbefff27d  scripts/project-handoff-audit.sh
 08211dc2fb7ed826  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
 34a319998981b650  scripts/release-close-audit.sh
 bd496d2802fc4272  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-716bce4654b0287d  scripts/release-preflight.sh
+20c7f513453ebb7a  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
-f44408a1761012e6  scripts/service-navigation-audit.sh
+326cb0b961c2856b  scripts/service-navigation-audit.sh
 dd05198419970d1c  scripts/ui-chrome-audit.sh
 972992f79e831a4b  scripts/v1417-auth-flow-audit.sh
 8809b63eb0115a67  scripts/v1418-account-library-import-audit.sh
@@ -1552,4 +1555,5 @@ d6c3e9ce36f07799  scripts/v1447-r3-runtime-lifecycle-r5-selftest.py
 2a7742ae78f95743  scripts/v1448-playlist-edit-audit.sh
 df3b1e2d8e6925c2  scripts/v1448-tile-foundation-audit.sh
 e46729024d7d050e  scripts/v1448-unit-test-foundation-audit.sh
+797052e580250bfa  scripts/v1449-updater-wave1-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts

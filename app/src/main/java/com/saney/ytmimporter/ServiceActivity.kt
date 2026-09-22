@@ -25,6 +25,7 @@ import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.SafTreeFileWriter
 import com.saney.ytmimporter.ui.SafFileSaveFlow
+import com.saney.ytmimporter.updater.UpdaterRemoteOperations
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.youtube.SearchCache
 import java.io.File
@@ -38,6 +39,12 @@ class ServiceActivity : Activity() {
     private lateinit var historyStore: HistoryStore
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var currentPlaylistStore: CurrentPlaylistStore
+
+    private val updaterListener: (UpdaterRemoteOperations.State) -> Unit = {
+        if (page == Page.VERSION) {
+            buildUi()
+        }
+    }
 
     private var page: Page = Page.HOME
     private var pendingExportContent: String? = null
@@ -77,6 +84,20 @@ class ServiceActivity : Activity() {
         buildUi()
     }
 
+    override fun onStart() {
+        super.onStart()
+        UpdaterRemoteOperations.addListener(
+            updaterListener
+        )
+    }
+
+    override fun onStop() {
+        UpdaterRemoteOperations.removeListener(
+            updaterListener
+        )
+        super.onStop()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(KEY_PAGE, page.name)
         outState.putInt(KEY_CHANGELOG_SCROLL_Y, changelogScrollY)
@@ -97,6 +118,11 @@ class ServiceActivity : Activity() {
                 super.onBackPressed()
 
             Page.CHANGELOG -> {
+                page = Page.ABOUT
+                buildUi()
+            }
+
+            Page.VERSION -> {
                 page = Page.ABOUT
                 buildUi()
             }
@@ -152,6 +178,7 @@ class ServiceActivity : Activity() {
             Page.DIAGNOSTICS -> buildDiagnostics()
             Page.SEARCH_CACHE -> buildSearchCache()
             Page.ABOUT -> buildAbout()
+            Page.VERSION -> buildVersion()
             Page.CHANGELOG -> buildChangelog()
         }
     }
@@ -432,11 +459,13 @@ class ServiceActivity : Activity() {
         val content = contentColumn()
 
         content.addView(
-            infoCard(
+            serviceCard(
                 "Версія",
                 "YTM Importer ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
                     "Android target SDK: ${applicationInfo.targetSdkVersion}"
-            )
+            ) {
+                open(Page.VERSION)
+            }
         )
         content.addView(
             infoCard(
@@ -488,6 +517,81 @@ class ServiceActivity : Activity() {
                 "Що змінювалося у кожному релізі"
             ) { open(Page.CHANGELOG) }
         )
+
+        setScreen(root, content)
+    }
+
+    private fun buildVersion() {
+        val root = screenRoot()
+        root.addView(topBar("Версія"))
+        val content = contentColumn()
+        val state = UpdaterRemoteOperations.current()
+
+        content.addView(
+            infoCard(
+                "Встановлено",
+                "YTM Importer ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
+                    "Android target SDK: ${applicationInfo.targetSdkVersion}"
+            )
+        )
+
+        val status =
+            when (state.phase) {
+                UpdaterRemoteOperations.Phase.IDLE ->
+                    "Перевірка оновлень" to
+                        "Джерело: офіційний GitHub Release faric-ua/YTM."
+
+                UpdaterRemoteOperations.Phase.CHECKING ->
+                    "Перевіряю…" to state.message
+
+                UpdaterRemoteOperations.Phase.UP_TO_DATE ->
+                    "Оновлень немає" to
+                        (
+                            state.message +
+                                " Стабільна версія: " +
+                                "${state.remoteVersionName} " +
+                                "(${state.remoteVersionCode})."
+                        )
+
+                UpdaterRemoteOperations.Phase.UPDATE_AVAILABLE ->
+                    "Доступне оновлення" to
+                        (
+                            "YTM Importer ${state.remoteVersionName} " +
+                                "(${state.remoteVersionCode}).\n" +
+                                "Завантаження APK не запускається автоматично."
+                        )
+
+                UpdaterRemoteOperations.Phase.ERROR ->
+                    "Не вдалося перевірити" to state.message
+            }
+
+        content.addView(
+            infoCard(
+                status.first,
+                status.second
+            )
+        )
+
+        val checkButton =
+            fullActionButton(
+                if (state.running) {
+                    "Перевіряю…"
+                } else {
+                    "Перевірити оновлення"
+                }
+            ) {
+                UpdaterRemoteOperations.startCheck(
+                    localVersionCode =
+                        BuildConfig.VERSION_CODE,
+                    deviceSdk = Build.VERSION.SDK_INT
+                )
+            }
+
+        checkButton.isEnabled =
+            !state.running
+        checkButton.alpha =
+            if (state.running) 0.65f else 1f
+        content.addView(checkButton)
 
         setScreen(root, content)
     }
@@ -1238,6 +1342,7 @@ class ServiceActivity : Activity() {
         DIAGNOSTICS,
         SEARCH_CACHE,
         ABOUT,
+        VERSION,
         CHANGELOG
     }
 

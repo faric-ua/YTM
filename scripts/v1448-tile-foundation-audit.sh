@@ -6,23 +6,23 @@ fail() {
   exit 1
 }
 
-GRADLE="app/build.gradle.kts"
+META="docs/v.1.4.48/RELEASE_META.json"
 UI="app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"
 DEST="app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt"
 ICON="app/src/main/res/drawable/ic_ytm_delete.xml"
 DOC="docs/design/TILE_UI_CONTRACT.md"
 BACKLOG="BACKLOG.md"
 
-for f in "$GRADLE" "$UI" "$DEST" "$ICON" "$DOC" "$BACKLOG"; do
+for f in "$META" "$UI" "$DEST" "$ICON" "$DOC" "$BACKLOG"; do
   test -f "$f" ||
     fail "missing v1.4.48 tile file: $f"
 done
 
-grep -Fq 'versionCode = 91' "$GRADLE" ||
-  fail "versionCode 91 missing"
+grep -Fq '"versionCode": 91' "$META" ||
+  fail "historical v1.4.48 versionCode 91 evidence missing"
 
-grep -Fq 'versionName = "1.4.48"' "$GRADLE" ||
-  fail "versionName 1.4.48 missing"
+grep -Fq '"versionName": "1.4.48"' "$META" ||
+  fail "historical v1.4.48 versionName evidence missing"
 
 for needle in \
   'data class TileAction(' \

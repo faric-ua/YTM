@@ -64,3 +64,18 @@ The first real JVM tests cover `PlaylistEditPolicy`:
 - blank-title rejection;
 - preservation of existing description/defaultLanguage/tags/podcastStatus;
 - omission of blank optional metadata.
+
+## v1.4.49 updater Wave 1
+
+Updater manifest/version policy is Android-independent production logic and is covered by JVM/JUnit tests for:
+
+- valid schema parsing;
+- same-version behavior;
+- newer-version detection;
+- downgrade rejection;
+- malformed/unsupported manifests;
+- APK asset identity;
+- SHA-256 field format;
+- remote minSdk compatibility.
+
+Rotation/recreation behavior remains a real-phone acceptance requirement even though the operation-owner structure is statically audited.

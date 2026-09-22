@@ -10,6 +10,7 @@ grep -q 'private enum class Page' "$SERVICE" || fail "Service page state missing
 grep -Fq 'when (page)' "$SERVICE" || fail "Service back-stack dispatcher missing"
 grep -Fq 'Page.HOME ->' "$SERVICE" || fail "Service HOME back route missing"
 grep -Fq 'Page.CHANGELOG -> {' "$SERVICE" || fail "Service CHANGELOG back route missing"
+grep -Fq 'Page.VERSION -> {' "$SERVICE" || fail "Service VERSION back route missing"
 grep -Fq 'page = Page.ABOUT' "$SERVICE" || fail "Service CHANGELOG parent route missing"
 grep -Fq 'page = Page.HOME' "$SERVICE" || fail "Service subpage HOME back route missing"
 grep -q 'private fun buildQuickStart' "$SERVICE" || fail "Quick Start detail missing"
@@ -28,6 +29,6 @@ grep -q 'data class DialogRecord' "$UI" || fail "DialogRecord template missing"
 echo 'PASS:'
 echo '- Service subpages stay inside ServiceActivity'
 echo '- Back uses explicit HOME / CHANGELOG / other-subpage routing'
-echo '- CHANGELOG Back returns to About; other subpages return to Service home'
+echo '- CHANGELOG and VERSION Back return to About; other subpages return to Service home'
 echo '- Diagnostics/SearchCache/About use structured screens'
 echo '- problem tracks use record tiles and stacked export actions'

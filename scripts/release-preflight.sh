@@ -159,6 +159,7 @@ check_file "docs/design/TILE_UI_CONTRACT.md"
 check_file "scripts/v1448-tile-foundation-audit.sh"
 check_file "scripts/v1448-playlist-edit-audit.sh"
 check_file "scripts/v1448-unit-test-foundation-audit.sh"
+check_file "scripts/v1449-updater-wave1-audit.sh"
 check_file "ASSISTANT_CONTEXT_INDEX.md"
 check_file "docs/assistant-kit/CONTEXT_FILES.txt"
 check_file "docs/assistant-kit/RELEASE_DOCUMENTATION_CONTRACT.md"
@@ -235,6 +236,7 @@ bash scripts/v1447-r3-history-counters-r9-fix5-audit.sh
 bash scripts/v1448-tile-foundation-audit.sh
 bash scripts/v1448-playlist-edit-audit.sh
 bash scripts/v1448-unit-test-foundation-audit.sh
+bash scripts/v1449-updater-wave1-audit.sh
 bash scripts/documentation-system-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
@@ -475,11 +477,11 @@ grep -q 'HistoryActivity::class.java' \
 grep -q 'applicationId = "com.saney.ytmimporter"' app/build.gradle.kts \
   || fail "Unexpected applicationId"
 
-grep -q 'versionCode = 91' app/build.gradle.kts \
-  || fail "Expected versionCode = 91"
+grep -q 'versionCode = 92' app/build.gradle.kts \
+  || fail "Expected versionCode = 92"
 
-grep -q 'versionName = "1.4.48"' app/build.gradle.kts \
-  || fail 'Expected versionName = "1.4.48"'
+grep -q 'versionName = "1.4.49"' app/build.gradle.kts \
+  || fail 'Expected versionName = "1.4.49"'
 
 grep -q 'buildConfig = true' app/build.gradle.kts \
   || fail "BuildConfig generation is not enabled"

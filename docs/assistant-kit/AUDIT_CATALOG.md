@@ -5,7 +5,7 @@ This file is generated from the repository audit scripts.
 Do not hand-edit the inventory; update scripts or
 `docs/assistant-kit/PORTABLE_AUDITS.txt`, then regenerate.
 
-Total audit scripts: **93**
+Total audit scripts: **94**
 
 ## Portable/system subset
 
@@ -150,6 +150,7 @@ contracts.
 - `scripts/v1448-playlist-edit-audit.sh`
 - `scripts/v1448-tile-foundation-audit.sh`
 - `scripts/v1448-unit-test-foundation-audit.sh`
+- `scripts/v1449-updater-wave1-audit.sh`
 
 ## Usage rule
 

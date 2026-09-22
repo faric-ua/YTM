@@ -2,7 +2,7 @@
 
 | Version | Status | Note |
 |---|---|---|
-| v1.4.49 | **PLANNED — DOCUMENTATION HARDENING COMPLETE / APP CODE NOT STARTED** | Release metadata, QA plan, evidence registry and Updater flow diagram exist before the first application-code change. No v1.4.49 APK or phone PASS is claimed yet. |
+| v1.4.49 | **DEVELOPMENT — WAVE 1 CHECK-ONLY IMPLEMENTED / PREFLIGHT + SIGNED + PHONE QA PENDING** | App identity 1.4.49/92, About → Version → Check, stable-manifest validation/version policy, process-owned check lifecycle and JVM tests are implemented. Download/verify/install are not implemented yet. No phone PASS is claimed. |
 | v1.4.48 | **PHONE QA PASS — TARGETED STABILIZATION CHECKPOINT** | Functional tests 1+–4+ passed on signed run `35671741464` / `0e5620204e475495dd08468e8d00987eba7c4f75`. That run found UX-023. The narrow multiline-title fix was then phone-retested as 5+ on signed run `35673239632` / final source `ada8038f51834f8ae4874cd9c13485645f5f72b6`. Full historical regression was not rerun on the successor build. |
 | v1.4.47-R3 | **PARTIALLY PHONE-TESTED — STABILIZATION CHECKPOINT PASS / BROADER R3 QA DEFERRED** | Signed build `35667160072` from `197da0c6afd7c1f41544e0d39b1dc17e2c7c156f` installed and targeted stabilization paths passed, including playlist deletion plus BUG-027/028 rotation continuity. Write-state reset reached 13/13 on the tested new-playlist run. Full R3 matrix and natural stale/live-401 acceptance were not exhaustively rerun. |
 | v1.4.47-R2 | **STATIC/FULL PREFLIGHT PASS — SUPERSEDED BY R3 BEFORE SIGNED BUILD/PHONE QA** | Compact Home follow-up passed static/full preflight but was superseded by R3 bug-fix consolidation before a signed phone-QA build. |

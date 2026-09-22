@@ -32,10 +32,10 @@ Primary branch: `main`
 
 Current application:
 
-- versionName: **1.4.48**
-- versionCode: **91**
-- release focus: **v1.4.49 — In-app Updater (documentation hardening complete; code next)**
-- release status: **v1.4.48 TARGETED PHONE QA PASS; v1.4.49 APP CODE NOT STARTED YET**
+- versionName: **1.4.49**
+- versionCode: **92**
+- release focus: **v1.4.49 — In-app Updater (Wave 1 check-only implementation)**
+- release status: **v1.4.48 TARGETED PHONE QA PASS; v1.4.49 WAVE 1 PREFLIGHT/SIGNED/PHONE QA PENDING**
 - active branch: `feat/v1.4.49-updater`
 - stable app checkpoint: `checkpoint-v1.4.48-phone-pass`
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`

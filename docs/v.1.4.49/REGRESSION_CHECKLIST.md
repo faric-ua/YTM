@@ -1,5 +1,18 @@
 # v1.4.49 — Regression Checklist
 
+## Wave 1 implementation evidence
+
+- [x] app identity source set to `1.4.49` / code `92`
+- [x] About → Version → Check entry implemented
+- [x] official GitHub Release latest-manifest URL wired
+- [x] pure schema/version/asset policy extracted
+- [x] process-local Check owner rejects duplicate active checks
+- [x] JVM tests added for manifest/version/minSdk policy
+- [ ] static/full release preflight
+- [ ] signed APK
+- [ ] real-phone Wave 1 check/rotation QA
+
+
 ## Identity / release source
 
 - [ ] versionName `1.4.49`
