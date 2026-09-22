@@ -22,6 +22,8 @@
 | BUG-028 | CLOSED — PHONE RETEST PASS v1.4.47-R3 | P2 | Existing-playlist search query and active filter survive Activity recreation/rotation. | v1.4.47-R3 stabilization checkpoint |
 | BUG-029 | CLOSED FOR TESTED SCOPE — PHONE RETEST PASS v1.4.49 R1 | P2 | Updater correctly detected installed 1.4.49/92 as newer than stable 1.4.48/91. R1 renders the relation as informational `Оновлень немає`, keeps updater prose Ukrainian, preserves the result through rotation and returns Back to About. | signed run 35730023317 / 4d30672c700d2fc2a32255465f555c0fd64acdc3 / result 1+ |
 | BUG-030 | OPEN — NON-BLOCKING DISTRIBUTION/REPUTATION FINDING | P2 | Google Play Protect displayed `Шкідливий додаток заблоковано` while sideloading the exact v1.4.49 final RC. The user explicitly chose `Усе одно встановити`; installation and all final functional updater checks then passed. Treat as a Play Protect/reputation/false-positive follow-up, not evidence that the updater flow itself failed. Do not solve by globally disabling Play Protect. | v1.4.49 final RC / conversation screenshot / FINAL+ |
+| BUG-031 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.50 R1 | P2 | Changing Skin in Menu left most of Home on the previous Skin; only the four workflow/state buttons refreshed. R1 moves Skin-change detection into AppThemeManager and keeps only a one-line MainActivity resume guard. | v1.4.50 Wave 1 run 35772192953 / 1- → R1 retest |
+| BUG-032 | FIX IMPLEMENTED — PHONE RETEST NEEDED v1.4.50 R1 | P2 | History → Очистити confirmation disappeared on Activity recreation/rotation. R1 persists the open-confirm state and restores it without automatically clearing History. | v1.4.50 Wave 1 run 35772192953 / 3- → R1 retest |
 
 ## BUG-002 current evidence
 

@@ -37,4 +37,4 @@ Theme selection continues to use the existing persisted style key and existing A
 
 ## Status
 
-**DEVELOPMENT — SKIN CONTRACT WAVE 1 STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA PENDING**
+**PHONE QA FAIL — WAVE 1 1-/2+/3- / R1 FIX STATIC+FULL PREFLIGHT PASS / SIGNED RETEST PENDING**

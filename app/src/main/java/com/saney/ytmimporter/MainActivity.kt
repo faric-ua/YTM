@@ -212,7 +212,7 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-
+        if (AppThemeManager.recreateIfSkinChanged(this)) return
         syncAuthorizationInvalidationFromMemory()
 
         if (

@@ -61,3 +61,40 @@ Expected:
   contract.
 
 Result format: `3+` / `3-`
+
+## Initial signed Wave 1 result
+
+Signed workflow:
+
+- run: `35772192953`
+- source: `c3939849516124cd66c6a72b04f1683f5c6e161c`
+- installed version: `1.4.50 (93)`
+
+Initial signed Wave 1 phone result: `1- / 2+ / 3-`
+
+Observed:
+
+- `1-`: after changing Skin in Menu, Home retained the previous Neon visual chrome;
+  only the four workflow/state buttons refreshed because `updatePrimaryActions()`
+  re-read the new palette while the rest of MainActivity's existing views were not
+  rebuilt.
+- `2+`: semantic success/warning/danger/duplicate roles remained distinguishable.
+- `3-`: `History → Очистити` destructive confirmation disappeared after rotation.
+  History was not automatically cleared.
+
+Corrective R1 targets:
+
+- BUG-031: AppThemeManager records the Skin applied to each Activity window; MainActivity
+  uses a one-line resume guard to recreate when that applied Skin differs from the
+  persisted Skin, rebuilding the whole Home without regrowing MainActivity.
+- BUG-032: History stores the clear-confirm open flag and restores the confirmation
+  after recreation without executing `historyStore.clear()` automatically.
+
+### R1 retest
+
+- `R1-1+`: Neon → Blue → Green; after returning from Menu the whole Home chrome
+  uses the active Skin, not only the four workflow buttons.
+- `R1-2+`: `History → Очистити`; rotate portrait → landscape → portrait; the
+  confirmation remains/reappears and History is unchanged until explicit confirm.
+- `R1-3+`: press Cancel after rotation; History remains unchanged and user stays on
+  History.

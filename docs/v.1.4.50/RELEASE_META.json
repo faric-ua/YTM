@@ -6,8 +6,8 @@
   "feature": "Skin System",
   "branch": "feat/v1.4.50-skin-system",
   "appSourceSha": null,
-  "signedRun": null,
-  "qaStatus": "DEVELOPMENT — SKIN CONTRACT WAVE 1 STATIC/FULL PREFLIGHT PASS / SIGNED BUILD + PHONE QA PENDING",
+  "signedRun": 35772192953,
+  "qaStatus": "PHONE QA FAIL — WAVE 1 1-/2+/3- / R1 FIX STATIC+FULL PREFLIGHT PASS / SIGNED RETEST PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null

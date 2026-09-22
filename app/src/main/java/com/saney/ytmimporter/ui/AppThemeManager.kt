@@ -57,6 +57,9 @@ object AppThemeManager {
     private const val KEY_STYLE =
         "theme_style"
 
+    private const val EXTRA_APPLIED_SKIN =
+        "ytm_applied_skin"
+
     private val BUILT_IN_SKINS: Map<ThemeStyle, Skin> =
         listOf(
             Skin(
@@ -200,11 +203,40 @@ object AppThemeManager {
     ): SkinPalette =
         skin(context).palette
 
+    fun recreateIfSkinChanged(
+        activity: Activity
+    ): Boolean {
+        val applied =
+            activity.intent
+                .getStringExtra(
+                    EXTRA_APPLIED_SKIN
+                )
+
+        val current =
+            currentStyle(activity)
+                .storageKey
+
+        if (
+            applied.isNullOrBlank() ||
+            applied == current
+        ) {
+            return false
+        }
+
+        activity.recreate()
+        return true
+    }
+
     fun applyWindow(
         activity: Activity
     ) {
         val palette =
             palette(activity)
+
+        activity.intent.putExtra(
+            EXTRA_APPLIED_SKIN,
+            currentStyle(activity).storageKey
+        )
 
         activity.window.statusBarColor =
             palette.background

@@ -7,8 +7,8 @@ Current development focus (v1.4.50 Skin System — DEVELOPMENT):
 - active branch: `feat/v1.4.50-skin-system`;
 - release documentation phase: development;
 - app identity: v1.4.50 / versionCode 93;
-- Skin contract Wave 1: implemented; static/full preflight PASS;
-- common Skin registry now represents Neon/Blue/Green with exact existing RGB values;
+- Skin contract Wave 1 initial signed phone QA: 1-/2+/3- on run 35772192953;
+- BUG-031/032 R1 fixes implemented; static/full preflight PASS; signed phone retest pending;
 - semantic success/warning/danger/duplicate colors are grouped under `SemanticPalette`; phone QA pending;
 - accepted stable release remains v1.4.49 In-app Updater;
 - v1.4.49 updater matrix `1+ 2+ 3+ 4+ 5+ 6+`, RC+, and FINAL+ remain accepted evidence;

@@ -35,7 +35,7 @@ Current development application:
 - versionName: **1.4.50**
 - versionCode: **93**
 - release focus: **v1.4.50 — Skin System — DEVELOPMENT**
-- release status: **Skin contract Wave 1 static/full preflight PASS; signed build + phone QA pending**
+- release status: **Wave 1 signed phone QA 1-/2+/3-; BUG-031/032 R1 fixes static/full preflight PASS; signed retest pending**
 - active branch: `feat/v1.4.50-skin-system`
 - accepted stable release: **v1.4.49 — In-app Updater**
 - stable app checkpoint: `checkpoint-v1.4.49-phone-pass`

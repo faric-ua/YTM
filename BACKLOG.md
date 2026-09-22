@@ -97,6 +97,9 @@ v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
 - [x] define reusable Skin contract before broad UI migration — Wave 1 static/full preflight PASS
 - [x] migrate Neon/Blue/Green into common Skin contract — exact existing RGB values preserved
 - [x] separate semantic state colors from skin visuals — `SemanticPalette` role group
+- [x] Wave 1 signed phone QA recorded — `1- / 2+ / 3-` on run `35772192953`
+- [x] BUG-031/032 R1 corrective implementation — static/full preflight PASS
+- [ ] R1 signed phone retest
 - [ ] skin preview/selection lifecycle
 - [ ] phone QA across representative screens/modals/tiles
 

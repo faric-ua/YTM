@@ -55,6 +55,8 @@ class HistoryActivity : Activity() {
     private var pendingExportMimeType: String? = null
     private var actionsDialogOpen = false
     private var actionsDialog: Dialog? = null
+    private var clearHistoryDialogOpen = false
+    private var clearHistoryDialog: Dialog? = null
 
     private val saveExportRequestCode = 3201
     private val saveExportFolderRequestCode = 3202
@@ -73,6 +75,14 @@ class HistoryActivity : Activity() {
             savedInstanceState
                 ?.getBoolean(
                     KEY_ACTIONS_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
+        val restoreClearHistoryDialog =
+            savedInstanceState
+                ?.getBoolean(
+                    KEY_CLEAR_HISTORY_DIALOG_OPEN,
                     false
                 )
                 ?: false
@@ -102,6 +112,18 @@ class HistoryActivity : Activity() {
 
         actionsDialogOpen = false
         showListScreen()
+
+        if (restoreClearHistoryDialog) {
+            window.decorView.post {
+                if (
+                    !isFinishing &&
+                    !isDestroyed &&
+                    currentEntryId == null
+                ) {
+                    confirmClearHistory()
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -112,6 +134,10 @@ class HistoryActivity : Activity() {
         outState.putBoolean(
             KEY_ACTIONS_DIALOG_OPEN,
             actionsDialogOpen
+        )
+        outState.putBoolean(
+            KEY_CLEAR_HISTORY_DIALOG_OPEN,
+            clearHistoryDialogOpen
         )
         super.onSaveInstanceState(outState)
     }
@@ -169,6 +195,13 @@ class HistoryActivity : Activity() {
                 null
             )
         actionsDialog = null
+
+        clearHistoryDialog
+            ?.setOnDismissListener(
+                null
+            )
+        clearHistoryDialog = null
+
         super.onDestroy()
     }
 
@@ -1154,34 +1187,51 @@ class HistoryActivity : Activity() {
     }
 
     private fun confirmClearHistory() {
+        if (
+            clearHistoryDialog
+                ?.isShowing == true
+        ) {
+            return
+        }
+
         val entries =
             historyStore.getAll()
 
         if (entries.isEmpty()) {
+            clearHistoryDialogOpen = false
             toast(
                 "Історія вже порожня"
             )
             return
         }
 
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Очистити всю історію?",
-            message =
-                "Буде видалено ${entries.size} локальних записів History.\n\n" +
-                    "Цю локальну історію можна повернути лише з повного backup, " +
-                    "якщо він був збережений раніше.\n\n" +
-                    "Плейлисти YouTube/YTM і Pending Queue не змінюються.",
-            confirmLabel =
-                "Так, очистити"
-        ) {
-            historyStore.clear()
-            toast(
-                "Історію очищено"
-            )
-            showListScreen()
-        }
+        clearHistoryDialogOpen = true
+
+        clearHistoryDialog =
+            UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title =
+                    "Очистити всю історію?",
+                message =
+                    "Буде видалено ${entries.size} локальних записів History.\n\n" +
+                        "Цю локальну історію можна повернути лише з повного backup, " +
+                        "якщо він був збережений раніше.\n\n" +
+                        "Плейлисти YouTube/YTM і Pending Queue не змінюються.",
+                confirmLabel =
+                    "Так, очистити"
+            ) {
+                clearHistoryDialogOpen = false
+                historyStore.clear()
+                toast(
+                    "Історію очищено"
+                )
+                showListScreen()
+            }.also { dialog ->
+                dialog.setOnDismissListener {
+                    clearHistoryDialogOpen = false
+                    clearHistoryDialog = null
+                }
+            }
     }
 
     private fun buildHistorySummary(
@@ -2109,6 +2159,9 @@ class HistoryActivity : Activity() {
 
         private const val KEY_ACTIONS_DIALOG_OPEN =
             "history_actions_dialog_open"
+
+        private const val KEY_CLEAR_HISTORY_DIALOG_OPEN =
+            "history_clear_dialog_open"
 
         private val BACKGROUND =
             Color.rgb(
