@@ -40,3 +40,28 @@ Still pending:
 - final release/tag/checkpoint closeout.
 
 Do not broaden this targeted PASS into a full-app regression PASS.
+
+## Wave 3 corrective closeout
+
+**TARGETED PHONE PASS — RESTORABLE MODAL CORE**
+
+Exact corrective package:
+- source `7e6fcb482387be92a7de54db0f4df5081d640495`;
+- signed run `35796094108`;
+- result `W3-1+ / W3-2+ / W3-3+ / W3-4+`.
+
+BUG-033 is CLOSED for the tested Data modal lifecycle paths.
+
+The real prepared-file test used History JSON and confirmed that the semantic
+confirmation survives recreation without file reselection or automatic import.
+
+Stored screenshot:
+`evidence/WAVE3_HISTORY_IMPORT_CONFIRM_2026-09-23.jpg`.
+
+Representative UI status:
+- prior `UI-1+ / UI-2+ / UI-3+` visual/readability/History modal smoke accepted;
+- Data modal rotation defect corrected and retested;
+- representative screen/modal/tile checklist item accepted.
+
+Final v1.4.50 release acceptance is not yet claimed because the release-level
+error-path and duplicate-operation checks are still open.

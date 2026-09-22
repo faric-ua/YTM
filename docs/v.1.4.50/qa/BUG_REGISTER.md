@@ -78,7 +78,7 @@ Both bugs are closed only for these tested paths.
 
 ## BUG-033 — Data modal lifecycle fragmentation
 
-Status: **FIX IMPLEMENTED — WAVE 3 STATIC/FULL PREFLIGHT PASS / PHONE RETEST NEEDED**
+Status: **CLOSED — PHONE RETEST PASS v1.4.50 WAVE 3**
 
 Phone finding on signed Wave 2:
 - source `fdb2892c7b4fa0c858c55d5187a04ce296bde913`;
@@ -109,3 +109,26 @@ Scope:
 - Wave 3 migrates DataActivity first because it has real failing phone evidence;
 - already phone-passing History/Menu paths remain unchanged in this corrective
   wave and may migrate to the same controller after the core proves stable.
+
+## BUG-033 closeout evidence
+
+Exact tested corrective APK:
+- source `7e6fcb482387be92a7de54db0f4df5081d640495`;
+- signed run `35796094108`;
+- result `W3-1+ / W3-2+ / W3-3+ / W3-4+`.
+
+Phone proof covers:
+- ordinary Data confirmations;
+- Restore/History pre-picker confirmations;
+- share confirmation;
+- real prepared History JSON confirmation after file selection.
+
+Safety proof:
+- rotation never launched picker/share/domain actions automatically;
+- prepared History confirmation restored without repeating file selection;
+- Cancel stayed non-destructive and returned to the Data parent screen.
+
+Stored visual evidence:
+- `qa/evidence/WAVE3_HISTORY_IMPORT_CONFIRM_2026-09-23.jpg`.
+
+BUG-033 is closed for these tested paths.

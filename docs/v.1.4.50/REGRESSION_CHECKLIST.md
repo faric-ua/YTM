@@ -16,14 +16,14 @@
 - [x] real-phone Green smoke — R1-1+
 - [x] representative success/warning/danger/duplicate state smoke — initial Wave 1 `2+`; R1 did not change semantic roles
 - [x] theme-selection recreation/rotation smoke — R1-1+ Skin recreation + R1-2+ confirmation rotation
-- [ ] representative modal/tile readability smoke
+- [x] representative modal/tile readability smoke — `UI-1+ / UI-2+ / UI-3+`; Data rotation follow-up `W3-1+..W3-4+`
 
 ## General release checks
 
-- [ ] Back/navigation ownership
-- [ ] rotation/recreation
-- [ ] modal lifecycle
-- [ ] cancel/no-op behavior
+- [x] Back/navigation ownership — representative UI `UI-3+`; modal Cancel returns to same parent in R1/W2/W3
+- [x] rotation/recreation — R1, W2 and W3 signed phone tests
+- [x] modal lifecycle — History + Skin preview + Data ordinary/prepared modal states
+- [x] cancel/no-op behavior — R1-3+, W2-1+/W2-3+, W3-1+..W3-4+
 - [ ] error path
 - [ ] no accidental duplicate operation
 
@@ -54,8 +54,8 @@
 - [x] old Activity dialog listener is detached during destruction
 - [x] dedicated Wave 3 modal lifecycle audit passes
 - [x] full release preflight passes
-- [ ] signed Wave 3 APK
-- [ ] W3-1 Data full-backup confirmation rotation + Cancel no-op
-- [ ] W3-2 Data restore/history-picker confirmations rotation + Cancel no-op
-- [ ] W3-3 Data share confirmation rotation + Cancel no-op
-- [ ] W3-4 optional prepared-file confirmation rotation if a suitable JSON fixture is available
+- [x] signed Wave 3 APK — run `35796094108` / source `7e6fcb482387be92a7de54db0f4df5081d640495`
+- [x] W3-1 Data full-backup confirmation rotation + Cancel no-op — PASS
+- [x] W3-2 Data restore/history-picker confirmations rotation + Cancel no-op — PASS
+- [x] W3-3 Data share confirmation rotation + Cancel no-op — PASS
+- [x] W3-4 prepared History JSON confirmation rotation — PASS with real fixture

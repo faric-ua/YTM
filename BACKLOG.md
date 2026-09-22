@@ -101,8 +101,8 @@ v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
 - [x] BUG-031/032 R1 corrective implementation — static/full preflight PASS
 - [x] R1 signed phone retest — run `35782627453` / source `81d5ebd988d08d3ddb80d78b73fd94e20280c980` / `R1-1+ R1-2+ R1-3+`
 - [x] skin preview/selection lifecycle — Wave 2 phone PASS `35787308504` / `W2-1+ W2-2+ W2-3+`
-- [ ] phone QA across representative screens/modals/tiles — visual/readability smoke `UI-1+ UI-2+ UI-3+`; BUG-033 Data rotation follow-up in Wave 3
-- [x] BUG-033 shared restorable modal core — DataActivity static/full preflight PASS; signed phone retest pending
+- [x] phone QA across representative screens/modals/tiles — `UI-1+ UI-2+ UI-3+` plus Wave 3 Data modal rotation `W3-1+..W3-4+`
+- [x] BUG-033 shared restorable modal core — PHONE PASS run `35796094108` / source `7e6fcb482387be92a7de54db0f4df5081d640495`
 
 ## v1.4.48 — Generic Tiles + Playlist Management
 - [x] start from v1.4.47-R3 stabilization checkpoint

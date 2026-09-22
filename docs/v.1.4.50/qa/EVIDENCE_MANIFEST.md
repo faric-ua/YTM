@@ -12,3 +12,7 @@
 | Signed Wave 2 APK | GitHub Actions run `35787308504`, source `fdb2892c7b4fa0c858c55d5187a04ce296bde913` | Exact Skin-preview APK used for Wave 2 phone QA | GitHub Actions |
 | Wave 2 targeted phone QA | User phone result `W2-1+ / W2-2+ / W2-3+` | Preview Cancel no-op, explicit Apply, Menu/Home refresh and preview rotation continuity pass on the real phone | Recorded in `PHONE_TEST.md` / 2026-09-23 report |
 | Wave 2 preview screenshot | `qa/evidence/WAVE2_SKIN_PREVIEW_2026-09-23.jpg` | Candidate Skin preview renders visual and semantic token samples readably over Menu | Stored in repository |
+
+| Signed Wave 3 APK | GitHub Actions run `35796094108`, source `7e6fcb482387be92a7de54db0f4df5081d640495` | Exact shared-modal-controller APK used for BUG-033 retest | GitHub Actions |
+| Wave 3 targeted phone QA | User phone result `W3-1+ / W3-2+ / W3-3+ / W3-4+` | Ordinary and prepared Data modal states survive recreation; rotation does not auto-run picker/share/restore/import; Cancel is no-op | Recorded in `PHONE_TEST.md` / 2026-09-23 report |
+| Wave 3 prepared History screenshot | `qa/evidence/WAVE3_HISTORY_IMPORT_CONFIRM_2026-09-23.jpg` | Real prepared History JSON confirmation renders after file selection on the Wave 3 build | Stored in repository |

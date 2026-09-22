@@ -54,7 +54,7 @@ v1.4.50 release closeout.
 
 ## Status
 
-**DEVELOPMENT — WAVE 3 RESTORABLE MODAL CORE STATIC/FULL PREFLIGHT PASS / BUG-033 PHONE RETEST PENDING; WAVE 2 PASS PRESERVED**
+**TARGETED PHONE PASS — WAVE 3 RESTORABLE MODAL CORE / BUG-033 CLOSED; FINAL ERROR/DUPLICATE-OP QA PENDING**
 
 ## Wave 2 implementation
 
@@ -116,3 +116,32 @@ modals.
 
 History/Menu are intentionally not rewritten in the same corrective wave
 because their current lifecycle paths already have accepted phone evidence.
+
+## Wave 3 phone checkpoint
+
+Exact signed Wave 3 package:
+- source `7e6fcb482387be92a7de54db0f4df5081d640495`;
+- GitHub Actions run `35796094108`;
+- version `1.4.50 (93)`;
+- real-phone result `W3-1+ / W3-2+ / W3-3+ / W3-4+`.
+
+Accepted behavior:
+- ordinary Data confirmations survive portrait/landscape recreation;
+- rotation does not open save/file/share pickers automatically;
+- Cancel remains a no-op and returns to the same Data parent screen;
+- a prepared History JSON confirmation survives recreation without reselecting
+  the file;
+- prepared confirmation recreation does not execute History import;
+- the shared `RestorableModalController` is now proven on the real phone for
+  both ordinary and prepared Data modal states.
+
+Visual evidence:
+- `docs/v.1.4.50/qa/evidence/WAVE3_HISTORY_IMPORT_CONFIRM_2026-09-23.jpg` shows the prepared `Підтвердити History import` modal from
+  the exact signed Wave 3 APK.
+
+BUG-033 is closed for the tested Data modal lifecycle scope.
+
+The earlier representative UI smoke `UI-1+ / UI-2+ / UI-3+` plus this Wave 3
+corrective retest closes the representative screens/modals/tiles checklist
+item. Final release acceptance is still not claimed: explicit error-path and
+duplicate-operation release checks remain open.

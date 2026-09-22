@@ -22,8 +22,8 @@ Current release state:
 - active branch: `feat/v1.4.50-skin-system`
 - release-start base HEAD: `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`
 - accepted stable checkpoint: `checkpoint-v1.4.49-phone-pass` → `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
-- status: **v1.4.50 DEVELOPMENT — WAVE 3 RESTORABLE MODAL CORE STATIC/FULL PREFLIGHT PASS / BUG-033 PHONE RETEST PENDING; WAVE 2 PASS PRESERVED**
-- current phone QA APK: **v1.4.50 / code 93**, source `fdb2892c7b4fa0c858c55d5187a04ce296bde913`, signed run `35787308504`; Wave 2 result `W2-1+ / W2-2+ / W2-3+`; Wave 1 R1 and BUG-031/032 PASS evidence remains preserved.
+- status: **v1.4.50 TARGETED PHONE PASS — WAVE 3 / BUG-033 CLOSED / FINAL ERROR+DUPLICATE QA PENDING**
+- current phone QA APK: **v1.4.50 / code 93**, source `7e6fcb482387be92a7de54db0f4df5081d640495`, signed run `35796094108`; Wave 3 result `W3-1+ / W3-2+ / W3-3+ / W3-4+`; BUG-033 closed; Wave 1 R1 and Wave 2 PASS evidence remains preserved.
 - installed production APK: **v1.4.49 / code 92 exact final RC** from run `35755925563` / source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; `RC+` preserved Google/YTM connection and the current 13-track playlist; `FINAL+` confirmed installed/stable `1.4.49 (92)` and `Оновлень немає`.
 - accepted stable checkpoint is `checkpoint-v1.4.49-phone-pass` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; previous v1.4.48 checkpoint remains historical evidence.
 - focus: **v1.4.50 Skin System — define the reusable Skin contract first, then migrate Neon/Blue/Green without changing business semantics. YouTube/YTM URL/Mix → local snapshot remains future development.**
@@ -336,15 +336,15 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 ## 7. Exact next execution step
 
 1. Keep work on `feat/v1.4.50-skin-system`.
-2. Wave 2 phone-tested source `fdb2892c7b4fa0c858c55d5187a04ce296bde913` / run `35787308504` remains accepted targeted PASS.
-3. Broader UI smoke passed `UI-1+ / UI-2+ / UI-3+` for readability/History modal scope but found BUG-033: ordinary Data modals disappear on rotation.
-4. Wave 3 introduces reusable `RestorableModalController` and migrates all 11 Data modal states to one semantic lifecycle owner.
-5. Rotation restores modal id + primitive args only; no positive/destructive action can auto-run.
-6. Existing validated Restore/History JSON uses local pending cache plus semantic modal state.
-7. History/Menu remain unchanged in Wave 3 because those current paths already have phone PASS evidence.
-8. Next: produce an exact signed APK from the Wave 3 source commit.
-9. Phone-test `W3-1`, `W3-2`, `W3-3`; run `W3-4` only if a suitable JSON fixture is already available.
-10. Do not close BUG-033 or final v1.4.50 before exact signed phone evidence.
+2. Current phone-tested source is `7e6fcb482387be92a7de54db0f4df5081d640495` / signed run `35796094108`.
+3. Wave 3 result is `W3-1+ / W3-2+ / W3-3+ / W3-4+`; BUG-033 is closed for tested Data modal lifecycle paths.
+4. Representative UI smoke is accepted from `UI-1+ / UI-2+ / UI-3+` plus the Wave 3 corrective rotation pass.
+5. Wave 1 R1 and Wave 2 targeted PASS evidence remains preserved.
+6. v1.4.50 remains `development`; do not create final release/tag/checkpoint yet.
+7. Two explicit General release checks remain open: `error path` and `no accidental duplicate operation`.
+8. Next phone QA should target those two checks on the current exact signed Wave 3 APK; no new code/build is needed unless a failure is found.
+9. Do not broaden targeted PASS into final release acceptance until those checks pass.
+10. After those checks, reassess release documentation/tag/checkpoint closeout.
 
 ## 8. Working contract
 

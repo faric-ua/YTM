@@ -259,3 +259,29 @@ Expected:
 - Cancel clears the pending confirmation safely.
 
 Result: `W3-4+` / `W3-4-` / `W3-4 SKIP`
+
+## Wave 3 signed result
+
+Exact package:
+- source `7e6fcb482387be92a7de54db0f4df5081d640495`;
+- signed run `35796094108`;
+- installed version `1.4.50 (93)`.
+
+Real-phone result:
+- `W3-1+` — full-backup confirmation survives rotation; no picker/backup starts automatically; Cancel is a no-op;
+- `W3-2+` — Restore and History pre-picker confirmations survive rotation; file picker does not auto-open;
+- `W3-3+` — full-backup share confirmation survives rotation; share UI does not auto-open;
+- `W3-4+` — a real prepared History JSON confirmation survives recreation without file reselection and without auto-import.
+
+Screenshot evidence:
+- `evidence/WAVE3_HISTORY_IMPORT_CONFIRM_2026-09-23.jpg`.
+
+The screenshot confirms the prepared History-import confirmation on the exact
+Wave 3 build, including the parsed History counts and preserved scope copy.
+Behavioral rotation/no-op acceptance comes from the real-phone W3 test.
+
+Result:
+- BUG-033 closed for tested Data modal lifecycle paths;
+- representative screens/modals/tiles smoke is now complete when combined with
+  the prior `UI-1+ / UI-2+ / UI-3+` pass;
+- explicit release-level error-path and duplicate-operation checks remain open.
