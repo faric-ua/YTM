@@ -1433,13 +1433,13 @@ a70421aa086a5c61  scripts/generate-file-manifest.py
 7d7193fd9798ed62  scripts/mainactivity-audit.sh
 8fe538a35721c634  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
-45a512fdbefff27d  scripts/project-handoff-audit.sh
+0f5a0752c269e3f1  scripts/project-handoff-audit.sh
 08211dc2fb7ed826  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
 34a319998981b650  scripts/release-close-audit.sh
 bd496d2802fc4272  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-20c7f513453ebb7a  scripts/release-preflight.sh
+aa8aa9925b5383c7  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1553,7 +1553,7 @@ d6c3e9ce36f07799  scripts/v1447-r3-runtime-lifecycle-r5-selftest.py
 94d66debbdff3c06  scripts/v1447-r3-write-progress-r8-fix1-selftest.py
 63b9ebadd93ce95d  scripts/v1447-r3-write-progress-r8-selftest.py
 2a7742ae78f95743  scripts/v1448-playlist-edit-audit.sh
-df3b1e2d8e6925c2  scripts/v1448-tile-foundation-audit.sh
+014ab82ce2a764b1  scripts/v1448-tile-foundation-audit.sh
 e46729024d7d050e  scripts/v1448-unit-test-foundation-audit.sh
 797052e580250bfa  scripts/v1449-updater-wave1-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
