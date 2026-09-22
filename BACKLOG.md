@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.49 — In-app Updater — WAVE 1 CHECK-ONLY IMPLEMENTED / PREFLIGHT + SIGNED + PHONE QA PENDING
+v1.4.49 — In-app Updater — WAVE 1 TEST 1 PASS / WAVE 2 NEXT
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -60,6 +60,7 @@ v1.4.49 — In-app Updater — WAVE 1 CHECK-ONLY IMPLEMENTED / PREFLIGHT + SIGNE
 - [x] fetch/validate stable update manifest
 - [x] compare versionCode
 - [x] older stable manifest → informational no-update state; updater user-facing prose localized
+- [x] Wave 1 R1 signed build + targeted Test 1 phone PASS — run `35730023317` / result `1+`
 - [ ] download APK
 - [ ] downloaded-file SHA-256 verification
 - [ ] Android package-installer handoff

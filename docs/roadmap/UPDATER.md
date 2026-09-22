@@ -3,7 +3,12 @@
 
 ## Implementation status
 
-Wave 1 implements the user-initiated stable-manifest check and lifecycle-safe state ownership. Download, downloaded-file SHA verification and installer handoff remain later waves.
+Wave 1 implements the user-initiated stable-manifest check and lifecycle-safe
+state ownership. Targeted phone Test 1 passed on signed run `35730023317` /
+`4d30672c700d2fc2a32255465f555c0fd64acdc3` with result `1+`.
+
+Wave 2 is next: explicit APK download plus downloaded-file SHA-256 verification.
+Installer handoff remains a later explicit-user-action wave.
 
 
 ## Entry point

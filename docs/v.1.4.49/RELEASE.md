@@ -69,6 +69,22 @@ R1 keeps the version comparison itself, maps an older stable manifest to
 names and abbreviations such as YTM, SDK, APK, JSON, SHA-256, HTTP, GitHub and
 Android remain unchanged.
 
+### R1 phone acceptance
+
+Signed run `35730023317` from `4d30672c700d2fc2a32255465f555c0fd64acdc3` received result `1+`.
+
+Accepted targeted scope:
+
+- Version page / installed identity;
+- official stable-manifest read;
+- older stable → informational no-update state;
+- Ukrainian user-facing updater text;
+- no automatic download;
+- rotation during Checking and on result;
+- Back → About.
+
+Wave 1 is accepted for Test 1 only. Download/verify/install remain pending.
+
 ## System/lifecycle impact
 
 Rotation/recreation must not:
@@ -101,4 +117,4 @@ Before application code:
 
 ## Status
 
-**DEVELOPMENT — WAVE 1 R1 LOCALIZATION/STATUS FIX IMPLEMENTED / SIGNED BUILD + PHONE RETEST PENDING**
+**PARTIALLY PHONE-TESTED — WAVE 1 TEST 1 PASS / WAVE 2 NEXT**

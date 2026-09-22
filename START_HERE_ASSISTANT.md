@@ -34,8 +34,8 @@ Current application:
 
 - versionName: **1.4.49**
 - versionCode: **92**
-- release focus: **v1.4.49 — In-app Updater (Wave 1 check-only implementation)**
-- release status: **v1.4.48 TARGETED PHONE QA PASS; v1.4.49 WAVE 1 R1 FIX IMPLEMENTED — SIGNED BUILD + PHONE RETEST PENDING**
+- release focus: **v1.4.49 — In-app Updater (Wave 1 Test 1 PASS; Wave 2 download/SHA next)**
+- release status: **v1.4.48 remains the accepted stable checkpoint; v1.4.49 is PARTIALLY PHONE-TESTED — WAVE 1 TEST 1 PASS / WAVE 2 NEXT**
 - active branch: `feat/v1.4.49-updater`
 - stable app checkpoint: `checkpoint-v1.4.48-phone-pass`
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`

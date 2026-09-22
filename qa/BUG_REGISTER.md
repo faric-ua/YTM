@@ -20,7 +20,7 @@
 | BUG-023 | R3 FIX IMPLEMENTED — PHONE RETEST NEEDED | P2 | `Поточний YTM Project` action modal preserves open state/context through rotation; Save/Share never auto-run. | v1.4.47-R3 lifecycle Wave 1 |
 | BUG-027 | CLOSED — PHONE RETEST PASS v1.4.47-R3 | P2 | Existing-playlist delete confirmation survives Activity recreation/rotation and never starts deletion until the user explicitly confirms. | v1.4.47-R3 stabilization checkpoint |
 | BUG-028 | CLOSED — PHONE RETEST PASS v1.4.47-R3 | P2 | Existing-playlist search query and active filter survive Activity recreation/rotation. | v1.4.47-R3 stabilization checkpoint |
-| BUG-029 | R1 FIX IMPLEMENTED — SIGNED BUILD + PHONE RETEST PENDING | P2 | Updater correctly detected installed 1.4.49/92 as newer than stable 1.4.48/91, but rendered it as an Error and exposed English diagnostic/UI text. R1 maps older stable to informational no-update and localizes user-facing updater prose. | v1.4.49 signed run 35727790033 → BUG-029 R1 |
+| BUG-029 | CLOSED FOR TESTED SCOPE — PHONE RETEST PASS v1.4.49 R1 | P2 | Updater correctly detected installed 1.4.49/92 as newer than stable 1.4.48/91. R1 renders the relation as informational `Оновлень немає`, keeps updater prose Ukrainian, preserves the result through rotation and returns Back to About. | signed run 35730023317 / 4d30672c700d2fc2a32255465f555c0fd64acdc3 / result 1+ |
 
 ## BUG-002 current evidence
 

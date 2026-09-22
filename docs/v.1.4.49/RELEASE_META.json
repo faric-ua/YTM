@@ -5,10 +5,10 @@
   "phase": "development",
   "feature": "In-app Updater",
   "branch": "feat/v1.4.49-updater",
-  "appSourceSha": null,
-  "signedRun": null,
-  "qaStatus": "DEVELOPMENT — WAVE 1 R1 FIX IMPLEMENTED / SIGNED BUILD + PHONE RETEST PENDING",
+  "appSourceSha": "4d30672c700d2fc2a32255465f555c0fd64acdc3",
+  "signedRun": "35730023317",
+  "qaStatus": "PARTIALLY PHONE-TESTED — WAVE 1 TEST 1 PASS / WAVE 2 NEXT",
   "tag": null,
   "checkpointTag": null,
-  "phoneTestDate": null
+  "phoneTestDate": "2026-09-22"
 }

@@ -38,6 +38,24 @@ Signed run `35727790033`, source
 
 This is not a Test 1 PASS. R1 phone retest is required.
 
+### R1 retest result — `1+`
+
+Signed run `35730023317`, source
+`4d30672c700d2fc2a32255465f555c0fd64acdc3`:
+
+- `YTM Importer 1.4.49 (92)` confirmed;
+- `Цільовий SDK Android: 36` confirmed;
+- stable manifest `1.4.48 (91)` read successfully;
+- older stable version renders as `Оновлень немає`, not Error;
+- user-facing updater prose is Ukrainian;
+- no download starts;
+- rotation during Checking and on the result passed;
+- Back returns to `Про YTM Importer`.
+
+**Test 1: PASS**
+
+BUG-029 is closed for this tested scope.
+
 ## Test 2 — newer release available
 
 Expected:
@@ -101,7 +119,7 @@ Where safely reproducible:
 - unsupported schema;
 - missing asset;
 - SHA mismatch;
-- downgrade/non-newer manifest.
+- lower remote version / no-downgrade behavior.
 
 These may be covered by JVM tests when destructive real-phone manipulation is
 not appropriate.

@@ -9,22 +9,22 @@
 - [x] process-local Check owner rejects duplicate active checks
 - [x] JVM tests added for manifest/version/minSdk policy
 - [x] static/full release preflight
-- [x] signed Wave 1 APK — run `35727790033`
-- [ ] real-phone Wave 1 R1 check/rotation QA
+- [x] signed Wave 1/R1 APKs — runs `35727790033` and `35730023317`
+- [x] real-phone Wave 1 R1 check/rotation QA — `1+`
 
 
 ## Identity / release source
 
-- [ ] versionName `1.4.49`
-- [ ] versionCode `92`
-- [ ] official GitHub Release manifest selected
-- [ ] APK asset name matches manifest
+- [x] versionName `1.4.49`
+- [x] versionCode `92`
+- [x] official GitHub Release manifest selected
+- [x] APK asset name matches manifest
 - [ ] SHA-256 asset/manifest contract matches downloaded APK
 
 ## Updater behavior
 
 - [ ] equal remote `versionCode` → Up to date
-- [ ] lower remote `versionCode` → informational no-update state, never Error/upgrade
+- [x] lower remote `versionCode` → informational no-update state, never Error/upgrade
 - [ ] newer `versionCode` → Update available
 - [ ] malformed manifest rejected
 - [ ] unsupported schema rejected
@@ -35,15 +35,15 @@
 
 ## Lifecycle
 
-- [ ] Checking survives rotation without duplicate request
+- [x] Checking survives rotation without observed duplicate request
 - [ ] Downloading survives/reconnects after rotation without duplicate download
 - [ ] Verifying survives recreation safely
 - [ ] Ready to install survives recreation
 - [ ] installer is not relaunched automatically by recreation
-- [ ] Back/Cancel returns to the correct About/Service parent
+- [x] Back/Cancel returns to the correct About/Service parent
 
 ## Existing behavior smoke
 
-- [ ] About page still opens
+- [x] About page still opens
 - [ ] Release History still opens
 - [ ] existing v1.4.48 playlist-management behavior not changed by updater work

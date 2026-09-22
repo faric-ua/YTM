@@ -106,6 +106,8 @@ retrospective gaps rather than invented evidence.
 - `docs/v.1.4.49/RELEASE.md`
 - `docs/v.1.4.49/REGRESSION_CHECKLIST.md`
 - `docs/v.1.4.49/qa/PHONE_TEST.md`
+- `docs/v.1.4.49/qa/TEST_RUN_2026-09-22.md`
+- `docs/v.1.4.49/qa/PHONE_TEST_REPORT_2026-09-22.md`
 - `docs/v.1.4.49/qa/BUG_REGISTER.md`
 - `docs/v.1.4.49/qa/EVIDENCE_MANIFEST.md`
 - `docs/v.1.4.49/diagrams/UPDATER_FLOW.md`

@@ -6,7 +6,7 @@ Release-specific Updater findings belong here.
 
 Status:
 
-**R1 FIX IMPLEMENTED — SIGNED BUILD + PHONE RETEST PENDING**
+**CLOSED FOR TESTED SCOPE — PHONE RETEST PASS v1.4.49 R1**
 
 Observed on signed Wave 1 run `35727790033`, source
 `d92bfc5231794deee833c4a14c11819de8244e84`.
@@ -28,6 +28,16 @@ R1 fix:
 - technical names/abbreviations such as YTM, SDK, APK, JSON, SHA-256, HTTP,
   GitHub and Android remain unchanged;
 - no download or installer scope is added.
+
+Phone retest:
+
+- signed run `35730023317`;
+- source `4d30672c700d2fc2a32255465f555c0fd64acdc3`;
+- result `1+`;
+- Ukrainian text PASS;
+- older stable → `Оновлень немає` PASS;
+- rotation PASS;
+- Back → About PASS.
 
 Global historical bugs remain in `qa/BUG_REGISTER.md`; do not silently close
 them here.
