@@ -19,6 +19,10 @@ SUPPORT = [
     Path("scripts/generate-audit-catalog.py"),
     Path("scripts/generate-file-manifest.py"),
     Path("scripts/export-assistant-project-skeleton.py"),
+    Path("scripts/create-release-docs.py"),
+    Path("scripts/release-metadata-audit.py"),
+    Path("scripts/release-close-audit.sh"),
+    Path("scripts/generate-release-documentation-matrix.py"),
     Path("FILE_MANIFEST.txt"),
 ]
 

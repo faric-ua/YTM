@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "versionName": "1.4.49",
+  "versionCode": 92,
+  "phase": "planned",
+  "feature": "In-app Updater",
+  "branch": "feat/v1.4.49-updater",
+  "appSourceSha": null,
+  "signedRun": null,
+  "qaStatus": "PLANNED — DOCUMENTATION HARDENING COMPLETE / APP CODE NOT STARTED",
+  "tag": null,
+  "checkpointTag": null,
+  "phoneTestDate": null
+}

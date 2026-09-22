@@ -50,8 +50,8 @@ grep -Fq 'feat/v1.4.49-updater' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF active updater branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'documentation recovery before v1.4.49 Updater' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF documentation-recovery focus missing"
+grep -Fq 'documentation hardening complete; next operation is v1.4.49 Updater application code' CURRENT_HANDOFF.md \
+  || fail "CURRENT_HANDOFF hardened updater next-step missing"
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
 grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
@@ -60,8 +60,8 @@ if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
 fi
 
-grep -Fq 'Version: 1.2' YTM_ASSISTANT_WORKFLOW.md \
-  || fail "assistant workflow version 1.2 missing"
+grep -Fq 'Version: 1.3' YTM_ASSISTANT_WORKFLOW.md \
+  || fail "assistant workflow version 1.3 missing"
 grep -Fq 'Stable phone-side build artifact convention' YTM_ASSISTANT_WORKFLOW.md \
   || fail "artifact convention missing from workflow policy"
 grep -Fq 'New assistant handoff' YTM_ASSISTANT_WORKFLOW.md \
@@ -128,6 +128,11 @@ grep -Fq 'UX-019' CURRENT_HANDOFF.md \
   || fail "future Home layout decision missing from handoff"
 grep -Fq 'UX-009 Blue/Green workflow-state palettes remain open' CURRENT_HANDOFF.md \
   || fail "theme-state follow-up missing from handoff"
+
+test -f docs/documentation/HISTORICAL_RELEASE_MATRIX.md \
+  || fail "historical release matrix missing"
+test -f docs/v.1.4.49/RELEASE_META.json \
+  || fail "active release metadata missing"
 
 echo "PASS:"
 echo "- canonical START_HERE entry point"

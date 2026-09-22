@@ -1,0 +1,14 @@
+# [VERSION] — Test Run — [DATE]
+
+## Build identity
+
+- versionName:
+- versionCode:
+- source commit:
+- signed run:
+
+## Results
+
+Record only executed cases.
+
+Use PASS / FAIL / BLOCKED / SKIP and preserve the exact tested scope.

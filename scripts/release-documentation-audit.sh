@@ -12,17 +12,24 @@ VERSION="$(
     head -n 1
 )"
 FORCE_FINAL=false
+FORCE_PLANNED=false
 
 for arg in "$@"; do
   case "$arg" in
     --final)
       FORCE_FINAL=true
       ;;
+    --planned)
+      FORCE_PLANNED=true
+      ;;
     *)
       VERSION="$arg"
       ;;
   esac
 done
+
+[ "$FORCE_FINAL" = false ] || [ "$FORCE_PLANNED" = false ] ||
+  fail "--final and --planned are mutually exclusive"
 
 test -n "$VERSION" || fail "cannot resolve versionName"
 
@@ -44,6 +51,7 @@ QA="$ROOT/qa"
 DIAGRAMS="$ROOT/diagrams"
 
 for path in \
+  "$ROOT/RELEASE_META.json" \
   "$ROOT/RELEASE.md" \
   "$ROOT/REGRESSION_CHECKLIST.md" \
   "$QA/PHONE_TEST.md" \
@@ -54,24 +62,30 @@ do
   test -f "$path" || fail "release documentation missing: $path"
 done
 
-find "$DIAGRAMS" \
-  -maxdepth 1 \
-  -type f \
-  -name '*.md' \
-  ! -name 'README.md' |
-  grep -q . ||
-  fail "release has no flow/test diagram: $DIAGRAMS"
-
 STATUS_LINE="$(
   grep -F "| v$VERSION |" RELEASE_TEST_STATUS.md || true
 )"
 
 FINAL="$FORCE_FINAL"
-if printf '%s' "$STATUS_LINE" | grep -Fq 'PHONE QA PASS'; then
+if [ "$FORCE_PLANNED" = false ] &&
+   printf '%s' "$STATUS_LINE" | grep -Fq 'PHONE QA PASS'; then
   FINAL=true
 fi
 
 if [ "$FINAL" = true ]; then
+  FLOW_COUNT="$(
+    find "$DIAGRAMS" \
+      -maxdepth 1 \
+      -type f \
+      -name '*.md' \
+      ! -name 'README.md' |
+      wc -l |
+      tr -d ' '
+  )"
+
+  [ "$FLOW_COUNT" -ge 1 ] ||
+    fail "final release has no flow/test diagram: $DIAGRAMS"
+
   compgen -G "$QA/TEST_RUN_*.md" >/dev/null ||
     fail "final phone-tested release has no TEST_RUN"
 
@@ -80,10 +94,14 @@ if [ "$FINAL" = true ]; then
 
   test -f "$QA/STABILIZATION_CHECKPOINT.md" ||
     fail "final phone-tested release has no stabilization checkpoint"
+
+  python -B scripts/release-metadata-audit.py "$VERSION" --final
+else
+  python -B scripts/release-metadata-audit.py "$VERSION" --planned
 fi
 
 echo "PASS:"
 echo "- release docs root: $ROOT"
+echo "- release metadata"
 echo "- release QA core"
-echo "- release diagrams"
 echo "- final evidence gate: $FINAL"

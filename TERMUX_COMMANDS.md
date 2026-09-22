@@ -358,3 +358,26 @@ Create a migration archive outside the repository:
 python -B scripts/export-assistant-project-skeleton.py \
   --output "$HOME/storage/shared/Download/YTM-Assistant-Migration-Kit.zip"
 ```
+
+## Release documentation start / close
+
+Create a new release documentation skeleton before app-code work:
+
+```bash
+python -B scripts/create-release-docs.py   --version X.Y.Z   --code N   --feature "Feature name"   --branch "$(git branch --show-current)"
+```
+
+Check the active documentation system:
+
+```bash
+bash scripts/documentation-system-audit.sh
+```
+
+Before declaring a phone-tested release closed:
+
+```bash
+bash scripts/release-close-audit.sh X.Y.Z
+```
+
+If the close gate fails, do not bypass it; repair the missing or inconsistent
+release evidence/status first.

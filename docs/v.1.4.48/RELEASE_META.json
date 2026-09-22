@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "versionName": "1.4.48",
+  "versionCode": 91,
+  "phase": "final",
+  "feature": "Generic Tiles + Playlist Management",
+  "branch": "feat/v1.4.48-playlist-edit",
+  "appSourceSha": "ada8038f51834f8ae4874cd9c13485645f5f72b6",
+  "signedRun": "35673239632",
+  "qaStatus": "TARGETED PHONE QA PASS — STABILIZATION CHECKPOINT",
+  "tag": "v1.4.48",
+  "checkpointTag": "checkpoint-v1.4.48-phone-pass",
+  "phoneTestDate": "2026-09-22"
+}

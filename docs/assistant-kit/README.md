@@ -45,3 +45,13 @@ python -B scripts/export-assistant-project-skeleton.py \
 
 The archive contains a generic portable skeleton and a YTM-specific reference
 layer. Generated ZIP files are not committed to the repository.
+
+## Release start / close automation
+
+- `scripts/create-release-docs.py` creates the per-release skeleton before code.
+- `scripts/release-metadata-audit.py` checks machine-readable release identity.
+- `scripts/generate-release-documentation-matrix.py` inventories historical coverage.
+- `scripts/release-close-audit.sh` blocks incomplete final release closeout.
+
+The current release package is included in `CONTEXT_FILES.txt`, so a fresh
+assistant sees it during mandatory context recovery.

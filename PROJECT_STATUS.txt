@@ -6,7 +6,7 @@ Current live resume snapshot: CURRENT_HANDOFF.md
 Current development focus (installed app remains v1.4.48 / code 91):
 - v1.4.48 targeted phone checkpoint is complete;
 - active development branch is feat/v1.4.49-updater;
-- documentation-system recovery runs before updater application code;
+- documentation-system recovery + hardening are complete; updater application code is next;
 - ASSISTANT_CONTEXT_INDEX.md + docs/assistant-kit/CONTEXT_FILES.txt are the assistant recovery map;
 - portable system/lifecycle/navigation contracts and audit inventory are first-class project artifacts;
 - next application feature: v1.4.49 in-app Updater;

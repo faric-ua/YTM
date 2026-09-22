@@ -34,7 +34,7 @@ Current application:
 
 - versionName: **1.4.48**
 - versionCode: **91**
-- release focus: **v1.4.49 — In-app Updater (documentation recovery first)**
+- release focus: **v1.4.49 — In-app Updater (documentation hardening complete; code next)**
 - release status: **v1.4.48 TARGETED PHONE QA PASS; v1.4.49 APP CODE NOT STARTED YET**
 - active branch: `feat/v1.4.49-updater`
 - stable app checkpoint: `checkpoint-v1.4.48-phone-pass`

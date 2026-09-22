@@ -23,7 +23,7 @@ while IFS= read -r path; do
   count=$((count + 1))
 done < "$LIST"
 
-[ "$count" -ge 20 ] ||
+[ "$count" -ge 35 ] ||
   fail "assistant context manifest is unexpectedly small: $count"
 
 while IFS= read -r path; do
@@ -42,12 +42,24 @@ grep -Fq 'CONTEXT_FILES.txt' ASSISTANT_CONTEXT_INDEX.md ||
 grep -Fq 'SYSTEM_BEHAVIOR_CONTRACT.md' ASSISTANT_CONTEXT_INDEX.md ||
   fail "system behavior contract missing from context index"
 
+grep -Fq 'HISTORICAL_RELEASE_MATRIX.md' ASSISTANT_CONTEXT_INDEX.md ||
+  fail "historical release matrix missing from context index"
+
+grep -Fq 'docs/v.1.4.49/RELEASE_META.json' "$LIST" ||
+  fail "active release metadata missing from context manifest"
+
+grep -Fq 'docs/v.1.4.48/qa/TEST_RUN_2026-09-22.md' "$LIST" ||
+  fail "accepted-release test run missing from context manifest"
+
 grep -Fq 'Portable project skeleton' YTM_ASSISTANT_WORKFLOW.md ||
   fail "workflow does not preserve migration-kit contract"
 
 echo "PASS:"
 echo "- assistant context index"
 echo "- $count mandatory context files"
+echo "- accepted-release QA/evidence context"
+echo "- active-release metadata/context"
+echo "- historical release matrix"
 echo "- portable system audit inventory"
 echo "- portable system behavior contract"
 echo "- migration-kit workflow contract"

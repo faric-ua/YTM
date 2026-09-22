@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.49 — In-app Updater — DOCUMENTATION SYSTEM RECOVERY BEFORE CODE
+v1.4.49 — In-app Updater — DOCUMENTATION HARDENING COMPLETE / CODE NEXT
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -48,6 +48,13 @@ v1.4.49 — In-app Updater — DOCUMENTATION SYSTEM RECOVERY BEFORE CODE
 - [x] add complete audit inventory + portable system-audit list
 - [x] add portable project-skeleton exporter
 - [x] add documentation/file-manifest gates to release preflight
+- [x] add generated historical release documentation matrix
+- [x] add machine-readable `RELEASE_META.json` contract
+- [x] add release metadata consistency audit
+- [x] add reusable release-documentation skeleton generator
+- [x] add final release-close gate for history/status/evidence/tag consistency
+- [x] expand fresh-chat context to accepted-release QA/evidence/diagrams
+- [x] create v1.4.49 release/QA/evidence/diagram skeleton before app code
 - [ ] bump app version to v1.4.49 / next versionCode
 - [ ] About → version → Перевірити оновлення
 - [ ] fetch/validate stable update manifest

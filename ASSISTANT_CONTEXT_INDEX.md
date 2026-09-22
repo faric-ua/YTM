@@ -80,12 +80,35 @@ Back/Cancel semantics, SAF/system UI boundaries and destructive actions.
 - `docs/roadmap/UPDATER.md`
 - `docs/roadmap/SKINS.md`
 
+### Historical documentation coverage
+
+- `docs/documentation/HISTORICAL_RELEASE_MATRIX.md`
+- `docs/documentation/DOCUMENTATION_GAP_AUDIT_2026-09-22.md`
+
+The matrix is generated from the repository and marks missing old artifacts as
+retrospective gaps rather than invented evidence.
+
 ### Current accepted release evidence
 
+- `docs/v.1.4.48/RELEASE_META.json`
 - `docs/v.1.4.48/RELEASE.md`
 - `docs/v.1.4.48/REGRESSION_CHECKLIST.md`
 - `docs/v.1.4.48/qa/STABILIZATION_CHECKPOINT.md`
+- `docs/v.1.4.48/qa/PHONE_TEST.md`
+- `docs/v.1.4.48/qa/TEST_RUN_2026-09-22.md`
 - `docs/v.1.4.48/qa/PHONE_TEST_REPORT_2026-09-22.md`
+- `docs/v.1.4.48/qa/EVIDENCE_MANIFEST.md`
+- `docs/v.1.4.48/diagrams/README.md`
+
+### Active release package
+
+- `docs/v.1.4.49/RELEASE_META.json`
+- `docs/v.1.4.49/RELEASE.md`
+- `docs/v.1.4.49/REGRESSION_CHECKLIST.md`
+- `docs/v.1.4.49/qa/PHONE_TEST.md`
+- `docs/v.1.4.49/qa/BUG_REGISTER.md`
+- `docs/v.1.4.49/qa/EVIDENCE_MANIFEST.md`
+- `docs/v.1.4.49/diagrams/UPDATER_FLOW.md`
 
 ## Audit rule
 
@@ -112,7 +135,9 @@ A completed release must not silently lose:
 - system/test diagrams;
 - executed test run and report when phone QA was performed.
 
-`scripts/release-documentation-audit.sh` enforces this contract.
+`scripts/release-documentation-audit.sh` enforces the package contract.
+`scripts/release-close-audit.sh` prevents final closeout when metadata, evidence,
+history/status files, diagrams or the tested-source tag are missing.
 
 ## Portable project skeleton
 

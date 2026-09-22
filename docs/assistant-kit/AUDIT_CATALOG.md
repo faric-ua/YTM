@@ -5,7 +5,7 @@ This file is generated from the repository audit scripts.
 Do not hand-edit the inventory; update scripts or
 `docs/assistant-kit/PORTABLE_AUDITS.txt`, then regenerate.
 
-Total audit scripts: **91**
+Total audit scripts: **93**
 
 ## Portable/system subset
 
@@ -49,6 +49,8 @@ contracts.
 - `scripts/assistant-context-audit.sh`
 - `scripts/release-documentation-audit.sh`
 - `scripts/documentation-system-audit.sh`
+- `scripts/release-metadata-audit.py`
+- `scripts/release-close-audit.sh`
 
 ## Core/current audits
 
@@ -68,7 +70,9 @@ contracts.
 - `scripts/playlist-write-coordinator-audit.sh`
 - `scripts/project-handoff-audit.sh`
 - `scripts/qa-plan-audit.sh`
+- `scripts/release-close-audit.sh`
 - `scripts/release-documentation-audit.sh`
+- `scripts/release-metadata-audit.py`
 - `scripts/result-modal-audit.sh`
 - `scripts/rotation-layout-audit.sh`
 - `scripts/search-coordinator-audit.sh`

@@ -35,3 +35,5 @@ scripts/v1448-unit-test-foundation-audit.sh
 scripts/assistant-context-audit.sh
 scripts/release-documentation-audit.sh
 scripts/documentation-system-audit.sh
+scripts/release-metadata-audit.py
+scripts/release-close-audit.sh

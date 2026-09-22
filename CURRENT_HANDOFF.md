@@ -20,9 +20,9 @@ Current release candidate:
 - active branch: `feat/v1.4.49-updater`
 - pre-recovery documentation HEAD: `33d1a04e4b295e80f02446944cdde2b4cfba8e6a`
 - stable app checkpoint: `checkpoint-v1.4.48-phone-pass` → `ada8038f51834f8ae4874cd9c13485645f5f72b6`
-- status: **DOCUMENTATION SYSTEM RECOVERY BEFORE v1.4.49 UPDATER CODE**
+- status: **DOCUMENTATION HARDENING COMPLETE — v1.4.49 UPDATER CODE NEXT**
 - installed phone APK: **v1.4.48**; functional tests 1–4 were established on run `35671741464` / `0e5620204e475495dd08468e8d00987eba7c4f75`; UX-023-only successor test 5 passed on run `35673239632` / final source `ada8038f51834f8ae4874cd9c13485645f5f72b6`
-- focus: **documentation recovery before v1.4.49 Updater; no app-source change in this recovery wave**
+- focus: **documentation hardening complete; next operation is v1.4.49 Updater application code**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -332,14 +332,13 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 ## 7. Exact next execution step
 
 1. Keep work on `feat/v1.4.49-updater`.
-2. Recover the complete v1.4.48 release/QA/diagram package.
-3. Add `ASSISTANT_CONTEXT_INDEX.md` and the machine-readable context manifest.
-4. Add portable system/lifecycle/navigation/modal/IME/remote-operation contracts.
-5. Add complete audit inventory plus a portable audit subset.
-6. Add release-documentation and file-manifest gates.
-7. Add the reusable project-skeleton migration exporter.
-8. Commit/push this documentation-only recovery with no APK build.
-9. Start v1.4.49 Updater application code only after the documentation system passes.
+2. Treat documentation recovery + hardening as complete.
+3. Use `docs/v.1.4.49/` as the live release package from the first code change.
+4. Bump app identity to planned v1.4.49 / code 92 when implementation starts.
+5. Implement the Updater against `docs/roadmap/UPDATER.md` and the system behavior contract.
+6. Keep `RELEASE_META.json`, QA/evidence and diagrams current as implementation evolves.
+7. Run the normal release preflight before every signed APK.
+8. Final release closeout must pass `scripts/release-close-audit.sh 1.4.49`.
 
 ## 8. Working contract
 

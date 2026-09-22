@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "versionName": "[VERSION]",
+  "versionCode": 0,
+  "phase": "planned",
+  "feature": "[FEATURE]",
+  "branch": "[BRANCH]",
+  "appSourceSha": null,
+  "signedRun": null,
+  "qaStatus": "PLANNED",
+  "tag": null,
+  "checkpointTag": null,
+  "phoneTestDate": null
+}

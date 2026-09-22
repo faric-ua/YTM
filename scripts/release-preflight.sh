@@ -169,6 +169,12 @@ check_file "scripts/documentation-system-audit.sh"
 check_file "scripts/generate-audit-catalog.py"
 check_file "scripts/generate-file-manifest.py"
 check_file "scripts/export-assistant-project-skeleton.py"
+check_file "scripts/create-release-docs.py"
+check_file "scripts/release-metadata-audit.py"
+check_file "scripts/release-close-audit.sh"
+check_file "scripts/generate-release-documentation-matrix.py"
+check_file "docs/documentation/HISTORICAL_RELEASE_MATRIX.md"
+check_file "docs/v.1.4.49/RELEASE_META.json"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
