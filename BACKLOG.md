@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.49 — In-app Updater — WAVE 1 TEST 1 PASS / WAVE 2 NEXT
+v1.4.49 — In-app Updater — WAVE 1 TEST 1 PASS / WAVE 2 DOWNLOAD+SHA IMPLEMENTED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -61,13 +61,14 @@ v1.4.49 — In-app Updater — WAVE 1 TEST 1 PASS / WAVE 2 NEXT
 - [x] compare versionCode
 - [x] older stable manifest → informational no-update state; updater user-facing prose localized
 - [x] Wave 1 R1 signed build + targeted Test 1 phone PASS — run `35730023317` / result `1+`
-- [ ] download APK
-- [ ] downloaded-file SHA-256 verification
+- [x] download APK
+- [x] downloaded-file SHA-256 verification
 - [ ] Android package-installer handoff
 - [x] Check lifecycle/rotation state ownership
-- [ ] Download/verify/install lifecycle ownership
+- [x] Download/verify lifecycle ownership
+- [ ] installer lifecycle ownership
 - [x] JVM tests for manifest/version/minSdk policy
-- [ ] JVM tests for downloaded-file SHA policy
+- [x] JVM tests for downloaded-file SHA policy
 - [ ] signed APK + targeted phone QA
 
 ## v1.4.50 — Skin System

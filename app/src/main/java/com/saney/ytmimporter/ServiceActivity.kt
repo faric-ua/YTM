@@ -558,11 +558,20 @@ class ServiceActivity : Activity() {
                         (
                             "YTM Importer ${state.remoteVersionName} " +
                                 "(${state.remoteVersionCode}).\n" +
-                                "Завантаження APK не запускається автоматично."
+                                "APK завантажується лише після явного натискання кнопки."
                         )
 
+                UpdaterRemoteOperations.Phase.DOWNLOADING ->
+                    "Завантаження APK" to state.message
+
+                UpdaterRemoteOperations.Phase.VERIFYING ->
+                    "Перевірка SHA-256" to state.message
+
+                UpdaterRemoteOperations.Phase.READY_TO_INSTALL ->
+                    "APK перевірено" to state.message
+
                 UpdaterRemoteOperations.Phase.ERROR ->
-                    "Не вдалося перевірити" to state.message
+                    state.errorTitle to state.message
             }
 
         content.addView(
@@ -572,26 +581,73 @@ class ServiceActivity : Activity() {
             )
         )
 
-        val checkButton =
-            fullActionButton(
-                if (state.running) {
+        val downloadAction =
+            state.phase == UpdaterRemoteOperations.Phase.UPDATE_AVAILABLE ||
+                (
+                    state.phase == UpdaterRemoteOperations.Phase.ERROR &&
+                        state.downloadRetryAvailable
+                    )
+
+        val actionLabel =
+            when (state.phase) {
+                UpdaterRemoteOperations.Phase.CHECKING ->
                     "Перевіряю…"
-                } else {
+
+                UpdaterRemoteOperations.Phase.UPDATE_AVAILABLE ->
+                    "Завантажити APK"
+
+                UpdaterRemoteOperations.Phase.DOWNLOADING ->
+                    "Завантажую…"
+
+                UpdaterRemoteOperations.Phase.VERIFYING ->
+                    "Перевіряю SHA-256…"
+
+                UpdaterRemoteOperations.Phase.READY_TO_INSTALL ->
+                    "APK перевірено"
+
+                UpdaterRemoteOperations.Phase.ERROR ->
+                    if (state.downloadRetryAvailable) {
+                        "Повторити завантаження"
+                    } else {
+                        "Перевірити оновлення"
+                    }
+
+                else ->
                     "Перевірити оновлення"
-                }
-            ) {
-                UpdaterRemoteOperations.startCheck(
-                    localVersionCode =
-                        BuildConfig.VERSION_CODE,
-                    deviceSdk = Build.VERSION.SDK_INT
-                )
             }
 
-        checkButton.isEnabled =
-            !state.running
-        checkButton.alpha =
-            if (state.running) 0.65f else 1f
-        content.addView(checkButton)
+        val actionEnabled =
+            when (state.phase) {
+                UpdaterRemoteOperations.Phase.CHECKING,
+                UpdaterRemoteOperations.Phase.DOWNLOADING,
+                UpdaterRemoteOperations.Phase.VERIFYING,
+                UpdaterRemoteOperations.Phase.READY_TO_INSTALL ->
+                    false
+
+                else ->
+                    true
+            }
+
+        val actionButton =
+            fullActionButton(actionLabel) {
+                if (downloadAction) {
+                    UpdaterRemoteOperations.startDownload(
+                        applicationContext
+                    )
+                } else {
+                    UpdaterRemoteOperations.startCheck(
+                        localVersionCode =
+                            BuildConfig.VERSION_CODE,
+                        deviceSdk = Build.VERSION.SDK_INT
+                    )
+                }
+            }
+
+        actionButton.isEnabled =
+            actionEnabled
+        actionButton.alpha =
+            if (actionEnabled) 1f else 0.65f
+        content.addView(actionButton)
 
         setScreen(root, content)
     }

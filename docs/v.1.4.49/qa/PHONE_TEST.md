@@ -68,23 +68,28 @@ Result format: `2+` / `2-`
 
 ## Test 3 — download/recreation
 
-Start download, rotate during progress.
+Wave 2. Start download, rotate during progress.
 
 Expected:
 
 - one logical download;
-- recreated UI reconnects to existing state;
-- no duplicate request/download.
+- recreated UI reconnects to existing Downloading state;
+- no duplicate request/download;
+- download remains explicit and never starts from rotation alone.
 
 Result format: `3+` / `3-`
 
-## Test 4 — SHA verification / installer
+## Test 4 — SHA verification / ready state
+
+Wave 2.
 
 Expected:
 
-- downloaded APK SHA-256 is checked;
-- installer action appears only after verification;
-- Android package installer opens only after explicit user action.
+- downloaded APK SHA-256 is checked against the manifest;
+- mismatch is a hard stop and the unverified `.part` file is not promoted;
+- matching hash reaches `APK перевірено` / Ready to install state;
+- rotation while Verifying/Ready preserves the logical state;
+- Wave 2 does **not** launch or expose Android installer execution yet.
 
 Result format: `4+` / `4-`
 

@@ -20,10 +20,10 @@ Current release candidate:
 - active branch: `feat/v1.4.49-updater`
 - pre-recovery documentation HEAD: `33d1a04e4b295e80f02446944cdde2b4cfba8e6a`
 - stable app checkpoint: `checkpoint-v1.4.48-phone-pass` → `ada8038f51834f8ae4874cd9c13485645f5f72b6`
-- status: **v1.4.49 PARTIALLY PHONE-TESTED — WAVE 1 TEST 1 PASS / WAVE 2 NEXT**
+- status: **v1.4.49 DEVELOPMENT — WAVE 1 TEST 1 PASS / WAVE 2 DOWNLOAD+SHA IMPLEMENTED — SIGNED BUILD PENDING**
 - installed phone APK: **v1.4.49 / code 92 R1** from signed run `35730023317` / source `4d30672c700d2fc2a32255465f555c0fd64acdc3`; Wave 1 Test 1 result is `1+` (older stable → `Оновлень немає`, Ukrainian UI, rotation and Back PASS); BUG-029 is closed for this tested scope
 - accepted v1.4.48 checkpoint remains `checkpoint-v1.4.48-phone-pass` / `ada8038f51834f8ae4874cd9c13485645f5f72b6`
-- focus: **v1.4.49 Updater Wave 1: stable-manifest Check + lifecycle-safe operation ownership — Test 1 PASS; Wave 2 explicit APK download + SHA-256 verification is next; installer handoff remains later**
+- focus: **v1.4.49 Updater Wave 1: stable-manifest Check + lifecycle-safe operation ownership — Test 1 PASS; Wave 2 explicit APK download + SHA-256 verification is implemented with process-owned lifecycle; installer handoff remains later**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -336,10 +336,10 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 2. Treat documentation recovery + hardening as complete.
 3. Wave 1 Test 1 is accepted on signed run `35730023317` / `4d30672c700d2fc2a32255465f555c0fd64acdc3` with result `1+`.
 4. BUG-029 is closed for the tested scope: older stable is informational and updater user-facing prose is Ukrainian.
-5. Wave 2 scope is explicit APK download plus downloaded-file SHA-256 verification with lifecycle-safe ownership.
-6. Wave 2 must not auto-launch the installer; installer handoff remains a later explicit-user-action step.
-7. Keep `docs/v.1.4.49/` metadata, test run/report, evidence and diagrams current as Wave 2 evolves.
-8. Run full release preflight before the next signed APK.
+5. Wave 2 Download + SHA-256 code is implemented with process-owned Downloading/Verifying state and app-private `.part` storage.
+6. Run full release preflight, commit/push Wave 2, then build a signed APK from the exact new HEAD.
+7. Re-run Wave 1 smoke on that signed build; newer-version/download/verify phone QA requires a valid newer release path and must not be fabricated.
+8. Wave 2 must not auto-launch the installer; installer handoff remains a later explicit-user-action step.
 9. Final release closeout still requires `scripts/release-close-audit.sh 1.4.49`.
 
 ## 8. Working contract

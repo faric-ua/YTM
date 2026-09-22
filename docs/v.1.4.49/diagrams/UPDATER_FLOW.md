@@ -39,7 +39,8 @@ flowchart TD
 ## Wave status
 
 Wave 1 implements the route through `Up to date` / `Update available` / `Error`.
-The Download → Verify → Install branch remains planned and is not auto-entered.
+Wave 2 implements explicit `Download` → `Downloading` → `Verifying SHA-256` → `Ready to install`.
+`Explicit Install` and Android package-installer handoff remain later work and are never auto-entered in Wave 2.
 
 ## Version relation contract
 

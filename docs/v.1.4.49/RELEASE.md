@@ -83,7 +83,25 @@ Accepted targeted scope:
 - rotation during Checking and on result;
 - Back → About.
 
-Wave 1 is accepted for Test 1 only. Download/verify/install remain pending.
+Wave 1 is accepted for Test 1 only.
+
+## Wave 2 implementation
+
+Wave 2 adds only Download + Verify:
+
+- `Update available` exposes an explicit `Завантажити APK` action;
+- exact APK URL is derived from validated manifest `tag` + `apkAsset`;
+- download is owned by `UpdaterRemoteOperations`, not the Activity;
+- one active Check/Download/Verify operation is allowed at a time;
+- APK streams to app-private `filesDir/updates/*.part`;
+- oversized or empty downloads are rejected;
+- SHA-256 is calculated from the downloaded bytes and compared with the manifest;
+- mismatch deletes the `.part` file and is a hard stop;
+- a verified `.part` file is atomically promoted to the final APK path;
+- rotation/recreation reattaches to Downloading/Verifying state;
+- installer launch remains intentionally absent from Wave 2.
+
+Signed build and phone QA for Wave 2 remain pending.
 
 ## System/lifecycle impact
 
@@ -117,4 +135,4 @@ Before application code:
 
 ## Status
 
-**PARTIALLY PHONE-TESTED — WAVE 1 TEST 1 PASS / WAVE 2 NEXT**
+**DEVELOPMENT — WAVE 1 TEST 1 PASS / WAVE 2 DOWNLOAD+SHA IMPLEMENTED — SIGNED BUILD PENDING**

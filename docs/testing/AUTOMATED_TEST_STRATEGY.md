@@ -79,3 +79,15 @@ Updater manifest/version policy is Android-independent production logic and is c
 - remote minSdk compatibility.
 
 Rotation/recreation behavior remains a real-phone acceptance requirement even though the operation-owner structure is statically audited.
+
+## v1.4.49 updater Wave 2
+
+Downloaded-file handling adds Android-independent `UpdaterDownloadPolicy` JVM tests for:
+
+- exact tagged GitHub Release asset URL construction;
+- deterministic SHA-256 calculation;
+- matching downloaded-file hash acceptance;
+- SHA mismatch rejection;
+- invalid expected-hash rejection.
+
+The real network download, rotation reattachment and Android filesystem behavior remain signed-build/phone concerns; installer launch is intentionally outside Wave 2.

@@ -12,6 +12,20 @@
 - [x] signed Wave 1/R1 APKs — runs `35727790033` and `35730023317`
 - [x] real-phone Wave 1 R1 check/rotation QA — `1+`
 
+## Wave 2 implementation evidence
+
+- [x] explicit Download action only after Update available
+- [x] process-owned Downloading / Verifying lifecycle state
+- [x] duplicate active download guard
+- [x] exact tagged GitHub Release APK URL
+- [x] app-private `.part` download path
+- [x] APK size/empty-file rejection
+- [x] downloaded-file SHA-256 policy + JVM tests
+- [x] SHA mismatch hard-stop implementation
+- [x] verified file promotion to final APK path
+- [x] installer launch absent from Wave 2
+- [ ] signed Wave 2 APK
+- [ ] real-phone newer-version / download / rotation / verify QA
 
 ## Identity / release source
 

@@ -6,7 +6,7 @@ Current live resume snapshot: CURRENT_HANDOFF.md
 Current development focus (installed phone app is v1.4.49 / code 92 Wave 1 R1):
 - v1.4.48 targeted phone checkpoint remains the accepted stable checkpoint;
 - active development branch is feat/v1.4.49-updater;
-- signed R1 run 35730023317 / 4d30672c700d2fc2a32255465f555c0fd64acdc3 received `1+`; Wave 1 Test 1 passed and BUG-029 is closed for the tested scope; Wave 2 download + SHA-256 verification is next;
+- signed R1 run 35730023317 / 4d30672c700d2fc2a32255465f555c0fd64acdc3 received `1+`; Wave 1 Test 1 remains accepted; Wave 2 explicit APK download + SHA-256 verification is implemented, signed build/phone QA pending;
 - ASSISTANT_CONTEXT_INDEX.md + docs/assistant-kit/CONTEXT_FILES.txt are the assistant recovery map;
 - portable system/lifecycle/navigation contracts and audit inventory are first-class project artifacts;
 - next application feature: v1.4.49 in-app Updater;

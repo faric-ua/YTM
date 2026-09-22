@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.49-updater",
   "appSourceSha": "4d30672c700d2fc2a32255465f555c0fd64acdc3",
   "signedRun": "35730023317",
-  "qaStatus": "PARTIALLY PHONE-TESTED — WAVE 1 TEST 1 PASS / WAVE 2 NEXT",
+  "qaStatus": "DEVELOPMENT — WAVE 1 TEST 1 PASS / WAVE 2 DOWNLOAD/SHA IMPLEMENTED — SIGNED BUILD PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": "2026-09-22"
