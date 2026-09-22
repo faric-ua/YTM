@@ -16,7 +16,7 @@
 - Playlist action menu and editor draft survive Activity recreation/rotation without auto-running remote changes.
 - UX-023: the playlist-name editor now wraps long titles across multiple visible lines and grows vertically instead of hiding text in a fixed single-line field.
 - Real-phone functional playlist-management QA passed on signed run `35671741464`: Edit, privacy persistence, overflow/long-press lifecycle and confirmed remote deletion.
-- Rename/privacy editing is implemented; signed phone QA is next.
+- Final targeted phone QA PASS on signed run `35673239632` from `ada8038f51834f8ae4874cd9c13485645f5f72b6`, including UX-023 multiline-title rotation continuity.
 - versionCode 91 / versionName 1.4.48.
 
 ## v1.4.47-R3
