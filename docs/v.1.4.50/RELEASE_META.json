@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.50-skin-system",
   "appSourceSha": "7e6fcb482387be92a7de54db0f4df5081d640495",
   "signedRun": "35796094108",
-  "qaStatus": "TARGETED PHONE PASS — WAVE 3 RESTORABLE MODAL CORE / BUG-033 CLOSED; FINAL ERROR/DUPLICATE-OP QA PENDING",
+  "qaStatus": "DEVELOPMENT — WAVE 3 R1 RESULT-MODAL LIFECYCLE FIX STATIC/FULL PREFLIGHT PASS / BUG-034 PHONE RETEST PENDING; BUG-033 PASS PRESERVED",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": "2026-09-23"

@@ -54,7 +54,7 @@ v1.4.50 release closeout.
 
 ## Status
 
-**TARGETED PHONE PASS — WAVE 3 RESTORABLE MODAL CORE / BUG-033 CLOSED; FINAL ERROR/DUPLICATE-OP QA PENDING**
+**DEVELOPMENT — WAVE 3 R1 RESULT-MODAL LIFECYCLE FIX STATIC/FULL PREFLIGHT PASS / BUG-034 PHONE RETEST PENDING; BUG-033 PASS PRESERVED**
 
 ## Wave 2 implementation
 
@@ -145,3 +145,35 @@ The earlier representative UI smoke `UI-1+ / UI-2+ / UI-3+` plus this Wave 3
 corrective retest closes the representative screens/modals/tiles checklist
 item. Final release acceptance is still not claimed: explicit error-path and
 duplicate-operation release checks remain open.
+
+## Wave 3 R1 — result-modal recreation hardening
+
+Final release QA exposed a new result-modal lifecycle defect on the exact
+signed Wave 3 build:
+- source `7e6fcb482387be92a7de54db0f4df5081d640495`;
+- run `35796094108`;
+- `History відновлено` disappeared after Activity recreation/rotation.
+
+The result modal was already represented as semantic
+`DataModal.HISTORY_IMPORT_RESULT` with primitive Bundle args. The remaining
+weakness was inside `RestorableModalController`: its dismiss listener relied
+primarily on `Activity.isChangingConfigurations` at dismiss time.
+
+R1 hardens the shared controller itself:
+- Activity explicitly reports `onResume` / `onPause`;
+- `save()` marks modal state as state-saved before recreation;
+- dismiss clears durable semantic state only while the Activity is resumed,
+  state is not saved, and configuration recreation is not in progress;
+- paused/state-saved/system teardown cannot erase the semantic modal identity;
+- user dismiss while resumed still clears state normally.
+
+This applies to all Data result states, including:
+- `HISTORY_IMPORT_RESULT`;
+- `RESTORE_RESULT`;
+- `ROLLBACK_RESULT`.
+
+Failure evidence:
+- `docs/v.1.4.50/qa/evidence/BUG034_HISTORY_RESULT_ROTATION_FAIL_2026-09-23.jpg`.
+
+BUG-033 remains closed for its tested confirmation scope. BUG-034 tracks this
+new result-modal recreation finding.

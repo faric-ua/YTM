@@ -128,10 +128,16 @@ class DataActivity : Activity() {
     }
     override fun onResume() {
         super.onResume()
+        dataModalController.onResume()
 
         if (::summaryText.isInitialized) {
             refreshSummary()
         }
+    }
+
+    override fun onPause() {
+        dataModalController.onPause()
+        super.onPause()
     }
 
     override fun onActivityResult(

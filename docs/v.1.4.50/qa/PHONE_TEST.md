@@ -285,3 +285,44 @@ Result:
 - representative screens/modals/tiles smoke is now complete when combined with
   the prior `UI-1+ / UI-2+ / UI-3+` pass;
 - explicit release-level error-path and duplicate-operation checks remain open.
+
+## Wave 3 R1 — Result modal lifecycle
+
+Use the exact signed Wave 3 R1 APK.
+
+### W3R1-1 — History result rotation
+
+1. Import a valid History JSON and explicitly confirm Restore.
+2. Wait for `History відновлено`.
+3. Rotate portrait → landscape → portrait without pressing a result action.
+
+Expected:
+- the same `History відновлено` result remains/reappears;
+- restored entry/track counts remain the same;
+- History import does not execute a second time.
+
+Result: `W3R1-1+` / `W3R1-1-`
+
+### W3R1-2 — Done clears result state
+
+1. From the restored result after at least one rotation, press `Готово`.
+2. Rotate the Data screen again.
+
+Expected:
+- the result closes once;
+- `History відновлено` does not resurrect after the explicit user dismissal.
+
+Result: `W3R1-2+` / `W3R1-2-`
+
+### W3R1-3 — rollback transition is single-shot
+
+1. Repeat a History import if needed to reach `History відновлено`.
+2. Rotate the result once.
+3. Press `Відкотити` exactly once.
+
+Expected:
+- exactly one `Відкотити останній Restore?` confirmation opens;
+- no second rollback confirmation appears;
+- rollback itself does not start until explicitly confirmed.
+
+Result: `W3R1-3+` / `W3R1-3-`

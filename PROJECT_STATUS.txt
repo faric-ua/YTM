@@ -12,6 +12,7 @@ Current development focus (v1.4.50 Skin System — DEVELOPMENT):
 - Wave 2 Skin preview/selection lifecycle PHONE PASS: `W2-1+ / W2-2+ / W2-3+` on run 35787308504 / source fdb2892c7b4fa0c858c55d5187a04ce296bde913;
 - representative UI smoke `UI-1+ / UI-2+ / UI-3+` accepted; BUG-033 corrective Data rotation follow-up also passed;
 - Wave 3 shared RestorableModalController PHONE PASS: `W3-1+ / W3-2+ / W3-3+ / W3-4+` on run 35796094108 / source 7e6fcb482387be92a7de54db0f4df5081d640495; BUG-033 CLOSED;
+- BUG-034: `History відновлено` result modal disappears on rotation; Wave 3 R1 generic controller hardening static/full preflight PASS; signed phone retest pending;
 - semantic success/warning/danger/duplicate colors are grouped under `SemanticPalette`; initial Wave 1 semantic phone smoke is `2+`;
 - accepted stable release remains v1.4.49 In-app Updater;
 - v1.4.49 updater matrix `1+ 2+ 3+ 4+ 5+ 6+`, RC+, and FINAL+ remain accepted evidence;

@@ -22,7 +22,7 @@ Current release state:
 - active branch: `feat/v1.4.50-skin-system`
 - release-start base HEAD: `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`
 - accepted stable checkpoint: `checkpoint-v1.4.49-phone-pass` → `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
-- status: **v1.4.50 TARGETED PHONE PASS — WAVE 3 / BUG-033 CLOSED / FINAL ERROR+DUPLICATE QA PENDING**
+- status: **v1.4.50 DEVELOPMENT — WAVE 3 R1 RESULT-MODAL LIFECYCLE FIX STATIC/FULL PREFLIGHT PASS / BUG-034 PHONE RETEST PENDING**
 - current phone QA APK: **v1.4.50 / code 93**, source `7e6fcb482387be92a7de54db0f4df5081d640495`, signed run `35796094108`; Wave 3 result `W3-1+ / W3-2+ / W3-3+ / W3-4+`; BUG-033 closed; Wave 1 R1 and Wave 2 PASS evidence remains preserved.
 - installed production APK: **v1.4.49 / code 92 exact final RC** from run `35755925563` / source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; `RC+` preserved Google/YTM connection and the current 13-track playlist; `FINAL+` confirmed installed/stable `1.4.49 (92)` and `Оновлень немає`.
 - accepted stable checkpoint is `checkpoint-v1.4.49-phone-pass` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; previous v1.4.48 checkpoint remains historical evidence.
@@ -336,15 +336,15 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 ## 7. Exact next execution step
 
 1. Keep work on `feat/v1.4.50-skin-system`.
-2. Current phone-tested source is `7e6fcb482387be92a7de54db0f4df5081d640495` / signed run `35796094108`.
-3. Wave 3 result is `W3-1+ / W3-2+ / W3-3+ / W3-4+`; BUG-033 is closed for tested Data modal lifecycle paths.
-4. Representative UI smoke is accepted from `UI-1+ / UI-2+ / UI-3+` plus the Wave 3 corrective rotation pass.
-5. Wave 1 R1 and Wave 2 targeted PASS evidence remains preserved.
-6. v1.4.50 remains `development`; do not create final release/tag/checkpoint yet.
-7. Two explicit General release checks remain open: `error path` and `no accidental duplicate operation`.
-8. Next phone QA should target those two checks on the current exact signed Wave 3 APK; no new code/build is needed unless a failure is found.
-9. Do not broaden targeted PASS into final release acceptance until those checks pass.
-10. After those checks, reassess release documentation/tag/checkpoint closeout.
+2. Last phone-tested app source remains `7e6fcb482387be92a7de54db0f4df5081d640495` / signed run `35796094108`.
+3. BUG-033 remains closed for tested ordinary/prepared Data confirmation paths.
+4. Final QA exposed BUG-034: post-operation result modal `History відновлено` disappears on rotation.
+5. Wave 3 R1 hardens `RestorableModalController` itself using resumed/paused + state-saved guards rather than adding a result-specific flag.
+6. The generic fix covers `HISTORY_IMPORT_RESULT`, `RESTORE_RESULT` and `ROLLBACK_RESULT`.
+7. Dedicated Wave 3 R1 audit and full release preflight pass before commit.
+8. Next: build exact signed Wave 3 R1 APK from the new source commit.
+9. Phone-test `W3R1-1`, `W3R1-2`, `W3R1-3`.
+10. Final error-path/duplicate-operation release acceptance remains pending until BUG-034 is retested.
 
 ## 8. Working contract
 

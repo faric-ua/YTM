@@ -59,3 +59,18 @@
 - [x] W3-2 Data restore/history-picker confirmations rotation + Cancel no-op — PASS
 - [x] W3-3 Data share confirmation rotation + Cancel no-op — PASS
 - [x] W3-4 prepared History JSON confirmation rotation — PASS with real fixture
+
+## Wave 3 R1 — Result modal lifecycle
+
+- [x] controller tracks resumed/paused Activity lifecycle
+- [x] controller marks state saved before Activity state snapshot
+- [x] system/recreation dismiss cannot clear saved semantic modal state
+- [x] user dismiss while resumed still clears semantic modal state
+- [x] DataActivity forwards onResume/onPause to the controller
+- [x] History/Restore/Rollback result modal semantic states remain unchanged
+- [x] dedicated Wave 3 R1 audit passes
+- [x] full release preflight passes
+- [ ] signed Wave 3 R1 APK
+- [ ] W3R1-1 `History відновлено` survives portrait → landscape → portrait
+- [ ] W3R1-2 after rotation `Готово` closes result and it does not resurrect
+- [ ] W3R1-3 after rotation `Відкотити` opens exactly one rollback confirmation

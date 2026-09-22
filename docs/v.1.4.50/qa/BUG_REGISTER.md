@@ -132,3 +132,35 @@ Stored visual evidence:
 - `qa/evidence/WAVE3_HISTORY_IMPORT_CONFIRM_2026-09-23.jpg`.
 
 BUG-033 is closed for these tested paths.
+
+## BUG-034 — Result modal disappears on Activity recreation
+
+Status: **FIX IMPLEMENTED — WAVE 3 R1 STATIC/FULL PREFLIGHT PASS / PHONE RETEST NEEDED**
+
+Finding:
+- exact signed source `7e6fcb482387be92a7de54db0f4df5081d640495`;
+- run `35796094108`;
+- after successful History JSON import, result modal `History відновлено`
+  disappears on rotation.
+
+Evidence:
+- `docs/v.1.4.50/qa/evidence/BUG034_HISTORY_RESULT_ROTATION_FAIL_2026-09-23.jpg`.
+
+Scope distinction:
+- BUG-033 remains closed for ordinary/prepared confirmation windows verified by
+  W3-1..W3-4;
+- BUG-034 is specifically about a post-operation result modal.
+
+Root cause:
+- result state already existed as `HISTORY_IMPORT_RESULT` with primitive Bundle
+  args;
+- shared controller could clear semantic state from an `OnDismissListener`
+  during Activity teardown before the recreation-safe condition was reliable.
+
+R1 fix:
+- controller tracks resumed vs paused Activity state;
+- `save()` marks state-saved before snapshot persistence;
+- dismiss only clears semantic state during a normal resumed user dismissal;
+- paused/state-saved/configuration teardown preserves the state for recreation.
+
+The fix is generic for History-import, full-Restore and rollback result modals.

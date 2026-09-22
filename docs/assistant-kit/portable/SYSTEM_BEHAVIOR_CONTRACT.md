@@ -72,6 +72,8 @@ For reusable modal lifecycle code:
 - on recreation, rebuild the modal only; never invoke its positive callback;
 - detach listeners from the old Activity instance before destruction;
 - Cancel/Back/dismiss clears modal state but must not execute the domain action;
+- system/Activity teardown while paused or after state-save must not be treated
+  as a user dismissal and must preserve the semantic modal state for recreation;
 - prepared destructive operations may keep their validated input in a safe
   local cache while the semantic confirmation is open.
 

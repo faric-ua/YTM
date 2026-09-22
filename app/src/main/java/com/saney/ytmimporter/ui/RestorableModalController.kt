@@ -20,6 +20,8 @@ class RestorableModalController(
     private var openModalId: String? = null
     private var openModalArgs: Bundle = Bundle()
     private var dialog: Dialog? = null
+    private var activityResumed = false
+    private var stateSaved = false
 
     fun restore(
         savedInstanceState: Bundle?
@@ -42,6 +44,8 @@ class RestorableModalController(
     fun save(
         outState: Bundle
     ) {
+        stateSaved = true
+
         val modalId =
             openModalId
                 ?: return
@@ -129,6 +133,15 @@ class RestorableModalController(
         openModalArgs = Bundle()
     }
 
+    fun onResume() {
+        stateSaved = false
+        activityResumed = true
+    }
+
+    fun onPause() {
+        activityResumed = false
+    }
+
     fun onDestroy() {
         detachCurrent(
             dismiss = false
@@ -154,6 +167,8 @@ class RestorableModalController(
             }
 
             if (
+                activityResumed &&
+                !stateSaved &&
                 !activity
                     .isChangingConfigurations
             ) {
