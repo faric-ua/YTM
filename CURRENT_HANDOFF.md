@@ -22,8 +22,8 @@ Current release state:
 - active branch: `feat/v1.4.50-skin-system`
 - release-start base HEAD: `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`
 - accepted stable checkpoint: `checkpoint-v1.4.49-phone-pass` → `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
-- status: **v1.4.50 DEVELOPMENT — WAVE 2 SKIN PREVIEW STATIC/FULL PREFLIGHT PASS / SIGNED PHONE QA PENDING; WAVE 1 R1 PASS PRESERVED**
-- current phone QA APK: **v1.4.50 / code 93**, source `81d5ebd988d08d3ddb80d78b73fd94e20280c980`, signed run `35782627453`; targeted result `R1-1+ / R1-2+ / R1-3+`; BUG-031/032 closed for tested paths.
+- status: **v1.4.50 TARGETED PHONE PASS — WAVE 2 SKIN PREVIEW / BROADER REPRESENTATIVE UI QA PENDING**
+- current phone QA APK: **v1.4.50 / code 93**, source `fdb2892c7b4fa0c858c55d5187a04ce296bde913`, signed run `35787308504`; Wave 2 result `W2-1+ / W2-2+ / W2-3+`; Wave 1 R1 and BUG-031/032 PASS evidence remains preserved.
 - installed production APK: **v1.4.49 / code 92 exact final RC** from run `35755925563` / source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; `RC+` preserved Google/YTM connection and the current 13-track playlist; `FINAL+` confirmed installed/stable `1.4.49 (92)` and `Оновлень немає`.
 - accepted stable checkpoint is `checkpoint-v1.4.49-phone-pass` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; previous v1.4.48 checkpoint remains historical evidence.
 - focus: **v1.4.50 Skin System — define the reusable Skin contract first, then migrate Neon/Blue/Green without changing business semantics. YouTube/YTM URL/Mix → local snapshot remains future development.**
@@ -336,15 +336,15 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 ## 7. Exact next execution step
 
 1. Keep work on `feat/v1.4.50-skin-system`.
-2. Wave 1/R1 phone-tested source `81d5ebd988d08d3ddb80d78b73fd94e20280c980` / run `35782627453` remains accepted evidence.
-3. Wave 2 implements explicit Skin preview-before-commit in Menu.
-4. Preview never writes prefs; Apply is the only `setStyle` path.
-5. Preview candidate style survives MenuActivity recreation/rotation.
-6. Cancel, system Back and dismiss leave the active Skin unchanged.
-7. Wave 2 dedicated static audit and full release preflight pass before commit.
-8. Next: produce a signed APK from the exact Wave 2 commit.
-9. Install over current v1.4.50 without clearing app data and run `W2-1`, `W2-2`, `W2-3`.
-10. Do not claim Wave 2 phone PASS or final v1.4.50 acceptance before real-phone evidence.
+2. Accepted Wave 2 phone-tested source is `fdb2892c7b4fa0c858c55d5187a04ce296bde913` / signed run `35787308504`.
+3. Wave 2 result is `W2-1+ / W2-2+ / W2-3+`.
+4. Preview-before-commit, explicit Apply, Cancel/Back no-op and preview rotation continuity are accepted for tested paths.
+5. Repository screenshot evidence is `docs/v.1.4.50/qa/evidence/WAVE2_SKIN_PREVIEW_2026-09-23.jpg`.
+6. Wave 1 R1 targeted PASS and BUG-031/032 closeout remain preserved.
+7. v1.4.50 remains `development`; do not create final release/tag/checkpoint yet.
+8. Next QA scope is the still-open representative screen/modal/tile phone smoke across built-in Skins.
+9. Do not silently broaden old phone evidence into that broader QA item.
+10. After broader UI QA, reassess the remaining release checklist before final closeout.
 
 ## 8. Working contract
 

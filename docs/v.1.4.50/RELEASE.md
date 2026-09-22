@@ -54,7 +54,7 @@ v1.4.50 release closeout.
 
 ## Status
 
-**DEVELOPMENT — WAVE 2 SKIN PREVIEW STATIC/FULL PREFLIGHT PASS / SIGNED PHONE QA PENDING; WAVE 1 R1 TARGETED PASS PRESERVED**
+**TARGETED PHONE PASS — WAVE 2 SKIN PREVIEW W2-1+/W2-2+/W2-3+; REPRESENTATIVE SCREEN/MODAL/TILE QA PENDING**
 
 ## Wave 2 implementation
 
@@ -72,3 +72,25 @@ Commit:
 - Home continues to use the Wave 1 R1 resume guard when the user returns.
 
 Wave 2 does not change the built-in RGB values or business semantics.
+
+## Wave 2 phone checkpoint
+
+Exact signed Wave 2 package:
+- source `fdb2892c7b4fa0c858c55d5187a04ce296bde913`;
+- GitHub Actions run `35787308504`;
+- version `1.4.50 (93)`;
+- real-phone result `W2-1+ / W2-2+ / W2-3+`.
+
+Accepted behavior:
+- preview does not commit the candidate Skin;
+- Cancel leaves the previously active Skin selected;
+- explicit Apply commits and refreshes Menu/Home;
+- the same candidate preview survives portrait/landscape Activity recreation;
+- Back/Cancel after recreation do not commit the candidate.
+
+Visual evidence:
+- `docs/v.1.4.50/qa/evidence/WAVE2_SKIN_PREVIEW_2026-09-23.jpg` shows the Skin preview with candidate visual/semantic tokens.
+
+This remains a targeted Wave 2 phone PASS. The broader representative
+screen/modal/tile QA item is still open and final v1.4.50 release acceptance is
+not claimed.

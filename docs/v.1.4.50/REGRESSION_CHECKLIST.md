@@ -38,7 +38,7 @@
 - [x] Wave 1 exact RGB values remain unchanged
 - [x] dedicated Wave 2 static audit passes
 - [x] full release preflight passes
-- [ ] signed Wave 2 APK
-- [ ] phone W2-1 preview + Cancel no-op
-- [ ] phone W2-2 Apply + Menu/Home refresh
-- [ ] phone W2-3 preview rotation continuity
+- [x] signed Wave 2 APK — run `35787308504` / source `fdb2892c7b4fa0c858c55d5187a04ce296bde913`
+- [x] phone W2-1 preview + Cancel no-op — PASS
+- [x] phone W2-2 Apply + Menu/Home refresh — PASS
+- [x] phone W2-3 preview rotation continuity — PASS

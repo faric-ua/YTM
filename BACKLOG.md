@@ -100,7 +100,7 @@ v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
 - [x] Wave 1 signed phone QA recorded — `1- / 2+ / 3-` on run `35772192953`
 - [x] BUG-031/032 R1 corrective implementation — static/full preflight PASS
 - [x] R1 signed phone retest — run `35782627453` / source `81d5ebd988d08d3ddb80d78b73fd94e20280c980` / `R1-1+ R1-2+ R1-3+`
-- [x] skin preview/selection lifecycle — Wave 2 static/full preflight PASS; signed phone QA pending
+- [x] skin preview/selection lifecycle — Wave 2 phone PASS `35787308504` / `W2-1+ W2-2+ W2-3+`
 - [ ] phone QA across representative screens/modals/tiles
 
 ## v1.4.48 — Generic Tiles + Playlist Management

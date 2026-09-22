@@ -5,10 +5,10 @@
   "phase": "development",
   "feature": "Skin System",
   "branch": "feat/v1.4.50-skin-system",
-  "appSourceSha": "81d5ebd988d08d3ddb80d78b73fd94e20280c980",
-  "signedRun": "35782627453",
-  "qaStatus": "DEVELOPMENT — WAVE 2 SKIN PREVIEW STATIC/FULL PREFLIGHT PASS / SIGNED PHONE QA PENDING; WAVE 1 R1 TARGETED PASS PRESERVED",
+  "appSourceSha": "fdb2892c7b4fa0c858c55d5187a04ce296bde913",
+  "signedRun": "35787308504",
+  "qaStatus": "TARGETED PHONE PASS — WAVE 2 SKIN PREVIEW W2-1+/W2-2+/W2-3+; REPRESENTATIVE SCREEN/MODAL/TILE QA PENDING",
   "tag": null,
   "checkpointTag": null,
-  "phoneTestDate": "2026-09-22"
+  "phoneTestDate": "2026-09-23"
 }

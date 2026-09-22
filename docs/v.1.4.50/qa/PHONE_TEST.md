@@ -172,3 +172,28 @@ Expected:
 - no remote operation or destructive action starts.
 
 Result: `W2-3+` / `W2-3-`
+
+## Wave 2 signed result
+
+Exact package:
+- source `fdb2892c7b4fa0c858c55d5187a04ce296bde913`;
+- signed run `35787308504`;
+- installed version `1.4.50 (93)`.
+
+Real-phone result:
+- `W2-1+` — candidate preview opens and Cancel preserves the previously active Skin;
+- `W2-2+` — explicit Apply commits the Skin, Menu recreates, and Home refreshes to the same Skin;
+- `W2-3+` — the same candidate preview survives portrait → landscape → portrait; Back/Cancel does not commit it.
+
+Screenshot evidence:
+- `evidence/WAVE2_SKIN_PREVIEW_2026-09-23.jpg`.
+
+The screenshot confirms the candidate-preview presentation and readable visual/
+semantic token samples. The interaction/rotation PASS is real-phone
+conversation-reported evidence from the same signed build.
+
+Scope:
+- Wave 2 preview/selection lifecycle is accepted for the tested paths;
+- Wave 1 R1 evidence remains accepted;
+- broader representative screen/modal/tile QA remains pending;
+- this is not final v1.4.50 release acceptance.
