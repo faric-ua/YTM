@@ -54,7 +54,7 @@ v1.4.50 release closeout.
 
 ## Status
 
-**TARGETED PHONE PASS — WAVE 2 SKIN PREVIEW W2-1+/W2-2+/W2-3+; REPRESENTATIVE SCREEN/MODAL/TILE QA PENDING**
+**DEVELOPMENT — WAVE 3 RESTORABLE MODAL CORE STATIC/FULL PREFLIGHT PASS / BUG-033 PHONE RETEST PENDING; WAVE 2 PASS PRESERVED**
 
 ## Wave 2 implementation
 
@@ -94,3 +94,25 @@ Visual evidence:
 This remains a targeted Wave 2 phone PASS. The broader representative
 screen/modal/tile QA item is still open and final v1.4.50 release acceptance is
 not claimed.
+
+## Wave 3 — shared restorable modal lifecycle
+
+Broader Wave 2 UI QA found that History modals survived rotation while Data
+modals such as `Зберегти повний backup?` disappeared.
+
+The rendering layer was already shared through `UiChrome`; the missing piece
+was shared semantic lifecycle ownership.
+
+Wave 3 adds `RestorableModalController`:
+- one durable semantic modal id + Bundle args;
+- one save/restore/detach implementation;
+- Activity-specific renderer and callbacks;
+- no callback execution during recreation.
+
+DataActivity is the first full migration and routes all 11 Data modal states
+through the controller. This includes ordinary confirmations, prepared
+Restore/History confirmations, destructive snapshot confirmation and result
+modals.
+
+History/Menu are intentionally not rewritten in the same corrective wave
+because their current lifecycle paths already have accepted phone evidence.

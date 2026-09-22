@@ -1,8 +1,10 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
+import com.saney.ytmimporter.ui.RestorableModalController
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.ClipData
 import android.content.Intent
 import android.graphics.Color
@@ -23,7 +25,6 @@ import com.saney.ytmimporter.model.HistoryResultSemantics
 import com.saney.ytmimporter.model.HistoryStatus
 import com.saney.ytmimporter.model.HistoryTrack
 import com.saney.ytmimporter.model.TrackStatus
-import com.saney.ytmimporter.storage.HistoryImportSummary
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.LocalBackupManager
 import com.saney.ytmimporter.storage.PendingJobStore
@@ -37,11 +38,25 @@ import java.util.Date
 import java.util.Locale
 
 class DataActivity : Activity() {
+    private enum class DataModal {
+        FULL_BACKUP_CONFIRM,
+        RESTORE_PICKER_CONFIRM,
+        HISTORY_PICKER_CONFIRM,
+        HISTORY_IMPORT_CONFIRM,
+        HISTORY_IMPORT_RESULT,
+        RESTORE_CONFIRM,
+        RESTORE_RESULT,
+        ROLLBACK_CONFIRM,
+        ROLLBACK_RESULT,
+        DELETE_SNAPSHOT_CONFIRM,
+        SHARE_FULL_BACKUP_CONFIRM
+    }
     private lateinit var historyStore: HistoryStore
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var quotaTracker: QuotaTracker
     private lateinit var searchCache: SearchCache
     private lateinit var localBackupManager: LocalBackupManager
+    private lateinit var dataModalController: RestorableModalController
 
     private lateinit var summaryText: TextView
     private lateinit var rollbackButton: Button
@@ -51,67 +66,66 @@ class DataActivity : Activity() {
     private var pendingExportSuccessMessage: String? = null
     private var pendingExportFileName: String? = null
     private var pendingExportMimeType: String? = null
-    private var restoreConfirmationPending = false
-    private var historyImportConfirmationPending = false
 
     private val saveExportRequestCode = 4201
     private val restoreBackupRequestCode = 4202
     private val saveExportFolderRequestCode = 4203
     private val historyImportRequestCode = 4204
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        AppThemeManager.applyWindow(this)
+    override fun onCreate(
+        savedInstanceState: Bundle?
+    ) {
+        super.onCreate(
+            savedInstanceState
+        )
+        AppThemeManager.applyWindow(
+            this
+        )
 
-        historyStore = HistoryStore(this)
-        pendingJobStore = PendingJobStore(this)
-        quotaTracker = QuotaTracker(this)
-        searchCache = SearchCache(this)
-        localBackupManager = LocalBackupManager(this)
+        historyStore =
+            HistoryStore(this)
+        pendingJobStore =
+            PendingJobStore(this)
+        quotaTracker =
+            QuotaTracker(this)
+        searchCache =
+            SearchCache(this)
+        localBackupManager =
+            LocalBackupManager(this)
+
+        dataModalController =
+            RestorableModalController(
+                activity = this,
+                stateKey =
+                    STATE_DATA_MODAL
+            )
+        dataModalController.restore(
+            savedInstanceState
+        )
 
         buildUi()
 
-        if (
-            savedInstanceState
-                ?.getBoolean(
-                    STATE_RESTORE_CONFIRMATION_PENDING,
-                    false
-                ) ==
-                true
-        ) {
-            restoreConfirmationPending = true
-            restorePendingBackupConfirmation()
-        }
-
-        if (
-            savedInstanceState
-                ?.getBoolean(
-                    STATE_HISTORY_IMPORT_CONFIRMATION_PENDING,
-                    false
-                ) ==
-                true
-        ) {
-            historyImportConfirmationPending = true
-            restorePendingHistoryImportConfirmation()
-        }
+        dataModalController
+            .restoreAfterContentReady(
+                ::renderDataModal
+            )
     }
-
     override fun onSaveInstanceState(
         outState: Bundle
     ) {
-        outState.putBoolean(
-            STATE_RESTORE_CONFIRMATION_PENDING,
-            restoreConfirmationPending
+        dataModalController.save(
+            outState
         )
 
-        outState.putBoolean(
-            STATE_HISTORY_IMPORT_CONFIRMATION_PENDING,
-            historyImportConfirmationPending
+        super.onSaveInstanceState(
+            outState
         )
-
-        super.onSaveInstanceState(outState)
     }
 
+    override fun onDestroy() {
+        dataModalController.onDestroy()
+        super.onDestroy()
+    }
     override fun onResume() {
         super.onResume()
 
@@ -530,20 +544,82 @@ class DataActivity : Activity() {
             }
     }
 
-    private fun createFullBackup() {
-        val content =
-            runCatching {
-                localBackupManager.createBackupJson()
-            }.getOrElse { error ->
-                toast(
-                    error.message
-                        ?: "Не вдалося створити backup"
-                )
-                return
-            }
 
+    private fun showDataModal(
+        modal: DataModal,
+        args: Bundle =
+            Bundle()
+    ) {
+        dataModalController.show(
+            modalId =
+                modal.name,
+            args = args,
+            renderer =
+                ::renderDataModal
+        )
+    }
+
+    private fun renderDataModal(
+        modalId: String,
+        args: Bundle
+    ): Dialog? {
+        val modal =
+            DataModal
+                .values()
+                .firstOrNull {
+                    it.name ==
+                        modalId
+                }
+                ?: return null
+
+        return when (modal) {
+            DataModal.FULL_BACKUP_CONFIRM ->
+                renderFullBackupConfirm()
+
+            DataModal.RESTORE_PICKER_CONFIRM ->
+                renderRestorePickerConfirm()
+
+            DataModal.HISTORY_PICKER_CONFIRM ->
+                renderHistoryPickerConfirm()
+
+            DataModal.HISTORY_IMPORT_CONFIRM ->
+                renderHistoryImportConfirmation()
+
+            DataModal.HISTORY_IMPORT_RESULT ->
+                renderHistoryImportResult(
+                    args
+                )
+
+            DataModal.RESTORE_CONFIRM ->
+                renderRestoreConfirmation()
+
+            DataModal.RESTORE_RESULT ->
+                renderRestoreResult(
+                    args
+                )
+
+            DataModal.ROLLBACK_CONFIRM ->
+                renderRollbackConfirm()
+
+            DataModal.ROLLBACK_RESULT ->
+                renderRollbackResult(
+                    args
+                )
+
+            DataModal.DELETE_SNAPSHOT_CONFIRM ->
+                renderDeleteSnapshotConfirm()
+
+            DataModal.SHARE_FULL_BACKUP_CONFIRM ->
+                renderShareFullBackupConfirm()
+        }
+    }
+
+    private fun renderFullBackupConfirm():
+        Dialog =
         UiChrome.alertBuilder(this)
-            .setTitle("Зберегти повний backup?")
+            .setTitle(
+                "Зберегти повний backup?"
+            )
             .setMessage(
                 "Буде збережено:\n" +
                     "• History\n" +
@@ -565,22 +641,40 @@ class DataActivity : Activity() {
             .setPositiveButton(
                 "Зберегти"
             ) { _, _ ->
-                createDocumentForExport(
-                    fileName =
-                        "YTM_Backup_${exportTimestamp()}.json",
-                    mimeType =
-                        "application/json",
-                    content = content,
-                    successMessage =
-                        "Повний backup збережено"
-                )
+                saveFullBackupNow()
             }
             .show()
+
+    private fun saveFullBackupNow() {
+        val content =
+            runCatching {
+                localBackupManager
+                    .createBackupJson()
+            }.getOrElse { error ->
+                toast(
+                    error.message
+                        ?: "Не вдалося створити backup"
+                )
+                return
+            }
+
+        createDocumentForExport(
+            fileName =
+                "YTM_Backup_${exportTimestamp()}.json",
+            mimeType =
+                "application/json",
+            content = content,
+            successMessage =
+                "Повний backup збережено"
+        )
     }
 
-    private fun chooseBackupForRestore() {
+    private fun renderRestorePickerConfirm():
+        Dialog =
         UiChrome.alertBuilder(this)
-            .setTitle("Відновити backup?")
+            .setTitle(
+                "Відновити backup?"
+            )
             .setMessage(
                 "Restore замінить локальні:\n\n" +
                     "• History\n" +
@@ -603,9 +697,9 @@ class DataActivity : Activity() {
                 )
             }
             .show()
-    }
 
-    private fun chooseHistoryJsonForRestore() {
+    private fun renderHistoryPickerConfirm():
+        Dialog =
         UiChrome.alertBuilder(this)
             .setTitle(
                 "Імпортувати History JSON?"
@@ -629,8 +723,466 @@ class DataActivity : Activity() {
                 )
             }
             .show()
+
+    private fun renderHistoryImportConfirmation():
+        Dialog? {
+        val raw =
+            runCatching {
+                pendingHistoryImportCacheFile()
+                    .takeIf {
+                        it.isFile
+                    }
+                    ?.readText(
+                        Charsets.UTF_8
+                    )
+                    ?: error(
+                        "Тимчасовий History JSON для підтвердження втрачено"
+                    )
+            }.getOrElse { error ->
+                clearPendingHistoryImportConfirmation()
+                toast(
+                    error.message
+                        ?: "History JSON потрібно вибрати ще раз"
+                )
+                return null
+            }
+
+        val summary =
+            runCatching {
+                historyStore
+                    .inspectImportJson(
+                        raw
+                    )
+            }.getOrElse { error ->
+                clearPendingHistoryImportConfirmation()
+                toast(
+                    "History JSON більше не доступний: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return null
+            }
+
+        val currentCount =
+            historyStore
+                .getAll()
+                .size
+
+        val truncatedNote =
+            if (
+                summary.sourceEntries >
+                    summary.importEntries
+            ) {
+                "\nФайл містить ${summary.sourceEntries} записів; буде імпортовано " +
+                    "${summary.importEntries} найновіших."
+            } else {
+                ""
+            }
+
+        return UiChrome
+            .alertBuilder(this)
+            .setTitle(
+                "Підтвердити History import"
+            )
+            .setMessage(
+                "History JSON\n\n" +
+                    "Поточна History: $currentCount записів\n" +
+                    "Буде відновлено: ${summary.importEntries} записів\n" +
+                    "Треків у відновлених записах: ${summary.trackCount}" +
+                    truncatedNote +
+                    "\n\nБуде замінено тільки History. " +
+                    "Черга, quota, SearchCache і поточний список залишаться без змін.\n\n" +
+                    "Перед імпортом автоматично створиться safety snapshot повного стану."
+            )
+            .setNegativeButton(
+                "Скасувати"
+            ) { _, _ ->
+                clearPendingHistoryImportConfirmation()
+            }
+            .setPositiveButton(
+                "Відновити"
+            ) { _, _ ->
+                clearPendingHistoryImportConfirmation()
+                restoreHistoryJsonNow(
+                    raw
+                )
+            }
+            .show()
+            .also { dialog ->
+                dialog.setOnCancelListener {
+                    if (
+                        !isChangingConfigurations
+                    ) {
+                        clearPendingHistoryImportConfirmation()
+                    }
+                }
+            }
     }
 
+    private fun renderHistoryImportResult(
+        args: Bundle
+    ): Dialog {
+        val importEntries =
+            args.getInt(
+                ARG_HISTORY_ENTRIES
+            )
+        val trackCount =
+            args.getInt(
+                ARG_HISTORY_TRACKS
+            )
+        val safetySnapshotCreated =
+            args.getBoolean(
+                ARG_SAFETY_SNAPSHOT_CREATED
+            )
+
+        return UiChrome
+            .alertBuilder(this)
+            .setTitle(
+                "History відновлено"
+            )
+            .setMessage(
+                "Відновлено записів: $importEntries\n" +
+                    "Треків у History: $trackCount\n\n" +
+                    "Черга, quota, SearchCache і поточний робочий список не змінювалися.\n\n" +
+                    if (
+                        safetySnapshotCreated
+                    ) {
+                        "Safety snapshot стану ДО імпорту збережено."
+                    } else {
+                        ""
+                    }
+            )
+            .setNeutralButton(
+                "Відкотити"
+            ) { _, _ ->
+                confirmRestoreSafetySnapshot()
+            }
+            .setPositiveButton(
+                "Готово",
+                null
+            )
+            .show()
+    }
+
+    private fun renderRestoreConfirmation():
+        Dialog? {
+        val raw =
+            runCatching {
+                pendingRestoreCacheFile()
+                    .takeIf {
+                        it.isFile
+                    }
+                    ?.readText(
+                        Charsets.UTF_8
+                    )
+                    ?: error(
+                        "Тимчасовий backup для підтвердження втрачено"
+                    )
+            }.getOrElse { error ->
+                clearPendingRestoreConfirmation()
+                toast(
+                    error.message
+                        ?: "Restore потрібно вибрати ще раз"
+                )
+                return null
+            }
+
+        val summary =
+            runCatching {
+                localBackupManager
+                    .inspectBackup(
+                        raw
+                    )
+            }.getOrElse { error ->
+                clearPendingRestoreConfirmation()
+                toast(
+                    "Backup більше не доступний: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return null
+            }
+
+        return UiChrome
+            .alertBuilder(this)
+            .setTitle(
+                "Підтвердити Restore"
+            )
+            .setMessage(
+                "Backup YTM Importer\n\n" +
+                    "Schema: ${summary.schemaVersion}\n" +
+                    "Версія застосунку: ${summary.appVersion}\n" +
+                    "Дата: ${formatDate(summary.exportedAt)}\n" +
+                    "Груп даних: ${summary.preferenceGroups}\n" +
+                    "Значень: ${summary.valueCount}\n" +
+                    "Integrity: " +
+                    if (
+                        summary.integrityProtected
+                    ) {
+                        if (
+                            summary.integrityVerified
+                        ) {
+                            "SHA-256 ✓\n\n"
+                        } else {
+                            "SHA-256 ?\n\n"
+                        }
+                    } else {
+                        "legacy backup без checksum\n\n"
+                    } +
+                    "Локальна quota estimate з backup не відновлюється.\n\n" +
+                    "Перед Restore буде автоматично створено " +
+                    "safety snapshot поточного стану."
+            )
+            .setNegativeButton(
+                "Скасувати"
+            ) { _, _ ->
+                clearPendingRestoreConfirmation()
+            }
+            .setPositiveButton(
+                "Відновити"
+            ) { _, _ ->
+                clearPendingRestoreConfirmation()
+                restoreBackupNow(
+                    raw
+                )
+            }
+            .show()
+            .also { dialog ->
+                dialog.setOnCancelListener {
+                    if (
+                        !isChangingConfigurations
+                    ) {
+                        clearPendingRestoreConfirmation()
+                    }
+                }
+            }
+    }
+
+    private fun renderRestoreResult(
+        args: Bundle
+    ): Dialog {
+        val preferenceGroups =
+            args.getInt(
+                ARG_PREFERENCE_GROUPS
+            )
+        val restoredValues =
+            args.getInt(
+                ARG_RESTORED_VALUES
+            )
+        val safetySnapshotCreated =
+            args.getBoolean(
+                ARG_SAFETY_SNAPSHOT_CREATED
+            )
+
+        return UiChrome
+            .alertBuilder(this)
+            .setTitle(
+                "Backup відновлено"
+            )
+            .setMessage(
+                "Груп даних: $preferenceGroups\n" +
+                    "Відновлено значень: $restoredValues\n\n" +
+                    "History, Черга, робочий список та SearchCache вже відновлені.\n" +
+                    "Поточна локальна оцінка квоти залишилась без змін.\n\n" +
+                    if (
+                        safetySnapshotCreated
+                    ) {
+                        "Safety snapshot стану ДО Restore збережено."
+                    } else {
+                        ""
+                    }
+            )
+            .setNeutralButton(
+                "Відкотити"
+            ) { _, _ ->
+                confirmRestoreSafetySnapshot()
+            }
+            .setPositiveButton(
+                "Готово",
+                null
+            )
+            .show()
+    }
+
+    private fun renderRollbackConfirm():
+        Dialog? {
+        val summary =
+            runCatching {
+                localBackupManager
+                    .inspectSafetySnapshot()
+            }.getOrElse { error ->
+                toast(
+                    "Safety snapshot пошкоджено: " +
+                        (
+                            error.message
+                                ?: "невідома помилка"
+                        )
+                )
+                return null
+            }
+
+        if (
+            summary == null
+        ) {
+            toast(
+                "Safety snapshot ще не створено. " +
+                    "Він з'явиться автоматично перед Restore."
+            )
+            return null
+        }
+
+        return UiChrome
+            .alertBuilder(this)
+            .setTitle(
+                "Відкотити останній Restore?"
+            )
+            .setMessage(
+                "Буде повернуто локальний стан ДО останнього Restore.\n\n" +
+                    "Дата: ${formatDate(summary.exportedAt)}\n" +
+                    "Версія: ${summary.appVersion}\n" +
+                    "Груп: ${summary.preferenceGroups}\n" +
+                    "Значень: ${summary.valueCount}\n\n" +
+                    "Локальна оцінка квоти залишиться поточною й не відкочуватиметься.\n\n" +
+                    "YouTube/YTM плейлисти в інтернеті не змінюються."
+            )
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Відкотити"
+            ) { _, _ ->
+                restoreSafetySnapshotNow()
+            }
+            .show()
+    }
+
+    private fun renderRollbackResult(
+        args: Bundle
+    ): Dialog {
+        val preferenceGroups =
+            args.getInt(
+                ARG_PREFERENCE_GROUPS
+            )
+        val restoredValues =
+            args.getInt(
+                ARG_RESTORED_VALUES
+            )
+
+        return UiChrome
+            .alertBuilder(this)
+            .setTitle(
+                "Відкат виконано"
+            )
+            .setMessage(
+                "Локальний стан ДО останнього Restore повернуто.\n\n" +
+                    "Груп: $preferenceGroups\n" +
+                    "Відновлено значень: $restoredValues.\n" +
+                    "Локальна оцінка квоти не змінювалася.\n\n" +
+                    "Резервний знімок залишено. За потреби його можна видалити " +
+                    "окремою кнопкою на екрані «Дані та резервні копії»."
+            )
+            .setPositiveButton(
+                "Готово",
+                null
+            )
+            .show()
+    }
+
+    private fun renderDeleteSnapshotConfirm():
+        Dialog? {
+        val summary =
+            runCatching {
+                localBackupManager
+                    .inspectSafetySnapshot()
+            }.getOrNull()
+                ?: return null
+
+        return UiChrome
+            .showDangerConfirmDialog(
+                activity = this,
+                title =
+                    "Видалити резервний знімок?",
+                message =
+                    "Буде безповоротно видалено локальний знімок стану ДО останнього Restore.\n\n" +
+                        "Дата: ${formatDate(summary.exportedAt)}\n" +
+                        "Версія: ${summary.appVersion}\n" +
+                        "Значень: ${summary.valueCount}\n\n" +
+                        "Після цього відкотити останній Restore через цей snapshot буде неможливо.",
+                confirmLabel =
+                    "Так, видалити"
+            ) {
+                localBackupManager
+                    .clearSafetySnapshot()
+                refreshSummary()
+                toast(
+                    "Резервний знімок видалено"
+                )
+            }
+    }
+
+    private fun renderShareFullBackupConfirm():
+        Dialog =
+        UiChrome.alertBuilder(this)
+            .setTitle(
+                "Поділитися повним backup?"
+            )
+            .setMessage(
+                "Backup може містити Google email, Channel ID, " +
+                    "назви плейлистів, History, Queue, поточний робочий список та SearchCache.\n\n" +
+                    "OAuth token, паролі та signing keys у файл не входять.\n\n" +
+                    "Надсилайте backup лише туди, де довіряєте одержувачу."
+            )
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Поділитися"
+            ) { _, _ ->
+                val content =
+                    runCatching {
+                        localBackupManager
+                            .createBackupJson()
+                    }.getOrElse { error ->
+                        toast(
+                            error.message
+                                ?: "Не вдалося створити backup"
+                        )
+                        return@setPositiveButton
+                    }
+
+                shareTextFile(
+                    fileName =
+                        "YTM_Backup_${exportTimestamp()}.json",
+                    mimeType =
+                        "application/json",
+                    content = content,
+                    chooserTitle =
+                        "Поділитися повним backup"
+                )
+            }
+            .show()
+
+    private fun createFullBackup() {
+        showDataModal(
+            DataModal.FULL_BACKUP_CONFIRM
+        )
+    }
+    private fun chooseBackupForRestore() {
+        showDataModal(
+            DataModal.RESTORE_PICKER_CONFIRM
+        )
+    }
+    private fun chooseHistoryJsonForRestore() {
+        showDataModal(
+            DataModal.HISTORY_PICKER_CONFIRM
+        )
+    }
     private fun launchJsonPicker(
         requestCode: Int
     ) {
@@ -675,22 +1227,21 @@ class DataActivity : Activity() {
                 label = "History JSON"
             ) ?: return
 
-        val summary =
-            runCatching {
-                historyStore
-                    .inspectImportJson(
-                        raw
-                    )
-            }.getOrElse { error ->
-                toast(
-                    "History JSON не підходить: " +
-                        (
-                            error.message
-                                ?: "невідома помилка"
-                        )
+        runCatching {
+            historyStore
+                .inspectImportJson(
+                    raw
                 )
-                return
-            }
+        }.getOrElse { error ->
+            toast(
+                "History JSON не підходить: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+            return
+        }
 
         runCatching {
             pendingHistoryImportCacheFile()
@@ -709,118 +1260,10 @@ class DataActivity : Activity() {
             return
         }
 
-        historyImportConfirmationPending =
-            true
-
-        showHistoryImportConfirmation(
-            raw = raw,
-            summary = summary
+        showDataModal(
+            DataModal.HISTORY_IMPORT_CONFIRM
         )
     }
-
-    private fun restorePendingHistoryImportConfirmation() {
-        val raw =
-            runCatching {
-                pendingHistoryImportCacheFile()
-                    .takeIf {
-                        it.isFile
-                    }
-                    ?.readText(
-                        Charsets.UTF_8
-                    )
-                    ?: error(
-                        "Тимчасовий History JSON для підтвердження втрачено"
-                    )
-            }.getOrElse { error ->
-                clearPendingHistoryImportConfirmation()
-                toast(
-                    error.message
-                        ?: "History JSON потрібно вибрати ще раз"
-                )
-                return
-            }
-
-        val summary =
-            runCatching {
-                historyStore
-                    .inspectImportJson(
-                        raw
-                    )
-            }.getOrElse { error ->
-                clearPendingHistoryImportConfirmation()
-                toast(
-                    "History JSON більше не доступний: " +
-                        (
-                            error.message
-                                ?: "невідома помилка"
-                        )
-                )
-                return
-            }
-
-        showHistoryImportConfirmation(
-            raw = raw,
-            summary = summary
-        )
-    }
-
-    private fun showHistoryImportConfirmation(
-        raw: String,
-        summary: HistoryImportSummary
-    ) {
-        val currentCount =
-            historyStore
-                .getAll()
-                .size
-
-        val truncatedNote =
-            if (
-                summary.sourceEntries >
-                    summary.importEntries
-            ) {
-                "\nФайл містить ${summary.sourceEntries} записів; буде імпортовано " +
-                    "${summary.importEntries} найновіших."
-            } else {
-                ""
-            }
-
-        val dialog =
-            UiChrome.alertBuilder(this)
-                .setTitle(
-                    "Підтвердити History import"
-                )
-                .setMessage(
-                    "History JSON\n\n" +
-                        "Поточна History: $currentCount записів\n" +
-                        "Буде відновлено: ${summary.importEntries} записів\n" +
-                        "Треків у відновлених записах: ${summary.trackCount}" +
-                        truncatedNote +
-                        "\n\nБуде замінено тільки History. " +
-                        "Черга, quota, SearchCache і поточний список залишаться без змін.\n\n" +
-                        "Перед імпортом автоматично створиться safety snapshot повного стану."
-                )
-                .setNegativeButton(
-                    "Скасувати"
-                ) { _, _ ->
-                    clearPendingHistoryImportConfirmation()
-                }
-                .setPositiveButton(
-                    "Відновити"
-                ) { _, _ ->
-                    clearPendingHistoryImportConfirmation()
-                    restoreHistoryJsonNow(
-                        raw
-                    )
-                }
-                .show()
-
-        dialog.setOnCancelListener {
-            if (!isChangingConfigurations) {
-                clearPendingHistoryImportConfirmation()
-            }
-        }
-    }
-
     private fun pendingHistoryImportCacheFile():
         File =
         File(
@@ -829,15 +1272,11 @@ class DataActivity : Activity() {
         )
 
     private fun clearPendingHistoryImportConfirmation() {
-        historyImportConfirmationPending =
-            false
-
         runCatching {
             pendingHistoryImportCacheFile()
                 .delete()
         }
     }
-
     private fun restoreHistoryJsonNow(
         raw: String
     ) {
@@ -877,34 +1316,26 @@ class DataActivity : Activity() {
 
         refreshSummary()
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "History відновлено"
-            )
-            .setMessage(
-                "Відновлено записів: ${summary.importEntries}\n" +
-                    "Треків у History: ${summary.trackCount}\n\n" +
-                    "Черга, quota, SearchCache і поточний робочий список не змінювалися.\n\n" +
-                    if (
+        showDataModal(
+            modal =
+                DataModal.HISTORY_IMPORT_RESULT,
+            args =
+                Bundle().apply {
+                    putInt(
+                        ARG_HISTORY_ENTRIES,
+                        summary.importEntries
+                    )
+                    putInt(
+                        ARG_HISTORY_TRACKS,
+                        summary.trackCount
+                    )
+                    putBoolean(
+                        ARG_SAFETY_SNAPSHOT_CREATED,
                         result.safetySnapshotCreated
-                    ) {
-                        "Safety snapshot стану ДО імпорту збережено."
-                    } else {
-                        ""
-                    }
-            )
-            .setNeutralButton(
-                "Відкотити"
-            ) { _, _ ->
-                confirmRestoreSafetySnapshot()
-            }
-            .setPositiveButton(
-                "Готово",
-                null
-            )
-            .show()
+                    )
+                }
+        )
     }
-
     private fun readJsonDocument(
         uri: Uri,
         label: String
@@ -941,19 +1372,21 @@ class DataActivity : Activity() {
                 label = "backup"
             ) ?: return
 
-        val summary =
-            runCatching {
-                localBackupManager.inspectBackup(raw)
-            }.getOrElse { error ->
-                toast(
-                    "Backup не підходить: " +
-                        (
-                            error.message
-                                ?: "невідома помилка"
-                        )
+        runCatching {
+            localBackupManager
+                .inspectBackup(
+                    raw
                 )
-                return
-            }
+        }.getOrElse { error ->
+            toast(
+                "Backup не підходить: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+            return
+        }
 
         runCatching {
             pendingRestoreCacheFile()
@@ -972,112 +1405,10 @@ class DataActivity : Activity() {
             return
         }
 
-        restoreConfirmationPending = true
-
-        showRestoreConfirmation(
-            raw = raw,
-            summary = summary
+        showDataModal(
+            DataModal.RESTORE_CONFIRM
         )
     }
-
-    private fun restorePendingBackupConfirmation() {
-        val raw =
-            runCatching {
-                pendingRestoreCacheFile()
-                    .takeIf {
-                        it.isFile
-                    }
-                    ?.readText(
-                        Charsets.UTF_8
-                    )
-                    ?: error(
-                        "Тимчасовий backup для підтвердження втрачено"
-                    )
-            }.getOrElse { error ->
-                clearPendingRestoreConfirmation()
-                toast(
-                    error.message
-                        ?: "Restore потрібно вибрати ще раз"
-                )
-                return
-            }
-
-        val summary =
-            runCatching {
-                localBackupManager.inspectBackup(raw)
-            }.getOrElse { error ->
-                clearPendingRestoreConfirmation()
-                toast(
-                    "Backup більше не доступний: " +
-                        (
-                            error.message
-                                ?: "невідома помилка"
-                        )
-                )
-                return
-            }
-
-        showRestoreConfirmation(
-            raw = raw,
-            summary = summary
-        )
-    }
-
-    private fun showRestoreConfirmation(
-        raw: String,
-        summary:
-            com.saney.ytmimporter.storage.BackupSummary
-    ) {
-        val dialog =
-            UiChrome.alertBuilder(this)
-                .setTitle(
-                    "Підтвердити Restore"
-                )
-                .setMessage(
-                    "Backup YTM Importer\n\n" +
-                        "Schema: ${summary.schemaVersion}\n" +
-                        "Версія застосунку: ${summary.appVersion}\n" +
-                        "Дата: ${formatDate(summary.exportedAt)}\n" +
-                        "Груп даних: ${summary.preferenceGroups}\n" +
-                        "Значень: ${summary.valueCount}\n" +
-                        "Integrity: " +
-                        if (
-                            summary.integrityProtected
-                        ) {
-                            if (
-                                summary.integrityVerified
-                            ) {
-                                "SHA-256 ✓\n\n"
-                            } else {
-                                "SHA-256 ?\n\n"
-                            }
-                        } else {
-                            "legacy backup без checksum\n\n"
-                        } +
-                        "Локальна quota estimate з backup не відновлюється.\n\n" +
-                        "Перед Restore буде автоматично створено " +
-                        "safety snapshot поточного стану."
-                )
-                .setNegativeButton(
-                    "Скасувати"
-                ) { _, _ ->
-                    clearPendingRestoreConfirmation()
-                }
-                .setPositiveButton(
-                    "Відновити"
-                ) { _, _ ->
-                    clearPendingRestoreConfirmation()
-                    restoreBackupNow(raw)
-                }
-                .show()
-
-        dialog.setOnCancelListener {
-            if (!isChangingConfigurations) {
-                clearPendingRestoreConfirmation()
-            }
-        }
-    }
-
     private fun pendingRestoreCacheFile():
         File =
         File(
@@ -1086,20 +1417,20 @@ class DataActivity : Activity() {
         )
 
     private fun clearPendingRestoreConfirmation() {
-        restoreConfirmationPending = false
-
         runCatching {
             pendingRestoreCacheFile()
                 .delete()
         }
     }
-
     private fun restoreBackupNow(
         raw: String
     ) {
         val result =
             runCatching {
-                localBackupManager.restoreBackupJson(raw)
+                localBackupManager
+                    .restoreBackupJson(
+                        raw
+                    )
             }.getOrElse { error ->
                 toast(
                     "Restore не виконано: " +
@@ -1113,35 +1444,31 @@ class DataActivity : Activity() {
 
         refreshSummary()
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Backup відновлено")
-            .setMessage(
-                "Груп даних: ${result.preferenceGroups}\n" +
-                    "Відновлено значень: ${result.restoredValues}\n\n" +
-                    "History, Черга, робочий список та SearchCache вже відновлені.\n" +
-                    "Поточна локальна оцінка квоти залишилась без змін.\n\n" +
-                    if (result.safetySnapshotCreated) {
-                        "Safety snapshot стану ДО Restore збережено."
-                    } else {
-                        ""
-                    }
-            )
-            .setNeutralButton(
-                "Відкотити"
-            ) { _, _ ->
-                confirmRestoreSafetySnapshot()
-            }
-            .setPositiveButton(
-                "Готово",
-                null
-            )
-            .show()
+        showDataModal(
+            modal =
+                DataModal.RESTORE_RESULT,
+            args =
+                Bundle().apply {
+                    putInt(
+                        ARG_PREFERENCE_GROUPS,
+                        result.preferenceGroups
+                    )
+                    putInt(
+                        ARG_RESTORED_VALUES,
+                        result.restoredValues
+                    )
+                    putBoolean(
+                        ARG_SAFETY_SNAPSHOT_CREATED,
+                        result.safetySnapshotCreated
+                    )
+                }
+        )
     }
-
     private fun confirmRestoreSafetySnapshot() {
         val summary =
             runCatching {
-                localBackupManager.inspectSafetySnapshot()
+                localBackupManager
+                    .inspectSafetySnapshot()
             }.getOrElse { error ->
                 toast(
                     "Safety snapshot пошкоджено: " +
@@ -1161,35 +1488,15 @@ class DataActivity : Activity() {
             return
         }
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Відкотити останній Restore?"
-            )
-            .setMessage(
-                "Буде повернуто локальний стан ДО останнього Restore.\n\n" +
-                    "Дата: ${formatDate(summary.exportedAt)}\n" +
-                    "Версія: ${summary.appVersion}\n" +
-                    "Груп: ${summary.preferenceGroups}\n" +
-                    "Значень: ${summary.valueCount}\n\n" +
-                    "Локальна оцінка квоти залишиться поточною й не відкочуватиметься.\n\n" +
-                    "YouTube/YTM плейлисти в інтернеті не змінюються."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Відкотити"
-            ) { _, _ ->
-                restoreSafetySnapshotNow()
-            }
-            .show()
+        showDataModal(
+            DataModal.ROLLBACK_CONFIRM
+        )
     }
-
     private fun restoreSafetySnapshotNow() {
         val result =
             runCatching {
-                localBackupManager.restoreSafetySnapshot()
+                localBackupManager
+                    .restoreSafetySnapshot()
             }.getOrElse { error ->
                 toast(
                     "Відкат не виконано: " +
@@ -1203,27 +1510,27 @@ class DataActivity : Activity() {
 
         refreshSummary()
 
-        UiChrome.alertBuilder(this)
-            .setTitle("Відкат виконано")
-            .setMessage(
-                "Локальний стан ДО останнього Restore повернуто.\n\n" +
-                    "Груп: ${result.preferenceGroups}\n" +
-                    "Відновлено значень: ${result.restoredValues}.\n" +
-                    "Локальна оцінка квоти не змінювалася.\n\n" +
-                    "Резервний знімок залишено. За потреби його можна видалити " +
-                    "окремою кнопкою на екрані «Дані та резервні копії»."
-            )
-            .setPositiveButton(
-                "Готово",
-                null
-            )
-            .show()
+        showDataModal(
+            modal =
+                DataModal.ROLLBACK_RESULT,
+            args =
+                Bundle().apply {
+                    putInt(
+                        ARG_PREFERENCE_GROUPS,
+                        result.preferenceGroups
+                    )
+                    putInt(
+                        ARG_RESTORED_VALUES,
+                        result.restoredValues
+                    )
+                }
+        )
     }
-
     private fun confirmDeleteSafetySnapshot() {
         val summary =
             runCatching {
-                localBackupManager.inspectSafetySnapshot()
+                localBackupManager
+                    .inspectSafetySnapshot()
             }.getOrNull()
 
         if (summary == null) {
@@ -1234,27 +1541,10 @@ class DataActivity : Activity() {
             return
         }
 
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Видалити резервний знімок?",
-            message =
-                "Буде безповоротно видалено локальний знімок стану ДО останнього Restore.\n\n" +
-                    "Дата: ${formatDate(summary.exportedAt)}\n" +
-                    "Версія: ${summary.appVersion}\n" +
-                    "Значень: ${summary.valueCount}\n\n" +
-                    "Після цього відкотити останній Restore через цей snapshot буде неможливо.",
-            confirmLabel =
-                "Так, видалити"
-        ) {
-            localBackupManager.clearSafetySnapshot()
-            refreshSummary()
-            toast(
-                "Резервний знімок видалено"
-            )
-        }
+        showDataModal(
+            DataModal.DELETE_SNAPSHOT_CONFIRM
+        )
     }
-
     private fun exportHistoryTxt() {
         val text =
             buildHistoryExportTxt()
@@ -1330,47 +1620,10 @@ class DataActivity : Activity() {
     }
 
     private fun confirmShareFullBackup() {
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Поділитися повним backup?"
-            )
-            .setMessage(
-                "Backup може містити Google email, Channel ID, " +
-                    "назви плейлистів, History, Queue, поточний робочий список та SearchCache.\n\n" +
-                    "OAuth token, паролі та signing keys у файл не входять.\n\n" +
-                    "Надсилайте backup лише туди, де довіряєте одержувачу."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Поділитися"
-            ) { _, _ ->
-                val content =
-                    runCatching {
-                        localBackupManager.createBackupJson()
-                    }.getOrElse { error ->
-                        toast(
-                            error.message
-                                ?: "Не вдалося створити backup"
-                        )
-                        return@setPositiveButton
-                    }
-
-                shareTextFile(
-                    fileName =
-                        "YTM_Backup_${exportTimestamp()}.json",
-                    mimeType =
-                        "application/json",
-                    content = content,
-                    chooserTitle =
-                        "Поділитися повним backup"
-                )
-            }
-            .show()
+        showDataModal(
+            DataModal.SHARE_FULL_BACKUP_CONFIRM
+        )
     }
-
     private fun buildHistoryExportTxt(): String? {
         val entries =
             historyStore.getAll()
@@ -2224,11 +2477,23 @@ class DataActivity : Activity() {
                 173
             )
 
-        private const val STATE_RESTORE_CONFIRMATION_PENDING =
-            "restore_confirmation_pending"
+        private const val STATE_DATA_MODAL =
+            "data_restorable_modal_state"
 
-        private const val STATE_HISTORY_IMPORT_CONFIRMATION_PENDING =
-            "history_import_confirmation_pending"
+        private const val ARG_HISTORY_ENTRIES =
+            "history_entries"
+
+        private const val ARG_HISTORY_TRACKS =
+            "history_tracks"
+
+        private const val ARG_PREFERENCE_GROUPS =
+            "preference_groups"
+
+        private const val ARG_RESTORED_VALUES =
+            "restored_values"
+
+        private const val ARG_SAFETY_SNAPSHOT_CREATED =
+            "safety_snapshot_created"
 
         private const val PENDING_RESTORE_CACHE_FILE =
             "pending_restore_confirmation_v1.json"

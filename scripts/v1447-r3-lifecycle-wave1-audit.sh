@@ -99,8 +99,84 @@ for title in \
 done
 
 # Preserve previously accepted lifecycle-safe reference implementations.
-grep -Fq 'STATE_RESTORE_CONFIRMATION_PENDING' "$DATA" || fail "Data restore confirmation lifecycle state regressed"
-grep -Fq 'STATE_HISTORY_IMPORT_CONFIRMATION_PENDING' "$DATA" || fail "History import confirmation lifecycle state regressed"
+#
+# Data originally used two implementation-specific boolean state keys. v1.4.50
+# generalizes those paths behind RestorableModalController. Accept either the
+# historical implementation or the stronger shared semantic lifecycle contract.
+if \
+  grep -Fq 'STATE_RESTORE_CONFIRMATION_PENDING' "$DATA" && \
+  grep -Fq 'STATE_HISTORY_IMPORT_CONFIRMATION_PENDING' "$DATA"
+then
+  echo "PASS: Data legacy restore/history lifecycle state present"
+else
+  MODAL_CORE="app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt"
+  test -f "$MODAL_CORE" ||
+    fail "Data shared restorable modal controller missing"
+
+  python - "$DATA" "$MODAL_CORE" <<'PY_DATA_MODAL'
+from pathlib import Path
+import sys
+
+data = Path(sys.argv[1]).read_text(encoding="utf-8")
+core = Path(sys.argv[2]).read_text(encoding="utf-8")
+
+required_data = (
+    "private lateinit var dataModalController: RestorableModalController",
+    "private enum class DataModal",
+    "DataModal.RESTORE_CONFIRM",
+    "DataModal.HISTORY_IMPORT_CONFIRM",
+    "dataModalController.restore(",
+    ".restoreAfterContentReady(",
+    "dataModalController.save(",
+    "dataModalController.onDestroy()",
+    "pendingRestoreCacheFile()",
+    "pendingHistoryImportCacheFile()",
+    "private fun renderRestoreConfirmation(",
+    "private fun renderHistoryImportConfirmation(",
+)
+
+for needle in required_data:
+    if needle not in data:
+        raise SystemExit(
+            "FAIL: Data shared lifecycle contract regressed: " + needle
+        )
+
+required_core = (
+    "class RestorableModalController(",
+    "fun restore(",
+    "fun save(",
+    "fun restoreAfterContentReady(",
+    "setOnDismissListener",
+    "isChangingConfigurations",
+)
+
+for needle in required_core:
+    if needle not in core:
+        raise SystemExit(
+            "FAIL: shared modal controller contract regressed: " + needle
+        )
+
+restore_start = core.index("fun restoreAfterContentReady(")
+restore_end = core.index("fun clearState()", restore_start)
+restore_block = core[restore_start:restore_end]
+
+for forbidden in (
+    "restoreBackupJson",
+    "restoreHistoryJson",
+    "restoreSafetySnapshot",
+    "clearSafetySnapshot",
+    "createBackupJson",
+    "startActivity",
+):
+    if forbidden in restore_block:
+        raise SystemExit(
+            "FAIL: modal recreation path executes domain work: " + forbidden
+        )
+
+print("PASS: Data shared semantic restore/history lifecycle contract present")
+PY_DATA_MODAL
+fi
+
 grep -Fq 'STATE_REPLACEMENT_DIALOG_OPEN' "$PLAYLIST" || fail "Playlist replacement lifecycle state regressed"
 grep -Fq 'STATE_CLEAR_WORKSPACE_DIALOG_OPEN' "$IMPORT" || fail "Import clear-workspace lifecycle state regressed"
 
@@ -112,5 +188,5 @@ echo "- Storage chooser Help window survives Activity recreation"
 echo "- Current YTM Project modal restores over the same Review parent screen"
 echo "- Menu Theme picker restores over Menu"
 echo "- restore is state-only; explicit action callbacks remain click-driven"
-echo "- prior Data / Playlist / Import lifecycle-safe dialogs remain present"
+echo "- prior Data lifecycle invariant remains protected via legacy or shared semantic controller contract; Playlist / Import lifecycle-safe dialogs remain present"
 echo "- Wave 1 historical no-version-bump boundary is documented without pinning the current app identity"

@@ -57,6 +57,26 @@ A result modal and the underlying completed status screen are separate states.
 Closing a result modal should not silently destroy the completed status screen
 unless that is the explicit product contract.
 
+### Shared restorable-modal implementation rule
+
+A visible `Dialog` object is transient UI and must not itself be treated as the
+durable state.
+
+For reusable modal lifecycle code:
+
+- persist a semantic modal id plus only the primitive/state payload needed to
+  rebuild that modal;
+- let a shared controller own save/restore/detach/dismiss bookkeeping;
+- let the Activity provide the renderer and domain callbacks for each semantic
+  modal id;
+- on recreation, rebuild the modal only; never invoke its positive callback;
+- detach listeners from the old Activity instance before destruction;
+- Cancel/Back/dismiss clears modal state but must not execute the domain action;
+- prepared destructive operations may keep their validated input in a safe
+  local cache while the semantic confirmation is open.
+
+YTM Importer implements this pattern through `RestorableModalController`.
+
 ## 4. Navigation ownership
 
 A screen must know who owns its Back destination.

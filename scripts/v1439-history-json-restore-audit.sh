@@ -33,11 +33,43 @@ grep -Fq 'title = "History JSON"' "$DATA"   || fail "History JSON restore card m
 grep -Fq 'buttonLabel = "Імпорт History"' "$DATA"   || fail "History import action missing"
 grep -Fq 'historyImportRequestCode = 4204' "$DATA"   || fail "History import request route missing"
 grep -Fq 'prepareHistoryImport(uri)' "$DATA"   || fail "History import result handler missing"
-grep -Fq 'showHistoryImportConfirmation(' "$DATA"   || fail "History import confirmation missing"
-grep -Fq 'STATE_HISTORY_IMPORT_CONFIRMATION_PENDING' "$DATA"   || fail "History import rotation state missing"
-grep -Fq 'PENDING_HISTORY_IMPORT_CACHE_FILE' "$DATA"   || fail "History import cache file missing"
-grep -Fq 'restorePendingHistoryImportConfirmation()' "$DATA"   || fail "History import confirmation recreation missing"
-grep -Fq 'clearPendingHistoryImportConfirmation()' "$DATA"   || fail "History import cache cleanup missing"
+grep -Fq 'PENDING_HISTORY_IMPORT_CACHE_FILE' "$DATA" \
+  || fail "History import cache file missing"
+grep -Fq 'clearPendingHistoryImportConfirmation()' "$DATA" \
+  || fail "History import cache cleanup missing"
+if grep -Fq 'STATE_HISTORY_IMPORT_CONFIRMATION_PENDING' "$DATA"; then
+  grep -Fq 'showHistoryImportConfirmation(' "$DATA" \
+    || fail "History import confirmation missing"
+  grep -Fq 'restorePendingHistoryImportConfirmation()' "$DATA" \
+    || fail "History import confirmation recreation missing"
+else
+  MODAL_CORE="app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt"
+  test -f "$MODAL_CORE" || fail "History import shared modal lifecycle core missing"
+  python - "$DATA" "$MODAL_CORE" <<'PY_HISTORY_IMPORT'
+from pathlib import Path
+import sys
+
+data = Path(sys.argv[1]).read_text(encoding="utf-8")
+core = Path(sys.argv[2]).read_text(encoding="utf-8")
+for needle in (
+    "DataModal.HISTORY_IMPORT_CONFIRM",
+    "private fun renderHistoryImportConfirmation(",
+    "pendingHistoryImportCacheFile()",
+    "dataModalController.restore(",
+    ".restoreAfterContentReady(",
+    "dataModalController.save(",
+):
+    if needle not in data:
+        raise SystemExit("FAIL: current History-import lifecycle invariant missing: " + needle)
+for needle in (
+    "class RestorableModalController(",
+    "fun restoreAfterContentReady(",
+):
+    if needle not in core:
+        raise SystemExit("FAIL: current shared modal core missing: " + needle)
+print("PASS: current History-import confirmation uses shared semantic lifecycle")
+PY_HISTORY_IMPORT
+fi
 grep -Fq 'localBackupManager' "$DATA"   || fail "LocalBackupManager use missing"
 grep -Fq '.restoreHistoryJson(' "$DATA"   || fail "History-only restore execution missing"
 

@@ -42,3 +42,20 @@
 - [x] phone W2-1 preview + Cancel no-op — PASS
 - [x] phone W2-2 Apply + Menu/Home refresh — PASS
 - [x] phone W2-3 preview rotation continuity — PASS
+
+## Wave 3 — Restorable modal core
+
+- [x] reusable `RestorableModalController` owns semantic modal save/restore
+- [x] DataActivity uses one `DataModal` type instead of per-dialog boolean flags
+- [x] all 11 Data modal states route through the shared controller
+- [x] prepared Restore/History confirmations retain only validated cache + semantic modal state
+- [x] result modals persist primitive summary args
+- [x] recreation restores UI only and cannot auto-run positive/destructive actions
+- [x] old Activity dialog listener is detached during destruction
+- [x] dedicated Wave 3 modal lifecycle audit passes
+- [x] full release preflight passes
+- [ ] signed Wave 3 APK
+- [ ] W3-1 Data full-backup confirmation rotation + Cancel no-op
+- [ ] W3-2 Data restore/history-picker confirmations rotation + Cancel no-op
+- [ ] W3-3 Data share confirmation rotation + Cancel no-op
+- [ ] W3-4 optional prepared-file confirmation rotation if a suitable JSON fixture is available

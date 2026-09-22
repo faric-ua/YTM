@@ -35,7 +35,7 @@ Current development application:
 - versionName: **1.4.50**
 - versionCode: **93**
 - release focus: **v1.4.50 — Skin System — DEVELOPMENT**
-- release status: **Wave 2 Skin preview targeted PHONE PASS; broader representative screen/modal/tile QA pending**
+- release status: **Wave 3 shared restorable modal core static/full preflight PASS; BUG-033 signed phone retest pending; Wave 2 PASS preserved**
 - active branch: `feat/v1.4.50-skin-system`
 - accepted stable release: **v1.4.49 — In-app Updater**
 - stable app checkpoint: `checkpoint-v1.4.49-phone-pass`

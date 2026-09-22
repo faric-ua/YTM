@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.50-skin-system",
   "appSourceSha": "fdb2892c7b4fa0c858c55d5187a04ce296bde913",
   "signedRun": "35787308504",
-  "qaStatus": "TARGETED PHONE PASS — WAVE 2 SKIN PREVIEW W2-1+/W2-2+/W2-3+; REPRESENTATIVE SCREEN/MODAL/TILE QA PENDING",
+  "qaStatus": "DEVELOPMENT — WAVE 3 RESTORABLE MODAL CORE STATIC/FULL PREFLIGHT PASS / BUG-033 PHONE RETEST PENDING; WAVE 2 TARGETED PASS PRESERVED",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": "2026-09-23"

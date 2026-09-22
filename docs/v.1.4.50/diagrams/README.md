@@ -7,4 +7,5 @@ Rendered binaries are optional; diffable Mermaid source is canonical.
 Current diagrams:
 
 - `SKIN_ARCHITECTURE.md` — Skin / palette / semantic-token structure;
-- `SKIN_PREVIEW_LIFECYCLE.md` — preview vs commit, rotation and Home refresh lifecycle.
+- `SKIN_PREVIEW_LIFECYCLE.md` — preview vs commit, rotation and Home refresh lifecycle;
+- `RESTORABLE_MODAL_LIFECYCLE.md` — shared semantic modal state across Activity recreation.

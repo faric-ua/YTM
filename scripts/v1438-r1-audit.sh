@@ -18,11 +18,27 @@ grep -Fq 'private fun multiChoiceView(index: Int): LinearLayout' "$SELECTOR"   |
 grep -Fq 'Gravity.CENTER' "$SELECTOR"   || fail "R1 checkbox centering guard missing"
 grep -Fq 'LinearLayout.LayoutParams(' "$SELECTOR"   || fail "R1 checkbox/text column layout missing"
 
-grep -Fq 'override fun onSaveInstanceState' "$DATA"   || fail "R1 Data saved-state path missing"
-grep -Fq 'STATE_RESTORE_CONFIRMATION_PENDING' "$DATA"   || fail "R1 Restore pending-state key missing"
-grep -Fq 'PENDING_RESTORE_CACHE_FILE' "$DATA"   || fail "R1 Restore cache file missing"
-grep -Fq 'restorePendingBackupConfirmation()' "$DATA"   || fail "R1 Restore confirmation recreation missing"
-grep -Fq 'clearPendingRestoreConfirmation()' "$DATA"   || fail "R1 pending Restore cleanup missing"
+grep -Fq 'override fun onSaveInstanceState' "$DATA" \
+  || fail "R1 Data saved-state path missing"
+grep -Fq 'PENDING_RESTORE_CACHE_FILE' "$DATA" \
+  || fail "R1 Restore cache file missing"
+grep -Fq 'clearPendingRestoreConfirmation()' "$DATA" \
+  || fail "R1 pending Restore cleanup missing"
+if grep -Fq 'STATE_RESTORE_CONFIRMATION_PENDING' "$DATA"; then
+  grep -Fq 'restorePendingBackupConfirmation()' "$DATA" \
+    || fail "R1 Restore confirmation recreation missing"
+else
+  grep -Fq 'STATE_DATA_MODAL' "$DATA" \
+    || fail "current shared Data modal saved-state key missing"
+  grep -Fq 'DataModal.RESTORE_CONFIRM' "$DATA" \
+    || fail "current Restore semantic modal state missing"
+  grep -Fq 'dataModalController.restore(' "$DATA" \
+    || fail "current shared Restore state restore missing"
+  grep -Fq '.restoreAfterContentReady(' "$DATA" \
+    || fail "current shared Restore modal recreation missing"
+  grep -Fq 'dataModalController.save(' "$DATA" \
+    || fail "current shared Restore state save missing"
+fi
 
 grep -Fq 'two targeted phone regressions only' "$R1"   || fail "R1 scope note missing"
 

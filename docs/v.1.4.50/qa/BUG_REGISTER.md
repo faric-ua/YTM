@@ -75,3 +75,37 @@ BUG-032 closeout:
 - Cancel leaves History unchanged and returns to the same History screen.
 
 Both bugs are closed only for these tested paths.
+
+## BUG-033 — Data modal lifecycle fragmentation
+
+Status: **FIX IMPLEMENTED — WAVE 3 STATIC/FULL PREFLIGHT PASS / PHONE RETEST NEEDED**
+
+Phone finding on signed Wave 2:
+- source `fdb2892c7b4fa0c858c55d5187a04ce296bde913`;
+- run `35787308504`;
+- broader UI smoke: `UI-1+ / UI-2+ / UI-3+` for visual/readability scope;
+- History action/Help modal rotation remained stable;
+- Data modal windows such as `Зберегти повний backup?` disappeared on rotation.
+
+Root cause:
+- `UiChrome` unified rendering, but modal lifecycle ownership remained per-call-site;
+- History had explicit saved semantic dialog state;
+- most Data modals were direct `UiChrome.alertBuilder(...).show()` calls with no
+  saved modal identity;
+- two prepared Restore/History confirmations had separate boolean/cache logic,
+  creating a third lifecycle pattern inside the same Activity.
+
+Wave 3 fix:
+- add reusable `RestorableModalController`;
+- DataActivity uses one semantic `DataModal` type for all 11 modal states;
+- controller persists modal id + primitive result args;
+- prepared Restore/History confirmations keep validated source JSON in their
+  existing local cache and restore the semantic confirmation;
+- result modals also restore with primitive summary args;
+- rotation restores UI only and never invokes positive/destructive callbacks;
+- old Activity listeners are detached in `onDestroy()`.
+
+Scope:
+- Wave 3 migrates DataActivity first because it has real failing phone evidence;
+- already phone-passing History/Menu paths remain unchanged in this corrective
+  wave and may migrate to the same controller after the core proves stable.

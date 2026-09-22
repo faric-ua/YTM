@@ -54,9 +54,40 @@ fi
 
 grep -Fq 'fun showDangerConfirmDialog' "$UI"   || fail "danger confirmation helper missing"
 
-for f in "$IMPORT" "$HISTORY" "$PENDING" "$SERVICE" "$DATA"; do
-  grep -Fq 'UiChrome.showDangerConfirmDialog(' "$f"     || fail "danger confirmation not used: $f"
+for f in "$IMPORT" "$HISTORY" "$PENDING" "$SERVICE"; do
+  grep -Fq 'UiChrome.showDangerConfirmDialog(' "$f" \
+    || fail "danger confirmation not used: $f"
 done
+
+python - "$DATA" <<'PY_DATA_DANGER'
+from pathlib import Path
+import re
+import sys
+
+data = Path(sys.argv[1]).read_text(encoding="utf-8")
+
+if "DataModal.DELETE_SNAPSHOT_CONFIRM" in data:
+    start = data.find("private fun renderDeleteSnapshotConfirm(")
+    if start < 0:
+        raise SystemExit("FAIL: Data semantic delete-snapshot renderer missing")
+    next_fun = data.find("\n    private fun ", start + 1)
+    next_companion = data.find("\n    companion object", start + 1)
+    ends = [x for x in (next_fun, next_companion) if x >= 0]
+    end = min(ends) if ends else len(data)
+    block = data[start:end]
+    if not re.search(r"UiChrome\s*\.\s*showDangerConfirmDialog\s*\(", block):
+        raise SystemExit(
+            "FAIL: Data delete-snapshot semantic modal is not rendered "
+            "through UiChrome.showDangerConfirmDialog"
+        )
+    if '"Так, видалити"' not in block:
+        raise SystemExit("FAIL: Data delete-snapshot explicit danger label missing")
+    print("PASS: Data semantic delete-snapshot modal uses danger confirmation")
+else:
+    if not re.search(r"UiChrome\s*\.\s*showDangerConfirmDialog\s*\(", data):
+        raise SystemExit("FAIL: danger confirmation not used: DataActivity.kt")
+    print("PASS: Data legacy danger confirmation present")
+PY_DATA_DANGER
 
 grep -Fq 'confirmLabel =' "$HISTORY"   || fail "History explicit danger labels missing"
 grep -Fq '"Так, видалити"' "$HISTORY"   || fail "History explicit delete copy missing"
@@ -67,10 +98,61 @@ grep -Fq 'confirmClearExpiredSearchCache' "$SERVICE"   || fail "expired SearchCa
 
 grep -Fq 'label = "Видалити знімок"' "$DATA"   || fail "separate snapshot delete action missing"
 grep -Fq 'confirmDeleteSafetySnapshot()' "$DATA"   || fail "snapshot delete confirmation route missing"
-grep -Fq 'STATE_RESTORE_CONFIRMATION_PENDING' "$DATA"   || fail "Restore rotation saved-state guard missing"
-grep -Fq 'PENDING_RESTORE_CACHE_FILE' "$DATA"   || fail "pending Restore cache file guard missing"
-grep -Fq 'restorePendingBackupConfirmation()' "$DATA"   || fail "Restore confirmation recreation path missing"
-grep -Fq 'dialog.setOnCancelListener' "$DATA"   || fail "Restore pending-cache cancel cleanup missing"
+grep -Fq 'PENDING_RESTORE_CACHE_FILE' "$DATA" \
+  || fail "pending Restore cache file guard missing"
+
+if grep -Fq 'STATE_RESTORE_CONFIRMATION_PENDING' "$DATA"; then
+  grep -Fq 'restorePendingBackupConfirmation()' "$DATA" \
+    || fail "Restore confirmation recreation path missing"
+  grep -Fq 'dialog.setOnCancelListener' "$DATA" \
+    || fail "Restore pending-cache cancel cleanup missing"
+else
+  MODAL_CORE="$SRC/ui/RestorableModalController.kt"
+  test -f "$MODAL_CORE" || fail "shared Data modal lifecycle core missing"
+  python - "$DATA" "$MODAL_CORE" <<'PY_DATA_RESTORE'
+from pathlib import Path
+import sys
+
+data = Path(sys.argv[1]).read_text(encoding="utf-8")
+core = Path(sys.argv[2]).read_text(encoding="utf-8")
+for needle in (
+    "private enum class DataModal",
+    "DataModal.RESTORE_CONFIRM",
+    "private lateinit var dataModalController: RestorableModalController",
+    "dataModalController.restore(",
+    ".restoreAfterContentReady(",
+    "dataModalController.save(",
+    "pendingRestoreCacheFile()",
+    "private fun renderRestoreConfirmation(",
+    "clearPendingRestoreConfirmation()",
+):
+    if needle not in data:
+        raise SystemExit("FAIL: current Restore lifecycle invariant missing: " + needle)
+for needle in (
+    "class RestorableModalController(",
+    "fun restore(",
+    "fun save(",
+    "fun restoreAfterContentReady(",
+    "isChangingConfigurations",
+):
+    if needle not in core:
+        raise SystemExit("FAIL: shared modal core invariant missing: " + needle)
+start = core.index("fun restoreAfterContentReady(")
+end = core.index("fun clearState()", start)
+block = core[start:end]
+for forbidden in (
+    "restoreBackupJson",
+    "restoreHistoryJson",
+    "restoreSafetySnapshot",
+    "clearSafetySnapshot",
+    "createBackupJson",
+    "startActivity",
+):
+    if forbidden in block:
+        raise SystemExit("FAIL: recreation path performs domain action: " + forbidden)
+print("PASS: current Data Restore lifecycle uses shared semantic controller")
+PY_DATA_RESTORE
+fi
 if grep -A35 -F 'private fun restoreSafetySnapshotNow()' "$DATA" | grep -Fq 'setNegativeButton'; then
   fail "rollback-success dialog still exposes a side/destructive action"
 fi

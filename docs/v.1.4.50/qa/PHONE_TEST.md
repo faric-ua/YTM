@@ -197,3 +197,65 @@ Scope:
 - Wave 1 R1 evidence remains accepted;
 - broader representative screen/modal/tile QA remains pending;
 - this is not final v1.4.50 release acceptance.
+
+## Wave 3 — Data restorable modal core
+
+Use the exact signed Wave 3 APK. Install over the current v1.4.50 build without
+clearing app data.
+
+### W3-1 — Full backup confirmation
+
+1. Open `Меню → Дані та резервні копії`.
+2. Tap `Зберегти backup`.
+3. While `Зберегти повний backup?` is open, rotate portrait → landscape → portrait.
+4. Press `Скасувати`.
+
+Expected:
+- the same confirmation remains/reappears after each recreation;
+- no save picker opens during rotation;
+- Cancel closes only the modal;
+- no backup operation starts automatically.
+
+Result: `W3-1+` / `W3-1-`
+
+### W3-2 — Pre-picker Restore / History confirmations
+
+For both `Вибрати backup` and `Імпорт History`:
+1. open the first confirmation;
+2. rotate before pressing `Вибрати файл`;
+3. press `Скасувати`.
+
+Expected:
+- the same confirmation restores;
+- Android/YTM file picker never opens from rotation;
+- Cancel returns to the same Data screen.
+
+Result: `W3-2+` / `W3-2-`
+
+### W3-3 — Share full backup confirmation
+
+1. Open the Data `Поділитися → Повний backup` confirmation.
+2. Rotate portrait → landscape → portrait.
+3. Press `Скасувати`.
+
+Expected:
+- the same confirmation restores;
+- Android share UI never starts from recreation;
+- Cancel leaves local data unchanged.
+
+Result: `W3-3+` / `W3-3-`
+
+### W3-4 — prepared-file confirmation (optional fixture)
+
+If a known-good backup/History JSON fixture is already available:
+1. reach `Підтвердити Restore` or `Підтвердити History import`;
+2. rotate before confirming;
+3. verify the same prepared confirmation restores;
+4. Cancel.
+
+Expected:
+- selected validated file does not need to be selected again;
+- rotation never performs Restore/import;
+- Cancel clears the pending confirmation safely.
+
+Result: `W3-4+` / `W3-4-` / `W3-4 SKIP`
