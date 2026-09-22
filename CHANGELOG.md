@@ -8,6 +8,9 @@
 - Long press and the `⋮` action open the same playlist action menu.
 - Direct delete remains protected by the existing explicit destructive confirmation.
 - Playlist tiles now include direct Edit, Delete and overflow actions.
+- Quick actions are arranged as a vertical right-side rail so playlist titles retain the main tile width.
+- Added the first real JVM/JUnit test foundation for production playlist-edit logic.
+- Signed GitHub Actions builds now run `:app:testDebugUnitTest` before signing the APK.
 - Edit changes playlist title and privacy (`public` / `unlisted` / `private`).
 - Playlist update performs a fresh metadata read before PUT so description/default language/tags/podcast status are not accidentally cleared.
 - Playlist action menu and editor draft survive Activity recreation/rotation without auto-running remote changes.

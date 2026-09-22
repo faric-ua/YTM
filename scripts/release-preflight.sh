@@ -158,6 +158,7 @@ check_file "scripts/v1447-r3-history-counters-r9-fix5-audit.sh"
 check_file "docs/design/TILE_UI_CONTRACT.md"
 check_file "scripts/v1448-tile-foundation-audit.sh"
 check_file "scripts/v1448-playlist-edit-audit.sh"
+check_file "scripts/v1448-unit-test-foundation-audit.sh"
 
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
@@ -217,6 +218,7 @@ bash scripts/v1447-r3-history-lifecycle-polish-r9-audit.sh
 bash scripts/v1447-r3-history-counters-r9-fix5-audit.sh
 bash scripts/v1448-tile-foundation-audit.sh
 bash scripts/v1448-playlist-edit-audit.sh
+bash scripts/v1448-unit-test-foundation-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
 bash scripts/result-modal-audit.sh

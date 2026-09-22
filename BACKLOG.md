@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.48 — Generic Tiles + Playlist Management — IMPLEMENTING / TILE FOUNDATION
+v1.4.48 — Generic Tiles + Playlist Management — IMPLEMENTING / TILE POLISH + TEST FOUNDATION
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -50,6 +50,12 @@ v1.4.48 — Generic Tiles + Playlist Management — IMPLEMENTING / TILE FOUNDATI
 - [x] edit privacy: Public / Unlisted / Private
 - [x] preserve existing YouTube playlist metadata during update
 - [x] editor + action-menu rotation lifecycle
+- [x] playlist Tile actions moved to vertical right-side rail
+- [x] first JVM JUnit unit-test foundation
+- [x] playlist-update policy covered by unit tests
+- [x] signed-build workflow runs unit tests before signing
+- [ ] phone test: Edit title/privacy
+- [ ] phone test: Delete confirmation + remote delete
 - [ ] signed APK + targeted phone QA
 
 ## v1.4.47-R3 — Lifecycle + OAuth Recovery + History Semantics

@@ -191,13 +191,16 @@ object UiChrome {
         val root =
             LinearLayout(activity).apply {
                 orientation =
-                    LinearLayout.VERTICAL
+                    LinearLayout.HORIZONTAL
+
+                gravity =
+                    Gravity.CENTER_VERTICAL
 
                 setPadding(
                     dp(activity, 14),
                     dp(activity, 10),
-                    dp(activity, 10),
-                    dp(activity, 11)
+                    dp(activity, 8),
+                    dp(activity, 10)
                 )
 
                 background =
@@ -228,24 +231,32 @@ object UiChrome {
                 }
             }
 
-        val header =
+        val contentColumn =
             LinearLayout(activity).apply {
                 orientation =
-                    LinearLayout.HORIZONTAL
+                    LinearLayout.VERTICAL
+
                 gravity =
                     Gravity.CENTER_VERTICAL
-                isBaselineAligned =
-                    false
+
+                setPadding(
+                    0,
+                    0,
+                    dp(activity, 10),
+                    0
+                )
             }
 
-        header.addView(
+        contentColumn.addView(
             TextView(activity).apply {
                 text =
                     title
+
                 textSize =
                     15f
+
                 maxLines =
-                    2
+                    3
 
                 setTypeface(
                     typeface,
@@ -255,14 +266,37 @@ object UiChrome {
                 setTextColor(
                     palette.text
                 )
+            }
+        )
 
-                setPadding(
-                    0,
-                    dp(activity, 2),
-                    dp(activity, 8),
-                    dp(activity, 2)
-                )
-            },
+        if (!subtitle.isNullOrBlank()) {
+            contentColumn.addView(
+                TextView(activity).apply {
+                    text =
+                        subtitle
+
+                    textSize =
+                        12.5f
+
+                    maxLines =
+                        2
+
+                    setTextColor(
+                        palette.muted
+                    )
+
+                    setPadding(
+                        0,
+                        dp(activity, 6),
+                        0,
+                        0
+                    )
+                }
+            )
+        }
+
+        root.addView(
+            contentColumn,
             LinearLayout.LayoutParams(
                 0,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -270,100 +304,95 @@ object UiChrome {
             )
         )
 
-        actions.forEachIndexed {
-                index,
-                action ->
+        if (actions.isNotEmpty()) {
+            val actionRail =
+                LinearLayout(activity).apply {
+                    orientation =
+                        LinearLayout.VERTICAL
 
-            header.addView(
-                ImageButton(activity).apply {
-                    contentDescription =
-                        action.contentDescription
+                    gravity =
+                        Gravity.CENTER_HORIZONTAL
+                }
 
-                    setImageResource(
-                        action.iconRes
-                    )
+            actions.forEachIndexed {
+                    index,
+                    action ->
 
-                    imageTintList =
-                        android.content.res
-                            .ColorStateList
-                            .valueOf(
-                                when (
-                                    action.tone
-                                ) {
-                                    ActionTone.DANGER ->
-                                        palette.danger
+                actionRail.addView(
+                    ImageButton(activity).apply {
+                        contentDescription =
+                            action.contentDescription
 
-                                    ActionTone.ACCENT ->
-                                        palette.accent
+                        setImageResource(
+                            action.iconRes
+                        )
 
-                                    else ->
-                                        palette.text
-                                }
-                            )
+                        imageTintList =
+                            android.content.res
+                                .ColorStateList
+                                .valueOf(
+                                    when (
+                                        action.tone
+                                    ) {
+                                        ActionTone.DANGER ->
+                                            palette.danger
 
-                    scaleType =
-                        android.widget
-                            .ImageView
-                            .ScaleType
-                            .CENTER
+                                        ActionTone.ACCENT ->
+                                            palette.accent
 
-                    setPadding(
-                        dp(activity, 8),
-                        dp(activity, 8),
-                        dp(activity, 8),
-                        dp(activity, 8)
-                    )
+                                        else ->
+                                            palette.text
+                                    }
+                                )
 
-                    minimumWidth = 0
-                    minimumHeight = 0
+                        scaleType =
+                            android.widget
+                                .ImageView
+                                .ScaleType
+                                .CENTER
 
-                    background =
-                        AppThemeManager
-                            .surfaceDrawable(
-                                context = activity,
-                                fill =
-                                    palette.surfaceAlt,
-                                radiusDp = 10,
-                                accentStroke = false
-                            )
+                        setPadding(
+                            dp(activity, 8),
+                            dp(activity, 8),
+                            dp(activity, 8),
+                            dp(activity, 8)
+                        )
 
-                    setOnClickListener {
-                        action.onClick()
+                        minimumWidth = 0
+                        minimumHeight = 0
+
+                        background =
+                            AppThemeManager
+                                .surfaceDrawable(
+                                    context = activity,
+                                    fill =
+                                        palette.surfaceAlt,
+                                    radiusDp = 10,
+                                    accentStroke = false
+                                )
+
+                        setOnClickListener {
+                            action.onClick()
+                        }
+                    },
+                    LinearLayout.LayoutParams(
+                        dp(activity, 40),
+                        dp(activity, 40)
+                    ).apply {
+                        if (index > 0) {
+                            topMargin =
+                                dp(activity, 6)
+                        }
                     }
-                },
+                )
+            }
+
+            root.addView(
+                actionRail,
                 LinearLayout.LayoutParams(
                     dp(activity, 40),
-                    dp(activity, 40)
-                ).apply {
-                    if (index > 0) {
-                        marginStart =
-                            dp(activity, 6)
-                    }
-                }
-            )
-        }
-
-        root.addView(
-            header
-        )
-
-        if (!subtitle.isNullOrBlank()) {
-            root.addView(
-                TextView(activity).apply {
-                    text =
-                        subtitle
-                    textSize =
-                        12.5f
-                    setTextColor(
-                        palette.muted
-                    )
-                    setPadding(
-                        0,
-                        dp(activity, 5),
-                        0,
-                        0
-                    )
-                }
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
             )
         }
 

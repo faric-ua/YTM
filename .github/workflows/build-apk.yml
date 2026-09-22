@@ -61,6 +61,9 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" "platforms;android-36" "build-tools;35.0.0"
 
+      - name: Run JVM unit tests
+        run: gradle :app:testDebugUnitTest
+
       - name: Check signing secrets
         env:
           KEYSTORE_B64: ${{ secrets.YTM_KEYSTORE_B64 }}

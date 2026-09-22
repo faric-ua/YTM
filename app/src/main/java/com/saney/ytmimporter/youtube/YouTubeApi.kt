@@ -6,6 +6,7 @@ import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.model.YouTubeChannelInfo
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -566,52 +567,67 @@ class YouTubeApi(
                 )
                 ?: JSONObject()
 
-        val safeTitle =
-            title
-                .trim()
-                .take(150)
+        val existingTags =
+            mutableListOf<String>()
 
-        if (safeTitle.isBlank()) {
-            throw IllegalArgumentException(
-                "Назва плейлиста не може бути порожньою"
+        existingSnippet
+            .optJSONArray(
+                "tags"
             )
-        }
-
-        val safePrivacy =
-            when (
-                privacyStatus
-            ) {
-                "public",
-                "unlisted",
-                "private" ->
-                    privacyStatus
-
-                else ->
-                    "private"
+            ?.let {
+                tags ->
+                for (
+                    index in
+                    0 until tags.length()
+                ) {
+                    existingTags +=
+                        tags.optString(
+                            index
+                        )
+                }
             }
+
+        val spec =
+            PlaylistEditPolicy
+                .buildSpec(
+                    rawTitle =
+                        title,
+                    rawPrivacyStatus =
+                        privacyStatus,
+                    metadata =
+                        PlaylistUpdateMetadata(
+                            description =
+                                existingSnippet
+                                    .optString(
+                                        "description"
+                                    ),
+                            defaultLanguage =
+                                existingSnippet
+                                    .optString(
+                                        "defaultLanguage"
+                                    ),
+                            tags =
+                                existingTags,
+                            podcastStatus =
+                                existingStatus
+                                    .optString(
+                                        "podcastStatus"
+                                    )
+                        )
+                )
 
         val snippet =
             JSONObject()
                 .put(
                     "title",
-                    safeTitle
+                    spec.title
                 )
                 .put(
                     "description",
-                    existingSnippet
-                        .optString(
-                            "description"
-                        )
+                    spec.description
                 )
 
-        existingSnippet
-            .optString(
-                "defaultLanguage"
-            )
-            .trim()
-            .takeIf {
-                it.isNotBlank()
-            }
+        spec.defaultLanguage
             ?.let {
                 defaultLanguage ->
                 snippet.put(
@@ -620,33 +636,33 @@ class YouTubeApi(
                 )
             }
 
-        existingSnippet
-            .optJSONArray(
-                "tags"
-            )
-            ?.let {
-                tags ->
-                snippet.put(
-                    "tags",
-                    tags
+        if (
+            spec.tags.isNotEmpty()
+        ) {
+            val tags =
+                JSONArray()
+
+            spec.tags.forEach {
+                tag ->
+                tags.put(
+                    tag
                 )
             }
+
+            snippet.put(
+                "tags",
+                tags
+            )
+        }
 
         val status =
             JSONObject()
                 .put(
                     "privacyStatus",
-                    safePrivacy
+                    spec.privacyStatus
                 )
 
-        existingStatus
-            .optString(
-                "podcastStatus"
-            )
-            .trim()
-            .takeIf {
-                it.isNotBlank()
-            }
+        spec.podcastStatus
             ?.let {
                 podcastStatus ->
                 status.put(

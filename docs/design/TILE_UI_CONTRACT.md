@@ -32,7 +32,7 @@ A tile may contain any combination of:
 - warning/error information;
 - progress;
 - contextual content;
-- a top action row;
+- a right-side action rail;
 - future entity-specific controls.
 
 The component must remain extensible rather than hard-coded around playlists.
@@ -41,7 +41,7 @@ The component must remain extensible rather than hard-coded around playlists.
 
 The tile body owns the entity's **primary action** when one exists.
 
-Frequently used secondary actions may appear as icons in the tile's top action row.
+Frequently used secondary actions appear as icons in a vertical action rail at the tile's right edge.
 
 `⋮` is the canonical entry to the **complete action menu for that entity**.
 
@@ -69,7 +69,8 @@ Tiles:
 - follow the active YTM Importer theme;
 - use the shared rounded-card language;
 - keep touch targets phone-friendly;
-- allow long titles without stealing all width from actions;
+- allow long titles to use the main content width while actions stay in a separate right-side rail;
+- place frequent quick actions vertically at the right edge by default;
 - prefer concise icons for frequent actions;
 - keep detailed/less frequent actions inside `⋮`.
 

@@ -50,7 +50,7 @@ grep -Fq 'feat/v1.4.48-playlist-edit' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF active v1.4.48 branch missing"
 grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq 'v1.4.48 playlist tiles + rename/privacy editor implemented' CURRENT_HANDOFF.md \
+grep -Fq 'vertical Tile action rail + first real JUnit test foundation' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF v1.4.48 focus missing"
 grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
   || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"

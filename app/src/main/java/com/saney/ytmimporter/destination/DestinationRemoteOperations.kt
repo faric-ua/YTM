@@ -11,6 +11,7 @@ import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.util.ErrorMessages
+import com.saney.ytmimporter.youtube.PlaylistEditPolicy
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
 import java.util.concurrent.CopyOnWriteArraySet
@@ -347,11 +348,14 @@ object DestinationRemoteOperations {
         }
 
         val safeTitle =
-            title
-                .trim()
-                .take(150)
+            PlaylistEditPolicy
+                .normalizeTitle(
+                    title
+                )
 
-        if (safeTitle.isBlank()) {
+        if (
+            safeTitle.isBlank()
+        ) {
             return terminalError(
                 kind =
                     Kind.UPDATE_PLAYLIST,
@@ -363,17 +367,10 @@ object DestinationRemoteOperations {
         }
 
         val safePrivacy =
-            when (
-                privacyStatus
-            ) {
-                "public",
-                "unlisted",
-                "private" ->
+            PlaylistEditPolicy
+                .normalizePrivacy(
                     privacyStatus
-
-                else ->
-                    "private"
-            }
+                )
 
         val appContext =
             context.applicationContext

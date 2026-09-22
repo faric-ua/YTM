@@ -60,9 +60,22 @@ grep -Fq 'A tile is **not playlist-specific**.' "$DOC" ||
 grep -Fq 'Long press itself must never secretly execute a destructive operation.' "$DOC" ||
   fail "Tile destructive rule missing"
 
+for needle in \
+  'val actionRail =' \
+  'actionRail.addView(' \
+  'Gravity.CENTER_HORIZONTAL'
+do
+  grep -Fq "$needle" "$UI" ||
+    fail "right-side Tile action rail missing: $needle"
+done
+
+grep -Fq 'vertical action rail at the tile' "$DOC" ||
+  fail "Tile action-rail design rule missing"
+
 echo "PASS:"
 echo "- v1.4.48 / code 91"
 echo "- generic project-wide Tile primitive"
+echo "- vertical right-side Tile action rail"
 echo "- playlist rows migrated to tiles"
 echo "- tile primary tap preserved"
 echo "- overflow + long press share action menu"
