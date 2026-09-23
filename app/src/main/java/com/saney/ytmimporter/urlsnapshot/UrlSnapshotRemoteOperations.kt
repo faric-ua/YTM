@@ -434,7 +434,7 @@ object UrlSnapshotRemoteOperations {
                     resolved = updated,
                     message = resolvedMessage(updated, true, requestCountNow = 1),
                     fromCache = true,
-                    cachedAt = cachedAt
+                    cachedAt = snapshotCachedAt
                 ))
             }.onFailure { error ->
                 val authFailure = isAuthorizationFailure(error)

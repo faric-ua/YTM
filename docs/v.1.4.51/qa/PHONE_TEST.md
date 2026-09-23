@@ -97,3 +97,30 @@ Observed on the real phone with the cached 9-track concrete playlist:
 
 The title metadata core flow therefore passed, but the timestamp finding requires
 the cachedAt corrective before this area is accepted.
+
+## CachedAt signed build attempt — 2026-09-23
+
+Signed build run `35916719461` from source
+`5b7755d6a5e79461ddddd3ee94f5999fa261908d` failed before signing/build during
+`:app:compileDebugKotlin`.
+
+Exact compiler failure:
+
+`UrlSnapshotRemoteOperations.kt:437:32 Unresolved reference 'cachedAt'`
+
+The cachedAt implementation had already replaced the cache-write timestamp with
+`snapshotCachedAt`, but the published `State.cachedAt` still referenced the
+removed local variable. No APK was produced. The Node.js 20 deprecation warning
+was unrelated to the failure.
+
+## CachedAt compile-fix follow-up — 2026-09-23
+
+The first compile-fix package stopped before apply because its precheck looked for
+the literal single-line text `cachedAt = snapshotCachedAt`. In the real Kotlin
+source the existing correct cache-write assignment is line-wrapped as
+`cachedAt =` followed by `snapshotCachedAt`.
+
+The recovery compile-fix uses whitespace-insensitive assignment matching. It
+changes only the real stale `State.cachedAt` assignment and strengthens the audit
+to require exactly two preserved timestamp assignments and zero stale
+`cachedAt = cachedAt` assignments.

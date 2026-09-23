@@ -60,6 +60,10 @@ if '.put(updated)' in owner:
     raise SystemExit('FAIL: metadata-only title enrichment still uses fresh-timestamp put(updated)')
 if 'System.currentTimeMillis()' in owner:
     raise SystemExit('FAIL: metadata-only title enrichment changed cachedAt')
+if normalized_owner.count('cachedAt = cachedAt') != 0:
+    raise SystemExit('FAIL: metadata-only State still references removed cachedAt local')
+if normalized_owner.count('cachedAt = snapshotCachedAt') != 2:
+    raise SystemExit('FAIL: metadata-only owner must preserve cachedAt in cache write and State publish')
 preserve_start = cache.index('fun putPreservingCachedAt(')
 preserve_end = cache.index('fun stats()', preserve_start)
 preserve_method = cache[preserve_start:preserve_end]
