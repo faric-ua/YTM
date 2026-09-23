@@ -147,13 +147,29 @@ required_core = (
     "fun save(",
     "fun restoreAfterContentReady(",
     "setOnDismissListener",
-    "isChangingConfigurations",
 )
 
 for needle in required_core:
     if needle not in core:
         raise SystemExit(
             "FAIL: shared modal controller contract regressed: " + needle
+        )
+
+if "isChangingConfigurations" not in core:
+    if "created.setOnCancelListener {" not in core:
+        raise SystemExit(
+            "FAIL: R2 deterministic OnCancel semantic-dismiss contract missing"
+        )
+
+    attach_start = core.index("private fun attach(")
+    detach_start = core.index("private fun detachCurrent(", attach_start)
+    attach = core[attach_start:detach_start]
+    dismiss_start = attach.index("created.setOnDismissListener {")
+    dismiss = attach[dismiss_start:]
+
+    if "clearState()" in dismiss:
+        raise SystemExit(
+            "FAIL: R2 OnDismiss clears semantic modal state"
         )
 
 restore_start = core.index("fun restoreAfterContentReady(")

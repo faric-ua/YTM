@@ -40,12 +40,20 @@ for needle in (
     "fun clearState()",
     "fun onDestroy()",
     "setOnDismissListener",
-    "isChangingConfigurations",
 ):
     if needle not in controller:
         raise SystemExit(
             "FAIL: RestorableModalController contract missing: " + needle
         )
+
+if (
+    "isChangingConfigurations" not in controller
+    and "setOnCancelListener" not in controller
+):
+    raise SystemExit(
+        "FAIL: controller has neither legacy configuration guard "
+        "nor deterministic OnCancel semantic-dismiss contract"
+    )
 
 for forbidden in (
     "createBackupJson",

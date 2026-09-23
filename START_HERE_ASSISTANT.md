@@ -35,7 +35,7 @@ Current development application:
 - versionName: **1.4.50**
 - versionCode: **93**
 - release focus: **v1.4.50 — Skin System — DEVELOPMENT**
-- release status: **Wave 3 R1 result-modal lifecycle fix static/full preflight PASS; BUG-034 signed phone retest pending**
+- release status: **Wave 3 R2 deterministic modal-dismiss core static/full preflight PASS; BUG-034 signed phone retest pending; R1 phone FAIL recorded**
 - active branch: `feat/v1.4.50-skin-system`
 - accepted stable release: **v1.4.49 — In-app Updater**
 - stable app checkpoint: `checkpoint-v1.4.49-phone-pass`

@@ -70,7 +70,24 @@
 - [x] History/Restore/Rollback result modal semantic states remain unchanged
 - [x] dedicated Wave 3 R1 audit passes
 - [x] full release preflight passes
-- [ ] signed Wave 3 R1 APK
-- [ ] W3R1-1 `History відновлено` survives portrait → landscape → portrait
-- [ ] W3R1-2 after rotation `Готово` closes result and it does not resurrect
-- [ ] W3R1-3 after rotation `Відкотити` opens exactly one rollback confirmation
+- [x] signed Wave 3 R1 APK — run `35799736192` / source `c25b9f2a6843caf8790e45467df5bf118d08656d`
+- [ ] W3R1-1 `History відновлено` survives portrait → landscape → portrait — **FAIL on R1**
+- [ ] W3R1-2 after rotation `Готово` closes result and it does not resurrect — **NOT ACCEPTED; R1 result state is lost**
+- [ ] W3R1-3 after rotation `Відкотити` opens exactly one rollback confirmation — **FAIL on R1: rollback confirm disappears on rotation**
+
+## Wave 3 R2 — Deterministic modal dismissal
+
+- [x] controller `OnDismissListener` does not clear semantic modal state
+- [x] controller `OnCancelListener` owns Back/touch-outside semantic cancellation
+- [x] all Data modal buttons explicitly close/transition semantic state
+- [x] prepared Restore/History cancel cleanup is routed by semantic modal id
+- [x] no Activity lifecycle timing flag is used to decide semantic close
+- [x] danger-confirm cancel button has explicit callback without breaking existing callers
+- [x] result/rollback states remain semantic `DataModal` values
+- [x] dedicated Wave 3 R2 audit passes
+- [x] full release preflight passes
+- [ ] signed Wave 3 R2 APK
+- [ ] W3R2-1 `History відновлено` survives repeated rotation
+- [ ] W3R2-2 `Готово` closes result and it stays closed after rotation
+- [ ] W3R2-3 `Відкотити останній Restore?` survives repeated rotation
+- [ ] W3R2-4 one explicit rollback tap opens one confirmation and does not execute rollback

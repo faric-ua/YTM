@@ -133,10 +133,26 @@ for needle in (
     "fun restore(",
     "fun save(",
     "fun restoreAfterContentReady(",
-    "isChangingConfigurations",
 ):
     if needle not in core:
         raise SystemExit("FAIL: shared modal core invariant missing: " + needle)
+
+if "isChangingConfigurations" not in core:
+    if "created.setOnCancelListener {" not in core:
+        raise SystemExit(
+            "FAIL: R2 deterministic OnCancel semantic-dismiss invariant missing"
+        )
+
+    attach_start = core.index("private fun attach(")
+    detach_start = core.index("private fun detachCurrent(", attach_start)
+    attach = core[attach_start:detach_start]
+    dismiss_start = attach.index("created.setOnDismissListener {")
+    dismiss = attach[dismiss_start:]
+
+    if "clearState()" in dismiss:
+        raise SystemExit(
+            "FAIL: R2 OnDismiss clears semantic modal state"
+        )
 start = core.index("fun restoreAfterContentReady(")
 end = core.index("fun clearState()", start)
 block = core[start:end]

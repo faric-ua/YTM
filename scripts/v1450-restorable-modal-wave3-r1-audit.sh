@@ -24,62 +24,77 @@ import sys
 data = Path(sys.argv[1]).read_text(encoding="utf-8")
 core = Path(sys.argv[2]).read_text(encoding="utf-8")
 
-for needle in (
-    "private var activityResumed = false",
-    "private var stateSaved = false",
-    "fun onResume()",
-    "fun onPause()",
-    "stateSaved = true",
-    "activityResumed = true",
-    "activityResumed = false",
-):
-    if needle not in core:
-        raise SystemExit(
-            "FAIL: controller recreation hardening missing: " + needle
-        )
+r2 = (
+    "created.setOnCancelListener {" in core
+    and "private var activityResumed" not in core
+    and "private var stateSaved" not in core
+)
 
-save_start = core.index("fun save(")
-show_start = core.index("fun show(", save_start)
-save_block = core[save_start:show_start]
-if save_block.index("stateSaved = true") > save_block.index("val modalId"):
-    raise SystemExit(
-        "FAIL: stateSaved must be set before early-return modal-id lookup"
-    )
+if r2:
+    for needle in (
+        "fun restore(",
+        "fun save(",
+        "fun show(",
+        "fun restoreAfterContentReady(",
+        "fun clearState()",
+        "created.setOnCancelListener {",
+        "created.setOnDismissListener {",
+    ):
+        if needle not in core:
+            raise SystemExit(
+                "FAIL: R2 deterministic controller contract missing: " + needle
+            )
 
-attach_start = core.index("private fun attach(")
-detach_start = core.index("private fun detachCurrent(", attach_start)
-attach_block = core[attach_start:detach_start]
+    attach_start = core.index("private fun attach(")
+    detach_start = core.index("private fun detachCurrent(", attach_start)
+    attach = core[attach_start:detach_start]
+    dismiss_start = attach.index("created.setOnDismissListener {")
+    dismiss = attach[dismiss_start:]
+    if "clearState()" in dismiss:
+        raise SystemExit("FAIL: R2 OnDismiss clears semantic modal state")
 
-for needle in (
-    "activityResumed &&",
-    "!stateSaved &&",
-    ".isChangingConfigurations",
-    "clearState()",
-):
-    if needle not in attach_block:
-        raise SystemExit(
-            "FAIL: dismiss preservation guard missing: " + needle
-        )
+    for needle in (
+        "private fun completeDataModalAction(",
+        "private fun handleDataModalCancel(",
+        "DataModal.HISTORY_IMPORT_RESULT",
+        "DataModal.RESTORE_RESULT",
+        "DataModal.ROLLBACK_CONFIRM",
+        "DataModal.ROLLBACK_RESULT",
+    ):
+        if needle not in data:
+            raise SystemExit(
+                "FAIL: R2 Data deterministic modal contract missing: " + needle
+            )
 
-resume_start = data.index("override fun onResume()")
-activity_result_start = data.index("override fun onActivityResult(", resume_start)
-lifecycle = data[resume_start:activity_result_start]
+    print("PASS: stronger R2 deterministic dismiss contract satisfies R1 invariant")
+else:
+    for needle in (
+        "private var activityResumed = false",
+        "private var stateSaved = false",
+        "fun onResume()",
+        "fun onPause()",
+        "stateSaved = true",
+        "activityResumed = true",
+        "activityResumed = false",
+    ):
+        if needle not in core:
+            raise SystemExit(
+                "FAIL: controller R1 recreation hardening missing: " + needle
+            )
 
-for needle in (
-    "dataModalController.onResume()",
-    "override fun onPause()",
-    "dataModalController.onPause()",
-):
-    if needle not in lifecycle:
-        raise SystemExit(
-            "FAIL: DataActivity controller lifecycle forwarding missing: "
-            + needle
-        )
-
-if lifecycle.index("dataModalController.onPause()") > lifecycle.index("super.onPause()"):
-    raise SystemExit(
-        "FAIL: controller must enter paused state before super.onPause()"
-    )
+    attach_start = core.index("private fun attach(")
+    detach_start = core.index("private fun detachCurrent(", attach_start)
+    attach = core[attach_start:detach_start]
+    for needle in (
+        "activityResumed &&",
+        "!stateSaved &&",
+        ".isChangingConfigurations",
+        "clearState()",
+    ):
+        if needle not in attach:
+            raise SystemExit(
+                "FAIL: R1 dismiss preservation guard missing: " + needle
+            )
 
 for needle in (
     "DataModal.HISTORY_IMPORT_RESULT",
@@ -97,7 +112,6 @@ for needle in (
 restore_start = core.index("fun restoreAfterContentReady(")
 clear_start = core.index("fun clearState()", restore_start)
 restore_block = core[restore_start:clear_start]
-
 for forbidden in (
     "restoreBackupJson",
     "restoreHistoryJson",
@@ -111,12 +125,8 @@ for forbidden in (
             "FAIL: recreation path executes domain work: " + forbidden
         )
 
-print("PASS: state-save occurs before modal-state early return")
-print("PASS: paused/state-saved dismiss preserves semantic modal state")
-print("PASS: normal resumed dismiss still owns clearState path")
-print("PASS: DataActivity forwards resume/pause to shared controller")
-print("PASS: all three Data result modal states remain semantic/restorable")
-print("PASS: restoration path has no Data domain side effects")
+print("PASS: result modal states remain semantic/restorable")
+print("PASS: restoration path remains domain-side-effect free")
 PY
 
 grep -Fq '## BUG-034 — Result modal disappears on Activity recreation' "$BUGS" ||
@@ -127,11 +137,23 @@ for result in W3R1-1 W3R1-2 W3R1-3; do
     fail "Wave 3 R1 phone test missing: $result"
 done
 
-grep -Fq 'system/Activity teardown while paused or after state-save must not be treated' "$SYSTEM" ||
+if \
+  grep -Fq 'system/Activity teardown while paused or after state-save must not be treated' "$SYSTEM" ||
+  grep -Fq '`Dialog.onDismiss` is transient window teardown only' "$SYSTEM"
+then
+  :
+else
   fail "portable teardown-vs-user-dismiss contract missing"
+fi
 
-grep -Fq 'Pause / state-save / recreate' "$DIAGRAM" ||
+if \
+  grep -Fq 'Pause / state-save / recreate' "$DIAGRAM" ||
+  grep -Fq 'Dialog onDismiss' "$DIAGRAM"
+then
+  :
+else
   fail "result-modal lifecycle diagram preservation branch missing"
+fi
 
 bash scripts/v1450-restorable-modal-wave3-audit.sh
 bash scripts/v1450-skin-preview-wave2-audit.sh

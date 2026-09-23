@@ -326,3 +326,76 @@ Expected:
 - rollback itself does not start until explicitly confirmed.
 
 Result: `W3R1-3+` / `W3R1-3-`
+
+## Wave 3 R1 signed failure
+
+Exact R1 package:
+- source `c25b9f2a6843caf8790e45467df5bf118d08656d`;
+- signed run `35799736192`.
+
+Phone result:
+- `W3R1-1-`;
+- `W3R1-2-`;
+- `W3R1-3-`.
+
+Observed:
+- `History відновлено` disappears after rotation;
+- `Відкотити останній Restore?` disappears after rotation.
+
+Screenshots:
+- `evidence/BUG034_HISTORY_RESULT_R1_FAIL_2026-09-23.jpg`;
+- `evidence/BUG034_ROLLBACK_CONFIRM_R1_FAIL_2026-09-23.jpg`.
+
+R1 is not accepted as a BUG-034 fix.
+
+## Wave 3 R2 — Deterministic modal dismissal
+
+Use the exact signed Wave 3 R2 APK.
+
+### W3R2-1 — result survives repeated recreation
+
+1. Import valid History JSON and confirm.
+2. Wait for `History відновлено`.
+3. Rotate portrait → landscape → portrait twice.
+
+Expected:
+- the same result remains/reappears after every rotation;
+- counts remain unchanged;
+- import does not execute again.
+
+Result: `W3R2-1+` / `W3R2-1-`
+
+### W3R2-2 — explicit Done is durable close
+
+1. From a restored `History відновлено` result, press `Готово`.
+2. Rotate Data screen twice.
+
+Expected:
+- result stays closed;
+- no result resurrection.
+
+Result: `W3R2-2+` / `W3R2-2-`
+
+### W3R2-3 — rollback confirmation survives recreation
+
+1. Reach `History відновлено`.
+2. Press `Відкотити` once.
+3. While `Відкотити останній Restore?` is open, rotate twice.
+
+Expected:
+- the same rollback confirmation remains/reappears;
+- rollback has not executed.
+
+Result: `W3R2-3+` / `W3R2-3-`
+
+### W3R2-4 — rollback transition is single-shot
+
+1. From `History відновлено`, press `Відкотити` exactly once.
+2. Do not confirm rollback.
+
+Expected:
+- exactly one rollback confirmation opens;
+- no duplicate confirmation;
+- no rollback occurs before the explicit confirmation button.
+
+Result: `W3R2-4+` / `W3R2-4-`

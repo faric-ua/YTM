@@ -107,7 +107,10 @@ class DataActivity : Activity() {
 
         dataModalController
             .restoreAfterContentReady(
-                ::renderDataModal
+                renderer =
+                    ::renderDataModal,
+                onCancel =
+                    ::handleDataModalCancel
             )
     }
     override fun onSaveInstanceState(
@@ -128,16 +131,10 @@ class DataActivity : Activity() {
     }
     override fun onResume() {
         super.onResume()
-        dataModalController.onResume()
 
         if (::summaryText.isInitialized) {
             refreshSummary()
         }
-    }
-
-    override fun onPause() {
-        dataModalController.onPause()
-        super.onPause()
     }
 
     override fun onActivityResult(
@@ -561,8 +558,40 @@ class DataActivity : Activity() {
                 modal.name,
             args = args,
             renderer =
-                ::renderDataModal
+                ::renderDataModal,
+            onCancel =
+                ::handleDataModalCancel
         )
+    }
+
+    private fun completeDataModalAction(
+        action: () -> Unit = {}
+    ) {
+        dataModalController.clearState()
+        action()
+    }
+
+    private fun handleDataModalCancel(
+        modalId: String,
+        args: Bundle
+    ) {
+        when (
+            DataModal
+                .values()
+                .firstOrNull {
+                    it.name ==
+                        modalId
+                }
+        ) {
+            DataModal.HISTORY_IMPORT_CONFIRM ->
+                clearPendingHistoryImportConfirmation()
+
+            DataModal.RESTORE_CONFIRM ->
+                clearPendingRestoreConfirmation()
+
+            else ->
+                Unit
+        }
     }
 
     private fun renderDataModal(
@@ -641,13 +670,16 @@ class DataActivity : Activity() {
                     "Файл має SHA-256 integrity check."
             )
             .setNegativeButton(
-                "Скасувати",
-                null
-            )
+                "Скасувати"
+            ) { _, _ ->
+                completeDataModalAction()
+            }
             .setPositiveButton(
                 "Зберегти"
             ) { _, _ ->
-                saveFullBackupNow()
+                completeDataModalAction(
+                    ::saveFullBackupNow
+                )
             }
             .show()
 
@@ -692,15 +724,18 @@ class DataActivity : Activity() {
                     "Перед Restore буде створено safety snapshot."
             )
             .setNegativeButton(
-                "Скасувати",
-                null
-            )
+                "Скасувати"
+            ) { _, _ ->
+                completeDataModalAction()
+            }
             .setPositiveButton(
                 "Вибрати файл"
             ) { _, _ ->
-                launchJsonPicker(
-                    restoreBackupRequestCode
-                )
+                completeDataModalAction {
+                    launchJsonPicker(
+                        restoreBackupRequestCode
+                    )
+                }
             }
             .show()
 
@@ -718,15 +753,18 @@ class DataActivity : Activity() {
                     "Перед імпортом буде створено safety snapshot повного локального стану."
             )
             .setNegativeButton(
-                "Скасувати",
-                null
-            )
+                "Скасувати"
+            ) { _, _ ->
+                completeDataModalAction()
+            }
             .setPositiveButton(
                 "Вибрати файл"
             ) { _, _ ->
-                launchJsonPicker(
-                    historyImportRequestCode
-                )
+                completeDataModalAction {
+                    launchJsonPicker(
+                        historyImportRequestCode
+                    )
+                }
             }
             .show()
 
@@ -805,26 +843,21 @@ class DataActivity : Activity() {
             .setNegativeButton(
                 "Скасувати"
             ) { _, _ ->
-                clearPendingHistoryImportConfirmation()
+                completeDataModalAction {
+                    clearPendingHistoryImportConfirmation()
+                }
             }
             .setPositiveButton(
                 "Відновити"
             ) { _, _ ->
-                clearPendingHistoryImportConfirmation()
-                restoreHistoryJsonNow(
-                    raw
-                )
-            }
-            .show()
-            .also { dialog ->
-                dialog.setOnCancelListener {
-                    if (
-                        !isChangingConfigurations
-                    ) {
-                        clearPendingHistoryImportConfirmation()
-                    }
+                completeDataModalAction {
+                    clearPendingHistoryImportConfirmation()
+                    restoreHistoryJsonNow(
+                        raw
+                    )
                 }
             }
+            .show()
     }
 
     private fun renderHistoryImportResult(
@@ -863,12 +896,15 @@ class DataActivity : Activity() {
             .setNeutralButton(
                 "Відкотити"
             ) { _, _ ->
-                confirmRestoreSafetySnapshot()
+                completeDataModalAction(
+                    ::confirmRestoreSafetySnapshot
+                )
             }
             .setPositiveButton(
-                "Готово",
-                null
-            )
+                "Готово"
+            ) { _, _ ->
+                completeDataModalAction()
+            }
             .show()
     }
 
@@ -946,26 +982,21 @@ class DataActivity : Activity() {
             .setNegativeButton(
                 "Скасувати"
             ) { _, _ ->
-                clearPendingRestoreConfirmation()
+                completeDataModalAction {
+                    clearPendingRestoreConfirmation()
+                }
             }
             .setPositiveButton(
                 "Відновити"
             ) { _, _ ->
-                clearPendingRestoreConfirmation()
-                restoreBackupNow(
-                    raw
-                )
-            }
-            .show()
-            .also { dialog ->
-                dialog.setOnCancelListener {
-                    if (
-                        !isChangingConfigurations
-                    ) {
-                        clearPendingRestoreConfirmation()
-                    }
+                completeDataModalAction {
+                    clearPendingRestoreConfirmation()
+                    restoreBackupNow(
+                        raw
+                    )
                 }
             }
+            .show()
     }
 
     private fun renderRestoreResult(
@@ -1005,12 +1036,15 @@ class DataActivity : Activity() {
             .setNeutralButton(
                 "Відкотити"
             ) { _, _ ->
-                confirmRestoreSafetySnapshot()
+                completeDataModalAction(
+                    ::confirmRestoreSafetySnapshot
+                )
             }
             .setPositiveButton(
-                "Готово",
-                null
-            )
+                "Готово"
+            ) { _, _ ->
+                completeDataModalAction()
+            }
             .show()
     }
 
@@ -1056,13 +1090,16 @@ class DataActivity : Activity() {
                     "YouTube/YTM плейлисти в інтернеті не змінюються."
             )
             .setNegativeButton(
-                "Скасувати",
-                null
-            )
+                "Скасувати"
+            ) { _, _ ->
+                completeDataModalAction()
+            }
             .setPositiveButton(
                 "Відкотити"
             ) { _, _ ->
-                restoreSafetySnapshotNow()
+                completeDataModalAction(
+                    ::restoreSafetySnapshotNow
+                )
             }
             .show()
     }
@@ -1093,9 +1130,10 @@ class DataActivity : Activity() {
                     "окремою кнопкою на екрані «Дані та резервні копії»."
             )
             .setPositiveButton(
-                "Готово",
-                null
-            )
+                "Готово"
+            ) { _, _ ->
+                completeDataModalAction()
+            }
             .show()
     }
 
@@ -1120,14 +1158,19 @@ class DataActivity : Activity() {
                         "Значень: ${summary.valueCount}\n\n" +
                         "Після цього відкотити останній Restore через цей snapshot буде неможливо.",
                 confirmLabel =
-                    "Так, видалити"
+                    "Так, видалити",
+                onCancel = {
+                    completeDataModalAction()
+                }
             ) {
-                localBackupManager
-                    .clearSafetySnapshot()
-                refreshSummary()
-                toast(
-                    "Резервний знімок видалено"
-                )
+                completeDataModalAction {
+                    localBackupManager
+                        .clearSafetySnapshot()
+                    refreshSummary()
+                    toast(
+                        "Резервний знімок видалено"
+                    )
+                }
             }
     }
 
@@ -1144,33 +1187,36 @@ class DataActivity : Activity() {
                     "Надсилайте backup лише туди, де довіряєте одержувачу."
             )
             .setNegativeButton(
-                "Скасувати",
-                null
-            )
+                "Скасувати"
+            ) { _, _ ->
+                completeDataModalAction()
+            }
             .setPositiveButton(
                 "Поділитися"
             ) { _, _ ->
-                val content =
-                    runCatching {
-                        localBackupManager
-                            .createBackupJson()
-                    }.getOrElse { error ->
-                        toast(
-                            error.message
-                                ?: "Не вдалося створити backup"
-                        )
-                        return@setPositiveButton
-                    }
+                completeDataModalAction {
+                    val content =
+                        runCatching {
+                            localBackupManager
+                                .createBackupJson()
+                        }.getOrElse { error ->
+                            toast(
+                                error.message
+                                    ?: "Не вдалося створити backup"
+                            )
+                            return@completeDataModalAction
+                        }
 
-                shareTextFile(
-                    fileName =
-                        "YTM_Backup_${exportTimestamp()}.json",
-                    mimeType =
-                        "application/json",
-                    content = content,
-                    chooserTitle =
-                        "Поділитися повним backup"
-                )
+                    shareTextFile(
+                        fileName =
+                            "YTM_Backup_${exportTimestamp()}.json",
+                        mimeType =
+                            "application/json",
+                        content = content,
+                        chooserTitle =
+                            "Поділитися повним backup"
+                    )
+                }
             }
             .show()
 

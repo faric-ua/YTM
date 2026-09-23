@@ -859,6 +859,7 @@ object UiChrome {
         title: String,
         message: String,
         confirmLabel: String,
+        onCancel: () -> Unit = {},
         onConfirm: () -> Unit
     ): Dialog =
         showMessageDialog(
@@ -875,7 +876,7 @@ object UiChrome {
                     DialogAction(
                         label = "Скасувати",
                         tone = ActionTone.NORMAL,
-                        onClick = {}
+                        onClick = onCancel
                     )
                 )
         )

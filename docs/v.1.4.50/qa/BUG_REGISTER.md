@@ -135,7 +135,7 @@ BUG-033 is closed for these tested paths.
 
 ## BUG-034 — Result modal disappears on Activity recreation
 
-Status: **FIX IMPLEMENTED — WAVE 3 R1 STATIC/FULL PREFLIGHT PASS / PHONE RETEST NEEDED**
+Status: **R1 PHONE RETEST FAILED / R2 FIX IMPLEMENTED — STATIC/FULL PREFLIGHT PASS / PHONE RETEST NEEDED**
 
 Finding:
 - exact signed source `7e6fcb482387be92a7de54db0f4df5081d640495`;
@@ -164,3 +164,28 @@ R1 fix:
 - paused/state-saved/configuration teardown preserves the state for recreation.
 
 The fix is generic for History-import, full-Restore and rollback result modals.
+
+### BUG-034 R1 phone evidence / R2 correction
+
+R1 exact package:
+- source `c25b9f2a6843caf8790e45467df5bf118d08656d`;
+- run `35799736192`;
+- result `W3R1-1- / W3R1-2- / W3R1-3-`.
+
+Failure screenshots:
+- `qa/evidence/BUG034_HISTORY_RESULT_R1_FAIL_2026-09-23.jpg`;
+- `qa/evidence/BUG034_ROLLBACK_CONFIRM_R1_FAIL_2026-09-23.jpg`.
+
+R1 root-cause correction:
+the controller must not infer semantic user dismissal from `Dialog.onDismiss`
+plus Activity lifecycle timing. Android can tear down a Dialog during
+recreation at a timing that makes such inference unreliable.
+
+R2 invariant:
+- OnDismiss = transient window detached only;
+- button callback = explicit semantic close/transition;
+- OnCancel = explicit Back/touch-outside semantic cancellation;
+- system recreation = never a semantic close.
+
+This is implemented once in the shared controller/Data modal host so all Data
+modal states follow the same contract.

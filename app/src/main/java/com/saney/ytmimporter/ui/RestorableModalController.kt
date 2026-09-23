@@ -20,8 +20,6 @@ class RestorableModalController(
     private var openModalId: String? = null
     private var openModalArgs: Bundle = Bundle()
     private var dialog: Dialog? = null
-    private var activityResumed = false
-    private var stateSaved = false
 
     fun restore(
         savedInstanceState: Bundle?
@@ -44,8 +42,6 @@ class RestorableModalController(
     fun save(
         outState: Bundle
     ) {
-        stateSaved = true
-
         val modalId =
             openModalId
                 ?: return
@@ -73,7 +69,11 @@ class RestorableModalController(
         renderer: (
             modalId: String,
             args: Bundle
-        ) -> Dialog?
+        ) -> Dialog?,
+        onCancel: (
+            modalId: String,
+            args: Bundle
+        ) -> Unit = { _, _ -> }
     ) {
         require(
             modalId.isNotBlank()
@@ -89,10 +89,14 @@ class RestorableModalController(
             Bundle(args)
 
         attach(
-            renderer(
-                modalId,
-                Bundle(openModalArgs)
-            )
+            created =
+                renderer(
+                    modalId,
+                    Bundle(openModalArgs)
+                ),
+            modalId = modalId,
+            args = Bundle(openModalArgs),
+            onCancel = onCancel
         )
     }
 
@@ -100,7 +104,11 @@ class RestorableModalController(
         renderer: (
             modalId: String,
             args: Bundle
-        ) -> Dialog?
+        ) -> Dialog?,
+        onCancel: (
+            modalId: String,
+            args: Bundle
+        ) -> Unit = { _, _ -> }
     ) {
         val modalId =
             openModalId
@@ -116,13 +124,22 @@ class RestorableModalController(
                     openModalId == modalId &&
                     dialog?.isShowing != true
                 ) {
-                    attach(
-                        renderer(
-                            modalId,
-                            Bundle(
-                                openModalArgs
-                            )
+                    val restoredArgs =
+                        Bundle(
+                            openModalArgs
                         )
+
+                    attach(
+                        created =
+                            renderer(
+                                modalId,
+                                Bundle(
+                                    restoredArgs
+                                )
+                            ),
+                        modalId = modalId,
+                        args = restoredArgs,
+                        onCancel = onCancel
                     )
                 }
             }
@@ -133,15 +150,6 @@ class RestorableModalController(
         openModalArgs = Bundle()
     }
 
-    fun onResume() {
-        stateSaved = false
-        activityResumed = true
-    }
-
-    fun onPause() {
-        activityResumed = false
-    }
-
     fun onDestroy() {
         detachCurrent(
             dismiss = false
@@ -149,7 +157,13 @@ class RestorableModalController(
     }
 
     private fun attach(
-        created: Dialog?
+        created: Dialog?,
+        modalId: String,
+        args: Bundle,
+        onCancel: (
+            modalId: String,
+            args: Bundle
+        ) -> Unit
     ) {
         if (created == null) {
             clearState()
@@ -159,7 +173,7 @@ class RestorableModalController(
         dialog =
             created
 
-        created.setOnDismissListener {
+        created.setOnCancelListener {
             if (
                 dialog === created
             ) {
@@ -167,13 +181,27 @@ class RestorableModalController(
             }
 
             if (
-                activityResumed &&
-                !stateSaved &&
-                !activity
-                    .isChangingConfigurations
+                openModalId ==
+                modalId
             ) {
                 clearState()
+                onCancel(
+                    modalId,
+                    Bundle(args)
+                )
             }
+        }
+
+        created.setOnDismissListener {
+            if (
+                dialog === created
+            ) {
+                dialog = null
+            }
+
+            // A dismiss is only transient window teardown.
+            // Semantic state is cleared by an explicit button action or
+            // OnCancel (Back / touch-outside), never by system recreation.
         }
     }
 

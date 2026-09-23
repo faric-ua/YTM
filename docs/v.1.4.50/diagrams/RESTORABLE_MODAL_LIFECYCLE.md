@@ -15,10 +15,11 @@ flowchart TD
     J --> K[Restore semantic modal state]
     K --> D
 
-    E -->|User Cancel / Back / dismiss while resumed| L[Clear modal state]
-    E -->|Pause / state-save / recreate| P[Preserve semantic modal state]
+    E -->|Dialog onDismiss| T[Detach transient Dialog only]
+    E -->|Back / touch-outside onCancel| L[Clear semantic state]
+    E -->|Explicit button tap| M[Clear or transition semantic state]
+    E -->|System recreate at any timing| P[Preserve semantic modal state]
     P --> F
-    E -->|Explicit positive tap| M[Dismiss modal]
     M --> N[Run domain action once]
 
     K -. never executes action .-> N
@@ -32,7 +33,9 @@ Contract:
 - Activity-specific renderer owns copy and callbacks;
 - recreation restores the same modal over the same parent screen;
 - recreation never runs the positive/destructive action;
-- paused/state-saved/system teardown cannot clear durable modal identity;
-- ordinary user Cancel/Back/dismiss while resumed clears the modal state;
+- `onDismiss` cannot clear durable modal identity;
+- explicit button actions clear or transition semantic state;
+- Back/touch-outside `onCancel` clears semantic state;
+- system teardown timing cannot affect semantic close decisions;
 - Cancel/Back/dismiss is a no-op for domain state unless the action already
   completed before recreation.

@@ -54,7 +54,7 @@ v1.4.50 release closeout.
 
 ## Status
 
-**DEVELOPMENT — WAVE 3 R1 RESULT-MODAL LIFECYCLE FIX STATIC/FULL PREFLIGHT PASS / BUG-034 PHONE RETEST PENDING; BUG-033 PASS PRESERVED**
+**DEVELOPMENT — WAVE 3 R2 DETERMINISTIC MODAL-DISMISS CORE STATIC/FULL PREFLIGHT PASS / BUG-034 PHONE RETEST PENDING; R1 PHONE RETEST FAILED**
 
 ## Wave 2 implementation
 
@@ -177,3 +177,39 @@ Failure evidence:
 
 BUG-033 remains closed for its tested confirmation scope. BUG-034 tracks this
 new result-modal recreation finding.
+
+## Wave 3 R2 — deterministic semantic dismissal
+
+Wave 3 R1 signed package:
+- source `c25b9f2a6843caf8790e45467df5bf118d08656d`;
+- run `35799736192`;
+- phone result `W3R1-1- / W3R1-2- / W3R1-3-`.
+
+Observed failures:
+- `History відновлено` disappears on rotation;
+- `Відкотити останній Restore?` disappears on rotation.
+
+Evidence:
+- `docs/v.1.4.50/qa/evidence/BUG034_HISTORY_RESULT_R1_FAIL_2026-09-23.jpg`;
+- `docs/v.1.4.50/qa/evidence/BUG034_ROLLBACK_CONFIRM_R1_FAIL_2026-09-23.jpg`.
+
+R1 proved that lifecycle timing flags are not a reliable distinction between a
+real user close and Android window teardown.
+
+R2 changes the shared contract:
+
+- `OnDismissListener` owns only transient `Dialog` detachment and never clears
+  semantic modal state;
+- explicit modal buttons call `completeDataModalAction()` to close semantic
+  state deterministically;
+- Back/touch-outside uses `Dialog.OnCancelListener`, which the shared
+  `RestorableModalController` owns;
+- the controller forwards semantic cancel to DataActivity so prepared
+  Restore/History caches are cleaned only on real user cancellation;
+- system recreation may dismiss the old transient Dialog at any lifecycle
+  timing without erasing `DataModal + Bundle args`;
+- `UiChrome.showDangerConfirmDialog` now has a backwards-compatible explicit
+  cancel-button callback.
+
+This removes dependence on `onPause`, `onSaveInstanceState` timing and
+`isChangingConfigurations` for semantic close decisions.
