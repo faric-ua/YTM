@@ -70,3 +70,7 @@ Wave 2 does not:
 - commit a snapshot.
 
 The next wave owns the process-local single-operation lifecycle and preview UI.
+
+## Playlist title metadata corrective
+
+Fresh concrete reads add one official quota-accounted `playlists.list?part=snippet` metadata request. Its request is included in resolver requestCount; playlistItems ordering/duplicate/unavailable semantics are unchanged.

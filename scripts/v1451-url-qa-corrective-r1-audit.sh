@@ -94,11 +94,48 @@ for needle in (
 for needle in (
     "forceRemote: Boolean = false",
     "UrlSnapshotCache(",
-    "API-запитів зараз: 0",
     "fromCache",
 ):
     if needle not in remote:
         raise SystemExit("FAIL: cache-first remote owner missing: " + needle)
+
+normalized_remote = " ".join(remote.split())
+
+for needle in (
+    "requestCountNow: Int? = null",
+    "requestCountNow ?: if (fromCache) 0 else result.requestCount",
+    '" • API-запитів зараз: $requestsNow"',
+    "requestCountNow = 1",
+):
+    if " ".join(needle.split()) not in normalized_remote:
+        raise SystemExit(
+            "FAIL: cache/title request-count semantics missing: " + needle
+        )
+
+cache_branch_start = remote.index(
+    "if (\n            !forceRemote &&"
+)
+cache_branch_end = remote.index(
+    "        val token =",
+    cache_branch_start,
+)
+cache_branch = remote[
+    cache_branch_start:cache_branch_end
+]
+
+if "requestCountNow = 1" in cache_branch:
+    raise SystemExit(
+        "FAIL: ordinary cache-hit branch spends metadata quota"
+    )
+
+if (
+    "resolvedMessage(" not in cache_branch
+    or "fromCache =" not in cache_branch
+    or "true" not in cache_branch
+):
+    raise SystemExit(
+        "FAIL: ordinary cache-hit zero-request render path missing"
+    )
 
 for needle in (
     "buildActionFooter(",

@@ -247,11 +247,20 @@ class UrlSnapshotCommitPolicyTest {
         )
     }
 
+    @Test
+    fun remotePlaylistTitleBecomesLocalPlaylistName() {
+        val plan = UrlSnapshotCommitPolicy.buildPlan(
+            resolved(emptyList(), "PLhuman", "Human playlist name")
+        )
+        assertEquals("Human playlist name", plan.playlist.name)
+    }
+
     private fun resolved(
         items:
             List<UrlSnapshotResolvedItem>,
         playlistId: String =
-            "PLcommit"
+            "PLcommit",
+        playlistTitle: String? = null
     ):
         UrlSnapshotResolutionResult.Resolved =
         UrlSnapshotResolutionResult.Resolved(
@@ -274,7 +283,8 @@ class UrlSnapshotCommitPolicyTest {
             items =
                 items,
             requestCount =
-                1
+                1,
+            playlistTitle = playlistTitle
         )
 
     private fun available(

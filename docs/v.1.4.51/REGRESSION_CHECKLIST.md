@@ -65,3 +65,13 @@
 - [x] fresh remote refresh requires explicit `Оновити з YouTube`
 - [x] URL snapshot cache is included in Full Backup/Restore
 - [ ] signed Corrective R1 U51-1 retest
+
+## Playlist title metadata corrective
+
+- [x] fresh concrete read obtains human playlist title through official `playlists.list`
+- [x] title metadata request records one SIMPLE_LIST quota unit
+- [x] optional playlistTitle keeps URL snapshot cache schema 1 backward compatible
+- [x] cached old snapshot can fetch title with one metadata request and zero playlistItems calls
+- [x] metadata-only repair renames matching technical Current Playlist / History names without changing tracks
+- [x] future commit uses human playlist title with technical fallback
+- [ ] signed title-metadata History/cache retest

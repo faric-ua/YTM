@@ -195,6 +195,9 @@ check_file "scripts/v1451-url-resolver-wave2-audit.sh"
 check_file "scripts/v1451-url-preview-wave3-audit.sh"
 check_file "scripts/v1451-url-commit-wave4-audit.sh"
 check_file "scripts/v1451-url-qa-corrective-r1-audit.sh"
+check_file "scripts/v1451-url-title-metadata-audit.sh"
+check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotTitleBackfill.kt"
+check_file "docs/v.1.4.51/TITLE_METADATA_CONTRACT.md"
 check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotCache.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotDuplicatePolicy.kt"
 check_file "app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotDuplicatePolicyTest.kt"
@@ -304,6 +307,7 @@ bash scripts/v1451-url-resolver-wave2-audit.sh
 bash scripts/v1451-url-preview-wave3-audit.sh
 bash scripts/v1451-url-commit-wave4-audit.sh
 bash scripts/v1451-url-qa-corrective-r1-audit.sh
+bash scripts/v1451-url-title-metadata-audit.sh
 bash scripts/documentation-system-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh

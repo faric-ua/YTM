@@ -386,6 +386,62 @@ object UrlSnapshotRemoteOperations {
     }
 
     @Synchronized
+    fun loadMissingPlaylistTitle(
+        context: Context
+    ): Boolean {
+        if (state.running) return false
+        val current = state
+        val resolved = current.resolved ?: return false
+        if (!resolved.playlistTitle.isNullOrBlank()) return false
+        val source = current.source ?: resolved.source
+        if (source.kind != UrlSnapshotSourceKind.CONCRETE_PLAYLIST) return false
+        val token = AuthSessionStore.current().accessToken?.takeIf { it.isNotBlank() }
+        if (token == null) {
+            publish(current.copy(phase = Phase.ERROR, message = "Спочатку підключіть Google / YTM на головному екрані."))
+            return false
+        }
+        val appContext = context.applicationContext
+        publish(current.copy(phase = Phase.RESOLVING, message = "Отримую назву плейлиста через YouTube Data API…"))
+        executor.execute {
+            val quotaTracker = QuotaTracker(appContext)
+            val api = YouTubeApi(GoogleAccessTokenRecovery(appContext))
+            val result = runCatching {
+                api.getPlaylistSnapshotTitle(
+                    accessToken = token,
+                    playlistId = source.playlistId,
+                    onListRequest = { quotaTracker.recordGeneralUnits(QuotaTracker.SIMPLE_LIST_COST) }
+                )
+            }
+            result.onSuccess { title ->
+                val updated = resolved.copy(playlistTitle = title)
+                val cachedAt = UrlSnapshotCache(appContext).put(updated)
+                UrlSnapshotTitleBackfill(appContext).apply(source.playlistId, title)
+                publish(State(
+                    phase = Phase.RESOLVED,
+                    inputUrl = current.inputUrl,
+                    source = source,
+                    resolved = updated,
+                    message = resolvedMessage(updated, true, requestCountNow = 1),
+                    fromCache = true,
+                    cachedAt = cachedAt
+                ))
+            }.onFailure { error ->
+                val authFailure = isAuthorizationFailure(error)
+                if (authFailure) invalidateAuthorization(appContext)
+                if (isQuotaFailure(error)) quotaTracker.recordQuotaError(error.message ?: "YouTube quota error")
+                publish(State(
+                    phase = Phase.ERROR,
+                    inputUrl = current.inputUrl,
+                    source = source,
+                    message = if (authFailure) "Авторизацію Google / YTM потрібно відновити." else ErrorMessages.userMessage(error, "Не вдалося отримати назву плейлиста"),
+                    authorizationInvalidated = authFailure
+                ))
+            }
+        }
+        return true
+    }
+
+    @Synchronized
     fun clearTerminal() {
         if (state.running) {
             return
@@ -444,13 +500,17 @@ object UrlSnapshotRemoteOperations {
     private fun resolvedMessage(
         result:
             UrlSnapshotResolutionResult.Resolved,
-        fromCache: Boolean
+        fromCache: Boolean,
+        requestCountNow: Int? = null
     ): String {
         val total =
             result.items.size
 
         val unavailable =
             result.unavailableCount
+
+        val requestsNow =
+            requestCountNow ?: if (fromCache) 0 else result.requestCount
 
         return buildString {
             if (fromCache) {
@@ -471,11 +531,11 @@ object UrlSnapshotRemoteOperations {
 
             if (fromCache) {
                 append(
-                    " • API-запитів зараз: 0"
+                    " • API-запитів зараз: $requestsNow"
                 )
             } else {
                 append(
-                    " • API-запитів: ${result.requestCount}"
+                    " • API-запитів: $requestsNow"
                 )
             }
         }

@@ -338,15 +338,15 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. Keep `v1.4.50` and `checkpoint-v1.4.50-phone-pass` immutable on exact app source `66d06d6912d014efb3a98d317ed49355a5fa3078`.
-2. Continue on `feat/v1.4.51-url-mix-snapshot`; identity remains v1.4.51 / versionCode 94 / phase `development`.
-3. Waves 1-4 parser/resolver/preview/local-commit static contracts remain accepted.
-4. First signed v1.4.51 phone build: run `35880942335`, source `16dd7ea8240fc4d6922070fc0f6f3f7ce8e41d67`. U51-1 concrete 813-row playlist resolved using 17 list requests and committed locally as 813 exact rows.
-5. Real-phone findings: Save/Cancel were below all 813 preview rows; repeated exact videoIds were preserved but not surfaced as source-duplicate statistics.
-6. Corrective R1 fixes the terminal footer, exact-videoId duplicate markers/save choice, permanent SearchCache and persistent URL snapshot cache with explicit force-refresh. URL snapshot cache is added to Full Backup/Restore; SearchCache was already backed up.
-7. The already committed 813-row `current_playlist_v1` workspace must survive the in-place corrective APK and must not be re-read remotely just to continue QA.
-8. Next step: signed Corrective R1 build. First verify the saved 813-row workspace survives and Home now surfaces exact-videoId repetitions without any remote read. Exercise fixed footer/duplicate choice and URL-cache hit on a smaller concrete playlist; do not spend another 17 list requests merely to seed/cache the already committed 813-row source. Then continue U51-2..U51-6.
-9. Do not mark v1.4.51 phone PASS from the first signed build; it produced valuable success evidence plus release-blocking findings.
+1. Keep v1.4.50/checkpoint immutable on `66d06d6912d014efb3a98d317ed49355a5fa3078`.
+2. Continue v1.4.51 / code 94 on `feat/v1.4.51-url-mix-snapshot`.
+3. Waves 1-4 and Corrective R1 remain protected.
+4. Real-phone History review found technical URL snapshot names.
+5. Title metadata corrective adds one official quota-accounted playlists.list metadata request to fresh reads.
+6. Cache schema remains 1; old cached snapshots without title remain readable and expose `Отримати назву плейлиста • 1 API`, with zero playlistItems reads.
+7. Metadata-only repair enriches cache and renames only matching technical Current Playlist / History names locally; tracks are unchanged and no new History entry is created.
+8. Do not re-read the pre-corrective 813-row workspace merely for title metadata.
+9. Next: signed title-metadata build, focused cached 9-track History/title retest and fresh small-playlist retest, then continue U51 QA.
 
 ## 8. Working contract
 

@@ -29,6 +29,7 @@ Current accepted release (v1.4.50 Skin System — FINAL):
 - v1.4.51 Wave 4 explicit local snapshot commit is implemented with dedicated static/full preflight PASS: existing CurrentPlaylistStore/HistoryStore reused, exact IDs/order/duplicates/unavailable rows preserved, no auto-commit and no remote write; signed phone QA is next.
 - v1.4.51 first signed phone build run 35880942335 / source 16dd7ea8240fc4d6922070fc0f6f3f7ce8e41d67 resolved and committed an 813-row concrete playlist, exposing long-preview footer and duplicate-visibility findings.
 - v1.4.51 Corrective R1 implements fixed footer, exact-videoId duplicate choice, permanent SearchCache and persistent URL snapshot cache with Full Backup/Restore; new signed phone retest is pending.
+- v1.4.51 title metadata corrective adds official playlist title retrieval, optional cached playlistTitle, one-request cached-title repair, and local technical-name backfill without changing tracks.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED

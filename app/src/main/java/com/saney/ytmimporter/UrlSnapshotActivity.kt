@@ -485,6 +485,9 @@ class UrlSnapshotActivity : Activity() {
                 body =
                     buildString {
                         append(state.message)
+                        resolved.playlistTitle?.takeIf { it.isNotBlank() }?.let { title ->
+                            append("\nПлейлист: $title")
+                        }
                         append(
                             "\nУнікальних exact videoId: " +
                                 "${duplicateAnalysis.uniqueExactIdCount}"
@@ -508,6 +511,20 @@ class UrlSnapshotActivity : Activity() {
                         )
                     }
             )
+
+        if (state.fromCache && resolved.playlistTitle.isNullOrBlank()) {
+            summaryCard.addView(
+                actionButton(
+                    label = "Отримати назву плейлиста • 1 API",
+                    primary = false,
+                    topMarginDp = 2
+                ) {
+                    duplicateChoiceOpen = false
+                    captureInput()
+                    UrlSnapshotRemoteOperations.loadMissingPlaylistTitle(this@UrlSnapshotActivity)
+                }
+            )
+        }
 
         if (state.fromCache) {
             summaryCard.addView(

@@ -161,6 +161,10 @@ The existing 813-row Current Playlist remains untouched by the corrective update
 
 See `CORRECTIVE_R1_CONTRACT.md`.
 
+## Playlist title metadata corrective
+
+Real-phone History review showed URL snapshot imports using technical playlistId fallback names. This corrective adds official `playlists.list?part=snippet` title retrieval, carries optional `playlistTitle` through resolver/cache/commit, and provides a one-request metadata-only repair for old cached snapshots without re-reading playlist items. Matching technical Current Playlist / History names are repaired locally with no new History entry. See `TITLE_METADATA_CONTRACT.md`.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:
@@ -182,4 +186,4 @@ See `CORRECTIVE_R1_CONTRACT.md`.
 
 ## Status
 
-**DEVELOPMENT — PHONE QA CORRECTIVE R1 STATIC/FULL PREFLIGHT PASS / SIGNED RETEST NEXT**
+**DEVELOPMENT — PLAYLIST TITLE METADATA CORRECTIVE STATIC/FULL PREFLIGHT PASS / SIGNED RETEST NEXT**

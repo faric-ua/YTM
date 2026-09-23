@@ -43,7 +43,9 @@ class UrlSnapshotResolver(
                         read.items
                     ),
             requestCount =
-                read.requestCount
+                read.requestCount,
+            playlistTitle =
+                read.playlistTitle
         )
     }
 
@@ -73,6 +75,13 @@ private class YouTubeApiSnapshotReader(
         playlistId: String,
         onListRequest: () -> Unit
     ): UrlSnapshotPlaylistRead {
+        val playlistTitle =
+            api.getPlaylistSnapshotTitle(
+                accessToken = accessToken,
+                playlistId = playlistId,
+                onListRequest = onListRequest
+            )
+
         val result =
             api.listPlaylistSnapshotItems(
                 accessToken = accessToken,
@@ -101,7 +110,9 @@ private class YouTubeApiSnapshotReader(
                     )
                 },
             requestCount =
-                result.requestCount
+                result.requestCount + 1,
+            playlistTitle =
+                playlistTitle
         )
     }
 }

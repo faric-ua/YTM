@@ -86,10 +86,12 @@ object UrlSnapshotCommitPolicy {
             playlist =
                 ImportedPlaylist(
                     name =
-                        snapshotName(
-                            resolved.source
-                                .playlistId
-                        ),
+                        resolved.playlistTitle
+                            ?.trim()
+                            ?.takeIf { it.isNotBlank() }
+                            ?: snapshotName(
+                                resolved.source.playlistId
+                            ),
                     tracks =
                         tracks
                 ),

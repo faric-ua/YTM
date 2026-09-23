@@ -355,9 +355,21 @@ class UrlSnapshotResolverTest {
         )
     }
 
+    @Test
+    fun concretePlaylist_carriesRemotePlaylistTitle() {
+        val result = resolverReturning(
+            rawItems = emptyList(),
+            requestCount = 2,
+            playlistTitle = "Remote playlist title"
+        ).resolve("token", source("PLtitle")) as UrlSnapshotResolutionResult.Resolved
+        assertEquals("Remote playlist title", result.playlistTitle)
+        assertEquals(2, result.requestCount)
+    }
+
     private fun resolverReturning(
         rawItems: List<UrlSnapshotRawItem>,
-        requestCount: Int = 1
+        requestCount: Int = 1,
+        playlistTitle: String? = null
     ): UrlSnapshotResolver =
         UrlSnapshotResolver(
             playlistReader =
@@ -374,7 +386,8 @@ class UrlSnapshotResolverTest {
                     UrlSnapshotPlaylistRead(
                         items = rawItems,
                         requestCount =
-                            requestCount
+                            requestCount,
+                        playlistTitle = playlistTitle
                     )
                 },
             quotaRecorder =

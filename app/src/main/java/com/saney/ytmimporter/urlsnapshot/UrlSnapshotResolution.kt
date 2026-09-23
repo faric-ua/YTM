@@ -37,7 +37,8 @@ data class UrlSnapshotResolvedItem(
 
 data class UrlSnapshotPlaylistRead(
     val items: List<UrlSnapshotRawItem>,
-    val requestCount: Int
+    val requestCount: Int,
+    val playlistTitle: String? = null
 )
 
 fun interface UrlSnapshotConcretePlaylistReader {
@@ -56,7 +57,8 @@ sealed class UrlSnapshotResolutionResult {
     data class Resolved(
         val source: UrlSnapshotSource,
         val items: List<UrlSnapshotResolvedItem>,
-        val requestCount: Int
+        val requestCount: Int,
+        val playlistTitle: String? = null
     ) : UrlSnapshotResolutionResult() {
         val unavailableCount: Int
             get() =

@@ -73,6 +73,30 @@ class YouTubeApi(
         val requestCount: Int
     )
 
+    fun getPlaylistSnapshotTitle(
+        accessToken: String,
+        playlistId: String,
+        onListRequest: () -> Unit = {}
+    ): String {
+        val encodedId = URLEncoder.encode(playlistId, Charsets.UTF_8.name())
+        val url =
+            "https://www.googleapis.com/youtube/v3/playlists" +
+                "?part=snippet" +
+                "&id=$encodedId" +
+                "&maxResults=1"
+        onListRequest()
+        val response = request("GET", url, accessToken)
+        requireSuccess(response, "Завантаження назви плейлиста")
+        val items = JSONObject(response.body).optJSONArray("items")
+        if (items == null || items.length() == 0) {
+            throw YouTubeApiException(404, "playlistNotFound", "Плейлист не знайдено")
+        }
+        return decodeEntities(
+            items.getJSONObject(0).optJSONObject("snippet")
+                ?.optString("title").orEmpty()
+        ).trim().ifBlank { "Без назви" }
+    }
+
     fun getGoogleAccountInfo(accessToken: String): GoogleAccountInfo {
         val response = request(
             method = "GET",

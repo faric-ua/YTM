@@ -198,6 +198,10 @@ class UrlSnapshotCache(
                 "cachedAt",
                 cachedAt
             )
+            .putNullable(
+                "playlistTitle",
+                resolved.playlistTitle
+            )
             .put(
                 "requestCount",
                 resolved.requestCount
@@ -358,6 +362,10 @@ class UrlSnapshotCache(
                             root.optInt(
                                 "requestCount",
                                 0
+                            ),
+                        playlistTitle =
+                            root.optNullableString(
+                                "playlistTitle"
                             )
                     ),
             cachedAt =

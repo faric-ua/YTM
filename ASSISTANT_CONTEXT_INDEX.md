@@ -136,6 +136,7 @@ retrospective gaps rather than invented evidence.
 - `docs/v.1.4.51/PREVIEW_CONTRACT.md`
 - `docs/v.1.4.51/COMMIT_CONTRACT.md`
 - `docs/v.1.4.51/CORRECTIVE_R1_CONTRACT.md`
+- `docs/v.1.4.51/TITLE_METADATA_CONTRACT.md`
 - `docs/v.1.4.51/REGRESSION_CHECKLIST.md`
 - `docs/v.1.4.51/qa/PHONE_TEST.md`
 - `docs/v.1.4.51/qa/BUG_REGISTER.md`
