@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.51-url-mix-snapshot",
   "appSourceSha": null,
   "signedRun": null,
-  "qaStatus": "DEVELOPMENT — RELEASE BASELINE READY / URL SOURCE CONTRACT WAVE NEXT / PHONE QA PENDING",
+  "qaStatus": "DEVELOPMENT — WAVE 1 URL SOURCE PARSER/CLASSIFICATION STATIC/FULL PREFLIGHT PASS / RESOLVER + UI NEXT / PHONE QA PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null

@@ -21,6 +21,20 @@ For such a source:
 - make the snapshot boundary visible to the user;
 - fail clearly when reliable enumeration is unavailable.
 
+## Wave 1 parser classification
+
+The authoritative accepted-form matrix is `URL_SOURCE_MATRIX.md`.
+
+Wave 1 classification is intentionally syntactic:
+- exact uppercase `RD` list IDs become `DYNAMIC_MIX` candidates;
+- other valid list IDs become `CONCRETE_PLAYLIST` candidates;
+- tracking parameters are discarded during canonicalization;
+- an exact 11-character context videoId is preserved when present;
+- parser success does not claim that the source is readable or complete.
+
+Resolver capability is a separate Wave 2 decision. No parser path may fetch a
+page, call the YouTube API, mutate the local playlist or start a remote write.
+
 ## Track identity
 
 Priority:

@@ -131,6 +131,7 @@ retrospective gaps rather than invented evidence.
 - `docs/v.1.4.51/RELEASE_META.json`
 - `docs/v.1.4.51/RELEASE.md`
 - `docs/v.1.4.51/URL_SNAPSHOT_CONTRACT.md`
+- `docs/v.1.4.51/URL_SOURCE_MATRIX.md`
 - `docs/v.1.4.51/REGRESSION_CHECKLIST.md`
 - `docs/v.1.4.51/qa/PHONE_TEST.md`
 - `docs/v.1.4.51/qa/BUG_REGISTER.md`

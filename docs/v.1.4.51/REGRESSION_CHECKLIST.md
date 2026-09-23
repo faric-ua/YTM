@@ -10,11 +10,11 @@
 
 ## URL/source contract
 
-- [ ] supported YouTube URL matrix defined
-- [ ] supported YouTube Music URL matrix defined
-- [ ] concrete playlist vs dynamic Mix/radio classification defined
-- [ ] invalid/unsupported URL fails clearly
-- [ ] no unsupported scraping/fabricated completeness path
+- [x] supported YouTube URL matrix defined — Wave 1
+- [x] supported YouTube Music URL matrix defined — Wave 1
+- [x] concrete playlist vs dynamic Mix/radio classification defined — Wave 1 parser boundary
+- [x] invalid/unsupported URL parser result is explicit — Wave 1
+- [x] Wave 1 parser has no network/scraping/completeness path
 
 ## Resolution / preview
 
@@ -48,8 +48,8 @@
 
 ## Release evidence
 
-- [ ] dedicated static URL-snapshot audit
-- [ ] full release preflight
+- [x] dedicated static URL-source Wave 1 audit
+- [x] full release preflight — Wave 1
 - [ ] signed v1.4.51 APK
 - [ ] real-phone URL/Mix QA
 - [ ] stabilization checkpoint

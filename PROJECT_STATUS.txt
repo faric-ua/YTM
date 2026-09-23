@@ -23,6 +23,7 @@ Current accepted release (v1.4.50 Skin System — FINAL):
 - substantial phone-side code changes are delivered through `ytm-code` packages;
 - v1.4.51 YouTube/YTM URL/Mix Snapshot Import is the active development release on `feat/v1.4.51-url-mix-snapshot`; the documentation skeleton remains the contract baseline;
 - current development app identity is v1.4.51 / versionCode 94; accepted installed stable baseline remains v1.4.50 / 93.
+- v1.4.51 Wave 1 URL source matrix/parser/classification is implemented with dedicated static/full preflight PASS; resolver/UI/local commit remain pending.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED

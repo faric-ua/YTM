@@ -6,9 +6,10 @@ Add an explicit import flow that accepts a YouTube or YouTube Music playlist/Mix
 URL and turns the tracks resolved in that import session into a stable local
 playlist snapshot inside YTM Importer.
 
-The documentation skeleton is complete and the release-start baseline is now
-active. The development application identity is v1.4.51 / versionCode 94. No
-URL/Mix parser or resolver implementation is included in the release-start step.
+The documentation skeleton and release-start baseline are complete. The
+development application identity is v1.4.51 / versionCode 94. Wave 1 now
+implements a side-effect-free URL source parser/classifier; resolver, preview
+UI and local snapshot commit remain separate later waves.
 
 ## Product contract
 
@@ -67,6 +68,22 @@ v1.4.51 does not promise:
 - replacement search results for inaccessible source items;
 - a claim that a dynamic Mix is complete or reproducible later.
 
+## Wave 1 implementation
+
+Wave 1 adds `UrlSnapshotSourceParser` plus a JVM test matrix and
+`URL_SOURCE_MATRIX.md`.
+
+The parser:
+- accepts only an explicit YouTube/YouTube Music host/path allowlist;
+- requires one unambiguous `list` identity;
+- canonicalizes tracking-bearing links to stable playlist URLs;
+- preserves an exact context videoId when a supported link exposes one;
+- classifies exact `RD...` list IDs as dynamic-Mix candidates;
+- performs no network request, scraping, playlist mutation, search or write.
+
+Dynamic-Mix classification is not a resolver-capability claim. Wave 2 must
+prove whether a source can be enumerated reliably and fail clearly otherwise.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:
@@ -88,4 +105,4 @@ v1.4.51 does not promise:
 
 ## Status
 
-**DEVELOPMENT — RELEASE BASELINE READY / URL SOURCE CONTRACT WAVE NEXT / PHONE QA PENDING**
+**DEVELOPMENT — WAVE 1 URL SOURCE PARSER/CLASSIFICATION STATIC/FULL PREFLIGHT PASS / RESOLVER + UI NEXT / PHONE QA PENDING**

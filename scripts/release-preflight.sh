@@ -190,6 +190,10 @@ check_file "scripts/v1450-skin-preview-wave2-audit.sh"
 check_file "scripts/v1450-restorable-modal-wave3-audit.sh"
 check_file "scripts/v1450-restorable-modal-wave3-r1-audit.sh"
 check_file "scripts/v1450-restorable-modal-wave3-r2-audit.sh"
+check_file "scripts/v1451-url-source-wave1-audit.sh"
+check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotSourceParser.kt"
+check_file "app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotSourceParserTest.kt"
+check_file "docs/v.1.4.51/URL_SOURCE_MATRIX.md"
 check_file "ASSISTANT_CONTEXT_INDEX.md"
 check_file "docs/assistant-kit/CONTEXT_FILES.txt"
 check_file "docs/assistant-kit/RELEASE_DOCUMENTATION_CONTRACT.md"
@@ -276,6 +280,7 @@ bash scripts/v1450-skin-preview-wave2-audit.sh
 bash scripts/v1450-restorable-modal-wave3-audit.sh
 bash scripts/v1450-restorable-modal-wave3-r1-audit.sh
 bash scripts/v1450-restorable-modal-wave3-r2-audit.sh
+bash scripts/v1451-url-source-wave1-audit.sh
 bash scripts/documentation-system-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh

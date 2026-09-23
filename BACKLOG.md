@@ -86,8 +86,9 @@ v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT / RELEASE BASELI
 - [x] dedicated planning branch `feat/v1.4.51-url-mix-snapshot`
 - [x] bump app identity to v1.4.51 / versionCode 94
 - [x] advance release metadata phase to `development`
-- [ ] define supported YouTube/YTM URL matrix
-- [ ] detect concrete playlist vs dynamic Mix/radio source
+- [x] define supported YouTube/YTM URL matrix — Wave 1
+- [x] detect concrete playlist vs dynamic Mix/radio source — Wave 1 parser-level classification
+- [x] parser/canonicalization + invalid/unsupported URL contract — Wave 1 static/full preflight PASS
 - [ ] read only currently available/resolvable tracks
 - [ ] show preview before local commit
 - [ ] preserve source order and duplicate occurrences
@@ -96,7 +97,8 @@ v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT / RELEASE BASELI
 - [ ] save as a stable local playlist snapshot
 - [ ] lifecycle-safe single resolution; no recreation auto-run
 - [ ] no YouTube/YTM playlist write during URL import
-- [ ] dedicated static audit + signed phone QA
+- [x] dedicated static URL-source audit + full release preflight — Wave 1
+- [ ] signed phone QA after resolver/UI integration
 - [ ] development reference: `https://music.youtube.com/playlist?list=RDREDRRxBLCgTn4p2e5sfWmEpQ&playnext=1&si=fCmcHgsLZstGHeXj`
 
 ## v1.4.50 — Skin System

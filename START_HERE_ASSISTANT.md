@@ -35,14 +35,15 @@ Current development application:
 - versionName: **1.4.51**
 - versionCode: **94**
 - release focus: **v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT**
-- release status: **DEVELOPMENT — RELEASE BASELINE READY / URL SOURCE CONTRACT WAVE NEXT / PHONE QA PENDING**
+- release status: **DEVELOPMENT — WAVE 1 URL SOURCE PARSER/CLASSIFICATION STATIC/FULL PREFLIGHT PASS / RESOLVER + UI NEXT / PHONE QA PENDING**
 - active branch: `feat/v1.4.51-url-mix-snapshot`
 - release-start base HEAD: `5ccc5e2066fb2e69338c8181f266a18dec55b398`
 - accepted stable release: **v1.4.50 — Skin System**
 - stable app checkpoint: `checkpoint-v1.4.50-phone-pass`
 - accepted stable app source: `66d06d6912d014efb3a98d317ed49355a5fa3078`
 - current architecture wave: **v1.4.51 URL/Mix Snapshot Import**
-- first implementation wave: **supported URL matrix + playlist-vs-Mix classification/parser**
+- Wave 1: **URL matrix + parser/canonicalization + playlist-vs-Mix classification — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
+- next implementation wave: **resolver capability + ordered resolution result model, without UI commit yet**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 

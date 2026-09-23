@@ -340,23 +340,23 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 1. Keep `v1.4.50` and `checkpoint-v1.4.50-phone-pass` immutable on exact
    app source `66d06d6912d014efb3a98d317ed49355a5fa3078`.
-2. Continue on `feat/v1.4.51-url-mix-snapshot` from the release-start baseline.
-3. App identity is now v1.4.51 / versionCode 94 and release metadata phase is
-   `development`.
-4. First implementation wave must define the supported YouTube/YTM URL matrix,
-   parse/canonicalize supported forms and classify concrete playlist vs dynamic
-   Mix/radio before resolver/UI expansion.
-5. Do not start remote resolution automatically on Activity recreation and do not
-   introduce any remote write path into URL snapshot import.
-6. Preserve source order, duplicate occurrences and exact videoId identity when
-   the source exposes it; unsupported/inaccessible data must fail or report clearly.
-7. Do not claim Mix completeness when only a current dynamic session can be
-   resolved.
-8. Preserve the v1.4.50 lifecycle, auth, quota, Skin and local-workspace contracts
-   unless v1.4.51 explicitly documents a change.
-9. Next code package: URL/source parser + classification contract + dedicated
-   static audit; resolver comes only after that boundary is stable.
-
+2. Continue on `feat/v1.4.51-url-mix-snapshot`; app identity remains
+   v1.4.51 / versionCode 94 / phase `development`.
+3. Wave 1 URL source matrix/parser/classifier is implemented and protected by
+   `scripts/v1451-url-source-wave1-audit.sh` plus JVM tests.
+4. Parser success is identifier/classification only: it performs no network,
+   no scraping, no local playlist mutation and no remote write.
+5. Exact uppercase `RD...` IDs are dynamic-Mix candidates only; do not claim
+   they are enumerable or complete until resolver capability proves it.
+6. Next implementation wave: resolver capability + ordered resolution result
+   model, reusing the existing YouTube API/auth/quota layer where supported.
+7. Resolver must preserve source order, duplicate occurrences and exact videoId
+   identity; inaccessible items must be explicit rather than search-substituted.
+8. Activity recreation must never auto-start/restart resolution. UI/preview and
+   explicit local snapshot commit remain later boundaries after resolver behavior
+   is stable.
+9. Preserve all v1.4.50 lifecycle, auth, quota, Skin and local-workspace
+   contracts unless v1.4.51 explicitly documents a change.
 ## 8. Working contract
 
 **ChatGPT prepares a `YTM_*.zip` package → user runs `ytm-code` → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
