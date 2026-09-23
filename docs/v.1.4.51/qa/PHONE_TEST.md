@@ -13,7 +13,7 @@ Expected:
 - duplicate occurrences, if present, are not silently removed;
 - current local playlist is unchanged before explicit commit.
 
-Result: `U51-1+` / `U51-1-`
+Result: `U51-1+` — PASS on real phone.
 
 ## U51-2 — dynamic Mix URL
 
@@ -28,7 +28,7 @@ Expected:
 - if reliable enumeration is unsupported, app explains that clearly and does
   not fabricate a complete list.
 
-Result: `U51-2+` / `U51-2-`
+Result: `U51-2+` — PASS on real phone; resolver reports unsupported Mix clearly and does not fabricate enumeration.
 
 ## U51-3 — preview Cancel / Back
 
@@ -124,3 +124,41 @@ The recovery compile-fix uses whitespace-insensitive assignment matching. It
 changes only the real stale `State.cachedAt` assignment and strengthens the audit
 to require exactly two preserved timestamp assignments and zero stale
 `cachedAt = cachedAt` assignments.
+
+## CachedAt corrective real-phone PASS — 2026-09-24
+
+Final signed corrective build:
+
+- run: `35921749405`;
+- source: `ba826563032da85fd99eb822c07342c56b2b60f6`;
+- JVM unit tests: PASS;
+- signed release APK build/signature verification: PASS.
+
+The 9-track concrete playlist `PLLmDYxRA6f00` was used for a controlled
+pre-title cache fixture without touching the 813-track workspace.
+
+Fixture preparation used the earlier signed run `35891714687` /
+`cbb74ef979e8cdbb0167e92f61bc6b176071f0df` to refresh the same 9-track
+snapshot without title metadata. The fresh track snapshot timestamp became:
+
+`T0 = 24.09.2026 00:50`
+
+After reinstalling the final corrective APK:
+
+1. cache-first preview showed 9 items, `API-запитів зараз: 0`, no human title,
+   title-fetch action available, and `Локальний snapshot: 24.09.2026 00:50`;
+2. `Отримати назву плейлиста • 1 API` loaded
+   `The Vinyl Society Vocal Trance Mix - Episode 014 [Vinyl Only]`;
+3. after the metadata-only request, `API-запитів зараз: 1` and the local snapshot
+   timestamp remained exactly `24.09.2026 00:50`;
+4. reopening the same URL showed the human title from cache,
+   `API-запитів зараз: 0`, no title-fetch action, and the timestamp still
+   `24.09.2026 00:50`.
+
+This directly proves that metadata-only title enrichment no longer advances the
+track snapshot `cachedAt`. Fresh remote refresh may advance it; title-only cache
+enrichment may not.
+
+The pre-existing 813-track workspace was not reread for this acceptance test.
+
+Result: `CACHED_AT+` — PHONE PASS.

@@ -340,13 +340,13 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 1. Keep v1.4.50/checkpoint immutable on `66d06d6912d014efb3a98d317ed49355a5fa3078`.
 2. Continue v1.4.51 / code 94 on `feat/v1.4.51-url-mix-snapshot`.
-3. Waves 1-4, Corrective R1 and title-metadata corrective remain protected.
-4. Signed title-metadata run `35909545473`, source `cc454aba5bcf1172ce2be64757272c8d0355d699`: cached read 0 API PASS, title metadata 1 API PASS, History rename PASS, fixed footer PASS.
-5. Phone QA finding: metadata-only title enrichment changed displayed snapshot cachedAt from 20:52 to 22:43 although playlistItems were not re-read.
-6. CachedAt corrective adds a dedicated cache writer that preserves the existing timestamp; only a fresh remote snapshot read may advance cachedAt.
-7. Do not re-read the 813-row source merely for title/timestamp repair.
-8. Next: signed cachedAt corrective build and focused 9-track retest. Expected: title remains human-readable, metadata action uses 1 API, snapshot timestamp does not change.
-9. After that focused PASS, continue U51-3/U51-4/U51-5/U51-6 and remaining v1.4.51 QA.
+3. Current signed phone-QA source: `ba826563032da85fd99eb822c07342c56b2b60f6`, run `35921749405`.
+4. CachedAt corrective real-phone acceptance is PASS: controlled 9-track `PLLmDYxRA6f00` fixture had `T0 = 24.09.2026 00:50`; 1-API title enrichment preserved T0; reopen used 0 API and preserved T0/title.
+5. The 813-track workspace was not reread for cachedAt acceptance and remains protected.
+6. U51-1 concrete playlist and U51-2 dynamic-Mix unsupported behavior are already phone-PASS.
+7. Next phone work on the same accepted APK: U51-3 preview Cancel/Back, U51-4 recreation safety, U51-5 invalid/unsupported source, U51-6 explicit local snapshot handoff.
+8. No new APK is required before those tests unless a new finding forces source changes.
+9. After U51-3..U51-6, record evidence, run remaining regression smoke, and decide stabilization checkpoint / release closeout.
 
 ## 8. Working contract
 

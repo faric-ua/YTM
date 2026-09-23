@@ -64,7 +64,7 @@
 - [x] concrete URL snapshot normal read is cache-first with zero new list requests on hit
 - [x] fresh remote refresh requires explicit `Оновити з YouTube`
 - [x] URL snapshot cache is included in Full Backup/Restore
-- [ ] signed Corrective R1 U51-1 retest
+- [x] signed Corrective R1 U51-1 retest — concrete playlist/cache-first path PASS on real phone
 
 ## Playlist title metadata corrective
 
@@ -74,6 +74,6 @@
 - [x] cached old snapshot can fetch title with one metadata request and zero playlistItems calls
 - [x] metadata-only repair renames matching technical Current Playlist / History names without changing tracks
 - [x] future commit uses human playlist title with technical fallback
-- [ ] signed title-metadata History/cache retest
+- [x] signed title-metadata History/cache retest — cached 0 API + one-request title repair + local History rename PASS
 - [x] metadata-only title enrichment preserves the existing snapshot `cachedAt`; only a fresh remote snapshot may advance it
-- [ ] signed cachedAt corrective retest: title stays repaired, API count is 1, snapshot timestamp remains unchanged
+- [x] signed cachedAt corrective retest — run 35921749405 / ba826563; T0 24.09.2026 00:50 preserved across 1-API title enrichment and 0-API reopen

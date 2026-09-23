@@ -178,6 +178,21 @@ This corrective adds a dedicated cache write that preserves the prior snapshot
 timestamp. Metadata-only title enrichment must use that path; fresh remote reads
 continue to receive a new timestamp.
 
+## CachedAt corrective phone acceptance
+
+Signed run `35921749405` from source
+`ba826563032da85fd99eb822c07342c56b2b60f6` passed JVM tests, signing and
+real-phone acceptance.
+
+A controlled pre-title 9-track cache fixture established
+`T0 = 24.09.2026 00:50`. On the final corrective build, the cache-first preview
+used 0 API requests; the explicit title-only action used 1 API request and loaded
+the human playlist title; `cachedAt` remained exactly `T0`; reopening the same
+URL used 0 API requests, retained the title and still retained `T0`.
+
+The 813-track workspace was not reread for this test. The cachedAt corrective is
+therefore phone-accepted. Remaining v1.4.51 phone work is U51-3 through U51-6.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:
@@ -199,4 +214,4 @@ continue to receive a new timestamp.
 
 ## Status
 
-**DEVELOPMENT — TITLE METADATA CACHED_AT CORRECTIVE STATIC/FULL PREFLIGHT PASS / SIGNED RETEST NEXT**
+**DEVELOPMENT — CACHED_AT CORRECTIVE PHONE PASS / U51-3..U51-6 NEXT**

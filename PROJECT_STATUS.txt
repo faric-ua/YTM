@@ -31,6 +31,7 @@ Current accepted release (v1.4.50 Skin System — FINAL):
 - v1.4.51 Corrective R1 implements fixed footer, exact-videoId duplicate choice, permanent SearchCache and persistent URL snapshot cache with Full Backup/Restore; new signed phone retest is pending.
 - v1.4.51 title metadata corrective adds official playlist title retrieval, optional cached playlistTitle, one-request cached-title repair, and local technical-name backfill without changing tracks.
 - v1.4.51 title metadata cachedAt corrective follows signed run 35909545473 / source cc454aba5bcf1172ce2be64757272c8d0355d699: title flow passed, but metadata-only enrichment advanced snapshot cachedAt; corrective preserves the existing snapshot timestamp.
+- v1.4.51 cachedAt corrective PHONE PASS: signed run 35921749405 / source ba826563032da85fd99eb822c07342c56b2b60f6; controlled 9-track fixture T0 24.09.2026 00:50 stayed unchanged through 1-API title enrichment and 0-API reopen; 813-track workspace was not reread.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED

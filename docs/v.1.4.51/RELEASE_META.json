@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.51-url-mix-snapshot",
   "appSourceSha": null,
   "signedRun": null,
-  "qaStatus": "DEVELOPMENT — TITLE METADATA CACHED_AT CORRECTIVE STATIC/FULL PREFLIGHT PASS / SIGNED RETEST NEXT",
+  "qaStatus": "DEVELOPMENT — CACHED_AT CORRECTIVE PHONE PASS / U51-3..U51-6 NEXT",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null
