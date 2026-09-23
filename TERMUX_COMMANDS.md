@@ -1,9 +1,11 @@
 # YTM Importer — Termux / Git command guide
 
-This is the reusable command guide for the phone-based development workflow.
+This is the reusable command guide for the phone-side part of the development workflow.
 
 Canonical collaboration/safety policy lives in `YTM_ASSISTANT_WORKFLOW.md`.
 New assistants start with `START_HERE_ASSISTANT.md`.
+
+Current default: ChatGPT performs repository changes and GitHub Actions work directly through GitHub; the phone normally uses the repository-owned Termux:Widget menu for sync/status/APK handoff/QA. Manual Git/package commands below remain recovery and fallback tools.
 
 ## 1. Repository
 
@@ -43,7 +45,7 @@ git rev-parse origin/main
 
 Stop if the package base no longer matches.
 
-## 3. Standard package application
+## 3. Fallback package application
 
 Packages should normally extract outside the repository.
 
@@ -382,9 +384,9 @@ bash scripts/release-close-audit.sh X.Y.Z
 If the close gate fails, do not bypass it; repair the missing or inconsistent
 release evidence/status first.
 
-## `ytm-code` package handoff
+## Legacy/fallback `ytm-code` package handoff
 
-The user's normal code-delivery command is:
+When direct GitHub mutation is unavailable or a change must be applied locally, the fallback command is:
 
 ```bash
 ytm-code
@@ -406,3 +408,34 @@ Normal flow:
 Canonical contract:
 
 `docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md`
+
+
+## Repository-owned Termux:Widget menu
+
+Canonical scripts live under:
+
+`tools/termux/`
+
+The menu actions are:
+
+1. `Sync YTM` — fetch the current branch and fast-forward only; refuses dirty,
+   ahead or diverged local state.
+2. `Status` — shows branch, local/remote HEAD, clean/dirty state and relation.
+3. `Download signed APK` — downloads only a successful build whose
+   `headSha` exactly equals the current remote branch HEAD, verifies SHA-256
+   and records the downloaded source/run.
+4. `Install downloaded APK` — re-verifies SHA-256 and refuses installation if
+   the recorded build source is no longer the current remote branch HEAD.
+5. `Open YTM shell` — opens an interactive shell in the repository.
+6. `Build APK manually` — fallback workflow dispatch; normal builds may be
+   started by ChatGPT directly.
+0. Exit.
+
+Install or repair the widget shortcut with:
+
+```bash
+bash tools/termux/install-widget.sh
+```
+
+The shortcut must point directly to the YTM repository. YTM tooling must not
+depend on the Renault repository.

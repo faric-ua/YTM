@@ -1,14 +1,15 @@
 # YTM Importer — Assistant Workflow Settings
 
-Version: 1.3
+Version: 1.4
 Created: 2026-09-17  
 Purpose: persistent collaboration rules for ChatGPT + user while developing and testing YTM Importer.
 
 ## 1. Roles
 
-- ChatGPT prepares complete changes: code/documentation updates, versioned ZIP overlays, QA documents, manifests, diagrams, test-data snapshots, release notes, and exact Termux command blocks.
-- The user applies prepared packages on the phone, runs real-device tests, and sends screenshots/video/log output back for verification.
-- The user should not have to manually assemble Git commands, choose what to stage, or improvise commit/push steps.
+- ChatGPT performs repository code/documentation changes, commits, pushes, live GitHub verification, and GitHub Actions operations directly through the connected GitHub integration whenever those capabilities are available.
+- The user primarily synchronizes the phone repository, downloads/installs signed APKs, runs real-device tests, and sends screenshots/video/log output back for verification.
+- `ytm-code` / ZIP apply packages remain a fallback for local-only work or when direct GitHub mutation is unavailable; they are no longer the default repository delivery path.
+- The user should not have to manually assemble Git staging/commit sequences or improvise push/build commands.
 
 ## 2. Language and communication
 
@@ -17,9 +18,9 @@ Purpose: persistent collaboration rules for ChatGPT + user while developing and 
 - Do not scatter repository commands across many messages when one copy-paste block can safely do the job.
 - When a step can damage history or overwrite files, stop before it and verify the repository state.
 
-## 3. Termux command format
+## 3. Termux command format for fallback/local-only work
 
-Whenever repository changes need to be applied, provide ONE cohesive copy-paste block in execution order.
+When a repository change genuinely must be applied on the phone rather than directly through GitHub, provide ONE cohesive copy-paste block in execution order.
 
 Preferred structure:
 
@@ -156,7 +157,18 @@ ChatGPT should:
 
 For repository work, the default behavior is:
 
-**ChatGPT prepares → user downloads → ChatGPT gives one exact Termux block → user runs it → user sends output/screenshots → ChatGPT verifies → ChatGPT gives the next exact block.**
+**ChatGPT edits/commits/pushes directly in GitHub → ChatGPT verifies remote state / CI → user syncs the phone only when needed → user downloads/installs the exact signed APK → user performs real-device QA → ChatGPT records evidence and continues.**
+
+Phone-side repository mutation is the exception, not the default.
+
+The Termux:Widget menu is the normal phone control surface for:
+
+- safe fast-forward sync;
+- repository status;
+- exact-remote-HEAD signed APK download;
+- APK installation;
+- opening an interactive YTM shell;
+- manual build dispatch only as a fallback.
 
 Do not hand responsibility for commit sequencing back to the user unless the user explicitly asks to manage Git manually.
 
@@ -366,21 +378,31 @@ CURRENT_HANDOFF and PROJECT_STATUS.
 Do not weaken the gate to make a release pass. Fix the documentation/state that
 the gate identifies.
 
-## 26. `ytm-code` package delivery
+## 26. `ytm-code` fallback delivery
 
-The established phone-side delivery mechanism is the user's `ytm-code` command.
+`ytm-code` remains a supported fail-closed fallback for changes that must be
+applied locally on the phone or when direct GitHub mutation is unavailable.
 
-For substantial repository mutations, the assistant should normally provide a
-descriptive `YTM_*.zip` package conforming to
-`docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md`.
+When it is used, packages still conform to
+`docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md` and retain all existing
+checksum, single-root, staging and preflight safeguards.
 
-The ZIP must contain exactly one top-level folder.
+Do not use a ZIP/apply package merely because that was the historical workflow
+when the connected GitHub integration can safely perform the repository change
+directly.
 
-Do not default back to long pasted shell programs when the same operation can be
-packaged safely.
+## 27. Direct GitHub + Termux:Widget workflow
 
-The normal user-facing execution instruction is:
+The current default operational split is:
 
-```bash
-ytm-code
-```
+1. ChatGPT edits, commits and pushes repository changes directly through GitHub.
+2. ChatGPT verifies the exact remote commit/diff and runs or inspects GitHub
+   Actions as required.
+3. The phone uses the repository-owned `tools/termux/` menu for safe sync,
+   status, signed APK download and installation.
+4. Signed APK download must match the current remote branch HEAD; a merely
+   successful older run is not sufficient.
+5. Phone QA remains the authority for real Android UI/lifecycle behavior.
+
+The YTM Termux menu belongs to the YTM repository. Other projects may keep
+compatibility wrappers, but must not be the source of truth for YTM tooling.
