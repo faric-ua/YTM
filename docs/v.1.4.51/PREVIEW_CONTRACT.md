@@ -59,6 +59,23 @@ Back exits the URL snapshot screen.
 
 Neither action mutates the current local playlist.
 
+## Responsive action footer
+
+The normal resolved-preview footer has two peer actions:
+
+- `Зберегти як поточний список`;
+- `Скасувати preview`.
+
+They follow the project-wide responsive action layout contract. On sufficiently
+wide layouts they render as one equal-width horizontal row through
+`UiChrome.addAdaptiveActionButtons(...)`; otherwise they remain vertically stacked.
+
+Rotation may reflow these controls only. It must not change preview state,
+consume API quota, commit the snapshot or trigger any action.
+
+The duplicate-choice footer may remain stacked when its longer labels need the
+additional width/readability.
+
 ## Recreation
 
 The Activity saves only the entered URL text.

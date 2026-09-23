@@ -218,3 +218,16 @@ Build CI proves compilation/build/signing contracts.
 Only real-device testing proves actual phone UI/lifecycle behavior.
 
 Do not silently convert one evidence class into another.
+
+## 14. Responsive action groups
+
+Action groups are width-responsive.
+
+For 2–3 peer actions, use a horizontal equal-width row when the available width
+can preserve readable/tappable controls; otherwise use a vertical stack.
+
+The decision should be based on actual available width rather than a hard-coded
+portrait/landscape label.
+
+Reflow during configuration change is UI-only. It must not execute actions,
+restart work, commit data, or change semantic state.

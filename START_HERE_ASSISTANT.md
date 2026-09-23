@@ -49,7 +49,7 @@ Current development application:
 - Corrective R1: **fixed preview footer + exact duplicate choice + permanent SearchCache + persistent URL snapshot cache — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
 - Title metadata corrective: **official playlist title + cache enrichment + local History/Current Playlist backfill — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
 - Title cachedAt corrective: **metadata-only title enrichment preserves the original snapshot timestamp — PHONE PASS on run 35921749405 / ba826563032da85fd99eb822c07342c56b2b60f6**
-- next release step: **continue real-phone U51-3 / U51-4 / U51-5 / U51-6 on the accepted signed corrective APK**
+- next release step: **signed UX-024 landscape action-row retest, then continue U51-5 / U51-6 on that APK**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 

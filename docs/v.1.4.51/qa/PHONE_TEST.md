@@ -38,7 +38,7 @@ Expected:
 - Cancel/Back does not replace the current local playlist;
 - no Review/Search/write operation starts automatically.
 
-Result: `U51-3+` / `U51-3-`
+Result: `U51-3+` — PASS on real phone; Cancel and Back left the current local playlist and History unchanged.
 
 ## U51-4 — recreation safety
 
@@ -52,7 +52,7 @@ Expected:
 - snapshot is not committed automatically;
 - no duplicate operation appears.
 
-Result: `U51-4+` / `U51-4-`
+Result: `U51-4+` — FUNCTIONAL PASS on real phone; entered URL and completed cached preview survived portrait ↔ landscape without auto-resolve, quota use or commit. UX-024 responsive footer retest remains.
 
 ## U51-5 — invalid / unsupported source
 
@@ -162,3 +162,21 @@ enrichment may not.
 The pre-existing 813-track workspace was not reread for this acceptance test.
 
 Result: `CACHED_AT+` — PHONE PASS.
+
+## U51-4 landscape action-row finding — UX-024
+
+Real-phone recreation testing on signed run `35921749405` / source
+`ba826563032da85fd99eb822c07342c56b2b60f6` functionally passed.
+
+Observed in landscape:
+
+- URL draft remained present and `Готово до читання` did not auto-start work;
+- completed cached preview remained 9 items with `API-запитів зараз: 0`;
+- `Локальний snapshot: 24.09.2026 00:50` stayed unchanged;
+- no automatic local commit occurred;
+- the fixed `Зберегти як поточний список` + `Скасувати preview` footer remained
+  vertically stacked despite sufficient horizontal width.
+
+The lifecycle behavior is accepted as `U51-4+`. The footer layout is tracked
+separately as UX-024 and requires a signed landscape visual retest after the
+adaptive-row corrective.

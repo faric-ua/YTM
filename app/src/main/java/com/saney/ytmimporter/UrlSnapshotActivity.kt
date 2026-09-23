@@ -939,7 +939,7 @@ class UrlSnapshotActivity : Activity() {
                     }
                 )
             } else {
-                addView(
+                val saveButton =
                     actionButton(
                         label =
                             "Зберегти як поточний список",
@@ -962,11 +962,24 @@ class UrlSnapshotActivity : Activity() {
                             )
                         }
                     }
-                )
 
-                addView(
+                val cancelButton =
                     cancelPreviewButton()
-                )
+
+                UiChrome
+                    .addAdaptiveActionButtons(
+                        activity =
+                            this@UrlSnapshotActivity,
+                        container =
+                            this,
+                        buttons =
+                            listOf(
+                                saveButton,
+                                cancelButton
+                            ),
+                        buttonHeightDp =
+                            58
+                    )
             }
         }
     }

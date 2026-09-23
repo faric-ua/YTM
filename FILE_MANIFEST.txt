@@ -13,11 +13,11 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 26517638fb7d12c1  ASSISTANT_CONTEXT_INDEX.md
 2d8eee7c3249aa82  BACKLOG.md
 2aa83bf1756ffaea  CHANGELOG.md
-8b2526b237106f1c  CURRENT_HANDOFF.md
+ff286293b285bbaf  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
-b87f37a8bafc5205  PROJECT_STATUS.txt
+f54c44663df8d3ea  PROJECT_STATUS.txt
 ce775606933d5b6f  PUBLIC_RELEASE_CHECKLIST.md
 a3aa1abb963a13e6  README.md
 48b7e9718ed807af  README_G01A.md
@@ -25,7 +25,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 a0beecdaddd92fca  RELEASE_TEST_STATUS.md
-7e27e59b54134625  START_HERE_ASSISTANT.md
+dd4c4059ad16e165  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
 e2bac72d8d2bc654  TERMINAL_APPLY_v0.10.0.md
@@ -101,7 +101,7 @@ a1f449578ea55ef1  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActiv
 2048239720693f8c  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 41b4011417cf353a  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 1d2285e95fb0bf60  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
-53b14e8d1fa9eae8  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
+ea960f6b91c772b7  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 99e25606f1e7db96  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
 5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
@@ -199,7 +199,7 @@ c303067db2c6dcab  app/src/test/java/com/saney/ytmimporter/youtube/PlaylistEditPo
 da6db67c9017a470  docs/README.md
 0eb6d1512dc9b142  docs/WORKFLOW_LESSONS.md
 ab9eabe91cd701dd  docs/assistant-kit/AUDIT_CATALOG.md
-6225c65b93b9d678  docs/assistant-kit/CONTEXT_FILES.txt
+eabff6e0825a2380  docs/assistant-kit/CONTEXT_FILES.txt
 32b0a039d0111864  docs/assistant-kit/PORTABLE_AUDITS.txt
 b07c7177d0a2b73e  docs/assistant-kit/README.md
 ac598ab37685b5df  docs/assistant-kit/RELEASE_DOCUMENTATION_CONTRACT.md
@@ -208,7 +208,7 @@ a210d9ca8304f4bb  docs/assistant-kit/portable/ASSISTANT_WORKFLOW_TEMPLATE.md
 f5c7d95af88808fb  docs/assistant-kit/portable/PROJECT_CONTEXT_TEMPLATE.md
 4f84a595360fa7d2  docs/assistant-kit/portable/README.md
 77c9b360273bc668  docs/assistant-kit/portable/RELEASE_DOCUMENTATION_CONTRACT.md
-bb5f94953ad9b903  docs/assistant-kit/portable/SYSTEM_BEHAVIOR_CONTRACT.md
+2a4aa21d3ad57025  docs/assistant-kit/portable/SYSTEM_BEHAVIOR_CONTRACT.md
 44218219e4f9c52a  docs/assistant-kit/portable/TEST_DIAGRAM_STANDARD.md
 9de7e33ebda19836  docs/assistant-kit/portable/templates/BUG_REGISTER.md.template
 6efab259a9ae1a88  docs/assistant-kit/portable/templates/EVIDENCE_MANIFEST.md.template
@@ -218,6 +218,7 @@ ac1508588acac2e0  docs/assistant-kit/portable/templates/PHONE_TEST.md.template
 c9a0f203088b48a9  docs/assistant-kit/portable/templates/RELEASE.md.template
 2d333ebed3c466b5  docs/assistant-kit/portable/templates/RELEASE_META.json.template
 51098420dcf58c17  docs/assistant-kit/portable/templates/TEST_RUN.md.template
+9b79bc6e6a64a9e4  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
 15e4b7411a52b7f0  docs/design/THEME_STATE_REFERENCE.md
 663807a41f7e5fd7  docs/design/TILE_UI_CONTRACT.md
 763946037aa1169a  docs/design/exclusive/ASSET_MANIFEST.md
@@ -1382,9 +1383,9 @@ aca0b2505f89611d  docs/v.1.4.50/qa/evidence/WAVE3_R2_ROLLBACK_CONFIRM_LANDSCAPE_
 3618fe6c95ccd20f  docs/v.1.4.50/qa/evidence/WAVE3_R2_ROLLBACK_CONFIRM_PORTRAIT_2026-09-23.jpg
 51ed6353865c39ed  docs/v.1.4.51/COMMIT_CONTRACT.md
 3d70ba73a6050f34  docs/v.1.4.51/CORRECTIVE_R1_CONTRACT.md
-5cfd7aa75332a190  docs/v.1.4.51/PREVIEW_CONTRACT.md
-943f424c51a9f66c  docs/v.1.4.51/REGRESSION_CHECKLIST.md
-3781fa8c0d54e856  docs/v.1.4.51/RELEASE.md
+0baf8c4044a1f71c  docs/v.1.4.51/PREVIEW_CONTRACT.md
+0dbb6536e3c16053  docs/v.1.4.51/REGRESSION_CHECKLIST.md
+342a9bdf09b2a5ac  docs/v.1.4.51/RELEASE.md
 c43218e985195d79  docs/v.1.4.51/RELEASE_META.json
 f3bba97777494594  docs/v.1.4.51/RESOLVER_CONTRACT.md
 7d64ef116ff8da00  docs/v.1.4.51/TITLE_METADATA_CONTRACT.md
@@ -1392,9 +1393,9 @@ f3bba97777494594  docs/v.1.4.51/RESOLVER_CONTRACT.md
 cc0c6caa3a243c2d  docs/v.1.4.51/URL_SOURCE_MATRIX.md
 2922544c989fe46c  docs/v.1.4.51/diagrams/README.md
 8f0c3edfd0b10394  docs/v.1.4.51/diagrams/URL_SNAPSHOT_FLOW.md
-6c9ac8405ce50e0d  docs/v.1.4.51/qa/BUG_REGISTER.md
+1828c8f10c409871  docs/v.1.4.51/qa/BUG_REGISTER.md
 8b726c5140360946  docs/v.1.4.51/qa/EVIDENCE_MANIFEST.md
-c86006010fe34d32  docs/v.1.4.51/qa/PHONE_TEST.md
+12c36e8962fbbd9d  docs/v.1.4.51/qa/PHONE_TEST.md
 91953c8f5c13af7d  docs/v.1.4.6/REGRESSION_CHECKLIST.md
 b19a7931871c062d  docs/v.1.4.6/RELEASE.md
 34feef4923c89b09  docs/v.1.4.6/diagrams/ACTION_HIERARCHY.md
@@ -1480,7 +1481,7 @@ b658f89a169a538d  scripts/apply-v1447-r3-navigation-ownership-r4.py
 f23ce1ad988cef2f  scripts/apply-v1447-r3-write-progress-r8.py
 8474a39bdf983a82  scripts/assistant-context-audit.sh
 a1c4b4a2f19a6a9b  scripts/auth-persistence-audit.sh
-b6380f24c10fc17c  scripts/button-layout-audit.sh
+7821290699461d6e  scripts/button-layout-audit.sh
 3a9cbe351822a8dd  scripts/compact-review-audit.sh
 dc6d0249b6ec16a0  scripts/configuration-state-audit.sh
 dab8c769400b611a  scripts/create-release-docs.py

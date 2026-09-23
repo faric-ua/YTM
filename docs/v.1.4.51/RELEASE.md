@@ -193,6 +193,19 @@ URL used 0 API requests, retained the title and still retained `T0`.
 The 813-track workspace was not reread for this test. The cachedAt corrective is
 therefore phone-accepted. Remaining v1.4.51 phone work is U51-3 through U51-6.
 
+## U51-3/U51-4 phone QA and UX-024
+
+Signed run `35921749405` / source
+`ba826563032da85fd99eb822c07342c56b2b60f6` passed preview Cancel/Back safety
+and recreation safety on the real phone. Rotation preserved the URL draft and
+completed 9-track cached preview without a new API request, local commit or
+History entry.
+
+Landscape screenshots exposed UX-024: the two fixed footer actions remained
+vertically stacked despite sufficient width. The corrective adopts the
+project-wide width-first responsive action layout contract and the existing
+`UiChrome.addAdaptiveActionButtons(...)` implementation.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:

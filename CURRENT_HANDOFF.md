@@ -340,13 +340,13 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 1. Keep v1.4.50/checkpoint immutable on `66d06d6912d014efb3a98d317ed49355a5fa3078`.
 2. Continue v1.4.51 / code 94 on `feat/v1.4.51-url-mix-snapshot`.
-3. Current signed phone-QA source: `ba826563032da85fd99eb822c07342c56b2b60f6`, run `35921749405`.
-4. CachedAt corrective real-phone acceptance is PASS: controlled 9-track `PLLmDYxRA6f00` fixture had `T0 = 24.09.2026 00:50`; 1-API title enrichment preserved T0; reopen used 0 API and preserved T0/title.
-5. The 813-track workspace was not reread for cachedAt acceptance and remains protected.
-6. U51-1 concrete playlist and U51-2 dynamic-Mix unsupported behavior are already phone-PASS.
-7. Next phone work on the same accepted APK: U51-3 preview Cancel/Back, U51-4 recreation safety, U51-5 invalid/unsupported source, U51-6 explicit local snapshot handoff.
-8. No new APK is required before those tests unless a new finding forces source changes.
-9. After U51-3..U51-6, record evidence, run remaining regression smoke, and decide stabilization checkpoint / release closeout.
+3. U51-1, U51-2, U51-3 and U51-4 functional behavior is phone-PASS.
+4. U51-4 landscape evidence found UX-024 only: resolved Save/Cancel footer was vertically stacked despite sufficient width; no lifecycle/operation bug was found.
+5. Project-wide responsive rule: 2–3 peer actions use equal-width horizontal layout when width preserves readability, otherwise vertical; use shared UiChrome adaptive helpers.
+6. Current corrective wires URL Snapshot resolved Save/Cancel to `UiChrome.addAdaptiveActionButtons(...)`; portrait remains stacked, wide/landscape becomes one row.
+7. Next: build a signed APK from the corrective source and do a focused portrait/landscape UX-024 retest plus rotation smoke.
+8. If that passes, continue U51-5 invalid/unsupported source and U51-6 explicit local snapshot handoff on the same APK.
+9. Do not reread the protected 813-track workspace merely for this visual retest.
 
 ## 8. Working contract
 
