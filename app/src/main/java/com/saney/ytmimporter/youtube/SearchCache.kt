@@ -10,11 +10,12 @@ import java.security.MessageDigest
 /**
  * Persistent local cache for YouTube search results.
  *
- * A cache hit does NOT call YouTube Data API, so repeated imports/searches
- * of the same track do not spend another search request.
+ * Cache entries do not expire automatically. A cache hit never calls YouTube
+ * search.list, so known search knowledge remains reusable across app restarts
+ * and ordinary APK updates. Full Backup/Restore includes this preference group.
  *
- * The cache survives app restarts and normal APK updates.
- * It is removed if the app is uninstalled or its storage is cleared.
+ * Android still removes private app storage after uninstall / Clear data unless
+ * the user restores a Full Backup.
  */
 data class SearchCacheStats(
     val totalEntries: Int,
@@ -31,8 +32,9 @@ class SearchCache(context: Context) {
         context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     /**
-     * @return cached candidates, including an empty list for a cached "nothing found" result.
-     * Returns null only when there is no valid cache entry.
+     * Returns cached candidates, including an empty list for a cached
+     * "nothing found" result. Returns null only when the entry is absent or
+     * malformed. Valid entries never expire automatically.
      */
     fun get(track: Track): List<SearchCandidate>? {
         val key = keyFor(track)
@@ -42,9 +44,8 @@ class SearchCache(context: Context) {
             val root = JSONObject(raw)
             val cachedAt = root.optLong("cachedAt", 0L)
 
-            if (cachedAt <= 0L || System.currentTimeMillis() - cachedAt > MAX_AGE_MS) {
-                prefs.edit().remove(key).apply()
-                return null
+            require(cachedAt > 0L) {
+                "Search cache entry has no valid timestamp"
             }
 
             val items = root.optJSONArray("items") ?: JSONArray()
@@ -58,8 +59,8 @@ class SearchCache(context: Context) {
 
                 if (videoId.isBlank() || title.isBlank()) continue
 
-                // Recalculate the score with the CURRENT scorer.
-                // This means a future MatchScorer improvement can reuse cached candidates.
+                // Recalculate with the CURRENT scorer so scoring improvements
+                // can reuse the permanently stored candidate set.
                 val score = MatchScorer.score(
                     artist = track.originalArtist,
                     title = track.originalTitle,
@@ -76,10 +77,7 @@ class SearchCache(context: Context) {
             }
 
             result.sortedByDescending { it.score }
-        }.getOrElse {
-            prefs.edit().remove(key).apply()
-            null
-        }
+        }.getOrNull()
     }
 
     fun put(track: Track, candidates: List<SearchCandidate>) {
@@ -101,19 +99,21 @@ class SearchCache(context: Context) {
             .put("cachedAt", System.currentTimeMillis())
             .put("items", items)
 
-        prefs.edit()
-            .putString(keyFor(track), root.toString())
-            .apply()
+        check(
+            prefs.edit()
+                .putString(keyFor(track), root.toString())
+                .commit()
+        ) {
+            "Не вдалося зберегти SearchCache"
+        }
     }
 
     fun stats(): SearchCacheStats {
         var valid = 0
-        var expired = 0
         var malformed = 0
         var approximateBytes = 0L
         var oldest: Long? = null
         var newest: Long? = null
-        val now = System.currentTimeMillis()
 
         prefs.all.forEach { (_, value) ->
             val raw = value as? String
@@ -123,31 +123,17 @@ class SearchCache(context: Context) {
                 return@forEach
             }
 
-            approximateBytes +=
-                raw.toByteArray(Charsets.UTF_8).size.toLong()
+            approximateBytes += raw.toByteArray(Charsets.UTF_8).size.toLong()
 
             runCatching {
                 val root = JSONObject(raw)
                 val cachedAt = root.optLong("cachedAt", 0L)
+                require(cachedAt > 0L)
+                root.optJSONArray("items") ?: JSONArray()
 
-                if (cachedAt <= 0L) {
-                    malformed += 1
-                    return@runCatching
-                }
-
-                oldest =
-                    oldest?.let { minOf(it, cachedAt) }
-                        ?: cachedAt
-
-                newest =
-                    newest?.let { maxOf(it, cachedAt) }
-                        ?: cachedAt
-
-                if (now - cachedAt > MAX_AGE_MS) {
-                    expired += 1
-                } else {
-                    valid += 1
-                }
+                oldest = oldest?.let { minOf(it, cachedAt) } ?: cachedAt
+                newest = newest?.let { maxOf(it, cachedAt) } ?: cachedAt
+                valid += 1
             }.onFailure {
                 malformed += 1
             }
@@ -156,7 +142,7 @@ class SearchCache(context: Context) {
         return SearchCacheStats(
             totalEntries = prefs.all.size,
             validEntries = valid,
-            expiredEntries = expired,
+            expiredEntries = 0,
             malformedEntries = malformed,
             approximateBytes = approximateBytes,
             oldestCachedAt = oldest,
@@ -164,27 +150,22 @@ class SearchCache(context: Context) {
         )
     }
 
+    /**
+     * Backward-compatible maintenance hook. Search knowledge no longer expires;
+     * this only removes structurally malformed entries when explicitly invoked.
+     */
     fun clearExpired(): Int {
-        val now = System.currentTimeMillis()
         val keysToRemove = mutableListOf<String>()
 
         prefs.all.forEach { (key, value) ->
             val raw = value as? String
-
-            val remove =
-                if (raw == null) {
-                    true
-                } else {
+            val malformed =
+                raw == null ||
                     runCatching {
-                        val cachedAt =
-                            JSONObject(raw).optLong("cachedAt", 0L)
-
-                        cachedAt <= 0L ||
-                            now - cachedAt > MAX_AGE_MS
+                        JSONObject(raw).optLong("cachedAt", 0L) <= 0L
                     }.getOrDefault(true)
-                }
 
-            if (remove) {
+            if (malformed) {
                 keysToRemove += key
             }
         }
@@ -192,7 +173,9 @@ class SearchCache(context: Context) {
         if (keysToRemove.isNotEmpty()) {
             val editor = prefs.edit()
             keysToRemove.forEach(editor::remove)
-            editor.apply()
+            check(editor.commit()) {
+                "Не вдалося очистити пошкоджені записи SearchCache"
+            }
         }
 
         return keysToRemove.size
@@ -217,9 +200,5 @@ class SearchCache(context: Context) {
         private const val PREFS_NAME = "youtube_search_cache"
         private const val CACHE_SCHEMA = "search-v2"
         private const val MAX_CANDIDATES = 10
-
-        // Music search results are fairly stable; 30 days gives strong quota savings
-        // while still allowing results to refresh eventually.
-        private const val MAX_AGE_MS = 30L * 24L * 60L * 60L * 1000L
     }
 }

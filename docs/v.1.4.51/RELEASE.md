@@ -144,6 +144,23 @@ Wave 4 adds the explicit local snapshot commit boundary:
 
 See `COMMIT_CONTRACT.md`.
 
+## Phone QA Corrective R1
+
+Signed run `35880942335` on source `16dd7ea8240fc4d6922070fc0f6f3f7ce8e41d67` successfully resolved and locally committed a concrete 813-row playlist using 17 list requests. Real-phone review found two release-blocking UX/data-efficiency improvements: primary actions were below the long list, and repeated exact videoIds were not surfaced as source duplicates.
+
+Corrective R1 adds:
+
+- fixed terminal action footer outside the long preview ScrollView;
+- exact-videoId duplicate statistics and per-row markers;
+- explicit keep-all vs first-occurrence-only local commit choice;
+- permanent SearchCache with no automatic 30-day expiry;
+- persistent concrete URL snapshot cache with cache-first reads and explicit `Оновити з YouTube`;
+- Full Backup/Restore coverage for URL snapshot cache in addition to the already-backed-up SearchCache.
+
+The existing 813-row Current Playlist remains untouched by the corrective update. A new signed build must retest U51-1 before U51-2..U51-6 continue.
+
+See `CORRECTIVE_R1_CONTRACT.md`.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:
@@ -165,4 +182,4 @@ See `COMMIT_CONTRACT.md`.
 
 ## Status
 
-**DEVELOPMENT — WAVE 4 LOCAL SNAPSHOT COMMIT STATIC/FULL PREFLIGHT PASS / SIGNED PHONE QA NEXT**
+**DEVELOPMENT — PHONE QA CORRECTIVE R1 STATIC/FULL PREFLIGHT PASS / SIGNED RETEST NEXT**

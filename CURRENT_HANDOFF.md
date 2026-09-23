@@ -338,29 +338,15 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. Keep `v1.4.50` and `checkpoint-v1.4.50-phone-pass` immutable on exact
-   app source `66d06d6912d014efb3a98d317ed49355a5fa3078`.
-2. Continue on `feat/v1.4.51-url-mix-snapshot`; identity remains
-   v1.4.51 / versionCode 94 / phase `development`.
-3. Waves 1-3 parser/resolver/preview contracts remain protected by dedicated
-   audits/JVM tests/static preflight.
-4. Wave 4 explicit local snapshot commit is implemented:
-   `UrlSnapshotCommitPolicy` maps ordered resolution rows into the existing
-   `ImportedPlaylist` / `Track` model and `UrlSnapshotLocalCommitter` persists
-   through `CurrentPlaylistStore` plus local-import `HistoryStore`.
-5. Available rows keep exact videoId as canonical MATCHED selections. Unavailable
-   rows remain ordered MISSING entries with explicit source errors and any exact
-   source ID exposed by the API. Duplicates remain separate.
-6. Commit is only the explicit `Зберегти як поточний список` action. Rotation or
-   state restoration never auto-commits and there is no pending-commit replay.
-7. URL commit performs no remote request/write. After success the URL screen
-   returns through ImportActivity's existing import-result channel so Home reloads
-   the saved workspace.
-8. Next release step: produce a signed v1.4.51 APK and run focused U51-1..U51-6
-   real-phone QA, including concrete URL, dynamic Mix unsupported, Cancel/Back,
-   rotation, invalid URL and local snapshot handoff.
-9. Preserve all accepted v1.4.50 lifecycle/auth/quota/Skin/local-workspace
-   contracts unless v1.4.51 explicitly documents a change.
+1. Keep `v1.4.50` and `checkpoint-v1.4.50-phone-pass` immutable on exact app source `66d06d6912d014efb3a98d317ed49355a5fa3078`.
+2. Continue on `feat/v1.4.51-url-mix-snapshot`; identity remains v1.4.51 / versionCode 94 / phase `development`.
+3. Waves 1-4 parser/resolver/preview/local-commit static contracts remain accepted.
+4. First signed v1.4.51 phone build: run `35880942335`, source `16dd7ea8240fc4d6922070fc0f6f3f7ce8e41d67`. U51-1 concrete 813-row playlist resolved using 17 list requests and committed locally as 813 exact rows.
+5. Real-phone findings: Save/Cancel were below all 813 preview rows; repeated exact videoIds were preserved but not surfaced as source-duplicate statistics.
+6. Corrective R1 fixes the terminal footer, exact-videoId duplicate markers/save choice, permanent SearchCache and persistent URL snapshot cache with explicit force-refresh. URL snapshot cache is added to Full Backup/Restore; SearchCache was already backed up.
+7. The already committed 813-row `current_playlist_v1` workspace must survive the in-place corrective APK and must not be re-read remotely just to continue QA.
+8. Next step: signed Corrective R1 build. First verify the saved 813-row workspace survives and Home now surfaces exact-videoId repetitions without any remote read. Exercise fixed footer/duplicate choice and URL-cache hit on a smaller concrete playlist; do not spend another 17 list requests merely to seed/cache the already committed 813-row source. Then continue U51-2..U51-6.
+9. Do not mark v1.4.51 phone PASS from the first signed build; it produced valuable success evidence plus release-blocking findings.
 
 ## 8. Working contract
 

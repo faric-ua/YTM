@@ -5,7 +5,7 @@ This file is generated from the repository audit scripts.
 Do not hand-edit the inventory; update scripts or
 `docs/assistant-kit/PORTABLE_AUDITS.txt`, then regenerate.
 
-Total audit scripts: **107**
+Total audit scripts: **108**
 
 ## Portable/system subset
 
@@ -162,6 +162,7 @@ contracts.
 - `scripts/v1450-wave1-r1-phone-fixes-audit.sh`
 - `scripts/v1451-url-commit-wave4-audit.sh`
 - `scripts/v1451-url-preview-wave3-audit.sh`
+- `scripts/v1451-url-qa-corrective-r1-audit.sh`
 - `scripts/v1451-url-resolver-wave2-audit.sh`
 - `scripts/v1451-url-source-wave1-audit.sh`
 

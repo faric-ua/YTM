@@ -16,10 +16,15 @@ import android.widget.TextView
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotAvailability
+import com.saney.ytmimporter.urlsnapshot.UrlSnapshotDuplicateMode
+import com.saney.ytmimporter.urlsnapshot.UrlSnapshotDuplicatePolicy
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotLocalCommitter
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotRemoteOperations
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotResolvedItem
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotUnavailableReason
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class UrlSnapshotActivity : Activity() {
     private lateinit var urlInput:
@@ -30,6 +35,9 @@ class UrlSnapshotActivity : Activity() {
         ""
 
     private var commitStarted =
+        false
+
+    private var duplicateChoiceOpen =
         false
 
     private val remoteListener:
@@ -58,6 +66,14 @@ class UrlSnapshotActivity : Activity() {
                 ?: UrlSnapshotRemoteOperations
                     .current()
                     .inputUrl
+
+        duplicateChoiceOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_DUPLICATE_CHOICE_OPEN,
+                    false
+                )
+                ?: false
 
         buildUi()
     }
@@ -88,6 +104,11 @@ class UrlSnapshotActivity : Activity() {
         outState.putString(
             STATE_URL_INPUT,
             enteredUrl
+        )
+
+        outState.putBoolean(
+            STATE_DUPLICATE_CHOICE_OPEN,
+            duplicateChoiceOpen
         )
 
         super.onSaveInstanceState(
@@ -287,6 +308,8 @@ class UrlSnapshotActivity : Activity() {
                         topMarginDp =
                             10
                     ) {
+                        duplicateChoiceOpen =
+                            false
                         captureInput()
 
                         UrlSnapshotRemoteOperations
@@ -403,6 +426,22 @@ class UrlSnapshotActivity : Activity() {
             )
         )
 
+        buildActionFooter(
+            state
+        )
+            ?.let {
+                footer ->
+                root.addView(
+                    footer,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams
+                            .MATCH_PARENT,
+                        ViewGroup.LayoutParams
+                            .WRAP_CONTENT
+                    )
+                )
+            }
+
         setContentView(
             root
         )
@@ -429,52 +468,102 @@ class UrlSnapshotActivity : Activity() {
             )
         )
 
-        content.addView(
+        val duplicateAnalysis =
+            UrlSnapshotDuplicatePolicy
+                .analyze(
+                    resolved.items
+                )
+
+        val summaryCard =
             infoCard(
                 title =
-                    "Snapshot прочитано",
+                    if (state.fromCache) {
+                        "Snapshot із локального кешу"
+                    } else {
+                        "Snapshot прочитано"
+                    },
                 body =
-                    state.message +
-                        "\nПоточний локальний список не змінено. " +
-                        "Жоден Review/Search/write flow автоматично не запускається."
+                    buildString {
+                        append(state.message)
+                        append(
+                            "\nУнікальних exact videoId: " +
+                                "${duplicateAnalysis.uniqueExactIdCount}"
+                        )
+                        append(
+                            " • повторних входжень: " +
+                                "${duplicateAnalysis.duplicateOccurrences}"
+                        )
+
+                        state.cachedAt
+                            ?.let {
+                                append(
+                                    "\nЛокальний snapshot: " +
+                                        formatDateTime(it)
+                                )
+                            }
+
+                        append(
+                            "\nПоточний локальний список не змінено. " +
+                                "Жоден Review/Search/write flow автоматично не запускається."
+                        )
+                    }
             )
-        )
 
-        resolved.items.forEach {
-                item ->
+        if (state.fromCache) {
+            summaryCard.addView(
+                actionButton(
+                    label =
+                        "Оновити з YouTube",
+                    primary =
+                        false,
+                    topMarginDp =
+                        2
+                ) {
+                    duplicateChoiceOpen =
+                        false
+                    captureInput()
 
-            content.addView(
-                previewItem(
-                    item
-                )
+                    UrlSnapshotRemoteOperations
+                        .startResolve(
+                            context =
+                                this@UrlSnapshotActivity,
+                            rawUrl =
+                                enteredUrl,
+                            forceRemote =
+                                true
+                        )
+                }
             )
         }
 
         content.addView(
-            actionButton(
-                label =
-                    "Зберегти як поточний список",
-                primary =
-                    true,
-                topMarginDp =
-                    4
-            ) {
-                commitResolved(
-                    resolved
-                )
-            }
+            summaryCard
         )
 
-        content.addView(
-            cancelPreviewButton()
-        )
+        resolved.items.forEachIndexed {
+                position,
+                item ->
+
+            content.addView(
+                previewItem(
+                    item = item,
+                    duplicateFirstIndex =
+                        duplicateAnalysis
+                            .firstOccurrenceByDuplicateIndex[
+                                position
+                            ]
+                )
+            )
+        }
     }
 
     private fun commitResolved(
         resolved:
             com.saney.ytmimporter.urlsnapshot
                 .UrlSnapshotResolutionResult
-                .Resolved
+                .Resolved,
+        duplicateMode:
+            UrlSnapshotDuplicateMode
     ) {
         if (commitStarted) {
             return
@@ -489,7 +578,10 @@ class UrlSnapshotActivity : Activity() {
                     this
                 )
                     .commit(
-                        resolved
+                        resolved =
+                            resolved,
+                        duplicateMode =
+                            duplicateMode
                     )
             }
 
@@ -497,6 +589,9 @@ class UrlSnapshotActivity : Activity() {
                 receipt ->
 
             captureInput()
+
+            duplicateChoiceOpen =
+                false
 
             UrlSnapshotRemoteOperations
                 .clearTerminal()
@@ -541,7 +636,9 @@ class UrlSnapshotActivity : Activity() {
 
     private fun previewItem(
         item:
-            UrlSnapshotResolvedItem
+            UrlSnapshotResolvedItem,
+        duplicateFirstIndex:
+            Int?
     ): TextView {
         val unavailable =
             item.availability ==
@@ -592,6 +689,15 @@ class UrlSnapshotActivity : Activity() {
                             ?: "недоступний"
                     )
 
+                    if (duplicateFirstIndex != null) {
+                        append(
+                            "\n⧉ Повтор exact videoId • перша поява #"
+                        )
+                        append(
+                            duplicateFirstIndex + 1
+                        )
+                    }
+
                     if (unavailable) {
                         append(
                             "\n⚠ "
@@ -635,7 +741,10 @@ class UrlSnapshotActivity : Activity() {
                         accentStroke =
                             true,
                         accentOverride =
-                            if (unavailable) {
+                            if (
+                                unavailable ||
+                                duplicateFirstIndex != null
+                            ) {
                                 AppThemeManager
                                     .palette(
                                         this@UrlSnapshotActivity
@@ -691,11 +800,189 @@ class UrlSnapshotActivity : Activity() {
             topMarginDp =
                 4
         ) {
+            duplicateChoiceOpen =
+                false
             captureInput()
 
             UrlSnapshotRemoteOperations
                 .clearTerminal()
         }
+
+    private fun buildActionFooter(
+        state:
+            UrlSnapshotRemoteOperations.State
+    ): LinearLayout? =
+        when (state.phase) {
+            UrlSnapshotRemoteOperations
+                .Phase.RESOLVED ->
+                state.resolved
+                    ?.let(
+                        ::resolvedActionFooter
+                    )
+
+            UrlSnapshotRemoteOperations
+                .Phase.UNSUPPORTED,
+            UrlSnapshotRemoteOperations
+                .Phase.ERROR ->
+                footerShell().apply {
+                    addView(
+                        cancelPreviewButton()
+                    )
+                }
+
+            else ->
+                null
+        }
+
+    private fun resolvedActionFooter(
+        resolved:
+            com.saney.ytmimporter.urlsnapshot
+                .UrlSnapshotResolutionResult
+                .Resolved
+    ): LinearLayout {
+        val analysis =
+            UrlSnapshotDuplicatePolicy
+                .analyze(
+                    resolved.items
+                )
+
+        return footerShell().apply {
+            if (
+                duplicateChoiceOpen &&
+                analysis.duplicateOccurrences > 0
+            ) {
+                addView(
+                    TextView(
+                        this@UrlSnapshotActivity
+                    ).apply {
+                        text =
+                            "Знайдено ${analysis.duplicateOccurrences} повторних входжень exact videoId."
+                        textSize =
+                            12.5f
+                        setTextColor(
+                            MUTED
+                        )
+                        setPadding(
+                            dp(4),
+                            0,
+                            dp(4),
+                            dp(6)
+                        )
+                    }
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            "Зберегти всі (${resolved.items.size})",
+                        primary =
+                            true
+                    ) {
+                        commitResolved(
+                            resolved =
+                                resolved,
+                            duplicateMode =
+                                UrlSnapshotDuplicateMode
+                                    .KEEP_ALL
+                        )
+                    }
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            "Без повторів (${resolved.items.size - analysis.duplicateOccurrences})",
+                        primary =
+                            false,
+                        topMarginDp =
+                            5
+                    ) {
+                        commitResolved(
+                            resolved =
+                                resolved,
+                            duplicateMode =
+                                UrlSnapshotDuplicateMode
+                                    .DROP_REPEATED_EXACT_VIDEO_IDS
+                        )
+                    }
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            "Назад",
+                        primary =
+                            false,
+                        topMarginDp =
+                            5
+                    ) {
+                        duplicateChoiceOpen =
+                            false
+                        buildUi()
+                    }
+                )
+            } else {
+                addView(
+                    actionButton(
+                        label =
+                            "Зберегти як поточний список",
+                        primary =
+                            true
+                    ) {
+                        if (
+                            analysis.duplicateOccurrences > 0
+                        ) {
+                            duplicateChoiceOpen =
+                                true
+                            buildUi()
+                        } else {
+                            commitResolved(
+                                resolved =
+                                    resolved,
+                                duplicateMode =
+                                    UrlSnapshotDuplicateMode
+                                        .KEEP_ALL
+                            )
+                        }
+                    }
+                )
+
+                addView(
+                    cancelPreviewButton()
+                )
+            }
+        }
+    }
+
+    private fun footerShell():
+        LinearLayout =
+        LinearLayout(this).apply {
+            orientation =
+                LinearLayout.VERTICAL
+            setPadding(
+                dp(12),
+                dp(7),
+                dp(12),
+                dp(10)
+            )
+            setBackgroundColor(
+                AppThemeManager
+                    .palette(
+                        this@UrlSnapshotActivity
+                    )
+                    .background
+            )
+        }
+
+    private fun formatDateTime(
+        timestamp: Long
+    ): String =
+        SimpleDateFormat(
+            "dd.MM.yyyy HH:mm",
+            Locale.getDefault()
+        ).format(
+            Date(timestamp)
+        )
 
     private fun topBar():
         LinearLayout =
@@ -972,6 +1259,9 @@ class UrlSnapshotActivity : Activity() {
     companion object {
         private const val STATE_URL_INPUT =
             "url_snapshot_input"
+
+        private const val STATE_DUPLICATE_CHOICE_OPEN =
+            "url_snapshot_duplicate_choice_open"
 
         const val EXTRA_COMMIT_MESSAGE =
             "url_snapshot_commit_message"

@@ -37,7 +37,11 @@ object UrlSnapshotRemoteOperations {
             UrlSnapshotResolutionResult.Resolved? =
             null,
         val authorizationInvalidated:
-            Boolean = false
+            Boolean = false,
+        val fromCache:
+            Boolean = false,
+        val cachedAt:
+            Long? = null
     ) {
         val running: Boolean
             get() =
@@ -95,7 +99,8 @@ object UrlSnapshotRemoteOperations {
     @Synchronized
     fun startResolve(
         context: Context,
-        rawUrl: String
+        rawUrl: String,
+        forceRemote: Boolean = false
     ): Boolean {
         if (state.running) {
             return false
@@ -136,6 +141,52 @@ object UrlSnapshotRemoteOperations {
                         .Supported
                 )
                 .source
+
+        val appContext =
+            context.applicationContext
+
+        if (
+            !forceRemote &&
+            source.kind ==
+                UrlSnapshotSourceKind
+                    .CONCRETE_PLAYLIST
+        ) {
+            val cached =
+                UrlSnapshotCache(
+                    appContext
+                )
+                    .get(
+                        source
+                    )
+
+            if (cached != null) {
+                publish(
+                    State(
+                        phase =
+                            Phase.RESOLVED,
+                        inputUrl =
+                            input,
+                        source =
+                            source,
+                        resolved =
+                            cached.resolved,
+                        message =
+                            resolvedMessage(
+                                result =
+                                    cached.resolved,
+                                fromCache =
+                                    true
+                            ),
+                        fromCache =
+                            true,
+                        cachedAt =
+                            cached.cachedAt
+                    )
+                )
+
+                return true
+            }
+        }
 
         val token =
             AuthSessionStore
@@ -182,14 +233,13 @@ object UrlSnapshotRemoteOperations {
                             .DYNAMIC_MIX
                     ) {
                         "Перевіряю, чи можна надійно прочитати цей Mix…"
+                    } else if (forceRemote) {
+                        "Оновлюю snapshot з YouTube Data API…"
                     } else {
                         "Читаю плейлист через YouTube Data API…"
                     }
             )
         )
-
-        val appContext =
-            context.applicationContext
 
         executor.execute {
             val quotaTracker =
@@ -227,6 +277,16 @@ object UrlSnapshotRemoteOperations {
                 when (resolution) {
                     is UrlSnapshotResolutionResult
                         .Resolved -> {
+                        val cachedAt =
+                            runCatching {
+                                UrlSnapshotCache(
+                                    appContext
+                                )
+                                    .put(
+                                        resolution
+                                    )
+                            }.getOrNull()
+
                         publish(
                             State(
                                 phase =
@@ -239,8 +299,15 @@ object UrlSnapshotRemoteOperations {
                                     resolution,
                                 message =
                                     resolvedMessage(
-                                        resolution
-                                    )
+                                        result =
+                                            resolution,
+                                        fromCache =
+                                            false
+                                    ),
+                                fromCache =
+                                    false,
+                                cachedAt =
+                                    cachedAt
                             )
                         )
                     }
@@ -376,8 +443,8 @@ object UrlSnapshotRemoteOperations {
 
     private fun resolvedMessage(
         result:
-            UrlSnapshotResolutionResult
-                .Resolved
+            UrlSnapshotResolutionResult.Resolved,
+        fromCache: Boolean
     ): String {
         val total =
             result.items.size
@@ -386,9 +453,15 @@ object UrlSnapshotRemoteOperations {
             result.unavailableCount
 
         return buildString {
-            append(
-                "Отримано $total елементів"
-            )
+            if (fromCache) {
+                append(
+                    "Кешований snapshot: $total елементів"
+                )
+            } else {
+                append(
+                    "Отримано $total елементів"
+                )
+            }
 
             if (unavailable > 0) {
                 append(
@@ -396,9 +469,15 @@ object UrlSnapshotRemoteOperations {
                 )
             }
 
-            append(
-                " • API-запитів: ${result.requestCount}"
-            )
+            if (fromCache) {
+                append(
+                    " • API-запитів зараз: 0"
+                )
+            } else {
+                append(
+                    " • API-запитів: ${result.requestCount}"
+                )
+            }
         }
     }
 

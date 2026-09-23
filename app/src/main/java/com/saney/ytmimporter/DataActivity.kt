@@ -32,6 +32,7 @@ import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.SafTreeFileWriter
 import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.youtube.SearchCache
+import com.saney.ytmimporter.urlsnapshot.UrlSnapshotCache
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -55,6 +56,7 @@ class DataActivity : Activity() {
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var quotaTracker: QuotaTracker
     private lateinit var searchCache: SearchCache
+    private lateinit var urlSnapshotCache: UrlSnapshotCache
     private lateinit var localBackupManager: LocalBackupManager
     private lateinit var dataModalController: RestorableModalController
 
@@ -90,6 +92,8 @@ class DataActivity : Activity() {
             QuotaTracker(this)
         searchCache =
             SearchCache(this)
+        urlSnapshotCache =
+            UrlSnapshotCache(this)
         localBackupManager =
             LocalBackupManager(this)
 
@@ -247,7 +251,7 @@ class DataActivity : Activity() {
             actionCard(
                 title = "Повний backup",
                 description =
-                    "History + Черга + робочий список + SearchCache. " +
+                    "History + Черга + робочий список + постійний SearchCache + URL snapshot cache. " +
                         "Лічильники квоти входять лише для діагностики й не відновлюються. " +
                         "Має SHA-256 integrity check.",
                 buttonLabel = "Зберегти backup",
@@ -425,7 +429,8 @@ class DataActivity : Activity() {
                     "OAuth access token, паролі та signing keys не входять " +
                         "у Full Backup.\n\n" +
                         "Але backup може містити Google email, YouTube Channel ID, " +
-                        "назви плейлистів, History, Queue, поточний робочий список та SearchCache. " +
+                        "назви плейлистів, History, Queue, поточний робочий список, " +
+                        "постійний SearchCache та URL snapshot cache. " +
                         "Не надсилайте backup туди, де не готові розкрити ці дані."
                 textSize = 12.5f
                 setTextColor(MUTED)
@@ -483,6 +488,9 @@ class DataActivity : Activity() {
         val cache =
             searchCache.stats()
 
+        val urlCache =
+            urlSnapshotCache.stats()
+
         val snapshotSummary =
             runCatching {
                 localBackupManager.inspectSafetySnapshot()
@@ -494,12 +502,23 @@ class DataActivity : Activity() {
                 append("History: $historyCount записів\n")
                 append("Черга: $pendingCount завдань\n")
                 append(
-                    "SearchCache: ${cache.validEntries} активних"
+                    "SearchCache: ${cache.validEntries} постійних"
                 )
 
-                if (cache.expiredEntries > 0) {
+                if (cache.malformedEntries > 0) {
                     append(
-                        " • ${cache.expiredEntries} прострочених"
+                        " • пошкоджених: ${cache.malformedEntries}"
+                    )
+                }
+
+                append("\n")
+                append(
+                    "URL snapshots: ${urlCache.validEntries} кешованих"
+                )
+
+                if (urlCache.malformedEntries > 0) {
+                    append(
+                        " • пошкоджених: ${urlCache.malformedEntries}"
                     )
                 }
 
@@ -1182,7 +1201,7 @@ class DataActivity : Activity() {
             )
             .setMessage(
                 "Backup може містити Google email, Channel ID, " +
-                    "назви плейлистів, History, Queue, поточний робочий список та SearchCache.\n\n" +
+                    "назви плейлистів, History, Queue, поточний робочий список, постійний SearchCache та URL snapshot cache.\n\n" +
                     "OAuth token, паролі та signing keys у файл не входять.\n\n" +
                     "Надсилайте backup лише туди, де довіряєте одержувачу."
             )

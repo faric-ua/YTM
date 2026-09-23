@@ -98,7 +98,12 @@ v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT / RELEASE BASELI
 - [x] lifecycle-safe single resolution; recreation reattaches without auto-run — Wave 3
 - [x] URL import local commit has no YouTube/YTM playlist write path — Wave 4
 - [x] dedicated static URL-source audit + full release preflight — Wave 1
-- [ ] signed phone QA after resolver/UI integration
+- [x] first signed phone U51-1 evidence: 813-row concrete playlist resolved/committed; long-preview footer + duplicate visibility findings recorded
+- [x] Corrective R1 fixed footer outside long preview ScrollView
+- [x] Corrective R1 exact-videoId duplicate statistics + explicit keep-all/dedupe save choice
+- [x] Corrective R1 permanent SearchCache with no automatic TTL; existing Full Backup/Restore retained
+- [x] Corrective R1 persistent URL snapshot cache + explicit force-refresh; Full Backup/Restore included
+- [ ] signed phone QA after Corrective R1; retest U51-1 then continue U51-2..U51-6
 - [ ] development reference: `https://music.youtube.com/playlist?list=RDREDRRxBLCgTn4p2e5sfWmEpQ&playnext=1&si=fCmcHgsLZstGHeXj`
 
 ## v1.4.50 — Skin System

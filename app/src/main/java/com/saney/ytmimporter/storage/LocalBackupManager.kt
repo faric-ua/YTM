@@ -42,7 +42,8 @@ class LocalBackupManager(
                 "Backup may contain playlist history, Google email, " +
                     "YouTube channel IDs and cached search results. " +
                     "It does NOT contain OAuth access tokens, passwords " +
-                    "or signing keys. Local quota counters are included for " +
+                    "or signing keys. SearchCache and URL snapshot cache are persistent " +
+                    "local knowledge. Local quota counters are included for " +
                     "diagnostics but are not restored."
             )
             .put("preferences", groups)
@@ -578,6 +579,7 @@ class LocalBackupManager(
                 "pending_jobs_v1",
                 "quota_tracker_v1",
                 "youtube_search_cache",
+                "url_snapshot_cache_v1",
                 "current_playlist_v1"
             )
 

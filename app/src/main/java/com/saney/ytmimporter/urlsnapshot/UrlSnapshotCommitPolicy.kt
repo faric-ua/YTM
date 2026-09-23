@@ -4,20 +4,51 @@ import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 
+enum class UrlSnapshotDuplicateMode {
+    KEEP_ALL,
+    DROP_REPEATED_EXACT_VIDEO_IDS
+}
+
 data class UrlSnapshotCommitPlan(
     val playlist: ImportedPlaylist,
     val sourceLabel: String,
+    val sourceCount: Int,
     val availableCount: Int,
-    val unavailableCount: Int
+    val unavailableCount: Int,
+    val duplicateOccurrences: Int,
+    val duplicateSkippedCount: Int
 )
 
 object UrlSnapshotCommitPolicy {
     fun buildPlan(
         resolved:
-            UrlSnapshotResolutionResult.Resolved
+            UrlSnapshotResolutionResult.Resolved,
+        duplicateMode:
+            UrlSnapshotDuplicateMode =
+            UrlSnapshotDuplicateMode.KEEP_ALL
     ): UrlSnapshotCommitPlan {
+        val duplicateAnalysis =
+            UrlSnapshotDuplicatePolicy
+                .analyze(
+                    resolved.items
+                )
+
+        val selectedItems =
+            when (duplicateMode) {
+                UrlSnapshotDuplicateMode
+                    .KEEP_ALL ->
+                    resolved.items
+
+                UrlSnapshotDuplicateMode
+                    .DROP_REPEATED_EXACT_VIDEO_IDS ->
+                    UrlSnapshotDuplicatePolicy
+                        .withoutRepeatedExactVideoIds(
+                            resolved.items
+                        )
+            }
+
         val tracks =
-            resolved.items.mapIndexed {
+            selectedItems.mapIndexed {
                     fallbackIndex,
                     item ->
 
@@ -47,6 +78,10 @@ object UrlSnapshotCommitPolicy {
                     TrackStatus.MISSING
             }
 
+        val duplicateSkippedCount =
+            resolved.items.size -
+                selectedItems.size
+
         return UrlSnapshotCommitPlan(
             playlist =
                 ImportedPlaylist(
@@ -59,14 +94,37 @@ object UrlSnapshotCommitPolicy {
                         tracks
                 ),
             sourceLabel =
-                "URL snapshot (" +
-                    resolved.source
-                        .playlistId +
-                    ")",
+                buildString {
+                    append(
+                        "URL snapshot ("
+                    )
+                    append(
+                        resolved.source
+                            .playlistId
+                    )
+                    append(")")
+
+                    if (
+                        duplicateMode ==
+                        UrlSnapshotDuplicateMode
+                            .DROP_REPEATED_EXACT_VIDEO_IDS
+                    ) {
+                        append(
+                            " • без повторів"
+                        )
+                    }
+                },
+            sourceCount =
+                resolved.items.size,
             availableCount =
                 availableCount,
             unavailableCount =
-                unavailableCount
+                unavailableCount,
+            duplicateOccurrences =
+                duplicateAnalysis
+                    .duplicateOccurrences,
+            duplicateSkippedCount =
+                duplicateSkippedCount
         )
     }
 

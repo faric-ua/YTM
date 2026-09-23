@@ -53,3 +53,15 @@
 - [ ] signed v1.4.51 APK
 - [ ] real-phone URL/Mix QA
 - [ ] stabilization checkpoint
+## Corrective R1 — phone finding gates
+
+- [x] preview Save/Cancel actions live outside the long track ScrollView
+- [x] exact-videoId repeated occurrences are counted and marked without title guessing
+- [x] missing/blank videoId rows are never auto-deduplicated
+- [x] duplicate choice requires a second explicit keep-all/dedupe action and survives recreation without auto-commit
+- [x] valid SearchCache entries have no automatic TTL
+- [x] cached empty Search results remain valid knowledge
+- [x] concrete URL snapshot normal read is cache-first with zero new list requests on hit
+- [x] fresh remote refresh requires explicit `Оновити з YouTube`
+- [x] URL snapshot cache is included in Full Backup/Restore
+- [ ] signed Corrective R1 U51-1 retest

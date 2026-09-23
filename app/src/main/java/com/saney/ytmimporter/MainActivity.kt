@@ -4032,9 +4032,8 @@ class MainActivity : Activity() {
             }
 
         val duplicates =
-            p.tracks.count {
-                it.status == TrackStatus.DUPLICATE
-            }
+            com.saney.ytmimporter.urlsnapshot.UrlSnapshotDuplicatePolicy
+                .countWorkspaceDuplicates(p.tracks)
 
         val pending =
             p.tracks.count {

@@ -12,9 +12,12 @@ import java.util.UUID
 
 data class UrlSnapshotCommitReceipt(
     val message: String,
-    val totalCount: Int,
+    val sourceCount: Int,
+    val savedCount: Int,
     val exactCount: Int,
-    val unavailableCount: Int
+    val unavailableCount: Int,
+    val duplicateOccurrences: Int,
+    val duplicateSkippedCount: Int
 )
 
 class UrlSnapshotLocalCommitter(
@@ -35,12 +38,17 @@ class UrlSnapshotLocalCommitter(
 
     fun commit(
         resolved:
-            UrlSnapshotResolutionResult.Resolved
+            UrlSnapshotResolutionResult.Resolved,
+        duplicateMode:
+            UrlSnapshotDuplicateMode =
+            UrlSnapshotDuplicateMode.KEEP_ALL
     ): UrlSnapshotCommitReceipt {
         val plan =
             UrlSnapshotCommitPolicy
                 .buildPlan(
-                    resolved
+                    resolved = resolved,
+                    duplicateMode =
+                        duplicateMode
                 )
 
         currentPlaylistStore.save(
@@ -56,23 +64,66 @@ class UrlSnapshotLocalCommitter(
             )
         )
 
-        val total =
+        val savedCount =
             plan.playlist
                 .tracks
                 .size
 
         return UrlSnapshotCommitReceipt(
             message =
-                "URL snapshot імпортовано: " +
-                    "$total елементів • " +
-                    "точних videoId: ${plan.availableCount} • " +
-                    "недоступних: ${plan.unavailableCount}.",
-            totalCount =
-                total,
+                buildString {
+                    append(
+                        "URL snapshot збережено: "
+                    )
+                    append(
+                        "джерело ${plan.sourceCount} • "
+                    )
+                    append(
+                        "збережено $savedCount"
+                    )
+
+                    if (
+                        plan.duplicateOccurrences > 0
+                    ) {
+                        if (
+                            plan.duplicateSkippedCount > 0
+                        ) {
+                            append(
+                                " • повторів пропущено: ${plan.duplicateSkippedCount}"
+                            )
+                        } else {
+                            append(
+                                " • повторів збережено: ${plan.duplicateOccurrences}"
+                            )
+                        }
+                    }
+
+                    append(
+                        " • точних videoId: ${plan.availableCount}"
+                    )
+
+                    if (
+                        plan.unavailableCount > 0
+                    ) {
+                        append(
+                            " • недоступних: ${plan.unavailableCount}"
+                        )
+                    }
+
+                    append(".")
+                },
+            sourceCount =
+                plan.sourceCount,
+            savedCount =
+                savedCount,
             exactCount =
                 plan.availableCount,
             unavailableCount =
-                plan.unavailableCount
+                plan.unavailableCount,
+            duplicateOccurrences =
+                plan.duplicateOccurrences,
+            duplicateSkippedCount =
+                plan.duplicateSkippedCount
         )
     }
 
@@ -126,7 +177,7 @@ class UrlSnapshotLocalCommitter(
             skippedCount =
                 0,
             duplicateCount =
-                0,
+                plan.duplicateSkippedCount,
             missingCount =
                 plan.unavailableCount,
             lastError =
