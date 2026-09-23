@@ -135,7 +135,7 @@ BUG-033 is closed for these tested paths.
 
 ## BUG-034 — Result modal disappears on Activity recreation
 
-Status: **R1 PHONE RETEST FAILED / R2 FIX IMPLEMENTED — STATIC/FULL PREFLIGHT PASS / PHONE RETEST NEEDED**
+Status: **CLOSED — PHONE RETEST PASS v1.4.50 WAVE 3 R2**
 
 Finding:
 - exact signed source `7e6fcb482387be92a7de54db0f4df5081d640495`;
@@ -189,3 +189,25 @@ R2 invariant:
 
 This is implemented once in the shared controller/Data modal host so all Data
 modal states follow the same contract.
+
+### BUG-034 R2 closeout evidence
+
+Exact tested package:
+- source `66d06d6912d014efb3a98d317ed49355a5fa3078`;
+- signed run `35802968056`;
+- result `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+`.
+
+Phone proof:
+- result modal survives repeated Activity recreation;
+- explicit Done clears semantic state durably;
+- rollback confirmation survives repeated recreation;
+- one explicit rollback transition opens one confirmation and does not execute
+  rollback automatically.
+
+Stored screenshots:
+- `qa/evidence/WAVE3_R2_HISTORY_RESULT_PORTRAIT_2026-09-23.jpg`;
+- `qa/evidence/WAVE3_R2_HISTORY_RESULT_LANDSCAPE_2026-09-23.jpg`;
+- `qa/evidence/WAVE3_R2_ROLLBACK_CONFIRM_LANDSCAPE_2026-09-23.jpg`;
+- `qa/evidence/WAVE3_R2_ROLLBACK_CONFIRM_PORTRAIT_2026-09-23.jpg`.
+
+BUG-034 is CLOSED for these tested lifecycle paths.

@@ -399,3 +399,25 @@ Expected:
 - no rollback occurs before the explicit confirmation button.
 
 Result: `W3R2-4+` / `W3R2-4-`
+
+## Wave 3 R2 signed result
+
+Exact package:
+- source `66d06d6912d014efb3a98d317ed49355a5fa3078`;
+- signed run `35802968056`;
+- installed version `1.4.50 (93)`.
+
+Real-phone result:
+- `W3R2-1+` — `History відновлено` survives repeated rotation;
+- `W3R2-2+` — `Готово` closes the result and it does not resurrect;
+- `W3R2-3+` — `Відкотити останній Restore?` survives repeated rotation;
+- `W3R2-4+` — one rollback tap opens one confirmation and no rollback runs
+  before explicit confirmation.
+
+Stored screenshots:
+- `evidence/WAVE3_R2_HISTORY_RESULT_PORTRAIT_2026-09-23.jpg`;
+- `evidence/WAVE3_R2_HISTORY_RESULT_LANDSCAPE_2026-09-23.jpg`;
+- `evidence/WAVE3_R2_ROLLBACK_CONFIRM_LANDSCAPE_2026-09-23.jpg`;
+- `evidence/WAVE3_R2_ROLLBACK_CONFIRM_PORTRAIT_2026-09-23.jpg`.
+
+BUG-034 is closed for the tested phone paths.

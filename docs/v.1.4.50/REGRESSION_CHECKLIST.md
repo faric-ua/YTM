@@ -86,8 +86,8 @@
 - [x] result/rollback states remain semantic `DataModal` values
 - [x] dedicated Wave 3 R2 audit passes
 - [x] full release preflight passes
-- [ ] signed Wave 3 R2 APK
-- [ ] W3R2-1 `History відновлено` survives repeated rotation
-- [ ] W3R2-2 `Готово` closes result and it stays closed after rotation
-- [ ] W3R2-3 `Відкотити останній Restore?` survives repeated rotation
-- [ ] W3R2-4 one explicit rollback tap opens one confirmation and does not execute rollback
+- [x] signed Wave 3 R2 APK — run `35802968056` / source `66d06d6912d014efb3a98d317ed49355a5fa3078`
+- [x] W3R2-1 `History відновлено` survives repeated rotation — PASS
+- [x] W3R2-2 `Готово` closes result and it stays closed after rotation — PASS
+- [x] W3R2-3 `Відкотити останній Restore?` survives repeated rotation — PASS
+- [x] W3R2-4 one explicit rollback tap opens one confirmation and does not execute rollback — PASS

@@ -22,8 +22,8 @@ Current release state:
 - active branch: `feat/v1.4.50-skin-system`
 - release-start base HEAD: `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`
 - accepted stable checkpoint: `checkpoint-v1.4.49-phone-pass` → `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
-- status: **v1.4.50 DEVELOPMENT — WAVE 3 R2 DETERMINISTIC MODAL-DISMISS CORE STATIC/FULL PREFLIGHT PASS / BUG-034 PHONE RETEST PENDING; R1 PHONE FAIL RECORDED**
-- current phone QA APK: **v1.4.50 / code 93**, source `7e6fcb482387be92a7de54db0f4df5081d640495`, signed run `35796094108`; Wave 3 result `W3-1+ / W3-2+ / W3-3+ / W3-4+`; BUG-033 closed; Wave 1 R1 and Wave 2 PASS evidence remains preserved.
+- status: **v1.4.50 TARGETED PHONE PASS — WAVE 3 R2 / BUG-034 CLOSED / FINAL ERROR+DUPLICATE QA PENDING**
+- current phone QA APK: **v1.4.50 / code 93**, source `66d06d6912d014efb3a98d317ed49355a5fa3078`, signed run `35802968056`; Wave 3 R2 result `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+`; BUG-034 closed; prior BUG-033/Wave 2/Wave 1 R1 PASS evidence remains preserved.
 - installed production APK: **v1.4.49 / code 92 exact final RC** from run `35755925563` / source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; `RC+` preserved Google/YTM connection and the current 13-track playlist; `FINAL+` confirmed installed/stable `1.4.49 (92)` and `Оновлень немає`.
 - accepted stable checkpoint is `checkpoint-v1.4.49-phone-pass` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; previous v1.4.48 checkpoint remains historical evidence.
 - focus: **v1.4.50 Skin System — define the reusable Skin contract first, then migrate Neon/Blue/Green without changing business semantics. YouTube/YTM URL/Mix → local snapshot remains future development.**
@@ -336,15 +336,14 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 ## 7. Exact next execution step
 
 1. Keep work on `feat/v1.4.50-skin-system`.
-2. BUG-033 remains closed on Wave 3 source `7e6fcb482387be92a7de54db0f4df5081d640495` / run `35796094108`.
-3. Wave 3 R1 source `c25b9f2a6843caf8790e45467df5bf118d08656d` / run `35799736192` failed BUG-034 phone retest: `W3R1-1- / W3R1-2- / W3R1-3-`.
-4. Failure evidence shows both `History відновлено` and `Відкотити останній Restore?` disappearing on rotation.
-5. R2 removes lifecycle timing inference from semantic dismissal.
-6. `Dialog.onDismiss` is transient-only; explicit buttons and Back/touch-outside are the only semantic close paths.
-7. Prepared Restore/History cancel cleanup is routed by semantic DataModal id through the shared controller.
-8. Next: build exact signed Wave 3 R2 APK.
-9. Phone-test `W3R2-1..W3R2-4`.
-10. Do not close BUG-034 or final v1.4.50 until R2 exact signed phone evidence passes.
+2. Current exact phone-tested APK is source `66d06d6912d014efb3a98d317ed49355a5fa3078` / signed run `35802968056`.
+3. BUG-033 remains closed for ordinary/prepared Data confirmations.
+4. BUG-034 is closed on R2: `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+`.
+5. R2 deterministic modal contract is accepted on phone for result and rollback confirmation recreation.
+6. v1.4.50 remains `development`; do not create final tag/checkpoint yet.
+7. Two explicit General release checks remain open: `error path` and `no accidental duplicate operation`.
+8. Next phone QA should rerun those two checks on this exact R2 APK; no new code/build is needed unless a failure is found.
+9. After both pass, prepare final v1.4.50 release closeout documentation/tag/checkpoint.
 
 ## 8. Working contract
 

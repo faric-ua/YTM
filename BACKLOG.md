@@ -103,7 +103,7 @@ v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
 - [x] skin preview/selection lifecycle — Wave 2 phone PASS `35787308504` / `W2-1+ W2-2+ W2-3+`
 - [x] phone QA across representative screens/modals/tiles — `UI-1+ UI-2+ UI-3+` plus Wave 3 Data modal rotation `W3-1+..W3-4+`
 - [x] BUG-033 shared restorable modal core — PHONE PASS run `35796094108` / source `7e6fcb482387be92a7de54db0f4df5081d640495`
-- [x] BUG-034 result-modal lifecycle hardening — R1 phone FAIL run `35799736192`; R2 deterministic dismiss contract static/full preflight PASS; signed phone retest pending
+- [x] BUG-034 result-modal lifecycle hardening — R2 PHONE PASS run `35802968056` / source `66d06d6912d014efb3a98d317ed49355a5fa3078`; `W3R2-1+..W3R2-4+`
 
 ## v1.4.48 — Generic Tiles + Playlist Management
 - [x] start from v1.4.47-R3 stabilization checkpoint

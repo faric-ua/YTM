@@ -5,9 +5,9 @@
   "phase": "development",
   "feature": "Skin System",
   "branch": "feat/v1.4.50-skin-system",
-  "appSourceSha": "7e6fcb482387be92a7de54db0f4df5081d640495",
-  "signedRun": "35796094108",
-  "qaStatus": "DEVELOPMENT — WAVE 3 R2 DETERMINISTIC MODAL-DISMISS CORE STATIC/FULL PREFLIGHT PASS / BUG-034 PHONE RETEST PENDING; R1 PHONE RETEST FAILED",
+  "appSourceSha": "66d06d6912d014efb3a98d317ed49355a5fa3078",
+  "signedRun": "35802968056",
+  "qaStatus": "TARGETED PHONE PASS — WAVE 3 R2 DETERMINISTIC MODAL DISMISS / BUG-034 CLOSED; FINAL ERROR-PATH + DUPLICATE-OP QA PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": "2026-09-23"

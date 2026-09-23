@@ -54,7 +54,7 @@ v1.4.50 release closeout.
 
 ## Status
 
-**DEVELOPMENT — WAVE 3 R2 DETERMINISTIC MODAL-DISMISS CORE STATIC/FULL PREFLIGHT PASS / BUG-034 PHONE RETEST PENDING; R1 PHONE RETEST FAILED**
+**TARGETED PHONE PASS — WAVE 3 R2 DETERMINISTIC MODAL DISMISS / BUG-034 CLOSED; FINAL ERROR-PATH + DUPLICATE-OP QA PENDING**
 
 ## Wave 2 implementation
 
@@ -213,3 +213,30 @@ R2 changes the shared contract:
 
 This removes dependence on `onPause`, `onSaveInstanceState` timing and
 `isChangingConfigurations` for semantic close decisions.
+
+## Wave 3 R2 phone checkpoint
+
+Exact signed package:
+- source `66d06d6912d014efb3a98d317ed49355a5fa3078`;
+- GitHub Actions run `35802968056`;
+- version `1.4.50 (93)`;
+- real-phone result `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+`.
+
+Accepted behavior:
+- `History відновлено` survives repeated portrait/landscape recreation;
+- explicit `Готово` closes the result and it stays closed after rotation;
+- `Відкотити останній Restore?` survives repeated recreation;
+- one explicit rollback tap opens one confirmation only;
+- rollback does not execute before explicit confirmation.
+
+R2 therefore validates the deterministic contract:
+- `Dialog.onDismiss` is transient-only;
+- explicit buttons own semantic close/transition;
+- Back/touch-outside uses explicit semantic cancel;
+- system recreation cannot erase durable modal identity.
+
+BUG-034 is CLOSED for the tested result/rollback lifecycle scope.
+
+Final v1.4.50 acceptance is still not claimed. The general release checklist
+keeps `error path` and `no accidental duplicate operation` open until they are
+explicitly rerun on this exact R2 APK.

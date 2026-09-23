@@ -203,8 +203,23 @@ print("PASS: danger-confirm has explicit backwards-compatible cancel button call
 print("PASS: recreation path cannot execute domain work")
 PY
 
-grep -Fq 'R1 PHONE RETEST FAILED / R2 FIX IMPLEMENTED' "$BUGS" ||
-  fail "BUG-034 R1 fail / R2 status missing"
+if grep -Fq 'R1 PHONE RETEST FAILED / R2 FIX IMPLEMENTED' "$BUGS"; then
+  echo "PASS: BUG-034 is in pre-phone R2 state"
+elif grep -Fq 'CLOSED — PHONE RETEST PASS v1.4.50 WAVE 3 R2' "$BUGS"; then
+  grep -Fq '66d06d6912d014efb3a98d317ed49355a5fa3078' "$BUGS" ||
+    fail "BUG-034 closed status missing exact R2 source"
+  grep -Fq '35802968056' "$BUGS" ||
+    fail "BUG-034 closed status missing exact R2 signed run"
+
+  for result in W3R2-1+ W3R2-2+ W3R2-3+ W3R2-4+; do
+    grep -Fq "$result" "$PHONE" ||
+      fail "BUG-034 closed without phone PASS evidence: $result"
+  done
+
+  echo "PASS: BUG-034 closed with exact signed R2 phone evidence"
+else
+  fail "BUG-034 R2 status is neither pre-phone nor accepted phone-pass state"
+fi
 
 for result in W3R2-1 W3R2-2 W3R2-3 W3R2-4; do
   grep -Fq "$result" "$PHONE" ||

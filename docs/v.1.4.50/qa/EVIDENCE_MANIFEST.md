@@ -16,3 +16,10 @@
 | Signed Wave 3 APK | GitHub Actions run `35796094108`, source `7e6fcb482387be92a7de54db0f4df5081d640495` | Exact shared-modal-controller APK used for BUG-033 retest | GitHub Actions |
 | Wave 3 targeted phone QA | User phone result `W3-1+ / W3-2+ / W3-3+ / W3-4+` | Ordinary and prepared Data modal states survive recreation; rotation does not auto-run picker/share/restore/import; Cancel is no-op | Recorded in `PHONE_TEST.md` / 2026-09-23 report |
 | Wave 3 prepared History screenshot | `qa/evidence/WAVE3_HISTORY_IMPORT_CONFIRM_2026-09-23.jpg` | Real prepared History JSON confirmation renders after file selection on the Wave 3 build | Stored in repository |
+
+| Signed Wave 3 R2 APK | GitHub Actions run `35802968056`, source `66d06d6912d014efb3a98d317ed49355a5fa3078` | Exact deterministic-modal-dismiss APK used for BUG-034 acceptance | GitHub Actions |
+| Wave 3 R2 phone QA | User result `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+` | Result/rollback modal recreation, durable Done close and single-shot rollback transition pass | Recorded in `PHONE_TEST.md` |
+| R2 History result portrait | `qa/evidence/WAVE3_R2_HISTORY_RESULT_PORTRAIT_2026-09-23.jpg` | `History відновлено` visible in portrait after R2 flow | Stored in repository |
+| R2 History result landscape | `qa/evidence/WAVE3_R2_HISTORY_RESULT_LANDSCAPE_2026-09-23.jpg` | Same result state remains readable in landscape | Stored in repository |
+| R2 rollback confirm landscape | `qa/evidence/WAVE3_R2_ROLLBACK_CONFIRM_LANDSCAPE_2026-09-23.jpg` | Rollback confirmation remains present in landscape | Stored in repository |
+| R2 rollback confirm portrait | `qa/evidence/WAVE3_R2_ROLLBACK_CONFIRM_PORTRAIT_2026-09-23.jpg` | Rollback confirmation remains present in portrait | Stored in repository |

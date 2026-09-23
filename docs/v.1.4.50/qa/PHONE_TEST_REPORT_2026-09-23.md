@@ -65,3 +65,21 @@ Representative UI status:
 
 Final v1.4.50 release acceptance is not yet claimed because the release-level
 error-path and duplicate-operation checks are still open.
+
+## Wave 3 R2 corrective closeout
+
+**TARGETED PHONE PASS — DETERMINISTIC MODAL DISMISS**
+
+Exact package:
+- source `66d06d6912d014efb3a98d317ed49355a5fa3078`;
+- signed run `35802968056`;
+- result `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+`.
+
+BUG-034 is CLOSED for the tested phone paths.
+
+The R2 phone run proves that result/rollback semantic state survives repeated
+recreation while explicit `Готово` remains a durable close and a single
+rollback transition does not duplicate or auto-execute the domain action.
+
+Final v1.4.50 release acceptance is not yet claimed because the general
+`error path` and `no accidental duplicate operation` checks remain open.
