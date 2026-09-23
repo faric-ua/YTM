@@ -24,8 +24,8 @@
 - [x] rotation/recreation — R1, W2 and W3 signed phone tests
 - [x] modal lifecycle — History + Skin preview + Data ordinary/prepared modal states
 - [x] cancel/no-op behavior — R1-3+, W2-1+/W2-3+, W3-1+..W3-4+
-- [ ] error path
-- [ ] no accidental duplicate operation
+- [x] error path — FINAL-A+; History JSON selected through full-Restore path was rejected as incompatible, no Restore confirmation/domain action started
+- [x] no accidental duplicate operation — FINAL-B+; after repeated rotation one explicit Save opened one system picker only, with no repeated confirm/save after picker Cancel
 
 ## Wave 2 — Skin preview / selection
 
@@ -71,9 +71,9 @@
 - [x] dedicated Wave 3 R1 audit passes
 - [x] full release preflight passes
 - [x] signed Wave 3 R1 APK — run `35799736192` / source `c25b9f2a6843caf8790e45467df5bf118d08656d`
-- [ ] W3R1-1 `History відновлено` survives portrait → landscape → portrait — **FAIL on R1**
-- [ ] W3R1-2 after rotation `Готово` closes result and it does not resurrect — **NOT ACCEPTED; R1 result state is lost**
-- [ ] W3R1-3 after rotation `Відкотити` opens exactly one rollback confirmation — **FAIL on R1: rollback confirm disappears on rotation**
+- [x] W3R1-1 executed — **FAIL on R1; superseded by W3R2-1+**
+- [x] W3R1-2 executed — **NOT ACCEPTED on R1; superseded by W3R2-2+**
+- [x] W3R1-3 executed — **FAIL on R1; superseded by W3R2-3+/W3R2-4+**
 
 ## Wave 3 R2 — Deterministic modal dismissal
 

@@ -54,7 +54,7 @@ v1.4.50 release closeout.
 
 ## Status
 
-**TARGETED PHONE PASS — WAVE 3 R2 DETERMINISTIC MODAL DISMISS / BUG-034 CLOSED; FINAL ERROR-PATH + DUPLICATE-OP QA PENDING**
+**QA COMPLETE — ALL v1.4.50 RELEASE CHECKS PASSED / RELEASE CLOSEOUT READY**
 
 ## Wave 2 implementation
 
@@ -240,3 +240,28 @@ BUG-034 is CLOSED for the tested result/rollback lifecycle scope.
 Final v1.4.50 acceptance is still not claimed. The general release checklist
 keeps `error path` and `no accidental duplicate operation` open until they are
 explicitly rerun on this exact R2 APK.
+
+## Final v1.4.50 phone QA
+
+Exact tested APK remains:
+- source `66d06d6912d014efb3a98d317ed49355a5fa3078`;
+- signed run `35802968056`;
+- version `1.4.50 (93)`.
+
+Final general release checks:
+- `FINAL-A+` — a `YTM_History_*.json` file selected through the full-Restore
+  picker is rejected as an incompatible backup; no `Підтвердити Restore`
+  modal appears and no Restore domain action starts;
+- `FINAL-B+` — after repeated rotation of `Зберегти повний backup?`, one
+  explicit `Зберегти` tap opens exactly one system save picker; cancelling
+  that picker causes no second picker, repeated confirmation or automatic
+  save.
+
+Video evidence for FINAL-A:
+- `docs/v.1.4.50/qa/evidence/FINAL_ERROR_PATH_2026-09-23.mp4`.
+
+All items in the v1.4.50 regression checklist are now complete.
+
+This checkpoint records QA completion only. The release remains in
+`development` until the separate final closeout package updates release
+metadata and creates the release/checkpoint tags.

@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.50-skin-system",
   "appSourceSha": "66d06d6912d014efb3a98d317ed49355a5fa3078",
   "signedRun": "35802968056",
-  "qaStatus": "TARGETED PHONE PASS — WAVE 3 R2 DETERMINISTIC MODAL DISMISS / BUG-034 CLOSED; FINAL ERROR-PATH + DUPLICATE-OP QA PENDING",
+  "qaStatus": "QA COMPLETE — ALL v1.4.50 RELEASE CHECKS PASSED / RELEASE CLOSEOUT READY",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": "2026-09-23"

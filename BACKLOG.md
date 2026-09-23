@@ -104,6 +104,8 @@ v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
 - [x] phone QA across representative screens/modals/tiles — `UI-1+ UI-2+ UI-3+` plus Wave 3 Data modal rotation `W3-1+..W3-4+`
 - [x] BUG-033 shared restorable modal core — PHONE PASS run `35796094108` / source `7e6fcb482387be92a7de54db0f4df5081d640495`
 - [x] BUG-034 result-modal lifecycle hardening — R2 PHONE PASS run `35802968056` / source `66d06d6912d014efb3a98d317ed49355a5fa3078`; `W3R2-1+..W3R2-4+`
+- [x] final error path — `FINAL-A+`; invalid History JSON is rejected by full Restore without domain action
+- [x] final no-duplicate-operation check — `FINAL-B+`; one post-rotation Save opens one picker only
 
 ## v1.4.48 — Generic Tiles + Playlist Management
 - [x] start from v1.4.47-R3 stabilization checkpoint

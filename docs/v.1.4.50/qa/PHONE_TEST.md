@@ -421,3 +421,38 @@ Stored screenshots:
 - `evidence/WAVE3_R2_ROLLBACK_CONFIRM_PORTRAIT_2026-09-23.jpg`.
 
 BUG-034 is closed for the tested phone paths.
+
+## Final release checks — exact R2 APK
+
+Exact package:
+- source `66d06d6912d014efb3a98d317ed49355a5fa3078`;
+- signed run `35802968056`.
+
+### FINAL-A — invalid full-Restore input
+
+Result: `FINAL-A+`
+
+Observed from the attached phone recording:
+- the user enters the full-Restore file flow;
+- selects `YTM_History_*.json`, which is not a full `YTM_Backup_*.json`;
+- the app returns to Data and reports that the backup is not suitable;
+- no `Підтвердити Restore` modal is opened;
+- no Restore domain action is launched.
+
+Evidence:
+- `evidence/FINAL_ERROR_PATH_2026-09-23.mp4`.
+
+### FINAL-B — no accidental duplicate operation
+
+Result: `FINAL-B+`
+
+Observed/reported:
+- `Зберегти повний backup?` survives repeated rotation;
+- one explicit Save opens one system file picker only;
+- cancelling the picker does not reopen a second picker or confirmation;
+- no automatic second save occurs.
+
+Final result:
+- general `error path` PASS;
+- general `no accidental duplicate operation` PASS;
+- every v1.4.50 regression-checklist item is complete.

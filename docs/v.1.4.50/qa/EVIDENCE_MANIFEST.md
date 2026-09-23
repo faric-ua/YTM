@@ -23,3 +23,6 @@
 | R2 History result landscape | `qa/evidence/WAVE3_R2_HISTORY_RESULT_LANDSCAPE_2026-09-23.jpg` | Same result state remains readable in landscape | Stored in repository |
 | R2 rollback confirm landscape | `qa/evidence/WAVE3_R2_ROLLBACK_CONFIRM_LANDSCAPE_2026-09-23.jpg` | Rollback confirmation remains present in landscape | Stored in repository |
 | R2 rollback confirm portrait | `qa/evidence/WAVE3_R2_ROLLBACK_CONFIRM_PORTRAIT_2026-09-23.jpg` | Rollback confirmation remains present in portrait | Stored in repository |
+
+| Final invalid-backup error-path video | `qa/evidence/FINAL_ERROR_PATH_2026-09-23.mp4` | FINAL-A+: History JSON selected through the full-Restore flow is rejected; no Restore confirmation/domain action follows | Stored in repository |
+| Final duplicate-operation check | User phone result `FINAL-B+` on source `66d06d6912d014efb3a98d317ed49355a5fa3078` / run `35802968056` | One explicit post-rotation Save opens one system picker only; picker Cancel does not trigger a duplicate operation | Recorded in `PHONE_TEST.md` |

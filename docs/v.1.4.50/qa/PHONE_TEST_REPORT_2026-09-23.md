@@ -83,3 +83,26 @@ rollback transition does not duplicate or auto-execute the domain action.
 
 Final v1.4.50 release acceptance is not yet claimed because the general
 `error path` and `no accidental duplicate operation` checks remain open.
+
+## Final release QA closeout
+
+**QA COMPLETE — ALL v1.4.50 RELEASE CHECKS PASSED**
+
+Exact final tested app source:
+`66d06d6912d014efb3a98d317ed49355a5fa3078`
+
+Exact signed run:
+`35802968056`
+
+Final checks:
+- `FINAL-A+`;
+- `FINAL-B+`.
+
+The invalid-backup error path was additionally reviewed from the stored phone
+recording. It shows the wrong History JSON being rejected by the full-Restore
+flow without opening `Підтвердити Restore` or starting Restore.
+
+The no-duplicate-operation check passed on the same exact APK.
+
+v1.4.50 is ready for the separate documentation/tag/checkpoint release
+closeout. This QA checkpoint itself does not create release tags.
