@@ -26,3 +26,5 @@
 
 | Final invalid-backup error-path video | `qa/evidence/FINAL_ERROR_PATH_2026-09-23.mp4` | FINAL-A+: History JSON selected through the full-Restore flow is rejected; no Restore confirmation/domain action follows | Stored in repository |
 | Final duplicate-operation check | User phone result `FINAL-B+` on source `66d06d6912d014efb3a98d317ed49355a5fa3078` / run `35802968056` | One explicit post-rotation Save opens one system picker only; picker Cancel does not trigger a duplicate operation | Recorded in `PHONE_TEST.md` |
+
+| v1.4.50 final stabilization checkpoint | `qa/STABILIZATION_CHECKPOINT.md` | Final identity source `66d06d6912d014efb3a98d317ed49355a5fa3078`, run `35802968056`, release tag `v1.4.50`, checkpoint `checkpoint-v1.4.50-phone-pass` | Stored in repository |

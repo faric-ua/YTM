@@ -34,11 +34,11 @@ Current development application:
 
 - versionName: **1.4.50**
 - versionCode: **93**
-- release focus: **v1.4.50 — Skin System — DEVELOPMENT**
-- release status: **v1.4.50 QA COMPLETE; all regression checks passed; final release closeout/tag/checkpoint ready**
+- release focus: **v1.4.50 — Skin System — FINAL**
+- release status: **v1.4.50 PHONE QA PASS — FINAL / stabilization checkpoint accepted**
 - active branch: `feat/v1.4.50-skin-system`
-- accepted stable release: **v1.4.49 — In-app Updater**
-- stable app checkpoint: `checkpoint-v1.4.49-phone-pass`
+- accepted stable release: **v1.4.50 — Skin System**
+- stable app checkpoint: `checkpoint-v1.4.50-phone-pass`
 - current architecture wave: **v1.4.50 Skin System**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**

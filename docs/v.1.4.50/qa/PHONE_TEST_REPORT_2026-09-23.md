@@ -106,3 +106,13 @@ The no-duplicate-operation check passed on the same exact APK.
 
 v1.4.50 is ready for the separate documentation/tag/checkpoint release
 closeout. This QA checkpoint itself does not create release tags.
+
+## Final stabilization identity
+
+Release acceptance:
+- source `66d06d6912d014efb3a98d317ed49355a5fa3078`;
+- signed run `35802968056`;
+- tag `v1.4.50`;
+- checkpoint `checkpoint-v1.4.50-phone-pass`.
+
+**Final result: PHONE QA PASS — v1.4.50 Skin System.**

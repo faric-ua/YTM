@@ -21,12 +21,12 @@ Current release state:
 - versionCode: **93**
 - active branch: `feat/v1.4.50-skin-system`
 - release-start base HEAD: `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`
-- accepted stable checkpoint: `checkpoint-v1.4.49-phone-pass` → `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
-- status: **v1.4.50 QA COMPLETE — ALL RELEASE CHECKS PASSED / RELEASE CLOSEOUT READY**
+- accepted stable checkpoint: `checkpoint-v1.4.50-phone-pass` → `66d06d6912d014efb3a98d317ed49355a5fa3078`
+- status: **v1.4.50 FINAL — PHONE QA PASS / STABILIZATION CHECKPOINT ACCEPTED**
 - current phone QA APK: **v1.4.50 / code 93**, source `66d06d6912d014efb3a98d317ed49355a5fa3078`, signed run `35802968056`; Wave 3 R2 result `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+`; BUG-034 closed; prior BUG-033/Wave 2/Wave 1 R1 PASS evidence remains preserved.
-- installed production APK: **v1.4.49 / code 92 exact final RC** from run `35755925563` / source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; `RC+` preserved Google/YTM connection and the current 13-track playlist; `FINAL+` confirmed installed/stable `1.4.49 (92)` and `Оновлень немає`.
-- accepted stable checkpoint is `checkpoint-v1.4.49-phone-pass` / `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`; previous v1.4.48 checkpoint remains historical evidence.
-- focus: **v1.4.50 Skin System — define the reusable Skin contract first, then migrate Neon/Blue/Green without changing business semantics. YouTube/YTM URL/Mix → local snapshot remains future development.**
+- installed/final phone-tested APK: **v1.4.50 / code 93** from run `35802968056` / source `66d06d6912d014efb3a98d317ed49355a5fa3078`; all v1.4.50 regression checks passed.
+- accepted stable checkpoint is `checkpoint-v1.4.50-phone-pass` / `66d06d6912d014efb3a98d317ed49355a5fa3078`; v1.4.49 remains the previous stable release evidence.
+- focus: **v1.4.50 Skin System is finalized. YouTube/YTM URL/Mix → local snapshot remains future development and must start as a separate documented release wave.**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -335,15 +335,17 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. Keep work on `feat/v1.4.50-skin-system`.
-2. Exact final phone-tested APK is source `66d06d6912d014efb3a98d317ed49355a5fa3078` / signed run `35802968056`.
-3. BUG-033 and BUG-034 are closed on accepted phone evidence.
-4. Final release checks passed: `FINAL-A+` invalid full-Restore input and `FINAL-B+` no accidental duplicate operation.
-5. The v1.4.50 regression checklist is fully complete.
-6. No new app source/build is required for release closeout.
-7. Next: prepare one final docs-only v1.4.50 release closeout package.
-8. That closeout may set final release metadata and create the canonical release tag/checkpoint only after its audits pass.
-9. Preserve the exact final app source `66d06d6912d014efb3a98d317ed49355a5fa3078` and signed run `35802968056`; do not substitute a later docs commit as the app-source identity.
+1. v1.4.50 Skin System is FINAL.
+2. Canonical app source: `66d06d6912d014efb3a98d317ed49355a5fa3078`.
+3. Canonical signed run: `35802968056`.
+4. Release tag: `v1.4.50`.
+5. Stabilization checkpoint: `checkpoint-v1.4.50-phone-pass`.
+6. Do not move either v1.4.50 tag to the later documentation closeout commit.
+7. Preserve v1.4.50 as the accepted stable baseline.
+8. Any next feature wave must begin with a new documentation/release skeleton
+   before the first app/build source change.
+9. YouTube/YTM URL/Mix → local snapshot remains future backlog until explicitly
+   started as a new release wave.
 
 ## 8. Working contract
 

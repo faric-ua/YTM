@@ -54,7 +54,7 @@ v1.4.50 release closeout.
 
 ## Status
 
-**QA COMPLETE — ALL v1.4.50 RELEASE CHECKS PASSED / RELEASE CLOSEOUT READY**
+**PHONE QA PASS — FINAL v1.4.50 / ALL RELEASE CHECKS COMPLETE**
 
 ## Wave 2 implementation
 
@@ -265,3 +265,26 @@ All items in the v1.4.50 regression checklist are now complete.
 This checkpoint records QA completion only. The release remains in
 `development` until the separate final closeout package updates release
 metadata and creates the release/checkpoint tags.
+
+## Final release closeout
+
+v1.4.50 is finalized with:
+- app source `66d06d6912d014efb3a98d317ed49355a5fa3078`;
+- signed run `35802968056`;
+- release tag `v1.4.50`;
+- stabilization checkpoint `checkpoint-v1.4.50-phone-pass`;
+- release metadata phase `final`.
+
+The canonical release/checkpoint tags intentionally point to the exact
+phone-tested app-source commit rather than this later documentation closeout
+commit.
+
+All earlier provisional statements in this document about remaining
+v1.4.50 QA are historical context and are superseded by the final phone QA and
+this closeout.
+
+See:
+- `qa/STABILIZATION_CHECKPOINT.md`;
+- `qa/PHONE_TEST_REPORT_2026-09-23.md`;
+- `qa/TEST_RUN_2026-09-23.md`;
+- `qa/EVIDENCE_MANIFEST.md`.

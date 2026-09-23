@@ -2,13 +2,13 @@
   "schema": 1,
   "versionName": "1.4.50",
   "versionCode": 93,
-  "phase": "development",
+  "phase": "final",
   "feature": "Skin System",
   "branch": "feat/v1.4.50-skin-system",
   "appSourceSha": "66d06d6912d014efb3a98d317ed49355a5fa3078",
   "signedRun": "35802968056",
-  "qaStatus": "QA COMPLETE — ALL v1.4.50 RELEASE CHECKS PASSED / RELEASE CLOSEOUT READY",
-  "tag": null,
-  "checkpointTag": null,
+  "qaStatus": "PHONE QA PASS — ALL v1.4.50 RELEASE CHECKS COMPLETE",
+  "tag": "v1.4.50",
+  "checkpointTag": "checkpoint-v1.4.50-phone-pass",
   "phoneTestDate": "2026-09-23"
 }

@@ -3,9 +3,9 @@ Version: 1.4.50
 Version code: 93
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current development focus (v1.4.50 Skin System — DEVELOPMENT):
+Current accepted release (v1.4.50 Skin System — FINAL):
 - active branch: `feat/v1.4.50-skin-system`;
-- release documentation phase: development;
+- release documentation phase: final;
 - app identity: v1.4.50 / versionCode 93;
 - Skin contract Wave 1 R1 targeted phone PASS: `R1-1+ / R1-2+ / R1-3+` on run 35782627453;
 - BUG-031/032 CLOSED for tested paths on source 81d5ebd988d08d3ddb80d78b73fd94e20280c980;
@@ -16,10 +16,10 @@ Current development focus (v1.4.50 Skin System — DEVELOPMENT):
 - Wave 3 R2 deterministic modal-dismiss PHONE PASS: `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+` on run 35802968056 / source 66d06d6912d014efb3a98d317ed49355a5fa3078; BUG-034 CLOSED;
 - v1.4.50 final release checks PASS: `FINAL-A+` invalid-input error path + `FINAL-B+` no accidental duplicate operation; regression checklist complete; release closeout ready;
 - semantic success/warning/danger/duplicate colors are grouped under `SemanticPalette`; initial Wave 1 semantic phone smoke is `2+`;
-- accepted stable release remains v1.4.49 In-app Updater;
+- accepted stable release: v1.4.50 Skin System;
 - v1.4.49 updater matrix `1+ 2+ 3+ 4+ 5+ 6+`, RC+, and FINAL+ remain accepted evidence;
-- stable app checkpoint: checkpoint-v1.4.49-phone-pass;
-- final v1.4.49 source: 3f2add44a43889c8119ae7a9289e2cd4e1d40dd2;
+- stable app checkpoint: checkpoint-v1.4.50-phone-pass;
+- final v1.4.50 source: 66d06d6912d014efb3a98d317ed49355a5fa3078; signed run: 35802968056; release tag: v1.4.50;
 - substantial phone-side code changes are delivered through `ytm-code` packages;
 - YouTube/YTM URL/Mix → local snapshot remains future backlog.
 

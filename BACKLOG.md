@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
+v1.4.50 — Skin System — FINAL / PHONE QA PASS
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -93,7 +93,7 @@ v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
 - [x] release documentation skeleton
 - [x] dedicated `feat/v1.4.50-skin-system` branch
 - [x] app identity v1.4.50 / versionCode 93
-- [x] release metadata phase `development`
+- [x] release metadata phase `final`
 - [x] define reusable Skin contract before broad UI migration — Wave 1 static/full preflight PASS
 - [x] migrate Neon/Blue/Green into common Skin contract — exact existing RGB values preserved
 - [x] separate semantic state colors from skin visuals — `SemanticPalette` role group
@@ -106,6 +106,7 @@ v1.4.50 — Skin System — DEVELOPMENT / RELEASE BASELINE READY
 - [x] BUG-034 result-modal lifecycle hardening — R2 PHONE PASS run `35802968056` / source `66d06d6912d014efb3a98d317ed49355a5fa3078`; `W3R2-1+..W3R2-4+`
 - [x] final error path — `FINAL-A+`; invalid History JSON is rejected by full Restore without domain action
 - [x] final no-duplicate-operation check — `FINAL-B+`; one post-rotation Save opens one picker only
+- [x] final release documentation/checkpoint closeout — `v1.4.50` + `checkpoint-v1.4.50-phone-pass` → `66d06d6912d014efb3a98d317ed49355a5fa3078`
 
 ## v1.4.48 — Generic Tiles + Playlist Management
 - [x] start from v1.4.47-R3 stabilization checkpoint

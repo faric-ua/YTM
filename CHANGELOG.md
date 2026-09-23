@@ -1,5 +1,20 @@
 # Журнал змін (Changelog)
 
+## v1.4.50
+
+- Додано спільний Skin-контракт для Neon Dark, Blue Dark і Green Dark без зміни прийнятих RGB.
+- Візуальні токени Skin відокремлено від семантичних success/warning/danger/duplicate станів.
+- Додано попередній перегляд Skin: preview не змінює активну тему, а запис відбувається лише після `Застосувати`.
+- Повний Home chrome оновлюється після зміни Skin, а не лише кнопки workflow.
+- Уніфіковано lifecycle Data-модалок через `RestorableModalController`.
+- `Dialog.onDismiss` є лише transient teardown; явні кнопки та `OnCancel` керують semantic close.
+- Confirm/result/rollback модалки Data переживають rotation без повторного запуску domain actions.
+- Виправлено rotation для History clear-confirm та result/rollback Data modal flows.
+- Фінальні error-path і no-duplicate-operation перевірки пройдені на телефоні.
+- versionCode 93 / versionName 1.4.50.
+- Final source: `66d06d6912d014efb3a98d317ed49355a5fa3078`; signed run: `35802968056`.
+
+
 ## v1.4.49
 - Додано безпечний in-app Updater через офіційні GitHub Releases.
 - Перевірка версії використовує `versionCode`; downgrade не пропонується.
