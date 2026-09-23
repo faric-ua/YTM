@@ -2,6 +2,7 @@
 
 | Version | Status | Note |
 |---|---|---|
+| v1.4.51 | **PLANNED — DOCUMENTATION SKELETON READY / APP CODE NOT STARTED** | URL/Mix snapshot import is scoped on a dedicated planning branch. Planned identity is 1.4.51 / 94; installed/current app remains accepted v1.4.50 until the separate release-start bump. No implementation or phone QA exists yet. |
 | v1.4.50 | **PHONE QA PASS — FINAL SKIN SYSTEM RELEASE** | Exact final source `66d06d6912d014efb3a98d317ed49355a5fa3078`, signed run `35802968056`, release tag `v1.4.50`, checkpoint `checkpoint-v1.4.50-phone-pass`. Wave 1/R1, Wave 2, Wave 3/R2, BUG-031/032/033/034 corrective QA, `FINAL-A+` and `FINAL-B+` passed. |
 | v1.4.49 | **PHONE QA PASS — TARGETED UPDATER / PRODUCTION FINAL RC / EQUAL-VERSION** | Exact final source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`, signed run `35755925563`, release tag `v1.4.49`. Updater `1+..6+`, final RC `RC+`, and stable equal-version `FINAL+` passed. BUG-030 remains an open non-blocking Play Protect distribution/reputation finding. |
 | v1.4.48 | **PHONE QA PASS — TARGETED STABILIZATION CHECKPOINT** | Functional tests 1+–4+ passed on signed run `35671741464` / `0e5620204e475495dd08468e8d00987eba7c4f75`. That run found UX-023. The narrow multiline-title fix was then phone-retested as 5+ on signed run `35673239632` / final source `ada8038f51834f8ae4874cd9c13485645f5f72b6`. Full historical regression was not rerun on the successor build. |

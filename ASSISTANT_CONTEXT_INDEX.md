@@ -115,15 +115,28 @@ retrospective gaps rather than invented evidence.
 - `docs/v.1.4.49/qa/EVIDENCE_MANIFEST.md`
 - `docs/v.1.4.49/diagrams/UPDATER_FLOW.md`
 
-### Active development release package
+### Accepted stable release package
 
 - `docs/v.1.4.50/RELEASE_META.json`
 - `docs/v.1.4.50/RELEASE.md`
 - `docs/v.1.4.50/REGRESSION_CHECKLIST.md`
+- `docs/v.1.4.50/qa/STABILIZATION_CHECKPOINT.md`
 - `docs/v.1.4.50/qa/PHONE_TEST.md`
 - `docs/v.1.4.50/qa/BUG_REGISTER.md`
 - `docs/v.1.4.50/qa/EVIDENCE_MANIFEST.md`
 - `docs/v.1.4.50/diagrams/README.md`
+
+### Planned next release package
+
+- `docs/v.1.4.51/RELEASE_META.json`
+- `docs/v.1.4.51/RELEASE.md`
+- `docs/v.1.4.51/URL_SNAPSHOT_CONTRACT.md`
+- `docs/v.1.4.51/REGRESSION_CHECKLIST.md`
+- `docs/v.1.4.51/qa/PHONE_TEST.md`
+- `docs/v.1.4.51/qa/BUG_REGISTER.md`
+- `docs/v.1.4.51/qa/EVIDENCE_MANIFEST.md`
+- `docs/v.1.4.51/diagrams/README.md`
+- `docs/v.1.4.51/diagrams/URL_SNAPSHOT_FLOW.md`
 
 ## Audit rule
 

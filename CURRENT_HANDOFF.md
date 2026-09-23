@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-22**
+Last updated: **2026-09-23**
 
 ## 1. Resume point
 
@@ -26,7 +26,10 @@ Current release state:
 - current phone QA APK: **v1.4.50 / code 93**, source `66d06d6912d014efb3a98d317ed49355a5fa3078`, signed run `35802968056`; Wave 3 R2 result `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+`; BUG-034 closed; prior BUG-033/Wave 2/Wave 1 R1 PASS evidence remains preserved.
 - installed/final phone-tested APK: **v1.4.50 / code 93** from run `35802968056` / source `66d06d6912d014efb3a98d317ed49355a5fa3078`; all v1.4.50 regression checks passed.
 - accepted stable checkpoint is `checkpoint-v1.4.50-phone-pass` / `66d06d6912d014efb3a98d317ed49355a5fa3078`; v1.4.49 remains the previous stable release evidence.
-- focus: **v1.4.50 Skin System is finalized. YouTube/YTM URL/Mix → local snapshot remains future development and must start as a separate documented release wave.**
+- focus: **v1.4.50 Skin System remains the accepted stable baseline. v1.4.51 YouTube/YTM URL/Mix Snapshot Import is now the planned next release; documentation exists before app/build changes.**
+- planning branch: `feat/v1.4.51-url-mix-snapshot`
+- planned app identity: **v1.4.51 / versionCode 94**, not applied yet; current app source is still v1.4.50 / 93
+- v1.4.51 phase: **planned — app code not started**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -335,17 +338,21 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. v1.4.50 Skin System is FINAL.
-2. Canonical app source: `66d06d6912d014efb3a98d317ed49355a5fa3078`.
-3. Canonical signed run: `35802968056`.
-4. Release tag: `v1.4.50`.
-5. Stabilization checkpoint: `checkpoint-v1.4.50-phone-pass`.
-6. Do not move either v1.4.50 tag to the later documentation closeout commit.
-7. Preserve v1.4.50 as the accepted stable baseline.
-8. Any next feature wave must begin with a new documentation/release skeleton
-   before the first app/build source change.
-9. YouTube/YTM URL/Mix → local snapshot remains future backlog until explicitly
-   started as a new release wave.
+1. Keep `v1.4.50` and `checkpoint-v1.4.50-phone-pass` immutable on exact
+   app source `66d06d6912d014efb3a98d317ed49355a5fa3078`.
+2. Work on planning branch `feat/v1.4.51-url-mix-snapshot`.
+3. v1.4.51 documentation skeleton is the only intended change in this step.
+4. Current app/build identity intentionally remains v1.4.50 / versionCode 93.
+5. Next package: bump app identity to v1.4.51 / versionCode 94 and advance
+   `docs/v.1.4.51/RELEASE_META.json` from `planned` to `development`.
+6. Only after that release-start package passes full preflight should the first
+   URL/source parser or resolver implementation be added.
+7. First implementation wave must define the supported URL matrix and
+   playlist-vs-Mix classification before broad UI/domain work.
+8. Do not claim Mix completeness when only a current dynamic session can be
+   resolved; fail clearly when reliable enumeration is unavailable.
+9. Preserve the v1.4.50 lifecycle, auth, quota, Skin and local-workspace
+   contracts unless v1.4.51 explicitly documents a change.
 
 ## 8. Working contract
 

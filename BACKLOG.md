@@ -79,14 +79,25 @@ v1.4.50 — Skin System — FINAL / PHONE QA PASS
 - [x] final release documentation/checkpoint closeout
 - [x] publish stable v1.4.49 + final equal-version recheck — `FINAL+`
 
-## Future — Import playlist / Mix by URL
+## v1.4.51 — YouTube/YTM URL/Mix Snapshot Import
 
-- [ ] accept a YouTube or YTM playlist/Mix URL
-- [ ] detect playlist vs dynamic Mix
-- [ ] read currently available tracks
-- [ ] show preview before import
+- [x] roadmap promoted from Future into dedicated v1.4.51 release
+- [x] release documentation skeleton created before app/build source changes
+- [x] dedicated planning branch `feat/v1.4.51-url-mix-snapshot`
+- [ ] bump app identity to v1.4.51 / versionCode 94
+- [ ] advance release metadata phase to `development`
+- [ ] define supported YouTube/YTM URL matrix
+- [ ] detect concrete playlist vs dynamic Mix/radio source
+- [ ] read only currently available/resolvable tracks
+- [ ] show preview before local commit
+- [ ] preserve source order and duplicate occurrences
+- [ ] preserve exact videoId when available
+- [ ] report inaccessible items without silent search substitution
 - [ ] save as a stable local playlist snapshot
-- [ ] use development reference: `https://music.youtube.com/playlist?list=RDREDRRxBLCgTn4p2e5sfWmEpQ&playnext=1&si=fCmcHgsLZstGHeXj`
+- [ ] lifecycle-safe single resolution; no recreation auto-run
+- [ ] no YouTube/YTM playlist write during URL import
+- [ ] dedicated static audit + signed phone QA
+- [ ] development reference: `https://music.youtube.com/playlist?list=RDREDRRxBLCgTn4p2e5sfWmEpQ&playnext=1&si=fCmcHgsLZstGHeXj`
 
 ## v1.4.50 — Skin System
 - [x] roadmap recorded

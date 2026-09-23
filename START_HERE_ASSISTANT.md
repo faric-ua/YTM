@@ -39,7 +39,10 @@ Current development application:
 - active branch: `feat/v1.4.50-skin-system`
 - accepted stable release: **v1.4.50 — Skin System**
 - stable app checkpoint: `checkpoint-v1.4.50-phone-pass`
-- current architecture wave: **v1.4.50 Skin System**
+- current architecture wave: **v1.4.50 Skin System — accepted stable**
+- next planned release: **v1.4.51 — YouTube/YTM URL/Mix Snapshot Import**
+- planning branch: `feat/v1.4.51-url-mix-snapshot`
+- planned identity: **1.4.51 / 94**; app/build source still **1.4.50 / 93** until release-start
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 

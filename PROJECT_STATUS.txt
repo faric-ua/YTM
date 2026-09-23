@@ -21,7 +21,8 @@ Current accepted release (v1.4.50 Skin System — FINAL):
 - stable app checkpoint: checkpoint-v1.4.50-phone-pass;
 - final v1.4.50 source: 66d06d6912d014efb3a98d317ed49355a5fa3078; signed run: 35802968056; release tag: v1.4.50;
 - substantial phone-side code changes are delivered through `ytm-code` packages;
-- YouTube/YTM URL/Mix → local snapshot remains future backlog.
+- v1.4.51 YouTube/YTM URL/Mix Snapshot Import is the planned next release; docs skeleton exists on `feat/v1.4.51-url-mix-snapshot` before app/build changes;
+- planned v1.4.51 identity is versionCode 94; current app remains v1.4.50 / 93 until release-start.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
