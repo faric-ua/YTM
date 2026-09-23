@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -15,6 +16,7 @@ import android.widget.TextView
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotAvailability
+import com.saney.ytmimporter.urlsnapshot.UrlSnapshotLocalCommitter
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotRemoteOperations
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotResolvedItem
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotUnavailableReason
@@ -26,6 +28,9 @@ class UrlSnapshotActivity : Activity() {
     private var enteredUrl:
         String =
         ""
+
+    private var commitStarted =
+        false
 
     private val remoteListener:
         (UrlSnapshotRemoteOperations.State) -> Unit = {
@@ -446,8 +451,92 @@ class UrlSnapshotActivity : Activity() {
         }
 
         content.addView(
+            actionButton(
+                label =
+                    "Зберегти як поточний список",
+                primary =
+                    true,
+                topMarginDp =
+                    4
+            ) {
+                commitResolved(
+                    resolved
+                )
+            }
+        )
+
+        content.addView(
             cancelPreviewButton()
         )
+    }
+
+    private fun commitResolved(
+        resolved:
+            com.saney.ytmimporter.urlsnapshot
+                .UrlSnapshotResolutionResult
+                .Resolved
+    ) {
+        if (commitStarted) {
+            return
+        }
+
+        commitStarted =
+            true
+
+        val result =
+            runCatching {
+                UrlSnapshotLocalCommitter(
+                    this
+                )
+                    .commit(
+                        resolved
+                    )
+            }
+
+        result.onSuccess {
+                receipt ->
+
+            captureInput()
+
+            UrlSnapshotRemoteOperations
+                .clearTerminal()
+
+            setResult(
+                RESULT_OK,
+                Intent()
+                    .putExtra(
+                        EXTRA_COMMIT_MESSAGE,
+                        receipt.message
+                    )
+            )
+
+            finish()
+        }.onFailure {
+                error ->
+
+            commitStarted =
+                false
+
+            UiChrome.showMessageDialog(
+                activity =
+                    this,
+                title =
+                    "Не вдалося зберегти snapshot",
+                message =
+                    error.message
+                        ?: "Локальний список не вдалося оновити.",
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label =
+                                "Закрити",
+                            tone =
+                                UiChrome.ActionTone.NORMAL,
+                            onClick = {}
+                        )
+                    )
+            )
+        }
     }
 
     private fun previewItem(
@@ -883,6 +972,9 @@ class UrlSnapshotActivity : Activity() {
     companion object {
         private const val STATE_URL_INPUT =
             "url_snapshot_input"
+
+        const val EXTRA_COMMIT_MESSAGE =
+            "url_snapshot_commit_message"
 
         private val MUTED =
             Color.rgb(

@@ -35,7 +35,7 @@ Current development application:
 - versionName: **1.4.51**
 - versionCode: **94**
 - release focus: **v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT**
-- release status: **DEVELOPMENT — WAVE 3 URL PREVIEW/LIFECYCLE STATIC/FULL PREFLIGHT PASS / LOCAL SNAPSHOT COMMIT NEXT / PHONE QA PENDING**
+- release status: **DEVELOPMENT — WAVE 4 LOCAL SNAPSHOT COMMIT STATIC/FULL PREFLIGHT PASS / SIGNED PHONE QA NEXT**
 - active branch: `feat/v1.4.51-url-mix-snapshot`
 - release-start base HEAD: `5ccc5e2066fb2e69338c8181f266a18dec55b398`
 - accepted stable release: **v1.4.50 — Skin System**
@@ -45,7 +45,8 @@ Current development application:
 - Wave 1: **URL matrix + parser/canonicalization + playlist-vs-Mix classification — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
 - Wave 2: **concrete-playlist resolver + ordered/unavailable result model + exact quota hook — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
 - Wave 3: **process-local single remote-operation owner + URL input/preview UI — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
-- next implementation wave: **explicit local snapshot commit into the existing current-playlist workspace; still no remote write**
+- Wave 4: **explicit local snapshot commit + CurrentPlaylist/History reuse + result handoff — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
+- next release step: **signed v1.4.51 build + focused real-phone U51-1..U51-6 QA**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 

@@ -74,6 +74,28 @@ and unavailable items. Dynamic Mix renders an explicit unsupported state.
 Wave 3 preview remains read-only: no `CurrentPlaylistStore`, Search, Review or
 remote-write dependency exists in the new owner/Activity.
 
+## Wave 4 local snapshot commit
+
+The authoritative local persistence boundary is `COMMIT_CONTRACT.md`.
+
+Wave 4 maps an accepted `Resolved` preview into the existing
+`ImportedPlaylist` / `Track` model and persists it through
+`CurrentPlaylistStore` plus local-import `HistoryStore` semantics.
+
+Available rows become exact canonical `MATCHED` selections. Unavailable rows
+remain ordered `MISSING` entries with their source error and any exact videoId
+the API exposed. No row is silently dropped or search-substituted.
+
+Commit happens only from the explicit `Зберегти як поточний список` action.
+Activity recreation never calls the commit method and no pending-commit flag is
+restored.
+
+After successful commit, the URL screen returns `RESULT_OK` through
+`ImportActivity` using the existing import-result message path.
+
+The Wave 4 commit path is local-only and has no YouTube API or remote playlist
+write dependency.
+
 ## Track identity
 
 Priority:

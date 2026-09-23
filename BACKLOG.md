@@ -94,9 +94,9 @@ v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT / RELEASE BASELI
 - [x] preserve source order and duplicate occurrences — Wave 2 resolver model/JVM tests
 - [x] preserve exact videoId when available — Wave 2
 - [x] report inaccessible/private/deleted items without silent search substitution — Wave 2
-- [ ] save as a stable local playlist snapshot
+- [x] explicit commit saves a stable local playlist snapshot — Wave 4
 - [x] lifecycle-safe single resolution; recreation reattaches without auto-run — Wave 3
-- [ ] no YouTube/YTM playlist write during URL import
+- [x] URL import local commit has no YouTube/YTM playlist write path — Wave 4
 - [x] dedicated static URL-source audit + full release preflight — Wave 1
 - [ ] signed phone QA after resolver/UI integration
 - [ ] development reference: `https://music.youtube.com/playlist?list=RDREDRRxBLCgTn4p2e5sfWmEpQ&playnext=1&si=fCmcHgsLZstGHeXj`

@@ -30,12 +30,12 @@
 
 ## Local snapshot commit
 
-- [ ] explicit commit creates stable local snapshot
-- [ ] snapshot does not auto-sync with later source changes
-- [ ] existing local current-playlist workspace is reused
-- [ ] existing Review/Search downstream flows remain reusable
-- [ ] URL import performs no YouTube/YTM playlist write
-- [ ] rotation/recreation does not auto-commit snapshot
+- [x] explicit commit creates stable local snapshot — Wave 4
+- [x] snapshot does not auto-sync with later source changes — Wave 4
+- [x] existing local current-playlist workspace is reused — Wave 4
+- [x] existing Review/Search downstream flows remain reusable — Wave 4
+- [x] URL import performs no YouTube/YTM playlist write — Wave 4
+- [x] rotation/recreation does not auto-commit snapshot — Wave 4
 
 ## Existing-system regression
 

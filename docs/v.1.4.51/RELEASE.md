@@ -123,6 +123,27 @@ URL snapshot preview screen:
 Wave 3 intentionally has no local snapshot commit action. See
 `PREVIEW_CONTRACT.md`.
 
+## Wave 4 implementation
+
+Wave 4 adds the explicit local snapshot commit boundary:
+
+- `UrlSnapshotCommitPolicy` maps the resolved ordered rows into the existing
+  `ImportedPlaylist` / `Track` model;
+- exact available rows remain canonical `MATCHED` selections with exact videoId;
+- unavailable rows remain ordered `MISSING` entries instead of being dropped;
+- duplicate occurrences remain separate rows;
+- `UrlSnapshotLocalCommitter` writes through the existing
+  `CurrentPlaylistStore` and `HistoryStore`;
+- History uses local-import semantics and never claims a YTM write;
+- commit is triggered only by `Зберегти як поточний список`;
+- the URL screen returns the existing import-result message through
+  `ImportActivity`, then Home can reload the saved workspace;
+- Activity recreation never auto-commits;
+- the commit path has no YouTube API, Search, resolver or playlist-write
+  dependency.
+
+See `COMMIT_CONTRACT.md`.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:
@@ -144,4 +165,4 @@ Wave 3 intentionally has no local snapshot commit action. See
 
 ## Status
 
-**DEVELOPMENT — WAVE 3 URL PREVIEW/LIFECYCLE STATIC/FULL PREFLIGHT PASS / LOCAL SNAPSHOT COMMIT NEXT / PHONE QA PENDING**
+**DEVELOPMENT — WAVE 4 LOCAL SNAPSHOT COMMIT STATIC/FULL PREFLIGHT PASS / SIGNED PHONE QA NEXT**

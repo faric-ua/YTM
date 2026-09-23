@@ -25,7 +25,8 @@ Current accepted release (v1.4.50 Skin System — FINAL):
 - current development app identity is v1.4.51 / versionCode 94; accepted installed stable baseline remains v1.4.50 / 93.
 - v1.4.51 Wave 1 URL source parser/classification remains PASS.
 - v1.4.51 Wave 2 concrete-playlist resolver + ordered/unavailable result model + exact quota hook remains PASS; dynamic Mix remains explicit unsupported.
-- v1.4.51 Wave 3 process-local URL resolve owner + explicit URL input/read-only preview UI is implemented with dedicated static/full preflight PASS; rotation reattaches without auto-run; local snapshot commit remains pending.
+- v1.4.51 Wave 3 URL resolve owner + read-only preview/lifecycle remains PASS.
+- v1.4.51 Wave 4 explicit local snapshot commit is implemented with dedicated static/full preflight PASS: existing CurrentPlaylistStore/HistoryStore reused, exact IDs/order/duplicates/unavailable rows preserved, no auto-commit and no remote write; signed phone QA is next.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED

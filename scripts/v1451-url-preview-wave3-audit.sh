@@ -162,10 +162,17 @@ for needle in (
     "Activity recreation reattaches",
     "never silently starts Search",
     "Neither action mutates the current local playlist",
-    "Wave 3 intentionally has no local commit action",
 ):
     if needle not in contract:
         raise SystemExit("FAIL: preview contract missing: " + needle)
+
+if not (
+    "Wave 3 intentionally has no local commit action" in contract
+    or "Wave 3 itself intentionally had no local commit action" in contract
+):
+    raise SystemExit(
+        "FAIL: preview contract missing Wave 3 no-auto-commit boundary"
+    )
 
 if "## Wave 3 preview / lifecycle" not in snapshot:
     raise SystemExit("FAIL: URL snapshot contract missing Wave 3 section")
@@ -186,7 +193,7 @@ print("PASS: no access token stored in owner State")
 print("PASS: Activity reattaches without onCreate auto-start")
 print("PASS: preview renders ordered exact/unavailable rows")
 print("PASS: dynamic Mix has explicit unsupported state")
-print("PASS: owner/Activity have no local-commit/search/write dependency")
+print("PASS: Wave 3 remote owner stays outside local-commit/search/write systems")
 print("PASS: Import entry + manifest registration present")
 PY
 

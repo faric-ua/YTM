@@ -342,20 +342,23 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
    app source `66d06d6912d014efb3a98d317ed49355a5fa3078`.
 2. Continue on `feat/v1.4.51-url-mix-snapshot`; identity remains
    v1.4.51 / versionCode 94 / phase `development`.
-3. Wave 1 parser/classifier and Wave 2 concrete-playlist resolver remain
-   protected by dedicated audits/JVM tests.
-4. Wave 3 URL preview/lifecycle is implemented: Import exposes an explicit
-   URL/Mix entry, `UrlSnapshotActivity` renders state, and
-   `UrlSnapshotRemoteOperations` owns at most one active resolve.
-5. Recreation restores entered URL and reattaches to process-local state without
-   auto-resolving, consuming fresh quota, committing or launching downstream work.
-6. Preview preserves ordered/duplicate/exact-id/unavailable rows; dynamic Mix is
-   a clear unsupported result with no scraper/Search fallback.
-7. HTTP 401 uses existing auth invalidation and quota failures are recorded in
-   the existing tracker. No auth token is stored in Activity saved state/owner state.
-8. Next wave: explicit local snapshot commit into the existing
-   `CurrentPlaylistStore` workspace. Commit must be user-triggered, local-only,
-   and must not create/edit/delete any YouTube/YTM playlist.
+3. Waves 1-3 parser/resolver/preview contracts remain protected by dedicated
+   audits/JVM tests/static preflight.
+4. Wave 4 explicit local snapshot commit is implemented:
+   `UrlSnapshotCommitPolicy` maps ordered resolution rows into the existing
+   `ImportedPlaylist` / `Track` model and `UrlSnapshotLocalCommitter` persists
+   through `CurrentPlaylistStore` plus local-import `HistoryStore`.
+5. Available rows keep exact videoId as canonical MATCHED selections. Unavailable
+   rows remain ordered MISSING entries with explicit source errors and any exact
+   source ID exposed by the API. Duplicates remain separate.
+6. Commit is only the explicit `Зберегти як поточний список` action. Rotation or
+   state restoration never auto-commits and there is no pending-commit replay.
+7. URL commit performs no remote request/write. After success the URL screen
+   returns through ImportActivity's existing import-result channel so Home reloads
+   the saved workspace.
+8. Next release step: produce a signed v1.4.51 APK and run focused U51-1..U51-6
+   real-phone QA, including concrete URL, dynamic Mix unsupported, Cancel/Back,
+   rotation, invalid URL and local snapshot handoff.
 9. Preserve all accepted v1.4.50 lifecycle/auth/quota/Skin/local-workspace
    contracts unless v1.4.51 explicitly documents a change.
 

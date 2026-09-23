@@ -75,8 +75,7 @@ Rotation/recreation must not:
 
 ## Commit boundary
 
-Wave 3 intentionally has no local commit action.
+Wave 3 itself intentionally had no local commit action.
 
-Wave 4 will map an accepted preview into the existing current-playlist workspace
-through an explicit user action. That later commit must remain local-only and
-must not create/edit/delete a remote playlist.
+Wave 4 now supplies the separate explicit local commit boundary documented in
+`COMMIT_CONTRACT.md`. Preview rendering/recreation still never commits by itself.

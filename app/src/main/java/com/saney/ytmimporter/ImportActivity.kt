@@ -94,6 +94,9 @@ class ImportActivity : Activity() {
     private val manifestProjectSelectorRequestCode =
         2504
 
+    private val urlSnapshotRequestCode =
+        2505
+
     private var pendingDeltaChainPlan:
         DeltaChainPlan? =
         null
@@ -362,6 +365,9 @@ class ImportActivity : Activity() {
 
             manifestProjectSelectorRequestCode ->
                 handleManifestProjectSelection(data)
+
+            urlSnapshotRequestCode ->
+                handleUrlSnapshotCommit(data)
         }
     }
 
@@ -496,11 +502,12 @@ class ImportActivity : Activity() {
                         primary = false,
                         topMarginDp = 10
                     ) {
-                        startActivity(
+                        startActivityForResult(
                             Intent(
                                 this@ImportActivity,
                                 UrlSnapshotActivity::class.java
-                            )
+                            ),
+                            urlSnapshotRequestCode
                         )
                     }
                 )
@@ -1169,6 +1176,32 @@ class ImportActivity : Activity() {
             treeUri = decoded.first,
             head = decoded.second
         )
+    }
+
+    private fun handleUrlSnapshotCommit(
+        data: Intent?
+    ) {
+        val message =
+            data
+                ?.getStringExtra(
+                    UrlSnapshotActivity
+                        .EXTRA_COMMIT_MESSAGE
+                )
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+                ?: "URL snapshot імпортовано."
+
+        setResult(
+            RESULT_OK,
+            Intent()
+                .putExtra(
+                    EXTRA_IMPORT_MESSAGE,
+                    message
+                )
+        )
+
+        finish()
     }
 
     private fun handleManifestProjectSelection(
