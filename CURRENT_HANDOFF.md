@@ -340,13 +340,13 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 1. Keep v1.4.50/checkpoint immutable on `66d06d6912d014efb3a98d317ed49355a5fa3078`.
 2. Continue v1.4.51 / code 94 on `feat/v1.4.51-url-mix-snapshot`.
-3. U51-1, U51-2, U51-3 and U51-4 functional behavior is phone-PASS.
-4. U51-4 landscape evidence found UX-024 only: resolved Save/Cancel footer was vertically stacked despite sufficient width; no lifecycle/operation bug was found.
-5. Project-wide responsive rule: 2–3 peer actions use equal-width horizontal layout when width preserves readability, otherwise vertical; use shared UiChrome adaptive helpers.
-6. Current corrective wires URL Snapshot resolved Save/Cancel to `UiChrome.addAdaptiveActionButtons(...)`; portrait remains stacked, wide/landscape becomes one row.
-7. Next: build a signed APK from the corrective source and do a focused portrait/landscape UX-024 retest plus rotation smoke.
-8. If that passes, continue U51-5 invalid/unsupported source and U51-6 explicit local snapshot handoff on the same APK.
-9. Do not reread the protected 813-track workspace merely for this visual retest.
+3. App corrective source for UX-024 is `721c712ef9f59f96acb9782036f21506a3dc3464`; current branch HEAD additionally contains repository-owned Termux tooling/workflow documentation.
+4. Current collaboration default is direct GitHub mutation by ChatGPT; `ytm-code` is fallback/local-only.
+5. Canonical phone tooling now lives in `tools/termux/` inside YTM. Renault contains compatibility wrappers only.
+6. One-time phone migration: fast-forward the local YTM repo and run `bash tools/termux/install-widget.sh`.
+7. After migration, use menu item 6 only when a manual `workflow_dispatch` is needed; current connector can inspect Actions but does not expose a new workflow-dispatch action.
+8. Next release action: signed UX-024 landscape action-row build/retest, then U51-5 invalid/unsupported source and U51-6 explicit local snapshot handoff.
+9. Do not reread the protected 813-track workspace merely for the UX-024 visual retest.
 
 ## 8. Working contract
 
