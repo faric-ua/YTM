@@ -84,6 +84,22 @@ The parser:
 Dynamic-Mix classification is not a resolver-capability claim. Wave 2 must
 prove whether a source can be enumerated reliably and fail clearly otherwise.
 
+## Wave 2 implementation
+
+Wave 2 adds the real resolver boundary without UI or local commit:
+
+- concrete playlists use the existing authenticated `YouTubeApi` transport;
+- `playlistItems.list` returns ordered raw rows without deduplication;
+- private/deleted/missing-ID rows remain explicit result entries;
+- exact videoId values are preserved whenever the API exposes them;
+- each logical list request records one general quota unit before the request;
+- pagination safety failures are hard errors, never successful truncated results;
+- parser-level dynamic `RD...` Mix sources return an explicit unsupported
+  capability without network, quota, scraping or Search fallback;
+- existing `YouTubeApi` 401 fresh-token / one-retry behavior remains reused.
+
+See `RESOLVER_CONTRACT.md`.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:
@@ -105,4 +121,4 @@ prove whether a source can be enumerated reliably and fail clearly otherwise.
 
 ## Status
 
-**DEVELOPMENT — WAVE 1 URL SOURCE PARSER/CLASSIFICATION STATIC/FULL PREFLIGHT PASS / RESOLVER + UI NEXT / PHONE QA PENDING**
+**DEVELOPMENT — WAVE 2 CONCRETE PLAYLIST RESOLVER STATIC/FULL PREFLIGHT PASS / REMOTE OWNER + PREVIEW UI NEXT / PHONE QA PENDING**

@@ -35,6 +35,24 @@ Wave 1 classification is intentionally syntactic:
 Resolver capability is a separate Wave 2 decision. No parser path may fetch a
 page, call the YouTube API, mutate the local playlist or start a remote write.
 
+## Wave 2 resolver capability
+
+The authoritative resolver boundary is `RESOLVER_CONTRACT.md`.
+
+Current capability:
+- `CONCRETE_PLAYLIST` -> authenticated ordered `playlistItems.list` read;
+- `DYNAMIC_MIX` -> explicit unsupported result with no network/quota/fallback.
+
+The concrete resolver preserves API order, duplicate occurrences and exact
+videoId identity. Private/deleted/missing-ID rows remain explicit unavailable
+entries rather than disappearing or becoming search substitutes.
+
+Quota is recorded once per logical list request before the request. Pagination
+guard failures are errors, so a truncated response cannot be represented as a
+complete snapshot.
+
+Wave 2 still has no Activity, preview, local commit or remote write.
+
 ## Track identity
 
 Priority:

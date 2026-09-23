@@ -59,6 +59,20 @@ class YouTubeApi(
         val requestCount: Int
     )
 
+    data class PlaylistSnapshotItemRecord(
+        val playlistItemId: String?,
+        val sourcePosition: Int?,
+        val videoId: String?,
+        val title: String?,
+        val channelTitle: String?,
+        val privacyStatus: String?
+    )
+
+    data class PlaylistSnapshotItemsResult(
+        val items: List<PlaylistSnapshotItemRecord>,
+        val requestCount: Int
+    )
+
     fun getGoogleAccountInfo(accessToken: String): GoogleAccountInfo {
         val response = request(
             method = "GET",
@@ -294,6 +308,226 @@ class YouTubeApi(
         return PlaylistTracksResult(
             tracks = tracks,
             requestCount = requestCount
+        )
+    }
+
+    fun listPlaylistSnapshotItems(
+        accessToken: String,
+        playlistId: String,
+        onListRequest: () -> Unit = {}
+    ): PlaylistSnapshotItemsResult {
+        val items =
+            mutableListOf<
+                PlaylistSnapshotItemRecord
+            >()
+
+        var pageToken: String? = null
+        var requestCount = 0
+        var pages = 0
+
+        val seenPageTokens =
+            linkedSetOf<String>()
+
+        do {
+            var url =
+                "https://www.googleapis.com/youtube/v3/playlistItems" +
+                    "?part=snippet,contentDetails,status" +
+                    "&maxResults=50" +
+                    "&playlistId=" +
+                    URLEncoder.encode(
+                        playlistId,
+                        Charsets.UTF_8.name()
+                    )
+
+            if (!pageToken.isNullOrBlank()) {
+                url +=
+                    "&pageToken=" +
+                    URLEncoder.encode(
+                        pageToken,
+                        Charsets.UTF_8.name()
+                    )
+            }
+
+            onListRequest()
+            requestCount += 1
+
+            val response =
+                request(
+                    "GET",
+                    url,
+                    accessToken
+                )
+
+            requireSuccess(
+                response,
+                "Завантаження snapshot плейлиста"
+            )
+
+            val json =
+                JSONObject(
+                    response.body
+                )
+
+            val responseItems =
+                json.optJSONArray(
+                    "items"
+                )
+
+            if (responseItems != null) {
+                for (
+                    i in
+                    0 until
+                        responseItems.length()
+                ) {
+                    val item =
+                        responseItems
+                            .getJSONObject(i)
+
+                    val snippet =
+                        item.optJSONObject(
+                            "snippet"
+                        )
+
+                    val contentDetails =
+                        item.optJSONObject(
+                            "contentDetails"
+                        )
+
+                    val status =
+                        item.optJSONObject(
+                            "status"
+                        )
+
+                    val contentVideoId =
+                        contentDetails
+                            ?.optString(
+                                "videoId"
+                            )
+                            .orEmpty()
+                            .trim()
+
+                    val resourceVideoId =
+                        snippet
+                            ?.optJSONObject(
+                                "resourceId"
+                            )
+                            ?.optString(
+                                "videoId"
+                            )
+                            .orEmpty()
+                            .trim()
+
+                    val videoId =
+                        contentVideoId
+                            .ifBlank {
+                                resourceVideoId
+                            }
+                            .takeIf {
+                                it.isNotBlank()
+                            }
+
+                    val position =
+                        snippet
+                            ?.optInt(
+                                "position",
+                                -1
+                            )
+                            ?.takeIf {
+                                it >= 0
+                            }
+
+                    items +=
+                        PlaylistSnapshotItemRecord(
+                            playlistItemId =
+                                item
+                                    .optString(
+                                        "id"
+                                    )
+                                    .trim()
+                                    .takeIf {
+                                        it.isNotBlank()
+                                    },
+                            sourcePosition =
+                                position,
+                            videoId =
+                                videoId,
+                            title =
+                                decodeEntities(
+                                    snippet
+                                        ?.optString(
+                                            "title"
+                                        )
+                                        .orEmpty()
+                                )
+                                    .trim()
+                                    .takeIf {
+                                        it.isNotBlank()
+                                    },
+                            channelTitle =
+                                decodeEntities(
+                                    snippet
+                                        ?.optString(
+                                            "videoOwnerChannelTitle"
+                                        )
+                                        .orEmpty()
+                                )
+                                    .trim()
+                                    .takeIf {
+                                        it.isNotBlank()
+                                    },
+                            privacyStatus =
+                                status
+                                    ?.optString(
+                                        "privacyStatus"
+                                    )
+                                    .orEmpty()
+                                    .trim()
+                                    .takeIf {
+                                        it.isNotBlank()
+                                    }
+                        )
+                }
+            }
+
+            val nextPageToken =
+                json.optString(
+                    "nextPageToken"
+                )
+                    .trim()
+                    .takeIf {
+                        it.isNotBlank()
+                    }
+
+            if (
+                nextPageToken != null &&
+                !seenPageTokens.add(
+                    nextPageToken
+                )
+            ) {
+                throw IllegalStateException(
+                    "Playlist snapshot pagination repeated a page token"
+                )
+            }
+
+            pageToken =
+                nextPageToken
+
+            pages += 1
+        } while (
+            pageToken != null &&
+            pages < 200
+        )
+
+        if (pageToken != null) {
+            throw IllegalStateException(
+                "Playlist snapshot exceeded page safety limit"
+            )
+        }
+
+        return PlaylistSnapshotItemsResult(
+            items = items,
+            requestCount =
+                requestCount
         )
     }
 

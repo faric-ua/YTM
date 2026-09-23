@@ -19,11 +19,11 @@
 ## Resolution / preview
 
 - [ ] one explicit user action starts at most one active resolution
-- [ ] source order preserved
-- [ ] duplicate occurrences preserved
-- [ ] exact videoId preserved when available
-- [ ] unavailable/inaccessible items reported explicitly
-- [ ] partial result never shown as complete without warning
+- [x] source order preserved — Wave 2 resolver model/JVM tests
+- [x] duplicate occurrences preserved — Wave 2 resolver model/JVM tests
+- [x] exact videoId preserved when available — Wave 2
+- [x] unavailable/inaccessible items reported explicitly — Wave 2
+- [x] resolver never returns pagination-truncated result as complete — Wave 2
 - [ ] preview does not mutate current local playlist
 - [ ] Cancel/Back from preview is local no-op
 - [ ] rotation/recreation does not auto-restart remote resolution
@@ -42,7 +42,7 @@
 - [ ] v1.4.50 Skin selection/preview semantics preserved
 - [ ] representative Data modal lifecycle smoke preserved
 - [ ] auth invalidation contract preserved
-- [ ] quota accounting for remote reads remains correct
+- [x] quota accounting hook records each playlistItems.list request — Wave 2
 - [ ] no accidental duplicate remote operation
 - [ ] error path
 

@@ -340,23 +340,23 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 1. Keep `v1.4.50` and `checkpoint-v1.4.50-phone-pass` immutable on exact
    app source `66d06d6912d014efb3a98d317ed49355a5fa3078`.
-2. Continue on `feat/v1.4.51-url-mix-snapshot`; app identity remains
+2. Continue on `feat/v1.4.51-url-mix-snapshot`; identity remains
    v1.4.51 / versionCode 94 / phase `development`.
-3. Wave 1 URL source matrix/parser/classifier is implemented and protected by
-   `scripts/v1451-url-source-wave1-audit.sh` plus JVM tests.
-4. Parser success is identifier/classification only: it performs no network,
-   no scraping, no local playlist mutation and no remote write.
-5. Exact uppercase `RD...` IDs are dynamic-Mix candidates only; do not claim
-   they are enumerable or complete until resolver capability proves it.
-6. Next implementation wave: resolver capability + ordered resolution result
-   model, reusing the existing YouTube API/auth/quota layer where supported.
-7. Resolver must preserve source order, duplicate occurrences and exact videoId
-   identity; inaccessible items must be explicit rather than search-substituted.
-8. Activity recreation must never auto-start/restart resolution. UI/preview and
-   explicit local snapshot commit remain later boundaries after resolver behavior
-   is stable.
-9. Preserve all v1.4.50 lifecycle, auth, quota, Skin and local-workspace
+3. Wave 1 parser/classifier and Wave 2 concrete-playlist resolver contracts are
+   implemented and protected by dedicated audits plus JVM tests.
+4. Concrete playlists resolve through the existing authenticated YouTube API,
+   preserving response order, duplicates, exact IDs and explicit unavailable rows.
+5. Each logical `playlistItems.list` request records one general quota unit
+   before the request; failures are not retroactively hidden.
+6. Dynamic `RD...` Mix is currently explicit unsupported capability: no network,
+   no quota, no scraping, no guessed Search fallback, no completeness claim.
+7. Next wave: process-local single-operation owner + preview UI. Recreation must
+   attach to state and must never auto-start a second resolution.
+8. Preview remains read-only. Cancel/Back is a local no-op and local snapshot
+   commit stays a later explicit boundary.
+9. Preserve all accepted v1.4.50 lifecycle/auth/quota/Skin/local-workspace
    contracts unless v1.4.51 explicitly documents a change.
+
 ## 8. Working contract
 
 **ChatGPT prepares a `YTM_*.zip` package → user runs `ytm-code` → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**

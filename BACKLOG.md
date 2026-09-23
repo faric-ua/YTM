@@ -89,11 +89,11 @@ v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT / RELEASE BASELI
 - [x] define supported YouTube/YTM URL matrix — Wave 1
 - [x] detect concrete playlist vs dynamic Mix/radio source — Wave 1 parser-level classification
 - [x] parser/canonicalization + invalid/unsupported URL contract — Wave 1 static/full preflight PASS
-- [ ] read only currently available/resolvable tracks
+- [x] concrete playlist resolver reads current API playlist items — Wave 2; dynamic Mix is explicit unsupported capability
 - [ ] show preview before local commit
-- [ ] preserve source order and duplicate occurrences
-- [ ] preserve exact videoId when available
-- [ ] report inaccessible items without silent search substitution
+- [x] preserve source order and duplicate occurrences — Wave 2 resolver model/JVM tests
+- [x] preserve exact videoId when available — Wave 2
+- [x] report inaccessible/private/deleted items without silent search substitution — Wave 2
 - [ ] save as a stable local playlist snapshot
 - [ ] lifecycle-safe single resolution; no recreation auto-run
 - [ ] no YouTube/YTM playlist write during URL import
