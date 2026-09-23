@@ -17,12 +17,6 @@ for file in "$DATA" "$CONTROLLER" "$SYSTEM" "$DIAGRAM" "$PHONE" "$BUGS"; do
   test -f "$file" || fail "missing Wave 3 modal lifecycle file: $file"
 done
 
-grep -Fq 'versionCode = 93' app/build.gradle.kts ||
-  fail "v1.4.50 versionCode 93 missing"
-
-grep -Fq 'versionName = "1.4.50"' app/build.gradle.kts ||
-  fail "v1.4.50 versionName missing"
-
 python - "$DATA" "$CONTROLLER" <<'PY'
 from pathlib import Path
 import re

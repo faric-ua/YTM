@@ -6,9 +6,9 @@ Add an explicit import flow that accepts a YouTube or YouTube Music playlist/Mix
 URL and turns the tracks resolved in that import session into a stable local
 playlist snapshot inside YTM Importer.
 
-The release starts with documentation only. The installed/current application
-remains v1.4.50 / versionCode 93 until the separate release-start package bumps
-the app identity to v1.4.51 / versionCode 94.
+The documentation skeleton is complete and the release-start baseline is now
+active. The development application identity is v1.4.51 / versionCode 94. No
+URL/Mix parser or resolver implementation is included in the release-start step.
 
 ## Product contract
 
@@ -80,12 +80,12 @@ v1.4.51 does not promise:
 
 ## Version
 
-- planned versionName: `1.4.51`
-- planned versionCode: `94`
-- planning branch: `feat/v1.4.51-url-mix-snapshot`
+- versionName: `1.4.51`
+- versionCode: `94`
+- branch: `feat/v1.4.51-url-mix-snapshot`
 - accepted stable baseline: `v1.4.50`
 - stable app source: `66d06d6912d014efb3a98d317ed49355a5fa3078`
 
 ## Status
 
-**PLANNED — DOCUMENTATION SKELETON READY / APP CODE NOT STARTED**
+**DEVELOPMENT — RELEASE BASELINE READY / URL SOURCE CONTRACT WAVE NEXT / PHONE QA PENDING**

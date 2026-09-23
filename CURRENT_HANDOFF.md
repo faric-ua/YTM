@@ -9,27 +9,27 @@ Last updated: **2026-09-23**
 Repository: `faric-ua/YTM`
 
 Latest stable release:
-- **v1.4.49 / versionCode 92**
-- GitHub Release/tag: `v1.4.49`
-- exact final app source: `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`
-- exact signed run: `35755925563`
-- stabilization checkpoint: `checkpoint-v1.4.49-phone-pass`
-- result: **PHONE QA PASS — targeted updater + production RC + equal-version stable check**
+- **v1.4.50 / versionCode 93**
+- GitHub Release/tag: `v1.4.50`
+- exact final app source: `66d06d6912d014efb3a98d317ed49355a5fa3078`
+- exact signed run: `35802968056`
+- stabilization checkpoint: `checkpoint-v1.4.50-phone-pass`
+- result: **PHONE QA PASS — FINAL Skin System / stabilization checkpoint accepted**
 
 Current release state:
-- versionName: **1.4.50**
-- versionCode: **93**
-- active branch: `feat/v1.4.50-skin-system`
-- release-start base HEAD: `9583dca5f25bc2ba6f59549121fe1794f3d24ad5`
+- versionName: **1.4.51**
+- versionCode: **94**
+- active branch: `feat/v1.4.51-url-mix-snapshot`
+- release-start base HEAD: `5ccc5e2066fb2e69338c8181f266a18dec55b398`
 - accepted stable checkpoint: `checkpoint-v1.4.50-phone-pass` → `66d06d6912d014efb3a98d317ed49355a5fa3078`
-- status: **v1.4.50 FINAL — PHONE QA PASS / STABILIZATION CHECKPOINT ACCEPTED**
+- status: **v1.4.51 DEVELOPMENT — RELEASE BASELINE READY / URL SOURCE CONTRACT WAVE NEXT / PHONE QA PENDING**
 - current phone QA APK: **v1.4.50 / code 93**, source `66d06d6912d014efb3a98d317ed49355a5fa3078`, signed run `35802968056`; Wave 3 R2 result `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+`; BUG-034 closed; prior BUG-033/Wave 2/Wave 1 R1 PASS evidence remains preserved.
 - installed/final phone-tested APK: **v1.4.50 / code 93** from run `35802968056` / source `66d06d6912d014efb3a98d317ed49355a5fa3078`; all v1.4.50 regression checks passed.
 - accepted stable checkpoint is `checkpoint-v1.4.50-phone-pass` / `66d06d6912d014efb3a98d317ed49355a5fa3078`; v1.4.49 remains the previous stable release evidence.
-- focus: **v1.4.50 Skin System remains the accepted stable baseline. v1.4.51 YouTube/YTM URL/Mix Snapshot Import is now the planned next release; documentation exists before app/build changes.**
-- planning branch: `feat/v1.4.51-url-mix-snapshot`
-- planned app identity: **v1.4.51 / versionCode 94**, not applied yet; current app source is still v1.4.50 / 93
-- v1.4.51 phase: **planned — app code not started**
+- focus: **v1.4.51 YouTube/YTM URL/Mix Snapshot Import is the active development release; first implementation wave is the supported URL/source classification contract and parser. v1.4.50 remains immutable stable baseline.**
+- active development branch: `feat/v1.4.51-url-mix-snapshot`
+- current development app identity: **v1.4.51 / versionCode 94**; installed/accepted stable phone baseline remains v1.4.50 / 93
+- v1.4.51 phase: **development — release baseline ready / URL source contract wave next**
 - Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
 - Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
 - Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
@@ -340,19 +340,22 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 1. Keep `v1.4.50` and `checkpoint-v1.4.50-phone-pass` immutable on exact
    app source `66d06d6912d014efb3a98d317ed49355a5fa3078`.
-2. Work on planning branch `feat/v1.4.51-url-mix-snapshot`.
-3. v1.4.51 documentation skeleton is the only intended change in this step.
-4. Current app/build identity intentionally remains v1.4.50 / versionCode 93.
-5. Next package: bump app identity to v1.4.51 / versionCode 94 and advance
-   `docs/v.1.4.51/RELEASE_META.json` from `planned` to `development`.
-6. Only after that release-start package passes full preflight should the first
-   URL/source parser or resolver implementation be added.
-7. First implementation wave must define the supported URL matrix and
-   playlist-vs-Mix classification before broad UI/domain work.
-8. Do not claim Mix completeness when only a current dynamic session can be
-   resolved; fail clearly when reliable enumeration is unavailable.
-9. Preserve the v1.4.50 lifecycle, auth, quota, Skin and local-workspace
-   contracts unless v1.4.51 explicitly documents a change.
+2. Continue on `feat/v1.4.51-url-mix-snapshot` from the release-start baseline.
+3. App identity is now v1.4.51 / versionCode 94 and release metadata phase is
+   `development`.
+4. First implementation wave must define the supported YouTube/YTM URL matrix,
+   parse/canonicalize supported forms and classify concrete playlist vs dynamic
+   Mix/radio before resolver/UI expansion.
+5. Do not start remote resolution automatically on Activity recreation and do not
+   introduce any remote write path into URL snapshot import.
+6. Preserve source order, duplicate occurrences and exact videoId identity when
+   the source exposes it; unsupported/inaccessible data must fail or report clearly.
+7. Do not claim Mix completeness when only a current dynamic session can be
+   resolved.
+8. Preserve the v1.4.50 lifecycle, auth, quota, Skin and local-workspace contracts
+   unless v1.4.51 explicitly documents a change.
+9. Next code package: URL/source parser + classification contract + dedicated
+   static audit; resolver comes only after that boundary is stable.
 
 ## 8. Working contract
 

@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.50 — Skin System — FINAL / PHONE QA PASS
+v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT / RELEASE BASELINE READY
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -84,8 +84,8 @@ v1.4.50 — Skin System — FINAL / PHONE QA PASS
 - [x] roadmap promoted from Future into dedicated v1.4.51 release
 - [x] release documentation skeleton created before app/build source changes
 - [x] dedicated planning branch `feat/v1.4.51-url-mix-snapshot`
-- [ ] bump app identity to v1.4.51 / versionCode 94
-- [ ] advance release metadata phase to `development`
+- [x] bump app identity to v1.4.51 / versionCode 94
+- [x] advance release metadata phase to `development`
 - [ ] define supported YouTube/YTM URL matrix
 - [ ] detect concrete playlist vs dynamic Mix/radio source
 - [ ] read only currently available/resolvable tracks

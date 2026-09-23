@@ -14,12 +14,6 @@ for file in "$THEME" "$DOC" "$DIAGRAM"; do
   test -f "$file" || fail "missing Skin Wave 1 file: $file"
 done
 
-grep -Fq 'versionCode = 93' app/build.gradle.kts ||
-  fail "v1.4.50 versionCode 93 missing"
-
-grep -Fq 'versionName = "1.4.50"' app/build.gradle.kts ||
-  fail "v1.4.50 versionName missing"
-
 for needle in \
   'data class Skin(' \
   'data class SkinPalette(' \
@@ -142,7 +136,7 @@ grep -Fq 'SemanticPalette' "$DIAGRAM" ||
   fail "Skin architecture diagram missing semantic layer"
 
 echo "PASS:"
-echo "- v1.4.50 / code 93 identity"
+echo "- historical v1.4.50 Skin contract is independent of current app identity"
 echo "- common Skin registry"
 echo "- stable persisted Neon/Blue/Green identities"
 echo "- visual and semantic token structure separated"

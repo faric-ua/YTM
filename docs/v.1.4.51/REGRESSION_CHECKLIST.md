@@ -5,8 +5,8 @@
 - [x] release roadmap promoted from Future into v1.4.51
 - [x] documentation skeleton created before app/build source changes
 - [x] dedicated planning branch `feat/v1.4.51-url-mix-snapshot`
-- [ ] app identity bumped to v1.4.51 / versionCode 94
-- [ ] release metadata phase advanced from `planned` to `development`
+- [x] app identity bumped to v1.4.51 / versionCode 94
+- [x] release metadata phase advanced from `planned` to `development`
 
 ## URL/source contract
 

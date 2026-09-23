@@ -16,12 +16,6 @@ for file in "$MENU" "$THEME" "$DOC" "$DIAGRAM" "$PHONE"; do
   test -f "$file" || fail "missing Wave 2 Skin preview file: $file"
 done
 
-grep -Fq 'versionCode = 93' app/build.gradle.kts ||
-  fail "v1.4.50 versionCode 93 missing"
-
-grep -Fq 'versionName = "1.4.50"' app/build.gradle.kts ||
-  fail "v1.4.50 versionName missing"
-
 python - "$MENU" "$THEME" <<'PY'
 from pathlib import Path
 import sys
@@ -168,7 +162,7 @@ done
 bash scripts/v1450-skin-contract-wave1-audit.sh
 
 echo "PASS:"
-echo "- v1.4.50 / code 93 identity preserved"
+echo "- historical v1.4.50 Skin preview contract is independent of current app identity"
 echo "- selector is preview-first"
 echo "- preview uses candidate Skin without prefs write"
 echo "- Apply is the only persisted Skin commit path"
