@@ -342,18 +342,20 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
    app source `66d06d6912d014efb3a98d317ed49355a5fa3078`.
 2. Continue on `feat/v1.4.51-url-mix-snapshot`; identity remains
    v1.4.51 / versionCode 94 / phase `development`.
-3. Wave 1 parser/classifier and Wave 2 concrete-playlist resolver contracts are
-   implemented and protected by dedicated audits plus JVM tests.
-4. Concrete playlists resolve through the existing authenticated YouTube API,
-   preserving response order, duplicates, exact IDs and explicit unavailable rows.
-5. Each logical `playlistItems.list` request records one general quota unit
-   before the request; failures are not retroactively hidden.
-6. Dynamic `RD...` Mix is currently explicit unsupported capability: no network,
-   no quota, no scraping, no guessed Search fallback, no completeness claim.
-7. Next wave: process-local single-operation owner + preview UI. Recreation must
-   attach to state and must never auto-start a second resolution.
-8. Preview remains read-only. Cancel/Back is a local no-op and local snapshot
-   commit stays a later explicit boundary.
+3. Wave 1 parser/classifier and Wave 2 concrete-playlist resolver remain
+   protected by dedicated audits/JVM tests.
+4. Wave 3 URL preview/lifecycle is implemented: Import exposes an explicit
+   URL/Mix entry, `UrlSnapshotActivity` renders state, and
+   `UrlSnapshotRemoteOperations` owns at most one active resolve.
+5. Recreation restores entered URL and reattaches to process-local state without
+   auto-resolving, consuming fresh quota, committing or launching downstream work.
+6. Preview preserves ordered/duplicate/exact-id/unavailable rows; dynamic Mix is
+   a clear unsupported result with no scraper/Search fallback.
+7. HTTP 401 uses existing auth invalidation and quota failures are recorded in
+   the existing tracker. No auth token is stored in Activity saved state/owner state.
+8. Next wave: explicit local snapshot commit into the existing
+   `CurrentPlaylistStore` workspace. Commit must be user-triggered, local-only,
+   and must not create/edit/delete any YouTube/YTM playlist.
 9. Preserve all accepted v1.4.50 lifecycle/auth/quota/Skin/local-workspace
    contracts unless v1.4.51 explicitly documents a change.
 

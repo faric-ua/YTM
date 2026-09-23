@@ -100,6 +100,29 @@ Wave 2 adds the real resolver boundary without UI or local commit:
 
 See `RESOLVER_CONTRACT.md`.
 
+## Wave 3 implementation
+
+Wave 3 adds the process-local remote-operation owner and the first user-facing
+URL snapshot preview screen:
+
+- `ImportActivity` exposes an explicit `Імпорт за URL / Mix` entry;
+- `UrlSnapshotActivity` owns URL text and rendering only;
+- `UrlSnapshotRemoteOperations` owns the one active resolve operation;
+- a second resolve tap while one is active is rejected;
+- Activity recreation reattaches to process-local state and never auto-resolves;
+- entered URL text is saved, but auth token material is never saved in
+  `savedInstanceState` or owner state;
+- concrete results render ordered rows, duplicate occurrences, exact videoId and
+  explicit unavailable items;
+- dynamic Mix renders a clear unsupported result with no scraping/Search fallback;
+- HTTP 401 reuses auth invalidation and quota failures are recorded in
+  `QuotaTracker`;
+- preview/Cancel/Back do not mutate the current local playlist and do not start
+  Review/Search/write work.
+
+Wave 3 intentionally has no local snapshot commit action. See
+`PREVIEW_CONTRACT.md`.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:
@@ -121,4 +144,4 @@ See `RESOLVER_CONTRACT.md`.
 
 ## Status
 
-**DEVELOPMENT — WAVE 2 CONCRETE PLAYLIST RESOLVER STATIC/FULL PREFLIGHT PASS / REMOTE OWNER + PREVIEW UI NEXT / PHONE QA PENDING**
+**DEVELOPMENT — WAVE 3 URL PREVIEW/LIFECYCLE STATIC/FULL PREFLIGHT PASS / LOCAL SNAPSHOT COMMIT NEXT / PHONE QA PENDING**

@@ -492,6 +492,22 @@ class ImportActivity : Activity() {
                 addView(
                     actionButton(
                         label =
+                            "Імпорт за URL / Mix",
+                        primary = false,
+                        topMarginDp = 10
+                    ) {
+                        startActivity(
+                            Intent(
+                                this@ImportActivity,
+                                UrlSnapshotActivity::class.java
+                            )
+                        )
+                    }
+                )
+
+                addView(
+                    actionButton(
+                        label =
                             "Вибрати плейлисти для експорту",
                         primary = false,
                         topMarginDp = 10

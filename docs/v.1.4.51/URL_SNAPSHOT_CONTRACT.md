@@ -53,6 +53,27 @@ complete snapshot.
 
 Wave 2 still has no Activity, preview, local commit or remote write.
 
+## Wave 3 preview / lifecycle
+
+The authoritative UI/lifecycle boundary is `PREVIEW_CONTRACT.md`.
+
+Wave 3 introduces `UrlSnapshotActivity` plus the process-local
+`UrlSnapshotRemoteOperations` owner.
+
+The Activity restores entered URL text and renders the owner's current state.
+It never calls resolve from `onCreate`, `onStart`, recreation, or result
+rendering. Only the explicit `Прочитати URL` action may call `startResolve`.
+
+The owner rejects a second active resolution, keeps auth tokens out of its
+public state, reuses the existing 401 invalidation path, and records quota
+failures through the existing quota tracker.
+
+Completed concrete results render ordered rows including duplicate occurrences
+and unavailable items. Dynamic Mix renders an explicit unsupported state.
+
+Wave 3 preview remains read-only: no `CurrentPlaylistStore`, Search, Review or
+remote-write dependency exists in the new owner/Activity.
+
 ## Track identity
 
 Priority:

@@ -69,6 +69,12 @@
             android:screenOrientation="unspecified" />
 
         <activity
+            android:name=".UrlSnapshotActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".ImportActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />

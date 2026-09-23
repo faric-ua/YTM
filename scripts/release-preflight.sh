@@ -192,6 +192,10 @@ check_file "scripts/v1450-restorable-modal-wave3-r1-audit.sh"
 check_file "scripts/v1450-restorable-modal-wave3-r2-audit.sh"
 check_file "scripts/v1451-url-source-wave1-audit.sh"
 check_file "scripts/v1451-url-resolver-wave2-audit.sh"
+check_file "scripts/v1451-url-preview-wave3-audit.sh"
+check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotRemoteOperations.kt"
+check_file "app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt"
+check_file "docs/v.1.4.51/PREVIEW_CONTRACT.md"
 check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotResolution.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotResolver.kt"
 check_file "app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotResolverTest.kt"
@@ -287,6 +291,7 @@ bash scripts/v1450-restorable-modal-wave3-r1-audit.sh
 bash scripts/v1450-restorable-modal-wave3-r2-audit.sh
 bash scripts/v1451-url-source-wave1-audit.sh
 bash scripts/v1451-url-resolver-wave2-audit.sh
+bash scripts/v1451-url-preview-wave3-audit.sh
 bash scripts/documentation-system-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
