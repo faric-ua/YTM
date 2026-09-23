@@ -340,13 +340,13 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 1. Keep v1.4.50/checkpoint immutable on `66d06d6912d014efb3a98d317ed49355a5fa3078`.
 2. Continue v1.4.51 / code 94 on `feat/v1.4.51-url-mix-snapshot`.
-3. Waves 1-4 and Corrective R1 remain protected.
-4. Real-phone History review found technical URL snapshot names.
-5. Title metadata corrective adds one official quota-accounted playlists.list metadata request to fresh reads.
-6. Cache schema remains 1; old cached snapshots without title remain readable and expose `Отримати назву плейлиста • 1 API`, with zero playlistItems reads.
-7. Metadata-only repair enriches cache and renames only matching technical Current Playlist / History names locally; tracks are unchanged and no new History entry is created.
-8. Do not re-read the pre-corrective 813-row workspace merely for title metadata.
-9. Next: signed title-metadata build, focused cached 9-track History/title retest and fresh small-playlist retest, then continue U51 QA.
+3. Waves 1-4, Corrective R1 and title-metadata corrective remain protected.
+4. Signed title-metadata run `35909545473`, source `cc454aba5bcf1172ce2be64757272c8d0355d699`: cached read 0 API PASS, title metadata 1 API PASS, History rename PASS, fixed footer PASS.
+5. Phone QA finding: metadata-only title enrichment changed displayed snapshot cachedAt from 20:52 to 22:43 although playlistItems were not re-read.
+6. CachedAt corrective adds a dedicated cache writer that preserves the existing timestamp; only a fresh remote snapshot read may advance cachedAt.
+7. Do not re-read the 813-row source merely for title/timestamp repair.
+8. Next: signed cachedAt corrective build and focused 9-track retest. Expected: title remains human-readable, metadata action uses 1 API, snapshot timestamp does not change.
+9. After that focused PASS, continue U51-3/U51-4/U51-5/U51-6 and remaining v1.4.51 QA.
 
 ## 8. Working contract
 

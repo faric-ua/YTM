@@ -391,6 +391,10 @@ object UrlSnapshotRemoteOperations {
     ): Boolean {
         if (state.running) return false
         val current = state
+        if (!current.fromCache) return false
+        val snapshotCachedAt =
+            current.cachedAt
+                ?: return false
         val resolved = current.resolved ?: return false
         if (!resolved.playlistTitle.isNullOrBlank()) return false
         val source = current.source ?: resolved.source
@@ -414,7 +418,14 @@ object UrlSnapshotRemoteOperations {
             }
             result.onSuccess { title ->
                 val updated = resolved.copy(playlistTitle = title)
-                val cachedAt = UrlSnapshotCache(appContext).put(updated)
+                UrlSnapshotCache(
+                    appContext
+                ).putPreservingCachedAt(
+                    resolved =
+                        updated,
+                    cachedAt =
+                        snapshotCachedAt
+                )
                 UrlSnapshotTitleBackfill(appContext).apply(source.playlistId, title)
                 publish(State(
                     phase = Phase.RESOLVED,

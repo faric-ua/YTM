@@ -165,6 +165,19 @@ See `CORRECTIVE_R1_CONTRACT.md`.
 
 Real-phone History review showed URL snapshot imports using technical playlistId fallback names. This corrective adds official `playlists.list?part=snippet` title retrieval, carries optional `playlistTitle` through resolver/cache/commit, and provides a one-request metadata-only repair for old cached snapshots without re-reading playlist items. Matching technical Current Playlist / History names are repaired locally with no new History entry. See `TITLE_METADATA_CONTRACT.md`.
 
+## Title metadata cachedAt corrective
+
+Signed run `35909545473` / source
+`cc454aba5bcf1172ce2be64757272c8d0355d699` passed the cache-first title flow:
+0 API on cached snapshot load, 1 metadata API for title retrieval, local History
+rename, and fixed footer. Phone QA found one remaining semantic issue: title-only
+cache enrichment advanced the snapshot `cachedAt`, making an unchanged track
+snapshot appear freshly read.
+
+This corrective adds a dedicated cache write that preserves the prior snapshot
+timestamp. Metadata-only title enrichment must use that path; fresh remote reads
+continue to receive a new timestamp.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:
@@ -186,4 +199,4 @@ Real-phone History review showed URL snapshot imports using technical playlistId
 
 ## Status
 
-**DEVELOPMENT — PLAYLIST TITLE METADATA CORRECTIVE STATIC/FULL PREFLIGHT PASS / SIGNED RETEST NEXT**
+**DEVELOPMENT — TITLE METADATA CACHED_AT CORRECTIVE STATIC/FULL PREFLIGHT PASS / SIGNED RETEST NEXT**

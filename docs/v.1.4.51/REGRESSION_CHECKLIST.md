@@ -50,7 +50,7 @@
 
 - [x] dedicated static URL-source Wave 1 audit
 - [x] full release preflight — Wave 1
-- [ ] signed v1.4.51 APK
+- [x] signed v1.4.51 APK — runs 35880942335 and 35909545473
 - [ ] real-phone URL/Mix QA
 - [ ] stabilization checkpoint
 ## Corrective R1 — phone finding gates
@@ -75,3 +75,5 @@
 - [x] metadata-only repair renames matching technical Current Playlist / History names without changing tracks
 - [x] future commit uses human playlist title with technical fallback
 - [ ] signed title-metadata History/cache retest
+- [x] metadata-only title enrichment preserves the existing snapshot `cachedAt`; only a fresh remote snapshot may advance it
+- [ ] signed cachedAt corrective retest: title stays repaired, API count is 1, snapshot timestamp remains unchanged

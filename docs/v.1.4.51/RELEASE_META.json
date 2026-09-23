@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.51-url-mix-snapshot",
   "appSourceSha": null,
   "signedRun": null,
-  "qaStatus": "DEVELOPMENT — PLAYLIST TITLE METADATA CORRECTIVE STATIC/FULL PREFLIGHT PASS / SIGNED RETEST NEXT",
+  "qaStatus": "DEVELOPMENT — TITLE METADATA CACHED_AT CORRECTIVE STATIC/FULL PREFLIGHT PASS / SIGNED RETEST NEXT",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null

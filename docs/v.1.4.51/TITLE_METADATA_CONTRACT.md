@@ -26,6 +26,16 @@ After success the cache is enriched, matching technical Current Playlist and
 History names are repaired locally, tracks are untouched, and no new History
 entry is created. Activity recreation never starts this request automatically.
 
+## Snapshot timestamp semantics
+
+Metadata-only title enrichment is not a fresh track snapshot read. It therefore
+preserves the original `cachedAt` value of the existing snapshot. Only a fresh
+remote snapshot read through the normal resolver or explicit
+`Оновити з YouTube` action may advance the snapshot timestamp.
+
+The title backfill still records one current API request in the preview message,
+but that request must not make the cached track list appear newer than it is.
+
 ## Local commit naming
 
 Future URL snapshot commits use the remote playlist title when available. The

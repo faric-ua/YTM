@@ -95,6 +95,45 @@ class UrlSnapshotCache(
         return cachedAt
     }
 
+    @Synchronized
+    fun putPreservingCachedAt(
+        resolved:
+            UrlSnapshotResolutionResult.Resolved,
+        cachedAt: Long
+    ): Long {
+        require(
+            resolved.source.kind ==
+                UrlSnapshotSourceKind.CONCRETE_PLAYLIST
+        ) {
+            "Only concrete playlist snapshots are cacheable"
+        }
+
+        require(
+            cachedAt > 0L
+        ) {
+            "Existing URL snapshot cache timestamp is required"
+        }
+
+        val raw =
+            encode(
+                resolved = resolved,
+                cachedAt = cachedAt
+            )
+
+        check(
+            prefs.edit()
+                .putString(
+                    resolved.source.playlistId,
+                    raw
+                )
+                .commit()
+        ) {
+            "Не вдалося оновити метадані URL snapshot cache"
+        }
+
+        return cachedAt
+    }
+
     fun stats(): UrlSnapshotCacheStats {
         var valid = 0
         var malformed = 0

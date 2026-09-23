@@ -1,6 +1,6 @@
 # v1.4.51 — Phone Test Plan
 
-No v1.4.51 APK exists yet. This file defines acceptance before implementation.
+v1.4.51 signed phone QA is in progress. This file defines the remaining acceptance matrix and records real-phone evidence.
 
 ## U51-1 — concrete playlist URL
 
@@ -76,3 +76,24 @@ Expected:
 - no remote playlist write occurs as part of import.
 
 Result: `U51-6+` / `U51-6-`
+
+## Signed title-metadata corrective evidence — 2026-09-23
+
+Signed run `35909545473`, source
+`cc454aba5bcf1172ce2be64757272c8d0355d699`.
+
+Observed on the real phone with the cached 9-track concrete playlist:
+
+- cache-first preview showed `API-запитів зараз: 0`;
+- `Отримати назву плейлиста • 1 API` performed one metadata request without
+  re-reading playlist items;
+- the remote title
+  `The Vinyl Society Vocal Trance Mix - Episode 014 [Vinyl Only]` appeared in
+  preview;
+- the existing History entry was renamed locally without a new import entry;
+- fixed Save/Cancel footer remained directly reachable;
+- finding: the displayed local snapshot timestamp changed from `20:52` to
+  `22:43` after title-only enrichment even though tracks were not re-read.
+
+The title metadata core flow therefore passed, but the timestamp finding requires
+the cachedAt corrective before this area is accepted.

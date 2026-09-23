@@ -39,6 +39,32 @@ for x in ('playlistItems','createPlaylist(','addVideo(','updatePlaylist','delete
     if x in meta: raise SystemExit('FAIL: title-only API boundary violation: '+x)
 start=remote.index('fun loadMissingPlaylistTitle('); end=remote.index('fun clearTerminal()',start); owner=remote[start:end]
 if 'listPlaylistSnapshotItems(' in owner: raise SystemExit('FAIL: metadata-only owner re-reads items')
+normalized_cache = ' '.join(cache.split())
+normalized_owner = ' '.join(owner.split())
+for x in (
+    'fun putPreservingCachedAt(',
+    'cachedAt > 0L',
+    'encode( resolved = resolved, cachedAt = cachedAt',
+):
+    if ' '.join(x.split()) not in normalized_cache:
+        raise SystemExit('FAIL: preserved cachedAt cache-write contract missing: '+x)
+for x in (
+    'if (!current.fromCache) return false',
+    'val snapshotCachedAt = current.cachedAt ?: return false',
+    '.putPreservingCachedAt(',
+    'cachedAt = snapshotCachedAt',
+):
+    if ' '.join(x.split()) not in normalized_owner:
+        raise SystemExit('FAIL: metadata-only cachedAt preservation missing: '+x)
+if '.put(updated)' in owner:
+    raise SystemExit('FAIL: metadata-only title enrichment still uses fresh-timestamp put(updated)')
+if 'System.currentTimeMillis()' in owner:
+    raise SystemExit('FAIL: metadata-only title enrichment changed cachedAt')
+preserve_start = cache.index('fun putPreservingCachedAt(')
+preserve_end = cache.index('fun stats()', preserve_start)
+preserve_method = cache[preserve_start:preserve_end]
+if 'System.currentTimeMillis()' in preserve_method:
+    raise SystemExit('FAIL: preserved cachedAt writer creates a fresh timestamp')
 for x in ('YouTubeApi','HttpURLConnection','SearchCoordinator','PlaylistWriteCoordinator'):
     if x in backfill: raise SystemExit('FAIL: backfill must remain local-only: '+x)
 normalized_contract = ' '.join(contract.split())
