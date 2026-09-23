@@ -343,10 +343,11 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 3. App corrective source for UX-024 is `721c712ef9f59f96acb9782036f21506a3dc3464`; current branch HEAD additionally contains repository-owned Termux tooling/workflow documentation.
 4. Current collaboration default is direct GitHub mutation by ChatGPT; `ytm-code` is fallback/local-only.
 5. Canonical phone tooling now lives in `tools/termux/` inside YTM. Renault contains compatibility wrappers only.
-6. One-time phone migration: fast-forward the local YTM repo and run `bash tools/termux/install-widget.sh`.
-7. After migration, use menu item 6 only when a manual `workflow_dispatch` is needed; current connector can inspect Actions but does not expose a new workflow-dispatch action.
-8. Next release action: signed UX-024 landscape action-row build/retest, then U51-5 invalid/unsupported source and U51-6 explicit local snapshot handoff.
-9. Do not reread the protected 813-track workspace merely for the UX-024 visual retest.
+6. Signed APKs downloaded on the phone are stored under `artifacts/apk/vX.Y.Z/run-<RUN_ID>/`; the APK subtree is gitignored. GitHub Release assets are reserved for accepted stable releases.
+7. One-time phone migration: fast-forward the local YTM repo and run `bash tools/termux/install-widget.sh`.
+8. After migration, use menu item 6 only when a manual `workflow_dispatch` is needed; current connector can inspect Actions but does not expose a new workflow-dispatch action.
+9. Next release action: signed UX-024 landscape action-row build/retest, then U51-5 invalid/unsupported source and U51-6 explicit local snapshot handoff.
+10. Do not reread the protected 813-track workspace merely for the UX-024 visual retest.
 
 ## 8. Working contract
 

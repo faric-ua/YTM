@@ -11,7 +11,8 @@ The YTM widget must not depend on the Renault repository.
 1. **Sync YTM** — clean-tree, fast-forward-only synchronization.
 2. **Status** — local/remote HEAD and clean/ahead/behind/diverged state.
 3. **Download signed APK** — only a successful GitHub Actions run whose
-   `headSha` exactly matches the current remote branch HEAD.
+   `headSha` exactly matches the current remote branch HEAD; stores it under
+   `artifacts/apk/vX.Y.Z/run-<RUN_ID>/`.
 4. **Install downloaded APK** — checksum + exact-current-source guard before
    opening Android's installer.
 5. **Open YTM shell** — interactive shell inside the repository.
@@ -42,3 +43,13 @@ The shortcut becomes:
 - Install rechecks the recorded source against the current remote HEAD.
 - APK SHA-256 is checked after download and again before install.
 - Manual build is a fallback; normal CI may be dispatched directly by ChatGPT.
+
+
+## Local APK archive
+
+Downloaded builds are kept under the YTM project itself:
+
+`/storage/emulated/0/Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`
+
+The `apk/` subtree is gitignored so APK binaries never dirty the repository or
+inflate Git history.

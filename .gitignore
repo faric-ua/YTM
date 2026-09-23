@@ -15,3 +15,6 @@ Thumbs.db
 
 # Generated assistant migration package
 YTM-Assistant-Migration-Kit.zip
+
+# Local signed APK cache — keep binaries out of Git history.
+artifacts/apk/

@@ -188,7 +188,7 @@ VERSION="X.Y.Z"
 REF="main"
 ARTIFACT="YTM-Importer-v${VERSION}-Release"
 TMP="$HOME/ytm-v${VERSION}-artifact"
-PHONE_DIR="/storage/emulated/0/Download/YTM-v${VERSION}-build"
+PHONE_DIR="/storage/emulated/0/Documents/YTM/artifacts/apk/v${VERSION}/run-${RUN_ID}"
 
 rm -rf "$TMP"
 mkdir -p "$TMP"
@@ -234,40 +234,26 @@ Do not advance to another release merely because the repository version was bump
 
 ## 10. Stable APK folder on Android
 
-Every release uses:
+Signed builds are archived inside the local project tree:
 
-`/storage/emulated/0/Download/YTM-vX.Y.Z-build/`
+`/storage/emulated/0/Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`
 
 Contents:
 
 - `YTM-Importer-vX.Y.Z-release.apk`
 - `YTM-Importer-vX.Y.Z-release.apk.sha256`
 
-Example:
+The run ID is part of the path because multiple QA builds can share the same
+versionName while pointing to different commits.
 
-```bash
-VERSION="1.4.27"
-SRC="$HOME/ytm-v${VERSION}-build"
-DST="/storage/emulated/0/Download/YTM-v${VERSION}-build"
-APK="YTM-Importer-v${VERSION}-release.apk"
-
-mkdir -p "$DST"
-cp -f "$SRC/$APK" "$DST/$APK"
-cp -f "$SRC/$APK.sha256" "$DST/$APK.sha256"
-sync
-
-cd "$DST"
-sha256sum -c "$APK.sha256"
-```
-
-Do not randomly switch to loose APK files in the root of `Download/`.
+`artifacts/apk/` is gitignored. Do not commit APK binaries into Git history.
 
 ## 11. Open APK directly from Termux
 
 If the file manager does not refresh immediately:
 
 ```bash
-termux-open --view   "/storage/emulated/0/Download/YTM-v1.4.27-build/YTM-Importer-v1.4.27-release.apk"
+termux-open --view   "/storage/emulated/0/Documents/YTM/artifacts/apk/v1.4.51/run-RUN_ID/YTM-Importer-v1.4.51-release.apk"
 ```
 
 Adapt the version to the current release.

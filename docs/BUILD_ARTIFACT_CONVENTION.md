@@ -1,61 +1,74 @@
 # YTM Importer — Build Artifact Convention
 
-Use one predictable Android Download folder per release.
+Signed APKs downloaded to the phone are stored inside the local YTM project tree,
+but outside Git tracking.
 
-## Standard folder
+## Canonical phone folder
 
-`/storage/emulated/0/Download/YTM-vX.Y.Z-build/`
-
-Example:
-
-`/storage/emulated/0/Download/YTM-v1.4.27-build/`
-
-## Standard contents
-
-At minimum:
-
-- `YTM-Importer-vX.Y.Z-release.apk`
-- `YTM-Importer-vX.Y.Z-release.apk.sha256`
+`/storage/emulated/0/Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`
 
 Example:
 
 ```text
-Download/
-└── YTM-v1.4.27-build/
-    ├── YTM-Importer-v1.4.27-release.apk
-    └── YTM-Importer-v1.4.27-release.apk.sha256
+Documents/
+└── YTM/
+    └── artifacts/
+        ├── README.md
+        └── apk/
+            └── v1.4.51/
+                └── run-35921749405/
+                    ├── YTM-Importer-v1.4.51-release.apk
+                    └── YTM-Importer-v1.4.51-release.apk.sha256
 ```
+
+`artifacts/apk/` is intentionally ignored by Git. APK binaries and their
+checksums must never be committed to normal repository history.
+
+## Why run-scoped folders
+
+Multiple signed QA builds may share the same `versionName` while pointing to
+different commits. A run-scoped folder prevents one v1.4.51 build from silently
+overwriting another v1.4.51 build.
+
+The exact source commit and GitHub Actions run are also recorded by the Termux
+tooling in `$HOME/.ytm-importer/`.
 
 ## Rules
 
-- Do not place new release APKs loose in the root of `Download/` unless the user explicitly asks.
-- Verify SHA-256 before installation.
-- Keep the artifact folder name aligned with `versionName`.
-- This phone folder is not part of the Git repository.
-- GitHub Actions artifact naming may differ slightly, but the phone-side layout remains stable.
+- Keep APK + matching `.sha256` together.
+- Verify SHA-256 immediately after download.
+- Verify SHA-256 again before opening the Android installer.
+- Download only a successful GitHub Actions run whose `headSha` exactly matches
+  the current remote branch HEAD.
+- If the remote branch moves after download, refuse installation until the
+  matching current build is downloaded.
+- Never commit APK/AAB binaries into normal Git history.
+- Do not use `Download/` as the canonical YTM build archive anymore.
+- Historical files already present elsewhere do not need to be moved
+  automatically.
 
-## Why
+## GitHub storage
 
-A predictable release folder:
+Use two layers:
 
-- matches the user's established file-manager workflow;
-- makes versions easy to find;
-- keeps APK + checksum together;
-- reduces accidental installation of the wrong build.
+1. **GitHub Actions artifacts** for development/QA builds.
+2. **GitHub Release assets** for accepted stable releases that should remain easy
+   to retrieve later.
 
+Do not use ordinary Git commits as binary artifact storage.
 
 ## Canonical GitHub Actions → phone flow
 
-After a signed workflow succeeds, the release is not considered handed off until the phone-side build folder has been populated.
+1. identify the exact successful workflow run for the current remote branch HEAD;
+2. download the run artifact to a temporary Termux directory;
+3. verify the bundled `.sha256`;
+4. create
+   `artifacts/apk/vX.Y.Z/run-<RUN_ID>/`;
+5. copy APK + checksum there;
+6. verify the copied APK again;
+7. record local path, run ID, branch and source SHA in
+   `$HOME/.ytm-importer/`;
+8. install only if that recorded source is still the current remote branch HEAD.
 
-Expected sequence:
-
-1. identify the exact successful workflow run for the intended release/ref;
-2. download the named GitHub Actions artifact;
-3. let `gh run download` extract the artifact into a temporary Termux directory;
-4. verify the bundled `.sha256` file;
-5. copy APK + checksum into `/storage/emulated/0/Download/YTM-vX.Y.Z-build/`;
-6. install from that versioned folder;
-7. record phone-installed version separately from repository/build version.
-
-The assistant supplies the exact version/ref/run block; the user should not have to discover artifact names or assemble the sequence manually.
+Repository version, signed-build source, downloaded artifact and installed phone
+version remain separate states.

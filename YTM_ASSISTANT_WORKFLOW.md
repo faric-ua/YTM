@@ -248,16 +248,20 @@ Do not claim a tool/capability was used if it is unavailable in the current sess
 
 ## 18. Stable phone-side build artifact convention
 
-Every release should use:
+Downloaded signed builds live inside the local YTM project tree:
 
-`/storage/emulated/0/Download/YTM-vX.Y.Z-build/`
+`/storage/emulated/0/Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`
 
 with:
 
 - `YTM-Importer-vX.Y.Z-release.apk`;
 - `YTM-Importer-vX.Y.Z-release.apk.sha256`.
 
-Do not randomly place a new release APK loose in the root of `Download/`.
+`artifacts/apk/` is gitignored. APK binaries are local build artifacts, not
+repository source files.
+
+Development/QA builds remain available through GitHub Actions. Accepted stable
+releases should additionally use GitHub Release assets for durable retrieval.
 
 The full convention lives in `docs/BUILD_ARTIFACT_CONVENTION.md`.
 

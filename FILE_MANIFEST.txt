@@ -5,7 +5,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 957b553c7b6dec80  .github/workflows/build-apk.yml
-83a7beaecf0256e1  .gitignore
+78cdd1de7657652f  .gitignore
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
@@ -13,7 +13,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 26517638fb7d12c1  ASSISTANT_CONTEXT_INDEX.md
 2d8eee7c3249aa82  BACKLOG.md
 2aa83bf1756ffaea  CHANGELOG.md
-574e6112e609784a  CURRENT_HANDOFF.md
+4023c44486a48f30  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -81,9 +81,9 @@ de641fc9d98aac34  TERMINAL_APPLY_v1.4.25.md
 fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 410caf55096b297c  TERMINAL_APPLY_v1.4.8.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
-0ff7b6dfacdef72b  TERMUX_COMMANDS.md
+b236cc338f4716b7  TERMUX_COMMANDS.md
 55cdc8a68f1e48f2  TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt
-9606f943f73ebd8d  YTM_ASSISTANT_WORKFLOW.md
+007c282182c00685  YTM_ASSISTANT_WORKFLOW.md
 9d6db8d1420b0d2e  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 ce278ee8fa660bda  app/src/main/AndroidManifest.xml
@@ -192,9 +192,10 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 0971fccf248b1dfd  app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotResolverTest.kt
 bfa4be449a7c9da8  app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotSourceParserTest.kt
 c303067db2c6dcab  app/src/test/java/com/saney/ytmimporter/youtube/PlaylistEditPolicyTest.kt
+c046586be53a0584  artifacts/README.md
 1ad29e43e790095c  build.gradle.kts
 03fc725ca9b1f89a  docs/ASSISTANT_TOOL_MAP.md
-1359623c640152e7  docs/BUILD_ARTIFACT_CONVENTION.md
+87fc228b4c2c6d23  docs/BUILD_ARTIFACT_CONVENTION.md
 3c8c6e273019f706  docs/HANDOFF_HARDENING_2026-09-17.md
 da6db67c9017a470  docs/README.md
 0eb6d1512dc9b142  docs/WORKFLOW_LESSONS.md
@@ -1639,11 +1640,11 @@ d8ceb8960c31e400  scripts/v1451-url-qa-corrective-r1-audit.sh
 1a276065be4bb479  scripts/v1451-url-source-wave1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
-e3c009c6610c2bb7  tools/termux/README.md
+bba90da11666d61e  tools/termux/README.md
 8a4753c11d9a562b  tools/termux/install-widget.sh
 13c00240361d97a0  tools/termux/ytm-build-apk.sh
 5f478613a041f448  tools/termux/ytm-common.sh
-eee586eca9d328c4  tools/termux/ytm-download-apk.sh
+f63257687628de7b  tools/termux/ytm-download-apk.sh
 8c36432f6c2a90f7  tools/termux/ytm-install-apk.sh
 8263dc92f03288fc  tools/termux/ytm-menu.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh

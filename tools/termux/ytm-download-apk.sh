@@ -58,7 +58,7 @@ REMOTE_AFTER="$(ytm_remote_head "$BRANCH")"
 APK_NAME="$(basename "$APK")"
 VERSION="${APK_NAME#YTM-Importer-v}"
 VERSION="${VERSION%-release.apk}"
-PHONE_DIR="/storage/emulated/0/Download/YTM-v${VERSION}-build"
+PHONE_DIR="$YTM_REPO_DIR/artifacts/apk/v${VERSION}/run-${RUN_ID}"
 
 mkdir -p "$PHONE_DIR" "$YTM_STATE_DIR"
 cp -f "$APK" "$SHA" "$PHONE_DIR/"
