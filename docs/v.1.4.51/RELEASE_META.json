@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.51-url-mix-snapshot",
   "appSourceSha": "05d01e46af2b99acb5a483ad13c3f5a87f849271",
   "signedRun": "35938232310",
-  "qaStatus": "DEVELOPMENT — U51-1..U51-4 + UX-024 PHONE PASS / U51-5..U51-6 NEXT",
+  "qaStatus": "DEVELOPMENT — U51-1..U51-4 + UX-024 PASS / U51-5 PARTIAL / BUG-035 + UX-025 SIGNED RETEST NEXT",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": "2026-09-24"

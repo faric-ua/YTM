@@ -30,3 +30,26 @@ When a finding appears, record:
 - real-phone retest result.
 
 Do not rewrite v1.4.50 historical bug evidence.
+
+## UX-025 — URL field does not visibly wrap long URLs
+
+- Severity: low / usability.
+- Found on: v1.4.51 signed run `35938232310`.
+- Source: `05d01e46af2b99acb5a483ad13c3f5a87f849271`.
+- Area: URL Snapshot URL input.
+- Observed: long URLs scroll/clip horizontally and only one line is effectively visible.
+- Expected: URL input wraps into a readable 2–3 line text area.
+- Corrective source: `e7404eb3c4760c2fcb0c86d3ec6b3f9d9f8faffd`.
+- Retest: pending signed phone QA.
+
+## BUG-035 — Home quick Export opens Import
+
+- Severity: medium / navigation semantics.
+- Found on: v1.4.51 signed run `35938232310`.
+- Source: `05d01e46af2b99acb5a483ad13c3f5a87f849271`.
+- Area: Home → `Швидкі дії файл/плейлист` → `Експорт`.
+- Observed: Export was wired to the same `openImportScreen()` callback as Import.
+- Expected: Export opens the existing current-playlist `YTM Project / export` actions.
+- Corrective source: `e7404eb3c4760c2fcb0c86d3ec6b3f9d9f8faffd`.
+- Implementation: reuse `ReviewActivity.EXTRA_OPEN_PROJECT_ACTIONS`.
+- Retest: pending signed phone QA.

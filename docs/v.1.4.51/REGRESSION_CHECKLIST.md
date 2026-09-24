@@ -78,3 +78,10 @@
 - [x] metadata-only title enrichment preserves the existing snapshot `cachedAt`; only a fresh remote snapshot may advance it
 - [x] signed cachedAt corrective retest — run 35921749405 / ba826563; T0 24.09.2026 00:50 preserved across 1-API title enrichment and 0-API reopen
 - [x] signed UX-024 landscape footer retest — run 35938232310 / 05d01e46af2b99acb5a483ad13c3f5a87f849271; resolved Save/Cancel actions share one horizontal adaptive row in landscape
+
+## U51-5 phone finding corrective
+
+- [x] malformed URL rejection observed on real phone without changing current 9-track playlist
+- [ ] direct video URL without `list` rejected clearly, with no Search/import fallback
+- [ ] UX-025 signed retest: URL field visibly wraps a long URL into 2–3 lines
+- [ ] BUG-035 signed retest: Home quick `Експорт` opens current `YTM Project / export` actions, not Import

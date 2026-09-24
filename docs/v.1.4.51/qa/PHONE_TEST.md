@@ -63,6 +63,9 @@ Expected:
 - current local playlist unchanged;
 - no fallback to a guessed search/import path.
 
+Current partial result: malformed URL rejection PASS on real phone; current 9-track local playlist remained unchanged.
+The direct-video-without-`list` rejection case is still pending and will be retested after the current phone-finding corrective.
+
 Result: `U51-5+` / `U51-5-`
 
 ## U51-6 — local snapshot handoff
@@ -192,3 +195,26 @@ Real-phone landscape evidence confirmed:
 - no functional lifecycle regression was observed in the retest.
 
 Result: `UX-024+` — PHONE PASS / CLOSED.
+
+## U51-5 phone findings — BUG-035 / UX-025
+
+Real-phone screenshots on signed run `35938232310` / source
+`05d01e46af2b99acb5a483ad13c3f5a87f849271` showed:
+
+- malformed URL input is rejected with `Не вдалося прочитати URL` /
+  `Не вдалося розібрати URL.`;
+- Home current playlist remained
+  `The Vinyl Society Vocal Trance Mix - Episode 014 [Vinyl Only]` with 9 tracks;
+- the URL editor visually behaves as a horizontally scrolling single-line field
+  even though the Activity intended a multiline editor;
+- Home quick action `Експорт` opens the same Import screen as `Імпорт`.
+
+Corrective source: `e7404eb3c4760c2fcb0c86d3ec6b3f9d9f8faffd`.
+
+- UX-025: URL editor disables horizontal scrolling and uses a 2–3 line multiline
+  input so long URLs wrap visibly;
+- BUG-035: Home `Експорт` now routes to the existing current-playlist
+  `YTM Project / export` actions through Review instead of opening Import;
+- existing export implementation is reused; no parallel export flow was added.
+
+Signed phone retest is pending.

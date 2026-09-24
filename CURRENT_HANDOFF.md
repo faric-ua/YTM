@@ -346,7 +346,7 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 6. Signed APKs downloaded on the phone are stored under `artifacts/apk/vX.Y.Z/run-<RUN_ID>/`; the APK subtree is gitignored. GitHub Release assets are reserved for accepted stable releases.
 7. One-time phone migration: fast-forward the local YTM repo and run `bash tools/termux/install-widget.sh`.
 8. After migration, use menu item 6 only when a manual `workflow_dispatch` is needed; current connector can inspect Actions but does not expose a new workflow-dispatch action.
-9. Signed UX-024 corrective is PHONE PASS on run `35938232310` / source `05d01e46af2b99acb5a483ad13c3f5a87f849271`; next release action is U51-5 invalid/unsupported source, then U51-6 explicit local snapshot handoff.
+9. U51-5 malformed-URL rejection is phone-PASS and current 9-track playlist stayed unchanged. Corrective source `e7404eb3c4760c2fcb0c86d3ec6b3f9d9f8faffd` fixes UX-025 URL wrapping and BUG-035 Home Export→Import routing. Next: signed build/retest of those two findings, then direct-video-without-list U51-5 case and U51-6.
 10. Do not reread the protected 813-track workspace merely for the UX-024 visual retest.
 
 ## 8. Working contract

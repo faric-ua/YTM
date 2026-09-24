@@ -711,3 +711,7 @@ v1.4.43 NOT PHONE-TESTED YET — BUG-013 AUTH FRESHNESS
 - write-time HTTP 401 stops write and preserves retryable pending work in Queue
 - BUG-013 phone retest required
 - UX-021 and UX-022 remain separate planned UI work
+
+- v1.4.51 U51-5 partial phone QA on run 35938232310: malformed URL rejection PASS and current 9-track playlist unchanged.
+- findings from that run: UX-025 long URL field visually scrolls as one line; BUG-035 Home quick Export opens Import.
+- corrective source e7404eb3c4760c2fcb0c86d3ec6b3f9d9f8faffd wraps URL input into 2–3 lines and routes Home Export to existing Review YTM Project/export actions; signed retest pending.
