@@ -66,34 +66,36 @@ command -v am >/dev/null 2>&1 ||
   ytm_fail "Android activity manager (am) is unavailable"
 
 CONTENT_URI="content://com.termux.files$APK"
-INSTALLER_PACKAGE=""
 
-for package_name in   com.samsung.android.packageinstaller   com.google.android.packageinstaller   com.android.packageinstaller
-do
-  if pm path "$package_name" >/dev/null 2>&1; then
-    INSTALLER_PACKAGE="$package_name"
-    break
-  fi
-done
-
-echo "Opening Android installer directly:"
+echo "Opening Android package installer:"
 echo "RUN_ID=$RUN_ID"
 echo "SOURCE=$SOURCE"
 echo "APK=$APK"
+echo "URI=$CONTENT_URI"
 
-if [ -n "$INSTALLER_PACKAGE" ]; then
-  echo "INSTALLER=$INSTALLER_PACKAGE"
-
-  if am start       -W       -a android.intent.action.VIEW       -d "$CONTENT_URI"       -t application/vnd.android.package-archive       -f 0x10000001       -p "$INSTALLER_PACKAGE"
-  then
-    exit 0
-  fi
-
-  echo
-  echo "Direct installer launch failed; falling back to Android resolver."
+# INSTALL_PACKAGE is intentionally used instead of a generic VIEW intent.
+# On Samsung the generic VIEW path can open an app chooser and hand the APK
+# through a handler chain. The install-specific action asks Android directly
+# for the package-install flow while keeping Termux's read grant on the URI.
+if am start \
+    -W \
+    -a android.intent.action.INSTALL_PACKAGE \
+    -d "$CONTENT_URI" \
+    -f 0x10000001
+then
+  exit 0
 fi
 
-command -v termux-open >/dev/null 2>&1 ||
-  ytm_fail "termux-open is unavailable and direct installer launch failed"
+echo
+echo "FAIL: Android rejected the install-specific intent." >&2
+echo "Available package-installer candidates:" >&2
+(
+  pm list packages 2>/dev/null |
+    grep -Ei 'packageinstaller|permissioncontroller|installer' ||
+  true
+) >&2
 
-termux-open --view "$APK"
+echo >&2
+echo "No generic chooser fallback was used." >&2
+echo "Copy the output above for diagnosis." >&2
+exit 1
