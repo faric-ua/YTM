@@ -140,8 +140,8 @@ if (
 for needle in (
     "buildActionFooter(",
     "STATE_DUPLICATE_CHOICE_OPEN",
-    "Зберегти всі",
-    "Без повторів",
+    "UrlSnapshotDuplicateMode.KEEP_ALL",
+    "UrlSnapshotDuplicateMode.DROP_REPEATED_EXACT_VIDEO_IDS",
     "Оновити з YouTube",
     "forceRemote =",
     "Повтор exact videoId",
