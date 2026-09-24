@@ -56,7 +56,7 @@ run_for_exact_head() {
     --branch "$BRANCH" \
     --limit 50 \
     --json databaseId,headSha,status,conclusion,createdAt \
-    --jq ".[] | select(.headSha == \"$sha\") | [.databaseId,.status,(.conclusion // \""\"),.createdAt] | @tsv" \
+    --jq ".[] | select(.headSha == \"$sha\") | [.databaseId,.status,.conclusion,.createdAt] | @tsv" \
     2>/dev/null |
     head -n 1 ||
     true
