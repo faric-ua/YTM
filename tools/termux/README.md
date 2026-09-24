@@ -13,8 +13,9 @@ The YTM widget must not depend on the Renault repository.
 3. **Download signed APK** — only a successful GitHub Actions run whose
    `headSha` exactly matches the current remote branch HEAD; stores it under
    `artifacts/apk/vX.Y.Z/run-<RUN_ID>/`.
-4. **Install downloaded APK** — checksum + exact-current-source guard before
-   opening Android's installer.
+4. **Install downloaded APK** — checksum + source-compatibility guard, then
+   direct launch of the detected Android package installer (Samsung first,
+   Google/AOSP fallback) to avoid the generic app chooser.
 5. **Open YTM shell** — interactive shell inside the repository.
 6. **Build APK manually** — fallback dispatch for the current remote branch HEAD.
 0. Exit.
@@ -53,3 +54,14 @@ Downloaded builds are kept under the YTM project itself:
 
 The `apk/` subtree is gitignored so APK binaries never dirty the repository or
 inflate Git history.
+
+
+## Installer launch
+
+The installer helper prefers a direct `ACTION_VIEW` intent to the installed
+package-installer app with a Termux content URI and read grant. This avoids the
+generic `Відкрити за допомогою` chooser seen on Samsung.
+
+If the remote branch advanced after the APK was downloaded, installation is
+still allowed only when every later change is tooling/docs-only. Any app/build
+source change still requires downloading the matching signed APK again.
