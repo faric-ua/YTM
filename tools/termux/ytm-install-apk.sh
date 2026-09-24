@@ -71,82 +71,23 @@ TERMUX_PROPS_FILE="$TERMUX_PROPS_DIR/termux.properties"
 mkdir -p "$TERMUX_PROPS_DIR"
 touch "$TERMUX_PROPS_FILE"
 
-if grep -Eq '^[[:space:]]*allow-external-apps[[:space:]]*=[[:space:]]*true[[:space:]]*STAGED_APK="$INSTALL_STAGE_DIR/$(basename "$APK")"
-STAGED_SHA="$STAGED_APK.sha256"
-
-rm -rf "$INSTALL_STAGE_DIR"
-mkdir -p "$INSTALL_STAGE_DIR"
-
-cp "$APK" "$STAGED_APK"
-cp "$SHA" "$STAGED_SHA"
-
-(
-  cd "$INSTALL_STAGE_DIR"
-  sha256sum -c "$(basename "$STAGED_SHA")"
-)
-
-ORIGINAL_HASH="$(sha256sum "$APK" | awk '{print $1}')"
-STAGED_HASH="$(sha256sum "$STAGED_APK" | awk '{print $1}')"
-
-[ "$ORIGINAL_HASH" = "$STAGED_HASH" ] ||
-  ytm_fail "Private Termux install staging hash mismatch"
-
-echo "Opening Android installer from private Termux staging:"
-echo "RUN_ID=$RUN_ID"
-echo "SOURCE=$SOURCE"
-echo "ARCHIVE_APK=$APK"
-echo "STAGED_APK=$STAGED_APK"
-echo "SHA256=$STAGED_HASH"
-
-CONTENT_URI="content://com.termux.files$STAGED_APK"
-APK_MIME="application/vnd.android.package-archive"
-
-command -v am >/dev/null 2>&1 ||
-  ytm_fail "Android activity manager (am) is unavailable"
-
-echo
-echo "Trying SAI rootless installer first:"
-
-SAI_COMPONENT="com.aefyr.sai/com.aefyr.sai.ui.activities.ApkActionViewProxyActivity"
-
-set +e
-SAI_OUTPUT="$(
-  am start \
-    -W \
-    -n "$SAI_COMPONENT" \
-    -a android.intent.action.VIEW \
-    -c android.intent.category.DEFAULT \
-    -d "$CONTENT_URI" \
-    -t "$APK_MIME" \
-    -f 0x10000001 \
-    2>&1
-)"
-SAI_RC=$?
-set -e
-
-printf '%s\n' "$SAI_OUTPUT"
-
-if [ "$SAI_RC" -eq 0 ] &&
-   ! printf '%s\n' "$SAI_OUTPUT" |
-     grep -Eqi 'Error:|Exception|SecurityException|unable to resolve|not found'
-then
+if ! grep -Eq '^[[:space:]]*allow-external-apps[[:space:]]*=[[:space:]]*true[[:space:]]*$' "$TERMUX_PROPS_FILE"; then
   echo
-  echo "SAI installer launched."
-  echo "Finish the install in SAI, then return to the YTM menu."
-  exit 0
-fi
+  echo "SAI needs TermuxContentProvider access to the staged APK."
+  echo "This requires: allow-external-apps=true"
+  echo "File: $TERMUX_PROPS_FILE"
+  echo
+  printf "Enable this Termux setting now? [y/N]: "
+  read -r answer
 
-echo
-echo "SAI direct launch was unavailable; opening Android chooser as fallback."
-echo "If SAI is shown, choose SAI."
+  case "$answer" in
+    y|Y|yes|YES)
+      ;;
+    *)
+      ytm_fail "Installer handoff cancelled; Termux external content sharing was not enabled"
+      ;;
+  esac
 
-termux-open \
-  --view \
-  --content-type "$APK_MIME" \
-  "$STAGED_APK"
- "$TERMUX_PROPS_FILE"; then
-  :
-else
   if grep -Eq '^[[:space:]]*allow-external-apps[[:space:]]*=' "$TERMUX_PROPS_FILE"; then
     sed -i -E 's/^[[:space:]]*allow-external-apps[[:space:]]*=.*$/allow-external-apps=true/' "$TERMUX_PROPS_FILE"
   else
@@ -157,9 +98,10 @@ else
     termux-reload-settings >/dev/null 2>&1 || true
   fi
 
-  echo "Enabled Termux external content sharing:"
-  echo "allow-external-apps=true"
-  echo "FILE=$TERMUX_PROPS_FILE"
+  grep -Eq '^[[:space:]]*allow-external-apps[[:space:]]*=[[:space:]]*true[[:space:]]*$' "$TERMUX_PROPS_FILE" ||
+    ytm_fail "Failed to enable allow-external-apps=true"
+
+  echo "Termux external content sharing enabled."
 fi
 
 INSTALL_STAGE_DIR="$YTM_STATE_DIR/install-staging/run-$RUN_ID"
@@ -183,21 +125,19 @@ STAGED_HASH="$(sha256sum "$STAGED_APK" | awk '{print $1}')"
 [ "$ORIGINAL_HASH" = "$STAGED_HASH" ] ||
   ytm_fail "Private Termux install staging hash mismatch"
 
-echo "Opening Android installer from private Termux staging:"
+CONTENT_URI="content://com.termux.files$STAGED_APK"
+APK_MIME="application/vnd.android.package-archive"
+
+echo
+echo "Opening APK installer:"
 echo "RUN_ID=$RUN_ID"
 echo "SOURCE=$SOURCE"
 echo "ARCHIVE_APK=$APK"
 echo "STAGED_APK=$STAGED_APK"
 echo "SHA256=$STAGED_HASH"
 
-CONTENT_URI="content://com.termux.files$STAGED_APK"
-APK_MIME="application/vnd.android.package-archive"
-
 command -v am >/dev/null 2>&1 ||
   ytm_fail "Android activity manager (am) is unavailable"
-
-echo
-echo "Trying SAI rootless installer first:"
 
 SAI_COMPONENT="com.aefyr.sai/com.aefyr.sai.ui.activities.ApkActionViewProxyActivity"
 
@@ -224,13 +164,13 @@ if [ "$SAI_RC" -eq 0 ] &&
 then
   echo
   echo "SAI installer launched."
-  echo "Finish the install in SAI, then return to the YTM menu."
+  echo "Complete the installation in SAI."
   exit 0
 fi
 
 echo
-echo "SAI direct launch was unavailable; opening Android chooser as fallback."
-echo "If SAI is shown, choose SAI."
+echo "SAI direct launch unavailable; opening Android chooser."
+echo "Choose SAI if it is listed."
 
 termux-open \
   --view \
