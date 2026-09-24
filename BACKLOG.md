@@ -86,14 +86,14 @@ v1.4.52 — URL Snapshot / Home UX Polish — DEVELOPMENT
 - [x] create release documentation before app-code changes
 - [x] dedicated branch `feat/v1.4.52-ux-polish`
 - [x] bump app identity to v1.4.52 / versionCode 95
-- [ ] UX-027: duplicate chooser uses one horizontal row
-- [ ] UX-027: labels are `Всі (N)`, `Унікальні (U)`, `Скасувати`
-- [ ] UX-027: Cancel returns to the same preview without commit
-- [ ] UX-027: rotation preserves chooser without auto-commit
-- [ ] UX-028: URL snapshot commit carries exact History entry id
-- [ ] UX-028: Home exposes explicit detail affordance for the associated status
-- [ ] UX-028: tap opens exact History detail directly
-- [ ] UX-028: stale detail mapping clears on unrelated status
+- [x] UX-027: duplicate chooser uses one horizontal row
+- [x] UX-027: labels are `Всі (N)`, `Унікальні (U)`, `Скасувати`
+- [x] UX-027: Cancel returns to the same preview without commit
+- [x] UX-027: rotation state is preserved in the existing duplicate-choice saved-state contract; phone retest pending
+- [x] UX-028: URL snapshot commit carries exact History entry id
+- [x] UX-028: Home exposes explicit `Деталі в Історії →` affordance for the associated status
+- [x] UX-028: tap opens exact History detail directly by id
+- [x] UX-028: stale detail mapping clears on unrelated status
 - [ ] static/full preflight
 - [ ] signed phone QA
 
