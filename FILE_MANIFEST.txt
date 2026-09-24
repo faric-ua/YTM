@@ -256,7 +256,7 @@ bda0e19ca6c2e07d  docs/design/exclusive/skins/prototypes/polyglot-ku-japanese-me
 825f45a7d5450cd0  docs/design/exclusive/skins/prototypes/polyglot-ku-kyiv-seoul-folklore-modern-fusion.jpg
 35367b8be4d09ad4  docs/design/exclusive/skins/prototypes/polyglot-ku-ukrainian-korean-fusion-motif.jpg
 4d76747d3ede3605  docs/documentation/DOCUMENTATION_GAP_AUDIT_2026-09-22.md
-826c25804990ced4  docs/documentation/HISTORICAL_RELEASE_MATRIX.md
+6c9feeb31b04faf3  docs/documentation/HISTORICAL_RELEASE_MATRIX.md
 1187e545d7e7e395  docs/issues/BUG-002/README.md
 1c2281d82e35a871  docs/issues/BUG-002/evidence/BUG002-dialog-entrance-motion-v1.4.27-2026-09-17.mp4
 99c7f4028960389c  docs/issues/BUG-004/PHONE_REPRO_v1.4.40_2026-09-19.md
