@@ -1665,6 +1665,7 @@ d67bd3e5edd4e84b  tools/termux/README.md
 f02208fad378e44b  tools/termux/ytm-common.sh
 f63257687628de7b  tools/termux/ytm-download-apk.sh
 8eda0cea3d5fad27  tools/termux/ytm-install-apk.sh
-1bd6f2fadef09725  tools/termux/ytm-menu.sh
+127143622639924f  tools/termux/ytm-menu.sh
+d9bed80c74070c8c  tools/termux/ytm-release-status.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
 42c09273cce76334  tools/termux/ytm-sync.sh
