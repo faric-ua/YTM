@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT / RELEASE BASELINE READY
+v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — FINAL / PHONE QA PASS
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -39,6 +39,8 @@ v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT / RELEASE BASELI
 - UX-023 Playlist Editor Long Title Visibility — CLOSED / PHONE RETEST PASS v1.4.48; long titles wrap across the required number of lines and the draft survives rotation.
 
 - BUG-030 Play Protect blocks/warns on the sideloaded updater-enabled APK — OPEN NON-BLOCKING DISTRIBUTION/REPUTATION FOLLOW-UP; exact final RC installed successfully after explicit user override; root cause/false-positive review remains separate from functional updater PASS.
+- UX-027 URL Snapshot duplicate-choice action layout — OPEN NON-BLOCKING; use one adaptive horizontal row only when width safely fits both labels, stacked fallback otherwise.
+- UX-028 Home last-action detail drill-down — OPEN NON-BLOCKING; History already has full URL-snapshot detail, but the truncated Home summary has no obvious direct navigation to it.
 
 
 ## v1.4.49 — In-app Updater
@@ -103,8 +105,8 @@ v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT / RELEASE BASELI
 - [x] Corrective R1 exact-videoId duplicate statistics + explicit keep-all/dedupe save choice
 - [x] Corrective R1 permanent SearchCache with no automatic TTL; existing Full Backup/Restore retained
 - [x] Corrective R1 persistent URL snapshot cache + explicit force-refresh; Full Backup/Restore included
-- [ ] signed phone QA after Corrective R1; retest U51-1 then continue U51-2..U51-6
-- [ ] development reference: `https://music.youtube.com/playlist?list=RDREDRRxBLCgTn4p2e5sfWmEpQ&playnext=1&si=fCmcHgsLZstGHeXj`
+- [x] signed phone QA after Corrective R1; U51-1..U51-6 complete and PASS
+- [x] dynamic-Mix reference exercised; U51-2 PASS as explicit unsupported capability without fabricated enumeration
 
 ## v1.4.50 — Skin System
 - [x] roadmap recorded
