@@ -91,8 +91,8 @@ if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
 fi
 
-grep -Fq 'Version: 1.3' YTM_ASSISTANT_WORKFLOW.md \
-  || fail "assistant workflow version 1.3 missing"
+grep -Fq 'Version: 1.4' YTM_ASSISTANT_WORKFLOW.md \
+  || fail "assistant workflow version 1.4 missing"
 grep -Fq 'Stable phone-side build artifact convention' YTM_ASSISTANT_WORKFLOW.md \
   || fail "artifact convention missing from workflow policy"
 grep -Fq 'New assistant handoff' YTM_ASSISTANT_WORKFLOW.md \
@@ -104,8 +104,8 @@ grep -Fq 'Do **not** use `git add -A` as the routine default.' TERMUX_COMMANDS.m
   || fail "Termux guide still lacks exact-staging rule"
 grep -Fq 'git diff --cached --diff-filter=D --name-status' TERMUX_COMMANDS.md \
   || fail "Termux staged deletion guard missing"
-grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' TERMUX_COMMANDS.md \
-  || fail "Termux stable build folder missing"
+grep -Fq '/storage/emulated/0/Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/' TERMUX_COMMANDS.md \
+  || fail "Termux project-local APK archive path missing"
 
 grep -Fq 'GitHub repository access' docs/ASSISTANT_TOOL_MAP.md \
   || fail "tool map GitHub section missing"
@@ -130,9 +130,9 @@ done
 grep -Fq 'Historical structural audits must not pin the current app version' docs/WORKFLOW_LESSONS.md \
   || fail "v1.4.28 historical-audit lesson missing"
 
-grep -Fq '/storage/emulated/0/Download/YTM-vX.Y.Z-build/' \
+grep -Fq '/storage/emulated/0/Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/' \
   docs/BUILD_ARTIFACT_CONVENTION.md \
-  || fail "build artifact standard path missing"
+  || fail "project-local build artifact standard path missing"
 
 grep -Fq "Version: $APP_VERSION" PROJECT_STATUS.txt \
   || fail "PROJECT_STATUS version drift"

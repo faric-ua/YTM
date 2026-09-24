@@ -1499,7 +1499,7 @@ a70421aa086a5c61  scripts/generate-file-manifest.py
 7d7193fd9798ed62  scripts/mainactivity-audit.sh
 8fe538a35721c634  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
-b7df9868f4b7e3d9  scripts/project-handoff-audit.sh
+e70d8ddc6e50124b  scripts/project-handoff-audit.sh
 08211dc2fb7ed826  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
 34a319998981b650  scripts/release-close-audit.sh
