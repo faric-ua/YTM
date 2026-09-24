@@ -10,6 +10,8 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -265,7 +267,7 @@ class UrlSnapshotActivity : Activity() {
                         setPadding(
                             dp(12),
                             dp(10),
-                            dp(12),
+                            dp(52),
                             dp(10)
                         )
 
@@ -291,8 +293,61 @@ class UrlSnapshotActivity : Activity() {
                         )
                     }
 
+                val urlField =
+                    FrameLayout(
+                        this@UrlSnapshotActivity
+                    ).apply {
+                        addView(
+                            urlInput,
+                            FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams
+                                    .MATCH_PARENT,
+                                ViewGroup.LayoutParams
+                                    .WRAP_CONTENT
+                            )
+                        )
+
+                        addView(
+                            ImageButton(
+                                this@UrlSnapshotActivity
+                            ).apply {
+                                contentDescription =
+                                    "Очистити URL"
+
+                                setImageResource(
+                                    R.drawable.ic_ytm_clear
+                                )
+
+                                setColorFilter(
+                                    palette.muted
+                                )
+
+                                background = null
+
+                                setPadding(
+                                    dp(10),
+                                    dp(10),
+                                    dp(10),
+                                    dp(10)
+                                )
+
+                                setOnClickListener {
+                                    urlInput.setText("")
+                                    enteredUrl = ""
+                                    urlInput.requestFocus()
+                                }
+                            },
+                            FrameLayout.LayoutParams(
+                                dp(44),
+                                dp(44),
+                                Gravity.END or
+                                    Gravity.CENTER_VERTICAL
+                            )
+                        )
+                    }
+
                 addView(
-                    urlInput,
+                    urlField,
                     LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams
                             .MATCH_PARENT,
