@@ -235,6 +235,13 @@ check_file "scripts/generate-release-documentation-matrix.py"
 check_file "docs/documentation/HISTORICAL_RELEASE_MATRIX.md"
 check_file "docs/v.1.4.49/RELEASE_META.json"
 
+for termux_script in tools/termux/*.sh; do
+  check_file "$termux_script"
+  bash -n "$termux_script" ||
+    fail "Termux script syntax error: $termux_script"
+done
+
+
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/search-coordinator-audit.sh
