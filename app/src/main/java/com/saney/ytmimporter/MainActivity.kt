@@ -946,10 +946,7 @@ class MainActivity : Activity() {
         )
     }
 
-    private fun openReviewScreen(
-        focusHistoryIndex: Int? = null,
-        openProjectActions: Boolean = false
-    ) {
+    private fun openReviewScreen(focusHistoryIndex: Int? = null, openProjectActions: Boolean = false) {
         val current =
             playlist
                 ?: return toast(
@@ -979,9 +976,7 @@ class MainActivity : Activity() {
                 )
             }
 
-        if (openProjectActions) {
-            intent.putExtra(ReviewActivity.EXTRA_OPEN_PROJECT_ACTIONS, true)
-        }
+        if (openProjectActions) intent.putExtra(ReviewActivity.EXTRA_OPEN_PROJECT_ACTIONS, true)
 
         startActivityForResult(
             intent,
