@@ -63,4 +63,5 @@ Do not rewrite v1.4.50 historical bug evidence.
 - Area: URL Snapshot URL input.
 - Expected: a small clear control is available inside the field at the right edge, vertically centered, without covering wrapped URL text.
 - Corrective: 44dp inline clear button, extra right text padding, clear-only behavior.
-- Retest: pending signed phone QA.
+- Signed retest: run `35943953149`, source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
+- Retest result: **PASS / CLOSED** — inline `×` is visible, clears only the URL draft, and starts no automatic work.
