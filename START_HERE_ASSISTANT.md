@@ -37,7 +37,7 @@ Current development application:
 - release focus: **v1.4.52 — URL Snapshot / Home UX Polish — DEVELOPMENT**
 - release status: **DEVELOPMENT — UX-027/UX-028 IMPLEMENTED / STATIC+SIGNED BUILD PENDING**
 - active branch: `feat/v1.4.52-ux-polish`
-- release-start base HEAD: `5ccc5e2066fb2e69338c8181f266a18dec55b398`
+- release-start base HEAD: `2d3b39cbf965473a191b2df20522d0f0db623504`
 - accepted stable release: **v1.4.51 — YouTube/YTM URL/Mix Snapshot Import**
 - stable app checkpoint: `checkpoint-v1.4.51-phone-pass`
 - accepted stable app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
