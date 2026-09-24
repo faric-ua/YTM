@@ -386,4 +386,4 @@ Rules:
 - UX-028 implemented: exact History entry id is returned by local commit, relayed through ImportActivity, retained by Home status state, and used for direct History detail launch.
 - Home shows a separate accent `Деталі в Історії →` affordance so truncation of the status text does not hide navigation.
 - Dedicated audit: `scripts/v1452-ux-polish-audit.sh`; wired into release preflight.
-- Next gate: generated docs/manifests → full preflight → signed build → targeted phone Tests 1–3.
+- Generated documentation indexes/manifests are refreshed. Next gate: full preflight → signed build → targeted phone Tests 1–3.
