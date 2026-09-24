@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.51
-Version code: 94
+Version: 1.4.52
+Version code: 95
 Current live resume snapshot: CURRENT_HANDOFF.md
 
 Current accepted release (v1.4.51 YouTube/YTM URL/Mix Snapshot Import — FINAL):
@@ -20,6 +20,15 @@ Current accepted release (v1.4.51 YouTube/YTM URL/Mix Snapshot Import — FINAL)
 - UX-027 / UX-028 remain open non-blocking polish;
 - previous stable v1.4.50 source/tag/checkpoint remain preserved as historical evidence;
 - repository changes are direct-GitHub by default; phone sync uses Termux menu item 1.
+
+Active development release (v1.4.52 URL Snapshot / Home UX Polish):
+- branch: feat/v1.4.52-ux-polish;
+- versionCode: 95;
+- UX-027: duplicate chooser implemented as one horizontal row: Всі (N) / Унікальні (U) / Скасувати;
+- UX-028: exact URL-snapshot History entry id is relayed to Home and opens direct History detail through an explicit affordance;
+- stale Home detail association clears on unrelated status; recreation state is preserved;
+- no intended URL resolver, Search, auth, quota or YTM-write semantic change;
+- static/full preflight and signed phone QA are next.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
