@@ -167,6 +167,7 @@ class MainActivity : Activity() {
 
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
+        homeHistoryDetailLink.restoreSavedState()
 
         val restoredToken =
             accessToken
