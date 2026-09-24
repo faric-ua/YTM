@@ -381,16 +381,17 @@ Rules:
 6. live GitHub branch / HEAD / Actions state
 
 
-## Resume point — 2026-09-24 v1.4.52 implementation handoff
+## Resume point — 2026-09-24 v1.4.52 phone-pass handoff
 
 - Branch: `feat/v1.4.52-ux-polish`.
 - versionName / versionCode: `1.4.52 (95)`.
-- Stable baseline: v1.4.51 / source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0` / run `35943953149` / `OTA+`.
-- Release docs were created before app-code changes.
-- UX-027 implemented: one horizontal equal-width row with `Всі (N)`, `Унікальні (U)`, `Скасувати`.
-- UX-028 implemented: exact History entry id is returned by local commit, relayed through ImportActivity, retained by Home status state, and used for direct History detail launch.
-- Home shows a separate accent `Деталі в Історії →` affordance so truncation of the status text does not hide navigation.
-- Dedicated audit: `scripts/v1452-ux-polish-audit.sh`; wired into release preflight.
-- Build hardening added after repeated v1.4.52 false-starts: automatic `Validate Android` must PASS on the exact HEAD before signed-build handoff; Termux menu item 6 now checks/watches that validation and does not dispatch a signed build on a failing HEAD.
-- Validation scope: full release preflight + `:app:testDebugUnitTest` + unsigned `:app:assembleRelease`. ChatGPT fixes validation failures before asking the user to retry phone build steps.
-- Generated documentation indexes/manifests are refreshed. Next gate: full preflight → signed build → targeted phone Tests 1–3.
+- Exact phone-tested app source: `d857ce8c42511b16357060e6639ed67d548f9f31`.
+- Exact successful signed run: `36041226156`.
+- Installed on phone and targeted QA Tests 1–3: **PASS**.
+- Test 1: `Всі (813) / Унікальні (320) / Скасувати` stays in one row; chooser survives rotation; Cancel is a no-op.
+- Test 2: unique handoff saved 320, reported 493 duplicates, produced local-import History semantics, and did not start YTM write.
+- Test 3: Home `Деталі в Історії →` opened the exact just-created History detail.
+- UX-027: CLOSED / PHONE PASS.
+- UX-028: CLOSED / PHONE PASS.
+- Automatic `Validate Android` exact-HEAD gate is installed; Termux item 6 requires validation PASS before signed-build dispatch.
+- Next step: final v1.4.52 closeout — finalize release docs/meta, stable/checkpoint tags on the tested app source, publish durable release assets, run final close audit, then stable OTA smoke if required.
