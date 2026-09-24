@@ -6,10 +6,7 @@ Add an explicit import flow that accepts a YouTube or YouTube Music playlist/Mix
 URL and turns the tracks resolved in that import session into a stable local
 playlist snapshot inside YTM Importer.
 
-The documentation skeleton and release-start baseline are complete. The
-development application identity is v1.4.51 / versionCode 94. Wave 1 now
-implements a side-effect-free URL source parser/classifier; resolver, preview
-UI and local snapshot commit remain separate later waves.
+The release is implemented and targeted real-phone QA is complete. The final accepted application identity is v1.4.51 / versionCode 94. The exact final tested app source is `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`, signed in GitHub Actions run `35943953149`.
 
 ## Product contract
 
@@ -206,6 +203,32 @@ vertically stacked despite sufficient width. The corrective adopts the
 project-wide width-first responsive action layout contract and the existing
 `UiChrome.addAdaptiveActionButtons(...)` implementation.
 
+## Final phone acceptance
+
+Targeted real-phone acceptance completed on 2026-09-24.
+
+Final accepted application package:
+- versionName: `1.4.51`;
+- versionCode: `94`;
+- exact app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`;
+- signed run: `35943953149`.
+
+Result:
+- U51-1 concrete playlist: PASS;
+- U51-2 dynamic Mix: PASS as explicit unsupported capability, with no fabricated enumeration;
+- U51-3 preview Cancel/Back: PASS;
+- U51-4 recreation safety: PASS;
+- U51-5 invalid/unsupported source: PASS;
+- U51-6 explicit local snapshot handoff: PASS.
+
+Final U51-6 dedupe handoff used the existing cached 813-row snapshot. Rotation did not auto-commit. The explicit first-occurrence-only choice saved 320 rows and recorded 493 duplicates. History used local-import semantics and showed no YTM write counters. Returning Home started no create/add flow, queue or remote write.
+
+The phone UI was not used to manually dump all 320 stored videoIds. Exact-ID preservation is therefore supported by the resolver/commit implementation and automated contract tests plus representative phone order/current-workspace inspection, not by a manual per-row ID transcript.
+
+Non-blocking polish follow-ups:
+- UX-027: consider an adaptive horizontal duplicate-choice action row when width permits;
+- UX-028: make the truncated Home last-action summary drill into the already-existing History detail.
+
 ## Planned implementation waves
 
 1. URL/source capability contract and parser:
@@ -222,9 +245,12 @@ project-wide width-first responsive action layout contract and the existing
 - versionName: `1.4.51`
 - versionCode: `94`
 - branch: `feat/v1.4.51-url-mix-snapshot`
-- accepted stable baseline: `v1.4.50`
-- stable app source: `66d06d6912d014efb3a98d317ed49355a5fa3078`
+- previous stable baseline: `v1.4.50`
+- final tested app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
+- final signed run: `35943953149`
+- release tag: `v1.4.51`
+- stabilization checkpoint: `checkpoint-v1.4.51-phone-pass`
 
 ## Status
 
-**DEVELOPMENT — CACHED_AT CORRECTIVE PHONE PASS / U51-3..U51-6 NEXT**
+**FINAL — TARGETED PHONE QA PASS / U51-1..U51-6 COMPLETE**
