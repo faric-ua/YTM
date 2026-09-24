@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.52-ux-polish",
   "appSourceSha": null,
   "signedRun": null,
-  "qaStatus": "DEVELOPMENT — UX-027/UX-028 IMPLEMENTATION",
+  "qaStatus": "DEVELOPMENT — UX-027/UX-028 IMPLEMENTED / FULL PREFLIGHT + SIGNED PHONE QA PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null
