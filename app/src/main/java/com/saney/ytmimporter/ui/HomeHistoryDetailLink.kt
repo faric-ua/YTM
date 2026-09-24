@@ -15,12 +15,16 @@ class HomeHistoryDetailLink(
     container: LinearLayout,
     savedInstanceState: Bundle?
 ) {
-    private var message =
+    private var message = ""
+
+    private var historyEntryId: String? = null
+
+    private val restoredMessage =
         savedInstanceState
             ?.getString(STATE_MESSAGE)
             .orEmpty()
 
-    private var historyEntryId =
+    private val restoredHistoryEntryId =
         savedInstanceState
             ?.getString(STATE_HISTORY_ENTRY_ID)
             ?.takeIf {
@@ -53,10 +57,17 @@ class HomeHistoryDetailLink(
 
     init {
         container.addView(detailText)
+    }
 
-        if (message.isNotBlank()) {
-            render()
+    fun restoreSavedState() {
+        if (restoredMessage.isBlank()) {
+            return
         }
+
+        show(
+            restoredMessage,
+            restoredHistoryEntryId
+        )
     }
 
     fun show(
