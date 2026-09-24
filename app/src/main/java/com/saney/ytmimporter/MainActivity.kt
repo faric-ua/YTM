@@ -149,7 +149,7 @@ class MainActivity : Activity() {
             savedInstanceState?.getBoolean(STATE_RETURN_TO_PLAYLIST_HUB, false) ?: false
         returnToMenuAfterDelegatedAction =
             savedInstanceState?.getBoolean(STATE_RETURN_TO_MENU, false) ?: false
-        buildUi()
+        buildUi(savedInstanceState)
         workflowRelay = WorkflowRelayOverlay(this, savedInstanceState)
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
@@ -219,7 +219,7 @@ class MainActivity : Activity() {
         executor.shutdownNow()
         super.onDestroy()
     }
-    private fun buildUi() {
+    private fun buildUi(savedInstanceState: Bundle?) {
         val palette = AppThemeManager.palette(this)
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
