@@ -69,7 +69,21 @@ class HistoryActivity : Activity() {
         pendingJobStore = PendingJobStore(this)
 
         val restoredEntryId =
-            savedInstanceState?.getString(KEY_CURRENT_ENTRY_ID)
+            savedInstanceState
+                ?.getString(
+                    KEY_CURRENT_ENTRY_ID
+                )
+                ?: if (savedInstanceState == null) {
+                    intent
+                        ?.getStringExtra(
+                            EXTRA_OPEN_ENTRY_ID
+                        )
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                } else {
+                    null
+                }
 
         actionsDialogOpen =
             savedInstanceState
@@ -2154,6 +2168,9 @@ class HistoryActivity : Activity() {
     }
 
     companion object {
+        const val EXTRA_OPEN_ENTRY_ID =
+            "history_open_entry_id"
+
         private const val KEY_CURRENT_ENTRY_ID =
             "current_history_entry_id"
 
