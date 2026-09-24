@@ -32,16 +32,16 @@ Primary branch: `main`
 
 Current development application:
 
-- versionName: **1.4.51**
-- versionCode: **94**
-- release focus: **v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — DEVELOPMENT**
-- release status: **DEVELOPMENT — CACHED_AT CORRECTIVE PHONE PASS / U51-3..U51-6 NEXT**
-- active branch: `feat/v1.4.51-url-mix-snapshot`
+- versionName: **1.4.52**
+- versionCode: **95**
+- release focus: **v1.4.52 — URL Snapshot / Home UX Polish — DEVELOPMENT**
+- release status: **DEVELOPMENT — UX-027/UX-028 IMPLEMENTED / STATIC+SIGNED BUILD PENDING**
+- active branch: `feat/v1.4.52-ux-polish`
 - release-start base HEAD: `5ccc5e2066fb2e69338c8181f266a18dec55b398`
-- accepted stable release: **v1.4.50 — Skin System**
-- stable app checkpoint: `checkpoint-v1.4.50-phone-pass`
-- accepted stable app source: `66d06d6912d014efb3a98d317ed49355a5fa3078`
-- current architecture wave: **v1.4.51 URL/Mix Snapshot Import**
+- accepted stable release: **v1.4.51 — YouTube/YTM URL/Mix Snapshot Import**
+- stable app checkpoint: `checkpoint-v1.4.51-phone-pass`
+- accepted stable app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
+- current architecture wave: **v1.4.52 URL Snapshot / Home UX Polish**
 - Wave 1: **URL matrix + parser/canonicalization + playlist-vs-Mix classification — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
 - Wave 2: **concrete-playlist resolver + ordered/unavailable result model + exact quota hook — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
 - Wave 3: **process-local single remote-operation owner + URL input/preview UI — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
@@ -49,7 +49,8 @@ Current development application:
 - Corrective R1: **fixed preview footer + exact duplicate choice + permanent SearchCache + persistent URL snapshot cache — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
 - Title metadata corrective: **official playlist title + cache enrichment + local History/Current Playlist backfill — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
 - Title cachedAt corrective: **metadata-only title enrichment preserves the original snapshot timestamp — PHONE PASS on run 35921749405 / ba826563032da85fd99eb822c07342c56b2b60f6**
-- next release step: **signed UX-024 landscape action-row retest, then continue U51-5 / U51-6 on that APK**
+- current v1.4.52 scope: **UX-027 one-row `Всі / Унікальні / Скасувати` chooser + UX-028 exact Home → History detail drill-down**
+- next release step: **full preflight → signed build → targeted phone QA**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
