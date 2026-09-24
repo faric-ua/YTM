@@ -425,3 +425,5 @@ bash tools/termux/install-widget.sh
 
 The shortcut must point directly to the YTM repository. YTM tooling must not
 depend on the Renault repository.
+
+The menu normalizes the YTM `origin` remote to HTTPS when it finds the legacy GitHub SSH URL, so normal phone operation does not depend on an SSH key.
