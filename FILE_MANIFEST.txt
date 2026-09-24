@@ -5,6 +5,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 957b553c7b6dec80  .github/workflows/build-apk.yml
+86494078c1f66cd1  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -13,7 +14,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 7161a19f3652dc37  ASSISTANT_CONTEXT_INDEX.md
 9b1aae0969816752  BACKLOG.md
 32c2196aa82fe430  CHANGELOG.md
-d8fd30cf310e7453  CURRENT_HANDOFF.md
+c2f2e59685559e58  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -81,9 +82,9 @@ de641fc9d98aac34  TERMINAL_APPLY_v1.4.25.md
 fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 410caf55096b297c  TERMINAL_APPLY_v1.4.8.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
-f919161743154578  TERMUX_COMMANDS.md
+0091f58b01ecd4b1  TERMUX_COMMANDS.md
 55cdc8a68f1e48f2  TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt
-d144172840bc299e  YTM_ASSISTANT_WORKFLOW.md
+cd1b153bfce945ce  YTM_ASSISTANT_WORKFLOW.md
 8b5110be046ed011  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 ce278ee8fa660bda  app/src/main/AndroidManifest.xml
@@ -92,7 +93,7 @@ b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 294d4b27b70d1309  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 4f2b040860fd56c4  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 840d2dea2e562c2e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
-f1ac74b07d17c447  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+b33b61b5648482eb  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 543310163c294d4e  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 6ed9a78faabac822  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 037f83a4b2de7dca  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
@@ -200,7 +201,7 @@ c046586be53a0584  artifacts/README.md
 87fc228b4c2c6d23  docs/BUILD_ARTIFACT_CONVENTION.md
 3c8c6e273019f706  docs/HANDOFF_HARDENING_2026-09-17.md
 da6db67c9017a470  docs/README.md
-0eb6d1512dc9b142  docs/WORKFLOW_LESSONS.md
+bb063331c071e088  docs/WORKFLOW_LESSONS.md
 6d3327b2a9944c89  docs/assistant-kit/AUDIT_CATALOG.md
 f79ff05a88d54a17  docs/assistant-kit/CONTEXT_FILES.txt
 32b0a039d0111864  docs/assistant-kit/PORTABLE_AUDITS.txt
@@ -1657,10 +1658,10 @@ f834e1746373fdba  scripts/v1452-ux-polish-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 d67bd3e5edd4e84b  tools/termux/README.md
 8a4753c11d9a562b  tools/termux/install-widget.sh
-13c00240361d97a0  tools/termux/ytm-build-apk.sh
+10df440715bab7b4  tools/termux/ytm-build-apk.sh
 f02208fad378e44b  tools/termux/ytm-common.sh
 f63257687628de7b  tools/termux/ytm-download-apk.sh
 8eda0cea3d5fad27  tools/termux/ytm-install-apk.sh
-f868774849410928  tools/termux/ytm-menu.sh
+1bd6f2fadef09725  tools/termux/ytm-menu.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
 42c09273cce76334  tools/termux/ytm-sync.sh
