@@ -62,92 +62,35 @@ fi
   sha256sum -c "$(basename "$SHA")"
 )
 
-command -v am >/dev/null 2>&1 ||
-  ytm_fail "Android activity manager (am) is unavailable"
+command -v termux-open >/dev/null 2>&1 ||
+  ytm_fail "termux-open is unavailable"
 
-command -v cmd >/dev/null 2>&1 ||
-  ytm_fail "Android cmd utility is unavailable"
+INSTALL_STAGE_DIR="$YTM_STATE_DIR/install-staging/run-$RUN_ID"
+STAGED_APK="$INSTALL_STAGE_DIR/$(basename "$APK")"
+STAGED_SHA="$STAGED_APK.sha256"
 
-CONTENT_URI="content://com.termux.files$APK"
-APK_MIME="application/vnd.android.package-archive"
+rm -rf "$INSTALL_STAGE_DIR"
+mkdir -p "$INSTALL_STAGE_DIR"
 
-echo "Resolving Android APK handlers:"
+cp "$APK" "$STAGED_APK"
+cp "$SHA" "$STAGED_SHA"
+
+(
+  cd "$INSTALL_STAGE_DIR"
+  sha256sum -c "$(basename "$STAGED_SHA")"
+)
+
+ORIGINAL_HASH="$(sha256sum "$APK" | awk '{print $1}')"
+STAGED_HASH="$(sha256sum "$STAGED_APK" | awk '{print $1}')"
+
+[ "$ORIGINAL_HASH" = "$STAGED_HASH" ] ||
+  ytm_fail "Private Termux install staging hash mismatch"
+
+echo "Opening Android installer from private Termux staging:"
 echo "RUN_ID=$RUN_ID"
 echo "SOURCE=$SOURCE"
-echo "APK=$APK"
-echo "URI=$CONTENT_URI"
+echo "ARCHIVE_APK=$APK"
+echo "STAGED_APK=$STAGED_APK"
+echo "SHA256=$STAGED_HASH"
 
-VIEW_CANDIDATES="$(
-  cmd package query-activities     --brief     --components     --user current     -a android.intent.action.VIEW     -c android.intent.category.DEFAULT     -d "$CONTENT_URI"     -t "$APK_MIME"     2>/dev/null ||
-  true
-)"
-
-INSTALL_CANDIDATES="$(
-  cmd package query-activities     --brief     --components     --user current     -a android.intent.action.INSTALL_PACKAGE     -c android.intent.category.DEFAULT     -d "$CONTENT_URI"     -t "$APK_MIME"     2>/dev/null ||
-  true
-)"
-
-echo
-echo "VIEW candidates:"
-if [ -n "$VIEW_CANDIDATES" ]; then
-  printf '%s\n' "$VIEW_CANDIDATES"
-else
-  echo "(none)"
-fi
-
-echo
-echo "INSTALL_PACKAGE candidates:"
-if [ -n "$INSTALL_CANDIDATES" ]; then
-  printf '%s\n' "$INSTALL_CANDIDATES"
-else
-  echo "(none)"
-fi
-
-ALL_CANDIDATES="$(
-  printf '%s\n%s\n' "$VIEW_CANDIDATES" "$INSTALL_CANDIDATES" |
-    sed '/^[[:space:]]*$/d' |
-    awk '!seen[$0]++'
-)"
-
-INSTALL_COMPONENT="$(
-  printf '%s\n' "$ALL_CANDIDATES" |
-    grep -Ei 'packageinstaller|permissioncontroller' |
-    head -n 1 ||
-  true
-)"
-
-if [ -z "$INSTALL_COMPONENT" ]; then
-  echo >&2
-  echo "FAIL: Android did not expose a system package-installer component." >&2
-  echo "Copy the candidate list above for diagnosis." >&2
-  exit 1
-fi
-
-echo
-echo "Launching system installer component directly:"
-echo "COMPONENT=$INSTALL_COMPONENT"
-
-set +e
-START_OUTPUT="$(
-  am start     -W     -n "$INSTALL_COMPONENT"     -a android.intent.action.VIEW     -c android.intent.category.DEFAULT     -d "$CONTENT_URI"     -t "$APK_MIME"     -f 0x10000001     2>&1
-)"
-START_RC=$?
-set -e
-
-printf '%s\n' "$START_OUTPUT"
-
-if [ "$START_RC" -ne 0 ]; then
-  echo >&2
-  echo "FAIL: explicit package-installer launch returned code $START_RC." >&2
-  exit "$START_RC"
-fi
-
-if printf '%s\n' "$START_OUTPUT" | grep -Eqi 'Error:|Exception|SecurityException|unable to resolve'; then
-  echo >&2
-  echo "FAIL: Android reported an explicit installer launch error." >&2
-  exit 1
-fi
-
-echo
-echo "Installer intent sent to the exact system component."
-echo "If the installer closes after tapping Install, the launcher is no longer the cause."
+termux-open   --view   --content-type application/vnd.android.package-archive   "$STAGED_APK"
