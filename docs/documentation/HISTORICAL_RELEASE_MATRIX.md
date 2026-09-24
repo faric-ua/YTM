@@ -7,7 +7,7 @@ standard. `RETRO GAP` means the artifact is absent today; it does not
 claim that the artifact was mandatory when that historical release was made.
 Missing historical evidence must never be fabricated.
 
-Active planned release from `BACKLOG.md`: **v1.4.51**
+Active planned release from `BACKLOG.md`: **v1.4.52**
 
 | Version | Release | Regression | Phone plan | Bug register | Evidence | Test run | Phone report | Diagrams | Other flow/nav docs |
 |---|---|---|---|---|---|---|---|---:|---:|
@@ -85,6 +85,7 @@ Active planned release from `BACKLOG.md`: **v1.4.51**
 | v1.4.49 | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | 1 | 0 |
 | v1.4.50 | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | 3 | 0 |
 | v1.4.51 | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | 1 | 0 |
+| v1.4.52 | PRESENT | PRESENT | PRESENT | PRESENT | PRESENT | PENDING | PENDING | 1 | 0 |
 
 ## Interpretation
 
