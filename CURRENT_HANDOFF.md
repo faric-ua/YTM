@@ -346,7 +346,7 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 6. Signed APKs downloaded on the phone are stored under `artifacts/apk/vX.Y.Z/run-<RUN_ID>/`; the APK subtree is gitignored. GitHub Release assets are reserved for accepted stable releases.
 7. One-time phone migration: fast-forward the local YTM repo and run `bash tools/termux/install-widget.sh`.
 8. After migration, use menu item 6 only when a manual `workflow_dispatch` is needed; current connector can inspect Actions but does not expose a new workflow-dispatch action.
-9. U51-5 is PHONE PASS on signed run `35941777241` / source `2bd57b3996787517f0c1ce8b45e40d74671ebee3`: malformed URL + direct-video-without-list rejected; UX-025 URL wrapping and BUG-035 Home Export routing both passed. UX-026 inline URL clear action is implemented and awaits signed smoke.
+9. U51-5 is PHONE PASS. UX-026 is also PHONE PASS on signed run `35943953149` / source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`: the inline right-center `×` clears only the URL draft and starts no automatic work. Phone used for this final smoke: Samsung Galaxy A26 5G. Menu item 4 has been simplified to re-verify and open the original downloaded APK run folder under `Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`; it no longer copies the APK or launches SAI/installer directly.
 10. Do not reread the protected 813-track workspace merely for the UX-024 visual retest.
 
 ## 8. Working contract
@@ -372,3 +372,17 @@ Rules:
 4. `docs/assistant-kit/AUDIT_CATALOG.md`
 5. relevant exact source/audit files
 6. live GitHub branch / HEAD / Actions state
+
+
+## Resume point — 2026-09-24 sleep handoff
+
+- Branch: `feat/v1.4.51-url-mix-snapshot`.
+- Last verified app APK source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
+- Signed run: `35943953149` — success.
+- U51-1..U51-5: PASS.
+- UX-024 / UX-025 / BUG-035 / UX-026: PASS / CLOSED.
+- UX-026 real-phone result: inline clear `×` visible and functional; tapping it clears only the draft URL and leaves `Готово до читання` with no automatic resolve/Search/commit.
+- Phone: Samsung Galaxy A26 5G.
+- APK archive remains canonical under `/storage/emulated/0/Documents/YTM/artifacts/apk/v1.4.51/run-<RUN_ID>/`.
+- Termux menu item 4 now only opens the original verified APK folder; no duplicate install copy and no direct installer/SAI handoff.
+- Next task when work resumes: U51-6 explicit local snapshot handoff, then release closeout if PASS.
