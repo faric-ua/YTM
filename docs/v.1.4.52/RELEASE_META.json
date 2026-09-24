@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "versionName": "1.4.52",
+  "versionCode": 95,
+  "phase": "planned",
+  "feature": "URL Snapshot / Home UX Polish",
+  "branch": "feat/v1.4.52-ux-polish",
+  "appSourceSha": null,
+  "signedRun": null,
+  "qaStatus": "PLANNED — DOCUMENTATION SKELETON READY / APP CODE NOT STARTED",
+  "tag": null,
+  "checkpointTag": null,
+  "phoneTestDate": null
+}
