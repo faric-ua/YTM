@@ -84,4 +84,17 @@ Implemented on `feat/v1.4.52-ux-polish`:
 
 ## Status
 
-**DEVELOPMENT — IMPLEMENTED / FULL PREFLIGHT + SIGNED PHONE QA PENDING**
+**PHONE QA PASS — TARGETED UX-027/UX-028 ACCEPTED / FINAL RELEASE CLOSEOUT PENDING**
+
+Phone-tested app identity:
+- source: `d857ce8c42511b16357060e6639ed67d548f9f31`;
+- signed run: `36041226156`;
+- version: `1.4.52 (95)`;
+- phone-test date: `2026-09-24`.
+
+Targeted results:
+- Test 1 PASS: one-row `Всі (813) / Унікальні (320) / Скасувати`, rotation continuity, Cancel no-op;
+- Test 2 PASS: unique local handoff saved 320 tracks, reported 493 duplicates, used local-import History semantics, no YTM write;
+- Test 3 PASS: Home `Деталі в Історії →` opened the exact newly created History detail.
+
+This is a targeted v1.4.52 acceptance, not a claim that every historical full-app regression was rerun.
