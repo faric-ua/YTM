@@ -6,7 +6,7 @@
 - [x] documentation skeleton created before app/build source changes
 - [x] dedicated planning branch `feat/v1.4.51-url-mix-snapshot`
 - [x] app identity bumped to v1.4.51 / versionCode 94
-- [x] release metadata phase advanced from `planned` to `development`
+- [x] release metadata phase advanced from `planned` → `development` → `final`
 
 ## URL/source contract
 
@@ -44,15 +44,15 @@
 - [ ] auth invalidation contract preserved
 - [x] quota accounting hook records each playlistItems.list request — Wave 2
 - [x] no accidental duplicate remote operation — Wave 3
-- [ ] error path
+- [x] error path — malformed URL and unsupported direct-video-without-`list` both fail clearly on phone
 
 ## Release evidence
 
 - [x] dedicated static URL-source Wave 1 audit
 - [x] full release preflight — Wave 1
-- [x] signed v1.4.51 APK — runs 35880942335 and 35909545473
-- [ ] real-phone URL/Mix QA
-- [ ] stabilization checkpoint
+- [x] signed v1.4.51 APK — final accepted run 35943953149 / source 226d2453ef3b4a34cb7db7be0c42ae84c8f624a0; earlier corrective runs preserved in QA evidence
+- [x] real-phone URL/Mix QA — U51-1..U51-6 PASS
+- [x] stabilization checkpoint — `qa/STABILIZATION_CHECKPOINT.md`
 ## Corrective R1 — phone finding gates
 
 - [x] preview Save/Cancel actions live outside the long track ScrollView
@@ -86,3 +86,18 @@
 - [x] UX-025 signed retest: URL field visibly wraps a long URL into 2–3 lines — run 35941777241
 - [x] BUG-035 signed retest: Home quick `Експорт` opens current `YTM Project / export` actions, not Import — run 35941777241
 - [x] UX-026 signed retest: inline right-center clear button clears only the URL draft — run 35943953149
+
+
+## Final U51-6 handoff acceptance
+
+- [x] completed preview survives recreation without auto-commit
+- [x] explicit dedupe choice commits 320 first-occurrence rows from 813 source rows
+- [x] History records 320 imported + 493 duplicates using local-import semantics
+- [x] no YTM write counters are attached to the local snapshot operation
+- [x] Home/current-playlist reload shows the committed 320-row workspace
+- [x] returning Home does not auto-start create/add, queue or YTM write
+- [x] exact-videoId preservation remains covered by resolver/commit policy tests; the phone UI was not used to manually extract all 320 IDs
+
+## Final regression scope note
+
+The three older-system smoke items left unchecked above were not re-run as a new full-app regression matrix for v1.4.51. Their prior accepted release evidence is preserved rather than silently promoted to a new phone PASS. v1.4.51 final acceptance is the targeted URL/Mix Snapshot Import scope documented in the phone test/report.
