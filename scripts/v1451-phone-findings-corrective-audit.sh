@@ -9,8 +9,9 @@ fail() {
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
 URL="app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt"
 REVIEW="app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
+CLEAR_ICON="app/src/main/res/drawable/ic_ytm_clear.xml"
 
-for file in "$MAIN" "$URL" "$REVIEW"; do
+for file in "$MAIN" "$URL" "$REVIEW" "$CLEAR_ICON"; do
   test -f "$file" || fail "missing v1.4.51 phone-finding corrective file: $file"
 done
 
@@ -58,7 +59,18 @@ for needle in (
     if needle not in url:
         raise SystemExit("FAIL: URL multiline editor missing: " + needle)
 
+for needle in (
+    "FrameLayout(",
+    "ImageButton(",
+    '"Очистити URL"',
+    "R.drawable.ic_ytm_clear",
+    "dp(52)",
+):
+    if needle not in url:
+        raise SystemExit("FAIL: URL clear-control contract missing: " + needle)
+
 print("PASS: Home Import remains Import")
 print("PASS: Home Export reuses Review YTM Project/export actions")
 print("PASS: URL input is width-wrapping 2-3 line multiline editor")
+print("PASS: URL input has right-center clear control with protected text padding")
 PY
