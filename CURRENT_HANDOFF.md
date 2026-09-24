@@ -342,12 +342,14 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. Keep v1.4.51 app-source identity immutable at `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
-2. Keep release tag `v1.4.51` and checkpoint `checkpoint-v1.4.51-phone-pass` on that exact app source.
-3. Preserve final phone evidence under `docs/v.1.4.51/qa/`.
-4. Do not reread the protected 813-track workspace merely for documentation or polish work.
-5. Treat UX-027/UX-028 as separate non-blocking future polish.
-6. Before the next app-code wave, create the next release documentation package first.
+1. Keep stable v1.4.51 immutable on source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
+2. Continue only on `feat/v1.4.52-ux-polish` / versionCode 95.
+3. Regenerate repository-derived documentation indexes/manifests and run full release preflight.
+4. After preflight PASS, create one signed v1.4.52 build from the exact branch HEAD.
+5. Phone Test 1: verify one-row `Всі / Унікальні / Скасувати` chooser, including rotation and Cancel no-op.
+6. Phone Test 2: commit `Унікальні` and verify local History semantics/no YTM write.
+7. Phone Test 3: tap Home `Деталі в Історії →` and verify the exact just-created History detail opens.
+8. Do not reread the protected 813-track source remotely merely to test this polish; reuse the existing cached snapshot if still available.
 
 ## 8. Working contract
 
@@ -374,17 +376,14 @@ Rules:
 6. live GitHub branch / HEAD / Actions state
 
 
-## Resume point — 2026-09-24 final v1.4.51 handoff
+## Resume point — 2026-09-24 v1.4.52 implementation handoff
 
-- Branch: `feat/v1.4.51-url-mix-snapshot`.
-- Exact final tested app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
-- Signed run: `35943953149` — success.
-- U51-1..U51-6: **PASS**.
-- UX-024 / UX-025 / BUG-035 / UX-026: **PASS / CLOSED**.
-- U51-6 dedupe save: 813 source rows → 320 saved → 493 duplicates.
-- History/detail correctly records local import semantics; no YTM write counters.
-- Isolation PASS: no automatic create/add flow, queue or write after handoff.
-- Final stable OTA smoke: `OTA+` — production updater reports `Оновлень немає` with installed/stable `1.4.51 (94)`.
-- UX-027/UX-028: open non-blocking polish.
-- APK archive: `/storage/emulated/0/Documents/YTM/artifacts/apk/v1.4.51/run-<RUN_ID>/`.
-- Next development work starts only after the v1.4.51 final tags/checkpoint and close audit are confirmed.
+- Branch: `feat/v1.4.52-ux-polish`.
+- versionName / versionCode: `1.4.52 (95)`.
+- Stable baseline: v1.4.51 / source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0` / run `35943953149` / `OTA+`.
+- Release docs were created before app-code changes.
+- UX-027 implemented: one horizontal equal-width row with `Всі (N)`, `Унікальні (U)`, `Скасувати`.
+- UX-028 implemented: exact History entry id is returned by local commit, relayed through ImportActivity, retained by Home status state, and used for direct History detail launch.
+- Home shows a separate accent `Деталі в Історії →` affordance so truncation of the status text does not hide navigation.
+- Dedicated audit: `scripts/v1452-ux-polish-audit.sh`; wired into release preflight.
+- Next gate: generated docs/manifests → full preflight → signed build → targeted phone Tests 1–3.
