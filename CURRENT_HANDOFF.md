@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-23**
+Last updated: **2026-09-24**
 
 ## 1. Resume point
 
@@ -351,7 +351,9 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 8. Working contract
 
-**ChatGPT prepares a `YTM_*.zip` package → user runs `ytm-code` → signed GitHub Actions APK → user installs → real-phone QA → ChatGPT records evidence/status → merge/next step.**
+**ChatGPT edits/commits/pushes directly in GitHub → verifies exact remote state / CI → user syncs the phone when needed → user downloads/installs the exact signed APK through the YTM Termux menu → real-phone QA → ChatGPT records evidence/status → next step.**
+
+`ytm-code` / ZIP packages remain fallback for local-only work or when direct GitHub mutation is unavailable.
 
 Rules:
 - GitHub/repository truth beats chat memory;
@@ -359,7 +361,8 @@ Rules:
 - preserve historical `docs/v.*`;
 - inspect deletion diff before merge;
 - signed builds come from `.github/workflows/build-apk.yml`;
-- use live branch/PR head immediately before build.
+- use live branch/PR head immediately before build;
+- downloaded APKs live under `artifacts/apk/vX.Y.Z/run-<RUN_ID>/` and are not committed to Git.
 
 ## 9. Fresh-chat reading order
 
