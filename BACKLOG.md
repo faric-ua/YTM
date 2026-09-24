@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — FINAL / PHONE QA PASS
+v1.4.52 — URL Snapshot / Home UX Polish — DEVELOPMENT
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -80,6 +80,22 @@ v1.4.51 — YouTube/YTM URL/Mix Snapshot Import — FINAL / PHONE QA PASS
 - [x] publish stable v1.4.49 + equal-version recheck — `FINAL+`
 - [x] final release documentation/checkpoint closeout
 - [x] publish stable v1.4.49 + final equal-version recheck — `FINAL+`
+
+## v1.4.52 — URL Snapshot / Home UX Polish
+
+- [x] create release documentation before app-code changes
+- [x] dedicated branch `feat/v1.4.52-ux-polish`
+- [x] bump app identity to v1.4.52 / versionCode 95
+- [ ] UX-027: duplicate chooser uses one horizontal row
+- [ ] UX-027: labels are `Всі (N)`, `Унікальні (U)`, `Скасувати`
+- [ ] UX-027: Cancel returns to the same preview without commit
+- [ ] UX-027: rotation preserves chooser without auto-commit
+- [ ] UX-028: URL snapshot commit carries exact History entry id
+- [ ] UX-028: Home exposes explicit detail affordance for the associated status
+- [ ] UX-028: tap opens exact History detail directly
+- [ ] UX-028: stale detail mapping clears on unrelated status
+- [ ] static/full preflight
+- [ ] signed phone QA
 
 ## v1.4.51 — YouTube/YTM URL/Mix Snapshot Import
 
