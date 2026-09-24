@@ -65,3 +65,25 @@ Do not rewrite v1.4.50 historical bug evidence.
 - Corrective: 44dp inline clear button, extra right text padding, clear-only behavior.
 - Signed retest: run `35943953149`, source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
 - Retest result: **PASS / CLOSED** — inline `×` is visible, clears only the URL draft, and starts no automatic work.
+
+
+## UX-027 — duplicate-save chooser can use a wider adaptive action row
+
+- Severity: low / visual usability.
+- Found during: final U51-6 phone acceptance.
+- Area: URL Snapshot duplicate-choice dialog.
+- Observed: `Зберегти всі (813)` and `Без повторів (320)` remain stacked even when a wider layout could fit both labels.
+- Expected: use the shared width-aware adaptive action layout when both actions fit; keep stacked fallback on narrow portrait widths.
+- Functional impact: none; explicit choice and local commit both passed.
+- Release status: **OPEN / NON-BLOCKING FOLLOW-UP**.
+
+## UX-028 — Home last-action summary has no obvious detail drill-down
+
+- Severity: low / discoverability.
+- Found during: final U51-6 phone acceptance.
+- Area: Home last-action summary.
+- Observed: the URL-snapshot summary is truncated on Home and the summary itself does not provide an obvious path to the already-existing History detail.
+- Existing behavior: History correctly stores the full local-import detail (`Імпортовано 320 треків`, `Дублікати 493`, source/mode, no YTM write counters).
+- Expected: keep Home compact, but allow tapping the last-action summary to open the corresponding History detail or otherwise make the drill-down obvious.
+- Functional impact: none; History/detail data is correct.
+- Release status: **OPEN / NON-BLOCKING FOLLOW-UP**.
