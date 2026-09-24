@@ -101,7 +101,7 @@ a1f449578ea55ef1  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActiv
 2048239720693f8c  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 41b4011417cf353a  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 1d2285e95fb0bf60  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
-e2218eb2a4055ab4  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
+3acfd1ff265f8da9  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 99e25606f1e7db96  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
 5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
@@ -1394,9 +1394,9 @@ f3bba97777494594  docs/v.1.4.51/RESOLVER_CONTRACT.md
 cc0c6caa3a243c2d  docs/v.1.4.51/URL_SOURCE_MATRIX.md
 2922544c989fe46c  docs/v.1.4.51/diagrams/README.md
 8f0c3edfd0b10394  docs/v.1.4.51/diagrams/URL_SNAPSHOT_FLOW.md
-85d5007f1e7b6213  docs/v.1.4.51/qa/BUG_REGISTER.md
+9f9ec1631c11fd3f  docs/v.1.4.51/qa/BUG_REGISTER.md
 8b726c5140360946  docs/v.1.4.51/qa/EVIDENCE_MANIFEST.md
-d400872d19238a91  docs/v.1.4.51/qa/PHONE_TEST.md
+b66456f9240f9208  docs/v.1.4.51/qa/PHONE_TEST.md
 91953c8f5c13af7d  docs/v.1.4.6/REGRESSION_CHECKLIST.md
 b19a7931871c062d  docs/v.1.4.6/RELEASE.md
 34feef4923c89b09  docs/v.1.4.6/diagrams/ACTION_HIERARCHY.md
@@ -1633,7 +1633,7 @@ e71e53f823226f56  scripts/v1449-wave3-qa-workflow.py
 30721f44c74e6e51  scripts/v1450-skin-contract-wave1-audit.sh
 db878f2ad688aed3  scripts/v1450-skin-preview-wave2-audit.sh
 5fa94c9b932cd7cd  scripts/v1450-wave1-r1-phone-fixes-audit.sh
-e3d6c1b7d633b901  scripts/v1451-phone-findings-corrective-audit.sh
+1f85a8b139707c05  scripts/v1451-phone-findings-corrective-audit.sh
 8781a7b5643203b7  scripts/v1451-url-commit-wave4-audit.sh
 40b7e1581152a25b  scripts/v1451-url-preview-wave3-audit.sh
 d8ceb8960c31e400  scripts/v1451-url-qa-corrective-r1-audit.sh
@@ -1650,3 +1650,4 @@ f63257687628de7b  tools/termux/ytm-download-apk.sh
 8263dc92f03288fc  tools/termux/ytm-menu.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
 fc251ebbade67a7d  tools/termux/ytm-sync.sh
+c0bad27e1d705a3d  app/src/main/res/drawable/ic_ytm_clear.xml
