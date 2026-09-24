@@ -391,4 +391,6 @@ Rules:
 - UX-028 implemented: exact History entry id is returned by local commit, relayed through ImportActivity, retained by Home status state, and used for direct History detail launch.
 - Home shows a separate accent `Деталі в Історії →` affordance so truncation of the status text does not hide navigation.
 - Dedicated audit: `scripts/v1452-ux-polish-audit.sh`; wired into release preflight.
+- Build hardening added after repeated v1.4.52 false-starts: automatic `Validate Android` must PASS on the exact HEAD before signed-build handoff; Termux menu item 6 now checks/watches that validation and does not dispatch a signed build on a failing HEAD.
+- Validation scope: full release preflight + `:app:testDebugUnitTest` + unsigned `:app:assembleRelease`. ChatGPT fixes validation failures before asking the user to retry phone build steps.
 - Generated documentation indexes/manifests are refreshed. Next gate: full preflight → signed build → targeted phone Tests 1–3.
