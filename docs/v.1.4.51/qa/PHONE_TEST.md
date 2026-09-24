@@ -75,7 +75,20 @@ Expected:
 - existing Review/Search/YTM Project paths remain usable;
 - no remote playlist write occurs as part of import.
 
-Result: `U51-6+` / `U51-6-`
+Result: `U51-6+` — PASS on real phone.
+
+Final U51-6 evidence on signed run `35943953149` / source
+`226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`:
+
+- completed 813-row cached preview survived portrait → landscape → portrait without automatic commit, navigation or remote work;
+- explicit `Зберегти як поточний список` opened the duplicate-choice step;
+- explicit `Без повторів (320)` committed 320 first-occurrence rows and reported 493 exact-videoId duplicates;
+- Home reloaded `mylist • 320 треків`;
+- History created a local-import entry with `Імпортовано 320 треків` and `Дублікати 493`, source `URL snapshot (PLIrF7GkQzd-E) • без повторів`, and no YTM write counters;
+- Current Playlist showed 320 ready rows and the expected first source item/order;
+- returning to Home started no create/add flow, queue or YTM write.
+
+Phone UI does not expose every stored videoId for manual row-by-row extraction. The real-phone handoff verifies the local snapshot/count/order/history/isolation behavior; exact-videoId preservation remains additionally covered by the Wave 2/4 implementation contract and JVM/static tests.
 
 ## Signed title-metadata corrective evidence — 2026-09-23
 
@@ -238,4 +251,6 @@ Real-phone evidence on Samsung Galaxy A26 5G:
 
 Result: `UX-026+` — PHONE PASS / CLOSED.
 
-Next release gate: U51-6 explicit local snapshot handoff.
+Final release result: `U51-1+ / U51-2+ / U51-3+ / U51-4+ / U51-5+ / U51-6+`.
+
+v1.4.51 targeted phone QA is complete. UX-024, UX-025, UX-026 and BUG-035 are closed on signed builds. UX-027 and UX-028 are recorded as non-blocking polish follow-ups.
