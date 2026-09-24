@@ -73,3 +73,15 @@ bypassing package-discovery results that were empty on the Samsung A26 5G.
 If the remote branch advanced after the APK was downloaded, installation is
 still allowed only when every later change is tooling/docs-only. Any app/build
 source change still requires downloading the matching signed APK again.
+
+
+### Samsung / Google Package Installer entry point
+
+On the tested Samsung A26 5G, targeting only the installer package returned
+success without showing UI. The helper now targets the exported Android package
+installer entry activity directly:
+
+`com.google.android.packageinstaller/com.android.packageinstaller.InstallStart`
+
+with the AOSP package-name variant as fallback. This is the Android entry point
+that accepts APK `VIEW` intents for `content://` URIs.
