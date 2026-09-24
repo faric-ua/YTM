@@ -38,6 +38,7 @@ import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.HomeDashboardChrome
+import com.saney.ytmimporter.ui.HomeHistoryDetailLink
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.ui.WorkflowRelayOverlay
 import com.saney.ytmimporter.ui.UiChrome
@@ -92,10 +93,8 @@ class MainActivity : Activity() {
 
     private lateinit var accountSummaryText: TextView
     private lateinit var statusText: TextView
-    private lateinit var statusDetailText: TextView
+    private lateinit var homeHistoryDetailLink: HomeHistoryDetailLink
     private lateinit var summaryText: TextView
-    private var currentStatusMessage: String = ""
-    private var statusHistoryEntryId: String? = null
     private lateinit var importButton: Button
     private lateinit var accountButton: Button
     private lateinit var searchButton: Button
@@ -163,35 +162,11 @@ class MainActivity : Activity() {
         returnToMenuAfterDelegatedAction =
             savedInstanceState?.getBoolean(STATE_RETURN_TO_MENU, false) ?: false
 
-        val restoredStatusMessage =
-            savedInstanceState
-                ?.getString(
-                    STATE_STATUS_MESSAGE
-                )
-
-        val restoredStatusHistoryEntryId =
-            savedInstanceState
-                ?.getString(
-                    STATE_STATUS_HISTORY_ENTRY_ID
-                )
-
         buildUi()
         workflowRelay = WorkflowRelayOverlay(this, savedInstanceState)
 
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
-
-        if (
-            !restoredStatusMessage
-                .isNullOrBlank()
-        ) {
-            status(
-                message =
-                    restoredStatusMessage,
-                historyEntryId =
-                    restoredStatusHistoryEntryId
-            )
-        }
 
         val restoredToken =
             accessToken
@@ -233,14 +208,7 @@ class MainActivity : Activity() {
         )
         outState.putBoolean(STATE_RETURN_TO_PLAYLIST_HUB, returnToPlaylistHubAfterDelegatedAction)
         outState.putBoolean(STATE_RETURN_TO_MENU, returnToMenuAfterDelegatedAction)
-        outState.putString(
-            STATE_STATUS_MESSAGE,
-            currentStatusMessage
-        )
-        outState.putString(
-            STATE_STATUS_HISTORY_ENTRY_ID,
-            statusHistoryEntryId
-        )
+        homeHistoryDetailLink.save(outState)
         workflowRelay.save(outState)
         super.onSaveInstanceState(outState)
     }
@@ -589,36 +557,13 @@ class MainActivity : Activity() {
                     android.text.TextUtils.TruncateAt.END
             }
 
-        statusDetailText =
-            TextView(this).apply {
-                text =
-                    "Деталі в Історії →"
-                textSize =
-                    12f
-                setTextColor(
-                    palette.accent
-                )
-                setTypeface(
-                    typeface,
-                    Typeface.BOLD
-                )
-                setPadding(
-                    0,
-                    dp(5),
-                    0,
-                    0
-                )
-                visibility =
-                    View.GONE
-                isClickable =
-                    true
-                isFocusable =
-                    true
-            }
-
-        accountCard.root.addView(
-            statusDetailText
-        )
+        homeHistoryDetailLink =
+            HomeHistoryDetailLink(
+                activity = this,
+                statusText = statusText,
+                container = accountCard.root,
+                savedInstanceState = savedInstanceState
+            )
 
         content.addView(
             accountCard.root,
@@ -1252,19 +1197,14 @@ class MainActivity : Activity() {
                         ImportActivity.EXTRA_IMPORT_MESSAGE
                     )
 
-                val historyEntryId =
-                    data.getStringExtra(
-                        ImportActivity
-                            .EXTRA_IMPORT_HISTORY_ENTRY_ID
-                    )
-
                 if (!message.isNullOrBlank()) {
                     status(
-                        message =
-                            message +
-                                " Крок 3: «Знайти / перевірити».",
-                        historyEntryId =
-                            historyEntryId
+                        message +
+                            " Крок 3: «Знайти / перевірити».",
+                        data.getStringExtra(
+                            ImportActivity
+                                .EXTRA_IMPORT_HISTORY_ENTRY_ID
+                        )
                     )
                 }
             }
@@ -4141,75 +4081,11 @@ class MainActivity : Activity() {
         message: String,
         historyEntryId: String? = null
     ) {
-        currentStatusMessage =
-            message
-
-        statusHistoryEntryId =
+        homeHistoryDetailLink.show(
+            message,
             historyEntryId
-                ?.takeIf {
-                    it.isNotBlank()
-                }
-
-        val hasHistoryDetail =
-            !statusHistoryEntryId
-                .isNullOrBlank()
-
-        statusText.text =
-            message
-
-        statusText.maxLines =
-            1
-
-        statusText.ellipsize =
-            android.text.TextUtils
-                .TruncateAt.END
-
-        statusText.setTextColor(
-            AppThemeManager
-                .palette(this)
-                .muted
         )
-
-        statusDetailText.visibility =
-            if (hasHistoryDetail) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-
-        statusDetailText.setOnClickListener(
-            if (hasHistoryDetail) {
-                View.OnClickListener {
-                    statusHistoryEntryId
-                        ?.let(
-                            ::openHistoryEntryDetail
-                        )
-                }
-            } else {
-                null
-            }
-        )
-
-        if (::workflowRelay.isInitialized) {
-            workflowRelay.update(
-                message
-            )
-        }
-    }
-
-    private fun openHistoryEntryDetail(
-        entryId: String
-    ) {
-        startActivity(
-            Intent(
-                this,
-                HistoryActivity::class.java
-            ).putExtra(
-                HistoryActivity
-                    .EXTRA_OPEN_ENTRY_ID,
-                entryId
-            )
-        )
+        if (::workflowRelay.isInitialized) workflowRelay.update(message)
     }
 
     private fun toast(message: String) {
@@ -4230,12 +4106,6 @@ class MainActivity : Activity() {
         private const val STATE_RETURN_TO_PLAYLIST_HUB =
             "state_return_to_playlist_hub"
         private const val STATE_RETURN_TO_MENU = "state_return_to_menu"
-
-        private const val STATE_STATUS_MESSAGE =
-            "state_status_message"
-
-        private const val STATE_STATUS_HISTORY_ENTRY_ID =
-            "state_status_history_entry_id"
 
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"
