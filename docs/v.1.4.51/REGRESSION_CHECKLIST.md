@@ -82,6 +82,7 @@
 ## U51-5 phone finding corrective
 
 - [x] malformed URL rejection observed on real phone without changing current 9-track playlist
-- [ ] direct video URL without `list` rejected clearly, with no Search/import fallback
-- [ ] UX-025 signed retest: URL field visibly wraps a long URL into 2–3 lines
-- [ ] BUG-035 signed retest: Home quick `Експорт` opens current `YTM Project / export` actions, not Import
+- [x] direct video URL without `list` rejected clearly, with no Search/import fallback — run 35941777241
+- [x] UX-025 signed retest: URL field visibly wraps a long URL into 2–3 lines — run 35941777241
+- [x] BUG-035 signed retest: Home quick `Експорт` opens current `YTM Project / export` actions, not Import — run 35941777241
+- [ ] UX-026 signed retest: inline right-center clear button clears only the URL draft
