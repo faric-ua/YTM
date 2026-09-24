@@ -33,7 +33,7 @@ while true; do
   echo "3 — Download signed APK"
   echo "4 — Open APK folder"
   echo "5 — Open YTM shell"
-  echo "6 — Build APK manually"
+  echo "6 — Validate + Build signed APK"
   echo "0 — Вийти"
   echo
   printf "Вибір: "
