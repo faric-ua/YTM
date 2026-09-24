@@ -58,10 +58,15 @@ inflate Git history.
 
 ## Installer launch
 
-The installer helper uses the install-specific `android.intent.action.INSTALL_PACKAGE`
-action with a Termux content URI and read grant. It intentionally avoids the
-generic `ACTION_VIEW` path and therefore should not show the Samsung
-`Відкрити за допомогою` chooser.
+The installer helper now asks Android for the actual APK-handler activities on
+the current phone, selects a system `Package Installer` /
+`Permission Controller` component, and launches that exact component with
+`ACTION_VIEW`, the APK MIME type, a Termux content URI, and a read grant.
+
+This avoids both failure modes observed on Samsung: the generic
+`Відкрити за допомогою` chooser and an implicit `INSTALL_PACKAGE` intent that
+returns without showing installer UI. If Android exposes no system installer,
+the script prints the resolver candidates instead of guessing.
 
 If the remote branch advanced after the APK was downloaded, installation is
 still allowed only when every later change is tooling/docs-only. Any app/build
