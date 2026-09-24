@@ -248,16 +248,15 @@ versionName while pointing to different commits.
 
 `artifacts/apk/` is gitignored. Do not commit APK binaries into Git history.
 
-## 11. Open APK install folder from Termux
+## 11. Open downloaded APK folder from Termux
 
-Menu item 4 prepares a verified install handoff under:
+Menu item 4 re-verifies the downloaded APK and opens the folder where that exact
+APK already lives:
 
-`/storage/emulated/0/Download/YTM-Install/run-<RUN_ID>/`
+`/storage/emulated/0/Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`
 
-and opens that folder. Tap the APK there to install it with Android's normal
-file-manager/package-installer flow.
-
-The canonical archived APK remains under `Documents/YTM/artifacts/apk/...`.
+No extra APK copy is created. Tap the APK in that folder to install it with
+Android's normal file-manager/package-installer flow.
 
 ## 12. Restore / unstage
 
@@ -411,9 +410,9 @@ The menu actions are:
 3. `Download signed APK` — downloads only a successful build whose
    `headSha` exactly equals the current remote branch HEAD, verifies SHA-256
    and records the downloaded source/run.
-4. `Open APK folder` — re-verifies SHA-256, prepares a verified install copy
-   under `Download/YTM-Install/run-<RUN_ID>/`, then opens that folder so the APK
-   can be tapped and installed with Android's normal file-manager flow.
+4. `Open APK folder` — re-verifies SHA-256 and opens the exact run folder
+   where the downloaded APK already lives under
+   `Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`.
 5. `Open YTM shell` — opens an interactive shell in the repository.
 6. `Build APK manually` — fallback workflow dispatch; normal builds may be
    started by ChatGPT directly.
