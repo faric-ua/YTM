@@ -267,3 +267,17 @@ Guard:
 - keep handoff/preflight audits checking anchors from later sections of large files so
   accidental truncation fails closed.
 
+
+
+## Signed builds must not be the first compile check
+
+Observed during v1.4.52: several signed-build attempts failed one gate at a time (historical static assertions, generated manifest ordering, then Kotlin compilation). The individual gates were useful, but using the signed workflow as the first complete verifier created unnecessary phone/Actions loops.
+
+Permanent guard:
+
+- every pushed development HEAD gets an automatic Android validation workflow;
+- validation runs release preflight, JVM/debug compile/tests, and unsigned release assembly;
+- the assistant waits for the exact-HEAD validation result and fixes failures before phone handoff;
+- Termux menu item 6 verifies the matching validation run before dispatching a signed build;
+- generated artifacts such as `FILE_MANIFEST.txt` are finalized before validation;
+- signed builds are reserved for artifact generation and phone QA, not basic compile discovery.
