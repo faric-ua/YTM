@@ -20,7 +20,7 @@ b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 294d4b27b70d1309  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 4f2b040860fd56c4  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 840d2dea2e562c2e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
-60a42d79caa1835d  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+f1ac74b07d17c447  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 543310163c294d4e  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 8af5f0f2ce44fbfa  app/src/main/java/com/saney/ytmimporter/model/HistoryEntry.kt
@@ -1450,7 +1450,7 @@ bf316be6ac1503fb  scripts/generate-audit-catalog.py
 a70421aa086a5c61  scripts/generate-file-manifest.py
 8376d7274a01a47c  scripts/generate-release-documentation-matrix.py
 7d7193fd9798ed62  scripts/mainactivity-audit.sh
-30fc6a64a0a53bb4  scripts/mainactivity-cleanup-audit.sh
+8fe538a35721c634  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
 e70d8ddc6e50124b  scripts/project-handoff-audit.sh
 08211dc2fb7ed826  scripts/qa-plan-audit.sh
