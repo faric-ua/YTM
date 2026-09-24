@@ -40,7 +40,8 @@ Do not rewrite v1.4.50 historical bug evidence.
 - Observed: long URLs scroll/clip horizontally and only one line is effectively visible.
 - Expected: URL input wraps into a readable 2–3 line text area.
 - Corrective source: `e7404eb3c4760c2fcb0c86d3ec6b3f9d9f8faffd`.
-- Retest: pending signed phone QA.
+- Signed retest: run `35941777241`, source `2bd57b3996787517f0c1ce8b45e40d74671ebee3`.
+- Retest result: **PASS / CLOSED** — long URL wraps visibly across multiple lines.
 
 ## BUG-035 — Home quick Export opens Import
 
@@ -52,4 +53,14 @@ Do not rewrite v1.4.50 historical bug evidence.
 - Expected: Export opens the existing current-playlist `YTM Project / export` actions.
 - Corrective source: `e7404eb3c4760c2fcb0c86d3ec6b3f9d9f8faffd`.
 - Implementation: reuse `ReviewActivity.EXTRA_OPEN_PROJECT_ACTIONS`.
+- Signed retest: run `35941777241`, source `2bd57b3996787517f0c1ce8b45e40d74671ebee3`.
+- Retest result: **PASS / CLOSED** — Home quick Export opens the existing current `YTM Project / export` actions.
+
+## UX-026 — URL field needs one-tap clear action
+
+- Severity: low / usability.
+- Requested after U51-5 corrective phone PASS.
+- Area: URL Snapshot URL input.
+- Expected: a small clear control is available inside the field at the right edge, vertically centered, without covering wrapped URL text.
+- Corrective: 44dp inline clear button, extra right text padding, clear-only behavior.
 - Retest: pending signed phone QA.
