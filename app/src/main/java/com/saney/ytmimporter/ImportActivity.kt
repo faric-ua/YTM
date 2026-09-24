@@ -1192,13 +1192,34 @@ class ImportActivity : Activity() {
                 }
                 ?: "URL snapshot імпортовано."
 
-        setResult(
-            RESULT_OK,
+        val historyEntryId =
+            data
+                ?.getStringExtra(
+                    UrlSnapshotActivity
+                        .EXTRA_HISTORY_ENTRY_ID
+                )
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+
+        val result =
             Intent()
                 .putExtra(
                     EXTRA_IMPORT_MESSAGE,
                     message
                 )
+
+        historyEntryId
+            ?.let {
+                result.putExtra(
+                    EXTRA_IMPORT_HISTORY_ENTRY_ID,
+                    it
+                )
+            }
+
+        setResult(
+            RESULT_OK,
+            result
         )
 
         finish()
@@ -3694,6 +3715,9 @@ class ImportActivity : Activity() {
 
         const val EXTRA_IMPORT_MESSAGE =
             "import_message"
+
+        const val EXTRA_IMPORT_HISTORY_ENTRY_ID =
+            "import_history_entry_id"
 
         const val EXTRA_CLEAR_WORKSPACE =
             "clear_current_workspace"
