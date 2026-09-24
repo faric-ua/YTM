@@ -384,6 +384,7 @@ Rules:
 - U51-6 dedupe save: 813 source rows → 320 saved → 493 duplicates.
 - History/detail correctly records local import semantics; no YTM write counters.
 - Isolation PASS: no automatic create/add flow, queue or write after handoff.
+- Final stable OTA smoke: `OTA+` — production updater reports `Оновлень немає` with installed/stable `1.4.51 (94)`.
 - UX-027/UX-028: open non-blocking polish.
 - APK archive: `/storage/emulated/0/Documents/YTM/artifacts/apk/v1.4.51/run-<RUN_ID>/`.
 - Next development work starts only after the v1.4.51 final tags/checkpoint and close audit are confirmed.
