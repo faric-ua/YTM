@@ -1,5 +1,21 @@
 # Журнал змін (Changelog)
 
+## v1.4.51
+
+- Додано явний імпорт YouTube / YouTube Music URL Snapshot із чітким контрактом підтримуваних джерел.
+- Конкретні плейлисти читаються через YouTube API зі збереженням порядку, exact videoId та явним обліком unavailable-рядків.
+- Dynamic Mix / radio `RD...` визначається окремо й повертає зрозумілий unsupported-результат без scraping або вигаданої повноти.
+- Preview є read-only; rotation/recreation не перезапускає resolve і не робить auto-commit.
+- Локальний snapshot зберігається лише після явної дії через існуючі CurrentPlaylistStore / HistoryStore, без YouTube/YTM write.
+- Додано exact-videoId duplicate statistics і явний вибір `Зберегти всі` / `Без повторів`.
+- Додано persistent URL snapshot cache, permanent SearchCache semantics, Full Backup/Restore coverage та explicit remote refresh.
+- Додано official playlist-title metadata repair із збереженням існуючого `cachedAt`.
+- UX-024, UX-025, UX-026 та BUG-035 виправлені й пройшли phone retest.
+- Фінальний targeted phone QA: U51-1..U51-6 PASS.
+- U51-6: 813 source rows → 320 saved first occurrences → 493 duplicates; History використовує local-import semantics без YTM write counters; після повернення Home нічого не запускається автоматично.
+- Final source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`; signed run: `35943953149`; versionCode 94 / versionName 1.4.51.
+- UX-027/UX-028 залишаються non-blocking polish follow-ups.
+
 ## v1.4.50
 
 - Додано спільний Skin-контракт для Neon Dark, Blue Dark і Green Dark без зміни прийнятих RGB.
