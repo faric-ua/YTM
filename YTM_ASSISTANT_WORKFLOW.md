@@ -168,7 +168,9 @@ The Termux:Widget menu is the normal phone control surface for:
 - exact-remote-HEAD signed APK download;
 - APK installation;
 - opening an interactive YTM shell;
-- manual build dispatch only as a fallback.
+- manual build dispatch only as a fallback;
+- self-service release status inspection;
+- guarded stable-release publication after phone QA.
 
 Do not hand responsibility for commit sequencing back to the user unless the user explicitly asks to manage Git manually.
 
