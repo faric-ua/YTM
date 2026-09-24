@@ -1,5 +1,4 @@
 package com.saney.ytmimporter
-
 import android.app.Activity
 import android.content.ClipData
 import android.content.res.ColorStateList
@@ -52,7 +51,6 @@ import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
-
 class MainActivity : Activity() {
     private val pendingQueueRequestCode = 1201
     private val importScreenRequestCode = 1301
@@ -63,7 +61,6 @@ class MainActivity : Activity() {
     private val playlistScreenRequestCode = 1601
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
-
     private val api by lazy {
         YouTubeApi(
             accessTokenRecovery =
@@ -72,7 +69,6 @@ class MainActivity : Activity() {
                 )
         )
     }
-
     private lateinit var searchCoordinator: SearchCoordinator
     private lateinit var destinationCoordinator: DestinationCoordinator
     private lateinit var playlistWriteCoordinator: PlaylistWriteCoordinator
@@ -81,7 +77,6 @@ class MainActivity : Activity() {
     private lateinit var historyStore: HistoryStore
     private lateinit var currentPlaylistStore: CurrentPlaylistStore
     private lateinit var persistentAuthStateStore: PersistentAuthStateStore
-
     private var playlist: ImportedPlaylist? = null
     private var accessToken: String? = null
     private var googleAccountInfo: GoogleAccountInfo? = null
@@ -90,7 +85,6 @@ class MainActivity : Activity() {
     private var pendingAfterAuth: (() -> Unit)? = null
     private var currentImportSourceLabel: String = "Невідоме джерело"
     private var restoringPriorAuthorization: Boolean = false
-
     private lateinit var accountSummaryText: TextView
     private lateinit var statusText: TextView
     private lateinit var homeHistoryDetailLink: HomeHistoryDetailLink
@@ -107,13 +101,11 @@ class MainActivity : Activity() {
     private var returnToMenuAfterDelegatedAction = false
     private lateinit var workflowRelay: WorkflowRelayOverlay
     private var writeInProgress = false
-
     private val uiPrefs by lazy {
         getSharedPreferences("ui_prefs_v1", MODE_PRIVATE)
     }
     private lateinit var adapter: TrackAdapter
     private val visibleTracks = mutableListOf<Track>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
@@ -143,35 +135,27 @@ class MainActivity : Activity() {
         currentPlaylistStore = CurrentPlaylistStore(this)
         persistentAuthStateStore =
             PersistentAuthStateStore(this)
-
         restoreAuthSessionFromMemory()
-
         restoringPriorAuthorization =
             accessToken.isNullOrBlank() &&
                 persistentAuthStateStore
                     .hadSuccessfulAuthorization()
-
         accountDialogOpen =
             savedInstanceState?.getBoolean(
                 STATE_ACCOUNT_DIALOG_OPEN,
                 false
             ) == true
-
         returnToPlaylistHubAfterDelegatedAction =
             savedInstanceState?.getBoolean(STATE_RETURN_TO_PLAYLIST_HUB, false) ?: false
         returnToMenuAfterDelegatedAction =
             savedInstanceState?.getBoolean(STATE_RETURN_TO_MENU, false) ?: false
-
         buildUi()
         workflowRelay = WorkflowRelayOverlay(this, savedInstanceState)
-
         updateAccountPanel()
         restoreCurrentWorkspaceOnLaunch()
         homeHistoryDetailLink.restoreSavedState()
-
         val restoredToken =
             accessToken
-
         if (
             !restoredToken.isNullOrBlank() &&
             (
@@ -186,7 +170,6 @@ class MainActivity : Activity() {
         } else if (restoringPriorAuthorization) {
             restorePriorAuthorizationSilently()
         }
-
         if (savedInstanceState == null) {
             window.decorView.post {
                 maybeShowWelcome()
@@ -199,7 +182,6 @@ class MainActivity : Activity() {
             }
         }
     }
-
     override fun onSaveInstanceState(
         outState: Bundle
     ) {
@@ -213,12 +195,10 @@ class MainActivity : Activity() {
         workflowRelay.save(outState)
         super.onSaveInstanceState(outState)
     }
-
     override fun onResume() {
         super.onResume()
         if (AppThemeManager.recreateIfSkinChanged(this)) return
         syncAuthorizationInvalidationFromMemory()
-
         if (
             ::adapter.isInitialized &&
             !writeInProgress &&
@@ -226,39 +206,31 @@ class MainActivity : Activity() {
         ) {
             reloadCurrentWorkspace()
         }
-
         if (::pendingButton.isInitialized) {
             updatePendingButton()
         }
-
         if (::quotaButton.isInitialized) {
             updateQuotaPanel()
         }
-
         updatePrimaryActions()
     }
-
     override fun onDestroy() {
         if (::workflowRelay.isInitialized) workflowRelay.detach()
         executor.shutdownNow()
         super.onDestroy()
     }
-
     private fun buildUi() {
         val palette = AppThemeManager.palette(this)
-
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(palette.background)
         }
-
         val scroll =
             ScrollView(this).apply {
                 isFillViewport = true
                 overScrollMode =
                     View.OVER_SCROLL_IF_CONTENT_SCROLLS
             }
-
         val content =
             LinearLayout(this).apply {
                 orientation =
@@ -273,13 +245,11 @@ class MainActivity : Activity() {
                     dp(8)
                 )
             }
-
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = android.view.Gravity.CENTER_VERTICAL
             setPadding(dp(16), dp(10), dp(16), dp(8))
         }
-
         val logoView =
             ImageView(this).apply {
                 setImageResource(
@@ -301,11 +271,9 @@ class MainActivity : Activity() {
                             this@MainActivity
                         )
             }
-
         val titleBlock = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
         }
-
         titleBlock.addView(
             TextView(this).apply {
                 text = "YTM Importer"
@@ -314,7 +282,6 @@ class MainActivity : Activity() {
                 setTypeface(typeface, Typeface.BOLD)
             }
         )
-
         titleBlock.addView(
             TextView(this).apply {
                 text = "Імпорт трекліста → YouTube Music"
@@ -323,7 +290,6 @@ class MainActivity : Activity() {
                 setPadding(0, dp(2), 0, 0)
             }
         )
-
         header.addView(
             logoView,
             LinearLayout.LayoutParams(
@@ -334,7 +300,6 @@ class MainActivity : Activity() {
                     dp(9)
             }
         )
-
         header.addView(
             titleBlock,
             LinearLayout.LayoutParams(
@@ -360,9 +325,7 @@ class MainActivity : Activity() {
                     )
             }
         )
-
         content.addView(header)
-
         val flowCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(12), dp(12), dp(12), dp(12))
@@ -374,7 +337,6 @@ class MainActivity : Activity() {
                     accentStroke = true
                 )
         }
-
         flowCard.addView(
             TextView(this).apply {
                 text = "4 кроки до плейлиста"
@@ -384,7 +346,6 @@ class MainActivity : Activity() {
                 setPadding(dp(2), 0, 0, dp(5))
             }
         )
-
         importButton =
             HomeDashboardChrome
                 .workflowButton(
@@ -394,7 +355,6 @@ class MainActivity : Activity() {
                 ) {
                     openImportScreen()
                 }
-
         accountButton =
             HomeDashboardChrome
                 .workflowButton(
