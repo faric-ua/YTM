@@ -125,7 +125,7 @@ c046586be53a0584  artifacts/README.md
 9b1aae0969816752  BACKLOG.md
 1ad29e43e790095c  build.gradle.kts
 32c2196aa82fe430  CHANGELOG.md
-34537961c218730b  CURRENT_HANDOFF.md
+d8fd30cf310e7453  CURRENT_HANDOFF.md
 03fc725ca9b1f89a  docs/ASSISTANT_TOOL_MAP.md
 6d3327b2a9944c89  docs/assistant-kit/AUDIT_CATALOG.md
 f79ff05a88d54a17  docs/assistant-kit/CONTEXT_FILES.txt
@@ -1662,5 +1662,5 @@ f63257687628de7b  tools/termux/ytm-download-apk.sh
 8eda0cea3d5fad27  tools/termux/ytm-install-apk.sh
 f868774849410928  tools/termux/ytm-menu.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
-f4a1b1e3ef2989b0  tools/termux/ytm-sync.sh
+42c09273cce76334  tools/termux/ytm-sync.sh
 d144172840bc299e  YTM_ASSISTANT_WORKFLOW.md
