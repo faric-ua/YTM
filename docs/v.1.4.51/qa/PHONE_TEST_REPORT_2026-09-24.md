@@ -48,3 +48,24 @@ preservation remains supported by code/JVM/static contract evidence.
 
 This is a targeted release acceptance, not a claim that every historical full-app
 regression was re-run on v1.4.51. Older accepted evidence remains historical.
+
+
+## Final stable OTA equal-version smoke
+
+After publishing stable GitHub Release `v1.4.51`, the already-installed
+`YTM Importer 1.4.51 (94)` used the production updater path:
+
+`Меню → Сервіс → Про YTM Importer → Версія → Перевірити оновлення`
+
+Observed on the real phone:
+
+- installed version: `1.4.51 (94)`;
+- stable version returned by the updater: `1.4.51 (94)`;
+- UI state: `Оновлень немає`;
+- message: installed version matches the current stable version;
+- no download/install action was offered.
+
+Result: `OTA+` — PASS.
+
+Evidence: conversation screenshot supplied on 2026-09-24; the screenshot was not
+separately committed as a repository binary asset.
