@@ -111,5 +111,8 @@ provider. Termux requires:
 `allow-external-apps=true`
 
 in `~/.termux/termux.properties` before another Android app can read that
-content URI. The install helper now ensures this setting is present and reloads
-Termux settings when possible before launching SAI.
+content URI.
+
+The install helper checks this setting. If it is missing, it asks for one-time
+confirmation before enabling it, reloads Termux settings when possible, and
+then launches SAI. The setting is never changed silently.
