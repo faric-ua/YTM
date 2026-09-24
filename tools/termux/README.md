@@ -85,3 +85,19 @@ installer entry activity directly:
 
 with the AOSP package-name variant as fallback. This is the Android entry point
 that accepts APK `VIEW` intents for `content://` URIs.
+
+
+### Samsung A26 5G installer handoff
+
+On the tested Samsung A26 5G, direct launches of the platform
+`PackageInstaller/InstallStart` entry returned success from ActivityManager but
+closed immediately without showing usable installer UI.
+
+Because SAI is installed on this phone, the helper now prefers SAI's exported
+APK `ACTION_VIEW` handler:
+
+`com.aefyr.sai/com.aefyr.sai.ui.activities.ApkActionViewProxyActivity`
+
+SAI then performs the rootless package-install flow. If SAI is unavailable, the
+helper falls back to the generic Android chooser with the APK MIME type
+explicitly set.
