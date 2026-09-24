@@ -1642,12 +1642,12 @@ d8ceb8960c31e400  scripts/v1451-url-qa-corrective-r1-audit.sh
 1a276065be4bb479  scripts/v1451-url-source-wave1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
-1aa41867c54108f4  tools/termux/README.md
+31481b03611ebafb  tools/termux/README.md
 8a4753c11d9a562b  tools/termux/install-widget.sh
 13c00240361d97a0  tools/termux/ytm-build-apk.sh
 5f478613a041f448  tools/termux/ytm-common.sh
 f63257687628de7b  tools/termux/ytm-download-apk.sh
-0cd6d15e957c8a7a  tools/termux/ytm-install-apk.sh
+38cbf89c49eb0983  tools/termux/ytm-install-apk.sh
 8263dc92f03288fc  tools/termux/ytm-menu.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
 fc251ebbade67a7d  tools/termux/ytm-sync.sh
