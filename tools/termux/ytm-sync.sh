@@ -11,6 +11,10 @@ CURRENT_BRANCH="$(ytm_branch)"
 CURRENT_HEAD="$(git -C "$YTM_REPO_DIR" rev-parse HEAD)"
 CURRENT_REMOTE="$(ytm_remote_head "$CURRENT_BRANCH")"
 
+# Make the remote tip object available locally before merge-base checks.
+# ls-remote returns only the SHA; it does not fetch that commit object.
+git -C "$YTM_REPO_DIR" fetch --quiet origin "$CURRENT_BRANCH"
+
 # "Sync YTM" follows the newest release feature branch so the phone does not
 # stay on the just-closed release when ChatGPT starts the next release branch.
 TARGET_BRANCH="$(
