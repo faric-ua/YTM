@@ -5,10 +5,10 @@
   "phase": "development",
   "feature": "YouTube/YTM URL/Mix Snapshot Import",
   "branch": "feat/v1.4.51-url-mix-snapshot",
-  "appSourceSha": null,
-  "signedRun": null,
-  "qaStatus": "DEVELOPMENT — CACHED_AT CORRECTIVE PHONE PASS / U51-3..U51-6 NEXT",
+  "appSourceSha": "05d01e46af2b99acb5a483ad13c3f5a87f849271",
+  "signedRun": "35938232310",
+  "qaStatus": "DEVELOPMENT — U51-1..U51-4 + UX-024 PHONE PASS / U51-5..U51-6 NEXT",
   "tag": null,
   "checkpointTag": null,
-  "phoneTestDate": null
+  "phoneTestDate": "2026-09-24"
 }

@@ -20,7 +20,7 @@ Current accepted release (v1.4.50 Skin System — FINAL):
 - v1.4.49 updater matrix `1+ 2+ 3+ 4+ 5+ 6+`, RC+, and FINAL+ remain accepted evidence;
 - stable app checkpoint: checkpoint-v1.4.50-phone-pass;
 - final v1.4.50 source: 66d06d6912d014efb3a98d317ed49355a5fa3078; signed run: 35802968056; release tag: v1.4.50;
-- substantial phone-side code changes are delivered through `ytm-code` packages;
+- repository changes are direct-GitHub by default; `ytm-code` remains fallback/local-only;
 - v1.4.51 YouTube/YTM URL/Mix Snapshot Import is the active development release on `feat/v1.4.51-url-mix-snapshot`; the documentation skeleton remains the contract baseline;
 - current development app identity is v1.4.51 / versionCode 94; accepted installed stable baseline remains v1.4.50 / 93.
 - v1.4.51 Wave 1 URL source parser/classification remains PASS.
@@ -32,7 +32,7 @@ Current accepted release (v1.4.50 Skin System — FINAL):
 - v1.4.51 title metadata corrective adds official playlist title retrieval, optional cached playlistTitle, one-request cached-title repair, and local technical-name backfill without changing tracks.
 - v1.4.51 title metadata cachedAt corrective follows signed run 35909545473 / source cc454aba5bcf1172ce2be64757272c8d0355d699: title flow passed, but metadata-only enrichment advanced snapshot cachedAt; corrective preserves the existing snapshot timestamp.
 - v1.4.51 cachedAt corrective PHONE PASS: signed run 35921749405 / source ba826563032da85fd99eb822c07342c56b2b60f6; controlled 9-track fixture T0 24.09.2026 00:50 stayed unchanged through 1-API title enrichment and 0-API reopen; 813-track workspace was not reread.
-- v1.4.51 U51-3/U51-4 functional phone QA PASS on run 35921749405 / ba826563032da85fd99eb822c07342c56b2b60f6; UX-024 found that the resolved Save/Cancel footer wastes vertical space in landscape, so it is being moved onto the shared width-aware adaptive action-row contract.
+- v1.4.51 U51-3/U51-4 lifecycle phone QA PASS; UX-024 corrective PHONE PASS on signed run 35938232310 / source 05d01e46af2b99acb5a483ad13c3f5a87f849271: resolved Save/Cancel footer now renders in one adaptive horizontal row in landscape. U51-5/U51-6 remain.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED

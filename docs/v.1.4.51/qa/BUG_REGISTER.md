@@ -14,7 +14,9 @@
 - Functional impact: none; U51-4 lifecycle behavior passed.
 - Corrective: wire the resolved footer to `UiChrome.addAdaptiveActionButtons`
   and make the rule project-wide.
-- Retest: pending signed landscape visual QA.
+- Corrective app source: `721c712ef9f59f96acb9782036f21506a3dc3464`.
+- Signed retest: run `35938232310`, source `05d01e46af2b99acb5a483ad13c3f5a87f849271`.
+- Retest result: **PASS / CLOSED** — real-phone landscape screenshot shows both resolved-preview footer actions in one horizontal adaptive row with readable labels.
 
 When a finding appears, record:
 - ID;

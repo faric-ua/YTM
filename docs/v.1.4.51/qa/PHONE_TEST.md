@@ -52,7 +52,7 @@ Expected:
 - snapshot is not committed automatically;
 - no duplicate operation appears.
 
-Result: `U51-4+` — FUNCTIONAL PASS on real phone; entered URL and completed cached preview survived portrait ↔ landscape without auto-resolve, quota use or commit. UX-024 responsive footer retest remains.
+Result: `U51-4+` — PASS on real phone; entered URL and completed cached preview survived portrait ↔ landscape without auto-resolve, quota use or commit. UX-024 corrective visual retest also PASS on signed run `35938232310` / source `05d01e46af2b99acb5a483ad13c3f5a87f849271`: in landscape, `Зберегти як поточний список` and `Скасувати preview` render in one horizontal adaptive row.
 
 ## U51-5 — invalid / unsupported source
 
@@ -177,6 +177,18 @@ Observed in landscape:
 - the fixed `Зберегти як поточний список` + `Скасувати preview` footer remained
   vertically stacked despite sufficient horizontal width.
 
-The lifecycle behavior is accepted as `U51-4+`. The footer layout is tracked
-separately as UX-024 and requires a signed landscape visual retest after the
-adaptive-row corrective.
+The lifecycle behavior is accepted as `U51-4+`.
+
+## UX-024 signed landscape corrective PASS — 2026-09-24
+
+Corrective app source: `721c712ef9f59f96acb9782036f21506a3dc3464`.
+Signed verification build: run `35938232310`, exact workflow source `05d01e46af2b99acb5a483ad13c3f5a87f849271`.
+
+Real-phone landscape evidence confirmed:
+
+- the resolved-preview footer uses one horizontal row;
+- `Зберегти як поточний список` and `Скасувати preview` are both fully readable;
+- both actions retain boxed button chrome and equal footer height;
+- no functional lifecycle regression was observed in the retest.
+
+Result: `UX-024+` — PHONE PASS / CLOSED.

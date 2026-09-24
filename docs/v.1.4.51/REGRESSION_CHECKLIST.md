@@ -77,4 +77,4 @@
 - [x] signed title-metadata History/cache retest — cached 0 API + one-request title repair + local History rename PASS
 - [x] metadata-only title enrichment preserves the existing snapshot `cachedAt`; only a fresh remote snapshot may advance it
 - [x] signed cachedAt corrective retest — run 35921749405 / ba826563; T0 24.09.2026 00:50 preserved across 1-API title enrichment and 0-API reopen
-- [ ] signed UX-024 landscape footer retest: resolved Save/Cancel actions share one equal-width row when width permits; portrait remains readable
+- [x] signed UX-024 landscape footer retest — run 35938232310 / 05d01e46af2b99acb5a483ad13c3f5a87f849271; resolved Save/Cancel actions share one horizontal adaptive row in landscape
