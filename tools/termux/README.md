@@ -116,3 +116,20 @@ content URI.
 The install helper checks this setting. If it is missing, it asks for one-time
 confirmation before enabling it, reloads Termux settings when possible, and
 then launches SAI. The setting is never changed silently.
+
+
+### Samsung A26 5G: SAF picker handoff
+
+The direct Termux `content://com.termux.files/...` handoff reached SAI but
+failed because SAI requires non-null `OpenableColumns.DISPLAY_NAME` metadata.
+That failure is provider/consumer interoperability, not an APK-signing failure.
+
+The install helper therefore no longer sends the APK to SAI through the Termux
+content provider. It creates a verified temporary copy under:
+
+`/storage/emulated/0/Download/YTM-Install/run-<RUN_ID>/`
+
+then opens SAI's main screen. The user selects that prepared APK through SAI's
+system file picker. The resulting SAF document URI supplies the metadata and
+temporary read grant SAI expects. The canonical APK archive remains under
+`artifacts/apk/...`; the Download copy is only an install handoff.
