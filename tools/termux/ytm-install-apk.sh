@@ -93,4 +93,53 @@ echo "ARCHIVE_APK=$APK"
 echo "STAGED_APK=$STAGED_APK"
 echo "SHA256=$STAGED_HASH"
 
-termux-open   --view   --content-type application/vnd.android.package-archive   "$STAGED_APK"
+CONTENT_URI="content://com.termux.files$STAGED_APK"
+APK_MIME="application/vnd.android.package-archive"
+
+command -v am >/dev/null 2>&1 ||
+  ytm_fail "Android activity manager (am) is unavailable"
+
+echo
+echo "Trying explicit Android installer packages:"
+
+for installer_package in \
+  com.google.android.packageinstaller \
+  com.google.android.permissioncontroller \
+  com.android.permissioncontroller \
+  com.samsung.android.packageinstaller \
+  com.android.packageinstaller
+do
+  echo
+  echo "TRY=$installer_package"
+
+  set +e
+  START_OUTPUT="$(
+    am start \
+      -W \
+      -a android.intent.action.VIEW \
+      -c android.intent.category.DEFAULT \
+      -d "$CONTENT_URI" \
+      -t "$APK_MIME" \
+      -f 0x10000001 \
+      -p "$installer_package" \
+      2>&1
+  )"
+  START_RC=$?
+  set -e
+
+  printf '%s\n' "$START_OUTPUT"
+
+  if [ "$START_RC" -eq 0 ] &&
+     ! printf '%s\n' "$START_OUTPUT" |
+       grep -Eqi 'Error:|Exception|unable to resolve|not found'
+  then
+    echo
+    echo "Installer launched with package: $installer_package"
+    exit 0
+  fi
+done
+
+echo >&2
+echo "FAIL: none of the known Android installer packages accepted the APK intent." >&2
+echo "No generic chooser fallback was used." >&2
+exit 1
