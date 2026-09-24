@@ -144,6 +144,16 @@ retrospective gaps rather than invented evidence.
 - `docs/v.1.4.51/diagrams/README.md`
 - `docs/v.1.4.51/diagrams/URL_SNAPSHOT_FLOW.md`
 
+### Active v1.4.52 development release
+
+- `docs/v.1.4.52/RELEASE_META.json`
+- `docs/v.1.4.52/RELEASE.md`
+- `docs/v.1.4.52/REGRESSION_CHECKLIST.md`
+- `docs/v.1.4.52/qa/PHONE_TEST.md`
+- `docs/v.1.4.52/qa/BUG_REGISTER.md`
+- `docs/v.1.4.52/qa/EVIDENCE_MANIFEST.md`
+- `docs/v.1.4.52/diagrams/UX_POLISH_FLOW.md`
+
 ## Audit rule
 
 Do not guess which old audit matters.
