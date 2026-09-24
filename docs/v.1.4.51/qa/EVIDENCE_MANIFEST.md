@@ -15,5 +15,6 @@
 | Final phone test report | `qa/PHONE_TEST_REPORT_2026-09-24.md` | Consolidated targeted phone-QA result and limitations | Stored in repository |
 | Final test run | `qa/TEST_RUN_2026-09-24.md` | Exact run/source and executed acceptance matrix | Stored in repository |
 | Stabilization checkpoint | `qa/STABILIZATION_CHECKPOINT.md` | Final tested source/run/tag/checkpoint identity | Stored in repository |
+| Final stable OTA equal-version smoke | User real-phone result `OTA+` after publishing stable `v1.4.51` | Production updater sees stable 1.4.51 (94) as equal to installed 1.4.51 (94) and reports no update | Conversation screenshot/report; not committed as binary evidence |
 
 Evidence limitation: the U51-6 screenshots were supplied in the development conversation and were not separately committed into the repository. They are recorded as conversation-reported evidence rather than fabricated repository assets.
