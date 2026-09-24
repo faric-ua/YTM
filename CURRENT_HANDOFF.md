@@ -39,6 +39,7 @@ Current release state:
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned **YTM Termux menu** by default.
 - **Operational rule:** when the YTM Termux menu has an equivalent action, use the menu instead of giving raw Git/gh shell commands. Manual commands are fallback/recovery only.
 - `Sync YTM` now detects the newest `feat/v*` release branch and safely switches the phone to it before syncing, preventing builds from accidentally running on the just-closed release branch.
+- Termux menu startup now self-heals YTM `origin` from the old SSH form (`git@github.com:faric-ua/YTM.git`) to HTTPS before network Git operations, avoiding phone-side SSH-key dependency.
 - Menu contract: 1=Sync, 2=Status, 3=Download signed APK, 4=Open/re-verify exact APK folder, 5=YTM shell, 6=Build signed APK manually.
 
 R2 signed-build attempt evidence:
