@@ -5,7 +5,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 957b553c7b6dec80  .github/workflows/build-apk.yml
-86494078c1f66cd1  .github/workflows/validate.yml
+841ac3888017a23d  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -82,9 +82,9 @@ de641fc9d98aac34  TERMINAL_APPLY_v1.4.25.md
 fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 410caf55096b297c  TERMINAL_APPLY_v1.4.8.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
-0091f58b01ecd4b1  TERMUX_COMMANDS.md
+89c25037208ec18e  TERMUX_COMMANDS.md
 55cdc8a68f1e48f2  TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt
-cd1b153bfce945ce  YTM_ASSISTANT_WORKFLOW.md
+69c214a4a09a9532  YTM_ASSISTANT_WORKFLOW.md
 8b5110be046ed011  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 ce278ee8fa660bda  app/src/main/AndroidManifest.xml
@@ -1522,7 +1522,7 @@ e70d8ddc6e50124b  scripts/project-handoff-audit.sh
 34a319998981b650  scripts/release-close-audit.sh
 bd496d2802fc4272  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-83f3ba51241aeb68  scripts/release-preflight.sh
+23428828bd9b7780  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1659,13 +1659,14 @@ ab1026878a043c72  scripts/v1451-url-qa-corrective-r1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 f834e1746373fdba  scripts/v1452-ux-polish-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
-d67bd3e5edd4e84b  tools/termux/README.md
+cf275a9ddfd583f3  tools/termux/README.md
 8a4753c11d9a562b  tools/termux/install-widget.sh
 10df440715bab7b4  tools/termux/ytm-build-apk.sh
 f02208fad378e44b  tools/termux/ytm-common.sh
 f63257687628de7b  tools/termux/ytm-download-apk.sh
+4e4bbad3bc6c88a3  tools/termux/ytm-finalize-release.sh
 8eda0cea3d5fad27  tools/termux/ytm-install-apk.sh
-127143622639924f  tools/termux/ytm-menu.sh
+1041a9e345f4dfbd  tools/termux/ytm-menu.sh
 d9bed80c74070c8c  tools/termux/ytm-release-status.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
 42c09273cce76334  tools/termux/ytm-sync.sh
