@@ -682,10 +682,7 @@ class MainActivity : Activity() {
                     icon =
                         R.drawable.ic_ytm_playlist_add
                 ) {
-                openReviewScreen(
-                    openProjectActions =
-                        true
-                )
+                openReviewScreen(openProjectActions = true)
             },
             LinearLayout.LayoutParams(
                 0,
@@ -983,11 +980,7 @@ class MainActivity : Activity() {
             }
 
         if (openProjectActions) {
-            intent.putExtra(
-                ReviewActivity
-                    .EXTRA_OPEN_PROJECT_ACTIONS,
-                true
-            )
+            intent.putExtra(ReviewActivity.EXTRA_OPEN_PROJECT_ACTIONS, true)
         }
 
         startActivityForResult(

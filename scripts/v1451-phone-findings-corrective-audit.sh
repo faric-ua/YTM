@@ -36,7 +36,7 @@ export_pos = quick.index('"Експорт"')
 export_tail = quick[export_pos:]
 if "openReviewScreen(" not in export_tail:
     raise SystemExit("FAIL: Home quick Export does not route through Review")
-if "openProjectActions =\n                        true" not in export_tail:
+if "openReviewScreen(openProjectActions = true)" not in export_tail:
     raise SystemExit("FAIL: Home quick Export does not request project actions")
 
 for needle in (
