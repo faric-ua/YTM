@@ -18,10 +18,11 @@ done
 MAIN_LINES="$(wc -l < "$MAIN" | tr -d ' ')"
 
 # v1.4.47-R3 R7 adds explicit navigation-origin ownership and active-write
-# lifecycle guards. v1.4.52 adds only a thin Home→History relay while its
-# state/rendering lives in HomeHistoryDetailLink. Keep a narrow hard cap.
-[ "$MAIN_LINES" -lt 4125 ] \
-  || fail "MainActivity exceeded the successor budget: $MAIN_LINES lines"
+# lifecycle guards. The old <4000 gate predates those successor contracts.
+# Keep a hard cap, aligned with the R7 audit, without weakening the
+# architectural checks below.
+[ "$MAIN_LINES" -lt 4100 ] \
+  || fail "MainActivity exceeded the R7 successor budget: $MAIN_LINES lines"
 
 for removed in \
   showImportMenu \
