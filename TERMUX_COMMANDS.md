@@ -417,6 +417,14 @@ The menu actions are:
    run whose `headSha` exactly matches the current remote branch HEAD. Only after that
    validation succeeds does it dispatch the signed APK workflow. A missing/failed
    validation stops before any signed build is started.
+7. `Release status` — shows current branch/HEAD synchronization, exact-HEAD validation,
+   recorded phone-tested app source, exact signed run, QA status, release tag,
+   GitHub Release publication state and overall closeout state.
+8. `Finalize stable release` — guarded stable publication. It uses the exact
+   `appSourceSha` and `signedRun` already recorded in the active release metadata,
+   verifies validation/QA/source/SHA, creates stable + checkpoint tags on the tested
+   app source, publishes APK/SHA/update-manifest assets, and downloads them again for
+   verification. It does not rebuild the app.
 0. Exit.
 
 Install or repair the widget shortcut with:
