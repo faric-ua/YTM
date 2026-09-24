@@ -36,7 +36,9 @@ Current release state:
 - release preflight includes `scripts/v1452-ux-polish-audit.sh`.
 - next gate: **full preflight / signed build**, then targeted phone QA 1–3.
 - v1.4.51 remains immutable stable release with `OTA+`.
-- phone collaboration: ChatGPT updates GitHub; user syncs with Termux menu item 1 only when requested.
+- phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned **YTM Termux menu** by default.
+- **Operational rule:** when the YTM Termux menu has an equivalent action, use the menu instead of giving raw Git/gh shell commands. Manual commands are fallback/recovery only.
+- Menu contract: 1=Sync, 2=Status, 3=Download signed APK, 4=Open/re-verify exact APK folder, 5=YTM shell, 6=Build signed APK manually.
 
 R2 signed-build attempt evidence:
 - GitHub Actions run: **35476795879**
