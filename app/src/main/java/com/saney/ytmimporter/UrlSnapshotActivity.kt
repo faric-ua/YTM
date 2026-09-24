@@ -225,11 +225,15 @@ class UrlSnapshotActivity : Activity() {
                             false
                         )
 
+                        setHorizontallyScrolling(
+                            false
+                        )
+
                         minLines =
                             2
 
                         maxLines =
-                            4
+                            3
 
                         gravity =
                             Gravity.TOP or
@@ -239,7 +243,9 @@ class UrlSnapshotActivity : Activity() {
                             InputType
                                 .TYPE_CLASS_TEXT or
                                 InputType
-                                    .TYPE_TEXT_VARIATION_URI
+                                    .TYPE_TEXT_VARIATION_URI or
+                                InputType
+                                    .TYPE_TEXT_FLAG_MULTI_LINE
 
                         textSize =
                             14f

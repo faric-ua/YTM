@@ -92,7 +92,7 @@ b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 cd360bb3320f3b67  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 3555e2abcb74be11  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 840d2dea2e562c2e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
-60d22d56a7e24e84  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+f44f1e114d3835b7  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 543310163c294d4e  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 6ed9a78faabac822  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 037f83a4b2de7dca  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
@@ -101,7 +101,7 @@ a1f449578ea55ef1  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActiv
 2048239720693f8c  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 41b4011417cf353a  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 1d2285e95fb0bf60  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
-ea960f6b91c772b7  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
+e2218eb2a4055ab4  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 99e25606f1e7db96  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
 5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
@@ -199,7 +199,7 @@ c046586be53a0584  artifacts/README.md
 3c8c6e273019f706  docs/HANDOFF_HARDENING_2026-09-17.md
 da6db67c9017a470  docs/README.md
 0eb6d1512dc9b142  docs/WORKFLOW_LESSONS.md
-ab9eabe91cd701dd  docs/assistant-kit/AUDIT_CATALOG.md
+f95dec8c8bfd3527  docs/assistant-kit/AUDIT_CATALOG.md
 eabff6e0825a2380  docs/assistant-kit/CONTEXT_FILES.txt
 32b0a039d0111864  docs/assistant-kit/PORTABLE_AUDITS.txt
 b07c7177d0a2b73e  docs/assistant-kit/README.md
@@ -1505,7 +1505,7 @@ e70d8ddc6e50124b  scripts/project-handoff-audit.sh
 34a319998981b650  scripts/release-close-audit.sh
 bd496d2802fc4272  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-46a18b70c8637401  scripts/release-preflight.sh
+2b8ad9a616dbd8be  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1633,6 +1633,7 @@ e71e53f823226f56  scripts/v1449-wave3-qa-workflow.py
 30721f44c74e6e51  scripts/v1450-skin-contract-wave1-audit.sh
 db878f2ad688aed3  scripts/v1450-skin-preview-wave2-audit.sh
 5fa94c9b932cd7cd  scripts/v1450-wave1-r1-phone-fixes-audit.sh
+81146d2da7ae92e4  scripts/v1451-phone-findings-corrective-audit.sh
 8781a7b5643203b7  scripts/v1451-url-commit-wave4-audit.sh
 40b7e1581152a25b  scripts/v1451-url-preview-wave3-audit.sh
 d8ceb8960c31e400  scripts/v1451-url-qa-corrective-r1-audit.sh

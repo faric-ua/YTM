@@ -682,7 +682,10 @@ class MainActivity : Activity() {
                     icon =
                         R.drawable.ic_ytm_playlist_add
                 ) {
-                openImportScreen()
+                openReviewScreen(
+                    openProjectActions =
+                        true
+                )
             },
             LinearLayout.LayoutParams(
                 0,
@@ -947,7 +950,8 @@ class MainActivity : Activity() {
     }
 
     private fun openReviewScreen(
-        focusHistoryIndex: Int? = null
+        focusHistoryIndex: Int? = null,
+        openProjectActions: Boolean = false
     ) {
         val current =
             playlist
@@ -977,6 +981,14 @@ class MainActivity : Activity() {
                     it
                 )
             }
+
+        if (openProjectActions) {
+            intent.putExtra(
+                ReviewActivity
+                    .EXTRA_OPEN_PROJECT_ACTIONS,
+                true
+            )
+        }
 
         startActivityForResult(
             intent,
