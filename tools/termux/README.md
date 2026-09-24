@@ -62,14 +62,13 @@ The installer helper first verifies the archived APK, then copies it into
 Termux private storage under `$HOME/.ytm-importer/install-staging/run-<RUN_ID>/`
 and verifies the staged copy again.
 
-The staged APK is opened with:
+The staged APK is handed to Android with an explicit APK MIME type and an
+explicit installer-package target. The helper tries the known installer package
+names used by Google/AOSP/Samsung, starting with
+`com.google.android.packageinstaller`, and does not use the generic chooser.
 
-`termux-open --view --content-type application/vnd.android.package-archive`
-
-This keeps the Android handoff inside Termux-managed private storage and sends
-the APK MIME type explicitly. It avoids depending on PackageManager component
-discovery from the Termux UID and avoids handing the installer a file directly
-from shared `/storage/emulated/0/...` storage.
+This keeps the Android handoff inside Termux-managed private storage while also
+bypassing package-discovery results that were empty on the Samsung A26 5G.
 
 If the remote branch advanced after the APK was downloaded, installation is
 still allowed only when every later change is tooling/docs-only. Any app/build
