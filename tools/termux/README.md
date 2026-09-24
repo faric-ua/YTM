@@ -101,3 +101,15 @@ APK `ACTION_VIEW` handler:
 SAI then performs the rootless package-install flow. If SAI is unavailable, the
 helper falls back to the generic Android chooser with the APK MIME type
 explicitly set.
+
+
+### Termux external content sharing
+
+SAI reads the staged APK through Termux's `content://com.termux.files/...`
+provider. Termux requires:
+
+`allow-external-apps=true`
+
+in `~/.termux/termux.properties` before another Android app can read that
+content URI. The install helper now ensures this setting is present and reloads
+Termux settings when possible before launching SAI.
