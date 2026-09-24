@@ -22,21 +22,21 @@ Previous stable release:
 - release tag/checkpoint remain immutable on `66d06d6912d014efb3a98d317ed49355a5fa3078`.
 
 Current release state:
-- versionName: **1.4.51**
-- versionCode: **94**
-- branch: `feat/v1.4.51-url-mix-snapshot`
-- phase: **final**
-- tested app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
-- signed run: `35943953149`
-- U51-1..U51-6: **PASS**
-- UX-024 / UX-025 / UX-026 / BUG-035: **PASS / CLOSED**
-- U51-6 final dedupe handoff: source 813 rows → saved 320 first occurrences → 493 duplicates; History uses local-import semantics and no YTM write counters.
-- after local snapshot handoff, returning Home started no create/add flow, queue or remote write.
-- repository commits after the tested app source may contain docs/Termux-only closeout changes; the app source remains fixed at the signed commit above.
-- UX-027 and UX-028 are recorded as **OPEN / NON-BLOCKING** polish follow-ups.
-- phone APK archive remains canonical under `Documents/YTM/artifacts/apk/v1.4.51/run-<RUN_ID>/`.
-- Termux menu item 4 only re-verifies and opens the original APK run folder.
-- collaboration default remains direct GitHub mutation by ChatGPT; phone normally only syncs through Termux menu item 1.
+- versionName: **1.4.52**
+- versionCode: **95**
+- feature: **URL Snapshot / Home UX Polish**
+- branch: `feat/v1.4.52-ux-polish`
+- phase: **development**
+- stable baseline: v1.4.51 / source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0` / run `35943953149`
+- UX-027 implementation: duplicate choice is one equal-width horizontal row with `Всі (N)`, `Унікальні (U)`, `Скасувати`; Cancel returns to the same preview without commit.
+- UX-028 implementation: URL snapshot commit now returns the exact created History entry id through UrlSnapshotActivity → ImportActivity → MainActivity; Home shows a dedicated `Деталі в Історії →` affordance and HistoryActivity opens that exact entry.
+- Home status/detail association is saved across MainActivity recreation; unrelated later status clears the association.
+- no intended resolver/cache/Search/auth/quota/YTM-write behavior changes.
+- v1.4.52 documentation skeleton and Mermaid flow were created before app-code changes.
+- release preflight includes `scripts/v1452-ux-polish-audit.sh`.
+- next gate: **full preflight / signed build**, then targeted phone QA 1–3.
+- v1.4.51 remains immutable stable release with `OTA+`.
+- phone collaboration: ChatGPT updates GitHub; user syncs with Termux menu item 1 only when requested.
 
 R2 signed-build attempt evidence:
 - GitHub Actions run: **35476795879**
