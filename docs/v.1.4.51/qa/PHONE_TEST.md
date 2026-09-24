@@ -63,10 +63,7 @@ Expected:
 - current local playlist unchanged;
 - no fallback to a guessed search/import path.
 
-Current partial result: malformed URL rejection PASS on real phone; current 9-track local playlist remained unchanged.
-The direct-video-without-`list` rejection case is still pending and will be retested after the current phone-finding corrective.
-
-Result: `U51-5+` / `U51-5-`
+Result: `U51-5+` — PASS on real phone. Malformed URL and direct-video-without-`list` are both rejected clearly; current 9-track playlist remains unchanged and no guessed Search/import fallback starts.
 
 ## U51-6 — local snapshot handoff
 
@@ -217,4 +214,12 @@ Corrective source: `e7404eb3c4760c2fcb0c86d3ec6b3f9d9f8faffd`.
   `YTM Project / export` actions through Review instead of opening Import;
 - existing export implementation is reused; no parallel export flow was added.
 
-Signed phone retest is pending.
+Signed phone retest on run `35941777241` / source `2bd57b3996787517f0c1ce8b45e40d74671ebee3`:
+
+- UX-025: PASS — long URL visibly wraps across multiple lines;
+- BUG-035: PASS — Home `Експорт` opens the existing `YTM Project / export` path;
+- U51-5 direct-video-without-`list`: PASS — rejected clearly, no preview/Search/import fallback.
+
+Result: `UX-025+` / `BUG-035+` / `U51-5+` — PHONE PASS.
+
+New polish request UX-026: add an inline clear control at the right-center of the URL editor. The control clears only the draft URL field and does not start any remote/local operation.
