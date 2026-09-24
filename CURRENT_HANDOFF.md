@@ -9,30 +9,34 @@ Last updated: **2026-09-24**
 Repository: `faric-ua/YTM`
 
 Latest stable release:
+- **v1.4.51 / versionCode 94**
+- GitHub Release/tag: `v1.4.51`
+- exact final app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
+- exact signed run: `35943953149`
+- stabilization checkpoint: `checkpoint-v1.4.51-phone-pass`
+- result: **PHONE QA PASS — U51-1..U51-6 complete**
+- scope: targeted YouTube/YTM URL/Mix Snapshot Import acceptance; no broad full-app regression claim.
+
+Previous stable release:
 - **v1.4.50 / versionCode 93**
-- GitHub Release/tag: `v1.4.50`
-- exact final app source: `66d06d6912d014efb3a98d317ed49355a5fa3078`
-- exact signed run: `35802968056`
-- stabilization checkpoint: `checkpoint-v1.4.50-phone-pass`
-- result: **PHONE QA PASS — FINAL Skin System / stabilization checkpoint accepted**
+- release tag/checkpoint remain immutable on `66d06d6912d014efb3a98d317ed49355a5fa3078`.
 
 Current release state:
 - versionName: **1.4.51**
 - versionCode: **94**
-- active branch: `feat/v1.4.51-url-mix-snapshot`
-- release-start base HEAD: `5ccc5e2066fb2e69338c8181f266a18dec55b398`
-- accepted stable checkpoint: `checkpoint-v1.4.50-phone-pass` → `66d06d6912d014efb3a98d317ed49355a5fa3078`
-- status: **v1.4.51 DEVELOPMENT — RELEASE BASELINE READY / URL SOURCE CONTRACT WAVE NEXT / PHONE QA PENDING**
-- current phone QA APK: **v1.4.50 / code 93**, source `66d06d6912d014efb3a98d317ed49355a5fa3078`, signed run `35802968056`; Wave 3 R2 result `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+`; BUG-034 closed; prior BUG-033/Wave 2/Wave 1 R1 PASS evidence remains preserved.
-- installed/final phone-tested APK: **v1.4.50 / code 93** from run `35802968056` / source `66d06d6912d014efb3a98d317ed49355a5fa3078`; all v1.4.50 regression checks passed.
-- accepted stable checkpoint is `checkpoint-v1.4.50-phone-pass` / `66d06d6912d014efb3a98d317ed49355a5fa3078`; v1.4.49 remains the previous stable release evidence.
-- focus: **v1.4.51 YouTube/YTM URL/Mix Snapshot Import is the active development release; first implementation wave is the supported URL/source classification contract and parser. v1.4.50 remains immutable stable baseline.**
-- active development branch: `feat/v1.4.51-url-mix-snapshot`
-- current development app identity: **v1.4.51 / versionCode 94**; installed/accepted stable phone baseline remains v1.4.50 / 93
-- v1.4.51 phase: **development — release baseline ready / URL source contract wave next**
-- Wave 1 lifecycle commit: `dd7e8d5e984200b9c2cdca993bc8378a2db4198b`
-- Wave 2 OAuth retry commit: `f53fc1d3ad8a02c67269c9f22df8e4cc8b2f2f14`
-- Wave 3 History semantics commit: `e1fee8ed989acfd1209e53873910bf3f362e5ec0`
+- branch: `feat/v1.4.51-url-mix-snapshot`
+- phase: **final**
+- tested app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
+- signed run: `35943953149`
+- U51-1..U51-6: **PASS**
+- UX-024 / UX-025 / UX-026 / BUG-035: **PASS / CLOSED**
+- U51-6 final dedupe handoff: source 813 rows → saved 320 first occurrences → 493 duplicates; History uses local-import semantics and no YTM write counters.
+- after local snapshot handoff, returning Home started no create/add flow, queue or remote write.
+- repository commits after the tested app source may contain docs/Termux-only closeout changes; the app source remains fixed at the signed commit above.
+- UX-027 and UX-028 are recorded as **OPEN / NON-BLOCKING** polish follow-ups.
+- phone APK archive remains canonical under `Documents/YTM/artifacts/apk/v1.4.51/run-<RUN_ID>/`.
+- Termux menu item 4 only re-verifies and opens the original APK run folder.
+- collaboration default remains direct GitHub mutation by ChatGPT; phone normally only syncs through Termux menu item 1.
 
 R2 signed-build attempt evidence:
 - GitHub Actions run: **35476795879**
@@ -338,16 +342,12 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 ## 7. Exact next execution step
 
-1. Keep v1.4.50/checkpoint immutable on `66d06d6912d014efb3a98d317ed49355a5fa3078`.
-2. Continue v1.4.51 / code 94 on `feat/v1.4.51-url-mix-snapshot`.
-3. App corrective source for UX-024 is `721c712ef9f59f96acb9782036f21506a3dc3464`; current branch HEAD additionally contains repository-owned Termux tooling/workflow documentation.
-4. Current collaboration default is direct GitHub mutation by ChatGPT; `ytm-code` is fallback/local-only.
-5. Canonical phone tooling now lives in `tools/termux/` inside YTM. Renault contains compatibility wrappers only.
-6. Signed APKs downloaded on the phone are stored under `artifacts/apk/vX.Y.Z/run-<RUN_ID>/`; the APK subtree is gitignored. GitHub Release assets are reserved for accepted stable releases.
-7. One-time phone migration: fast-forward the local YTM repo and run `bash tools/termux/install-widget.sh`.
-8. After migration, use menu item 6 only when a manual `workflow_dispatch` is needed; current connector can inspect Actions but does not expose a new workflow-dispatch action.
-9. U51-5 is PHONE PASS. UX-026 is also PHONE PASS on signed run `35943953149` / source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`: the inline right-center `×` clears only the URL draft and starts no automatic work. Phone used for this final smoke: Samsung Galaxy A26 5G. Menu item 4 has been simplified to re-verify and open the original downloaded APK run folder under `Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`; it no longer copies the APK or launches SAI/installer directly.
-10. Do not reread the protected 813-track workspace merely for the UX-024 visual retest.
+1. Keep v1.4.51 app-source identity immutable at `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
+2. Keep release tag `v1.4.51` and checkpoint `checkpoint-v1.4.51-phone-pass` on that exact app source.
+3. Preserve final phone evidence under `docs/v.1.4.51/qa/`.
+4. Do not reread the protected 813-track workspace merely for documentation or polish work.
+5. Treat UX-027/UX-028 as separate non-blocking future polish.
+6. Before the next app-code wave, create the next release documentation package first.
 
 ## 8. Working contract
 
@@ -374,15 +374,16 @@ Rules:
 6. live GitHub branch / HEAD / Actions state
 
 
-## Resume point — 2026-09-24 sleep handoff
+## Resume point — 2026-09-24 final v1.4.51 handoff
 
 - Branch: `feat/v1.4.51-url-mix-snapshot`.
-- Last verified app APK source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
+- Exact final tested app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
 - Signed run: `35943953149` — success.
-- U51-1..U51-5: PASS.
-- UX-024 / UX-025 / BUG-035 / UX-026: PASS / CLOSED.
-- UX-026 real-phone result: inline clear `×` visible and functional; tapping it clears only the draft URL and leaves `Готово до читання` with no automatic resolve/Search/commit.
-- Phone: Samsung Galaxy A26 5G.
-- APK archive remains canonical under `/storage/emulated/0/Documents/YTM/artifacts/apk/v1.4.51/run-<RUN_ID>/`.
-- Termux menu item 4 now only opens the original verified APK folder; no duplicate install copy and no direct installer/SAI handoff.
-- Next task when work resumes: U51-6 explicit local snapshot handoff, then release closeout if PASS.
+- U51-1..U51-6: **PASS**.
+- UX-024 / UX-025 / BUG-035 / UX-026: **PASS / CLOSED**.
+- U51-6 dedupe save: 813 source rows → 320 saved → 493 duplicates.
+- History/detail correctly records local import semantics; no YTM write counters.
+- Isolation PASS: no automatic create/add flow, queue or write after handoff.
+- UX-027/UX-028: open non-blocking polish.
+- APK archive: `/storage/emulated/0/Documents/YTM/artifacts/apk/v1.4.51/run-<RUN_ID>/`.
+- Next development work starts only after the v1.4.51 final tags/checkpoint and close audit are confirmed.
