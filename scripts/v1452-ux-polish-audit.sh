@@ -10,9 +10,10 @@ URL="app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt"
 COMMITTER="app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotLocalCommitter.kt"
 IMPORT="app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 MAIN="app/src/main/java/com/saney/ytmimporter/MainActivity.kt"
+HOME_LINK="app/src/main/java/com/saney/ytmimporter/ui/HomeHistoryDetailLink.kt"
 HISTORY="app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 
-for path in "$URL" "$COMMITTER" "$IMPORT" "$MAIN" "$HISTORY"; do
+for path in "$URL" "$COMMITTER" "$IMPORT" "$MAIN" "$HOME_LINK" "$HISTORY"; do
   test -f "$path" || fail "missing source: $path"
 done
 
@@ -49,16 +50,19 @@ grep -Fq 'EXTRA_IMPORT_HISTORY_ENTRY_ID' "$IMPORT" ||
 grep -Fq 'EXTRA_IMPORT_HISTORY_ENTRY_ID' "$MAIN" ||
   fail "MainActivity History-id receive path missing"
 
-grep -Fq 'EXTRA_OPEN_ENTRY_ID' "$MAIN" ||
-  fail "MainActivity exact History-detail navigation missing"
+grep -Fq 'HomeHistoryDetailLink' "$MAIN" ||
+  fail "MainActivity Home History-link bridge missing"
+
+grep -Fq 'EXTRA_OPEN_ENTRY_ID' "$HOME_LINK" ||
+  fail "Home History-link exact detail navigation missing"
 
 grep -Fq 'EXTRA_OPEN_ENTRY_ID' "$HISTORY" ||
   fail "HistoryActivity exact-entry launch contract missing"
 
-grep -Fq 'STATE_STATUS_HISTORY_ENTRY_ID' "$MAIN" ||
+grep -Fq 'STATE_HISTORY_ENTRY_ID' "$HOME_LINK" ||
   fail "Home status History-id recreation state missing"
 
-grep -Fq 'Деталі в Історії →' "$MAIN" ||
+grep -Fq 'Деталі в Історії →' "$HOME_LINK" ||
   fail "Home detail affordance missing"
 
 grep -Fq 'UX-027' docs/v.1.4.52/RELEASE.md ||
