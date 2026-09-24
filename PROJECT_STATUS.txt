@@ -715,3 +715,6 @@ v1.4.43 NOT PHONE-TESTED YET — BUG-013 AUTH FRESHNESS
 - v1.4.51 U51-5 partial phone QA on run 35938232310: malformed URL rejection PASS and current 9-track playlist unchanged.
 - findings from that run: UX-025 long URL field visually scrolls as one line; BUG-035 Home quick Export opens Import.
 - corrective source e7404eb3c4760c2fcb0c86d3ec6b3f9d9f8faffd wraps URL input into 2–3 lines and routes Home Export to existing Review YTM Project/export actions; signed retest pending.
+
+- v1.4.51 signed run 35941777241 / source 2bd57b3996787517f0c1ce8b45e40d74671ebee3: UX-025 PASS, BUG-035 PASS, U51-5 direct-video-without-list PASS; U51-5 closed.
+- UX-026 inline URL clear action implemented; signed phone smoke pending before/alongside U51-6.
