@@ -92,6 +92,7 @@ class MainActivity : Activity() {
 
     private lateinit var accountSummaryText: TextView
     private lateinit var statusText: TextView
+    private lateinit var statusDetailText: TextView
     private lateinit var summaryText: TextView
     private var currentStatusMessage: String = ""
     private var statusHistoryEntryId: String? = null
@@ -587,6 +588,37 @@ class MainActivity : Activity() {
                 ellipsize =
                     android.text.TextUtils.TruncateAt.END
             }
+
+        statusDetailText =
+            TextView(this).apply {
+                text =
+                    "Деталі в Історії →"
+                textSize =
+                    12f
+                setTextColor(
+                    palette.accent
+                )
+                setTypeface(
+                    typeface,
+                    Typeface.BOLD
+                )
+                setPadding(
+                    0,
+                    dp(5),
+                    0,
+                    0
+                )
+                visibility =
+                    View.GONE
+                isClickable =
+                    true
+                isFocusable =
+                    true
+            }
+
+        accountCard.root.addView(
+            statusDetailText
+        )
 
         content.addView(
             accountCard.root,
@@ -4123,43 +4155,29 @@ class MainActivity : Activity() {
                 .isNullOrBlank()
 
         statusText.text =
-            if (hasHistoryDetail) {
-                message +
-                    "\nДеталі в Історії →"
-            } else {
-                message
-            }
+            message
 
         statusText.maxLines =
-            if (hasHistoryDetail) {
-                2
-            } else {
-                1
-            }
+            1
 
         statusText.ellipsize =
             android.text.TextUtils
                 .TruncateAt.END
 
         statusText.setTextColor(
-            if (hasHistoryDetail) {
-                AppThemeManager
-                    .palette(this)
-                    .accent
-            } else {
-                AppThemeManager
-                    .palette(this)
-                    .muted
-            }
+            AppThemeManager
+                .palette(this)
+                .muted
         )
 
-        statusText.isClickable =
-            hasHistoryDetail
+        statusDetailText.visibility =
+            if (hasHistoryDetail) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
 
-        statusText.isFocusable =
-            hasHistoryDetail
-
-        statusText.setOnClickListener(
+        statusDetailText.setOnClickListener(
             if (hasHistoryDetail) {
                 View.OnClickListener {
                     statusHistoryEntryId
