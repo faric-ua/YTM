@@ -681,6 +681,10 @@ class UrlSnapshotActivity : Activity() {
                         EXTRA_COMMIT_MESSAGE,
                         receipt.message
                     )
+                    .putExtra(
+                        EXTRA_HISTORY_ENTRY_ID,
+                        receipt.historyEntryId
+                    )
             )
 
             finish()
@@ -949,10 +953,10 @@ class UrlSnapshotActivity : Activity() {
                     }
                 )
 
-                addView(
-                    actionButton(
+                val allButton =
+                    compactChoiceButton(
                         label =
-                            "Зберегти всі (${resolved.items.size})",
+                            "Всі (${resolved.items.size})",
                         primary =
                             true
                     ) {
@@ -964,16 +968,13 @@ class UrlSnapshotActivity : Activity() {
                                     .KEEP_ALL
                         )
                     }
-                )
 
-                addView(
-                    actionButton(
+                val uniqueButton =
+                    compactChoiceButton(
                         label =
-                            "Без повторів (${resolved.items.size - analysis.duplicateOccurrences})",
+                            "Унікальні (${resolved.items.size - analysis.duplicateOccurrences})",
                         primary =
-                            false,
-                        topMarginDp =
-                            5
+                            false
                     ) {
                         commitResolved(
                             resolved =
@@ -983,21 +984,62 @@ class UrlSnapshotActivity : Activity() {
                                     .DROP_REPEATED_EXACT_VIDEO_IDS
                         )
                     }
-                )
 
-                addView(
-                    actionButton(
+                val cancelButton =
+                    compactChoiceButton(
                         label =
-                            "Назад",
+                            "Скасувати",
                         primary =
-                            false,
-                        topMarginDp =
-                            5
+                            false
                     ) {
                         duplicateChoiceOpen =
                             false
                         buildUi()
                     }
+
+                val choiceRow =
+                    LinearLayout(
+                        this@UrlSnapshotActivity
+                    ).apply {
+                        orientation =
+                            LinearLayout.HORIZONTAL
+                        isBaselineAligned =
+                            false
+                        gravity =
+                            Gravity.CENTER_VERTICAL
+                    }
+
+                listOf(
+                    allButton,
+                    uniqueButton,
+                    cancelButton
+                ).forEachIndexed {
+                        index,
+                        button ->
+
+                    choiceRow.addView(
+                        button,
+                        LinearLayout.LayoutParams(
+                            0,
+                            dp(58),
+                            1f
+                        ).apply {
+                            if (index > 0) {
+                                marginStart =
+                                    dp(5)
+                            }
+                        }
+                    )
+                }
+
+                addView(
+                    choiceRow,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams
+                            .MATCH_PARENT,
+                        ViewGroup.LayoutParams
+                            .WRAP_CONTENT
+                    )
                 )
             } else {
                 val saveButton =
@@ -1336,6 +1378,39 @@ class UrlSnapshotActivity : Activity() {
                 }
         }
 
+    private fun compactChoiceButton(
+        label: String,
+        primary: Boolean,
+        action: () -> Unit
+    ): Button =
+        actionButton(
+            label =
+                label,
+            primary =
+                primary,
+            action =
+                action
+        ).apply {
+            maxLines =
+                1
+
+            setPadding(
+                dp(5),
+                dp(8),
+                dp(5),
+                dp(8)
+            )
+
+            UiChrome
+                .autoSizeButton(
+                    this,
+                    minSp =
+                        8,
+                    maxSp =
+                        13
+                )
+        }
+
     private fun dp(
         value: Int
     ): Int =
@@ -1356,6 +1431,9 @@ class UrlSnapshotActivity : Activity() {
 
         const val EXTRA_COMMIT_MESSAGE =
             "url_snapshot_commit_message"
+
+        const val EXTRA_HISTORY_ENTRY_ID =
+            "url_snapshot_history_entry_id"
 
         private val MUTED =
             Color.rgb(
