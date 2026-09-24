@@ -223,3 +223,19 @@ Signed phone retest on run `35941777241` / source `2bd57b3996787517f0c1ce8b45e40
 Result: `UX-025+` / `BUG-035+` / `U51-5+` — PHONE PASS.
 
 New polish request UX-026: add an inline clear control at the right-center of the URL editor. The control clears only the draft URL field and does not start any remote/local operation.
+
+## UX-026 signed phone PASS — 2026-09-24
+
+Signed build: run `35943953149`, source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`.
+
+Real-phone evidence on Samsung Galaxy A26 5G:
+
+- inline `×` is visible inside the URL field at the right edge and vertically centered;
+- wrapped URL/input text does not overlap the clear control;
+- tapping `×` clears the draft URL;
+- screen remains in `Готово до читання`;
+- no URL resolve, Search, local commit or remote operation starts automatically.
+
+Result: `UX-026+` — PHONE PASS / CLOSED.
+
+Next release gate: U51-6 explicit local snapshot handoff.
