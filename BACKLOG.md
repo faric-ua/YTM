@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.52 — URL Snapshot / Home UX Polish — DEVELOPMENT
+v1.4.52 — URL Snapshot / Home UX Polish — PHONE QA PASS / CLOSEOUT
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -96,6 +96,12 @@ v1.4.52 — URL Snapshot / Home UX Polish — DEVELOPMENT
 - [x] UX-028: stale detail mapping clears on unrelated status
 - [ ] static/full preflight
 - [ ] signed phone QA
+
+- Phone QA 2026-09-24: Tests 1–3 PASS on signed run `36041226156` / source `d857ce8c42511b16357060e6639ed67d548f9f31`.
+- UX-027 CLOSED: one-row duplicate chooser + rotation + Cancel no-op passed.
+- UX-028 CLOSED: Home `Деталі в Історії →` opens exact corresponding History detail.
+- Unique snapshot handoff revalidated: 320 saved / 493 duplicates / local History semantics / no YTM write.
+- Final release closeout/tagging remains.
 
 ## v1.4.51 — YouTube/YTM URL/Mix Snapshot Import
 
