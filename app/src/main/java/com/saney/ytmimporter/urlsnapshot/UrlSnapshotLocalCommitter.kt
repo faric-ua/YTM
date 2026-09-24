@@ -17,7 +17,8 @@ data class UrlSnapshotCommitReceipt(
     val exactCount: Int,
     val unavailableCount: Int,
     val duplicateOccurrences: Int,
-    val duplicateSkippedCount: Int
+    val duplicateSkippedCount: Int,
+    val historyEntryId: String
 )
 
 class UrlSnapshotLocalCommitter(
@@ -58,10 +59,13 @@ class UrlSnapshotLocalCommitter(
                 plan.sourceLabel
         )
 
-        historyStore.upsert(
+        val historyEntry =
             historyEntry(
                 plan
             )
+
+        historyStore.upsert(
+            historyEntry
         )
 
         val savedCount =
@@ -123,7 +127,9 @@ class UrlSnapshotLocalCommitter(
             duplicateOccurrences =
                 plan.duplicateOccurrences,
             duplicateSkippedCount =
-                plan.duplicateSkippedCount
+                plan.duplicateSkippedCount,
+            historyEntryId =
+                historyEntry.id
         )
     }
 
