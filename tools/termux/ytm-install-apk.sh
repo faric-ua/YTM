@@ -65,37 +65,89 @@ fi
 command -v am >/dev/null 2>&1 ||
   ytm_fail "Android activity manager (am) is unavailable"
 
-CONTENT_URI="content://com.termux.files$APK"
+command -v cmd >/dev/null 2>&1 ||
+  ytm_fail "Android cmd utility is unavailable"
 
-echo "Opening Android package installer:"
+CONTENT_URI="content://com.termux.files$APK"
+APK_MIME="application/vnd.android.package-archive"
+
+echo "Resolving Android APK handlers:"
 echo "RUN_ID=$RUN_ID"
 echo "SOURCE=$SOURCE"
 echo "APK=$APK"
 echo "URI=$CONTENT_URI"
 
-# INSTALL_PACKAGE is intentionally used instead of a generic VIEW intent.
-# On Samsung the generic VIEW path can open an app chooser and hand the APK
-# through a handler chain. The install-specific action asks Android directly
-# for the package-install flow while keeping Termux's read grant on the URI.
-if am start \
-    -W \
-    -a android.intent.action.INSTALL_PACKAGE \
-    -d "$CONTENT_URI" \
-    -f 0x10000001
-then
-  exit 0
+VIEW_CANDIDATES="$(
+  cmd package query-activities     --brief     --components     --user current     -a android.intent.action.VIEW     -c android.intent.category.DEFAULT     -d "$CONTENT_URI"     -t "$APK_MIME"     2>/dev/null ||
+  true
+)"
+
+INSTALL_CANDIDATES="$(
+  cmd package query-activities     --brief     --components     --user current     -a android.intent.action.INSTALL_PACKAGE     -c android.intent.category.DEFAULT     -d "$CONTENT_URI"     -t "$APK_MIME"     2>/dev/null ||
+  true
+)"
+
+echo
+echo "VIEW candidates:"
+if [ -n "$VIEW_CANDIDATES" ]; then
+  printf '%s\n' "$VIEW_CANDIDATES"
+else
+  echo "(none)"
 fi
 
 echo
-echo "FAIL: Android rejected the install-specific intent." >&2
-echo "Available package-installer candidates:" >&2
-(
-  pm list packages 2>/dev/null |
-    grep -Ei 'packageinstaller|permissioncontroller|installer' ||
-  true
-) >&2
+echo "INSTALL_PACKAGE candidates:"
+if [ -n "$INSTALL_CANDIDATES" ]; then
+  printf '%s\n' "$INSTALL_CANDIDATES"
+else
+  echo "(none)"
+fi
 
-echo >&2
-echo "No generic chooser fallback was used." >&2
-echo "Copy the output above for diagnosis." >&2
-exit 1
+ALL_CANDIDATES="$(
+  printf '%s\n%s\n' "$VIEW_CANDIDATES" "$INSTALL_CANDIDATES" |
+    sed '/^[[:space:]]*$/d' |
+    awk '!seen[$0]++'
+)"
+
+INSTALL_COMPONENT="$(
+  printf '%s\n' "$ALL_CANDIDATES" |
+    grep -Ei 'packageinstaller|permissioncontroller' |
+    head -n 1 ||
+  true
+)"
+
+if [ -z "$INSTALL_COMPONENT" ]; then
+  echo >&2
+  echo "FAIL: Android did not expose a system package-installer component." >&2
+  echo "Copy the candidate list above for diagnosis." >&2
+  exit 1
+fi
+
+echo
+echo "Launching system installer component directly:"
+echo "COMPONENT=$INSTALL_COMPONENT"
+
+set +e
+START_OUTPUT="$(
+  am start     -W     -n "$INSTALL_COMPONENT"     -a android.intent.action.VIEW     -c android.intent.category.DEFAULT     -d "$CONTENT_URI"     -t "$APK_MIME"     -f 0x10000001     2>&1
+)"
+START_RC=$?
+set -e
+
+printf '%s\n' "$START_OUTPUT"
+
+if [ "$START_RC" -ne 0 ]; then
+  echo >&2
+  echo "FAIL: explicit package-installer launch returned code $START_RC." >&2
+  exit "$START_RC"
+fi
+
+if printf '%s\n' "$START_OUTPUT" | grep -Eqi 'Error:|Exception|SecurityException|unable to resolve'; then
+  echo >&2
+  echo "FAIL: Android reported an explicit installer launch error." >&2
+  exit 1
+fi
+
+echo
+echo "Installer intent sent to the exact system component."
+echo "If the installer closes after tapping Install, the launcher is no longer the cause."
