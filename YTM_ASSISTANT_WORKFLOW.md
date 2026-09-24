@@ -403,6 +403,7 @@ The current default operational split is:
 2. ChatGPT verifies the exact remote commit/diff and runs or inspects GitHub
    Actions as required.
 3. The phone uses the repository-owned `tools/termux/` menu as the **default control surface** for safe sync, status, signed APK build dispatch, APK download and APK-folder handoff.
+   `Sync YTM` must also move the phone safely to the newest release feature branch when development advances to a new release branch.
    If a menu action exists, prefer it over ad-hoc raw `git` / `gh` commands. Raw shell commands are recovery/fallback only.
 4. Signed APK download must match the current remote branch HEAD; a merely
    successful older run is not sufficient.
