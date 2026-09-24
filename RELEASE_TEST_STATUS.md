@@ -2,6 +2,7 @@
 
 | Version | Status | Note |
 |---|---|---|
+| v1.4.52 | **DEVELOPMENT — NOT PHONE-TESTED YET** | UX-027 one-row duplicate choice + UX-028 exact Home → History detail drill-down. versionCode 95. |
 | v1.4.51 | **PHONE QA PASS — FINAL TARGETED URL/MIX SNAPSHOT IMPORT RELEASE + OTA STABLE SMOKE PASS** | Exact final app source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`, signed run `35943953149`. U51-1..U51-6 PASS; UX-024/025/026 and BUG-035 closed. U51-6 saved 320/813 with 493 duplicates and no YTM write. After publishing stable `v1.4.51`, production updater equal-version check returned `Оновлень немає` for installed/stable `1.4.51 (94)` (`OTA+`). UX-027/028 remain non-blocking polish follow-ups. |
 | v1.4.50 | **PHONE QA PASS — FINAL SKIN SYSTEM RELEASE** | Exact final source `66d06d6912d014efb3a98d317ed49355a5fa3078`, signed run `35802968056`, release tag `v1.4.50`, checkpoint `checkpoint-v1.4.50-phone-pass`. Wave 1/R1, Wave 2, Wave 3/R2, BUG-031/032/033/034 corrective QA, `FINAL-A+` and `FINAL-B+` passed. |
 | v1.4.49 | **PHONE QA PASS — TARGETED UPDATER / PRODUCTION FINAL RC / EQUAL-VERSION** | Exact final source `3f2add44a43889c8119ae7a9289e2cd4e1d40dd2`, signed run `35755925563`, release tag `v1.4.49`. Updater `1+..6+`, final RC `RC+`, and stable equal-version `FINAL+` passed. BUG-030 remains an open non-blocking Play Protect distribution/reputation finding. |
