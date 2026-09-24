@@ -62,95 +62,52 @@ fi
   sha256sum -c "$(basename "$SHA")"
 )
 
-command -v termux-open >/dev/null 2>&1 ||
-  ytm_fail "termux-open is unavailable"
+INSTALL_PICK_DIR="/storage/emulated/0/Download/YTM-Install/run-$RUN_ID"
+PICK_APK="$INSTALL_PICK_DIR/$(basename "$APK")"
+PICK_SHA="$PICK_APK.sha256"
 
-TERMUX_PROPS_DIR="$HOME/.termux"
-TERMUX_PROPS_FILE="$TERMUX_PROPS_DIR/termux.properties"
+rm -rf "$INSTALL_PICK_DIR"
+mkdir -p "$INSTALL_PICK_DIR"
 
-mkdir -p "$TERMUX_PROPS_DIR"
-touch "$TERMUX_PROPS_FILE"
-
-if ! grep -Eq '^[[:space:]]*allow-external-apps[[:space:]]*=[[:space:]]*true[[:space:]]*$' "$TERMUX_PROPS_FILE"; then
-  echo
-  echo "SAI needs TermuxContentProvider access to the staged APK."
-  echo "This requires: allow-external-apps=true"
-  echo "File: $TERMUX_PROPS_FILE"
-  echo
-  printf "Enable this Termux setting now? [y/N]: "
-  read -r answer
-
-  case "$answer" in
-    y|Y|yes|YES)
-      ;;
-    *)
-      ytm_fail "Installer handoff cancelled; Termux external content sharing was not enabled"
-      ;;
-  esac
-
-  if grep -Eq '^[[:space:]]*allow-external-apps[[:space:]]*=' "$TERMUX_PROPS_FILE"; then
-    sed -i -E 's/^[[:space:]]*allow-external-apps[[:space:]]*=.*$/allow-external-apps=true/' "$TERMUX_PROPS_FILE"
-  else
-    printf '\nallow-external-apps=true\n' >> "$TERMUX_PROPS_FILE"
-  fi
-
-  if command -v termux-reload-settings >/dev/null 2>&1; then
-    termux-reload-settings >/dev/null 2>&1 || true
-  fi
-
-  grep -Eq '^[[:space:]]*allow-external-apps[[:space:]]*=[[:space:]]*true[[:space:]]*$' "$TERMUX_PROPS_FILE" ||
-    ytm_fail "Failed to enable allow-external-apps=true"
-
-  echo "Termux external content sharing enabled."
-fi
-
-INSTALL_STAGE_DIR="$YTM_STATE_DIR/install-staging/run-$RUN_ID"
-STAGED_APK="$INSTALL_STAGE_DIR/$(basename "$APK")"
-STAGED_SHA="$STAGED_APK.sha256"
-
-rm -rf "$INSTALL_STAGE_DIR"
-mkdir -p "$INSTALL_STAGE_DIR"
-
-cp "$APK" "$STAGED_APK"
-cp "$SHA" "$STAGED_SHA"
+cp "$APK" "$PICK_APK"
+cp "$SHA" "$PICK_SHA"
 
 (
-  cd "$INSTALL_STAGE_DIR"
-  sha256sum -c "$(basename "$STAGED_SHA")"
+  cd "$INSTALL_PICK_DIR"
+  sha256sum -c "$(basename "$PICK_SHA")"
 )
 
 ORIGINAL_HASH="$(sha256sum "$APK" | awk '{print $1}')"
-STAGED_HASH="$(sha256sum "$STAGED_APK" | awk '{print $1}')"
+PICK_HASH="$(sha256sum "$PICK_APK" | awk '{print $1}')"
 
-[ "$ORIGINAL_HASH" = "$STAGED_HASH" ] ||
-  ytm_fail "Private Termux install staging hash mismatch"
-
-CONTENT_URI="content://com.termux.files$STAGED_APK"
-APK_MIME="application/vnd.android.package-archive"
+[ "$ORIGINAL_HASH" = "$PICK_HASH" ] ||
+  ytm_fail "System-picker staging hash mismatch"
 
 echo
-echo "Opening APK installer:"
+echo "APK is ready for Android's system file picker:"
 echo "RUN_ID=$RUN_ID"
 echo "SOURCE=$SOURCE"
-echo "ARCHIVE_APK=$APK"
-echo "STAGED_APK=$STAGED_APK"
-echo "SHA256=$STAGED_HASH"
+echo "PICK_APK=$PICK_APK"
+echo "SHA256=$PICK_HASH"
+echo
+echo "In SAI: tap 'Встановити APK' -> use the system file picker ->"
+echo "Download -> YTM-Install -> run-$RUN_ID -> $(basename "$PICK_APK")"
+echo
+echo "The system file picker is intentional: it returns a SAF URI with"
+echo "DISPLAY_NAME metadata, which SAI requires on this Samsung/Termux setup."
 
 command -v am >/dev/null 2>&1 ||
   ytm_fail "Android activity manager (am) is unavailable"
 
-SAI_COMPONENT="com.aefyr.sai/com.aefyr.sai.ui.activities.ApkActionViewProxyActivity"
+SAI_MAIN="com.aefyr.sai/com.aefyr.sai.ui.activities.MainActivity"
 
 set +e
 SAI_OUTPUT="$(
   am start \
     -W \
-    -n "$SAI_COMPONENT" \
-    -a android.intent.action.VIEW \
-    -c android.intent.category.DEFAULT \
-    -d "$CONTENT_URI" \
-    -t "$APK_MIME" \
-    -f 0x10000001 \
+    -n "$SAI_MAIN" \
+    -a android.intent.action.MAIN \
+    -c android.intent.category.LAUNCHER \
     2>&1
 )"
 SAI_RC=$?
@@ -163,16 +120,12 @@ if [ "$SAI_RC" -eq 0 ] &&
      grep -Eqi 'Error:|Exception|SecurityException|unable to resolve|not found'
 then
   echo
-  echo "SAI installer launched."
-  echo "Complete the installation in SAI."
+  echo "SAI opened. Select the prepared APK with its system file picker."
   exit 0
 fi
 
-echo
-echo "SAI direct launch unavailable; opening Android chooser."
-echo "Choose SAI if it is listed."
-
-termux-open \
-  --view \
-  --content-type "$APK_MIME" \
-  "$STAGED_APK"
+echo >&2
+echo "SAI could not be opened automatically." >&2
+echo "Open SAI manually and select:" >&2
+echo "$PICK_APK" >&2
+exit 1
