@@ -100,28 +100,25 @@ command -v am >/dev/null 2>&1 ||
   ytm_fail "Android activity manager (am) is unavailable"
 
 echo
-echo "Trying explicit Android installer packages:"
+echo "Trying explicit Android installer components:"
 
-for installer_package in \
-  com.google.android.packageinstaller \
-  com.google.android.permissioncontroller \
-  com.android.permissioncontroller \
-  com.samsung.android.packageinstaller \
-  com.android.packageinstaller
+for installer_component in \
+  com.google.android.packageinstaller/com.android.packageinstaller.InstallStart \
+  com.android.packageinstaller/com.android.packageinstaller.InstallStart
 do
   echo
-  echo "TRY=$installer_package"
+  echo "TRY_COMPONENT=$installer_component"
 
   set +e
   START_OUTPUT="$(
     am start \
       -W \
+      -n "$installer_component" \
       -a android.intent.action.VIEW \
       -c android.intent.category.DEFAULT \
       -d "$CONTENT_URI" \
       -t "$APK_MIME" \
       -f 0x10000001 \
-      -p "$installer_package" \
       2>&1
   )"
   START_RC=$?
@@ -131,15 +128,15 @@ do
 
   if [ "$START_RC" -eq 0 ] &&
      ! printf '%s\n' "$START_OUTPUT" |
-       grep -Eqi 'Error:|Exception|unable to resolve|not found'
+       grep -Eqi 'Error:|Exception|SecurityException|unable to resolve|not found'
   then
     echo
-    echo "Installer launched with package: $installer_package"
+    echo "Installer component launched: $installer_component"
     exit 0
   fi
 done
 
 echo >&2
-echo "FAIL: none of the known Android installer packages accepted the APK intent." >&2
+echo "FAIL: no known exported InstallStart component accepted the APK intent." >&2
 echo "No generic chooser fallback was used." >&2
 exit 1
