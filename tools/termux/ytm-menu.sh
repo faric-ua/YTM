@@ -31,7 +31,7 @@ while true; do
   echo "1 — Sync YTM"
   echo "2 — Status"
   echo "3 — Download signed APK"
-  echo "4 — Install downloaded APK"
+  echo "4 — Open APK folder"
   echo "5 — Open YTM shell"
   echo "6 — Build APK manually"
   echo "0 — Вийти"
