@@ -5,7 +5,7 @@ This is the reusable command guide for the phone-side part of the development wo
 Canonical collaboration/safety policy lives in `YTM_ASSISTANT_WORKFLOW.md`.
 New assistants start with `START_HERE_ASSISTANT.md`.
 
-Current default: ChatGPT performs repository changes and GitHub Actions work directly through GitHub; the phone normally uses the repository-owned Termux:Widget menu for sync/status/APK handoff/QA. Manual Git/package commands below remain recovery and fallback tools.
+Current default: ChatGPT performs repository changes directly through GitHub; **all normal phone-side operations use the repository-owned YTM Termux:Widget menu first** (sync/status/build/download/open APK folder/shell). If the menu has the needed action, do not replace it with a raw Git/gh command. Manual Git/package commands below are recovery and fallback tools only.
 
 ## 1. Repository
 
