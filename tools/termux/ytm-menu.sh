@@ -34,6 +34,7 @@ while true; do
   echo "4 — Open APK folder"
   echo "5 — Open YTM shell"
   echo "6 — Validate + Build signed APK"
+  echo "7 — Release status"
   echo "0 — Вийти"
   echo
   printf "Вибір: "
@@ -62,6 +63,9 @@ while true; do
       ;;
     6)
       run_tool "ytm-build-apk.sh"
+      ;;
+    7)
+      run_tool "ytm-release-status.sh"
       ;;
     0)
       clear
