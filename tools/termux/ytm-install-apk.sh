@@ -62,42 +62,33 @@ fi
   sha256sum -c "$(basename "$SHA")"
 )
 
-OPEN_DIR="/storage/emulated/0/Download/YTM-Install/run-$RUN_ID"
-OPEN_APK="$OPEN_DIR/$(basename "$APK")"
-OPEN_SHA="$OPEN_APK.sha256"
+APK_DIR="$(dirname "$APK")"
 
-rm -rf "$OPEN_DIR"
-mkdir -p "$OPEN_DIR"
+case "$APK_DIR" in
+  /storage/emulated/0/*)
+    ;;
+  *)
+    ytm_fail "APK folder is outside shared Android storage: $APK_DIR"
+    ;;
+esac
 
-cp "$APK" "$OPEN_APK"
-cp "$SHA" "$OPEN_SHA"
-
-(
-  cd "$OPEN_DIR"
-  sha256sum -c "$(basename "$OPEN_SHA")"
-)
-
-ORIGINAL_HASH="$(sha256sum "$APK" | awk '{print $1}')"
-OPEN_HASH="$(sha256sum "$OPEN_APK" | awk '{print $1}')"
-
-[ "$ORIGINAL_HASH" = "$OPEN_HASH" ] ||
-  ytm_fail "Open-folder staging hash mismatch"
+RELATIVE_DIR="${APK_DIR#/storage/emulated/0/}"
+ENCODED_DIR="${RELATIVE_DIR//\//%2F}"
+FOLDER_URI="content://com.android.externalstorage.documents/document/primary%3A$ENCODED_DIR"
+FOLDER_MIME="vnd.android.document/directory"
 
 echo
 echo "APK ready:"
 echo "RUN_ID=$RUN_ID"
 echo "SOURCE=$SOURCE"
-echo "FOLDER=$OPEN_DIR"
-echo "APK=$OPEN_APK"
-echo "SHA256=$OPEN_HASH"
+echo "FOLDER=$APK_DIR"
+echo "APK=$APK"
 echo
-echo "Tap the APK in the opened folder to install it."
+echo "Opening the original downloaded APK folder."
+echo "Tap $(basename "$APK") to install it."
 
 command -v am >/dev/null 2>&1 ||
   ytm_fail "Android activity manager (am) is unavailable"
-
-FOLDER_URI="content://com.android.externalstorage.documents/document/primary%3ADownload%2FYTM-Install%2Frun-$RUN_ID"
-FOLDER_MIME="vnd.android.document/directory"
 
 try_open_folder() {
   local package_name="$1"
@@ -155,5 +146,5 @@ fi
 echo
 echo "Could not open the exact folder automatically."
 echo "Open this folder manually:"
-echo "$OPEN_DIR"
+echo "$APK_DIR"
 exit 1
