@@ -69,6 +69,19 @@ than opening stale History detail.
 - stable baseline: `v1.4.51`
 - baseline tested app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
 
+## Implementation
+
+Implemented on `feat/v1.4.52-ux-polish`:
+
+- v1.4.52 / versionCode 95;
+- UX-027 compact one-row duplicate chooser with exact labels
+  `Всі (N)`, `Унікальні (U)`, `Скасувати`;
+- UX-028 exact History-entry id relay from local commit to Home and direct
+  HistoryActivity detail launch;
+- explicit Home `Деталі в Історії →` affordance;
+- Home status/detail association saved through MainActivity recreation;
+- dedicated `scripts/v1452-ux-polish-audit.sh` release gate.
+
 ## Status
 
-**PLANNED — DOCUMENTATION SKELETON READY / APP CODE NOT STARTED**
+**DEVELOPMENT — IMPLEMENTED / FULL PREFLIGHT + SIGNED PHONE QA PENDING**
