@@ -13,6 +13,8 @@ ytm_fail() {
 ytm_require_repo() {
   [ -d "$YTM_REPO_DIR/.git" ] ||
     ytm_fail "YTM repository not found: $YTM_REPO_DIR"
+
+  ytm_ensure_https_origin
 }
 
 ytm_ensure_https_origin() {
