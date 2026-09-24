@@ -100,43 +100,42 @@ command -v am >/dev/null 2>&1 ||
   ytm_fail "Android activity manager (am) is unavailable"
 
 echo
-echo "Trying explicit Android installer components:"
+echo "Trying SAI rootless installer first:"
 
-for installer_component in \
-  com.google.android.packageinstaller/com.android.packageinstaller.InstallStart \
-  com.android.packageinstaller/com.android.packageinstaller.InstallStart
-do
+SAI_COMPONENT="com.aefyr.sai/com.aefyr.sai.ui.activities.ApkActionViewProxyActivity"
+
+set +e
+SAI_OUTPUT="$(
+  am start \
+    -W \
+    -n "$SAI_COMPONENT" \
+    -a android.intent.action.VIEW \
+    -c android.intent.category.DEFAULT \
+    -d "$CONTENT_URI" \
+    -t "$APK_MIME" \
+    -f 0x10000001 \
+    2>&1
+)"
+SAI_RC=$?
+set -e
+
+printf '%s\n' "$SAI_OUTPUT"
+
+if [ "$SAI_RC" -eq 0 ] &&
+   ! printf '%s\n' "$SAI_OUTPUT" |
+     grep -Eqi 'Error:|Exception|SecurityException|unable to resolve|not found'
+then
   echo
-  echo "TRY_COMPONENT=$installer_component"
+  echo "SAI installer launched."
+  echo "Finish the install in SAI, then return to the YTM menu."
+  exit 0
+fi
 
-  set +e
-  START_OUTPUT="$(
-    am start \
-      -W \
-      -n "$installer_component" \
-      -a android.intent.action.VIEW \
-      -c android.intent.category.DEFAULT \
-      -d "$CONTENT_URI" \
-      -t "$APK_MIME" \
-      -f 0x10000001 \
-      2>&1
-  )"
-  START_RC=$?
-  set -e
+echo
+echo "SAI direct launch was unavailable; opening Android chooser as fallback."
+echo "If SAI is shown, choose SAI."
 
-  printf '%s\n' "$START_OUTPUT"
-
-  if [ "$START_RC" -eq 0 ] &&
-     ! printf '%s\n' "$START_OUTPUT" |
-       grep -Eqi 'Error:|Exception|SecurityException|unable to resolve|not found'
-  then
-    echo
-    echo "Installer component launched: $installer_component"
-    exit 0
-  fi
-done
-
-echo >&2
-echo "FAIL: no known exported InstallStart component accepted the APK intent." >&2
-echo "No generic chooser fallback was used." >&2
-exit 1
+termux-open \
+  --view \
+  --content-type "$APK_MIME" \
+  "$STAGED_APK"
