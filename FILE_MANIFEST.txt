@@ -81,7 +81,7 @@ de641fc9d98aac34  TERMINAL_APPLY_v1.4.25.md
 fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 410caf55096b297c  TERMINAL_APPLY_v1.4.8.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
-b236cc338f4716b7  TERMUX_COMMANDS.md
+4868af5a4e1cf752  TERMUX_COMMANDS.md
 55cdc8a68f1e48f2  TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt
 007c282182c00685  YTM_ASSISTANT_WORKFLOW.md
 9d6db8d1420b0d2e  app/build.gradle.kts
@@ -1642,12 +1642,12 @@ d8ceb8960c31e400  scripts/v1451-url-qa-corrective-r1-audit.sh
 1a276065be4bb479  scripts/v1451-url-source-wave1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
-31481b03611ebafb  tools/termux/README.md
+0015d6bb1775d576  tools/termux/README.md
 8a4753c11d9a562b  tools/termux/install-widget.sh
 13c00240361d97a0  tools/termux/ytm-build-apk.sh
 5f478613a041f448  tools/termux/ytm-common.sh
 f63257687628de7b  tools/termux/ytm-download-apk.sh
-38cbf89c49eb0983  tools/termux/ytm-install-apk.sh
-8263dc92f03288fc  tools/termux/ytm-menu.sh
+d01112e88abefd17  tools/termux/ytm-install-apk.sh
+f868774849410928  tools/termux/ytm-menu.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
 fc251ebbade67a7d  tools/termux/ytm-sync.sh
