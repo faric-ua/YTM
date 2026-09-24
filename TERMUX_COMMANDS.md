@@ -413,8 +413,10 @@ The menu actions are:
    where the downloaded APK already lives under
    `Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`.
 5. `Open YTM shell` — opens an interactive shell in the repository.
-6. `Build APK manually` — fallback workflow dispatch; normal builds may be
-   started by ChatGPT directly.
+6. `Validate + Build signed APK` — waits for the automatic `Validate Android`
+   run whose `headSha` exactly matches the current remote branch HEAD. Only after that
+   validation succeeds does it dispatch the signed APK workflow. A missing/failed
+   validation stops before any signed build is started.
 0. Exit.
 
 Install or repair the widget shortcut with:
