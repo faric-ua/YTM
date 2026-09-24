@@ -15,6 +15,18 @@ ytm_require_repo() {
     ytm_fail "YTM repository not found: $YTM_REPO_DIR"
 }
 
+ytm_ensure_https_origin() {
+  local current
+  current="$(git -C "$YTM_REPO_DIR" remote get-url origin 2>/dev/null || true)"
+
+  case "$current" in
+    git@github.com:faric-ua/YTM.git|ssh://git@github.com/faric-ua/YTM.git)
+      git -C "$YTM_REPO_DIR" remote set-url origin "https://github.com/faric-ua/YTM.git"
+      echo "Repaired origin transport: SSH → HTTPS"
+      ;;
+  esac
+}
+
 ytm_branch() {
   local branch
   branch="$(git -C "$YTM_REPO_DIR" branch --show-current)"
