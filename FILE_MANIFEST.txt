@@ -125,7 +125,7 @@ c046586be53a0584  artifacts/README.md
 9b1aae0969816752  BACKLOG.md
 1ad29e43e790095c  build.gradle.kts
 32c2196aa82fe430  CHANGELOG.md
-85bac36b85ed2aff  CURRENT_HANDOFF.md
+4cab336c8db0e06d  CURRENT_HANDOFF.md
 03fc725ca9b1f89a  docs/ASSISTANT_TOOL_MAP.md
 6d3327b2a9944c89  docs/assistant-kit/AUDIT_CATALOG.md
 f79ff05a88d54a17  docs/assistant-kit/CONTEXT_FILES.txt
@@ -1652,7 +1652,7 @@ fb9e3fbf272d150e  TERMINAL_APPLY_v1.4.7.md
 410caf55096b297c  TERMINAL_APPLY_v1.4.8.md
 dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
-30d3979d84db503c  TERMUX_COMMANDS.md
+4119a1de02ea4e34  TERMUX_COMMANDS.md
 55cdc8a68f1e48f2  TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt
 8a4753c11d9a562b  tools/termux/install-widget.sh
 d67bd3e5edd4e84b  tools/termux/README.md
@@ -1662,5 +1662,5 @@ f63257687628de7b  tools/termux/ytm-download-apk.sh
 8eda0cea3d5fad27  tools/termux/ytm-install-apk.sh
 f868774849410928  tools/termux/ytm-menu.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
-fc251ebbade67a7d  tools/termux/ytm-sync.sh
-3e9237feffbe7b94  YTM_ASSISTANT_WORKFLOW.md
+f4a1b1e3ef2989b0  tools/termux/ytm-sync.sh
+d144172840bc299e  YTM_ASSISTANT_WORKFLOW.md
