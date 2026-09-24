@@ -3,36 +3,23 @@ Version: 1.4.51
 Version code: 94
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current accepted release (v1.4.50 Skin System — FINAL):
-- active branch: `feat/v1.4.50-skin-system`;
+Current accepted release (v1.4.51 YouTube/YTM URL/Mix Snapshot Import — FINAL):
+- active branch: `feat/v1.4.51-url-mix-snapshot`;
 - release documentation phase: final;
-- app identity: v1.4.50 / versionCode 93;
-- Skin contract Wave 1 R1 targeted phone PASS: `R1-1+ / R1-2+ / R1-3+` on run 35782627453;
-- BUG-031/032 CLOSED for tested paths on source 81d5ebd988d08d3ddb80d78b73fd94e20280c980;
-- Wave 2 Skin preview/selection lifecycle PHONE PASS: `W2-1+ / W2-2+ / W2-3+` on run 35787308504 / source fdb2892c7b4fa0c858c55d5187a04ce296bde913;
-- representative UI smoke `UI-1+ / UI-2+ / UI-3+` accepted; BUG-033 corrective Data rotation follow-up also passed;
-- Wave 3 shared RestorableModalController PHONE PASS: `W3-1+ / W3-2+ / W3-3+ / W3-4+` on run 35796094108 / source 7e6fcb482387be92a7de54db0f4df5081d640495; BUG-033 CLOSED;
-- BUG-034 R1 phone FAIL on run 35799736192 / source c25b9f2a6843caf8790e45467df5bf118d08656d: `History відновлено` and rollback confirmation disappear on rotation;
-- Wave 3 R2 deterministic modal-dismiss PHONE PASS: `W3R2-1+ / W3R2-2+ / W3R2-3+ / W3R2-4+` on run 35802968056 / source 66d06d6912d014efb3a98d317ed49355a5fa3078; BUG-034 CLOSED;
-- v1.4.50 final release checks PASS: `FINAL-A+` invalid-input error path + `FINAL-B+` no accidental duplicate operation; regression checklist complete; release closeout ready;
-- semantic success/warning/danger/duplicate colors are grouped under `SemanticPalette`; initial Wave 1 semantic phone smoke is `2+`;
-- accepted stable release: v1.4.50 Skin System;
-- v1.4.49 updater matrix `1+ 2+ 3+ 4+ 5+ 6+`, RC+, and FINAL+ remain accepted evidence;
-- stable app checkpoint: checkpoint-v1.4.50-phone-pass;
-- final v1.4.50 source: 66d06d6912d014efb3a98d317ed49355a5fa3078; signed run: 35802968056; release tag: v1.4.50;
-- repository changes are direct-GitHub by default; `ytm-code` remains fallback/local-only;
-- v1.4.51 YouTube/YTM URL/Mix Snapshot Import is the active development release on `feat/v1.4.51-url-mix-snapshot`; the documentation skeleton remains the contract baseline;
-- current development app identity is v1.4.51 / versionCode 94; accepted installed stable baseline remains v1.4.50 / 93.
-- v1.4.51 Wave 1 URL source parser/classification remains PASS.
-- v1.4.51 Wave 2 concrete-playlist resolver + ordered/unavailable result model + exact quota hook remains PASS; dynamic Mix remains explicit unsupported.
-- v1.4.51 Wave 3 URL resolve owner + read-only preview/lifecycle remains PASS.
-- v1.4.51 Wave 4 explicit local snapshot commit is implemented with dedicated static/full preflight PASS: existing CurrentPlaylistStore/HistoryStore reused, exact IDs/order/duplicates/unavailable rows preserved, no auto-commit and no remote write; signed phone QA is next.
-- v1.4.51 first signed phone build run 35880942335 / source 16dd7ea8240fc4d6922070fc0f6f3f7ce8e41d67 resolved and committed an 813-row concrete playlist, exposing long-preview footer and duplicate-visibility findings.
-- v1.4.51 Corrective R1 implements fixed footer, exact-videoId duplicate choice, permanent SearchCache and persistent URL snapshot cache with Full Backup/Restore; new signed phone retest is pending.
-- v1.4.51 title metadata corrective adds official playlist title retrieval, optional cached playlistTitle, one-request cached-title repair, and local technical-name backfill without changing tracks.
-- v1.4.51 title metadata cachedAt corrective follows signed run 35909545473 / source cc454aba5bcf1172ce2be64757272c8d0355d699: title flow passed, but metadata-only enrichment advanced snapshot cachedAt; corrective preserves the existing snapshot timestamp.
-- v1.4.51 cachedAt corrective PHONE PASS: signed run 35921749405 / source ba826563032da85fd99eb822c07342c56b2b60f6; controlled 9-track fixture T0 24.09.2026 00:50 stayed unchanged through 1-API title enrichment and 0-API reopen; 813-track workspace was not reread.
-- v1.4.51 U51-3/U51-4 lifecycle phone QA PASS; UX-024 corrective PHONE PASS on signed run 35938232310 / source 05d01e46af2b99acb5a483ad13c3f5a87f849271: resolved Save/Cancel footer now renders in one adaptive horizontal row in landscape. U51-5/U51-6 remain.
+- app identity: v1.4.51 / versionCode 94;
+- exact final tested app source: 226d2453ef3b4a34cb7db7be0c42ae84c8f624a0;
+- exact signed run: 35943953149;
+- release tag: v1.4.51;
+- stabilization checkpoint: checkpoint-v1.4.51-phone-pass;
+- targeted phone QA: U51-1+ / U51-2+ / U51-3+ / U51-4+ / U51-5+ / U51-6+;
+- concrete playlist URL preview/commit, dynamic-Mix unsupported handling, Cancel/Back, recreation safety, invalid-source rejection and explicit local handoff all passed;
+- final U51-6 dedupe handoff: 813 source rows → 320 saved first occurrences → 493 duplicates;
+- History/detail uses local-import semantics and does not show YTM write counters;
+- returning Home after handoff starts no create/add flow, queue or YTM write;
+- UX-024 / UX-025 / UX-026 / BUG-035 are closed on signed phone retests;
+- UX-027 / UX-028 remain open non-blocking polish;
+- previous stable v1.4.50 source/tag/checkpoint remain preserved as historical evidence;
+- repository changes are direct-GitHub by default; phone sync uses Termux menu item 1.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
