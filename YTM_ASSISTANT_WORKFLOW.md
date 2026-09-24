@@ -411,3 +411,20 @@ The current default operational split is:
 
 The YTM Termux menu belongs to the YTM repository. Other projects may keep
 compatibility wrappers, but must not be the source of truth for YTM tooling.
+
+
+### Exact-HEAD validation gate
+
+After any code, build, audit, generated-file, or release-config change, ChatGPT must not send the user into a signed-build loop immediately.
+
+1. Push the complete intended change set, including generated files such as `FILE_MANIFEST.txt`.
+2. Wait for the automatic `Validate Android` workflow on that exact branch HEAD.
+3. Require all of these to pass before phone build handoff:
+   - `scripts/release-preflight.sh`;
+   - JVM/debug compilation via `:app:testDebugUnitTest`;
+   - unsigned release assembly via `:app:assembleRelease`.
+4. Only after exact-HEAD validation is green should the user be asked to Sync and use menu item 6.
+5. Menu item 6 itself re-checks the exact-HEAD validation run and refuses to dispatch a signed build if validation is missing or failed.
+6. ChatGPT should inspect and repair failed automatic validation itself before asking the user to repeat phone actions.
+
+This gate exists to prevent serial one-error-per-signed-build debugging. Signed builds are for artifacts/phone QA, not for discovering basic compile, generated-file, or static-audit failures.
