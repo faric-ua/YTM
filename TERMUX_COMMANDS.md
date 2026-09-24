@@ -404,8 +404,7 @@ Canonical scripts live under:
 
 The menu actions are:
 
-1. `Sync YTM` — fetch the current branch and fast-forward only; refuses dirty,
-   ahead or diverged local state.
+1. `Sync YTM` — detects the newest release feature branch, safely switches to it when the release branch changed, then fast-forwards only; refuses dirty, ahead or diverged local state.
 2. `Status` — shows branch, local/remote HEAD, clean/dirty state and relation.
 3. `Download signed APK` — downloads only a successful build whose
    `headSha` exactly equals the current remote branch HEAD, verifies SHA-256
