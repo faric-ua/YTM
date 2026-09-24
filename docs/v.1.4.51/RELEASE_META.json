@@ -5,9 +5,9 @@
   "phase": "development",
   "feature": "YouTube/YTM URL/Mix Snapshot Import",
   "branch": "feat/v1.4.51-url-mix-snapshot",
-  "appSourceSha": "05d01e46af2b99acb5a483ad13c3f5a87f849271",
-  "signedRun": "35938232310",
-  "qaStatus": "DEVELOPMENT — U51-1..U51-4 + UX-024 PASS / U51-5 PARTIAL / BUG-035 + UX-025 SIGNED RETEST NEXT",
+  "appSourceSha": "2bd57b3996787517f0c1ce8b45e40d74671ebee3",
+  "signedRun": "35941777241",
+  "qaStatus": "DEVELOPMENT — U51-1..U51-5 PASS / UX-026 CLEAR BUTTON RETEST + U51-6 NEXT",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": "2026-09-24"
