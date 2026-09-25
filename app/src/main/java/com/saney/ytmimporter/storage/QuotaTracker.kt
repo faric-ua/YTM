@@ -35,20 +35,16 @@ class QuotaTracker(context: Context) {
                 0
             )
 
-        val totalUnits =
-            QuotaMath.totalUnits(
-                searchCalls =
-                    searchCalls,
+        val generalUnits =
+            QuotaMath.generalUnits(
                 nonSearchUnits =
-                    nonSearchUnits,
-                searchListCost =
-                    SEARCH_LIST_COST
+                    nonSearchUnits
             )
 
-        val totalRemaining =
-            QuotaMath.totalRemaining(
-                totalUnits =
-                    totalUnits,
+        val generalRemaining =
+            QuotaMath.generalRemaining(
+                generalUnits =
+                    generalUnits,
                 dailyLimit =
                     GENERAL_DAILY_LIMIT
             )
@@ -66,16 +62,12 @@ class QuotaTracker(context: Context) {
                     searchCalls =
                         searchCalls,
                     searchDailyLimit =
-                        SEARCH_DAILY_LIMIT,
-                    totalRemaining =
-                        totalRemaining,
-                    searchListCost =
-                        SEARCH_LIST_COST
+                        SEARCH_DAILY_LIMIT
                 ),
             generalUnits =
-                totalUnits,
+                generalUnits,
             generalRemaining =
-                totalRemaining,
+                generalRemaining,
             cacheHits =
                 prefs.getInt(
                     KEY_CACHE_HITS,
@@ -196,8 +188,6 @@ class QuotaTracker(context: Context) {
         const val SEARCH_DAILY_LIMIT = 100
 
         const val GENERAL_DAILY_LIMIT = 10_000
-
-        const val SEARCH_LIST_COST = 100
 
         const val PLAYLIST_CREATE_COST = 50
 
