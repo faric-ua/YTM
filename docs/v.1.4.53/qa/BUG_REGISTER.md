@@ -4,7 +4,8 @@ This release owns the corrective work for:
 - BUG-036 — Search quota durable resume — OPEN;
 - BUG-037 — quota accounting/label semantics — FIXED IN CODE / PHONE RETEST REQUIRED;
 - BUG-038 — History durability investigation — OPEN / root cause not yet proven;
-- UX-029 — quota resume copy/discoverability — OPEN.
+- UX-029 — quota resume copy/discoverability — OPEN;
+- BUG-039 — HTTP 429 write limit is ambiguously classified as daily quota — OPEN.
 
 Do not silently mark BUG-038 fixed unless a controlled reproduction or a concrete
 persistence defect is identified and retested.
@@ -49,3 +50,26 @@ Fix contract:
 - UI must label the buckets separately and keep Google Cloud as authoritative.
 
 Phone retest required before BUG-037 can be closed.
+
+## BUG-039 — write HTTP 429 quota/rate-limit ambiguity
+
+Phone evidence on the BUG-037-patched v1.4.53 candidate:
+- Search local state is `64/100` with `≈36` remaining;
+- non-Search local estimate is `3907/10000` with `≈6093` remaining;
+- an existing `playlists.insert` retry still reports HTTP 429:
+  `Resource has been exhausted (e.g. check quota)`;
+- WRITE job remains durable in Queue.
+
+Current code problem:
+- `YouTubeApiException.isQuotaError` falls back to matching the word `quota`
+  in the human-readable message;
+- the generic 429 message contains `check quota`, so a transient rate limit can
+  be classified as daily quota exhaustion;
+- the parser currently does not surface structured Google error details that could
+  identify the actual quota/rate-limit dimension.
+
+Required follow-up:
+- distinguish explicit daily/quota exhaustion from transient rate limiting;
+- preserve the WRITE job in both cases;
+- show recovery copy appropriate to the actual condition;
+- do not claim a daily reset time for an ambiguous 429.
