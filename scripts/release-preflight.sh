@@ -511,7 +511,7 @@ grep -q 'resolveCurrentTrack' \
   || fail "Manual URL canonical-track guard is missing"
 
 grep -q 'track.manuallySelected &&' \
-  app/src/main/java/com/saney/ytmimporter/MainActivity.kt \
+  app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt \
   || fail "Manual selection sticky guard is missing"
 
 grep -q 'current_playlist_v1' \
