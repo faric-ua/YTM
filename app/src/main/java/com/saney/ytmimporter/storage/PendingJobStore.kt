@@ -3,6 +3,10 @@ package com.saney.ytmimporter.storage
 import android.content.Context
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
+import com.saney.ytmimporter.model.PendingOperation
+import com.saney.ytmimporter.model.PendingSearchCandidate
+import com.saney.ytmimporter.model.PendingSearchSnapshot
+import com.saney.ytmimporter.model.PendingSearchTrack
 import com.saney.ytmimporter.model.PendingTrack
 import org.json.JSONArray
 import org.json.JSONObject
@@ -18,6 +22,15 @@ class PendingJobStore(context: Context) {
     @Synchronized
     fun get(jobId: String): PendingJob? =
         readJobs().firstOrNull { it.id == jobId }
+
+    @Synchronized
+    fun findSearchByRecoveryKey(
+        recoveryKey: String
+    ): PendingJob? =
+        readJobs().firstOrNull {
+            it.operation == PendingOperation.SEARCH &&
+                it.recoveryKey == recoveryKey
+        }
 
     @Synchronized
     fun upsert(job: PendingJob) {
@@ -101,6 +114,15 @@ class PendingJobStore(context: Context) {
                 }
             )
             .put("lastError", job.lastError ?: JSONObject.NULL)
+            .put("operation", job.operation.name)
+            .put("recoveryKey", job.recoveryKey ?: JSONObject.NULL)
+            .put("preserveExistingExact", job.preserveExistingExact)
+            .put(
+                "searchSnapshot",
+                job.searchSnapshot
+                    ?.let(::searchSnapshotToJson)
+                    ?: JSONObject.NULL
+            )
 
     private fun jobFromJson(json: JSONObject): PendingJob {
         val tracksJson = json.optJSONArray("remainingTracks") ?: JSONArray()
@@ -142,15 +164,281 @@ class PendingJobStore(context: Context) {
             addedCount = json.optInt("addedCount", 0),
             failedCount = json.optInt("failedCount", 0),
             remainingTracks = tracks,
-            lastError = nullableString(json, "lastError")
+            lastError = nullableString(json, "lastError"),
+            operation =
+                runCatching {
+                    PendingOperation.valueOf(
+                        json.optString(
+                            "operation",
+                            PendingOperation.WRITE.name
+                        )
+                    )
+                }.getOrDefault(
+                    PendingOperation.WRITE
+                ),
+            recoveryKey =
+                nullableString(
+                    json,
+                    "recoveryKey"
+                ),
+            preserveExistingExact =
+                json.optBoolean(
+                    "preserveExistingExact",
+                    false
+                ),
+            searchSnapshot =
+                json.optJSONObject(
+                    "searchSnapshot"
+                )?.let(
+                    ::searchSnapshotFromJson
+                )
         )
     }
 
-    private fun nullableString(json: JSONObject, key: String): String? {
+    private fun searchSnapshotToJson(
+        snapshot: PendingSearchSnapshot
+    ): JSONObject =
+        JSONObject()
+            .put(
+                "playlistName",
+                snapshot.playlistName
+            )
+            .put(
+                "tracks",
+                JSONArray().also { array ->
+                    snapshot.tracks.forEach { track ->
+                        array.put(
+                            JSONObject()
+                                .put(
+                                    "originalTitle",
+                                    track.originalTitle
+                                )
+                                .put(
+                                    "originalArtist",
+                                    track.originalArtist
+                                )
+                                .put(
+                                    "selectedVideoId",
+                                    track.selectedVideoId
+                                        ?: JSONObject.NULL
+                                )
+                                .put(
+                                    "selectedTitle",
+                                    track.selectedTitle
+                                        ?: JSONObject.NULL
+                                )
+                                .put(
+                                    "selectedChannel",
+                                    track.selectedChannel
+                                        ?: JSONObject.NULL
+                                )
+                                .put(
+                                    "status",
+                                    track.status
+                                )
+                                .put(
+                                    "manuallySelected",
+                                    track.manuallySelected
+                                )
+                                .put(
+                                    "error",
+                                    track.error
+                                        ?: JSONObject.NULL
+                                )
+                                .put(
+                                    "historyIndex",
+                                    track.historyIndex
+                                        ?: JSONObject.NULL
+                                )
+                                .put(
+                                    "candidates",
+                                    JSONArray().also {
+                                            candidates ->
+                                        track.candidates.forEach {
+                                                candidate ->
+                                            candidates.put(
+                                                JSONObject()
+                                                    .put(
+                                                        "videoId",
+                                                        candidate.videoId
+                                                    )
+                                                    .put(
+                                                        "title",
+                                                        candidate.title
+                                                    )
+                                                    .put(
+                                                        "channelTitle",
+                                                        candidate.channelTitle
+                                                    )
+                                                    .put(
+                                                        "score",
+                                                        candidate.score
+                                                    )
+                                            )
+                                        }
+                                    }
+                                )
+                        )
+                    }
+                }
+            )
+
+    private fun searchSnapshotFromJson(
+        json: JSONObject
+    ): PendingSearchSnapshot {
+        val tracksJson =
+            json.optJSONArray("tracks")
+                ?: JSONArray()
+
+        val tracks =
+            mutableListOf<PendingSearchTrack>()
+
+        for (
+            index in 0 until
+                tracksJson.length()
+        ) {
+            val item =
+                tracksJson.optJSONObject(
+                    index
+                ) ?: continue
+
+            val candidatesJson =
+                item.optJSONArray(
+                    "candidates"
+                ) ?: JSONArray()
+
+            val candidates =
+                mutableListOf<
+                    PendingSearchCandidate
+                >()
+
+            for (
+                candidateIndex in 0 until
+                    candidatesJson.length()
+            ) {
+                val candidate =
+                    candidatesJson
+                        .optJSONObject(
+                            candidateIndex
+                        ) ?: continue
+
+                val videoId =
+                    candidate
+                        .optString(
+                            "videoId"
+                        )
+
+                if (
+                    videoId.isBlank()
+                ) {
+                    continue
+                }
+
+                candidates +=
+                    PendingSearchCandidate(
+                        videoId =
+                            videoId,
+                        title =
+                            candidate
+                                .optString(
+                                    "title"
+                                ),
+                        channelTitle =
+                            candidate
+                                .optString(
+                                    "channelTitle"
+                                ),
+                        score =
+                            candidate
+                                .optDouble(
+                                    "score",
+                                    0.0
+                                )
+                    )
+            }
+
+            tracks +=
+                PendingSearchTrack(
+                    originalTitle =
+                        item.optString(
+                            "originalTitle"
+                        ),
+                    originalArtist =
+                        item.optString(
+                            "originalArtist"
+                        ),
+                    selectedVideoId =
+                        nullableString(
+                            item,
+                            "selectedVideoId"
+                        ),
+                    selectedTitle =
+                        nullableString(
+                            item,
+                            "selectedTitle"
+                        ),
+                    selectedChannel =
+                        nullableString(
+                            item,
+                            "selectedChannel"
+                        ),
+                    status =
+                        item.optString(
+                            "status",
+                            "NEW"
+                        ),
+                    manuallySelected =
+                        item.optBoolean(
+                            "manuallySelected",
+                            false
+                        ),
+                    error =
+                        nullableString(
+                            item,
+                            "error"
+                        ),
+                    historyIndex =
+                        nullableInt(
+                            item,
+                            "historyIndex"
+                        ),
+                    candidates =
+                        candidates
+                )
+        }
+
+        return PendingSearchSnapshot(
+            playlistName =
+                json.optString(
+                    "playlistName",
+                    "YTM Import"
+                ),
+            tracks =
+                tracks
+        )
+    }
+
+    private fun nullableString(
+        json: JSONObject,
+        key: String
+    ): String? {
         val value = json.opt(key)
         if (value == null || value == JSONObject.NULL) return null
         return value.toString().takeIf { it.isNotBlank() }
     }
+
+    private fun nullableInt(
+        json: JSONObject,
+        key: String
+    ): Int? =
+        if (
+            !json.has(key) ||
+            json.isNull(key)
+        ) {
+            null
+        } else {
+            json.optInt(key)
+        }
 
     companion object {
         private const val KEY_JOBS = "jobs"
