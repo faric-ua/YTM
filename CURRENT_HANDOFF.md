@@ -405,3 +405,22 @@ Rules:
 - GitHub Release `v1.4.52`: published with APK, SHA-256 and updater manifest.
 - No app rebuild was performed during release closeout.
 - Next phone step after syncing the final-doc HEAD: menu item 7 must show `CLOSEOUT: FINAL`; then run the equal-version updater check. Expected result for installed/stable `1.4.52 (95)`: `Оновлень немає`.
+
+## Post-release findings — quota/recovery session 2026-09-25
+
+User supplied screenshots plus a ~6m40s phone recording from a Prodigy batch session
+that reached YouTube API quota limits.
+
+Recorded for the next corrective release:
+- BUG-036 OPEN / P1: Search quota exhaustion leaves uncached tracks FAILED but
+  creates no Pending Queue item; durable Search resume is missing.
+- BUG-037 OPEN / P2: local quota `generalUnits` does not include Search calls,
+  so “Загальна квота” can remain high while Search already returns HTTP 429.
+- BUG-038 OPEN / P1: user reports a quota/interrupted History record disappeared
+  later; current History count is 69, below the 100-entry trim cap, so controlled
+  History JSON before/after reproduction is required before assigning root cause.
+- UX-029 OPEN / P2: Search-quota copy says work can be continued but does not
+  identify a real resume path and can coexist with Queue = 0.
+
+Do not change the stable v1.4.52 app binary for these findings. Finish the
+equal-version OTA smoke, then address the findings in the next corrective release.
