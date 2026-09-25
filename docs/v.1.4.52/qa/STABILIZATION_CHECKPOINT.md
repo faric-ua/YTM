@@ -20,4 +20,4 @@ Accepted targeted scope:
 - local History semantics with no YTM write;
 - UX-028 exact Home → History detail drill-down.
 
-Stable release/checkpoint tags and durable GitHub Release publication are complete. Equal-version OTA smoke remains the final post-publication phone check.
+Stable release/checkpoint tags, durable GitHub Release publication, and equal-version OTA smoke are complete. Installed/stable `1.4.52 (95)` returned `Оновлень немає`.
