@@ -55,18 +55,23 @@ class SearchCoordinator(
         val cacheHits: Int,
         val apiSearches: Int,
         val quotaBlocked: Boolean,
-        val authorizationInvalidated: Boolean
+        val authorizationInvalidated: Boolean,
+        val waitingQuotaCount: Int
     )
 
     fun plan(
         playlist: ImportedPlaylist,
-        preserveExistingExact: Boolean
+        preserveExistingExact: Boolean,
+        resumeWaitingOnly: Boolean = false
     ): SearchPlan {
         val tracksToSearch =
             playlist.tracks.filter { track ->
                 shouldSearch(
                     track = track,
-                    preserveExistingExact = preserveExistingExact
+                    preserveExistingExact =
+                        preserveExistingExact,
+                    resumeWaitingOnly =
+                        resumeWaitingOnly
                 )
             }
 
@@ -76,11 +81,17 @@ class SearchCoordinator(
             }
 
         return SearchPlan(
-            totalTracks = playlist.tracks.size,
-            tracksToSearch = tracksToSearch.size,
-            cachedCount = cachedCount,
-            apiNeeded = tracksToSearch.size - cachedCount,
-            quota = quotaTracker.snapshot()
+            totalTracks =
+                playlist.tracks.size,
+            tracksToSearch =
+                tracksToSearch.size,
+            cachedCount =
+                cachedCount,
+            apiNeeded =
+                tracksToSearch.size -
+                    cachedCount,
+            quota =
+                quotaTracker.snapshot()
         )
     }
 
@@ -88,6 +99,7 @@ class SearchCoordinator(
         accessToken: String,
         playlist: ImportedPlaylist,
         preserveExistingExact: Boolean,
+        resumeWaitingOnly: Boolean = false,
         onTrackStateChanged: (index: Int) -> Unit = {},
         onProgress: (SearchProgress) -> Unit = {},
         onQuotaBlocked: () -> Unit = {},
@@ -99,52 +111,101 @@ class SearchCoordinator(
         var quotaCallbackSent = false
         var authorizationInvalidated = false
 
-        for ((index, track) in playlist.tracks.withIndex()) {
-            if (Thread.currentThread().isInterrupted) {
+        val indexesToProcess =
+            playlist.tracks
+                .indices
+                .filter { index ->
+                    shouldSearch(
+                        track =
+                            playlist.tracks[index],
+                        preserveExistingExact =
+                            preserveExistingExact,
+                        resumeWaitingOnly =
+                            resumeWaitingOnly
+                    )
+                }
+
+        for (
+            (
+                progressIndex,
+                trackIndex
+            ) in indexesToProcess
+                .withIndex()
+        ) {
+            if (
+                Thread.currentThread()
+                    .isInterrupted
+            ) {
                 break
             }
+
+            val track =
+                playlist.tracks[
+                    trackIndex
+                ]
 
             val preservedSelection =
                 preservedSelection(
                     track = track,
-                    preserveExistingExact = preserveExistingExact
+                    preserveExistingExact =
+                        preserveExistingExact
                 )
 
-            if (preservedSelection != null) {
+            if (
+                preservedSelection != null
+            ) {
                 onProgress(
                     SearchProgress(
-                        processed = index + 1,
-                        total = playlist.tracks.size,
-                        cacheHits = cacheHits,
-                        apiSearches = apiSearches,
-                        preservedSelection = preservedSelection
+                        processed =
+                            progressIndex + 1,
+                        total =
+                            indexesToProcess.size,
+                        cacheHits =
+                            cacheHits,
+                        apiSearches =
+                            apiSearches,
+                        preservedSelection =
+                            preservedSelection
                     )
                 )
                 continue
             }
 
-            track.status = TrackStatus.SEARCHING
+            track.status =
+                TrackStatus.SEARCHING
             track.error = null
-            onTrackStateChanged(index)
+
+            onTrackStateChanged(
+                trackIndex
+            )
 
             try {
                 val cachedCandidates =
-                    searchCache.get(track)
+                    searchCache.get(
+                        track
+                    )
 
                 val candidates =
-                    if (cachedCandidates != null) {
+                    if (
+                        cachedCandidates != null
+                    ) {
                         cacheHits += 1
-                        quotaTracker.recordCacheHit()
+                        quotaTracker
+                            .recordCacheHit()
                         cachedCandidates
-                    } else if (quotaBlocked) {
+                    } else if (
+                        quotaBlocked
+                    ) {
                         track.status =
-                            TrackStatus.FAILED
+                            TrackStatus
+                                .WAITING_QUOTA
                         track.error =
-                            "Немає в кеші, а квота YouTube search API вже закінчилась"
+                            WAITING_QUOTA_MESSAGE
                         emptyList()
                     } else {
                         apiSearches += 1
-                        quotaTracker.recordSearchCall()
+                        quotaTracker
+                            .recordSearchCall()
 
                         val freshCandidates =
                             api.search(
@@ -160,90 +221,162 @@ class SearchCoordinator(
                         freshCandidates
                     }
 
-                if (track.status != TrackStatus.FAILED) {
+                if (
+                    track.status !=
+                    TrackStatus
+                        .WAITING_QUOTA
+                ) {
                     applySearchCandidates(
                         track = track,
-                        candidates = candidates
+                        candidates =
+                            candidates
                     )
                 }
-            } catch (error: Exception) {
-                if (isAuthorizationFailure(error)) {
+            } catch (
+                error: Exception
+            ) {
+                if (
+                    isAuthorizationFailure(
+                        error
+                    )
+                ) {
                     // A 401 is a session failure, not a track failure.
                     // Keep the workspace retryable and stop before producing
                     // the same misleading error for every remaining track.
                     track.status =
                         TrackStatus.NEW
                     track.error = null
-                    authorizationInvalidated = true
-                    onTrackStateChanged(index)
-                    onAuthorizationInvalidated(error)
+                    authorizationInvalidated =
+                        true
+
+                    onTrackStateChanged(
+                        trackIndex
+                    )
+
+                    onAuthorizationInvalidated(
+                        error
+                    )
 
                     onProgress(
                         SearchProgress(
-                            processed = index + 1,
-                            total = playlist.tracks.size,
-                            cacheHits = cacheHits,
-                            apiSearches = apiSearches
+                            processed =
+                                progressIndex +
+                                    1,
+                            total =
+                                indexesToProcess
+                                    .size,
+                            cacheHits =
+                                cacheHits,
+                            apiSearches =
+                                apiSearches
                         )
                     )
                     break
                 }
 
-                track.status =
-                    TrackStatus.FAILED
-                track.error =
-                    ErrorMessages.userMessage(
-                        error,
-                        "Не вдалося виконати пошук"
+                if (
+                    isQuotaError(
+                        error
                     )
+                ) {
+                    track.status =
+                        TrackStatus
+                            .WAITING_QUOTA
+                    track.error =
+                        WAITING_QUOTA_MESSAGE
+                    quotaBlocked =
+                        true
 
-                if (isQuotaError(error)) {
-                    quotaBlocked = true
-                    quotaTracker.recordQuotaError(
-                        error.message
-                            ?: "Search quota exceeded"
-                    )
+                    quotaTracker
+                        .recordQuotaError(
+                            error.message
+                                ?: "Search quota exceeded"
+                        )
 
-                    if (!quotaCallbackSent) {
-                        quotaCallbackSent = true
+                    if (
+                        !quotaCallbackSent
+                    ) {
+                        quotaCallbackSent =
+                            true
                         onQuotaBlocked()
                     }
+                } else {
+                    track.status =
+                        TrackStatus.FAILED
+                    track.error =
+                        ErrorMessages
+                            .userMessage(
+                                error,
+                                "Не вдалося виконати пошук"
+                            )
                 }
             }
 
+            onTrackStateChanged(
+                trackIndex
+            )
+
             onProgress(
                 SearchProgress(
-                    processed = index + 1,
-                    total = playlist.tracks.size,
-                    cacheHits = cacheHits,
-                    apiSearches = apiSearches
+                    processed =
+                        progressIndex + 1,
+                    total =
+                        indexesToProcess.size,
+                    cacheHits =
+                        cacheHits,
+                    apiSearches =
+                        apiSearches
                 )
             )
         }
 
         return SearchResult(
-            cacheHits = cacheHits,
-            apiSearches = apiSearches,
-            quotaBlocked = quotaBlocked,
-            authorizationInvalidated = authorizationInvalidated
+            cacheHits =
+                cacheHits,
+            apiSearches =
+                apiSearches,
+            quotaBlocked =
+                quotaBlocked,
+            authorizationInvalidated =
+                authorizationInvalidated,
+            waitingQuotaCount =
+                playlist.tracks.count {
+                    it.status ==
+                        TrackStatus
+                            .WAITING_QUOTA
+                }
         )
     }
 
     private fun shouldSearch(
         track: Track,
-        preserveExistingExact: Boolean
+        preserveExistingExact: Boolean,
+        resumeWaitingOnly: Boolean
     ): Boolean {
+        if (
+            resumeWaitingOnly
+        ) {
+            return track.status ==
+                TrackStatus
+                    .WAITING_QUOTA
+        }
+
         val manualExact =
             track.manuallySelected &&
-                !track.selectedVideoId.isNullOrBlank()
+                !track.selectedVideoId
+                    .isNullOrBlank()
 
-        if (manualExact) {
+        if (
+            manualExact
+        ) {
             return false
         }
 
         if (
             preserveExistingExact &&
-            hasCanonicalExactSelection(track)
+            hasCanonicalExactSelection(
+                track
+            )
         ) {
             return false
         }
@@ -257,18 +390,27 @@ class SearchCoordinator(
     ): PreservedSelection? {
         val keepManualSelection =
             track.manuallySelected &&
-                !track.selectedVideoId.isNullOrBlank()
+                !track.selectedVideoId
+                    .isNullOrBlank()
 
-        if (keepManualSelection) {
-            return PreservedSelection.MANUAL
+        if (
+            keepManualSelection
+        ) {
+            return PreservedSelection
+                .MANUAL
         }
 
         val keepExactSelection =
             preserveExistingExact &&
-                hasCanonicalExactSelection(track)
+                hasCanonicalExactSelection(
+                    track
+                )
 
-        return if (keepExactSelection) {
-            PreservedSelection.PROJECT_EXACT
+        return if (
+            keepExactSelection
+        ) {
+            PreservedSelection
+                .PROJECT_EXACT
         } else {
             null
         }
@@ -277,20 +419,25 @@ class SearchCoordinator(
     private fun hasCanonicalExactSelection(
         track: Track
     ): Boolean =
-        !track.selectedVideoId.isNullOrBlank() &&
-            track.status == TrackStatus.MATCHED &&
-            track.candidates.isEmpty()
+        !track.selectedVideoId
+            .isNullOrBlank() &&
+            track.status ==
+                TrackStatus.MATCHED &&
+            track.candidates
+                .isEmpty()
 
     private fun applySearchCandidates(
         track: Track,
-        candidates: List<SearchCandidate>
+        candidates:
+            List<SearchCandidate>
     ) {
         track.candidates =
             candidates
 
         if (
             track.manuallySelected &&
-            !track.selectedVideoId.isNullOrBlank()
+            !track.selectedVideoId
+                .isNullOrBlank()
         ) {
             track.status =
                 TrackStatus.MATCHED
@@ -301,12 +448,18 @@ class SearchCoordinator(
         val best =
             candidates.firstOrNull()
 
-        if (best == null) {
+        if (
+            best == null
+        ) {
             track.status =
                 TrackStatus.MISSING
-            track.selectedVideoId = null
-            track.selectedTitle = null
-            track.selectedChannel = null
+            track.selectedVideoId =
+                null
+            track.selectedTitle =
+                null
+            track.selectedChannel =
+                null
+            track.error = null
             return
         }
 
@@ -318,10 +471,14 @@ class SearchCoordinator(
             best.channelTitle
         track.manuallySelected =
             false
-        track.error = null
+        track.error =
+            null
 
         track.status =
-            if (best.score >= AUTO_MATCH_THRESHOLD) {
+            if (
+                best.score >=
+                AUTO_MATCH_THRESHOLD
+            ) {
                 TrackStatus.MATCHED
             } else {
                 TrackStatus.REVIEW
@@ -331,16 +488,23 @@ class SearchCoordinator(
     private fun isAuthorizationFailure(
         error: Throwable
     ): Boolean {
-        var current: Throwable? = error
+        var current:
+            Throwable? =
+            error
 
-        while (current != null) {
+        while (
+            current != null
+        ) {
             if (
-                current is YouTubeApiException &&
-                current.httpCode == 401
+                current is
+                    YouTubeApiException &&
+                current.httpCode ==
+                    401
             ) {
                 return true
             }
-            current = current.cause
+            current =
+                current.cause
         }
 
         return false
@@ -349,23 +513,32 @@ class SearchCoordinator(
     private fun isQuotaError(
         error: Throwable
     ): Boolean =
-        (error as? YouTubeApiException)
-            ?.isQuotaError == true ||
+        (
+            error as?
+                YouTubeApiException
+            )
+            ?.isQuotaError ==
+            true ||
             error.message
                 .orEmpty()
                 .contains(
                     "quota",
-                    ignoreCase = true
+                    ignoreCase =
+                        true
                 ) ||
             error.message
                 .orEmpty()
                 .contains(
                     "daily limit",
-                    ignoreCase = true
+                    ignoreCase =
+                        true
                 )
 
     companion object {
         private const val AUTO_MATCH_THRESHOLD =
             0.72
+
+        const val WAITING_QUOTA_MESSAGE =
+            "Очікує продовження: квота YouTube Search API закінчилась"
     }
 }
