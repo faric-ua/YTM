@@ -188,17 +188,16 @@ ensure_remote_tag() {
   local tag="$1"
   local remote
 
-  remote="$(
-    gh api "repos/$YTM_GH_REPO/git/ref/tags/$tag"       --jq '.object.sha'       2>/dev/null ||
-    true
-  )"
-
-  if [ -n "$remote" ]; then
+  if remote="$(
+    gh api "repos/$YTM_GH_REPO/git/ref/tags/$tag"       --jq '.object.sha'       2>/dev/null
+  )"; then
     [ "$remote" = "$APP_SOURCE" ] ||
       ytm_fail "Remote tag $tag points to $remote, expected $APP_SOURCE"
     echo "Tag already correct: $tag"
     return
   fi
+
+  remote=""
 
   gh api     --method POST     "repos/$YTM_GH_REPO/git/refs"     -f "ref=refs/tags/$tag"     -f "sha=$APP_SOURCE"     >/dev/null
 
