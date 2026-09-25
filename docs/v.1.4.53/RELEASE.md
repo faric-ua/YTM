@@ -67,4 +67,13 @@ Current implementation:
 
 ## Status
 
-**IMPLEMENTED — STATIC/FULL PREFLIGHT PENDING**
+**STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING**
+
+Validation evidence:
+- exact validated source HEAD: `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`;
+- Validate Android run: `36176662561` — **SUCCESS**;
+- release preflight: PASS;
+- JVM unit tests: PASS;
+- unsigned release assemble: PASS.
+
+No signed APK or phone acceptance is claimed yet.
