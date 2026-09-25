@@ -56,3 +56,15 @@ Observed:
 Screenshots were supplied in the development conversation and are not committed as repository binary assets. This report records that limitation.
 
 This was a targeted v1.4.52 acceptance. It does not claim that every historical full-app regression was rerun.
+
+## Stable closeout — 2026-09-25
+
+The accepted phone-tested package was published unchanged as stable `v1.4.52`.
+
+- exact app source: `d857ce8c42511b16357060e6639ed67d548f9f31`;
+- signed run: `36041226156`;
+- release tag: `v1.4.52`;
+- checkpoint: `checkpoint-v1.4.52-phone-pass`;
+- publisher run: `36145617465` — PASS.
+
+An equal-version production updater smoke is still required after publication; it is not a rerun of the targeted functional phone tests above.
