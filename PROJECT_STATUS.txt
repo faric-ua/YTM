@@ -6,7 +6,7 @@ Current live resume snapshot: CURRENT_HANDOFF.md
 Active development release (v1.4.53 Quota Recovery / Durable Resume):
 - branch: `feat/v1.4.53-quota-recovery`;
 - versionName / versionCode: 1.4.53 / 96;
-- release phase: development;
+- release phase: development — static/full validation PASS;
 - stable baseline remains v1.4.52 / source d857ce8c42511b16357060e6639ed67d548f9f31 / signed run 36041226156;
 - BUG-036 implementation: Search quota exhaustion uses WAITING_QUOTA and persists a SEARCH recovery job with a full playlist snapshot in the existing Pending Queue store;
 - Queue distinguishes SEARCH and WRITE jobs; Search Resume is explicit and processes only waiting Search tracks;
@@ -16,7 +16,8 @@ Active development release (v1.4.53 Quota Recovery / Durable Resume):
 - Full Backup/Restore already includes pending_jobs_v1, therefore it carries Search recovery jobs;
 - BUG-038 remains OPEN / evidence-driven: no speculative History fix has been made;
 - MainActivity remains below the historical 4100-line cleanup budget after extraction to SearchRecoveryCoordinator;
-- next gate: exact-head static/full Validate Android; no signed build or phone QA yet.
+- static/full Validate Android PASS on source cf9e3778cc9e1010ba834ed865f6d1ff96c24b33, run 36176662561;
+- next gate: signed APK build from the synchronized exact branch HEAD, then targeted phone QA; no signed/phone PASS claimed yet.
 
 Current accepted release (v1.4.52 URL Snapshot / Home UX Polish — FINAL):
 - active branch: `feat/v1.4.52-ux-polish`;
