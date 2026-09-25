@@ -2020,7 +2020,7 @@ class MainActivity : Activity() {
                     "${QuotaTracker.SEARCH_DAILY_LIMIT}\n" +
                     "Оцінка доступних Search запитів: " +
                     "${plan.quota.searchRemaining}\n" +
-                    "Загальні API units: " +
+                    "Інші API units (окремий bucket): " +
                     "${plan.quota.generalUnits}/" +
                     "${QuotaTracker.GENERAL_DAILY_LIMIT}" +
                     warning +
@@ -3203,7 +3203,7 @@ class MainActivity : Activity() {
 
         return "Квота API (локальна оцінка):\n" +
             "Потрібно для write приблизно: $required units\n" +
-            "Загалом уже враховано: ${quota.generalUnits}/" +
+            "Інші API units уже враховано: ${quota.generalUnits}/" +
             "${QuotaTracker.GENERAL_DAILY_LIMIT} units\n" +
             "Орієнтовно залишилось: ${quota.generalRemaining} units" +
             warning
