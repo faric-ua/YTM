@@ -190,8 +190,7 @@ class SearchCoordinator(
                         cachedCandidates != null
                     ) {
                         cacheHits += 1
-                        quotaTracker
-                            .recordCacheHit()
+                        quotaTracker.recordCacheHit()
                         cachedCandidates
                     } else if (
                         quotaBlocked
@@ -204,8 +203,7 @@ class SearchCoordinator(
                         emptyList()
                     } else {
                         apiSearches += 1
-                        quotaTracker
-                            .recordSearchCall()
+                        quotaTracker.recordSearchCall()
 
                         val freshCandidates =
                             api.search(
