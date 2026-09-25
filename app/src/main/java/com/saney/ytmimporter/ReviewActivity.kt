@@ -1840,7 +1840,8 @@ class ReviewActivity : Activity() {
                     setOf(
                         TrackStatus.MISSING,
                         TrackStatus.FAILED,
-                        TrackStatus.SKIPPED
+                        TrackStatus.SKIPPED,
+                        TrackStatus.WAITING_QUOTA
                     )
             }
 
@@ -1879,6 +1880,9 @@ class ReviewActivity : Activity() {
             TrackStatus.PENDING ->
                 "⏳ Черга"
 
+            TrackStatus.WAITING_QUOTA ->
+                "⏳ Очікує квоту"
+
             TrackStatus.ADDED ->
                 "✓ Додано"
 
@@ -1898,7 +1902,8 @@ class ReviewActivity : Activity() {
                 palette.semantic.success
 
             TrackStatus.REVIEW,
-            TrackStatus.PENDING ->
+            TrackStatus.PENDING,
+            TrackStatus.WAITING_QUOTA ->
                 palette.semantic.warning
 
             TrackStatus.DUPLICATE ->
@@ -2316,7 +2321,8 @@ class ReviewActivity : Activity() {
                                     TrackStatus.FAILED,
                                     TrackStatus.SKIPPED,
                                     TrackStatus.DUPLICATE,
-                                    TrackStatus.PENDING
+                                    TrackStatus.PENDING,
+                                    TrackStatus.WAITING_QUOTA
                                 )
                     }
                 }
@@ -2485,7 +2491,8 @@ class ReviewActivity : Activity() {
                 TrackStatus.DUPLICATE ->
                     "⧉"
 
-                TrackStatus.PENDING ->
+                TrackStatus.PENDING,
+                TrackStatus.WAITING_QUOTA ->
                     "⏳"
 
                 TrackStatus.SKIPPED ->
