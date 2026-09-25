@@ -19,7 +19,7 @@ Current accepted release (v1.4.52 URL Snapshot / Home UX Polish — FINAL):
 - History uses local-import semantics and no YTM write starts automatically;
 - Home `Деталі в Історії →` opens the exact just-created History detail;
 - stable GitHub Release includes APK, SHA-256 and updater manifest;
-- post-publication equal-version updater smoke remains.
+- post-publication equal-version updater smoke PASS: installed/stable 1.4.52 (95) → `Оновлень немає` (`OTA+`);
 
 Previous stable release (v1.4.51 YouTube/YTM URL/Mix Snapshot Import — FINAL):
 - exact final tested app source: 226d2453ef3b4a34cb7db7be0c42ae84c8f624a0;
