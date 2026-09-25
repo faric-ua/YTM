@@ -2,6 +2,7 @@ YTM Importer v1.4.33 FULL — FILE MANIFEST
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 0739c7de5aa06eac  .github/workflows/build-apk.yml
+43b602a1c1c85846  .github/workflows/publish-release.yml
 6cc7d3ae20eee52b  .gitignore
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
