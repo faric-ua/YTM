@@ -5,9 +5,9 @@
   "phase": "development",
   "feature": "Quota Recovery / Durable Resume",
   "branch": "feat/v1.4.53-quota-recovery",
-  "appSourceSha": null,
-  "signedRun": null,
-  "qaStatus": "STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING",
+  "appSourceSha": "454979093c0e108fe629aefe7db4bece97334575",
+  "signedRun": 36178783613,
+  "qaStatus": "SIGNED BUILD PASS — PHONE QA PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null
