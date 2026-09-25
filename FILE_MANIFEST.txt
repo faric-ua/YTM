@@ -1536,7 +1536,7 @@ e70d8ddc6e50124b  scripts/project-handoff-audit.sh
 34a319998981b650  scripts/release-close-audit.sh
 bd496d2802fc4272  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-fe00c421a528c79c  scripts/release-preflight.sh
+cf31b95174f2d1a3  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
