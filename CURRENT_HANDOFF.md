@@ -26,16 +26,21 @@ Previous stable release:
 - OTA equal-version stable smoke: PASS.
 
 Current release state:
-- versionName: **1.4.52**
-- versionCode: **95**
-- feature: **URL Snapshot / Home UX Polish**
-- branch: `feat/v1.4.52-ux-polish`
-- phase: **final**
-- UX-027: CLOSED / PHONE PASS.
-- UX-028: CLOSED / PHONE PASS.
-- stable publication: PASS.
-- exact phone-tested package identity remains `d857ce8c...` / run `36041226156`; no rebuild was substituted.
-- v1.4.52 release closeout is complete; next product work is the post-release quota/recovery findings.
+- versionName: **1.4.53**
+- versionCode: **96**
+- feature: **Quota Recovery / Durable Resume**
+- branch: `feat/v1.4.53-quota-recovery`
+- phase: **development**
+- stable baseline remains v1.4.52 / exact source `d857ce8c42511b16357060e6639ed67d548f9f31` / signed run `36041226156`.
+- BUG-036 implementation in progress: Search quota stop maps unresolved tracks to `WAITING_QUOTA` and persists a durable SEARCH job in Pending Queue.
+- SEARCH Queue jobs contain a full playlist snapshot and survive current-workspace replacement/restart; Resume is explicit and searches only waiting tracks.
+- existing WRITE PendingJob JSON defaults to `WRITE` for backward compatibility.
+- BUG-037 implementation: local total quota estimate includes `search.list = 100 units`; historical stored general_units remains the non-search component.
+- Queue UI distinguishes SEARCH vs WRITE and Search jobs expose `Продовжити пошук`.
+- WAITING_QUOTA tracks are blocked from destination write.
+- BUG-038 remains investigation-only until controlled History JSON before/after evidence exists.
+- MainActivity recovery helpers were extracted to `SearchRecoveryCoordinator` to remain under the 4100-line audit budget.
+- next gate: exact-head static/full validation, then signed build only after PASS.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
