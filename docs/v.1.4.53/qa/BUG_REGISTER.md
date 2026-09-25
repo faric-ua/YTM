@@ -2,7 +2,7 @@
 
 This release owns the corrective work for:
 - BUG-036 — Search quota durable resume — OPEN;
-- BUG-037 — quota accounting/label semantics — FIXED IN CODE / PHONE RETEST REQUIRED;
+- BUG-037 — quota accounting/label semantics — CLOSED / PHONE RETEST PASS;
 - BUG-038 — History durability investigation — OPEN / root cause not yet proven;
 - UX-029 — quota resume copy/discoverability — OPEN;
 - BUG-039 — HTTP 429 write limit is ambiguously classified as daily quota — OPEN;
@@ -91,3 +91,17 @@ Desired UX:
 - when linked, show the YTM playlist title plus a stable identifier/link affordance;
 - never infer linkage from title alone; use persisted remote `playlistId`;
 - pending WRITE must be distinct from an already-created remote playlist.
+
+## BUG-037 phone retest PASS
+
+Retested on signed candidate run `36195438071`, app source
+`ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`, installed over existing
+v1.4.53 app data.
+
+Observed:
+- Search remained `64/100` with local remaining `≈36`;
+- non-Search usage displayed separately as `3907/10000`, remaining `≈6093`;
+- cached-hit count and pending-job count were preserved;
+- existing WRITE PendingJob survived the in-place update.
+
+Result: BUG-037 quota-bucket separation PASS on phone.
