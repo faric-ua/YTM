@@ -395,3 +395,21 @@ Rules:
 - UX-028: CLOSED / PHONE PASS.
 - Automatic `Validate Android` exact-HEAD gate is installed; Termux item 6 requires validation PASS before signed-build dispatch.
 - Next step: final v1.4.52 closeout — finalize release docs/meta, stable/checkpoint tags on the tested app source, publish durable release assets, run final close audit, then stable OTA smoke if required.
+
+## Resume point — 2026-09-25 v1.4.52 stable-release finalizer
+
+- Branch: `feat/v1.4.52-ux-polish`.
+- Exact phone-tested app source remains immutable: `d857ce8c42511b16357060e6639ed67d548f9f31`.
+- Exact accepted signed APK run remains: `36041226156`.
+- Phone QA Tests 1–3 remain PASS; UX-027/UX-028 CLOSED.
+- Self-service Termux menu now includes:
+  - item 7 — `Release status`;
+  - item 8 — `Finalize stable release`.
+- First item-8 attempt failed after APK verification because plain HTTPS `git push` had no Git credentials. Finalizer was changed to create tags through authenticated `gh api`.
+- Second item-8 attempt failed because missing-tag HTTP 404 JSON was captured as if it were a SHA. Finalizer was changed so a missing tag is treated as absent and is then created.
+- Exact fixed finalizer source HEAD before this handoff note: `caa16e88e1340d3b47183b5f774e1e3a9a8baca7`.
+- Exact-head validation for that fix: run `36081259054` — SUCCESS.
+- At the time of this handoff, remote `v1.4.52` tag does not exist and GitHub Release `v1.4.52` does not exist; no partial stable publication must be assumed.
+- Next phone action after syncing the latest branch and confirming exact-head validation PASS: menu item `8 — Finalize stable release`, confirm with `y`.
+- Expected success marker: `RELEASE PUBLICATION PASS`. After that, ChatGPT must finalize release metadata/docs, run final close audit, verify item 7 reaches `CLOSEOUT: FINAL`, and perform the equal-version stable updater smoke if still required.
+- Do not rebuild the app for closeout; stable publication must reuse the exact phone-tested APK from run `36041226156` / source `d857ce8...`.
