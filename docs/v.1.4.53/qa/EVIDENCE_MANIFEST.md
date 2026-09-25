@@ -7,3 +7,4 @@
 | v1.4.52 Home after quota | user screenshot, 2026-09-25 | current playlist retained 22 tracks and 20 failures | Conversation only |
 | v1.4.52 History after session | user screenshot, 2026-09-25 | History currently had 69 entries; expected interrupted entry not visible | Conversation only |
 | v1.4.52 phone recording | user recording, 2026-09-25 | broader quota-session navigation/context | Conversation only |
+| v1.4.53 static/full validation | GitHub Actions run 36176662561, source `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33` | release preflight, JVM tests and unsigned release assemble PASS | GitHub Actions |
