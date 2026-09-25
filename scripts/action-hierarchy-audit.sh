@@ -7,9 +7,10 @@ SRC="app/src/main/java/com/saney/ytmimporter"
 UI="$SRC/ui/UiChrome.kt"
 MAIN="$SRC/MainActivity.kt"
 SERVICE="$SRC/ServiceActivity.kt"
+REPLACEMENTS="$SRC/ui/ReplacementLogDialog.kt"
 MANIFEST="app/src/main/AndroidManifest.xml"
 
-for f in "$UI" "$MAIN" "$SERVICE" "$MANIFEST"; do
+for f in "$UI" "$MAIN" "$SERVICE" "$REPLACEMENTS" "$MANIFEST"; do
   test -f "$f" || fail "missing $f"
 done
 
@@ -61,10 +62,13 @@ grep -q 'private fun buildDiagnostics' "$SERVICE" \
 grep -q 'private fun buildAbout' "$SERVICE" \
   || fail "Service About detail screen missing"
 
-grep -q 'TikTok список' "$MAIN" \
+grep -q 'ReplacementLogDialog.show' "$MAIN" \
+  || fail "Main does not delegate replacement log to ReplacementLogDialog"
+
+grep -q 'TikTok список' "$REPLACEMENTS" \
   || fail "replacement log action label not clarified"
 
-grep -q 'Повний текст' "$MAIN" \
+grep -q 'Повний текст' "$REPLACEMENTS" \
   || fail "replacement full-text action label not clarified"
 
 grep -q 'private fun showServiceTools()' "$MAIN" \
