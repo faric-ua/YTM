@@ -16,6 +16,7 @@ enum class TrackStatus {
     SKIPPED,
     DUPLICATE,
     PENDING,
+    WAITING_QUOTA,
     ADDED,
     FAILED
 }
