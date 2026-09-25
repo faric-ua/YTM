@@ -164,7 +164,7 @@ jobs:
           echo "UPDATE_MANIFEST=$UPDATE_MANIFEST" >> "$GITHUB_ENV"
           echo "NOTES=$NOTES" >> "$GITHUB_ENV"
 
-      - name: Ensure release tags
+      - name: Verify precreated release tags
         env:
           APP_SOURCE: ${{ inputs.app_source }}
           TAG: ${{ inputs.tag }}
@@ -173,40 +173,22 @@ jobs:
         run: |
           set -euo pipefail
 
-          ensure_tag() {
+          verify_tag() {
             local tag="$1"
-            local remote local_target
+            local remote
 
             remote="$(
               git ls-remote --tags origin "refs/tags/$tag" |
                 awk 'NR == 1 {print $1}'
             )"
 
-            if [ -n "$remote" ]; then
-              test "$remote" = "$APP_SOURCE"
-              echo "Tag already correct: $tag"
-              return
-            fi
-
-            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-              local_target="$(git rev-parse "$tag^{commit}")"
-              test "$local_target" = "$APP_SOURCE"
-            else
-              git tag "$tag" "$APP_SOURCE"
-            fi
-
-            git push origin "refs/tags/$tag"
-
-            remote="$(
-              git ls-remote --tags origin "refs/tags/$tag" |
-                awk 'NR == 1 {print $1}'
-            )"
+            test -n "$remote"
             test "$remote" = "$APP_SOURCE"
-            echo "Created tag: $tag"
+            echo "Tag verified: $tag"
           }
 
-          ensure_tag "$TAG"
-          ensure_tag "$CHECKPOINT_TAG"
+          verify_tag "$TAG"
+          verify_tag "$CHECKPOINT_TAG"
 
       - name: Create or refresh stable release
         env:
