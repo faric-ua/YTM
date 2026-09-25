@@ -29,6 +29,8 @@ object ReplacementLogDialog {
                         track.status ==
                             TrackStatus.PENDING ||
                         track.status ==
+                            TrackStatus.WAITING_QUOTA ||
+                        track.status ==
                             TrackStatus.FAILED
                 }
 
@@ -169,6 +171,10 @@ object ReplacementLogDialog {
                 "Очікує в Pending Queue"
 
             track.status ==
+                TrackStatus.WAITING_QUOTA ->
+                "Очікує відновлення Search quota"
+
+            track.status ==
                 TrackStatus.FAILED ->
                 track.error
                     ?.takeIf {
@@ -204,6 +210,10 @@ object ReplacementLogDialog {
             track.status ==
                 TrackStatus.PENDING ->
                 "[очікує в черзі]"
+
+            track.status ==
+                TrackStatus.WAITING_QUOTA ->
+                "[очікує відновлення Search quota]"
 
             track.status ==
                 TrackStatus.FAILED &&
