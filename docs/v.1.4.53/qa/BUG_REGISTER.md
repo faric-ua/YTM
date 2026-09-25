@@ -5,7 +5,8 @@ This release owns the corrective work for:
 - BUG-037 — quota accounting/label semantics — FIXED IN CODE / PHONE RETEST REQUIRED;
 - BUG-038 — History durability investigation — OPEN / root cause not yet proven;
 - UX-029 — quota resume copy/discoverability — OPEN;
-- BUG-039 — HTTP 429 write limit is ambiguously classified as daily quota — OPEN.
+- BUG-039 — HTTP 429 write limit is ambiguously classified as daily quota — OPEN;
+- UX-030 — local ↔ YTM playlist linkage is not visible enough — OPEN.
 
 Do not silently mark BUG-038 fixed unless a controlled reproduction or a concrete
 persistence defect is identified and retested.
@@ -73,3 +74,20 @@ Required follow-up:
 - preserve the WRITE job in both cases;
 - show recovery copy appropriate to the actual condition;
 - do not claim a daily reset time for an ambiguous 429.
+
+## UX-030 — local ↔ YTM playlist linkage visibility
+
+Observed during v1.4.53 phone QA:
+- the user cannot easily tell which locally imported/current playlist also exists
+  remotely in YouTube/YTM;
+- successful write History entries do contain a remote `playlistId`;
+- the current workspace already persists `destinationPlaylistId`;
+- working-project export/import also has `sourcePlaylistId` support for linked
+  YTM-derived projects.
+
+Desired UX:
+- show a clear local-only / linked-to-YTM / pending-write status for the current
+  playlist and relevant History/project surfaces;
+- when linked, show the YTM playlist title plus a stable identifier/link affordance;
+- never infer linkage from title alone; use persisted remote `playlistId`;
+- pending WRITE must be distinct from an already-created remote playlist.
