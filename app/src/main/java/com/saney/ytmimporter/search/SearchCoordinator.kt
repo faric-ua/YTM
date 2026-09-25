@@ -120,8 +120,7 @@ class SearchCoordinator(
                     .filter { index ->
                         playlist.tracks[index]
                             .status ==
-                            TrackStatus
-                                .WAITING_QUOTA
+                            TrackStatus.WAITING_QUOTA
                     }
             } else {
                 playlist.tracks
@@ -200,8 +199,7 @@ class SearchCoordinator(
                         quotaBlocked
                     ) {
                         track.status =
-                            TrackStatus
-                                .WAITING_QUOTA
+                            TrackStatus.WAITING_QUOTA
                         track.error =
                             WAITING_QUOTA_MESSAGE
                         emptyList()
@@ -225,8 +223,7 @@ class SearchCoordinator(
 
                 if (
                     track.status !=
-                    TrackStatus
-                        .WAITING_QUOTA
+                    TrackStatus.WAITING_QUOTA
                 ) {
                     applySearchCandidates(
                         track = track,
@@ -276,8 +273,7 @@ class SearchCoordinator(
                     )
                 ) {
                     track.status =
-                        TrackStatus
-                            .WAITING_QUOTA
+                        TrackStatus.WAITING_QUOTA
                     track.error =
                         WAITING_QUOTA_MESSAGE
                     quotaBlocked =
@@ -338,8 +334,7 @@ class SearchCoordinator(
             waitingQuotaCount =
                 playlist.tracks.count {
                     it.status ==
-                        TrackStatus
-                            .WAITING_QUOTA
+                        TrackStatus.WAITING_QUOTA
                 }
         )
     }
@@ -353,8 +348,7 @@ class SearchCoordinator(
             resumeWaitingOnly
         ) {
             return track.status ==
-                TrackStatus
-                    .WAITING_QUOTA
+                TrackStatus.WAITING_QUOTA
         }
 
         val manualExact =
