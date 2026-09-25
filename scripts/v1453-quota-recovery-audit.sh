@@ -49,9 +49,12 @@ grep -Fq 'SearchRecoveryCoordinator' "$MAIN"   || fail "MainActivity search reco
 grep -Fq 'resumePendingSearchJob' "$MAIN"   || fail "MainActivity Search Resume route missing"
 grep -Fq 'TrackStatus.WAITING_QUOTA' "$DEST"   || fail "destination write does not exclude WAITING_QUOTA"
 
-grep -Fq 'SEARCH_LIST_COST' "$QUOTA"   || fail "Search API unit cost missing"
-grep -Fq '100' "$QUOTA"   || fail "Search API cost 100 missing"
-grep -Fq 'QuotaMath.totalUnits' "$QUOTA"   || fail "total quota computation missing"
+grep -Fq 'SEARCH_DAILY_LIMIT = 100' "$QUOTA"   || fail "Search daily bucket missing"
+grep -Fq 'QuotaMath.generalUnits' "$QUOTA"   || fail "general quota computation missing"
+grep -Fq 'QuotaMath.searchRemaining' "$QUOTA"   || fail "Search quota computation missing"
+if grep -Fq 'SEARCH_LIST_COST' "$QUOTA"; then
+  fail "Search must not be charged into the general 10k-unit bucket"
+fi
 
 grep -Fq 'BUG-038' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 investigation not carried into release"
 grep -Fq 'root cause not yet proven' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 uncertainty guard missing"
@@ -92,7 +95,7 @@ echo "- v1.4.53 identity"
 echo "- durable Search recovery payload + Queue route"
 echo "- waiting-quota Search semantics"
 echo "- write PendingJob backward compatibility"
-echo "- corrected total quota estimate"
+echo "- granular Search quota separated from general 10k-unit bucket"
 echo "- WAITING_QUOTA blocked from destination write"
 echo "- BUG-038 remains evidence-driven / no speculative closure"
 echo "- v1.4.53 JVM policy tests + release docs present"
