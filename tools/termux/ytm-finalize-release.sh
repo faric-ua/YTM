@@ -184,15 +184,13 @@ Signed GitHub Actions run:
 $SIGNED_RUN
 EOF
 
-git -C "$YTM_REPO_DIR" fetch --quiet --tags origin
-
-ensure_tag() {
+ensure_remote_tag() {
   local tag="$1"
   local remote
 
   remote="$(
-    git -C "$YTM_REPO_DIR" ls-remote --tags origin "refs/tags/$tag" |
-      awk 'NR == 1 {print $1}'
+    gh api "repos/$YTM_GH_REPO/git/ref/tags/$tag"       --jq '.object.sha'       2>/dev/null ||
+    true
   )"
 
   if [ -n "$remote" ]; then
@@ -202,22 +200,22 @@ ensure_tag() {
     return
   fi
 
-  if git -C "$YTM_REPO_DIR" rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-    local local_tag
-    local_tag="$(
-      git -C "$YTM_REPO_DIR" rev-parse "$tag^{commit}"
-    )"
-    [ "$local_tag" = "$APP_SOURCE" ] ||
-      ytm_fail "Local tag $tag points to $local_tag, expected $APP_SOURCE"
-  else
-    git -C "$YTM_REPO_DIR" tag "$tag" "$APP_SOURCE"
-  fi
+  gh api     --method POST     "repos/$YTM_GH_REPO/git/refs"     -f "ref=refs/tags/$tag"     -f "sha=$APP_SOURCE"     >/dev/null
 
-  git -C "$YTM_REPO_DIR" push origin "refs/tags/$tag"
+  remote="$(
+    gh api "repos/$YTM_GH_REPO/git/ref/tags/$tag"       --jq '.object.sha'
+  )"
+
+  [ "$remote" = "$APP_SOURCE" ] ||
+    ytm_fail "Created tag $tag points to $remote, expected $APP_SOURCE"
+
+  echo "Created tag: $tag"
 }
 
-ensure_tag "$TAG"
-ensure_tag "$CHECKPOINT_TAG"
+ensure_remote_tag "$TAG"
+ensure_remote_tag "$CHECKPOINT_TAG"
+
+git -C "$YTM_REPO_DIR" fetch --quiet --tags origin
 
 if gh release view "$TAG" --repo "$YTM_GH_REPO" >/dev/null 2>&1; then
   echo "Release already exists; refreshing exact assets."
