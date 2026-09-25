@@ -5,6 +5,7 @@ SRC="app/src/main/java/com/saney/ytmimporter"
 MAIN="$SRC/MainActivity.kt"
 SERVICE="$SRC/ServiceActivity.kt"
 UI="$SRC/ui/UiChrome.kt"
+REPLACEMENTS="$SRC/ui/ReplacementLogDialog.kt"
 
 grep -q 'private enum class Page' "$SERVICE" || fail "Service page state missing"
 grep -Fq 'when (page)' "$SERVICE" || fail "Service back-stack dispatcher missing"
@@ -22,8 +23,13 @@ grep -q 'saveDiagnosticsRequestCode' "$SERVICE" || fail "Service local diagnosti
 grep -q 'shareDiagnostics()' "$SERVICE" || fail "Service local diagnostics share missing"
 if grep -q 'returnAction' "$SERVICE"; then fail "Service still exits through returnAction"; fi
 if grep -q 'handleServiceResult' "$MAIN"; then fail "Main still handles Service submenu result"; fi
-grep -q 'UiChrome.showRecordDialog' "$MAIN" || fail "problem tracks are not rendered as record tiles"
-grep -q 'VERTICAL_WITH_TEXT_CLOSE' "$MAIN" || fail "problem-track export actions are not stacked"
+
+grep -q 'ReplacementLogDialog.show' "$MAIN" \
+  || fail "Main does not delegate problem tracks to ReplacementLogDialog"
+grep -q 'UiChrome.showRecordDialog' "$REPLACEMENTS" \
+  || fail "problem tracks are not rendered as record tiles"
+grep -q 'VERTICAL_WITH_TEXT_CLOSE' "$REPLACEMENTS" \
+  || fail "problem-track export actions are not stacked"
 grep -q 'data class DialogRecord' "$UI" || fail "DialogRecord template missing"
 
 echo 'PASS:'
@@ -31,4 +37,4 @@ echo '- Service subpages stay inside ServiceActivity'
 echo '- Back uses explicit HOME / CHANGELOG / other-subpage routing'
 echo '- CHANGELOG and VERSION Back return to About; other subpages return to Service home'
 echo '- Diagnostics/SearchCache/About use structured screens'
-echo '- problem tracks use record tiles and stacked export actions'
+echo '- problem tracks use record tiles and stacked export actions through ReplacementLogDialog'
