@@ -102,13 +102,13 @@ class QuotaActivity : Activity() {
                 )
                 addView(
                     statLine(
-                        "Загальні API units",
+                        "Інші API units",
                         "${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT}"
                     )
                 )
                 addView(
                     statLine(
-                        "Залишилось API units",
+                        "Залишилось інших units",
                         "≈ ${quota.generalRemaining}"
                     )
                 )
@@ -138,6 +138,8 @@ class QuotaActivity : Activity() {
                 addView(
                     bodyText(
                         "${quota.dayKey} (Pacific Time)\n\n" +
+                            "Search має окрему денну квоту. " +
+                            "10 000 units стосуються інших YouTube Data API endpoint-ів.\n\n" +
                             "Це локальна оцінка лише тих операцій, " +
                             "які YTM Importer зафіксував на цьому телефоні. " +
                             "Точний стан квоти знаходиться в Google Cloud Console."
