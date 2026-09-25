@@ -1540,7 +1540,7 @@ fe00c421a528c79c  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
-326cb0b961c2856b  scripts/service-navigation-audit.sh
+c310a0f949ed619b  scripts/service-navigation-audit.sh
 dd05198419970d1c  scripts/ui-chrome-audit.sh
 972992f79e831a4b  scripts/v1417-auth-flow-audit.sh
 8809b63eb0115a67  scripts/v1418-account-library-import-audit.sh
