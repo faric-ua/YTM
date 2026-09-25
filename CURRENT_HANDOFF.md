@@ -32,7 +32,7 @@ Current release state:
 - branch: `feat/v1.4.53-quota-recovery`
 - phase: **development**
 - stable baseline remains v1.4.52 / exact source `d857ce8c42511b16357060e6639ed67d548f9f31` / signed run `36041226156`.
-- BUG-036 implementation in progress: Search quota stop maps unresolved tracks to `WAITING_QUOTA` and persists a durable SEARCH job in Pending Queue.
+- BUG-036 implementation complete for build/phone validation: Search quota stop maps unresolved tracks to `WAITING_QUOTA` and persists a durable SEARCH job in Pending Queue.
 - SEARCH Queue jobs contain a full playlist snapshot and survive current-workspace replacement/restart; Resume is explicit and searches only waiting tracks.
 - existing WRITE PendingJob JSON defaults to `WRITE` for backward compatibility.
 - BUG-037 implementation: local total quota estimate includes `search.list = 100 units`; historical stored general_units remains the non-search component.
@@ -40,7 +40,8 @@ Current release state:
 - WAITING_QUOTA tracks are blocked from destination write.
 - BUG-038 remains investigation-only until controlled History JSON before/after evidence exists.
 - MainActivity recovery helpers were extracted to `SearchRecoveryCoordinator` to remain under the 4100-line audit budget.
-- next gate: exact-head static/full validation, then signed build only after PASS.
+- static/full validation PASS on source `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`, Validate Android run `36176662561` — SUCCESS.
+- next gate: signed APK build from the synchronized exact branch HEAD, then targeted phone QA.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
