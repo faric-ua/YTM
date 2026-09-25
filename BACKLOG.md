@@ -102,7 +102,7 @@ v1.4.52 — URL Snapshot / Home UX Polish — PHONE QA PASS / CLOSEOUT
 - UX-028 CLOSED: Home `Деталі в Історії →` opens exact corresponding History detail.
 - Unique snapshot handoff revalidated: 320 saved / 493 duplicates / local History semantics / no YTM write.
 - Final release closeout complete: `v1.4.52` + `checkpoint-v1.4.52-phone-pass` point to the exact phone-tested source; publisher run `36145617465` PASS.
-- Post-publication equal-version updater smoke remains.
+- [x] Post-publication equal-version updater smoke: installed/stable `1.4.52 (95)` → `Оновлень немає` (`OTA+`).
 
 ### Post-release quota/recovery findings 2026-09-25
 
