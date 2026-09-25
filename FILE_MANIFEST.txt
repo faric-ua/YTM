@@ -5,6 +5,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 957b553c7b6dec80  .github/workflows/build-apk.yml
+43b602a1c1c85846  .github/workflows/publish-release.yml
 841ac3888017a23d  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
@@ -1664,7 +1665,7 @@ cf275a9ddfd583f3  tools/termux/README.md
 10df440715bab7b4  tools/termux/ytm-build-apk.sh
 f02208fad378e44b  tools/termux/ytm-common.sh
 f63257687628de7b  tools/termux/ytm-download-apk.sh
-28135af7e5620d0f  tools/termux/ytm-finalize-release.sh
+40c31e3e27138753  tools/termux/ytm-finalize-release.sh
 8eda0cea3d5fad27  tools/termux/ytm-install-apk.sh
 1041a9e345f4dfbd  tools/termux/ytm-menu.sh
 d9bed80c74070c8c  tools/termux/ytm-release-status.sh
