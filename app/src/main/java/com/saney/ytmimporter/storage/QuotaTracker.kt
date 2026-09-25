@@ -193,29 +193,21 @@ class QuotaTracker(context: Context) {
             .toString()
 
     companion object {
-        const val SEARCH_DAILY_LIMIT =
-            100
+        const val SEARCH_DAILY_LIMIT = 100
 
-        const val GENERAL_DAILY_LIMIT =
-            10_000
+        const val GENERAL_DAILY_LIMIT = 10_000
 
-        const val SEARCH_LIST_COST =
-            100
+        const val SEARCH_LIST_COST = 100
 
-        const val PLAYLIST_CREATE_COST =
-            50
+        const val PLAYLIST_CREATE_COST = 50
 
-        const val PLAYLIST_UPDATE_COST =
-            50
+        const val PLAYLIST_UPDATE_COST = 50
 
-        const val PLAYLIST_DELETE_COST =
-            50
+        const val PLAYLIST_DELETE_COST = 50
 
-        const val PLAYLIST_ITEM_INSERT_COST =
-            50
+        const val PLAYLIST_ITEM_INSERT_COST = 50
 
-        const val SIMPLE_LIST_COST =
-            1
+        const val SIMPLE_LIST_COST = 1
 
         private const val KEY_DAY =
             "day"
