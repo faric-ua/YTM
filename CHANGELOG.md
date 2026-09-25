@@ -1,5 +1,17 @@
 # Журнал змін (Changelog)
 
+## v1.4.52
+
+- UX-027: duplicate-choice actions compacted into one horizontal row: `Всі (N)`, `Унікальні (U)`, `Скасувати`.
+- Duplicate chooser survives rotation without auto-commit; Cancel returns to the same resolved preview.
+- UX-028: URL snapshot local commit relays the exact created History entry id back to Home.
+- Home adds `Деталі в Історії →`, which opens the exact corresponding History detail.
+- Unique local snapshot handoff revalidated on phone: 813 source rows → 320 saved → 493 duplicates, local-import History semantics, no automatic YTM write.
+- Targeted phone Tests 1–3 PASS; UX-027 and UX-028 closed.
+- Final tested app source: `d857ce8c42511b16357060e6639ed67d548f9f31`; signed run: `36041226156`; versionCode 95.
+- Stable `v1.4.52` and `checkpoint-v1.4.52-phone-pass` published on the exact tested source; publisher run `36145617465` PASS.
+- Release assets: signed APK, SHA-256 file and updater manifest.
+
 ## v1.4.51
 
 - Додано явний імпорт YouTube / YouTube Music URL Snapshot із чітким контрактом підтримуваних джерел.
