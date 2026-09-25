@@ -108,6 +108,51 @@ RUN_CONCLUSION="$(
 
 PUBLISH_WORKFLOW="publish-release.yml"
 
+ensure_user_tag() {
+  local tag="$1"
+  local remote
+  local error_file
+
+  remote="$(
+    gh api "repos/$YTM_GH_REPO/git/ref/tags/$tag" \
+      --jq '.object.sha' 2>/dev/null ||
+    true
+  )"
+
+  if [ -n "$remote" ]; then
+    [ "$remote" = "$APP_SOURCE" ] ||
+      ytm_fail "Remote tag $tag points to $remote, expected $APP_SOURCE"
+    echo "Tag already correct: $tag"
+    return
+  fi
+
+  error_file="$(mktemp "${TMPDIR:-$HOME}/ytm-tag-error.XXXXXX")"
+
+  if ! gh api \
+    --method POST \
+    "repos/$YTM_GH_REPO/git/refs" \
+    -f "ref=refs/tags/$tag" \
+    -f "sha=$APP_SOURCE" \
+    >/dev/null 2>"$error_file"
+  then
+    cat "$error_file" >&2
+    rm -f "$error_file"
+    ytm_fail "Cannot create release tag with current GitHub CLI token. Run once: gh auth refresh -h github.com -s workflow ; then rerun menu item 8."
+  fi
+
+  rm -f "$error_file"
+
+  remote="$(
+    gh api "repos/$YTM_GH_REPO/git/ref/tags/$tag" \
+      --jq '.object.sha'
+  )"
+
+  [ "$remote" = "$APP_SOURCE" ] ||
+    ytm_fail "Created tag $tag points to $remote, expected $APP_SOURCE"
+
+  echo "Created tag: $tag"
+}
+
 echo "Stable release publication"
 echo "=========================="
 echo "Version:       $VERSION ($VERSION_CODE)"
@@ -141,6 +186,11 @@ BEFORE_IDS="$(
     --jq '.[].databaseId' 2>/dev/null ||
     true
 )"
+
+echo
+echo "Ensuring release tags with authenticated user token..."
+ensure_user_tag "$TAG"
+ensure_user_tag "$CHECKPOINT_TAG"
 
 echo
 echo "Dispatching guarded stable publisher..."
