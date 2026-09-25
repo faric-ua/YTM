@@ -1,5 +1,19 @@
 # Журнал змін (Changelog)
 
+## v1.4.53 — development
+
+- Search quota exhaustion no longer turns unsearched remainder into ordinary permanent-looking failures; affected rows use `WAITING_QUOTA`.
+- Search quota pauses are persisted as durable SEARCH recovery jobs in the existing Pending Queue store.
+- SEARCH jobs carry a full playlist/search-state snapshot, survive app restart/current-workspace replacement, and resume only after an explicit user action.
+- Queue distinguishes Search recovery from YouTube/YTM write recovery and exposes `Продовжити пошук`.
+- Existing WRITE PendingJob JSON remains backward-compatible through a default WRITE operation type.
+- Local total API-unit estimate now includes `search.list` at 100 units per call; quota labels distinguish Search calls from total API units.
+- WAITING_QUOTA tracks are excluded from destination writes until Search recovery completes.
+- Full Backup/Restore carries Search recovery state through the already-restored `pending_jobs_v1` preference group.
+- BUG-038 History durability remains an evidence-driven investigation; no speculative History persistence change is included yet.
+- versionCode 96 / versionName 1.4.53.
+- Static/full preflight and phone QA are pending.
+
 ## v1.4.52
 
 - UX-027: duplicate-choice actions compacted into one horizontal row: `Всі (N)`, `Унікальні (U)`, `Скасувати`.
