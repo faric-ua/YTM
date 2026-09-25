@@ -18,7 +18,8 @@ User phone evidence from 2026-09-24 shows:
 - Queue count was `0` while the quota-blocked Search workspace was still open;
 - verification rows reported that YouTube Data API quota had ended;
 - after importing another playlist, the unfinished workspace was no longer reachable;
-- the user cannot find a corresponding entry in current History.
+- the user cannot find a corresponding entry in current History;
+- direct YouTube Music library check confirmed that no remote playlist with this name exists, so the legacy flow never reached the write/create stage.
 
 Interpretation:
 - this is direct reproduction evidence for the legacy non-durable Search state addressed by BUG-036;
