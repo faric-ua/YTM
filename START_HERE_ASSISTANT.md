@@ -35,7 +35,7 @@ Current development application:
 - versionName: **1.4.53**
 - versionCode: **96**
 - release focus: **v1.4.53 — Quota Recovery / Durable Resume**
-- release status: **SIGNED BUILD PASS — PHONE QA PENDING**
+- release status: **BUG-037 PATCH — STATIC/FULL VALIDATION PENDING**
 - active branch: `feat/v1.4.53-quota-recovery`
 - release-start base HEAD: `9d50e0d246423f933c440aeadea440019a3fdb5f`
 - accepted stable release: **v1.4.52 — URL Snapshot / Home UX Polish**
@@ -45,15 +45,15 @@ Current development application:
 - stable OTA equal-version smoke: **PASS**
 - current architecture wave: **Quota Recovery / Durable Resume**
 - BUG-036: Search quota exhaustion persists a SEARCH recovery job with a full playlist snapshot instead of leaving the only recovery state in the current workspace.
-- BUG-037: local total API-unit estimate includes `search.list = 100 units` while keeping server HTTP 429 authoritative.
+- BUG-037: phone QA proved the old model stale; after Google's 2026-06-01 granular quota change, Search is a separate 100-calls/day bucket and must not be added to the general 10,000-unit estimate.
 - BUG-038: History durability remains investigation-only until controlled before/after History JSON evidence exists.
 - UX-029: Queue/search recovery copy points to the real explicit resume path.
 - SEARCH and WRITE jobs share the Queue surface but retain separate operation semantics.
 - `WAITING_QUOTA` tracks are excluded from destination write until Search recovery completes.
 - MainActivity remains under the historical 4100-line cleanup budget through `SearchRecoveryCoordinator`.
 - static/full validation evidence: source `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`, Validate Android run `36176662561` — **SUCCESS**
-- signed candidate: run `36178783613`, app source `454979093c0e108fe629aefe7db4bece97334575`, installed on phone
-- next release step: **targeted phone QA**
+- historical signed candidate: run `36178783613`, app source `454979093c0e108fe629aefe7db4bece97334575`; installed on phone and superseded after BUG-037 reproduction
+- next release step: **validate granular-quota patch → new signed candidate → targeted phone retest**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
