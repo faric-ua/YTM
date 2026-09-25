@@ -5,6 +5,11 @@ enum class PendingDestination {
     EXISTING_PLAYLIST
 }
 
+enum class PendingOperation {
+    WRITE,
+    SEARCH
+}
+
 data class PendingTrack(
     val originalTitle: String,
     val originalArtist: String,
@@ -12,6 +17,31 @@ data class PendingTrack(
     val selectedTitle: String?,
     val selectedChannel: String?,
     val historyIndex: Int = -1
+)
+
+data class PendingSearchCandidate(
+    val videoId: String,
+    val title: String,
+    val channelTitle: String,
+    val score: Double
+)
+
+data class PendingSearchTrack(
+    val originalTitle: String,
+    val originalArtist: String,
+    val selectedVideoId: String?,
+    val selectedTitle: String?,
+    val selectedChannel: String?,
+    val status: String,
+    val manuallySelected: Boolean,
+    val error: String?,
+    val historyIndex: Int?,
+    val candidates: List<PendingSearchCandidate>
+)
+
+data class PendingSearchSnapshot(
+    val playlistName: String,
+    val tracks: List<PendingSearchTrack>
 )
 
 data class PendingJob(
@@ -30,5 +60,9 @@ data class PendingJob(
     val addedCount: Int,
     val failedCount: Int,
     val remainingTracks: List<PendingTrack>,
-    val lastError: String?
+    val lastError: String?,
+    val operation: PendingOperation = PendingOperation.WRITE,
+    val recoveryKey: String? = null,
+    val preserveExistingExact: Boolean = false,
+    val searchSnapshot: PendingSearchSnapshot? = null
 )
