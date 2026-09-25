@@ -67,7 +67,7 @@ Current implementation:
 
 ## Status
 
-**BUG-037 PATCH — STATIC/FULL VALIDATION PENDING**
+**SIGNED BUILD PASS — BUG-037/BUG-036 PHONE RETEST PENDING**
 
 Validation evidence:
 - exact validated source HEAD: `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`;
@@ -77,3 +77,9 @@ Validation evidence:
 - unsigned release assemble: PASS.
 
 Historical signed candidate run `36178783613` from app source `454979093c0e108fe629aefe7db4bece97334575` was installed on the phone and exposed BUG-037: Search was incorrectly charged into the legacy 10,000-unit bucket. Google moved `search.list` to its own granular quota bucket on 2026-06-01. The candidate is superseded; the granular-quota patch requires static/full validation, a new signed build and targeted phone retest.
+
+Quota-fix validation/signed candidate:
+- exact source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`;
+- Validate Android run: `36194608351` — **SUCCESS**;
+- Build Signed Android APK run: `36195438071` — **SUCCESS**;
+- next gate: install over existing v1.4.53 data and retest BUG-037/BUG-036 plus queued WRITE regression.
