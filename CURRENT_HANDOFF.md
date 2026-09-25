@@ -18,7 +18,7 @@ Latest stable release:
 - result: **PHONE QA PASS — targeted Tests 1–3 complete; UX-027/UX-028 closed**
 - scope: targeted URL Snapshot / Home UX Polish acceptance; no broad full-app regression claim.
 - stable assets: signed APK, APK SHA-256 and `YTM-Importer-update.json`.
-- remaining post-publication check: equal-version updater smoke.
+- equal-version updater smoke: PASS (`Оновлень немає` for installed/stable `1.4.52 (95)`).
 
 Previous stable release:
 - **v1.4.51 / versionCode 94**
@@ -35,7 +35,7 @@ Current release state:
 - UX-028: CLOSED / PHONE PASS.
 - stable publication: PASS.
 - exact phone-tested package identity remains `d857ce8c...` / run `36041226156`; no rebuild was substituted.
-- next action: sync final-doc HEAD, verify Termux item 7 reports `CLOSEOUT: FINAL`, then run the equal-version production updater smoke.
+- v1.4.52 release closeout is complete; next product work is the post-release quota/recovery findings.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
@@ -404,7 +404,7 @@ Rules:
 - Stable publisher run `36145617465`: SUCCESS.
 - GitHub Release `v1.4.52`: published with APK, SHA-256 and updater manifest.
 - No app rebuild was performed during release closeout.
-- Next phone step after syncing the final-doc HEAD: menu item 7 must show `CLOSEOUT: FINAL`; then run the equal-version updater check. Expected result for installed/stable `1.4.52 (95)`: `Оновлень немає`.
+- Equal-version updater smoke PASS on phone: installed/stable `1.4.52 (95)` returned `Оновлень немає`.
 
 ## Post-release findings — quota/recovery session 2026-09-25
 
