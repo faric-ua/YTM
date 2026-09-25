@@ -41,7 +41,8 @@ Current release state:
 - BUG-038 remains investigation-only until controlled History JSON before/after evidence exists.
 - MainActivity recovery helpers were extracted to `SearchRecoveryCoordinator` to remain under the 4100-line audit budget.
 - static/full validation PASS on source `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`, Validate Android run `36176662561` — SUCCESS.
-- next gate: signed APK build from the synchronized exact branch HEAD, then targeted phone QA.
+- signed build PASS: run `36178783613`, exact app source `454979093c0e108fe629aefe7db4bece97334575`.
+- APK installed on phone; next gate: targeted v1.4.53 phone QA.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
