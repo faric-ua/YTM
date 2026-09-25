@@ -112,18 +112,22 @@ class SearchCoordinator(
         var authorizationInvalidated = false
 
         val indexesToProcess =
-            playlist.tracks
-                .indices
-                .filter { index ->
-                    shouldSearch(
-                        track =
-                            playlist.tracks[index],
-                        preserveExistingExact =
-                            preserveExistingExact,
-                        resumeWaitingOnly =
-                            resumeWaitingOnly
-                    )
-                }
+            if (
+                resumeWaitingOnly
+            ) {
+                playlist.tracks
+                    .indices
+                    .filter { index ->
+                        playlist.tracks[index]
+                            .status ==
+                            TrackStatus
+                                .WAITING_QUOTA
+                    }
+            } else {
+                playlist.tracks
+                    .indices
+                    .toList()
+            }
 
         for (
             (
