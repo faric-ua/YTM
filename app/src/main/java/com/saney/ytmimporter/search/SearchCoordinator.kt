@@ -421,12 +421,9 @@ class SearchCoordinator(
     private fun hasCanonicalExactSelection(
         track: Track
     ): Boolean =
-        !track.selectedVideoId
-            .isNullOrBlank() &&
-            track.status ==
-                TrackStatus.MATCHED &&
-            track.candidates
-                .isEmpty()
+        !track.selectedVideoId.isNullOrBlank() &&
+            track.status == TrackStatus.MATCHED &&
+            track.candidates.isEmpty()
 
     private fun applySearchCandidates(
         track: Track,
