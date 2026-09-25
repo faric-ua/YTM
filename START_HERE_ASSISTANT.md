@@ -35,7 +35,7 @@ Current development application:
 - versionName: **1.4.53**
 - versionCode: **96**
 - release focus: **v1.4.53 — Quota Recovery / Durable Resume**
-- release status: **STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING**
+- release status: **SIGNED BUILD PASS — PHONE QA PENDING**
 - active branch: `feat/v1.4.53-quota-recovery`
 - release-start base HEAD: `9d50e0d246423f933c440aeadea440019a3fdb5f`
 - accepted stable release: **v1.4.52 — URL Snapshot / Home UX Polish**
@@ -52,7 +52,8 @@ Current development application:
 - `WAITING_QUOTA` tracks are excluded from destination write until Search recovery completes.
 - MainActivity remains under the historical 4100-line cleanup budget through `SearchRecoveryCoordinator`.
 - static/full validation evidence: source `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`, Validate Android run `36176662561` — **SUCCESS**
-- next release step: **signed build from synchronized exact branch HEAD → targeted phone QA**
+- signed candidate: run `36178783613`, app source `454979093c0e108fe629aefe7db4bece97334575`, installed on phone
+- next release step: **targeted phone QA**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
