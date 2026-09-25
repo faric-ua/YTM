@@ -94,14 +94,15 @@ v1.4.52 — URL Snapshot / Home UX Polish — PHONE QA PASS / CLOSEOUT
 - [x] UX-028: Home exposes explicit `Деталі в Історії →` affordance for the associated status
 - [x] UX-028: tap opens exact History detail directly by id
 - [x] UX-028: stale detail mapping clears on unrelated status
-- [ ] static/full preflight
-- [ ] signed phone QA
+- [x] static/full preflight
+- [x] signed phone QA
 
 - Phone QA 2026-09-24: Tests 1–3 PASS on signed run `36041226156` / source `d857ce8c42511b16357060e6639ed67d548f9f31`.
 - UX-027 CLOSED: one-row duplicate chooser + rotation + Cancel no-op passed.
 - UX-028 CLOSED: Home `Деталі в Історії →` opens exact corresponding History detail.
 - Unique snapshot handoff revalidated: 320 saved / 493 duplicates / local History semantics / no YTM write.
-- Final release closeout/tagging remains.
+- Final release closeout complete: `v1.4.52` + `checkpoint-v1.4.52-phone-pass` point to the exact phone-tested source; publisher run `36145617465` PASS.
+- Post-publication equal-version updater smoke remains.
 
 ## v1.4.51 — YouTube/YTM URL/Mix Snapshot Import
 
