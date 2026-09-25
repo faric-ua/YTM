@@ -355,8 +355,8 @@ class ServiceActivity : Activity() {
             infoCard(
                 "Quota — локальна оцінка",
                 "День Google: ${quota.dayKey} Pacific Time\n" +
-                    "Search: ${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT} • ≈${quota.searchRemaining} залишилось\n" +
-                    "General: ${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT} • ≈${quota.generalRemaining} залишилось\n" +
+                    "Search запити: ${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT} • ≈${quota.searchRemaining} залишилось\n" +
+                    "Загальні API units: ${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT} • ≈${quota.generalRemaining} залишилось\n" +
                     "Cache hits сьогодні: ${quota.cacheHits}"
             )
         )
