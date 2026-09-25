@@ -1,0 +1,256 @@
+name: Publish Stable Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Stable version name
+        required: true
+        type: string
+      version_code:
+        description: Android versionCode
+        required: true
+        type: string
+      min_sdk:
+        description: Android minSdk
+        required: true
+        type: string
+      app_source:
+        description: Exact phone-tested app source SHA
+        required: true
+        type: string
+      signed_run:
+        description: Exact successful signed-build run id
+        required: true
+        type: string
+      tag:
+        description: Stable release tag
+        required: true
+        type: string
+      checkpoint_tag:
+        description: Phone-QA checkpoint tag
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Validate release request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          VERSION_CODE: ${{ inputs.version_code }}
+          MIN_SDK: ${{ inputs.min_sdk }}
+          APP_SOURCE: ${{ inputs.app_source }}
+          SIGNED_RUN: ${{ inputs.signed_run }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git cat-file -e "$APP_SOURCE^{commit}"
+
+          SOURCE_GRADLE="$(git show "$APP_SOURCE:app/build.gradle.kts")"
+          SOURCE_VERSION="$(printf '%s\n' "$SOURCE_GRADLE" | sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' | head -n 1)"
+          SOURCE_CODE="$(printf '%s\n' "$SOURCE_GRADLE" | sed -n 's/.*versionCode = \([0-9][0-9]*\).*/\1/p' | head -n 1)"
+          SOURCE_MIN_SDK="$(printf '%s\n' "$SOURCE_GRADLE" | sed -n 's/.*minSdk = \([0-9][0-9]*\).*/\1/p' | head -n 1)"
+
+          test "$SOURCE_VERSION" = "$VERSION"
+          test "$SOURCE_CODE" = "$VERSION_CODE"
+          test "$SOURCE_MIN_SDK" = "$MIN_SDK"
+
+          RUN_HEAD="$(gh run view "$SIGNED_RUN" --repo "$GITHUB_REPOSITORY" --json headSha --jq '.headSha')"
+          RUN_CONCLUSION="$(gh run view "$SIGNED_RUN" --repo "$GITHUB_REPOSITORY" --json conclusion --jq '.conclusion')"
+
+          test "$RUN_HEAD" = "$APP_SOURCE"
+          test "$RUN_CONCLUSION" = "success"
+
+      - name: Download exact signed artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          SIGNED_RUN: ${{ inputs.signed_run }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p release-work/artifact
+          gh run download "$SIGNED_RUN"             --repo "$GITHUB_REPOSITORY"             --dir release-work/artifact
+
+          mapfile -t APKS < <(
+            find release-work/artifact -type f -name "YTM-Importer-v$VERSION-release.apk" -print
+          )
+
+          test "${#APKS[@]}" -eq 1
+          APK="${APKS[0]}"
+          SHA_FILE="$APK.sha256"
+          test -s "$SHA_FILE"
+
+          (
+            cd "$(dirname "$APK")"
+            sha256sum -c "$(basename "$SHA_FILE")"
+          )
+
+          APK_NAME="$(basename "$APK")"
+          APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
+
+          echo "APK=$APK" >> "$GITHUB_ENV"
+          echo "SHA_FILE=$SHA_FILE" >> "$GITHUB_ENV"
+          echo "APK_NAME=$APK_NAME" >> "$GITHUB_ENV"
+          echo "APK_SHA=$APK_SHA" >> "$GITHUB_ENV"
+
+      - name: Generate updater manifest and notes
+        env:
+          VERSION: ${{ inputs.version }}
+          VERSION_CODE: ${{ inputs.version_code }}
+          MIN_SDK: ${{ inputs.min_sdk }}
+          APP_SOURCE: ${{ inputs.app_source }}
+          SIGNED_RUN: ${{ inputs.signed_run }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          UPDATE_MANIFEST="$GITHUB_WORKSPACE/release-work/YTM-Importer-update.json"
+          python - "$UPDATE_MANIFEST" "$VERSION" "$VERSION_CODE" "$TAG" "$APK_NAME" "$APK_SHA" "$MIN_SDK" <<'PY'
+          import json
+          import sys
+
+          path, version, code, tag, apk, sha, min_sdk = sys.argv[1:]
+          data = {
+              "schema": 1,
+              "versionName": version,
+              "versionCode": int(code),
+              "tag": tag,
+              "apkAsset": apk,
+              "sha256": sha,
+              "minSdk": int(min_sdk),
+          }
+          with open(path, "w", encoding="utf-8") as fh:
+              json.dump(data, fh, ensure_ascii=False, indent=2)
+              fh.write("\n")
+          PY
+
+          NOTES="$GITHUB_WORKSPACE/release-work/RELEASE_NOTES.md"
+          RELEASE_DOC="docs/v.$VERSION/RELEASE.md"
+
+          if [ -s "$RELEASE_DOC" ]; then
+            cp "$RELEASE_DOC" "$NOTES"
+          else
+            cat > "$NOTES" <<EOF
+          # YTM Importer v$VERSION
+
+          Stable release.
+
+          Exact phone-tested app source:
+          $APP_SOURCE
+
+          Signed GitHub Actions run:
+          $SIGNED_RUN
+          EOF
+          fi
+
+          echo "UPDATE_MANIFEST=$UPDATE_MANIFEST" >> "$GITHUB_ENV"
+          echo "NOTES=$NOTES" >> "$GITHUB_ENV"
+
+      - name: Ensure release tags
+        env:
+          APP_SOURCE: ${{ inputs.app_source }}
+          TAG: ${{ inputs.tag }}
+          CHECKPOINT_TAG: ${{ inputs.checkpoint_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ensure_tag() {
+            local tag="$1"
+            local remote local_target
+
+            remote="$(
+              git ls-remote --tags origin "refs/tags/$tag" |
+                awk 'NR == 1 {print $1}'
+            )"
+
+            if [ -n "$remote" ]; then
+              test "$remote" = "$APP_SOURCE"
+              echo "Tag already correct: $tag"
+              return
+            fi
+
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              local_target="$(git rev-parse "$tag^{commit}")"
+              test "$local_target" = "$APP_SOURCE"
+            else
+              git tag "$tag" "$APP_SOURCE"
+            fi
+
+            git push origin "refs/tags/$tag"
+
+            remote="$(
+              git ls-remote --tags origin "refs/tags/$tag" |
+                awk 'NR == 1 {print $1}'
+            )"
+            test "$remote" = "$APP_SOURCE"
+            echo "Created tag: $tag"
+          }
+
+          ensure_tag "$TAG"
+          ensure_tag "$CHECKPOINT_TAG"
+
+      - name: Create or refresh stable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release already exists; refreshing exact assets."
+          else
+            gh release create "$TAG"               --repo "$GITHUB_REPOSITORY"               --verify-tag               --title "YTM Importer v$VERSION"               --notes-file "$NOTES"               --latest
+          fi
+
+          gh release upload "$TAG"             "$APK"             "$SHA_FILE"             "$UPDATE_MANIFEST"             --repo "$GITHUB_REPOSITORY"             --clobber
+
+      - name: Verify published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          LATEST_TAG="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq '.tag_name')"
+          test "$LATEST_TAG" = "$TAG"
+
+          VERIFY_DIR="$GITHUB_WORKSPACE/release-work/verify"
+          mkdir -p "$VERIFY_DIR"
+
+          gh release download "$TAG"             --repo "$GITHUB_REPOSITORY"             --dir "$VERIFY_DIR"             --pattern "$APK_NAME"             --pattern "$APK_NAME.sha256"             --pattern "YTM-Importer-update.json"
+
+          test -f "$VERIFY_DIR/$APK_NAME"
+          test -f "$VERIFY_DIR/$APK_NAME.sha256"
+          test -f "$VERIFY_DIR/YTM-Importer-update.json"
+
+          PUBLISHED_SHA="$(sha256sum "$VERIFY_DIR/$APK_NAME" | awk '{print $1}')"
+          test "$PUBLISHED_SHA" = "$APK_SHA"
+          cmp -s "$UPDATE_MANIFEST" "$VERIFY_DIR/YTM-Importer-update.json"
+
+          echo "RELEASE PUBLICATION PASS"
+          echo "TAG=$TAG"
+          echo "APP_SOURCE=${{ inputs.app_source }}"
+          echo "SIGNED_RUN=${{ inputs.signed_run }}"
+          echo "APK_SHA256=$APK_SHA"
