@@ -2010,11 +2010,14 @@ class MainActivity : Activity() {
                     "Пошук потрібен для: ${plan.tracksToSearch}\n" +
                     "Вже є в кеші: ${plan.cachedCount}\n" +
                     "Потрібно нових search.list: ${plan.apiNeeded}\n\n" +
-                    "Локально використано сьогодні: " +
+                    "Search запитів локально: " +
                     "${plan.quota.searchCalls}/" +
                     "${QuotaTracker.SEARCH_DAILY_LIMIT}\n" +
-                    "Локальна оцінка залишку: " +
-                    "${plan.quota.searchRemaining}" +
+                    "Оцінка доступних Search запитів: " +
+                    "${plan.quota.searchRemaining}\n" +
+                    "Загальні API units: " +
+                    "${plan.quota.generalUnits}/" +
+                    "${QuotaTracker.GENERAL_DAILY_LIMIT}" +
                     warning +
                     "\n\nЦе не точний залишок Google Cloud. " +
                     "Інші пристрої або клієнти того самого API project " +
@@ -3347,10 +3350,11 @@ class MainActivity : Activity() {
                 ""
             }
 
-        return "Квота API (оцінка):\n" +
-            "Потрібно приблизно: $required units (одиниць)\n" +
-            "Локально залишилось приблизно: ${quota.generalRemaining}/" +
-            "${QuotaTracker.GENERAL_DAILY_LIMIT}" +
+        return "Квота API (локальна оцінка):\n" +
+            "Потрібно для write приблизно: $required units\n" +
+            "Загалом уже враховано: ${quota.generalUnits}/" +
+            "${QuotaTracker.GENERAL_DAILY_LIMIT} units\n" +
+            "Орієнтовно залишилось: ${quota.generalRemaining} units" +
             warning
     }
 
