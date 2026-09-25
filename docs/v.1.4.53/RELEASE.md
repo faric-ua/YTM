@@ -17,7 +17,7 @@ Primary release findings:
 
 ## Architecture / behavior changes
 
-Planned contract:
+Implemented development contract:
 - Search quota exhaustion must not turn "not searched because quota stopped" into a
   permanent-looking ordinary track failure.
 - Unfinished Search work must be persisted independently of the current Home
@@ -50,6 +50,21 @@ Planned contract:
 - stable baseline: `v1.4.52`
 - baseline app source: `d857ce8c42511b16357060e6639ed67d548f9f31`
 
+## Implementation snapshot
+
+Current implementation:
+- adds `TrackStatus.WAITING_QUOTA`;
+- extends Pending Queue records with a backward-compatible `PendingOperation` and optional Search snapshot;
+- persists one SEARCH recovery record per stable workspace recovery key;
+- restores the exact saved Search workspace and retries only WAITING_QUOTA tracks;
+- keeps cache/manual/exact selections intact;
+- removes a SEARCH recovery job only after no waiting-quota tracks remain;
+- distinguishes SEARCH and WRITE in Queue UI;
+- excludes WAITING_QUOTA from destination write candidates;
+- includes Search cost in the local total-unit estimate through `QuotaMath`;
+- reuses `pending_jobs_v1`, so existing Full Backup / Restore includes Search recovery state;
+- intentionally makes no speculative HistoryStore change for BUG-038.
+
 ## Status
 
-**PLANNED — DOCUMENTATION SKELETON READY / APP CODE NOT STARTED**
+**IMPLEMENTED — STATIC/FULL PREFLIGHT PENDING**
