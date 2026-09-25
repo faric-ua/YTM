@@ -113,18 +113,19 @@ ensure_user_tag() {
   local remote
   local error_file
 
-  remote="$(
-    gh api "repos/$YTM_GH_REPO/git/ref/tags/$tag" \
-      --jq '.object.sha' 2>/dev/null ||
-    true
-  )"
+  remote=""
 
-  if [ -n "$remote" ]; then
+  if remote="$(
+    gh api "repos/$YTM_GH_REPO/git/ref/tags/$tag" \
+      --jq '.object.sha' 2>/dev/null
+  )"; then
     [ "$remote" = "$APP_SOURCE" ] ||
       ytm_fail "Remote tag $tag points to $remote, expected $APP_SOURCE"
     echo "Tag already correct: $tag"
     return
   fi
+
+  remote=""
 
   error_file="$(mktemp "${TMPDIR:-$HOME}/ytm-tag-error.XXXXXX")"
 
