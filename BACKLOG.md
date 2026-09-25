@@ -104,6 +104,17 @@ v1.4.52 — URL Snapshot / Home UX Polish — PHONE QA PASS / CLOSEOUT
 - Final release closeout complete: `v1.4.52` + `checkpoint-v1.4.52-phone-pass` point to the exact phone-tested source; publisher run `36145617465` PASS.
 - Post-publication equal-version updater smoke remains.
 
+### Post-release quota/recovery findings 2026-09-25
+
+Carry these into the next corrective release; do not reopen the already published
+v1.4.52 app binary:
+
+- [ ] BUG-036 — durable resume for Search quota exhaustion; Queue/search ownership must be explicit;
+- [ ] BUG-037 — correct or relabel local quota accounting so Search usage and “general” budget cannot contradict each other;
+- [ ] BUG-038 — reproduce the reported disappearing History entry using before/after History JSON and stable entry IDs;
+- [ ] UX-029 — Search-quota copy must point to the real resume mechanism and must not imply a Queue item when Queue is empty.
+
+
 ## v1.4.51 — YouTube/YTM URL/Mix Snapshot Import
 
 - [x] roadmap promoted from Future into dedicated v1.4.51 release
