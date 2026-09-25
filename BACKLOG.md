@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.52 — URL Snapshot / Home UX Polish — PHONE QA PASS / CLOSEOUT
+v1.4.53 — Quota Recovery / Durable Resume — DEVELOPMENT
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -80,6 +80,24 @@ v1.4.52 — URL Snapshot / Home UX Polish — PHONE QA PASS / CLOSEOUT
 - [x] publish stable v1.4.49 + equal-version recheck — `FINAL+`
 - [x] final release documentation/checkpoint closeout
 - [x] publish stable v1.4.49 + final equal-version recheck — `FINAL+`
+
+## v1.4.53 — Quota Recovery / Durable Resume
+
+- [x] create release documentation before app-code changes
+- [x] dedicated branch `feat/v1.4.53-quota-recovery`
+- [x] bump app identity to v1.4.53 / versionCode 96
+- [ ] BUG-036: durable Search quota resume job
+- [ ] Queue distinguishes SEARCH and WRITE recovery jobs
+- [ ] Search waiting-for-quota state is not shown as ordinary permanent failure
+- [ ] Search recovery survives restart and unrelated current-playlist replacement
+- [ ] explicit Search Resume restores snapshot and searches only waiting tracks
+- [ ] BUG-037: total local quota estimate includes Search cost (100 units/call)
+- [ ] write preflight uses corrected total-unit estimate
+- [ ] BUG-038: controlled History JSON durability reproduction
+- [ ] UX-029: quota copy points to the real resume mechanism
+- [ ] Full Backup / Restore includes Search recovery queue state
+- [ ] static/full preflight
+- [ ] signed phone QA
 
 ## v1.4.52 — URL Snapshot / Home UX Polish
 
