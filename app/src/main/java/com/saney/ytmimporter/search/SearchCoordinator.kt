@@ -396,8 +396,7 @@ class SearchCoordinator(
         if (
             keepManualSelection
         ) {
-            return PreservedSelection
-                .MANUAL
+            return PreservedSelection.MANUAL
         }
 
         val keepExactSelection =
@@ -407,8 +406,7 @@ class SearchCoordinator(
         return if (
             keepExactSelection
         ) {
-            PreservedSelection
-                .PROJECT_EXACT
+            PreservedSelection.PROJECT_EXACT
         } else {
             null
         }
