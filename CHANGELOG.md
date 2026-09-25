@@ -12,7 +12,7 @@
 - Full Backup/Restore carries Search recovery state through the already-restored `pending_jobs_v1` preference group.
 - BUG-038 History durability remains an evidence-driven investigation; no speculative History persistence change is included yet.
 - versionCode 96 / versionName 1.4.53.
-- Static/full validation PASS on source `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33` (Validate Android run `36176662561`); signed build and phone QA are pending.
+- Static/full validation PASS; signed candidate build `36178783613` from app source `454979093c0e108fe629aefe7db4bece97334575` PASS and installed on phone; phone QA is pending.
 
 ## v1.4.52
 
