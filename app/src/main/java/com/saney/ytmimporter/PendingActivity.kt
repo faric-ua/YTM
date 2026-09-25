@@ -25,6 +25,9 @@ import android.widget.TextView
 import android.widget.Toast
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
+import com.saney.ytmimporter.model.PendingOperation
+import com.saney.ytmimporter.model.PendingSearchTrack
+import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.model.PendingTrack
 import com.saney.ytmimporter.storage.PendingJobStore
 import java.text.SimpleDateFormat
@@ -105,8 +108,8 @@ class PendingActivity : Activity() {
         root.addView(
             TextView(this).apply {
                 text =
-                    "Невиконані треки, збережені після quota error " +
-                        "або перерваного запису."
+                    "Невиконані Search і YouTube/YTM write операції, " +
+                        "які можна явно продовжити."
                 textSize = 13f
                 setTextColor(MUTED)
                 setPadding(
@@ -186,8 +189,8 @@ class PendingActivity : Activity() {
                 TextView(this).apply {
                     text =
                         "Невиконаних завдань немає.\n\n" +
-                            "Якщо YouTube API зупинить запис через квоту, " +
-                            "залишок автоматично з'явиться тут."
+                            "Якщо квота зупинить Search або запис у YouTube/YTM, " +
+                            "відновлюване завдання з'явиться тут."
                     gravity = Gravity.CENTER
                     textSize = 15f
                     setTextColor(MUTED)
@@ -299,6 +302,16 @@ class PendingActivity : Activity() {
     private fun showDetailScreen(
         job: PendingJob
     ) {
+        if (
+            job.operation ==
+                PendingOperation.SEARCH
+        ) {
+            showSearchDetailScreen(
+                job
+            )
+            return
+        }
+
         currentJobId = job.id
 
         val root = baseRoot()
@@ -578,6 +591,340 @@ class PendingActivity : Activity() {
         UiChrome.applyScreenInsets(this, root)
     }
 
+    private fun showSearchDetailScreen(
+        job: PendingJob
+    ) {
+        currentJobId =
+            job.id
+
+        val snapshot =
+            job.searchSnapshot
+
+        if (
+            snapshot == null
+        ) {
+            toast(
+                "Завдання пошуку пошкоджене: snapshot відсутній"
+            )
+            showListScreen()
+            return
+        }
+
+        val waitingTracks =
+            snapshot.tracks.filter {
+                it.status ==
+                    TrackStatus
+                        .WAITING_QUOTA
+                        .name
+            }
+
+        val root =
+            baseRoot()
+
+        root.addView(
+            topBar(
+                title =
+                    job.playlistName,
+                onBack = {
+                    showListScreen()
+                }
+            )
+        )
+
+        val scroll =
+            ScrollView(this).apply {
+                isFillViewport =
+                    true
+            }
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(24)
+                )
+            }
+
+        content.addView(
+            card().apply {
+                addView(
+                    TextView(
+                        this@PendingActivity
+                    ).apply {
+                        text =
+                            "⏳ Очікує продовження пошуку"
+                        textSize =
+                            18f
+                        setTextColor(
+                            Color.rgb(
+                                255,
+                                195,
+                                80
+                            )
+                        )
+                        setTypeface(
+                            typeface,
+                            Typeface.BOLD
+                        )
+                    }
+                )
+
+                addView(
+                    metaText(
+                        "Оновлено: ${formatDate(job.updatedAt)}\n" +
+                            "Створено: ${formatDate(job.createdAt)}\n" +
+                            "Джерело: ${job.sourceLabel}\n" +
+                            "Тип: Пошук (Search)"
+                    )
+                )
+            }
+        )
+
+        content.addView(
+            sectionTitle(
+                "Прогрес"
+            )
+        )
+
+        content.addView(
+            card().apply {
+                addView(
+                    statLine(
+                        "Усього треків",
+                        job.totalCount
+                            .toString()
+                    )
+                )
+
+                addView(
+                    statLine(
+                        "Очікує пошуку",
+                        waitingTracks.size
+                            .toString()
+                    )
+                )
+
+                addView(
+                    statLine(
+                        "Не очікує Search",
+                        (
+                            job.totalCount -
+                                waitingTracks.size
+                        )
+                            .coerceAtLeast(
+                                0
+                            )
+                            .toString()
+                    )
+                )
+            }
+        )
+
+        content.addView(
+            sectionTitle(
+                "Акаунт"
+            )
+        )
+
+        content.addView(
+            card().apply {
+                addView(
+                    metaText(
+                        "Google: ${maskEmail(job.googleEmail)}\n" +
+                            "YouTube/YTM: " +
+                            (
+                                job.youtubeChannelTitle
+                                    ?: "не збережено"
+                            ) +
+                            "\nChannel ID: " +
+                            maskId(
+                                job.youtubeChannelId
+                            )
+                    )
+                )
+            }
+        )
+
+        if (
+            !job.lastError
+                .isNullOrBlank()
+        ) {
+            content.addView(
+                sectionTitle(
+                    "Остання причина паузи"
+                )
+            )
+
+            content.addView(
+                card().apply {
+                    addView(
+                        metaText(
+                            job.lastError
+                        )
+                    )
+                }
+            )
+        }
+
+        content.addView(
+            sectionTitle(
+                "Очікують пошуку"
+            )
+        )
+
+        content.addView(
+            card().apply {
+                waitingTracks
+                    .take(15)
+                    .forEachIndexed {
+                            index,
+                            track ->
+
+                        addView(
+                            searchTrackRow(
+                                index =
+                                    index,
+                                track =
+                                    track
+                            )
+                        )
+                    }
+
+                if (
+                    waitingTracks.size >
+                        15
+                ) {
+                    addView(
+                        metaText(
+                            "Ще " +
+                                "${waitingTracks.size - 15} " +
+                                "треків."
+                        )
+                    )
+                }
+            }
+        )
+
+        content.addView(
+            sectionTitle(
+                "Дії"
+            )
+        )
+
+        val actions =
+            card()
+
+        actions.addView(
+            actionButton(
+                label =
+                    "Продовжити пошук",
+                primary =
+                    true
+            ) {
+                requestResume(
+                    job
+                )
+            }
+        )
+
+        actions.addView(
+            actionButton(
+                label =
+                    "Видалити з черги",
+                primary =
+                    false
+            ) {
+                confirmDelete(
+                    job
+                )
+            }
+        )
+
+        content.addView(
+            actions
+        )
+
+        scroll.addView(
+            content
+        )
+
+        root.addView(
+            scroll,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        setContentView(
+            root
+        )
+
+        UiChrome.applyScreenInsets(
+            this,
+            root
+        )
+    }
+
+    private fun searchTrackRow(
+        index: Int,
+        track: PendingSearchTrack
+    ): TextView =
+        TextView(this).apply {
+            text =
+                buildString {
+                    append(
+                        "${index + 1}. "
+                    )
+                    append(
+                        track.originalArtist
+                    )
+                    append(" — ")
+                    append(
+                        track.originalTitle
+                    )
+
+                    if (
+                        !track.error
+                            .isNullOrBlank()
+                    ) {
+                        append("\n")
+                        append(
+                            track.error
+                        )
+                    }
+                }
+
+            textSize =
+                13f
+
+            setTextColor(
+                Color.WHITE
+            )
+
+            setPadding(
+                0,
+                if (
+                    index == 0
+                ) {
+                    0
+                } else {
+                    dp(9)
+                },
+                0,
+                dp(5)
+            )
+
+            setTextIsSelectable(
+                true
+            )
+        }
+
     private fun requestResume(
         job: PendingJob
     ) {
@@ -600,9 +947,18 @@ class PendingActivity : Activity() {
             title =
                 "Видалити завдання з черги?",
             message =
-                "Буде видалено тільки локальне завдання " +
-                    "«${job.playlistName}».\n\n" +
-                    "Треки, які вже були додані в YouTube/YTM, не видаляються.",
+                if (
+                    job.operation ==
+                        PendingOperation.SEARCH
+                ) {
+                    "Буде видалено тільки локальне завдання пошуку " +
+                        "«${job.playlistName}».\n\n" +
+                        "Поточний плейлист, History та YouTube/YTM не змінюються."
+                } else {
+                    "Буде видалено тільки локальне завдання " +
+                        "«${job.playlistName}».\n\n" +
+                        "Треки, які вже були додані в YouTube/YTM, не видаляються."
+                },
             confirmLabel =
                 "Так, видалити"
         ) {
@@ -1212,33 +1568,73 @@ class PendingActivity : Activity() {
                     as TextView
 
             title.text =
-                "⏳ ${job.playlistName}"
+                if (
+                    job.operation ==
+                        PendingOperation.SEARCH
+                ) {
+                    "⏳ 🔎 ${job.playlistName}"
+                } else {
+                    "⏳ ${job.playlistName}"
+                }
 
             meta.text =
-                buildString {
-                    append(
-                        formatDate(
-                            job.updatedAt
-                        )
-                    )
-                    append(
-                        " • Очікує " +
-                            job.remainingTracks.size
-                    )
-                    append("\n")
-                    append(
-                        "Додано " +
-                            "${job.addedCount}/" +
-                            "${job.totalCount}"
-                    )
+                if (
+                    job.operation ==
+                        PendingOperation.SEARCH
+                ) {
+                    val waiting =
+                        job.searchSnapshot
+                            ?.tracks
+                            ?.count {
+                                it.status ==
+                                    TrackStatus
+                                        .WAITING_QUOTA
+                                        .name
+                            }
+                            ?: 0
 
-                    if (
-                        job.failedCount > 0
-                    ) {
+                    buildString {
                         append(
-                            " • Помилок " +
-                                job.failedCount
+                            formatDate(
+                                job.updatedAt
+                            )
                         )
+                        append(
+                            " • Пошук • Очікує " +
+                                waiting
+                        )
+                        append("\n")
+                        append(
+                            "Треків у snapshot: " +
+                                job.totalCount
+                        )
+                    }
+                } else {
+                    buildString {
+                        append(
+                            formatDate(
+                                job.updatedAt
+                            )
+                        )
+                        append(
+                            " • Запис • Очікує " +
+                                job.remainingTracks.size
+                        )
+                        append("\n")
+                        append(
+                            "Додано " +
+                                "${job.addedCount}/" +
+                                "${job.totalCount}"
+                        )
+
+                        if (
+                            job.failedCount > 0
+                        ) {
+                            append(
+                                " • Помилок " +
+                                    job.failedCount
+                            )
+                        }
                     }
                 }
 
