@@ -5,9 +5,9 @@
   "phase": "development",
   "feature": "Quota Recovery / Durable Resume",
   "branch": "feat/v1.4.53-quota-recovery",
-  "appSourceSha": null,
-  "signedRun": null,
-  "qaStatus": "BUG-037 PATCH — STATIC/FULL VALIDATION PENDING",
+  "appSourceSha": "ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5",
+  "signedRun": 36195438071,
+  "qaStatus": "SIGNED BUILD PASS — BUG-037/BUG-036 PHONE RETEST PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null
