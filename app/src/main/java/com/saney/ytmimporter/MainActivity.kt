@@ -26,6 +26,7 @@ import com.saney.ytmimporter.model.HistoryTrack
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
+import com.saney.ytmimporter.model.PendingOperation
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
@@ -45,10 +46,12 @@ import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.destination.DestinationCoordinator
 import com.saney.ytmimporter.destination.DestinationForwardedWritePlan
 import com.saney.ytmimporter.search.SearchCoordinator
+import com.saney.ytmimporter.search.SearchRecoveryPolicy
 import com.saney.ytmimporter.write.PlaylistWriteCoordinator
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
+import java.util.UUID
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 class MainActivity : Activity() {
@@ -2058,7 +2061,9 @@ class MainActivity : Activity() {
     private fun startSearch(
         p: ImportedPlaylist,
         openReviewAfter: Boolean = false,
-        preserveExistingExact: Boolean = false
+        preserveExistingExact: Boolean = false,
+        resumeWaitingOnly: Boolean = false,
+        recoveryJobId: String? = null
     ) {
         authorize {
             val token =
@@ -2083,6 +2088,8 @@ class MainActivity : Activity() {
                         playlist = p,
                         preserveExistingExact =
                             preserveExistingExact,
+                        resumeWaitingOnly =
+                            resumeWaitingOnly,
                         onTrackStateChanged = { index ->
                             runOnUiThread {
                                 refreshRow(index)
@@ -2124,7 +2131,8 @@ class MainActivity : Activity() {
                             runOnUiThread {
                                 toast(
                                     "Закінчилась квота пошуку YouTube API. " +
-                                        "Треки, які вже є в кеші, програма ще обробить."
+                                        "Кешовані треки ще буде оброблено, а залишок " +
+                                        "буде збережено в «Черзі»."
                                 )
                             }
                         },
@@ -2146,11 +2154,25 @@ class MainActivity : Activity() {
                                 "Пошук зупинено: Google/YTM потребує повторного входу. " +
                                     "Поточний список збережено; після входу запустіть пошук ще раз."
 
-                            result.quotaBlocked ->
-                                "Готово: з кешу ${result.cacheHits}, " +
+                            result.quotaBlocked -> {
+                                val recoveryJob =
+                                    saveSearchRecoveryJob(
+                                        playlist = p,
+                                        preserveExistingExact =
+                                            preserveExistingExact,
+                                        requestedJobId =
+                                            recoveryJobId,
+                                        lastError =
+                                            "Search quota exceeded"
+                                    )
+
+                                updatePendingButton()
+
+                                "Пошук призупинено: з кешу ${result.cacheHits}, " +
                                     "API-запитів ${result.apiSearches}. " +
-                                    "Квота закінчилась; некешовані треки " +
-                                    "залишились без пошуку."
+                                    "Очікує пошуку: ${result.waitingQuotaCount}. " +
+                                    "Збережено в «Черзі» (${recoveryJob.playlistName})."
+                            }
 
                             else ->
                                 "Пошук завершено: з кешу ${result.cacheHits}, " +
@@ -2159,8 +2181,20 @@ class MainActivity : Activity() {
                         }
                     )
 
+                    if (
+                        !result.quotaBlocked &&
+                        !result.authorizationInvalidated
+                    ) {
+                        removeCompletedSearchRecovery(
+                            playlist = p,
+                            requestedJobId =
+                                recoveryJobId
+                        )
+                    }
+
                     updateSummary()
                     updateQuotaPanel()
+                    updatePendingButton()
 
                     if (
                         result.authorizationInvalidated
@@ -3017,6 +3051,14 @@ class MainActivity : Activity() {
     }
 
     private fun resumePendingJob(job: PendingJob) {
+        if (
+            job.operation ==
+                PendingOperation.SEARCH
+        ) {
+            resumePendingSearchJob(job)
+            return
+        }
+
         authorize {
             val token = accessToken ?: return@authorize
 
@@ -3088,6 +3130,200 @@ class MainActivity : Activity() {
                 tracks = tracks,
                 token = token,
                 operationLabel = "продовжено з черги"
+            )
+        }
+    }
+
+    private fun resumePendingSearchJob(
+        job: PendingJob
+    ) {
+        val snapshot =
+            job.searchSnapshot
+
+        if (snapshot == null) {
+            toast(
+                "У завданні пошуку немає збереженого snapshot"
+            )
+            return
+        }
+
+        val restored =
+            SearchRecoveryPolicy
+                .restore(snapshot)
+
+        playlist =
+            restored
+        currentImportSourceLabel =
+            job.sourceLabel
+        createdPlaylistId =
+            job.playlistId
+
+        visibleTracks.clear()
+        visibleTracks.addAll(
+            restored.tracks
+        )
+
+        adapter.notifyDataSetChanged()
+        updateSummary()
+        persistCurrentWorkspace()
+
+        status(
+            "Відновлено пошук із «Черги»: " +
+                "${restored.name} • " +
+                "${SearchRecoveryPolicy.waitingCount(snapshot)} " +
+                "треків очікують пошуку."
+        )
+
+        startSearch(
+            p = restored,
+            openReviewAfter = true,
+            preserveExistingExact =
+                job.preserveExistingExact,
+            resumeWaitingOnly = true,
+            recoveryJobId = job.id
+        )
+    }
+
+    private fun saveSearchRecoveryJob(
+        playlist: ImportedPlaylist,
+        preserveExistingExact: Boolean,
+        requestedJobId: String?,
+        lastError: String?
+    ): PendingJob {
+        val now =
+            System.currentTimeMillis()
+
+        val recoveryKey =
+            SearchRecoveryPolicy
+                .workspaceKey(
+                    sourceLabel =
+                        currentImportSourceLabel,
+                    playlist =
+                        playlist
+                )
+
+        val existing =
+            requestedJobId
+                ?.let(
+                    pendingJobStore::get
+                )
+                ?: pendingJobStore
+                    .findSearchByRecoveryKey(
+                        recoveryKey
+                    )
+
+        val snapshot =
+            SearchRecoveryPolicy
+                .snapshot(
+                    playlist
+                )
+
+        val job =
+            PendingJob(
+                id =
+                    existing?.id
+                        ?: UUID.randomUUID()
+                            .toString(),
+                createdAt =
+                    existing?.createdAt
+                        ?: now,
+                updatedAt =
+                    now,
+                sourceLabel =
+                    currentImportSourceLabel,
+                playlistName =
+                    playlist.name,
+                playlistId =
+                    createdPlaylistId,
+                privacyStatus =
+                    "search",
+                destination =
+                    PendingDestination
+                        .EXISTING_PLAYLIST,
+                googleEmail =
+                    googleAccountInfo
+                        ?.email,
+                youtubeChannelId =
+                    youtubeChannelInfo
+                        ?.id,
+                youtubeChannelTitle =
+                    youtubeChannelInfo
+                        ?.title,
+                totalCount =
+                    playlist.tracks
+                        .size,
+                addedCount =
+                    0,
+                failedCount =
+                    playlist.tracks
+                        .count {
+                            it.status ==
+                                TrackStatus.FAILED
+                        },
+                remainingTracks =
+                    emptyList(),
+                lastError =
+                    lastError,
+                operation =
+                    PendingOperation.SEARCH,
+                recoveryKey =
+                    recoveryKey,
+                preserveExistingExact =
+                    preserveExistingExact,
+                searchSnapshot =
+                    snapshot
+            )
+
+        pendingJobStore.upsert(
+            job
+        )
+
+        persistCurrentWorkspace()
+
+        return job
+    }
+
+    private fun removeCompletedSearchRecovery(
+        playlist: ImportedPlaylist,
+        requestedJobId: String?
+    ) {
+        val byId =
+            requestedJobId
+                ?.let(
+                    pendingJobStore::get
+                )
+
+        val job =
+            if (
+                byId?.operation ==
+                    PendingOperation.SEARCH
+            ) {
+                byId
+            } else {
+                val key =
+                    SearchRecoveryPolicy
+                        .workspaceKey(
+                            sourceLabel =
+                                currentImportSourceLabel,
+                            playlist =
+                                playlist
+                        )
+
+                pendingJobStore
+                    .findSearchByRecoveryKey(
+                        key
+                    )
+            }
+
+        if (
+            job != null &&
+            playlist.tracks.none {
+                it.status ==
+                    TrackStatus.WAITING_QUOTA
+            }
+        ) {
+            pendingJobStore.remove(
+                job.id
             )
         }
     }
@@ -3886,6 +4122,9 @@ class MainActivity : Activity() {
             track.status == TrackStatus.PENDING ->
                 "Очікує в Pending Queue"
 
+            track.status == TrackStatus.WAITING_QUOTA ->
+                "Очікує відновлення Search quota"
+
             track.status == TrackStatus.FAILED ->
                 track.error
                     ?.takeIf { it.isNotBlank() }
@@ -3962,6 +4201,8 @@ class MainActivity : Activity() {
                 "[дублікат — write-запит пропущено]"
             track.status == TrackStatus.MISSING -> "[не знайдено]"
             track.status == TrackStatus.PENDING -> "[очікує в черзі]"
+            track.status == TrackStatus.WAITING_QUOTA ->
+                "[очікує відновлення Search quota]"
             track.status == TrackStatus.FAILED &&
                 track.selectedTitle.isNullOrBlank() -> "[помилка]"
             track.selectedTitle == "Ручне посилання" ->
@@ -4013,7 +4254,11 @@ class MainActivity : Activity() {
 
         val pending =
             p.tracks.count {
-                it.status == TrackStatus.PENDING
+                it.status in
+                    setOf(
+                        TrackStatus.PENDING,
+                        TrackStatus.WAITING_QUOTA
+                    )
             }
 
         val missing =
