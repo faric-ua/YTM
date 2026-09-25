@@ -3,32 +3,30 @@ Version: 1.4.52
 Version code: 95
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Current accepted release (v1.4.51 YouTube/YTM URL/Mix Snapshot Import — FINAL):
-- active branch: `feat/v1.4.51-url-mix-snapshot`;
+Current accepted release (v1.4.52 URL Snapshot / Home UX Polish — FINAL):
+- active branch: `feat/v1.4.52-ux-polish`;
 - release documentation phase: final;
-- app identity: v1.4.51 / versionCode 94;
+- app identity: v1.4.52 / versionCode 95;
+- exact final tested app source: d857ce8c42511b16357060e6639ed67d548f9f31;
+- exact signed run: 36041226156;
+- release tag: v1.4.52;
+- stabilization checkpoint: checkpoint-v1.4.52-phone-pass;
+- stable publisher run: 36145617465 — PASS;
+- targeted phone QA: Tests 1–3 PASS;
+- UX-027 / UX-028 CLOSED;
+- duplicate chooser one-row + rotation + Cancel no-op passed;
+- unique snapshot handoff: 813 source rows → 320 saved → 493 duplicates;
+- History uses local-import semantics and no YTM write starts automatically;
+- Home `Деталі в Історії →` opens the exact just-created History detail;
+- stable GitHub Release includes APK, SHA-256 and updater manifest;
+- post-publication equal-version updater smoke remains.
+
+Previous stable release (v1.4.51 YouTube/YTM URL/Mix Snapshot Import — FINAL):
 - exact final tested app source: 226d2453ef3b4a34cb7db7be0c42ae84c8f624a0;
 - exact signed run: 35943953149;
 - release tag: v1.4.51;
 - stabilization checkpoint: checkpoint-v1.4.51-phone-pass;
-- targeted phone QA: U51-1+ / U51-2+ / U51-3+ / U51-4+ / U51-5+ / U51-6+;
-- concrete playlist URL preview/commit, dynamic-Mix unsupported handling, Cancel/Back, recreation safety, invalid-source rejection and explicit local handoff all passed;
-- final U51-6 dedupe handoff: 813 source rows → 320 saved first occurrences → 493 duplicates;
-- History/detail uses local-import semantics and does not show YTM write counters;
-- returning Home after handoff starts no create/add flow, queue or YTM write;
-- UX-024 / UX-025 / UX-026 / BUG-035 are closed on signed phone retests;
-- UX-027 / UX-028 remain open non-blocking polish;
-- previous stable v1.4.50 source/tag/checkpoint remain preserved as historical evidence;
-- repository changes are direct-GitHub by default; phone sync uses Termux menu item 1.
-
-Active development release (v1.4.52 URL Snapshot / Home UX Polish):
-- branch: feat/v1.4.52-ux-polish;
-- versionCode: 95;
-- UX-027: duplicate chooser implemented as one horizontal row: Всі (N) / Унікальні (U) / Скасувати;
-- UX-028: exact URL-snapshot History entry id is relayed to Home and opens direct History detail through an explicit affordance;
-- stale Home detail association clears on unrelated status; recreation state is preserved;
-- no intended URL resolver, Search, auth, quota or YTM-write semantic change;
-- static/full preflight and signed phone QA are next.
+- U51-1..U51-6 PASS and OTA stable smoke PASS.
 
 v1.4.12 NOT TESTED
 v1.4.13 PARTIALLY PHONE-TESTED
