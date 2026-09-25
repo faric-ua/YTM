@@ -83,7 +83,8 @@ class DestinationCoordinator(
     ): List<Track> =
         playlist.tracks.filter { track ->
             !track.selectedVideoId.isNullOrBlank() &&
-                track.status != TrackStatus.SKIPPED
+                track.status != TrackStatus.SKIPPED &&
+                track.status != TrackStatus.WAITING_QUOTA
         }
 
     fun cachedPlaylists(): List<YouTubePlaylistInfo> =
