@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.53-quota-recovery",
   "appSourceSha": null,
   "signedRun": null,
-  "qaStatus": "DEVELOPMENT — QUOTA RECOVERY IMPLEMENTATION IN PROGRESS",
+  "qaStatus": "STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null
