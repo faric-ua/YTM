@@ -32,25 +32,26 @@ Primary branch: `main`
 
 Current development application:
 
-- versionName: **1.4.52**
-- versionCode: **95**
-- release focus: **v1.4.52 — URL Snapshot / Home UX Polish — DEVELOPMENT**
-- release status: **DEVELOPMENT — UX-027/UX-028 IMPLEMENTED / STATIC+SIGNED BUILD PENDING**
-- active branch: `feat/v1.4.52-ux-polish`
-- release-start base HEAD: `2d3b39cbf965473a191b2df20522d0f0db623504`
-- accepted stable release: **v1.4.51 — YouTube/YTM URL/Mix Snapshot Import**
-- stable app checkpoint: `checkpoint-v1.4.51-phone-pass`
-- accepted stable app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
-- current architecture wave: **v1.4.52 URL Snapshot / Home UX Polish**
-- Wave 1: **URL matrix + parser/canonicalization + playlist-vs-Mix classification — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
-- Wave 2: **concrete-playlist resolver + ordered/unavailable result model + exact quota hook — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
-- Wave 3: **process-local single remote-operation owner + URL input/preview UI — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
-- Wave 4: **explicit local snapshot commit + CurrentPlaylist/History reuse + result handoff — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
-- Corrective R1: **fixed preview footer + exact duplicate choice + permanent SearchCache + persistent URL snapshot cache — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
-- Title metadata corrective: **official playlist title + cache enrichment + local History/Current Playlist backfill — IMPLEMENTED / STATIC+FULL PREFLIGHT PASS**
-- Title cachedAt corrective: **metadata-only title enrichment preserves the original snapshot timestamp — PHONE PASS on run 35921749405 / ba826563032da85fd99eb822c07342c56b2b60f6**
-- current v1.4.52 scope: **UX-027 one-row `Всі / Унікальні / Скасувати` chooser + UX-028 exact Home → History detail drill-down**
-- next release step: **full preflight → signed build → targeted phone QA**
+- versionName: **1.4.53**
+- versionCode: **96**
+- release focus: **v1.4.53 — Quota Recovery / Durable Resume**
+- release status: **IMPLEMENTED — STATIC/FULL PREFLIGHT PENDING**
+- active branch: `feat/v1.4.53-quota-recovery`
+- release-start base HEAD: `9d50e0d246423f933c440aeadea440019a3fdb5f`
+- accepted stable release: **v1.4.52 — URL Snapshot / Home UX Polish**
+- stable app checkpoint: `checkpoint-v1.4.52-phone-pass`
+- accepted stable app source: `d857ce8c42511b16357060e6639ed67d548f9f31`
+- accepted stable signed run: `36041226156`
+- stable OTA equal-version smoke: **PASS**
+- current architecture wave: **Quota Recovery / Durable Resume**
+- BUG-036: Search quota exhaustion persists a SEARCH recovery job with a full playlist snapshot instead of leaving the only recovery state in the current workspace.
+- BUG-037: local total API-unit estimate includes `search.list = 100 units` while keeping server HTTP 429 authoritative.
+- BUG-038: History durability remains investigation-only until controlled before/after History JSON evidence exists.
+- UX-029: Queue/search recovery copy points to the real explicit resume path.
+- SEARCH and WRITE jobs share the Queue surface but retain separate operation semantics.
+- `WAITING_QUOTA` tracks are excluded from destination write until Search recovery completes.
+- MainActivity remains under the historical 4100-line cleanup budget through `SearchRecoveryCoordinator`.
+- next release step: **exact-head static/full validation → signed build → targeted phone QA**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
