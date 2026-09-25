@@ -63,8 +63,8 @@ than opening stale History detail.
 
 ## Version
 
-- planned versionName: `1.4.52`
-- planned versionCode: `95`
+- versionName: `1.4.52`
+- versionCode: `95`
 - branch: `feat/v1.4.52-ux-polish`
 - stable baseline: `v1.4.51`
 - baseline tested app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
@@ -84,7 +84,7 @@ Implemented on `feat/v1.4.52-ux-polish`:
 
 ## Status
 
-**PHONE QA PASS — TARGETED UX-027/UX-028 ACCEPTED / FINAL RELEASE CLOSEOUT PENDING**
+**FINAL — TARGETED PHONE QA PASS / UX-027 + UX-028 CLOSED**
 
 Phone-tested app identity:
 - source: `d857ce8c42511b16357060e6639ed67d548f9f31`;
@@ -98,3 +98,18 @@ Targeted results:
 - Test 3 PASS: Home `Деталі в Історії →` opened the exact newly created History detail.
 
 This is a targeted v1.4.52 acceptance, not a claim that every historical full-app regression was rerun.
+
+## Stable publication
+
+Stable publication completed on 2026-09-25.
+
+- release tag: `v1.4.52`;
+- checkpoint tag: `checkpoint-v1.4.52-phone-pass`;
+- both tags point to the exact phone-tested app source `d857ce8c42511b16357060e6639ed67d548f9f31`;
+- exact accepted signed build remains GitHub Actions run `36041226156`;
+- stable publisher run: `36145617465` — PASS;
+- published assets: signed APK, APK SHA-256, and `YTM-Importer-update.json`;
+- no rebuild was used for stable publication.
+
+The equal-version production updater smoke remains a post-publication check.
+
