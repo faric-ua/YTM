@@ -1,49 +1,39 @@
 package com.saney.ytmimporter.storage
 
 import kotlin.math.max
-import kotlin.math.min
 
 object QuotaMath {
-    fun totalUnits(
-        searchCalls: Int,
-        nonSearchUnits: Int,
-        searchListCost: Int
+    fun generalUnits(
+        nonSearchUnits: Int
     ): Int =
-        max(0, nonSearchUnits) +
-            max(0, searchCalls) *
-                max(0, searchListCost)
+        max(
+            0,
+            nonSearchUnits
+        )
 
-    fun totalRemaining(
-        totalUnits: Int,
+    fun generalRemaining(
+        generalUnits: Int,
         dailyLimit: Int
     ): Int =
         max(
             0,
-            dailyLimit - max(0, totalUnits)
+            dailyLimit -
+                max(
+                    0,
+                    generalUnits
+                )
         )
 
     fun searchRemaining(
         searchCalls: Int,
-        searchDailyLimit: Int,
-        totalRemaining: Int,
-        searchListCost: Int
-    ): Int {
-        val byCalls =
-            max(
-                0,
-                searchDailyLimit -
-                    max(0, searchCalls)
-            )
-
-        val cost =
-            max(1, searchListCost)
-
-        val byUnits =
-            max(0, totalRemaining) / cost
-
-        return min(
-            byCalls,
-            byUnits
+        searchDailyLimit: Int
+    ): Int =
+        max(
+            0,
+            searchDailyLimit -
+                max(
+                    0,
+                    searchCalls
+                )
         )
-    }
 }
