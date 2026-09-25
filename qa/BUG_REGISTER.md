@@ -500,3 +500,8 @@ Repair direction:
   `Черга`.
 
 Real-phone startup silent recovery has been observed. The decisive aged/stale-token retest remains required before BUG-013 closes and is deferred until that state occurs naturally.
+
+| BUG-036 | OPEN — SEARCH QUOTA RESUME GAP | P1 | Search HTTP 429 leaves uncached tracks as FAILED in the current workspace but creates no Pending Queue job; phone evidence showed 2 ready / 20 failed and Queue 0. Need durable Search resume / waiting-quota semantics. | v1.4.52 post-release quota session 2026-09-25 |
+| BUG-037 | OPEN — QUOTA ACCOUNTING MODEL | P2 | `QuotaTracker.recordSearchCall()` increments searchCalls but not generalUnits, so “Загальна квота”/generalRemaining can stay high after Search quota exhaustion and can make write preflight over-optimistic. | v1.4.52 post-release quota session 2026-09-25 |
+| BUG-038 | OPEN — HISTORY DURABILITY INVESTIGATION | P1 | User reports an interrupted/quota-related History entry was visible during the prior session but is absent later. Current History has 69 entries, below the 100-entry trim cap, so normal eviction does not explain it. Requires controlled History JSON before/after reproduction. | v1.4.52 post-release quota session 2026-09-25 |
+| UX-029 | OPEN — SEARCH QUOTA RESUME COPY | P2 | Review says unfinished quota-blocked work can be continued while Search creates no Queue item; copy must distinguish Search resume from write Pending Queue and expose an explicit resume path. | linked to BUG-036 |
