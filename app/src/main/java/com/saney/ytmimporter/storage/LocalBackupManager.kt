@@ -39,8 +39,8 @@ class LocalBackupManager(
             .put("containsSensitiveData", true)
             .put(
                 "note",
-                "Backup may contain playlist history, Google email, " +
-                    "YouTube channel IDs and cached search results. " +
+                "Backup may contain playlist history, Search/Write Pending Queue jobs, " +
+                    "Google email, YouTube channel IDs and cached search results. " +
                     "It does NOT contain OAuth access tokens, passwords " +
                     "or signing keys. SearchCache and URL snapshot cache are persistent " +
                     "local knowledge. Local quota counters are included for " +
