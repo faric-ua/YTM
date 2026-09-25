@@ -17,7 +17,8 @@ Active development release (v1.4.53 Quota Recovery / Durable Resume):
 - BUG-038 remains OPEN / evidence-driven: no speculative History fix has been made;
 - MainActivity remains below the historical 4100-line cleanup budget after extraction to SearchRecoveryCoordinator;
 - static/full Validate Android PASS on source cf9e3778cc9e1010ba834ed865f6d1ff96c24b33, run 36176662561;
-- next gate: signed APK build from the synchronized exact branch HEAD, then targeted phone QA; no signed/phone PASS claimed yet.
+- signed build PASS: run 36178783613 from exact app source 454979093c0e108fe629aefe7db4bece97334575;
+- APK installed on phone; next gate: targeted v1.4.53 phone QA; no phone PASS claimed yet.
 
 Current accepted release (v1.4.52 URL Snapshot / Home UX Polish — FINAL):
 - active branch: `feat/v1.4.52-ux-polish`;
