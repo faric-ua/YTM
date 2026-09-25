@@ -535,7 +535,8 @@ object PlaylistProjectCodec {
 
             TrackStatus.ADDED,
             TrackStatus.DUPLICATE,
-            TrackStatus.PENDING ->
+            TrackStatus.PENDING,
+            TrackStatus.WAITING_QUOTA ->
                 if (hasExactSelection) {
                     TrackStatus.MATCHED
                 } else {
