@@ -139,13 +139,17 @@ class TrackAdapter(
         TrackStatus.SKIPPED -> "— пропуск"
         TrackStatus.DUPLICATE -> "⧉ дублікат"
         TrackStatus.PENDING -> "⏳ черга"
+        TrackStatus.WAITING_QUOTA -> "⏳ квота"
         TrackStatus.ADDED -> "✓ додано"
         TrackStatus.FAILED -> "× помилка"
     }
 
     private fun statusColor(status: TrackStatus): Int = when (status) {
         TrackStatus.MATCHED, TrackStatus.ADDED -> Color.rgb(63, 196, 109)
-        TrackStatus.REVIEW, TrackStatus.PENDING -> Color.rgb(255, 193, 7)
+        TrackStatus.REVIEW,
+        TrackStatus.PENDING,
+        TrackStatus.WAITING_QUOTA ->
+            Color.rgb(255, 193, 7)
         TrackStatus.DUPLICATE -> Color.rgb(120, 170, 255)
         TrackStatus.MISSING, TrackStatus.FAILED -> Color.rgb(255, 92, 92)
         else -> Color.rgb(170, 172, 178)
