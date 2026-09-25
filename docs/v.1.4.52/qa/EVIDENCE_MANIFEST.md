@@ -10,3 +10,7 @@
 | Test 2 Home after unique commit | conversation screenshot, 2026-09-24 | installed v1.4.52, current `mylist` has 320 tracks, explicit `Деталі в Історії →` affordance visible | Conversation only; binary not committed |
 | Test 2 History list/detail | conversation screenshots, 2026-09-24 | newest local import shows 320 imported / 493 duplicates and local-import semantics | Conversation only; binaries not committed |
 | Test 3 exact drill-down | user result `3+`, 2026-09-24 | Home detail affordance opened the exact just-created History detail | Conversation evidence |
+| Stable publisher | GitHub Actions run `36145617465`, 2026-09-25 | stable release publication completed successfully | GitHub Actions |
+| Release tag | `v1.4.52` | points to exact phone-tested source `d857ce8c42511b16357060e6639ed67d548f9f31` | GitHub |
+| Checkpoint tag | `checkpoint-v1.4.52-phone-pass` | points to the same exact phone-tested source | GitHub |
+| Stable assets | GitHub Release `v1.4.52` | APK + SHA-256 + updater manifest published | GitHub Release |
