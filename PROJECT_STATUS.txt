@@ -6,7 +6,7 @@ Current live resume snapshot: CURRENT_HANDOFF.md
 Active development release (v1.4.53 Quota Recovery / Durable Resume):
 - branch: `feat/v1.4.53-quota-recovery`;
 - versionName / versionCode: 1.4.53 / 96;
-- release phase: development — BUG-037 granular-quota patch, static/full validation pending;
+- release phase: development — granular-quota patch validation + signed build PASS; phone retest pending;
 - stable baseline remains v1.4.52 / source d857ce8c42511b16357060e6639ed67d548f9f31 / signed run 36041226156;
 - BUG-036 implementation: Search quota exhaustion uses WAITING_QUOTA and persists a SEARCH recovery job with a full playlist snapshot in the existing Pending Queue store;
 - Queue distinguishes SEARCH and WRITE jobs; Search Resume is explicit and processes only waiting Search tracks;
@@ -18,7 +18,9 @@ Active development release (v1.4.53 Quota Recovery / Durable Resume):
 - MainActivity remains below the historical 4100-line cleanup budget after extraction to SearchRecoveryCoordinator;
 - static/full Validate Android PASS on source cf9e3778cc9e1010ba834ed865f6d1ff96c24b33, run 36176662561;
 - historical signed candidate run 36178783613 / source 454979093c0e108fe629aefe7db4bece97334575 is superseded by BUG-037 phone findings;
-- next gate: static/full validation of patch, new signed candidate, install-over-data, then targeted quota recovery retest; no phone PASS claimed.
+- quota-fix validation PASS: run 36194608351 from exact source ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5;
+- quota-fix signed build PASS: run 36195438071 from the same exact source;
+- next gate: install over existing app data, then targeted BUG-037/BUG-036 + WRITE queue retest; no phone PASS claimed.
 
 Current accepted release (v1.4.52 URL Snapshot / Home UX Polish — FINAL):
 - active branch: `feat/v1.4.52-ux-polish`;
