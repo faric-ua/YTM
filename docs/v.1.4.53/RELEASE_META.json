@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "versionName": "1.4.53",
+  "versionCode": 96,
+  "phase": "planned",
+  "feature": "Quota Recovery / Durable Resume",
+  "branch": "feat/v1.4.53-quota-recovery",
+  "appSourceSha": null,
+  "signedRun": null,
+  "qaStatus": "PLANNED — DOCUMENTATION SKELETON READY / APP CODE NOT STARTED",
+  "tag": null,
+  "checkpointTag": null,
+  "phoneTestDate": null
+}
