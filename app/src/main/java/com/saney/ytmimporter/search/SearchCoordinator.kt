@@ -237,11 +237,7 @@ class SearchCoordinator(
             } catch (
                 error: Exception
             ) {
-                if (
-                    isAuthorizationFailure(
-                        error
-                    )
-                ) {
+                if (isAuthorizationFailure(error)) {
                     // A 401 is a session failure, not a track failure.
                     // Keep the workspace retryable and stop before producing
                     // the same misleading error for every remaining track.
@@ -255,9 +251,7 @@ class SearchCoordinator(
                         trackIndex
                     )
 
-                    onAuthorizationInvalidated(
-                        error
-                    )
+                    onAuthorizationInvalidated(error)
 
                     onProgress(
                         SearchProgress(
