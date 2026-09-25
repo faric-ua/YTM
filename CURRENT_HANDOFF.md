@@ -42,7 +42,9 @@ Current release state:
 - MainActivity recovery helpers were extracted to `SearchRecoveryCoordinator` to remain under the 4100-line audit budget.
 - static/full validation PASS on source `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`, Validate Android run `36176662561` — SUCCESS.
 - historical signed candidate run `36178783613` / source `454979093c0e108fe629aefe7db4bece97334575` exposed BUG-037 on phone and is superseded.
-- current gate: validate granular-quota patch → new signed build → install over existing data → targeted BUG-037/BUG-036 phone retest.
+- granular-quota patch validation PASS: run `36194608351`, exact source `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
+- new signed candidate PASS: run `36195438071`, same exact source.
+- current gate: install over existing v1.4.53 data → verify quota UI/data preservation → targeted BUG-037/BUG-036 phone retest.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
