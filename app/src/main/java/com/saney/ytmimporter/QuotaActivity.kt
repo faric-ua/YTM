@@ -90,7 +90,7 @@ class QuotaActivity : Activity() {
             card().apply {
                 addView(
                     statLine(
-                        "Пошук",
+                        "Search запити",
                         "${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT}"
                     )
                 )
@@ -102,13 +102,13 @@ class QuotaActivity : Activity() {
                 )
                 addView(
                     statLine(
-                        "Загальна квота",
+                        "Загальні API units",
                         "${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT}"
                     )
                 )
                 addView(
                     statLine(
-                        "Залишилось units",
+                        "Залишилось API units",
                         "≈ ${quota.generalRemaining}"
                     )
                 )
