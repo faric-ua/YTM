@@ -61,13 +61,13 @@ Current implementation:
 - removes a SEARCH recovery job only after no waiting-quota tracks remain;
 - distinguishes SEARCH and WRITE in Queue UI;
 - excludes WAITING_QUOTA from destination write candidates;
-- includes Search cost in the local total-unit estimate through `QuotaMath`;
+- tracks `search.list` in its own 100-calls/day Search bucket and keeps the 10,000-unit estimate for non-Search endpoints only;
 - reuses `pending_jobs_v1`, so existing Full Backup / Restore includes Search recovery state;
 - intentionally makes no speculative HistoryStore change for BUG-038.
 
 ## Status
 
-**SIGNED BUILD PASS — PHONE QA PENDING**
+**BUG-037 PATCH — STATIC/FULL VALIDATION PENDING**
 
 Validation evidence:
 - exact validated source HEAD: `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`;
@@ -76,4 +76,4 @@ Validation evidence:
 - JVM unit tests: PASS;
 - unsigned release assemble: PASS.
 
-Signed APK build passed on run `36178783613` from exact app source `454979093c0e108fe629aefe7db4bece97334575`. The APK has been installed on the phone. Phone acceptance is not claimed yet.
+Historical signed candidate run `36178783613` from app source `454979093c0e108fe629aefe7db4bece97334575` was installed on the phone and exposed BUG-037: Search was incorrectly charged into the legacy 10,000-unit bucket. Google moved `search.list` to its own granular quota bucket on 2026-06-01. The candidate is superseded; the granular-quota patch requires static/full validation, a new signed build and targeted phone retest.
