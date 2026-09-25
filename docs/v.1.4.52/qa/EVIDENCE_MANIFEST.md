@@ -14,3 +14,4 @@
 | Release tag | `v1.4.52` | points to exact phone-tested source `d857ce8c42511b16357060e6639ed67d548f9f31` | GitHub |
 | Checkpoint tag | `checkpoint-v1.4.52-phone-pass` | points to the same exact phone-tested source | GitHub |
 | Stable assets | GitHub Release `v1.4.52` | APK + SHA-256 + updater manifest published | GitHub Release |
+| OTA equal-version smoke | conversation screenshot, 2026-09-25 | installed `1.4.52 (95)` matched stable `1.4.52 (95)`; updater showed `Оновлень немає` and offered no download/install | Conversation only; binary not committed |
