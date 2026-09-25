@@ -5,47 +5,46 @@ import org.junit.Test
 
 class QuotaMathTest {
     @Test
-    fun searchCallsContributeToTotalUnits() {
-        val total =
-            QuotaMath.totalUnits(
-                searchCalls = 98,
-                nonSearchUnits = 5771,
-                searchListCost = 100
-            )
-
+    fun generalUnitsExcludeSearchBucket() {
         assertEquals(
-            15571,
-            total
+            5771,
+            QuotaMath.generalUnits(
+                nonSearchUnits = 5771
+            )
         )
 
         assertEquals(
-            0,
-            QuotaMath.totalRemaining(
-                totalUnits = total,
+            4229,
+            QuotaMath.generalRemaining(
+                generalUnits = 5771,
                 dailyLimit = 10000
             )
         )
     }
 
     @Test
-    fun searchRemainingIsLimitedByTotalUnitBudget() {
-        assertEquals(
-            2,
-            QuotaMath.searchRemaining(
-                searchCalls = 80,
-                searchDailyLimit = 100,
-                totalRemaining = 250,
-                searchListCost = 100
-            )
-        )
-
+    fun searchRemainingUsesOnlySearchBucket() {
         assertEquals(
             20,
             QuotaMath.searchRemaining(
                 searchCalls = 80,
-                searchDailyLimit = 100,
-                totalRemaining = 5000,
-                searchListCost = 100
+                searchDailyLimit = 100
+            )
+        )
+
+        assertEquals(
+            0,
+            QuotaMath.searchRemaining(
+                searchCalls = 100,
+                searchDailyLimit = 100
+            )
+        )
+
+        assertEquals(
+            0,
+            QuotaMath.searchRemaining(
+                searchCalls = 120,
+                searchDailyLimit = 100
             )
         )
     }
