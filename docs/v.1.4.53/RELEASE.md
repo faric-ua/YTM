@@ -67,7 +67,7 @@ Current implementation:
 
 ## Status
 
-**STATIC/FULL PREFLIGHT PASS — SIGNED BUILD + PHONE QA PENDING**
+**SIGNED BUILD PASS — PHONE QA PENDING**
 
 Validation evidence:
 - exact validated source HEAD: `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`;
@@ -76,4 +76,4 @@ Validation evidence:
 - JVM unit tests: PASS;
 - unsigned release assemble: PASS.
 
-No signed APK or phone acceptance is claimed yet.
+Signed APK build passed on run `36178783613` from exact app source `454979093c0e108fe629aefe7db4bece97334575`. The APK has been installed on the phone. Phone acceptance is not claimed yet.
