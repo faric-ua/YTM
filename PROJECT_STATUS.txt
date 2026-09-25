@@ -6,19 +6,19 @@ Current live resume snapshot: CURRENT_HANDOFF.md
 Active development release (v1.4.53 Quota Recovery / Durable Resume):
 - branch: `feat/v1.4.53-quota-recovery`;
 - versionName / versionCode: 1.4.53 / 96;
-- release phase: development — static/full validation PASS;
+- release phase: development — BUG-037 granular-quota patch, static/full validation pending;
 - stable baseline remains v1.4.52 / source d857ce8c42511b16357060e6639ed67d548f9f31 / signed run 36041226156;
 - BUG-036 implementation: Search quota exhaustion uses WAITING_QUOTA and persists a SEARCH recovery job with a full playlist snapshot in the existing Pending Queue store;
 - Queue distinguishes SEARCH and WRITE jobs; Search Resume is explicit and processes only waiting Search tracks;
 - current-workspace replacement/restart cannot be the only copy of unfinished Search work because the Search snapshot is stored in pending_jobs_v1;
-- BUG-037 implementation: local total API-unit estimate includes search.list at 100 units/call while preserving the historical non-search counter storage format;
+- BUG-037 phone reproduction proved that model stale after Google's 2026-06-01 quota change; patched model tracks Search separately (100 calls/day) and keeps the 10,000-unit bucket for non-Search endpoints;
 - WAITING_QUOTA tracks are excluded from destination write until Search is resumed/resolved;
 - Full Backup/Restore already includes pending_jobs_v1, therefore it carries Search recovery jobs;
 - BUG-038 remains OPEN / evidence-driven: no speculative History fix has been made;
 - MainActivity remains below the historical 4100-line cleanup budget after extraction to SearchRecoveryCoordinator;
 - static/full Validate Android PASS on source cf9e3778cc9e1010ba834ed865f6d1ff96c24b33, run 36176662561;
-- signed build PASS: run 36178783613 from exact app source 454979093c0e108fe629aefe7db4bece97334575;
-- APK installed on phone; next gate: targeted v1.4.53 phone QA; no phone PASS claimed yet.
+- historical signed candidate run 36178783613 / source 454979093c0e108fe629aefe7db4bece97334575 is superseded by BUG-037 phone findings;
+- next gate: static/full validation of patch, new signed candidate, install-over-data, then targeted quota recovery retest; no phone PASS claimed.
 
 Current accepted release (v1.4.52 URL Snapshot / Home UX Polish — FINAL):
 - active branch: `feat/v1.4.52-ux-polish`;
