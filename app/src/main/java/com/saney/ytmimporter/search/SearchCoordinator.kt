@@ -376,9 +376,7 @@ class SearchCoordinator(
 
         if (
             preserveExistingExact &&
-            hasCanonicalExactSelection(
-                track
-            )
+            hasCanonicalExactSelection(track)
         ) {
             return false
         }
@@ -404,9 +402,7 @@ class SearchCoordinator(
 
         val keepExactSelection =
             preserveExistingExact &&
-                hasCanonicalExactSelection(
-                    track
-                )
+                hasCanonicalExactSelection(track)
 
         return if (
             keepExactSelection
