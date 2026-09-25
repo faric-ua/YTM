@@ -2,46 +2,42 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-24**
+Last updated: **2026-09-25**
 
 ## 1. Resume point
 
 Repository: `faric-ua/YTM`
 
 Latest stable release:
-- **v1.4.51 / versionCode 94**
-- GitHub Release/tag: `v1.4.51`
-- exact final app source: `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
-- exact signed run: `35943953149`
-- stabilization checkpoint: `checkpoint-v1.4.51-phone-pass`
-- result: **PHONE QA PASS — U51-1..U51-6 complete**
-- scope: targeted YouTube/YTM URL/Mix Snapshot Import acceptance; no broad full-app regression claim.
+- **v1.4.52 / versionCode 95**
+- GitHub Release/tag: `v1.4.52`
+- exact final app source: `d857ce8c42511b16357060e6639ed67d548f9f31`
+- exact signed run: `36041226156`
+- stabilization checkpoint: `checkpoint-v1.4.52-phone-pass`
+- stable publisher run: `36145617465` — PASS
+- result: **PHONE QA PASS — targeted Tests 1–3 complete; UX-027/UX-028 closed**
+- scope: targeted URL Snapshot / Home UX Polish acceptance; no broad full-app regression claim.
+- stable assets: signed APK, APK SHA-256 and `YTM-Importer-update.json`.
+- remaining post-publication check: equal-version updater smoke.
 
 Previous stable release:
-- **v1.4.50 / versionCode 93**
-- release tag/checkpoint remain immutable on `66d06d6912d014efb3a98d317ed49355a5fa3078`.
+- **v1.4.51 / versionCode 94**
+- release tag/checkpoint remain immutable on `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
+- OTA equal-version stable smoke: PASS.
 
 Current release state:
 - versionName: **1.4.52**
 - versionCode: **95**
 - feature: **URL Snapshot / Home UX Polish**
 - branch: `feat/v1.4.52-ux-polish`
-- phase: **development**
-- stable baseline: v1.4.51 / source `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0` / run `35943953149`
-- UX-027 implementation: duplicate choice is one equal-width horizontal row with `Всі (N)`, `Унікальні (U)`, `Скасувати`; Cancel returns to the same preview without commit.
-- UX-028 implementation: URL snapshot commit now returns the exact created History entry id through UrlSnapshotActivity → ImportActivity → MainActivity; Home shows a dedicated `Деталі в Історії →` affordance and HistoryActivity opens that exact entry.
-- Home status/detail association is saved across MainActivity recreation; unrelated later status clears the association.
-- no intended resolver/cache/Search/auth/quota/YTM-write behavior changes.
-- v1.4.52 documentation skeleton and Mermaid flow were created before app-code changes.
-- release preflight includes `scripts/v1452-ux-polish-audit.sh`.
-- next gate: **full preflight / signed build**, then targeted phone QA 1–3.
-- v1.4.51 remains immutable stable release with `OTA+`.
-- phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned **YTM Termux menu** by default.
-- **Operational rule:** when the YTM Termux menu has an equivalent action, use the menu instead of giving raw Git/gh shell commands. Manual commands are fallback/recovery only.
-- `Sync YTM` now detects the newest `feat/v*` release branch and safely switches the phone to it before syncing, preventing builds from accidentally running on the just-closed release branch.
-- Termux menu startup now self-heals YTM `origin` from the old SSH form (`git@github.com:faric-ua/YTM.git`) to HTTPS before network Git operations, avoiding phone-side SSH-key dependency.
-- `Sync YTM` now fetches the current branch before `merge-base` ancestry checks; this avoids false `Not a valid commit name` / diverged errors when `ls-remote` reports a new remote SHA that is not yet present in the phone object database.
-- Menu contract: 1=Sync, 2=Status, 3=Download signed APK, 4=Open/re-verify exact APK folder, 5=YTM shell, 6=Build signed APK manually.
+- phase: **final**
+- UX-027: CLOSED / PHONE PASS.
+- UX-028: CLOSED / PHONE PASS.
+- stable publication: PASS.
+- exact phone-tested package identity remains `d857ce8c...` / run `36041226156`; no rebuild was substituted.
+- next action: sync final-doc HEAD, verify Termux item 7 reports `CLOSEOUT: FINAL`, then run the equal-version production updater smoke.
+- phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
+- operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
 R2 signed-build attempt evidence:
 - GitHub Actions run: **35476795879**
@@ -396,20 +392,16 @@ Rules:
 - Automatic `Validate Android` exact-HEAD gate is installed; Termux item 6 requires validation PASS before signed-build dispatch.
 - Next step: final v1.4.52 closeout — finalize release docs/meta, stable/checkpoint tags on the tested app source, publish durable release assets, run final close audit, then stable OTA smoke if required.
 
-## Resume point — 2026-09-25 v1.4.52 stable-release finalizer
+## Resume point — 2026-09-25 v1.4.52 stable publication PASS
 
 - Branch: `feat/v1.4.52-ux-polish`.
 - Exact phone-tested app source remains immutable: `d857ce8c42511b16357060e6639ed67d548f9f31`.
-- Exact accepted signed APK run remains: `36041226156`.
-- Phone QA Tests 1–3 remain PASS; UX-027/UX-028 CLOSED.
-- Self-service Termux menu now includes:
-  - item 7 — `Release status`;
-  - item 8 — `Finalize stable release`.
-- First item-8 attempt failed after APK verification because plain HTTPS `git push` had no Git credentials. Finalizer was changed to create tags through authenticated `gh api`.
-- Second item-8 attempt failed because missing-tag HTTP 404 JSON was captured as if it were a SHA. Finalizer was changed so a missing tag is treated as absent and is then created.
-- Exact fixed finalizer source HEAD before this handoff note: `caa16e88e1340d3b47183b5f774e1e3a9a8baca7`.
-- Exact-head validation for that fix: run `36081259054` — SUCCESS.
-- At the time of this handoff, remote `v1.4.52` tag does not exist and GitHub Release `v1.4.52` does not exist; no partial stable publication must be assumed.
-- Next phone action after syncing the latest branch and confirming exact-head validation PASS: menu item `8 — Finalize stable release`, confirm with `y`.
-- Expected success marker: `RELEASE PUBLICATION PASS`. After that, ChatGPT must finalize release metadata/docs, run final close audit, verify item 7 reaches `CLOSEOUT: FINAL`, and perform the equal-version stable updater smoke if still required.
-- Do not rebuild the app for closeout; stable publication must reuse the exact phone-tested APK from run `36041226156` / source `d857ce8...`.
+- Exact accepted signed APK run: `36041226156`.
+- Phone QA Tests 1–3: PASS; UX-027/UX-028 CLOSED.
+- Final stable tag: `v1.4.52`.
+- Final checkpoint: `checkpoint-v1.4.52-phone-pass`.
+- Both tags point to the exact phone-tested app source.
+- Stable publisher run `36145617465`: SUCCESS.
+- GitHub Release `v1.4.52`: published with APK, SHA-256 and updater manifest.
+- No app rebuild was performed during release closeout.
+- Next phone step after syncing the final-doc HEAD: menu item 7 must show `CLOSEOUT: FINAL`; then run the equal-version updater check. Expected result for installed/stable `1.4.52 (95)`: `Оновлень немає`.
