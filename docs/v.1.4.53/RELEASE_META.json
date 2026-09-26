@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.53-quota-recovery",
   "appSourceSha": "ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5",
   "signedRun": 36195438071,
-  "qaStatus": "SIGNED BUILD PASS — BUG-037/BUG-036 PHONE RETEST PENDING",
+  "qaStatus": "PHONE QA IN PROGRESS — TESTS 1/2/4 PASS; TEST 3 + HISTORY POST-RESET COMPARISON PENDING",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null
