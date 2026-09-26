@@ -111,4 +111,17 @@ Stable publication completed on 2026-09-26.
 - published APK SHA-256: `841019959d02d4e5368a6cc954d815563ac85535e7bc4a577b69653d21acaf2e`;
 - no rebuild was used for stable publication.
 
-The equal-version production updater smoke remains a post-publication check.
+## OTA equal-version smoke
+
+Post-publication phone smoke passed on 2026-09-26.
+
+Installed:
+- YTM Importer `1.4.53 (96)`.
+
+Production updater result:
+- `Оновлень немає`;
+- `Встановлена версія відповідає поточній стабільній версії`;
+- stable version displayed as `1.4.53 (96)`;
+- no APK download/install action was offered.
+
+Result: **OTA+ / PASS**.
