@@ -1165,26 +1165,10 @@ class MainActivity : Activity() {
             }
 
             historyScreenRequestCode -> {
-                reloadCurrentWorkspace(
-                    force = true
-                )
-
-                val restoredName =
-                    data.getStringExtra(
-                        HistoryActivity
-                            .EXTRA_RESTORED_PLAYLIST_NAME
-                    )
-                        .orEmpty()
-                        .ifBlank {
-                            playlist
-                                ?.name
-                                .orEmpty()
-                        }
-
+                reloadCurrentWorkspace(force = true)
                 status(
-                    "Відновлено з History як поточний плейлист: " +
-                        restoredName +
-                        ". Пошук і запис у YTM не запускались."
+                    "Відновлено з History: ${playlist?.name.orEmpty()}. " +
+                        "Search і запис у YTM не запускались."
                 )
             }
 
@@ -3626,9 +3610,8 @@ class MainActivity : Activity() {
         historyStore.upsert(
             entry.copy(
                 localPlaylistId =
-                    currentPlaylistStore
-                        .load()
-                        ?.localPlaylistId
+                    currentPlaylistStore.load()?.localPlaylistId
+                        ?: existing?.localPlaylistId
             )
         )
     }
@@ -3651,10 +3634,7 @@ class MainActivity : Activity() {
 
     private fun showHistory() {
         startActivityForResult(
-            Intent(
-                this,
-                HistoryActivity::class.java
-            ),
+            Intent(this, HistoryActivity::class.java),
             historyScreenRequestCode
         )
     }
