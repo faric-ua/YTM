@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -u
 
-REPO="/storage/emulated/0/Documents/YTM"
+REPO="${YTM_REPO_DIR:-$HOME/YTM}"
 TOOLS="$REPO/tools/termux"
 
 # A Termux session can inherit a working directory that was removed by a prior
