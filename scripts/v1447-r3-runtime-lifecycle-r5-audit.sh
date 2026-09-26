@@ -90,7 +90,12 @@ if 'onTrackStart(' not in write[loop:loop_end]:
 
 # Main connects write callbacks to detailed relay.
 execute_start = main.index('private fun executeWriteJob(')
-execute_end = main.index('private fun showQuotaPausedDialog(', execute_start)
+pause_marker = (
+    'private fun showWritePausedDialog('
+    if 'private fun showWritePausedDialog(' in main
+    else 'private fun showQuotaPausedDialog('
+)
+execute_end = main.index(pause_marker, execute_start)
 execute = main[execute_start:execute_end]
 for needle in [
     'workflowRelay.showWriteProgress(',
