@@ -2997,7 +2997,17 @@ class MainActivity : Activity() {
                     }
 
                     is PlaylistWriteCoordinator.WriteOutcome.PausedForQuota -> {
-                        showQuotaPausedDialog(outcome.job)
+                        showWritePausedDialog(
+                            job = outcome.job,
+                            userMessage = outcome.userMessage
+                        )
+                    }
+
+                    is PlaylistWriteCoordinator.WriteOutcome.PausedForLimit -> {
+                        showWritePausedDialog(
+                            job = outcome.job,
+                            userMessage = outcome.userMessage
+                        )
                     }
 
                     is PlaylistWriteCoordinator.WriteOutcome.AuthorizationInvalidated -> {
@@ -3024,7 +3034,10 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun showQuotaPausedDialog(job: PendingJob) {
+    private fun showWritePausedDialog(
+        job: PendingJob,
+        userMessage: String
+    ) {
         val playlistInfo =
             if (job.playlistId.isNullOrBlank()) {
                 "Плейлист ще не створений."
@@ -3035,14 +3048,13 @@ class MainActivity : Activity() {
         UiChrome.alertBuilder(this)
             .setTitle("Операцію призупинено")
             .setMessage(
-                "YouTube API повідомив про вичерпання квоти.\n\n" +
+                "$userMessage\n\n" +
                     "Вже додано: ${job.addedCount}/${job.totalCount}\n" +
                     "Помилок: ${job.failedCount}\n" +
                     "У черзі: ${job.remainingTracks.size}\n" +
                     "$playlistInfo\n\n" +
-                    "Невиконані треки збережені локально. " +
-                    "Відкрийте «Черга» і натисніть «Продовжити», " +
-                    "коли квота відновиться."
+                    "Автоматичного повтору не буде. " +
+                    "Продовження запускається тільки вручну з «Черги»."
             )
             .setNegativeButton("Закрити") { _, _ ->
                 reopenDelegatedParentAfterAction()
@@ -3139,7 +3151,8 @@ class MainActivity : Activity() {
             executeWriteJob(
                 initialJob = job.copy(
                     updatedAt = System.currentTimeMillis(),
-                    lastError = null
+                    lastError = null,
+                    pauseReason = null
                 ),
                 tracks = tracks,
                 token = token,
@@ -3206,7 +3219,10 @@ class MainActivity : Activity() {
             "Інші API units уже враховано: ${quota.generalUnits}/" +
             "${QuotaTracker.GENERAL_DAILY_LIMIT} units\n" +
             "Орієнтовно залишилось: ${quota.generalRemaining} units" +
-            warning
+            warning +
+            "\n\nGoogle може окремо тимчасово обмежити частоту write-запитів " +
+            "(наприклад, часте створення плейлистів). У такому разі операція " +
+            "буде збережена в «Черзі» без автоматичних повторів."
     }
 
     private fun updateQuotaPanel() {
