@@ -12,7 +12,8 @@ data class CurrentPlaylistSnapshot(
     val playlist: ImportedPlaylist,
     val sourceLabel: String,
     val updatedAt: Long,
-    val destinationPlaylistId: String? = null
+    val destinationPlaylistId: String? = null,
+    val destinationPlaylistTitle: String? = null
 )
 
 class CurrentPlaylistStore(
@@ -28,7 +29,8 @@ class CurrentPlaylistStore(
     fun save(
         playlist: ImportedPlaylist,
         sourceLabel: String,
-        destinationPlaylistId: String? = null
+        destinationPlaylistId: String? = null,
+        destinationPlaylistTitle: String? = null
     ) {
         val root =
             JSONObject()
@@ -38,6 +40,10 @@ class CurrentPlaylistStore(
                 .putNullable(
                     "destinationPlaylistId",
                     destinationPlaylistId
+                )
+                .putNullable(
+                    "destinationPlaylistTitle",
+                    destinationPlaylistTitle
                 )
                 .put("playlist", playlistToJson(playlist))
 
@@ -83,6 +89,10 @@ class CurrentPlaylistStore(
                 destinationPlaylistId =
                     root.optNullableString(
                         "destinationPlaylistId"
+                    ),
+                destinationPlaylistTitle =
+                    root.optNullableString(
+                        "destinationPlaylistTitle"
                     )
             )
         }.getOrNull()
@@ -341,6 +351,6 @@ class CurrentPlaylistStore(
             "current_playlist_json"
 
         private const val SCHEMA_VERSION =
-            2
+            3
     }
 }
