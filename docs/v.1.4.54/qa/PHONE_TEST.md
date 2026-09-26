@@ -110,6 +110,31 @@ Result notation: `UX030+` / `UX030-`.
 After `UX030+`, begin History Recovery Tests 1–2. Bulk Sync Tests 3+ stay blocked until the History Recovery contract is implemented.
 
 
+### UX-030 phone result — 2026-09-27: UX030+
+
+Exact installed candidate:
+- source: `90d470ddbe6d7158613f7a069d8f6cd3596804dc`;
+- Validate Android run: `36272701416` — PASS;
+- signed build run: `36276086140` — PASS.
+
+Observed on real phone:
+- linked workspace `The Prodigy - What Evil Lurks (1991)` showed `Пов'язано з YTM` on Home and Playlist Hub;
+- Playlist Hub exposed the persisted YTM playlist ID;
+- linked History list/detail agreed and detail exposed the persisted YTM ID with `Додано в YTM 4/4`;
+- rotation/restart preserved the linked wording and did not auto-start Search or WRITE;
+- fresh local import `The Prodigy - Promotional Singles / Official Promo Tracks (1994)` naturally showed `Очікує Search` before search;
+- its Search plan showed 12 tracks, 11 cache hits and 1 new `search.list` request;
+- after search completed, Home and Playlist Hub showed `Лише локально`;
+- the corresponding local-import History detail also showed `Лише локально`, type `Локальний імпорт`, result `Імпортовано 12 треків`, and no YTM ID;
+- no title-only linkage was invented;
+- pending WRITE state was not manufactured because no natural pending WRITE was available.
+
+Result:
+- **UX030+ / PHONE PASS**.
+- History Recovery Tests 1–2 may begin.
+- Bulk Sync Tests 3+ remain blocked until the History Recovery contract is implemented.
+
+
 ## Test 1 — Search work survives workspace replacement
 
 1. Import playlist A with at least 4 uncached tracks.
