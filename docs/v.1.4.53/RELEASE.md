@@ -67,19 +67,33 @@ Current implementation:
 
 ## Status
 
-**SIGNED BUILD PASS — BUG-037/BUG-036 PHONE RETEST PENDING**
+**PHONE QA PASS — READY FOR STABLE PUBLICATION**
 
-Validation evidence:
-- exact validated source HEAD: `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`;
-- Validate Android run: `36176662561` — **SUCCESS**;
-- release preflight: PASS;
-- JVM unit tests: PASS;
-- unsigned release assemble: PASS.
+Accepted phone-tested app identity:
+- app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`;
+- signed run: `36195438071`;
+- version: `1.4.53 (96)`;
+- phone-test date: `2026-09-26`.
 
-Historical signed candidate run `36178783613` from app source `454979093c0e108fe629aefe7db4bece97334575` was installed on the phone and exposed BUG-037: Search was incorrectly charged into the legacy 10,000-unit bucket. Google moved `search.list` to its own granular quota bucket on 2026-06-01. The candidate is superseded; the granular-quota patch requires static/full validation, a new signed build and targeted phone retest.
+Validation/build evidence:
+- Validate Android run: `36194608351` — **SUCCESS** on the exact app source;
+- Build Signed Android APK run: `36195438071` — **SUCCESS** on the same app source.
 
-Quota-fix validation/signed candidate:
-- exact source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`;
-- Validate Android run: `36194608351` — **SUCCESS**;
-- Build Signed Android APK run: `36195438071` — **SUCCESS**;
-- next gate: install over existing v1.4.53 data and retest BUG-037/BUG-036 plus queued WRITE regression.
+Targeted phone results:
+- Test 1 PASS — Search quota stop created a durable SEARCH job; resolved tracks stayed resolved; Queue detail survived rotation without auto-resume;
+- Test 2 PASS — restart + unrelated import preserved independent SEARCH and WRITE pending snapshots;
+- Test 3 PASS — after reset, explicit Search resume retried only the one WAITING_QUOTA track, consumed one Search call, removed the SEARCH job only on completion, and did not auto-write remotely;
+- Test 4 PASS — existing WRITE job preserved account/playlist semantics across the release and later resumed successfully from Queue to 4/4; Queue then became empty;
+- Test 5 PASS — History JSON comparison found 0 removed IDs and 0 changed pre-existing records; exactly one expected completed Firestarter WRITE record was added.
+
+Release findings:
+- BUG-036 CLOSED / PHONE PASS;
+- BUG-037 CLOSED / PHONE RETEST PASS;
+- BUG-038 CLOSED / CONTROLLED RETEST PASS — no separate History deletion defect reproduced;
+- UX-029 CLOSED / PHONE PASS.
+
+Non-blocking follow-ups intentionally carried forward:
+- BUG-039 — generic HTTP 429 write error classification remains ambiguous between daily quota/rate-limit/other quota dimensions; recovery itself is proven healthy;
+- UX-030 — make local-only / linked-to-YTM / pending-write linkage more visible using persisted remote playlistId rather than title inference.
+
+This is a targeted v1.4.53 quota-recovery acceptance, not a claim that every historical full-app regression was rerun.
