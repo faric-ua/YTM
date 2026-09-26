@@ -2,47 +2,43 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-25**
+Last updated: **2026-09-26**
 
 ## 1. Resume point
 
 Repository: `faric-ua/YTM`
 
 Latest stable release:
-- **v1.4.52 / versionCode 95**
-- GitHub Release/tag: `v1.4.52`
-- exact final app source: `d857ce8c42511b16357060e6639ed67d548f9f31`
-- exact signed run: `36041226156`
-- stabilization checkpoint: `checkpoint-v1.4.52-phone-pass`
-- stable publisher run: `36145617465` — PASS
-- result: **PHONE QA PASS — targeted Tests 1–3 complete; UX-027/UX-028 closed**
-- scope: targeted URL Snapshot / Home UX Polish acceptance; no broad full-app regression claim.
+- **v1.4.53 / versionCode 96**
+- GitHub Release/tag: `v1.4.53`
+- exact final app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`
+- exact signed run: `36195438071`
+- stabilization checkpoint: `checkpoint-v1.4.53-phone-pass`
+- stable publisher run: `36250364471` — PASS
+- result: **PHONE QA PASS — targeted Tests 1–5 complete; BUG-036/037/038 and UX-029 closed**
+- scope: targeted Quota Recovery / Durable Resume acceptance; no broad full-app regression claim.
 - stable assets: signed APK, APK SHA-256 and `YTM-Importer-update.json`.
-- equal-version updater smoke: PASS (`Оновлень немає` for installed/stable `1.4.52 (95)`).
+- equal-version updater smoke: PASS (`Оновлень немає` for installed/stable `1.4.53 (96)`).
 
 Previous stable release:
-- **v1.4.51 / versionCode 94**
-- release tag/checkpoint remain immutable on `226d2453ef3b4a34cb7db7be0c42ae84c8f624a0`
-- OTA equal-version stable smoke: PASS.
+- **v1.4.52 / versionCode 95**
+- release tag/checkpoint remain immutable on `d857ce8c42511b16357060e6639ed67d548f9f31`
+- stable publisher run `36145617465` PASS; OTA equal-version stable smoke PASS.
 
 Current release state:
 - versionName: **1.4.53**
 - versionCode: **96**
 - feature: **Quota Recovery / Durable Resume**
 - branch: `feat/v1.4.53-quota-recovery`
-- phase: **development**
-- stable baseline remains v1.4.52 / exact source `d857ce8c42511b16357060e6639ed67d548f9f31` / signed run `36041226156`.
-- BUG-036 implementation complete for build/phone validation: Search quota stop maps unresolved tracks to `WAITING_QUOTA` and persists a durable SEARCH job in Pending Queue.
-- SEARCH Queue jobs contain a full playlist snapshot and survive current-workspace replacement/restart; Resume is explicit and searches only waiting tracks.
-- existing WRITE PendingJob JSON defaults to `WRITE` for backward compatibility.
-- BUG-037 phone reproduction found the quota model was stale after Google's 2026-06-01 granular quota change. Patch now keeps Search in its own 100-calls/day bucket and keeps `general_units` as non-Search usage only; phone retest required.
-- Queue UI distinguishes SEARCH vs WRITE and Search jobs expose `Продовжити пошук`.
-- WAITING_QUOTA tracks are blocked from destination write.
-- BUG-038 remains investigation-only until controlled History JSON before/after evidence exists.
-- MainActivity recovery helpers were extracted to `SearchRecoveryCoordinator` to remain under the 4100-line audit budget.
-- static/full validation PASS on source `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`, Validate Android run `36176662561` — SUCCESS.
-- historical signed candidate run `36178783613` / source `454979093c0e108fe629aefe7db4bece97334575` exposed BUG-037 on phone and is superseded.
-- current gate: validate granular-quota patch → new signed build → install over existing data → targeted BUG-037/BUG-036 phone retest.
+- phase: **final**
+- BUG-036: CLOSED / PHONE PASS.
+- BUG-037: CLOSED / PHONE RETEST PASS.
+- BUG-038: CLOSED / CONTROLLED RETEST PASS — 0 removed IDs and 0 changed pre-existing History records.
+- UX-029: CLOSED / PHONE PASS.
+- exact phone-tested package identity remains `ce8a1d5d...` / run `36195438071`; no rebuild was substituted.
+- stable publication: PASS — publisher run `36250364471`; tags and release assets verified.
+- BUG-039 and UX-030 remain deferred non-blocking follow-ups.
+- v1.4.53 release closeout is complete, including `CLOSEOUT: FINAL` and equal-version OTA smoke PASS; next product work is the deferred BUG-039 / UX-030 follow-up or v1.4.54 planning.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
@@ -431,3 +427,33 @@ Recorded for the next corrective release:
 
 Do not change the stable v1.4.52 app binary for these findings. Finish the
 equal-version OTA smoke, then address the findings in the next corrective release.
+
+## v1.4.53 phone QA progress — 2026-09-26
+
+- Test 1 PASS — durable SEARCH job created on real server Search quota stop; rotation preserved detail and did not auto-resume.
+- Test 2 PASS — app restart + unrelated 31-track import did not overwrite SEARCH/WRITE pending snapshots.
+- Test 4 PASS — existing What Evil Lurks WRITE job preserved 0/4, same account/channel, playlistId absent, no duplicate/auto-write.
+- BUG-037 PASS — patched UI shows Search 64/100 separately from non-Search units 3907/10000 after in-place update.
+- Test 5 baseline: History JSON captured with 93 entries; Firestarter local-import id `local-import-9cbabf9d-f5e9-4ee3-a348-21bb2cd6bf63`; post-resume comparison pending.
+- Test 3 is blocked only by Search quota reset; after reset resume Firestarter and verify only the one WAITING_QUOTA track is searched.
+- BUG-039 remains OPEN: ambiguous write HTTP 429 is still classified too broadly as quota.
+
+## Next release planning
+
+- v1.4.54 planning skeleton exists under `docs/v.1.4.54/`: History Recovery + Safe Bulk Sync.
+- Do not start v1.4.54 app code until v1.4.53 phone QA and stable closeout are complete.
+## Resume point — 2026-09-26 v1.4.53 stable publication PASS
+
+- Branch: `feat/v1.4.53-quota-recovery`.
+- versionName / versionCode: `1.4.53 (96)`.
+- Exact phone-tested app source remains immutable: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
+- Exact accepted signed APK run: `36195438071`.
+- Phone QA Tests 1–5: PASS; BUG-036/037/038 and UX-029 CLOSED for the accepted release scope.
+- Final stable tag: `v1.4.53`.
+- Final checkpoint: `checkpoint-v1.4.53-phone-pass`.
+- Both tags point to the exact phone-tested app source.
+- Stable publisher run `36250364471`: SUCCESS.
+- GitHub Release `v1.4.53`: published with APK, SHA-256 and updater manifest.
+- Published APK SHA-256: `841019959d02d4e5368a6cc954d815563ac85535e7bc4a577b69653d21acaf2e`.
+- No app rebuild was performed during release closeout.
+- Final Termux status passed with `CLOSEOUT: FINAL`; equal-version updater smoke also passed: installed/stable `1.4.53 (96)` returned `Оновлень немає` (`OTA+`).
