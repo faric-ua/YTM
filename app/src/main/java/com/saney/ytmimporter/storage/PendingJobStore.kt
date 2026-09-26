@@ -4,6 +4,7 @@ import android.content.Context
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
 import com.saney.ytmimporter.model.PendingOperation
+import com.saney.ytmimporter.model.PendingPauseReason
 import com.saney.ytmimporter.model.PendingSearchCandidate
 import com.saney.ytmimporter.model.PendingSearchSnapshot
 import com.saney.ytmimporter.model.PendingSearchTrack
@@ -114,6 +115,10 @@ class PendingJobStore(context: Context) {
                 }
             )
             .put("lastError", job.lastError ?: JSONObject.NULL)
+            .put(
+                "pauseReason",
+                job.pauseReason?.name ?: JSONObject.NULL
+            )
             .put("operation", job.operation.name)
             .put("recoveryKey", job.recoveryKey ?: JSONObject.NULL)
             .put("preserveExistingExact", job.preserveExistingExact)
@@ -165,6 +170,17 @@ class PendingJobStore(context: Context) {
             failedCount = json.optInt("failedCount", 0),
             remainingTracks = tracks,
             lastError = nullableString(json, "lastError"),
+            pauseReason =
+                nullableString(
+                    json,
+                    "pauseReason"
+                )?.let { value ->
+                    runCatching {
+                        PendingPauseReason.valueOf(
+                            value
+                        )
+                    }.getOrNull()
+                },
             operation =
                 runCatching {
                     PendingOperation.valueOf(
