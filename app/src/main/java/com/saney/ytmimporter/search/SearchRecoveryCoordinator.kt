@@ -23,6 +23,7 @@ class SearchRecoveryCoordinator(
         sourceLabel: String,
         playlist: ImportedPlaylist,
         destinationPlaylistId: String?,
+        destinationPlaylistTitle: String? = null,
         preserveExistingExact: Boolean,
         requestedJobId: String?,
         account: AccountContext,
@@ -67,6 +68,8 @@ class SearchRecoveryCoordinator(
                     playlist.name,
                 playlistId =
                     destinationPlaylistId,
+                destinationPlaylistTitle =
+                    destinationPlaylistTitle,
                 privacyStatus =
                     "search",
                 destination =
