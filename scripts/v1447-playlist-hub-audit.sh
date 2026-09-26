@@ -67,8 +67,8 @@ grep -Fq 'destinationPlaylistId: String? = null' "$STORE" ||
 grep -Fq 'private const val SCHEMA_VERSION =' "$STORE" ||
   fail "CurrentPlaylistStore schema marker missing"
 grep -A1 -F 'private const val SCHEMA_VERSION =' "$STORE" |
-  grep -Fq '2' ||
-  fail "CurrentPlaylistStore schema is not v2"
+  grep -Fq '3' ||
+  fail "CurrentPlaylistStore schema is not v3"
 grep -Fq 'in 1..SCHEMA_VERSION' "$STORE" ||
   fail "schema v1 backward-read contract missing"
 
@@ -88,6 +88,6 @@ echo "- interactive Home account/current-playlist cards"
 echo "- Home track list removed"
 echo "- dedicated Playlist Hub registered"
 echo "- Review/Search/Create/Project/replacements feature surface retained"
-echo "- CurrentPlaylistStore schema v2 + v1 compatibility"
+echo "- CurrentPlaylistStore schema v3 + v1/v2 compatibility"
 echo "- destination YTM playlist ID persistence"
 echo "- OAuth token remains hidden"
