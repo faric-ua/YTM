@@ -17,20 +17,29 @@ import java.net.URLEncoder
 class YouTubeApiException(
     val httpCode: Int,
     val reason: String?,
-    override val message: String
+    override val message: String,
+    val status: String? = null,
+    val detailReasons: List<String> = emptyList()
 ) : IllegalStateException(message) {
-    val isQuotaError: Boolean
-        get() {
-            val normalizedReason = reason.orEmpty().lowercase()
-            val normalizedMessage = message.lowercase()
+    val limitKind: YouTubeLimitKind? =
+        YouTubeLimitPolicy.classify(
+            httpCode = httpCode,
+            reason = reason,
+            status = status,
+            detailReasons = detailReasons,
+            message = message
+        )
 
-            return normalizedReason.contains("quota") ||
-                normalizedReason.contains("dailylimit") ||
-                normalizedReason.contains("variabletermlimit") ||
-                normalizedReason.contains("variabletermexpireddaily") ||
-                normalizedMessage.contains("quota exceeded") ||
-                normalizedMessage.contains("daily limit")
-        }
+    val isQuotaError: Boolean
+        get() =
+            limitKind ==
+                YouTubeLimitKind.DAILY_QUOTA
+
+    val isRetryableWriteLimit: Boolean
+        get() =
+            limitKind == YouTubeLimitKind.RATE_LIMIT ||
+                limitKind == YouTubeLimitKind.RESOURCE_LIMIT ||
+                limitKind == YouTubeLimitKind.UNKNOWN_429
 }
 
 interface YouTubeAccessTokenRecovery {
@@ -1130,25 +1139,93 @@ class YouTubeApi(
         val message =
             errorJson?.optString("message").orEmpty()
 
+        val status =
+            errorJson
+                ?.optString(
+                    "status"
+                )
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+
         val errors =
             errorJson?.optJSONArray("errors")
 
+        val legacyReasons =
+            buildList {
+                if (errors != null) {
+                    for (
+                        index in
+                        0 until errors.length()
+                    ) {
+                        errors
+                            .optJSONObject(index)
+                            ?.optString("reason")
+                            ?.takeIf {
+                                it.isNotBlank()
+                            }
+                            ?.let(::add)
+                    }
+                }
+            }
+
+        val detailReasons =
+            buildList {
+                val details =
+                    errorJson
+                        ?.optJSONArray(
+                            "details"
+                        )
+
+                if (details != null) {
+                    for (
+                        index in
+                        0 until details.length()
+                    ) {
+                        details
+                            .optJSONObject(index)
+                            ?.optString("reason")
+                            ?.takeIf {
+                                it.isNotBlank()
+                            }
+                            ?.let(::add)
+                    }
+                }
+            }
+
         val reason =
-            if (errors != null && errors.length() > 0) {
-                errors.optJSONObject(0)?.optString("reason")
+            legacyReasons
+                .firstOrNull()
+
+        val allReasons =
+            (
+                legacyReasons +
+                    detailReasons
+                )
+                .distinct()
+
+        val reasonSuffix =
+            if (allReasons.isEmpty()) {
+                ""
             } else {
-                null
+                " [" +
+                    allReasons.joinToString(
+                        ", "
+                    ) +
+                    "]"
             }
 
         val fullMessage =
             "$action: HTTP ${response.code}" +
                 if (message.isNotBlank()) " — $message" else "" +
-                if (!reason.isNullOrBlank()) " [$reason]" else ""
+                reasonSuffix
 
         throw YouTubeApiException(
             httpCode = response.code,
             reason = reason,
-            message = fullMessage
+            message = fullMessage,
+            status = status,
+            detailReasons = detailReasons
         )
     }
 
