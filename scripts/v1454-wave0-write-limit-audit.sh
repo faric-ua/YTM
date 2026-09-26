@@ -82,7 +82,7 @@ grep -Fq 'Do **not** intentionally spam playlist creation' "$PHONE" ||
 
 grep -Fq 'enum class PlaylistLinkageState' "$LINKAGE" ||
   fail "UX-030 linkage state model missing"
-for label in 'Лише локально' 'Пов'''язано з YTM' 'Очікує Search' 'Очікує запис у YTM'; do
+for label in "Лише локально" "Пов'язано з YTM" "Очікує Search" "Очікує запис у YTM"; do
   grep -Fq "$label" "$LINKAGE" ||
     fail "UX-030 linkage label missing: $label"
 done
