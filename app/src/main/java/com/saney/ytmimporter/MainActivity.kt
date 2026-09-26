@@ -2189,6 +2189,8 @@ class MainActivity : Activity() {
                                         sourceLabel = currentImportSourceLabel,
                                         playlist = p,
                                         destinationPlaylistId = createdPlaylistId,
+                                        destinationPlaylistTitle =
+                                            destinationPlaylistTitle,
                                         preserveExistingExact = preserveExistingExact,
                                         requestedJobId = recoveryJobId,
                                         account =
@@ -3165,7 +3167,8 @@ class MainActivity : Activity() {
             adapter.notifyDataSetChanged()
             createdPlaylistId = job.playlistId
             destinationPlaylistTitle =
-                job.playlistName
+                job.destinationPlaylistTitle
+                    ?: job.playlistName
             updateSummary()
 
             prepareWriteUi(
@@ -3204,7 +3207,8 @@ class MainActivity : Activity() {
         playlist = restored
         currentImportSourceLabel = job.sourceLabel
         createdPlaylistId = job.playlistId
-        destinationPlaylistTitle = null
+        destinationPlaylistTitle =
+            job.destinationPlaylistTitle
         visibleTracks.clear()
         visibleTracks.addAll(restored.tracks)
         adapter.notifyDataSetChanged()
