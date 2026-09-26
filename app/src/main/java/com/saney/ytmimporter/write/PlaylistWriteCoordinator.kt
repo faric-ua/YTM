@@ -83,6 +83,8 @@ class PlaylistWriteCoordinator(
             sourceLabel = sourceLabel,
             playlistName = playlistName,
             playlistId = playlistId,
+            destinationPlaylistTitle =
+                playlistName,
             privacyStatus = privacyStatus,
             destination = destination,
             googleEmail = account.googleEmail,
