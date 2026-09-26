@@ -1234,7 +1234,11 @@ class ReviewActivity : Activity() {
                 sourceLabel =
                     snapshot.sourceLabel,
                 appVersion =
-                    BuildConfig.VERSION_NAME
+                    BuildConfig.VERSION_NAME,
+                sourcePlaylistId =
+                    snapshot.destinationPlaylistId,
+                sourcePlaylistTitle =
+                    snapshot.destinationPlaylistTitle
             )
     }
 
