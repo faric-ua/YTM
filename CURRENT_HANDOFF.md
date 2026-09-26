@@ -26,19 +26,19 @@ Previous stable release:
 - stable publisher run `36145617465` PASS; OTA equal-version stable smoke PASS.
 
 Current release state:
-- versionName: **1.4.53**
-- versionCode: **96**
-- feature: **Quota Recovery / Durable Resume**
-- branch: `feat/v1.4.53-quota-recovery`
-- phase: **final**
-- BUG-036: CLOSED / PHONE PASS.
-- BUG-037: CLOSED / PHONE RETEST PASS.
-- BUG-038: CLOSED / CONTROLLED RETEST PASS — 0 removed IDs and 0 changed pre-existing History records.
-- UX-029: CLOSED / PHONE PASS.
-- exact phone-tested package identity remains `ce8a1d5d...` / run `36195438071`; no rebuild was substituted.
-- stable publication: PASS — publisher run `36250364471`; tags and release assets verified.
-- BUG-039 and UX-030 remain deferred non-blocking follow-ups.
-- v1.4.53 release closeout is complete, including `CLOSEOUT: FINAL` and equal-version OTA smoke PASS; next product work is the deferred BUG-039 / UX-030 follow-up or v1.4.54 planning.
+- versionName: **1.4.54**
+- versionCode: **97**
+- feature: **History Recovery / Safe Bulk Sync**
+- branch: `feat/v1.4.54-history-bulk-sync`
+- phase: **development / Wave 0**
+- branch base is the exact v1.4.53 phone-tested app source `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
+- BUG-039 Wave 0 implementation: structured write-limit classification distinguishes confirmed daily quota, rate limit, resource limit and ambiguous HTTP 429.
+- generic `Resource has been exhausted (e.g. check quota)` is no longer enough to claim daily quota.
+- retryable playlist-create/track-add limits persist the WRITE job and pause reason in Queue; no automatic retry is started.
+- user guidance for frequent playlist creation/write throttling says to wait, avoid rapid retries, and Resume manually; no unverified cooldown/reset time is shown.
+- legacy v1.4.53 Pending Queue data remains backward-compatible.
+- UX-030 remains planned in v1.4.54 linkage/History recovery.
+- next gate: Wave 0 static/JVM/full preflight, then one signed candidate and targeted phone smoke; do not intentionally spam playlist creation to manufacture 429.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
@@ -457,3 +457,13 @@ equal-version OTA smoke, then address the findings in the next corrective releas
 - Published APK SHA-256: `841019959d02d4e5368a6cc954d815563ac85535e7bc4a577b69653d21acaf2e`.
 - No app rebuild was performed during release closeout.
 - Final Termux status passed with `CLOSEOUT: FINAL`; equal-version updater smoke also passed: installed/stable `1.4.53 (96)` returned `Оновлень немає` (`OTA+`).
+
+## Resume point — 2026-09-26 v1.4.54 Wave 0
+
+- v1.4.53 is fully closed and OTA+.
+- v1.4.54 branch: `feat/v1.4.54-history-bulk-sync`.
+- Branch started from exact phone-tested v1.4.53 app source `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
+- App identity: `1.4.54 (97)`.
+- Wave 0 implements BUG-039 write-limit classification/pause safety before History Recovery/Bulk Sync.
+- Required next gate: static/JVM/full preflight; after PASS create one signed candidate for targeted Wave 0 phone smoke.
+- Do not force a rate limit by rapid playlist creation; use normal write regression plus natural limit evidence if Google returns one.
