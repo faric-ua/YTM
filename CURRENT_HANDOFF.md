@@ -40,13 +40,13 @@ Current release state:
 - UX-030 linkage visibility is implemented: explicit `Лише локально` / `Пов'язано з YTM` / `Очікує Search` / `Очікує запис у YTM`, using persisted playlistId rather than title matching.
 - UX-030 persists YTM target title as display metadata through current workspace, Pending WRITE/Search recovery and YTM Project round-trip; Playlist Hub exposes the stable YTM ID.
 - UX-030 app/code static/JVM/full-preflight PASS: source `f00ee7a4b6f0ab6fc4533d9b7c7610046972181a`, Validate Android run `36267305742`.
-- UX-030 real-phone gate is still pending; do not start History Recovery until that targeted gate passes.
+- UX-030 real-phone gate: **UX030+ / PASS** on installed source `90d470ddbe6d7158613f7a069d8f6cd3596804dc`, signed build run `36276086140`; linked/local/pending-Search visibility, exact YTM ID, History agreement, and rotation/restart persistence were verified on phone.
 - Wave 0 static/JVM/full preflight: **PASS** on app/code source `51a308c537f969cef2f9255038df442cf7ec7c1e`, Validate Android run `36257551798`.
 - final pre-phone branch HEAD `9daa9027981551539d2fdfa76d08faa4620aeee6` passed Validate Android run `36257890045`.
 - signed candidate run `36261268460` from exact source `9daa9027981551539d2fdfa76d08faa4620aeee6`: **SUCCESS**.
 - Wave 0 phone smoke: **W0+ / PASS** — install-over v1.4.53 preserved account/current workspace, Queue opened cleanly with no phantom jobs or auto-start, and controlled playlist `YTM v1.4.54 W0 test` completed 4/4 adds with 0 errors and no false pause.
 - natural 429/limit phone evidence remains opportunistic only; do not intentionally spam playlist creation to manufacture 429.
-- next scope: **UX-030 explicit local↔YTM linkage visibility, then History Recovery**; Bulk Sync stays later.
+- next scope: **History Recovery Tests 1–2**; Bulk Sync stays blocked until the History Recovery contract is implemented.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
