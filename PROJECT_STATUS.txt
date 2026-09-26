@@ -3,42 +3,31 @@ Version: 1.4.53
 Version code: 96
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Active development release (v1.4.53 Quota Recovery / Durable Resume):
-- branch: `feat/v1.4.53-quota-recovery`;
-- versionName / versionCode: 1.4.53 / 96;
-- release phase: development — signed candidate phone QA in progress; Tests 1/2/4 PASS, Test 3 + post-reset History comparison pending;
-- stable baseline remains v1.4.52 / source d857ce8c42511b16357060e6639ed67d548f9f31 / signed run 36041226156;
-- BUG-036 implementation: Search quota exhaustion uses WAITING_QUOTA and persists a SEARCH recovery job with a full playlist snapshot in the existing Pending Queue store;
-- Queue distinguishes SEARCH and WRITE jobs; Search Resume is explicit and processes only waiting Search tracks;
-- current-workspace replacement/restart cannot be the only copy of unfinished Search work because the Search snapshot is stored in pending_jobs_v1;
-- BUG-037 phone reproduction proved that model stale after Google's 2026-06-01 quota change; patched model tracks Search separately (100 calls/day) and keeps the 10,000-unit bucket for non-Search endpoints;
-- WAITING_QUOTA tracks are excluded from destination write until Search is resumed/resolved;
-- Full Backup/Restore already includes pending_jobs_v1, therefore it carries Search recovery jobs;
-- BUG-038 remains OPEN / evidence-driven: no speculative History fix has been made;
-- MainActivity remains below the historical 4100-line cleanup budget after extraction to SearchRecoveryCoordinator;
-- static/full Validate Android PASS on source cf9e3778cc9e1010ba834ed865f6d1ff96c24b33, run 36176662561;
-- historical signed candidate run 36178783613 / source 454979093c0e108fe629aefe7db4bece97334575 is superseded by BUG-037 phone findings;
-- quota-fix validation PASS: run 36194608351 from exact source ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5;
-- quota-fix signed build PASS: run 36195438071 from the same exact source;
-- next gate: install over existing app data, then targeted BUG-037/BUG-036 + WRITE queue retest; no phone PASS claimed.
-
-Current accepted release (v1.4.52 URL Snapshot / Home UX Polish — FINAL):
-- active branch: `feat/v1.4.52-ux-polish`;
+Current accepted release (v1.4.53 Quota Recovery / Durable Resume — FINAL):
+- active branch: `feat/v1.4.53-quota-recovery`;
 - release documentation phase: final;
-- app identity: v1.4.52 / versionCode 95;
+- app identity: v1.4.53 / versionCode 96;
+- exact final tested app source: ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5;
+- exact signed run: 36195438071;
+- release tag: v1.4.53;
+- stabilization checkpoint: checkpoint-v1.4.53-phone-pass;
+- stable publisher run: 36250364471 — PASS;
+- targeted phone QA: Tests 1–5 PASS;
+- BUG-036 / BUG-037 / BUG-038 / UX-029 CLOSED for accepted scope;
+- Search quota recovery survives rotation/restart/unrelated import and resumes only WAITING_QUOTA work;
+- existing WRITE recovery completed 4/4 after quota recovery and Queue became empty;
+- controlled History comparison: baseline 93 → 94 records, 0 removed IDs, 0 changed common records;
+- stable GitHub Release includes APK, SHA-256 and updater manifest;
+- post-publication equal-version updater smoke remains;
+- BUG-039 and UX-030 remain deferred non-blocking follow-ups.
+
+Previous stable release (v1.4.52 URL Snapshot / Home UX Polish — FINAL):
 - exact final tested app source: d857ce8c42511b16357060e6639ed67d548f9f31;
 - exact signed run: 36041226156;
 - release tag: v1.4.52;
 - stabilization checkpoint: checkpoint-v1.4.52-phone-pass;
 - stable publisher run: 36145617465 — PASS;
-- targeted phone QA: Tests 1–3 PASS;
-- UX-027 / UX-028 CLOSED;
-- duplicate chooser one-row + rotation + Cancel no-op passed;
-- unique snapshot handoff: 813 source rows → 320 saved → 493 duplicates;
-- History uses local-import semantics and no YTM write starts automatically;
-- Home `Деталі в Історії →` opens the exact just-created History detail;
-- stable GitHub Release includes APK, SHA-256 and updater manifest;
-- post-publication equal-version updater smoke PASS: installed/stable 1.4.52 (95) → `Оновлень немає` (`OTA+`);
+- Tests 1–3 and equal-version OTA smoke PASS.
 
 Previous stable release (v1.4.51 YouTube/YTM URL/Mix Snapshot Import — FINAL):
 - exact final tested app source: 226d2453ef3b4a34cb7db7be0c42ae84c8f624a0;
