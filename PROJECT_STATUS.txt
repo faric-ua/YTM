@@ -15,8 +15,11 @@ Active development release (v1.4.54 History Recovery / Safe Bulk Sync):
 - frequent playlist-creation/write limiting gets explicit guidance not to spam retries; no fake cooldown/reset is shown;
 - old v1.4.53 PendingJob JSON remains readable without pauseReason;
 - UX-030 remains part of the v1.4.54 linkage/History wave;
-- Wave 0 static/JVM/full preflight PASS: Validate Android run 36257551798 on app/code source 51a308c537f969cef2f9255038df442cf7ec7c1e;
-- one signed candidate + targeted Wave 0 phone smoke are still required; no v1.4.54 phone PASS claimed.
+- final Wave 0 exact-HEAD validation PASS: Validate Android run 36257890045 on source 9daa9027981551539d2fdfa76d08faa4620aeee6;
+- signed candidate run 36261268460 PASS from the same source;
+- Wave 0 phone smoke W0+ / PASS: in-place update preserved account/current workspace, Queue opened cleanly with no phantom jobs/auto-start, and controlled create/add wrote 4/4 tracks with 0 errors and no false pause;
+- natural 429/limit behavior remains evidence-on-occurrence only; do not deliberately manufacture rate limits;
+- next development scope: UX-030 explicit local↔YTM linkage visibility, then History Recovery; Bulk Sync remains later.
 
 Current accepted release (v1.4.53 Quota Recovery / Durable Resume — FINAL):
 - active branch: `feat/v1.4.53-quota-recovery`;
