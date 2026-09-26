@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "versionName": "1.4.54",
+  "versionCode": 97,
+  "phase": "planned",
+  "feature": "History Recovery / Safe Bulk Sync",
+  "branch": "feat/v1.4.54-history-bulk-sync",
+  "appSourceSha": null,
+  "signedRun": null,
+  "qaStatus": "PLANNING ONLY — BLOCKED ON v1.4.53 CLOSEOUT",
+  "tag": null,
+  "checkpointTag": null,
+  "phoneTestDate": null
+}
