@@ -19,7 +19,7 @@
 - [x] frequent playlist-creation warning is visible before/after a write limit
 - [x] old v1.4.53 PendingJob JSON without pauseReason remains readable
 - [x] Wave 0 static/JVM/full preflight — Validate Android run `36257551798`, app/code source `51a308c537f969cef2f9255038df442cf7ec7c1e`
-- [ ] Wave 0 signed phone regression smoke
+- [x] Wave 0 signed phone regression smoke — `W0+`; signed run `36261268460`, source `9daa9027981551539d2fdfa76d08faa4620aeee6`; install-over v1.4.53 preserved startup/account/current workspace, Queue opened cleanly with no phantom jobs, controlled `YTM v1.4.54 W0 test` create/add completed 4/4 with 0 errors and no false pause
 
 ## History recovery
 - [ ] local import gets stable localPlaylistKey
