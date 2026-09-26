@@ -64,6 +64,7 @@ class MainActivity : Activity() {
     private val menuScreenRequestCode = 1501
     private val quotaScreenRequestCode = 1502
     private val playlistScreenRequestCode = 1601
+    private val historyScreenRequestCode = 1701
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
     private val api by lazy {
@@ -1161,6 +1162,30 @@ class MainActivity : Activity() {
                         resumePendingJob(job)
                     }
                 }
+            }
+
+            historyScreenRequestCode -> {
+                reloadCurrentWorkspace(
+                    force = true
+                )
+
+                val restoredName =
+                    data.getStringExtra(
+                        HistoryActivity
+                            .EXTRA_RESTORED_PLAYLIST_NAME
+                    )
+                        .orEmpty()
+                        .ifBlank {
+                            playlist
+                                ?.name
+                                .orEmpty()
+                        }
+
+                status(
+                    "Відновлено з History як поточний плейлист: " +
+                        restoredName +
+                        ". Пошук і запис у YTM не запускались."
+                )
             }
 
             importScreenRequestCode -> {
@@ -3598,7 +3623,14 @@ class MainActivity : Activity() {
                 tracks = merged
             )
 
-        historyStore.upsert(entry)
+        historyStore.upsert(
+            entry.copy(
+                localPlaylistId =
+                    currentPlaylistStore
+                        .load()
+                        ?.localPlaylistId
+            )
+        )
     }
 
     private fun historyTrackFromTrack(
@@ -3618,11 +3650,12 @@ class MainActivity : Activity() {
         )
 
     private fun showHistory() {
-        startActivity(
+        startActivityForResult(
             Intent(
                 this,
                 HistoryActivity::class.java
-            )
+            ),
+            historyScreenRequestCode
         )
     }
 
