@@ -91,7 +91,7 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 ce278ee8fa660bda  app/src/main/AndroidManifest.xml
 9e5252664b4ab395  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
-676be1f9c161ded3  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
+fe23b63f001e4fd5  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 a2460161a7f09851  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 840d2dea2e562c2e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
 1ae620df113f1116  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
