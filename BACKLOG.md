@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.53 — Quota Recovery / Durable Resume — FINAL / OTA+
+v1.4.54 — History Recovery / Safe Bulk Sync — DEVELOPMENT / WAVE 0
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -87,7 +87,24 @@ v1.4.53 — Quota Recovery / Durable Resume — FINAL / OTA+
 Contract: `docs/design/V1454_HISTORY_SAFE_BULK_SYNC_CONTRACT.md`  
 Flow: `docs/design/V1454_HISTORY_SAFE_BULK_SYNC_FLOW.md`
 
-Planned after v1.4.53 stabilization. Do not start app-code implementation before v1.4.53 phone QA/closeout.
+v1.4.53 is final/OTA+ and v1.4.54 is active on `feat/v1.4.54-history-bulk-sync`,
+created from exact phone-tested v1.4.53 source
+`ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
+
+### Wave 0 — BUG-039 / write-limit safety
+- [x] create v1.4.54 branch from exact accepted v1.4.53 app source
+- [x] bump app identity to v1.4.54 / versionCode 97
+- [x] classify confirmed daily quota separately from rate/resource/unknown HTTP 429
+- [x] generic `Resource has been exhausted (e.g. check quota)` 429 is not called daily quota
+- [x] parse structured Google status/reason/details when available
+- [x] persist backward-compatible WRITE pauseReason in Pending Queue
+- [x] preserve full CREATE/ADD unfinished work on retryable write limits
+- [x] no automatic retry after rate/resource/unknown-429 pause
+- [x] explain frequent playlist-creation/write limits: wait, do not spam retries, resume manually from Queue
+- [x] do not invent cooldown/reset time when Google does not provide one
+- [x] keep permanent `maxPlaylistExceeded` separate from temporary write-limit pause
+- [ ] Wave 0 static/JVM/full preflight
+- [ ] Wave 0 signed phone smoke
 
 ### History → current workspace
 - [ ] Add `Відновити як поточний плейлист` from History detail/actions.
