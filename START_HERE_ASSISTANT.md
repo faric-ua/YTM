@@ -32,28 +32,27 @@ Primary branch: `main`
 
 Current development application:
 
-- versionName: **1.4.53**
-- versionCode: **96**
-- release focus: **v1.4.53 — Quota Recovery / Durable Resume**
-- release status: **BUG-037 PATCH — STATIC/FULL VALIDATION PENDING**
-- active branch: `feat/v1.4.53-quota-recovery`
-- release-start base HEAD: `9d50e0d246423f933c440aeadea440019a3fdb5f`
-- accepted stable release: **v1.4.52 — URL Snapshot / Home UX Polish**
-- stable app checkpoint: `checkpoint-v1.4.52-phone-pass`
-- accepted stable app source: `d857ce8c42511b16357060e6639ed67d548f9f31`
-- accepted stable signed run: `36041226156`
+- versionName: **1.4.54**
+- versionCode: **97**
+- release focus: **History Recovery / Safe Bulk Sync**
+- release status: **development / Wave 0 — BUG-039 implemented; static/JVM/full preflight in progress**
+- active branch: `feat/v1.4.54-history-bulk-sync`
+- release-start base / latest stable app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`
+- accepted stable release: **v1.4.53 — Quota Recovery / Durable Resume**
+- stable app checkpoint: `checkpoint-v1.4.53-phone-pass`
+- accepted stable app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`
+- accepted stable signed run: `36195438071`
+- stable publisher run: `36250364471` — **PASS**
 - stable OTA equal-version smoke: **PASS**
-- current architecture wave: **Quota Recovery / Durable Resume**
-- BUG-036: Search quota exhaustion persists a SEARCH recovery job with a full playlist snapshot instead of leaving the only recovery state in the current workspace.
-- BUG-037: phone QA proved the old model stale; after Google's 2026-06-01 granular quota change, Search is a separate 100-calls/day bucket and must not be added to the general 10,000-unit estimate.
-- BUG-038: History durability remains investigation-only until controlled before/after History JSON evidence exists.
-- UX-029: Queue/search recovery copy points to the real explicit resume path.
-- SEARCH and WRITE jobs share the Queue surface but retain separate operation semantics.
-- `WAITING_QUOTA` tracks are excluded from destination write until Search recovery completes.
-- MainActivity remains under the historical 4100-line cleanup budget through `SearchRecoveryCoordinator`.
-- static/full validation evidence: source `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`, Validate Android run `36176662561` — **SUCCESS**
-- historical signed candidate: run `36178783613`, app source `454979093c0e108fe629aefe7db4bece97334575`; installed on phone and superseded after BUG-037 reproduction
-- next release step: **validate granular-quota patch → new signed candidate → targeted phone retest**
+- current architecture wave: **Wave 0 / BUG-039 write-limit safety**
+- BUG-036: **CLOSED / PHONE PASS** — durable SEARCH Queue resume.
+- BUG-037: **CLOSED / PHONE RETEST PASS** — Search quota separated from non-Search units.
+- BUG-038: **CLOSED / CONTROLLED RETEST PASS** — no History deletion reproduced.
+- BUG-039: structured write-limit classification implemented in Wave 0; generic HTTP 429 no longer proves daily quota.
+- UX-029: **CLOSED / PHONE PASS**.
+- UX-030: planned next for explicit local ↔ YTM linkage visibility.
+- retryable write limits preserve the WRITE job and require explicit manual Resume; no automatic retry loop.
+- next release step: **finish static/JVM/full preflight → one signed Wave 0 candidate → targeted phone smoke → then UX-030 / History Recovery / Bulk Sync**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
@@ -292,13 +291,13 @@ Do not randomly switch back to placing the APK loose in the root of `Download/`.
 
 Near-term repository direction:
 
-1. finish static/preflight + signed phone QA for v1.4.41 auth/search recovery and UI consistency;
-2. use the preserved House Dance Hit 2000 Vol.1 fixture for playlist-name and end-to-end smoke where quota allows;
-3. keep populated-History Restore + rollback proof explicitly pending until meaningful History exists;
-4. keep the remaining v1.4.34 BUG-002 modal cases explicitly pending until the user resumes that QA;
-5. current Home work: UX-019 Phase 2 moves track rows behind Playlist Hub/Review and makes account/current-playlist cards interactive;
-6. keep UX-009 Blue/Green state-color work separate while Neon remains the accepted reference;
-7. UX-023 GitHub Releases + in-app updater follows after the current Home/Hub wave; then continue UX-008 Phase 2B / localization / later visual-skin work according to BACKLOG.md.
+1. finish v1.4.54 Wave 0 static/JVM/full preflight for BUG-039;
+2. create one signed candidate only after exact-HEAD validation passes;
+3. run targeted Wave 0 phone smoke without deliberately forcing server rate limits;
+4. then implement UX-030 explicit local ↔ YTM linkage status;
+5. continue History → Restore as current playlist with durable workspace snapshots;
+6. add safe bulk-sync preflight before any remote mutation;
+7. only after those gates, proceed to durable bulk execution, mutation ledger and session-scoped rollback.
 
 Future product requirements already recorded:
 
