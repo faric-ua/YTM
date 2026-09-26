@@ -4,6 +4,11 @@ set -u
 REPO="/storage/emulated/0/Documents/YTM"
 TOOLS="$REPO/tools/termux"
 
+# A Termux session can inherit a working directory that was removed by a prior
+# checkout/file-manager operation. Git calls fail before -C can recover from
+# that state, so always anchor the menu in a known-existing directory.
+cd "$HOME" || exit 1
+
 pause_menu() {
   echo
   printf "Натисни Enter, щоб повернутися в меню..."
