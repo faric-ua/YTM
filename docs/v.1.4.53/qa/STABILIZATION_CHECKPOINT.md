@@ -25,4 +25,4 @@ Deferred non-blocking follow-ups:
 - BUG-039 — ambiguous generic write HTTP 429 classification;
 - UX-030 — explicit local ↔ YTM linkage visibility.
 
-Stable release/checkpoint tags and durable GitHub Release publication are complete. Equal-version OTA smoke remains the final post-publication phone check.
+Stable release/checkpoint tags, durable GitHub Release publication, and equal-version OTA smoke are complete. Installed/stable `1.4.53 (96)` returned `Оновлень немає` (`OTA+`).
