@@ -3,6 +3,39 @@
 Do not execute this suite until v1.4.54 has a signed candidate built from the exact
 validated source.
 
+## Wave 0 — BUG-039 write-limit smoke
+
+Do **not** intentionally spam playlist creation to force HTTP 429.
+
+A. Normal regression path:
+1. Install the signed v1.4.54 candidate over real v1.4.53 data.
+2. Verify existing Search/WRITE Queue records remain readable.
+3. Create one controlled small playlist or resume one existing WRITE job.
+4. Verify a normal successful write still completes.
+
+PASS:
+- no regression in ordinary create/add;
+- Queue compatibility remains intact;
+- no false pause appears on successful requests.
+
+B. Natural-limit path, only if Google returns a real 429/limit during ordinary QA:
+1. Capture the displayed reason and Queue state.
+2. Close/reopen or rotate.
+3. Reopen the WRITE job.
+
+PASS:
+- unfinished work remains in Queue;
+- explicit daily quota is called daily quota only when the server reason supports it;
+- rate/resource/unknown 429 copy does not claim a daily reset;
+- frequent-write/rate-limit copy tells the user to wait and resume manually;
+- no automatic retry occurs after rotation/restart;
+- the Queue retains the same pause reason.
+
+JVM policy tests are the deterministic classification acceptance for synthetic
+rate/resource/generic-429 variants; phone QA must not manufacture API abuse.
+
+Result notation: `W0+` / `W0-`; natural-limit evidence can be added separately.
+
 ## Test 1 — Search work survives workspace replacement
 
 1. Import playlist A with at least 4 uncached tracks.
