@@ -115,6 +115,21 @@ class PlaylistLinkagePolicyTest {
     }
 
     @Test
+    fun finalPartialHistoryWithRemoteIdIsStillLinked() {
+        assertEquals(
+            PlaylistLinkageState.LINKED_YTM,
+            PlaylistLinkagePolicy.history(
+                historyEntry(
+                    status =
+                        HistoryStatus.PARTIAL,
+                    playlistId = "PL123",
+                    pendingCount = 0
+                )
+            )
+        )
+    }
+
+    @Test
     fun completedHistoryWithRemoteIdIsLinked() {
         assertEquals(
             PlaylistLinkageState.LINKED_YTM,
