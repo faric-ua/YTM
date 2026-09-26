@@ -44,8 +44,8 @@ Implemented development contract:
 
 ## Version
 
-- planned versionName: `1.4.53`
-- planned versionCode: `96`
+- versionName: `1.4.53`
+- versionCode: `96`
 - branch: `feat/v1.4.53-quota-recovery`
 - stable baseline: `v1.4.52`
 - baseline app source: `d857ce8c42511b16357060e6639ed67d548f9f31`
@@ -67,7 +67,7 @@ Current implementation:
 
 ## Status
 
-**PHONE QA PASS — READY FOR STABLE PUBLICATION**
+**FINAL — TARGETED PHONE QA PASS / QUOTA RECOVERY RELEASE**
 
 Accepted phone-tested app identity:
 - app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`;
@@ -97,3 +97,18 @@ Non-blocking follow-ups intentionally carried forward:
 - UX-030 — make local-only / linked-to-YTM / pending-write linkage more visible using persisted remote playlistId rather than title inference.
 
 This is a targeted v1.4.53 quota-recovery acceptance, not a claim that every historical full-app regression was rerun.
+
+## Stable publication
+
+Stable publication completed on 2026-09-26.
+
+- release tag: `v1.4.53`;
+- checkpoint tag: `checkpoint-v1.4.53-phone-pass`;
+- both tags point to the exact phone-tested app source `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`;
+- exact accepted signed build remains GitHub Actions run `36195438071`;
+- stable publisher run: `36250364471` — PASS;
+- published assets: signed APK, APK SHA-256, and `YTM-Importer-update.json`;
+- published APK SHA-256: `841019959d02d4e5368a6cc954d815563ac85535e7bc4a577b69653d21acaf2e`;
+- no rebuild was used for stable publication.
+
+The equal-version production updater smoke remains a post-publication check.
