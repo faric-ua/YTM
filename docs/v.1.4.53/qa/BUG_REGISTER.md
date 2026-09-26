@@ -3,7 +3,7 @@
 This release owns the corrective work for:
 - BUG-036 — Search quota durable resume — OPEN;
 - BUG-037 — quota accounting/label semantics — CLOSED / PHONE RETEST PASS;
-- BUG-038 — History durability investigation — OPEN / root cause not yet proven;
+- BUG-038 — History durability investigation — CLOSED / CONTROLLED RETEST PASS; no History deletion reproduced;
 - UX-029 — quota resume copy/discoverability — OPEN;
 - BUG-039 — HTTP 429 write limit is ambiguously classified as daily quota — OPEN;
 - UX-030 — local ↔ YTM playlist linkage is not visible enough — OPEN.
@@ -105,3 +105,21 @@ Observed:
 - existing WRITE PendingJob survived the in-place update.
 
 Result: BUG-037 quota-bucket separation PASS on phone.
+## BUG-038 controlled retest — PASS / no History deletion reproduced
+
+Phone QA on v1.4.53 used a persisted History JSON baseline before Search recovery and a second export after quota reset, explicit Search resume, and explicit Firestarter YTM write.
+
+Comparison result:
+- baseline: 93 History records;
+- post-resume: 94 History records;
+- removed IDs: 0;
+- changed common records: 0;
+- added IDs: 1 (the expected successful Firestarter WRITE record);
+- the original Firestarter local-import History ID remained unchanged;
+- the existing What Evil Lurks PENDING_QUOTA WRITE History ID remained unchanged.
+
+Conclusion:
+- the controlled v1.4.53 scenario does not reproduce History record deletion or mutation;
+- the legacy v1.4.52 user-visible "lost playlist" evidence is therefore best explained by the non-durable Search workspace/discoverability defect owned by BUG-036, not by proven HistoryStore deletion;
+- BUG-038 is closed as controlled retest PASS / no separate History durability defect reproduced. Reopen only if future evidence shows an actual History record being deleted or rewritten unexpectedly.
+
