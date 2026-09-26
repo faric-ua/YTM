@@ -198,7 +198,8 @@ check_file "scripts/v1451-url-qa-corrective-r1-audit.sh"
 check_file "scripts/v1451-url-title-metadata-audit.sh"
 check_file "scripts/v1451-phone-findings-corrective-audit.sh"
 check_file "scripts/v1452-ux-polish-audit.sh"
-check_file "scripts/v1453-quota-recovery-audit.sh"\ncheck_file "scripts/v1454-wave0-write-limit-audit.sh"
+check_file "scripts/v1453-quota-recovery-audit.sh"
+check_file "scripts/v1454-wave0-write-limit-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotTitleBackfill.kt"
 check_file "docs/v.1.4.51/TITLE_METADATA_CONTRACT.md"
 check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotCache.kt"
@@ -320,7 +321,8 @@ bash scripts/v1451-url-qa-corrective-r1-audit.sh
 bash scripts/v1451-url-title-metadata-audit.sh
 bash scripts/v1451-phone-findings-corrective-audit.sh
 bash scripts/v1452-ux-polish-audit.sh
-bash scripts/v1453-quota-recovery-audit.sh\nbash scripts/v1454-wave0-write-limit-audit.sh
+bash scripts/v1453-quota-recovery-audit.sh
+bash scripts/v1454-wave0-write-limit-audit.sh
 bash scripts/documentation-system-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
