@@ -1,6 +1,7 @@
 package com.saney.ytmimporter.util
 
 import com.saney.ytmimporter.youtube.YouTubeApiException
+import com.saney.ytmimporter.youtube.YouTubeLimitKind
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -13,23 +14,44 @@ object ErrorMessages {
         val apiError = error as? YouTubeApiException
 
         if (apiError != null) {
-            if (apiError.isQuotaError) {
-                return "Закінчилася квота YouTube Data API. " +
-                    "Невиконані операції можна продовжити після відновлення квоти."
+            when (apiError.limitKind) {
+                YouTubeLimitKind.DAILY_QUOTA ->
+                    return "Закінчилася добова квота YouTube Data API. " +
+                        "Невиконані операції можна продовжити після відновлення квоти."
+
+                YouTubeLimitKind.RATE_LIMIT ->
+                    return "YouTube тимчасово обмежив частоту запитів. " +
+                        "Зачекайте деякий час і повторіть дію вручну."
+
+                YouTubeLimitKind.RESOURCE_LIMIT ->
+                    return "Google/YouTube тимчасово відхилив запит через ресурсний ліміт. " +
+                        "Зачекайте деякий час і повторіть дію вручну."
+
+                YouTubeLimitKind.UNKNOWN_429 ->
+                    return "YouTube тимчасово обмежив запит (HTTP 429), " +
+                        "але не повідомив точний тип ліміту. Спробуйте пізніше."
+
+                null -> Unit
             }
 
             val reason = apiError.reason.orEmpty().lowercase()
 
             return when (apiError.httpCode) {
                 400 ->
-                    if (
+                    when {
+                        reason.contains(
+                            "maxplaylistexceeded"
+                        ) ->
+                            "YouTube не дозволяє створити ще один плейлист: " +
+                                "для каналу досягнуто максимальної кількості плейлистів."
+
                         reason.contains(
                             "playlistoperationunsupported"
-                        )
-                    ) {
-                        "Цей системний плейлист YouTube не підтримує цю операцію."
-                    } else {
-                        "YouTube відхилив запит. Перевірте вибраний трек або плейлист."
+                        ) ->
+                            "Цей системний плейлист YouTube не підтримує цю операцію."
+
+                        else ->
+                            "YouTube відхилив запит. Перевірте вибраний трек або плейлист."
                     }
 
                 401 ->
