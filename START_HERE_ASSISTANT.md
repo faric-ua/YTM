@@ -35,7 +35,7 @@ Current development application:
 - versionName: **1.4.53**
 - versionCode: **96**
 - release focus: **v1.4.53 — Quota Recovery / Durable Resume**
-- release status: **SIGNED BUILD PASS — BUG-037/BUG-036 PHONE RETEST PENDING**
+- release status: **PHONE QA IN PROGRESS — TESTS 1/2/4 PASS; TEST 3 + HISTORY POST-RESET COMPARISON PENDING**
 - active branch: `feat/v1.4.53-quota-recovery`
 - release-start base HEAD: `9d50e0d246423f933c440aeadea440019a3fdb5f`
 - accepted stable release: **v1.4.52 — URL Snapshot / Home UX Polish**
@@ -467,3 +467,7 @@ For substantial phone-side repository changes, use
 
 Default delivery is a correctly structured `YTM_*.zip` package executed by the
 user's existing `ytm-code` command, not a long multiline script pasted into chat.
+
+Next-release note:
+- v1.4.54 planning contract is prepared in `docs/v.1.4.54/` for History recovery + checkpointed safe bulk sync/rollback.
+- planning only; do not modify app code for v1.4.54 until v1.4.53 is closed.
