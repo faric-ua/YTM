@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.53 — Quota Recovery / Durable Resume — FINAL / OTA SMOKE PENDING
+v1.4.53 — Quota Recovery / Durable Resume — FINAL / OTA+
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -135,7 +135,7 @@ Planned after v1.4.53 stabilization. Do not start app-code implementation before
 - [x] static/full preflight
 - [x] signed phone QA — Tests 1–5 PASS
 - [x] stable publication: `v1.4.53` + `checkpoint-v1.4.53-phone-pass` on exact tested source; publisher run `36250364471` PASS
-- [ ] post-publication equal-version updater smoke
+- [x] post-publication equal-version updater smoke: installed/stable `1.4.53 (96)` → `Оновлень немає` (`OTA+`)
 
 Deferred non-blocking follow-ups:
 - BUG-039 — generic write HTTP 429 classification remains ambiguous between daily quota, rate limit and other quota dimensions.
