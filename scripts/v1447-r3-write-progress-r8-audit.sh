@@ -17,7 +17,12 @@ import sys
 main, relay, standard, doc = [Path(p).read_text(encoding="utf-8") for p in sys.argv[1:]]
 
 w0=main.index("private fun executeWriteJob(")
-write=main[w0:main.index("private fun showQuotaPausedDialog(",w0)]
+pause_marker=(
+    "private fun showWritePausedDialog("
+    if "private fun showWritePausedDialog(" in main
+    else "private fun showQuotaPausedDialog("
+)
+write=main[w0:main.index(pause_marker,w0)]
 for n in ["stateSourceTracks = tracks","workflowRelay.updateWriteTracks(","workflowRelay.updateWriteProgress("]:
     if n not in write: raise SystemExit(f"FAIL: Main R8 bridge missing: {n}")
 
