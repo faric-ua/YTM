@@ -60,7 +60,6 @@ object PlaylistLinkagePolicy {
             entry.status in
                 setOf(
                     HistoryStatus.RUNNING,
-                    HistoryStatus.PARTIAL,
                     HistoryStatus.PENDING_QUOTA,
                     HistoryStatus.PENDING_LIMIT
                 )
