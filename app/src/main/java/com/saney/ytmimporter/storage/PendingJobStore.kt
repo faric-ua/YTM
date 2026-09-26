@@ -90,6 +90,11 @@ class PendingJobStore(context: Context) {
             .put("sourceLabel", job.sourceLabel)
             .put("playlistName", job.playlistName)
             .put("playlistId", job.playlistId ?: JSONObject.NULL)
+            .put(
+                "destinationPlaylistTitle",
+                job.destinationPlaylistTitle
+                    ?: JSONObject.NULL
+            )
             .put("privacyStatus", job.privacyStatus)
             .put("destination", job.destination.name)
             .put("googleEmail", job.googleEmail ?: JSONObject.NULL)
@@ -152,6 +157,11 @@ class PendingJobStore(context: Context) {
             sourceLabel = json.optString("sourceLabel", "Черга з попередньої версії"),
             playlistName = json.optString("playlistName", "YTM Importer"),
             playlistId = nullableString(json, "playlistId"),
+            destinationPlaylistTitle =
+                nullableString(
+                    json,
+                    "destinationPlaylistTitle"
+                ),
             privacyStatus = json.optString("privacyStatus", "private"),
             destination =
                 runCatching {
