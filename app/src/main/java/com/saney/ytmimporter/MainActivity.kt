@@ -27,6 +27,8 @@ import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
 import com.saney.ytmimporter.model.PendingOperation
+import com.saney.ytmimporter.model.PlaylistLinkagePolicy
+import com.saney.ytmimporter.model.PlaylistLinkageState
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
@@ -86,6 +88,7 @@ class MainActivity : Activity() {
     private var googleAccountInfo: GoogleAccountInfo? = null
     private var youtubeChannelInfo: YouTubeChannelInfo? = null
     private var createdPlaylistId: String? = null
+    private var destinationPlaylistTitle: String? = null
     private var pendingAfterAuth: (() -> Unit)? = null
     private var currentImportSourceLabel: String = "Невідоме джерело"
     private var restoringPriorAuthorization: Boolean = false
@@ -93,6 +96,7 @@ class MainActivity : Activity() {
     private lateinit var statusText: TextView
     private lateinit var homeHistoryDetailLink: HomeHistoryDetailLink
     private lateinit var summaryText: TextView
+    private lateinit var workspaceStatusText: TextView
     private lateinit var importButton: Button
     private lateinit var accountButton: Button
     private lateinit var searchButton: Button
@@ -568,6 +572,12 @@ class MainActivity : Activity() {
 
         summaryText =
             workspaceCard.title
+        workspaceStatusText =
+            requireNotNull(
+                workspaceCard.subtitle
+            ).apply {
+                maxLines = 3
+            }
 
         content.addView(
             workspaceCard.root,
@@ -938,7 +948,9 @@ class MainActivity : Activity() {
             sourceLabel =
                 currentImportSourceLabel,
             destinationPlaylistId =
-                createdPlaylistId
+                createdPlaylistId,
+            destinationPlaylistTitle =
+                destinationPlaylistTitle
         )
 
         val intent =
@@ -1001,6 +1013,8 @@ class MainActivity : Activity() {
             snapshot.sourceLabel
         createdPlaylistId =
             snapshot.destinationPlaylistId
+        destinationPlaylistTitle =
+            snapshot.destinationPlaylistTitle
 
         visibleTracks.clear()
         visibleTracks.addAll(
@@ -1045,6 +1059,8 @@ class MainActivity : Activity() {
             snapshot.sourceLabel
         createdPlaylistId =
             snapshot.destinationPlaylistId
+        destinationPlaylistTitle =
+            snapshot.destinationPlaylistTitle
 
         visibleTracks.clear()
         visibleTracks.addAll(
@@ -1065,7 +1081,9 @@ class MainActivity : Activity() {
             sourceLabel =
                 currentImportSourceLabel,
             destinationPlaylistId =
-                createdPlaylistId
+                createdPlaylistId,
+            destinationPlaylistTitle =
+                destinationPlaylistTitle
         )
     }
 
@@ -1074,12 +1092,15 @@ class MainActivity : Activity() {
         currentImportSourceLabel =
             "Невідоме джерело"
         createdPlaylistId = null
+        destinationPlaylistTitle = null
 
         visibleTracks.clear()
         adapter.notifyDataSetChanged()
 
         summaryText.text =
             "Плейлист ще не імпортовано"
+        workspaceStatusText.text =
+            "Натисніть для керування →"
 
         updatePrimaryActions()
     }
@@ -2820,6 +2841,8 @@ class MainActivity : Activity() {
             updatePendingButton()
 
             createdPlaylistId = target.id
+            destinationPlaylistTitle =
+                target.title
             persistCurrentWorkspace()
 
             prepareWriteUi(
@@ -2864,6 +2887,9 @@ class MainActivity : Activity() {
             updatePendingButton()
 
             createdPlaylistId = null
+            destinationPlaylistTitle =
+                playlistName
+            persistCurrentWorkspace()
 
             prepareWriteUi(
                 total = selected.size + 1,
@@ -2974,6 +3000,8 @@ class MainActivity : Activity() {
                 when (outcome) {
                     is PlaylistWriteCoordinator.WriteOutcome.Completed -> {
                         createdPlaylistId = outcome.playlistId
+                        destinationPlaylistTitle =
+                            outcome.job.playlistName
                         persistCurrentWorkspace()
 
                         status(
@@ -3136,6 +3164,8 @@ class MainActivity : Activity() {
             visibleTracks.addAll(tracks)
             adapter.notifyDataSetChanged()
             createdPlaylistId = job.playlistId
+            destinationPlaylistTitle =
+                job.playlistName
             updateSummary()
 
             prepareWriteUi(
@@ -3174,6 +3204,7 @@ class MainActivity : Activity() {
         playlist = restored
         currentImportSourceLabel = job.sourceLabel
         createdPlaylistId = job.playlistId
+        destinationPlaylistTitle = null
         visibleTracks.clear()
         visibleTracks.addAll(restored.tracks)
         adapter.notifyDataSetChanged()
@@ -3959,6 +3990,42 @@ class MainActivity : Activity() {
             "${p.name} • ${p.tracks.size} треків • " +
                 "✓ $matched  ! $review  ⧉ $duplicates  " +
                 "⏳ $pending  × $missing"
+
+        val linkageState =
+            PlaylistLinkagePolicy.current(
+                tracks = p.tracks,
+                destinationPlaylistId =
+                    createdPlaylistId
+            )
+
+        workspaceStatusText.text =
+            buildString {
+                append(
+                    PlaylistLinkagePolicy
+                        .label(linkageState)
+                )
+
+                if (
+                    linkageState in
+                        setOf(
+                            PlaylistLinkageState
+                                .LINKED_YTM,
+                            PlaylistLinkageState
+                                .PENDING_WRITE
+                        ) &&
+                    !destinationPlaylistTitle
+                        .isNullOrBlank()
+                ) {
+                    append(": ")
+                    append(
+                        destinationPlaylistTitle
+                    )
+                }
+
+                append(
+                    "\nНатисніть для керування →"
+                )
+            }
 
         persistCurrentWorkspace()
         updatePrimaryActions()
