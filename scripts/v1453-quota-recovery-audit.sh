@@ -56,8 +56,9 @@ if grep -Fq 'SEARCH_LIST_COST' "$QUOTA"; then
   fail "Search must not be charged into the general 10k-unit bucket"
 fi
 
-grep -Fq 'BUG-038' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 investigation not carried into release"
-grep -Fq 'root cause not yet proven' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 uncertainty guard missing"
+grep -Fq 'BUG-038' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 evidence record not carried into release"
+grep -Fq 'CONTROLLED RETEST PASS' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 controlled retest evidence missing"
+grep -Fq '0 changed common records' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 stable-record comparison missing"
 
 python -B - <<'PY'
 from pathlib import Path
@@ -97,5 +98,5 @@ echo "- waiting-quota Search semantics"
 echo "- write PendingJob backward compatibility"
 echo "- granular Search quota separated from general 10k-unit bucket"
 echo "- WAITING_QUOTA blocked from destination write"
-echo "- BUG-038 remains evidence-driven / no speculative closure"
+echo "- BUG-038 closure is evidence-driven by controlled stable-ID comparison"
 echo "- v1.4.53 JVM policy tests + release docs present"
