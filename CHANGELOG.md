@@ -1,5 +1,18 @@
 # Журнал змін (Changelog)
 
+## v1.4.54 — development
+
+- Wave 0 starts BUG-039 hardening before History Recovery / Safe Bulk Sync.
+- YouTube write-limit errors are classified as confirmed daily quota, rate limit, resource limit, or ambiguous HTTP 429.
+- Generic HTTP 429 text containing `check quota` no longer proves daily quota exhaustion.
+- Structured Google error status/reasons are retained when available.
+- Retryable playlist-create and playlist-item write limits preserve unfinished work in Pending Queue with a durable pause reason.
+- No automatic retry is launched after rate/resource/ambiguous-429 pause.
+- User copy for frequent playlist creation/write throttling says to wait, avoid repeated rapid retries, and explicitly Resume from Queue later; no unsupported cooldown/reset time is invented.
+- Existing v1.4.53 PendingJob JSON remains readable.
+- versionCode 97 / versionName 1.4.54.
+- Wave 0 phone QA is pending.
+
 ## v1.4.53
 
 - Search quota exhaustion now preserves unresolved work as `WAITING_QUOTA` instead of ordinary permanent-looking failures.
