@@ -5,6 +5,7 @@ import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
+import java.util.UUID
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -13,7 +14,9 @@ data class CurrentPlaylistSnapshot(
     val sourceLabel: String,
     val updatedAt: Long,
     val destinationPlaylistId: String? = null,
-    val destinationPlaylistTitle: String? = null
+    val destinationPlaylistTitle: String? = null,
+    val localPlaylistId: String,
+    val sourceHistoryId: String? = null
 )
 
 class CurrentPlaylistStore(
@@ -25,18 +28,67 @@ class CurrentPlaylistStore(
             Context.MODE_PRIVATE
         )
 
+    private val restorableStore =
+        RestorablePlaylistStore(
+            context
+        )
+
     @Synchronized
     fun save(
         playlist: ImportedPlaylist,
         sourceLabel: String,
         destinationPlaylistId: String? = null,
-        destinationPlaylistTitle: String? = null
-    ) {
+        destinationPlaylistTitle: String? = null,
+        localPlaylistId: String? = null,
+        sourceHistoryId: String? = null
+    ): String {
+        val previousRoot =
+            currentRoot()
+
+        val resolvedLocalPlaylistId =
+            localPlaylistId
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+                ?: previousRoot
+                    ?.optNullableString(
+                        "localPlaylistId"
+                    )
+                ?: UUID.randomUUID()
+                    .toString()
+
+        val resolvedSourceHistoryId =
+            sourceHistoryId
+                ?: previousRoot
+                    ?.optNullableString(
+                        "sourceHistoryId"
+                    )
+
+        val now =
+            System.currentTimeMillis()
+
         val root =
             JSONObject()
-                .put("schemaVersion", SCHEMA_VERSION)
-                .put("sourceLabel", sourceLabel)
-                .put("updatedAt", System.currentTimeMillis())
+                .put(
+                    "schemaVersion",
+                    SCHEMA_VERSION
+                )
+                .put(
+                    "localPlaylistId",
+                    resolvedLocalPlaylistId
+                )
+                .putNullable(
+                    "sourceHistoryId",
+                    resolvedSourceHistoryId
+                )
+                .put(
+                    "sourceLabel",
+                    sourceLabel
+                )
+                .put(
+                    "updatedAt",
+                    now
+                )
                 .putNullable(
                     "destinationPlaylistId",
                     destinationPlaylistId
@@ -45,79 +97,243 @@ class CurrentPlaylistStore(
                     "destinationPlaylistTitle",
                     destinationPlaylistTitle
                 )
-                .put("playlist", playlistToJson(playlist))
+                .put(
+                    "playlist",
+                    playlistToJson(
+                        playlist
+                    )
+                )
 
-        prefs
-            .edit()
-            .putString(KEY_CURRENT, root.toString())
+        prefs.edit()
+            .putString(
+                KEY_CURRENT,
+                root.toString()
+            )
             .apply()
+
+        val previousRestorable =
+            restorableStore.get(
+                resolvedLocalPlaylistId
+            )
+
+        restorableStore.upsert(
+            RestorablePlaylistSnapshot(
+                localPlaylistId =
+                    resolvedLocalPlaylistId,
+                sourceHistoryId =
+                    resolvedSourceHistoryId
+                        ?: previousRestorable
+                            ?.sourceHistoryId,
+                playlist =
+                    playlist,
+                sourceLabel =
+                    sourceLabel,
+                createdAt =
+                    previousRestorable
+                        ?.createdAt
+                        ?: now,
+                updatedAt =
+                    now,
+                destinationPlaylistId =
+                    destinationPlaylistId,
+                destinationPlaylistTitle =
+                    destinationPlaylistTitle
+            )
+        )
+
+        return resolvedLocalPlaylistId
     }
 
     @Synchronized
     fun load(): CurrentPlaylistSnapshot? {
         val raw =
-            prefs.getString(KEY_CURRENT, null)
+            prefs.getString(
+                KEY_CURRENT,
+                null
+            )
                 ?: return null
 
         return runCatching {
-            val root = JSONObject(raw)
+            val root =
+                JSONObject(
+                    raw
+                )
 
-            require(
+            val schemaVersion =
                 root.optInt(
                     "schemaVersion",
                     -1
-                ) in 1..SCHEMA_VERSION
+                )
+
+            require(
+                schemaVersion in
+                    1..SCHEMA_VERSION
             ) {
                 "Unsupported current-playlist schema"
             }
 
-            CurrentPlaylistSnapshot(
-                playlist =
-                    playlistFromJson(
-                        root.getJSONObject("playlist")
-                    ),
-                sourceLabel =
-                    root.optString(
-                        "sourceLabel",
-                        "Невідоме джерело"
-                    ),
-                updatedAt =
-                    root.optLong(
-                        "updatedAt",
-                        0L
-                    ),
-                destinationPlaylistId =
-                    root.optNullableString(
-                        "destinationPlaylistId"
-                    ),
-                destinationPlaylistTitle =
-                    root.optNullableString(
-                        "destinationPlaylistTitle"
+            val resolvedLocalPlaylistId =
+                root.optNullableString(
+                    "localPlaylistId"
+                )
+                    ?: UUID.randomUUID()
+                        .toString()
+
+            val snapshot =
+                CurrentPlaylistSnapshot(
+                    playlist =
+                        playlistFromJson(
+                            root.getJSONObject(
+                                "playlist"
+                            )
+                        ),
+                    sourceLabel =
+                        root.optString(
+                            "sourceLabel",
+                            "Невідоме джерело"
+                        ),
+                    updatedAt =
+                        root.optLong(
+                            "updatedAt",
+                            0L
+                        ),
+                    destinationPlaylistId =
+                        root.optNullableString(
+                            "destinationPlaylistId"
+                        ),
+                    destinationPlaylistTitle =
+                        root.optNullableString(
+                            "destinationPlaylistTitle"
+                        ),
+                    localPlaylistId =
+                        resolvedLocalPlaylistId,
+                    sourceHistoryId =
+                        root.optNullableString(
+                            "sourceHistoryId"
+                        )
+                )
+
+            if (
+                schemaVersion <
+                    SCHEMA_VERSION ||
+                root.optNullableString(
+                    "localPlaylistId"
+                ) == null
+            ) {
+                val migratedRoot =
+                    JSONObject(
+                        raw
                     )
+                        .put(
+                            "schemaVersion",
+                            SCHEMA_VERSION
+                        )
+                        .put(
+                            "localPlaylistId",
+                            resolvedLocalPlaylistId
+                        )
+
+                if (
+                    !migratedRoot.has(
+                        "sourceHistoryId"
+                    )
+                ) {
+                    migratedRoot.put(
+                        "sourceHistoryId",
+                        JSONObject.NULL
+                    )
+                }
+
+                prefs.edit()
+                    .putString(
+                        KEY_CURRENT,
+                        migratedRoot
+                            .toString()
+                    )
+                    .apply()
+            }
+
+            val existing =
+                restorableStore.get(
+                    resolvedLocalPlaylistId
+                )
+
+            restorableStore.upsert(
+                RestorablePlaylistSnapshot(
+                    localPlaylistId =
+                        resolvedLocalPlaylistId,
+                    sourceHistoryId =
+                        snapshot.sourceHistoryId
+                            ?: existing
+                                ?.sourceHistoryId,
+                    playlist =
+                        snapshot.playlist,
+                    sourceLabel =
+                        snapshot.sourceLabel,
+                    createdAt =
+                        existing
+                            ?.createdAt
+                            ?: snapshot
+                                .updatedAt,
+                    updatedAt =
+                        snapshot.updatedAt,
+                    destinationPlaylistId =
+                        snapshot
+                            .destinationPlaylistId,
+                    destinationPlaylistTitle =
+                        snapshot
+                            .destinationPlaylistTitle
+                )
             )
+
+            snapshot
         }.getOrNull()
     }
 
     @Synchronized
     fun clear() {
-        prefs
-            .edit()
-            .remove(KEY_CURRENT)
+        prefs.edit()
+            .remove(
+                KEY_CURRENT
+            )
             .apply()
+    }
+
+    private fun currentRoot():
+        JSONObject? {
+        val raw =
+            prefs.getString(
+                KEY_CURRENT,
+                null
+            )
+                ?: return null
+
+        return runCatching {
+            JSONObject(
+                raw
+            )
+        }.getOrNull()
     }
 
     private fun playlistToJson(
         playlist: ImportedPlaylist
     ): JSONObject =
         JSONObject()
-            .put("name", playlist.name)
+            .put(
+                "name",
+                playlist.name
+            )
             .put(
                 "tracks",
-                JSONArray().also { array ->
+                JSONArray().also {
+                        array ->
                     playlist.tracks
-                        .forEach { track ->
+                        .forEach {
+                                track ->
                             array.put(
-                                trackToJson(track)
+                                trackToJson(
+                                    track
+                                )
                             )
                         }
                 }
@@ -130,15 +346,25 @@ class CurrentPlaylistStore(
             mutableListOf<Track>()
 
         val array =
-            root.optJSONArray("tracks")
+            root.optJSONArray(
+                "tracks"
+            )
                 ?: JSONArray()
 
-        for (index in 0 until array.length()) {
+        for (
+            index in
+            0 until array.length()
+        ) {
             val item =
-                array.optJSONObject(index)
+                array.optJSONObject(
+                    index
+                )
                     ?: continue
 
-            tracks += trackFromJson(item)
+            tracks +=
+                trackFromJson(
+                    item
+                )
         }
 
         return ImportedPlaylist(
@@ -175,21 +401,29 @@ class CurrentPlaylistStore(
                 "selectedChannel",
                 track.selectedChannel
             )
-            .put("status", track.status.name)
+            .put(
+                "status",
+                track.status.name
+            )
             .put(
                 "manuallySelected",
                 track.manuallySelected
             )
-            .putNullable("error", track.error)
+            .putNullable(
+                "error",
+                track.error
+            )
             .putNullable(
                 "historyIndex",
                 track.historyIndex
             )
             .put(
                 "candidates",
-                JSONArray().also { array ->
+                JSONArray().also {
+                        array ->
                     track.candidates
-                        .forEach { candidate ->
+                        .forEach {
+                                candidate ->
                             array.put(
                                 JSONObject()
                                     .put(
@@ -220,26 +454,40 @@ class CurrentPlaylistStore(
             mutableListOf<SearchCandidate>()
 
         val array =
-            root.optJSONArray("candidates")
+            root.optJSONArray(
+                "candidates"
+            )
                 ?: JSONArray()
 
-        for (index in 0 until array.length()) {
+        for (
+            index in
+            0 until array.length()
+        ) {
             val item =
-                array.optJSONObject(index)
+                array.optJSONObject(
+                    index
+                )
                     ?: continue
 
             val videoId =
-                item.optString("videoId")
+                item.optString(
+                    "videoId"
+                )
 
-            if (videoId.isBlank()) {
+            if (
+                videoId.isBlank()
+            ) {
                 continue
             }
 
             candidates +=
                 SearchCandidate(
-                    videoId = videoId,
+                    videoId =
+                        videoId,
                     title =
-                        item.optString("title"),
+                        item.optString(
+                            "title"
+                        ),
                     channelTitle =
                         item.optString(
                             "channelTitle"
@@ -286,7 +534,8 @@ class CurrentPlaylistStore(
                     "selectedChannel"
                 ),
             status = status,
-            candidates = candidates,
+            candidates =
+                candidates,
             manuallySelected =
                 root.optBoolean(
                     "manuallySelected",
@@ -307,10 +556,18 @@ class CurrentPlaylistStore(
         key: String,
         value: Any?
     ): JSONObject {
-        if (value == null) {
-            put(key, JSONObject.NULL)
+        if (
+            value == null
+        ) {
+            put(
+                key,
+                JSONObject.NULL
+            )
         } else {
-            put(key, value)
+            put(
+                key,
+                value
+            )
         }
 
         return this
@@ -325,7 +582,9 @@ class CurrentPlaylistStore(
         ) {
             null
         } else {
-            optString(key)
+            optString(
+                key
+            )
                 .takeIf {
                     it.isNotBlank()
                 }
@@ -340,7 +599,9 @@ class CurrentPlaylistStore(
         ) {
             null
         } else {
-            optInt(key)
+            optInt(
+                key
+            )
         }
 
     companion object {
@@ -351,6 +612,6 @@ class CurrentPlaylistStore(
             "current_playlist_json"
 
         private const val SCHEMA_VERSION =
-            3
+            4
     }
 }
