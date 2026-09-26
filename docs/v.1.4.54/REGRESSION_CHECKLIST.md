@@ -1,10 +1,25 @@
 # v1.4.54 — Regression Checklist
 
 ## Release gating
-- [ ] v1.4.53 is final before v1.4.54 app-code work begins
-- [ ] versionName 1.4.54 / versionCode 97
-- [ ] dedicated branch created from exact accepted v1.4.53 source
-- [ ] release/audit/docs skeleton exists before app-source changes
+- [x] v1.4.53 is final before v1.4.54 app-code work begins
+- [x] versionName 1.4.54 / versionCode 97
+- [x] dedicated branch created from exact accepted v1.4.53 source
+- [x] release/audit/docs skeleton exists before app-source changes
+
+## Wave 0 — BUG-039 / write-limit safety
+- [x] generic HTTP 429 is not automatically called daily quota
+- [x] explicit daily-quota reasons remain distinguishable
+- [x] rate-limit and resource-limit reasons are classified separately when supplied
+- [x] YouTube error status/details reasons are parsed
+- [x] WRITE Queue persists an optional backward-compatible pauseReason
+- [x] playlist-create temporary limit preserves the complete pending write
+- [x] playlist-item temporary limit preserves the remaining pending write
+- [x] temporary write-limit pause has no automatic retry
+- [x] user copy says wait + resume manually and does not invent a reset time
+- [x] frequent playlist-creation warning is visible before/after a write limit
+- [x] old v1.4.53 PendingJob JSON without pauseReason remains readable
+- [ ] Wave 0 static/JVM/full preflight
+- [ ] Wave 0 signed phone regression smoke
 
 ## History recovery
 - [ ] local import gets stable localPlaylistKey
