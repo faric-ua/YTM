@@ -26,6 +26,7 @@ import android.widget.Toast
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
 import com.saney.ytmimporter.model.PendingOperation
+import com.saney.ytmimporter.model.PendingPauseReason
 import com.saney.ytmimporter.model.PendingSearchTrack
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.model.PendingTrack
@@ -189,8 +190,9 @@ class PendingActivity : Activity() {
                 TextView(this).apply {
                     text =
                         "Невиконаних завдань немає.\n\n" +
-                            "Якщо квота зупинить Search або запис у YouTube/YTM, " +
-                            "відновлюване завдання з'явиться тут."
+                            "Якщо квота або тимчасовий API-ліміт зупинить Search " +
+                            "чи запис у YouTube/YTM, відновлюване завдання " +
+                            "з'явиться тут."
                     gravity = Gravity.CENTER
                     textSize = 15f
                     setTextColor(MUTED)
@@ -349,7 +351,9 @@ class PendingActivity : Activity() {
                         this@PendingActivity
                     ).apply {
                         text =
-                            "⏳ Очікує продовження"
+                            writePauseTitle(
+                                job.pauseReason
+                            )
                         textSize = 18f
                         setTextColor(
                             Color.rgb(
@@ -466,7 +470,7 @@ class PendingActivity : Activity() {
         if (!job.lastError.isNullOrBlank()) {
             content.addView(
                 sectionTitle(
-                    "Остання помилка"
+                    "Остання причина паузи"
                 )
             )
 
@@ -1089,6 +1093,48 @@ class PendingActivity : Activity() {
                 "Існуючий плейлист"
         }
 
+    private fun writePauseTitle(
+        reason: PendingPauseReason?
+    ): String =
+        when (reason) {
+            PendingPauseReason.DAILY_QUOTA ->
+                "⏳ Очікує відновлення квоти"
+
+            PendingPauseReason.RATE_LIMIT ->
+                "⏸ Пауза: забагато write-запитів"
+
+            PendingPauseReason.RESOURCE_LIMIT ->
+                "⏸ Пауза: ресурсний ліміт API"
+
+            PendingPauseReason.UNKNOWN_API_LIMIT ->
+                "⏸ Пауза: тимчасовий ліміт API"
+
+            PendingPauseReason.SEARCH_QUOTA,
+            null ->
+                "⏳ Очікує продовження"
+        }
+
+    private fun writePauseShortLabel(
+        reason: PendingPauseReason?
+    ): String =
+        when (reason) {
+            PendingPauseReason.DAILY_QUOTA ->
+                "Квота"
+
+            PendingPauseReason.RATE_LIMIT ->
+                "Rate limit"
+
+            PendingPauseReason.RESOURCE_LIMIT ->
+                "Resource limit"
+
+            PendingPauseReason.UNKNOWN_API_LIMIT ->
+                "HTTP 429"
+
+            PendingPauseReason.SEARCH_QUOTA,
+            null ->
+                "Пауза"
+        }
+
     private fun privacyLabel(
         value: String
     ): String =
@@ -1617,7 +1663,11 @@ class PendingActivity : Activity() {
                             )
                         )
                         append(
-                            " • Запис • Очікує " +
+                            " • Запис • " +
+                                writePauseShortLabel(
+                                    job.pauseReason
+                                ) +
+                                " • Очікує " +
                                 job.remainingTracks.size
                         )
                         append("\n")
