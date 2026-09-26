@@ -1697,11 +1697,11 @@ fb09bd0b60f3c042  scripts/v1454-wave0-write-limit-audit.sh
 cf275a9ddfd583f3  tools/termux/README.md
 8a4753c11d9a562b  tools/termux/install-widget.sh
 10df440715bab7b4  tools/termux/ytm-build-apk.sh
-f02208fad378e44b  tools/termux/ytm-common.sh
+cec5644172988c1a  tools/termux/ytm-common.sh
 f63257687628de7b  tools/termux/ytm-download-apk.sh
 83bdfb3538920765  tools/termux/ytm-finalize-release.sh
 8eda0cea3d5fad27  tools/termux/ytm-install-apk.sh
-1041a9e345f4dfbd  tools/termux/ytm-menu.sh
+bd79b82f25bc99d7  tools/termux/ytm-menu.sh
 d9bed80c74070c8c  tools/termux/ytm-release-status.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
 42c09273cce76334  tools/termux/ytm-sync.sh
