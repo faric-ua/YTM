@@ -27,6 +27,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import com.saney.ytmimporter.history.HistoryRecoveryPolicy
 import com.saney.ytmimporter.model.HistoryEntry
 import com.saney.ytmimporter.model.HistoryResultKind
 import com.saney.ytmimporter.model.HistoryResultSemantics
@@ -36,8 +37,10 @@ import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PlaylistLinkagePolicy
 import com.saney.ytmimporter.model.PlaylistLinkageState
 import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.PendingJobStore
+import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.SafTreeFileWriter
 import com.saney.ytmimporter.ui.SafFileSaveFlow
@@ -45,10 +48,13 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 class HistoryActivity : Activity() {
     private lateinit var historyStore: HistoryStore
     private lateinit var pendingJobStore: PendingJobStore
+    private lateinit var currentPlaylistStore: CurrentPlaylistStore
+    private lateinit var restorablePlaylistStore: RestorablePlaylistStore
 
     private var currentEntryId: String? = null
     private var pendingExportContent: String? = null
@@ -59,6 +65,8 @@ class HistoryActivity : Activity() {
     private var actionsDialog: Dialog? = null
     private var clearHistoryDialogOpen = false
     private var clearHistoryDialog: Dialog? = null
+    private var restoreConfirmEntryId: String? = null
+    private var restoreConfirmDialog: Dialog? = null
 
     private val saveExportRequestCode = 3201
     private val saveExportFolderRequestCode = 3202
@@ -69,6 +77,10 @@ class HistoryActivity : Activity() {
 
         historyStore = HistoryStore(this)
         pendingJobStore = PendingJobStore(this)
+        currentPlaylistStore =
+            CurrentPlaylistStore(this)
+        restorablePlaylistStore =
+            RestorablePlaylistStore(this)
 
         val restoredEntryId =
             savedInstanceState
@@ -103,13 +115,35 @@ class HistoryActivity : Activity() {
                 )
                 ?: false
 
+        restoreConfirmEntryId =
+            savedInstanceState
+                ?.getString(
+                    KEY_RESTORE_CONFIRM_ENTRY_ID
+                )
+
         if (!restoredEntryId.isNullOrBlank()) {
             val entry = historyStore.get(restoredEntryId)
 
             if (entry != null) {
                 showDetailScreen(entry)
 
-                if (actionsDialogOpen) {
+                if (
+                    restoreConfirmEntryId ==
+                        entry.id
+                ) {
+                    window.decorView.post {
+                        if (
+                            !isFinishing &&
+                            !isDestroyed &&
+                            currentEntryId ==
+                                entry.id
+                        ) {
+                            confirmRestoreAsCurrent(
+                                entry
+                            )
+                        }
+                    }
+                } else if (actionsDialogOpen) {
                     window.decorView.post {
                         if (
                             !isFinishing &&
@@ -154,6 +188,10 @@ class HistoryActivity : Activity() {
         outState.putBoolean(
             KEY_CLEAR_HISTORY_DIALOG_OPEN,
             clearHistoryDialogOpen
+        )
+        outState.putString(
+            KEY_RESTORE_CONFIRM_ENTRY_ID,
+            restoreConfirmEntryId
         )
         super.onSaveInstanceState(outState)
     }
@@ -218,6 +256,12 @@ class HistoryActivity : Activity() {
             )
         clearHistoryDialog = null
 
+        restoreConfirmDialog
+            ?.setOnDismissListener(
+                null
+            )
+        restoreConfirmDialog = null
+
         super.onDestroy()
     }
 
@@ -231,6 +275,15 @@ class HistoryActivity : Activity() {
         actionsDialog
             ?.dismiss()
         actionsDialog = null
+
+        restoreConfirmEntryId = null
+        restoreConfirmDialog
+            ?.setOnDismissListener(
+                null
+            )
+        restoreConfirmDialog
+            ?.dismiss()
+        restoreConfirmDialog = null
 
         val root = baseRoot()
 
@@ -827,6 +880,17 @@ class HistoryActivity : Activity() {
         val actions =
             mutableListOf<UiChrome.MenuAction>()
 
+        if (entry.tracks.isNotEmpty()) {
+            actions +=
+                UiChrome.MenuAction(
+                    "Відновити як поточний плейлист"
+                ) {
+                    requestRestoreAsCurrent(
+                        entry
+                    )
+                }
+        }
+
         if (!entry.playlistId.isNullOrBlank()) {
             actions +=
                 UiChrome.MenuAction(
@@ -902,6 +966,194 @@ class HistoryActivity : Activity() {
                     actionsDialog = null
                 }
             }
+    }
+
+    private fun requestRestoreAsCurrent(
+        entry: HistoryEntry
+    ) {
+        val current =
+            currentPlaylistStore
+                .load()
+
+        val sameWorkspace =
+            current != null &&
+                !entry.localPlaylistId
+                    .isNullOrBlank() &&
+                current.localPlaylistId ==
+                    entry.localPlaylistId
+
+        if (
+            current == null ||
+            sameWorkspace
+        ) {
+            restoreAsCurrent(
+                entry
+            )
+            return
+        }
+
+        confirmRestoreAsCurrent(
+            entry
+        )
+    }
+
+    private fun confirmRestoreAsCurrent(
+        entry: HistoryEntry
+    ) {
+        if (
+            restoreConfirmDialog
+                ?.isShowing == true
+        ) {
+            return
+        }
+
+        val currentName =
+            currentPlaylistStore
+                .load()
+                ?.playlist
+                ?.name
+                .orEmpty()
+
+        restoreConfirmEntryId =
+            entry.id
+
+        restoreConfirmDialog =
+            UiChrome.showMessageDialog(
+                activity = this,
+                title =
+                    "Відновити як поточний плейлист?",
+                message =
+                    buildString {
+                        if (
+                            currentName
+                                .isNotBlank()
+                        ) {
+                            append(
+                                "Поточний плейлист «"
+                            )
+                            append(
+                                currentName
+                            )
+                            append(
+                                "» буде замінено локально.\n\n"
+                            )
+                        }
+
+                        append(
+                            "Буде відновлено «"
+                        )
+                        append(
+                            entry.playlistName
+                        )
+                        append(
+                            "». Search і запис у YTM не запускатимуться автоматично."
+                        )
+                    },
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label =
+                                "Відновити",
+                            tone =
+                                UiChrome.ActionTone.ACCENT
+                        ) {
+                            restoreAsCurrent(
+                                entry
+                            )
+                        },
+                        UiChrome.DialogAction(
+                            label =
+                                "Скасувати"
+                        ) {
+                            restoreConfirmEntryId =
+                                null
+                        }
+                    )
+            ).also {
+                    dialog ->
+                dialog.setOnDismissListener {
+                    if (
+                        !isChangingConfigurations
+                    ) {
+                        restoreConfirmEntryId =
+                            null
+                    }
+
+                    restoreConfirmDialog =
+                        null
+                }
+            }
+    }
+
+    private fun restoreAsCurrent(
+        entry: HistoryEntry
+    ) {
+        val durableSnapshot =
+            entry.localPlaylistId
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+                ?.let {
+                        localPlaylistId ->
+                    restorablePlaylistStore
+                        .get(
+                            localPlaylistId
+                        )
+                }
+
+        val plan =
+            HistoryRecoveryPolicy.plan(
+                entry = entry,
+                durableSnapshot =
+                    durableSnapshot,
+                generatedLocalPlaylistId =
+                    UUID.randomUUID()
+                        .toString()
+            )
+
+        currentPlaylistStore.save(
+            playlist =
+                plan.playlist,
+            sourceLabel =
+                plan.sourceLabel,
+            destinationPlaylistId =
+                plan.destinationPlaylistId,
+            destinationPlaylistTitle =
+                plan.destinationPlaylistTitle,
+            localPlaylistId =
+                plan.localPlaylistId,
+            sourceHistoryId =
+                plan.sourceHistoryId
+        )
+
+        if (
+            entry.localPlaylistId
+                .isNullOrBlank()
+        ) {
+            historyStore.upsert(
+                entry.copy(
+                    localPlaylistId =
+                        plan.localPlaylistId
+                )
+            )
+        }
+
+        restoreConfirmEntryId = null
+
+        setResult(
+            RESULT_OK,
+            Intent()
+                .putExtra(
+                    EXTRA_RESTORED_PLAYLIST_NAME,
+                    plan.playlist.name
+                )
+                .putExtra(
+                    EXTRA_RESTORED_LOCAL_PLAYLIST_ID,
+                    plan.localPlaylistId
+                )
+        )
+
+        finish()
     }
 
     private fun showProblemLog(
@@ -2269,11 +2521,20 @@ class HistoryActivity : Activity() {
         const val EXTRA_OPEN_ENTRY_ID =
             "history_open_entry_id"
 
+        const val EXTRA_RESTORED_PLAYLIST_NAME =
+            "history_restored_playlist_name"
+
+        const val EXTRA_RESTORED_LOCAL_PLAYLIST_ID =
+            "history_restored_local_playlist_id"
+
         private const val KEY_CURRENT_ENTRY_ID =
             "current_history_entry_id"
 
         private const val KEY_ACTIONS_DIALOG_OPEN =
             "history_actions_dialog_open"
+
+        private const val KEY_RESTORE_CONFIRM_ENTRY_ID =
+            "history_restore_confirm_entry_id"
 
         private const val KEY_CLEAR_HISTORY_DIALOG_OPEN =
             "history_clear_dialog_open"
