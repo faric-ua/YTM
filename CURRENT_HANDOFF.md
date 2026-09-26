@@ -46,7 +46,7 @@ Current release state:
 - signed candidate run `36261268460` from exact source `9daa9027981551539d2fdfa76d08faa4620aeee6`: **SUCCESS**.
 - Wave 0 phone smoke: **W0+ / PASS** — install-over v1.4.53 preserved account/current workspace, Queue opened cleanly with no phantom jobs or auto-start, and controlled playlist `YTM v1.4.54 W0 test` completed 4/4 adds with 0 errors and no false pause.
 - natural 429/limit phone evidence remains opportunistic only; do not intentionally spam playlist creation to manufacture 429.
-- next scope: **History Recovery Tests 1–2**; Bulk Sync stays blocked until the History Recovery contract is implemented.
+- next scope: **implement History Recovery** (including `Відновити як поточний плейлист` from History), then run Tests 1–2; Bulk Sync stays blocked until that contract is implemented and phone-accepted.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
