@@ -18,7 +18,7 @@
 - [x] user copy says wait + resume manually and does not invent a reset time
 - [x] frequent playlist-creation warning is visible before/after a write limit
 - [x] old v1.4.53 PendingJob JSON without pauseReason remains readable
-- [ ] Wave 0 static/JVM/full preflight
+- [x] Wave 0 static/JVM/full preflight — Validate Android run `36257551798`, app/code source `51a308c537f969cef2f9255038df442cf7ec7c1e`
 - [ ] Wave 0 signed phone regression smoke
 
 ## History recovery
