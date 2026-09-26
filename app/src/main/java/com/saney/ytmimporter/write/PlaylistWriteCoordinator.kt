@@ -3,6 +3,7 @@ package com.saney.ytmimporter.write
 import com.saney.ytmimporter.model.HistoryStatus
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
+import com.saney.ytmimporter.model.PendingPauseReason
 import com.saney.ytmimporter.model.PendingTrack
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
@@ -11,6 +12,7 @@ import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
+import com.saney.ytmimporter.youtube.YouTubeLimitKind
 import java.util.UUID
 
 class PlaylistWriteCoordinator(
@@ -42,7 +44,14 @@ class PlaylistWriteCoordinator(
         ) : WriteOutcome()
 
         data class PausedForQuota(
-            val job: PendingJob
+            val job: PendingJob,
+            val userMessage: String
+        ) : WriteOutcome()
+
+        data class PausedForLimit(
+            val job: PendingJob,
+            val pauseReason: PendingPauseReason,
+            val userMessage: String
         ) : WriteOutcome()
 
         data class Failed(
@@ -135,7 +144,8 @@ class PlaylistWriteCoordinator(
                     job.copy(
                         playlistId = playlistId,
                         updatedAt = System.currentTimeMillis(),
-                        lastError = null
+                        lastError = null,
+                        pauseReason = null
                     )
 
                 pendingJobStore.upsert(job)
@@ -181,24 +191,82 @@ class PlaylistWriteCoordinator(
                         error.message ?: "Quota exceeded while creating playlist"
                     )
 
+                    val userMessage =
+                        WritePausePolicy.userMessage(
+                            kind = YouTubeLimitKind.DAILY_QUOTA,
+                            action = WritePauseAction.CREATE_PLAYLIST
+                        )
+
                     job =
                         job.copy(
                             updatedAt = System.currentTimeMillis(),
-                            lastError = error.message
+                            lastError = userMessage,
+                            pauseReason =
+                                PendingPauseReason.DAILY_QUOTA
                         )
 
                     pendingJobStore.upsert(job)
 
                     tracks.forEach { track ->
                         track.status = TrackStatus.PENDING
-                        track.error =
-                            "Очікує продовження: " +
-                                (error.message ?: "закінчилась квота API")
+                        track.error = userMessage
                     }
 
                     onHistoryState(job, HistoryStatus.PENDING_QUOTA)
-                    return WriteOutcome.PausedForQuota(job)
+                    return WriteOutcome.PausedForQuota(
+                        job = job,
+                        userMessage = userMessage
+                    )
                 }
+
+                retryableWriteLimitKind(error)
+                    ?.let { limitKind ->
+                        val pauseReason =
+                            WritePausePolicy.pendingReason(
+                                limitKind
+                            )
+
+                        val userMessage =
+                            WritePausePolicy.userMessage(
+                                kind = limitKind,
+                                action =
+                                    WritePauseAction.CREATE_PLAYLIST
+                            )
+
+                        job =
+                            job.copy(
+                                updatedAt =
+                                    System.currentTimeMillis(),
+                                lastError =
+                                    userMessage,
+                                pauseReason =
+                                    pauseReason,
+                                remainingTracks =
+                                    tracks.mapNotNull(
+                                        ::trackToPendingTrack
+                                    )
+                            )
+
+                        pendingJobStore.upsert(job)
+
+                        tracks.forEach { track ->
+                            track.status =
+                                TrackStatus.PENDING
+                            track.error =
+                                userMessage
+                        }
+
+                        onHistoryState(
+                            job,
+                            HistoryStatus.PENDING_LIMIT
+                        )
+
+                        return WriteOutcome.PausedForLimit(
+                            job = job,
+                            pauseReason = pauseReason,
+                            userMessage = userMessage
+                        )
+                    }
 
                 val friendlyError =
                     ErrorMessages.userMessage(
@@ -281,7 +349,8 @@ class PlaylistWriteCoordinator(
                         updatedAt = System.currentTimeMillis(),
                         addedCount = job.addedCount + 1,
                         remainingTracks = job.remainingTracks.drop(1),
-                        lastError = null
+                        lastError = null,
+                        pauseReason = null
                     )
 
                 pendingJobStore.upsert(job)
@@ -326,25 +395,90 @@ class PlaylistWriteCoordinator(
                             .drop(index)
                             .mapNotNull(::trackToPendingTrack)
 
+                    val userMessage =
+                        WritePausePolicy.userMessage(
+                            kind = YouTubeLimitKind.DAILY_QUOTA,
+                            action = WritePauseAction.ADD_TRACK
+                        )
+
                     job =
                         job.copy(
                             updatedAt = System.currentTimeMillis(),
                             remainingTracks = remaining,
-                            lastError = error.message
+                            lastError = userMessage,
+                            pauseReason =
+                                PendingPauseReason.DAILY_QUOTA
                         )
 
                     pendingJobStore.upsert(job)
 
                     tracks.drop(index).forEach { pendingTrack ->
                         pendingTrack.status = TrackStatus.PENDING
-                        pendingTrack.error =
-                            "Очікує продовження: " +
-                                (error.message ?: "закінчилась квота API")
+                        pendingTrack.error = userMessage
                     }
 
                     onHistoryState(job, HistoryStatus.PENDING_QUOTA)
-                    return WriteOutcome.PausedForQuota(job)
+                    return WriteOutcome.PausedForQuota(
+                        job = job,
+                        userMessage = userMessage
+                    )
                 }
+
+                retryableWriteLimitKind(error)
+                    ?.let { limitKind ->
+                        val remaining =
+                            tracks
+                                .drop(index)
+                                .mapNotNull(
+                                    ::trackToPendingTrack
+                                )
+
+                        val pauseReason =
+                            WritePausePolicy.pendingReason(
+                                limitKind
+                            )
+
+                        val userMessage =
+                            WritePausePolicy.userMessage(
+                                kind = limitKind,
+                                action =
+                                    WritePauseAction.ADD_TRACK
+                            )
+
+                        job =
+                            job.copy(
+                                updatedAt =
+                                    System.currentTimeMillis(),
+                                remainingTracks =
+                                    remaining,
+                                lastError =
+                                    userMessage,
+                                pauseReason =
+                                    pauseReason
+                            )
+
+                        pendingJobStore.upsert(job)
+
+                        tracks.drop(index)
+                            .forEach {
+                                pendingTrack ->
+                                pendingTrack.status =
+                                    TrackStatus.PENDING
+                                pendingTrack.error =
+                                    userMessage
+                            }
+
+                        onHistoryState(
+                            job,
+                            HistoryStatus.PENDING_LIMIT
+                        )
+
+                        return WriteOutcome.PausedForLimit(
+                            job = job,
+                            pauseReason = pauseReason,
+                            userMessage = userMessage
+                        )
+                    }
 
                 val friendlyError =
                     ErrorMessages.userMessage(
@@ -412,8 +546,19 @@ class PlaylistWriteCoordinator(
     ): Boolean =
         (error as? YouTubeApiException)?.httpCode == 401
 
-    private fun isQuotaError(error: Throwable): Boolean =
-        (error as? YouTubeApiException)?.isQuotaError == true ||
-            error.message.orEmpty().contains("quota", ignoreCase = true) ||
-            error.message.orEmpty().contains("daily limit", ignoreCase = true)
+    private fun isQuotaError(
+        error: Throwable
+    ): Boolean =
+        (error as? YouTubeApiException)
+            ?.isQuotaError == true
+
+    private fun retryableWriteLimitKind(
+        error: Throwable
+    ): YouTubeLimitKind? =
+        (error as? YouTubeApiException)
+            ?.limitKind
+            ?.takeIf {
+                it !=
+                    YouTubeLimitKind.DAILY_QUOTA
+            }
 }
