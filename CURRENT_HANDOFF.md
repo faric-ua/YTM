@@ -18,7 +18,7 @@ Latest stable release:
 - result: **PHONE QA PASS — targeted Tests 1–5 complete; BUG-036/037/038 and UX-029 closed**
 - scope: targeted Quota Recovery / Durable Resume acceptance; no broad full-app regression claim.
 - stable assets: signed APK, APK SHA-256 and `YTM-Importer-update.json`.
-- remaining post-publication check: equal-version updater smoke.
+- equal-version updater smoke: PASS (`Оновлень немає` for installed/stable `1.4.53 (96)`).
 
 Previous stable release:
 - **v1.4.52 / versionCode 95**
@@ -38,7 +38,7 @@ Current release state:
 - exact phone-tested package identity remains `ce8a1d5d...` / run `36195438071`; no rebuild was substituted.
 - stable publication: PASS — publisher run `36250364471`; tags and release assets verified.
 - BUG-039 and UX-030 remain deferred non-blocking follow-ups.
-- next action: sync final-doc HEAD, verify Termux item 7 reports `CLOSEOUT: FINAL`, then run the equal-version production updater smoke.
+- v1.4.53 release closeout is complete, including `CLOSEOUT: FINAL` and equal-version OTA smoke PASS; next product work is the deferred BUG-039 / UX-030 follow-up or v1.4.54 planning.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
@@ -456,4 +456,4 @@ equal-version OTA smoke, then address the findings in the next corrective releas
 - GitHub Release `v1.4.53`: published with APK, SHA-256 and updater manifest.
 - Published APK SHA-256: `841019959d02d4e5368a6cc954d815563ac85535e7bc4a577b69653d21acaf2e`.
 - No app rebuild was performed during release closeout.
-- Next phone step after syncing the final-doc HEAD: menu item 7 must show `CLOSEOUT: FINAL`; then run the equal-version updater check. Expected result for installed/stable `1.4.53 (96)`: `Оновлень немає`.
+- Final Termux status passed with `CLOSEOUT: FINAL`; equal-version updater smoke also passed: installed/stable `1.4.53 (96)` returned `Оновлень немає` (`OTA+`).
