@@ -33,6 +33,8 @@ import com.saney.ytmimporter.model.HistoryResultSemantics
 import com.saney.ytmimporter.model.HistoryStatus
 import com.saney.ytmimporter.model.HistoryTrack
 import com.saney.ytmimporter.model.PendingDestination
+import com.saney.ytmimporter.model.PlaylistLinkagePolicy
+import com.saney.ytmimporter.model.PlaylistLinkageState
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.PendingJobStore
@@ -480,6 +482,68 @@ class HistoryActivity : Activity() {
                         )
                         setTextColor(
                             historyStatusColor(status)
+                        )
+                    }
+                )
+
+                val linkageState =
+                    PlaylistLinkagePolicy
+                        .history(entry)
+
+                addView(
+                    TextView(
+                        this@HistoryActivity
+                    ).apply {
+                        text =
+                            buildString {
+                                append(
+                                    PlaylistLinkagePolicy
+                                        .label(
+                                            linkageState
+                                        )
+                                )
+
+                                if (
+                                    linkageState in
+                                        setOf(
+                                            PlaylistLinkageState
+                                                .LINKED_YTM,
+                                            PlaylistLinkageState
+                                                .PENDING_WRITE
+                                        )
+                                ) {
+                                    append(": ")
+                                    append(
+                                        entry.playlistName
+                                    )
+                                }
+
+                                if (
+                                    !entry.playlistId
+                                        .isNullOrBlank()
+                                ) {
+                                    append(
+                                        "\nYTM ID: "
+                                    )
+                                    append(
+                                        entry.playlistId
+                                    )
+                                }
+                            }
+                        textSize = 13f
+                        setTypeface(
+                            typeface,
+                            Typeface.BOLD
+                        )
+                        setTextColor(
+                            ACCENT
+                        )
+                        setTextIsSelectable(true)
+                        setPadding(
+                            0,
+                            dp(6),
+                            0,
+                            dp(2)
                         )
                     }
                 )
@@ -1265,6 +1329,14 @@ class HistoryActivity : Activity() {
                 "Статус: ${historyStatusLabel(status)}\n"
             )
             append(
+                "Зв'язок: " +
+                    PlaylistLinkagePolicy.label(
+                        PlaylistLinkagePolicy
+                            .history(entry)
+                    ) +
+                    "\n"
+            )
+            append(
                 "Дата: ${formatHistoryDate(entry.updatedAt)}\n"
             )
             append(
@@ -1297,6 +1369,16 @@ class HistoryActivity : Activity() {
                 !entry.playlistId
                     .isNullOrBlank()
             ) {
+                append(
+                    "YTM плейлист: " +
+                        entry.playlistName +
+                        "\n"
+                )
+                append(
+                    "Playlist ID: " +
+                        entry.playlistId +
+                        "\n"
+                )
                 append(
                     "YTM: " +
                         playlistUrl(
@@ -2072,6 +2154,13 @@ class HistoryActivity : Activity() {
                     append(
                         historyStatusLabel(
                             status
+                        )
+                    )
+                    append(" • ")
+                    append(
+                        PlaylistLinkagePolicy.label(
+                            PlaylistLinkagePolicy
+                                .history(entry)
                         )
                     )
                     append("\n")
