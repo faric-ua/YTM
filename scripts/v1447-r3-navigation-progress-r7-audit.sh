@@ -43,7 +43,12 @@ if 'beginPlaylistRelay("Створити / додати"' not in playlist_handle
     raise SystemExit("FAIL: Playlist-owned destination no longer sets Playlist return ownership")
 
 write_start = main.index("private fun executeWriteJob(")
-write = main[write_start:main.index("private fun showQuotaPausedDialog(", write_start)]
+pause_marker = (
+    "private fun showWritePausedDialog("
+    if "private fun showWritePausedDialog(" in main
+    else "private fun showQuotaPausedDialog("
+)
+write = main[write_start:main.index(pause_marker, write_start)]
 for needle in [
     "writeInProgress = true",
     "val displayTracks =",
