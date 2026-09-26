@@ -4,6 +4,7 @@ import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
 import com.saney.ytmimporter.model.PendingOperation
+import com.saney.ytmimporter.model.PendingPauseReason
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.PendingJobStore
 import java.util.UUID
@@ -91,6 +92,8 @@ class SearchRecoveryCoordinator(
                     emptyList(),
                 lastError =
                     lastError,
+                pauseReason =
+                    PendingPauseReason.SEARCH_QUOTA,
                 operation =
                     PendingOperation.SEARCH,
                 recoveryKey =
