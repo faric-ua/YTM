@@ -39,8 +39,11 @@ Current release state:
 - legacy v1.4.53 Pending Queue data remains backward-compatible.
 - UX-030 remains planned in v1.4.54 linkage/History recovery.
 - Wave 0 static/JVM/full preflight: **PASS** on app/code source `51a308c537f969cef2f9255038df442cf7ec7c1e`, Validate Android run `36257551798`.
-- subsequent status-document sync does not change the Wave 0 app code; exact final branch HEAD validation must still be PASS before signed-build dispatch.
-- next gate: one signed candidate, then targeted Wave 0 phone smoke; do not intentionally spam playlist creation to manufacture 429.
+- final pre-phone branch HEAD `9daa9027981551539d2fdfa76d08faa4620aeee6` passed Validate Android run `36257890045`.
+- signed candidate run `36261268460` from exact source `9daa9027981551539d2fdfa76d08faa4620aeee6`: **SUCCESS**.
+- Wave 0 phone smoke: **W0+ / PASS** — install-over v1.4.53 preserved account/current workspace, Queue opened cleanly with no phantom jobs or auto-start, and controlled playlist `YTM v1.4.54 W0 test` completed 4/4 adds with 0 errors and no false pause.
+- natural 429/limit phone evidence remains opportunistic only; do not intentionally spam playlist creation to manufacture 429.
+- next scope: **UX-030 explicit local↔YTM linkage visibility, then History Recovery**; Bulk Sync stays later.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
@@ -350,12 +353,14 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
 
 1. Keep stable v1.4.53 immutable on source `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
 2. Continue only on `feat/v1.4.54-history-bulk-sync` / versionCode 97.
-3. Wave 0 BUG-039 app/code gate is PASS: Validate Android run `36257551798` on source `51a308c537f969cef2f9255038df442cf7ec7c1e`.
-4. After this documentation/status sync, require exact current branch HEAD validation PASS again.
-5. Create exactly one signed v1.4.54 Wave 0 candidate from that validated HEAD.
-6. Phone smoke A: install over real v1.4.53 data, verify legacy Search/WRITE Queue compatibility, then perform one normal controlled create/add or resume path.
-7. Do not manufacture HTTP 429 by rapid playlist creation; record natural limit evidence only if Google returns it during ordinary QA.
-8. Only after Wave 0 phone smoke PASS proceed to UX-030 / History Recovery / Bulk Sync implementation.
+3. Treat Wave 0 BUG-039 stabilization as **W0+ / PHONE PASS** for the normal regression path:
+   - Validate Android run `36257890045` PASS on source `9daa9027981551539d2fdfa76d08faa4620aeee6`;
+   - signed build run `36261268460` PASS from the same source;
+   - in-place phone install preserved state and normal create/add completed 4/4 with 0 errors.
+4. Do not manufacture HTTP 429; preserve natural limit evidence if it occurs later.
+5. Implement UX-030 first: make local-only / linked-to-YTM / pending Search / pending Write state explicit without title-based identity.
+6. Then implement the durable History recovery foundation (`localPlaylistKey`, workspace lineage/snapshot, explicit restore with no auto-Search or auto-write).
+7. Do not start Bulk Sync execution/rollback work until linkage + History recovery contracts are implemented and gated.
 
 ## 8. Working contract
 
