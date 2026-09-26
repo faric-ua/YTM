@@ -35,7 +35,7 @@ Current development application:
 - versionName: **1.4.54**
 - versionCode: **97**
 - release focus: **History Recovery / Safe Bulk Sync**
-- release status: **development / Wave 0 — BUG-039 static/JVM/full preflight PASS; signed candidate + targeted phone smoke pending**
+- release status: **development — Wave 0 BUG-039 W0+ / PHONE PASS; UX-030 + History Recovery next**
 - active branch: `feat/v1.4.54-history-bulk-sync`
 - release-start base / latest stable app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`
 - accepted stable release: **v1.4.53 — Quota Recovery / Durable Resume**
@@ -52,8 +52,10 @@ Current development application:
 - UX-029: **CLOSED / PHONE PASS**.
 - UX-030: planned next for explicit local ↔ YTM linkage visibility.
 - retryable write limits preserve the WRITE job and require explicit manual Resume; no automatic retry loop.
-- Wave 0 app/code validation: **PASS**, run `36257551798`, source `51a308c537f969cef2f9255038df442cf7ec7c1e`
-- next release step: **exact current HEAD validation PASS after docs sync → one signed Wave 0 candidate → targeted phone smoke → then UX-030 / History Recovery / Bulk Sync**
+- Wave 0 final validation: **PASS**, run `36257890045`, source `9daa9027981551539d2fdfa76d08faa4620aeee6`
+- Wave 0 signed candidate: **PASS**, run `36261268460`, same source
+- Wave 0 phone smoke: **W0+** — state preserved; Queue clean; controlled create/add 4/4, errors 0
+- next release step: **UX-030 explicit linkage visibility → History Recovery foundation; Bulk Sync later**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
