@@ -14,6 +14,7 @@ data class PlaylistProjectImport(
     val sourceHistoryId: String?,
     val sourcePlaylistId: String?,
     val sourcePlaylistTitle: String?,
+    val sourceLocalPlaylistId: String?,
     val sourcePrivacyStatus: String?,
     val sourceDestination: PendingDestination?,
     val exactSelectionCount: Int,
@@ -22,7 +23,7 @@ data class PlaylistProjectImport(
 
 object PlaylistProjectCodec {
     private const val FORMAT = "ytm-importer-playlist-project"
-    private const val SCHEMA_VERSION = 2
+    private const val SCHEMA_VERSION = 3
 
     fun isProject(raw: String): Boolean =
         runCatching {
@@ -34,7 +35,8 @@ object PlaylistProjectCodec {
         sourceLabel: String,
         appVersion: String,
         sourcePlaylistId: String? = null,
-        sourcePlaylistTitle: String? = null
+        sourcePlaylistTitle: String? = null,
+        sourceLocalPlaylistId: String? = null
     ): String {
         val tracks = JSONArray()
 
@@ -51,6 +53,10 @@ object PlaylistProjectCodec {
         val playlistJson =
             JSONObject()
                 .put("name", playlist.name)
+                .put(
+                    "localPlaylistId",
+                    sourceLocalPlaylistId ?: JSONObject.NULL
+                )
                 .put(
                     "sourcePlaylistId",
                     sourcePlaylistId ?: JSONObject.NULL
@@ -100,6 +106,10 @@ object PlaylistProjectCodec {
         val playlistJson =
             JSONObject()
                 .put("name", playlist.name)
+                .put(
+                    "localPlaylistId",
+                    JSONObject.NULL
+                )
                 .put(
                     "sourcePlaylistId",
                     sourcePlaylistId
@@ -179,6 +189,10 @@ object PlaylistProjectCodec {
         val playlist =
             JSONObject()
                 .put("name", entry.playlistName)
+                .put(
+                    "localPlaylistId",
+                    entry.localPlaylistId ?: JSONObject.NULL
+                )
                 .put(
                     "sourcePlaylistId",
                     entry.playlistId ?: JSONObject.NULL
@@ -424,6 +438,11 @@ object PlaylistProjectCodec {
                 nullableString(
                     playlistJson,
                     "sourcePlaylistTitle"
+                ),
+            sourceLocalPlaylistId =
+                nullableString(
+                    playlistJson,
+                    "localPlaylistId"
                 ),
             sourcePrivacyStatus =
                 nullableString(
