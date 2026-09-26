@@ -1,12 +1,12 @@
 # v1.4.53 — Bug Register
 
 This release owns the corrective work for:
-- BUG-036 — Search quota durable resume — OPEN;
+- BUG-036 — Search quota durable resume — CLOSED / PHONE PASS;
 - BUG-037 — quota accounting/label semantics — CLOSED / PHONE RETEST PASS;
 - BUG-038 — History durability investigation — CLOSED / CONTROLLED RETEST PASS; no History deletion reproduced;
-- UX-029 — quota resume copy/discoverability — OPEN;
-- BUG-039 — HTTP 429 write limit is ambiguously classified as daily quota — OPEN;
-- UX-030 — local ↔ YTM playlist linkage is not visible enough — OPEN.
+- UX-029 — quota resume copy/discoverability — CLOSED / PHONE PASS;
+- BUG-039 — HTTP 429 write limit is ambiguously classified as daily quota — OPEN / DEFERRED FOLLOW-UP;
+- UX-030 — local ↔ YTM playlist linkage is not visible enough — OPEN / DEFERRED UX FOLLOW-UP.
 
 Do not silently mark BUG-038 fixed unless a controlled reproduction or a concrete
 persistence defect is identified and retested.
@@ -122,4 +122,26 @@ Conclusion:
 - the controlled v1.4.53 scenario does not reproduce History record deletion or mutation;
 - the legacy v1.4.52 user-visible "lost playlist" evidence is therefore best explained by the non-durable Search workspace/discoverability defect owned by BUG-036, not by proven HistoryStore deletion;
 - BUG-038 is closed as controlled retest PASS / no separate History durability defect reproduced. Reopen only if future evidence shows an actual History record being deleted or rewritten unexpectedly.
+## BUG-036 / UX-029 phone acceptance — PASS
+
+Real-phone v1.4.53 acceptance confirmed the complete Search recovery contract:
+- a server Search-quota stop produced a durable SEARCH Queue job with one WAITING_QUOTA track and preserved three resolved tracks;
+- Queue detail survived rotation and app restart without automatic resume;
+- importing an unrelated playlist did not overwrite the saved Search snapshot;
+- after quota reset, explicit Resume consumed exactly one Search call, preserved the already-resolved tracks, then removed the SEARCH job only after completion;
+- Search resume did not automatically create or modify a remote playlist;
+- the Queue and recovery copy exposed a concrete, user-invoked resume path.
+
+Result: BUG-036 and UX-029 CLOSED / PHONE PASS.
+
+## BUG-039 follow-up evidence after quota reset
+
+After the quota day reset, the pre-existing What Evil Lurks WRITE job was explicitly resumed from Queue and completed successfully:
+- 4/4 tracks added, 0 errors;
+- Queue became empty;
+- Search stayed at 1/100 (no new Search calls);
+- non-Search local units rose from 251 to 501 (+250), consistent with one playlist create plus four playlist-item inserts;
+- remote playlist id: `PLb2lfAgoEJr4`.
+
+This proves durable WRITE recovery is healthy and that the earlier HTTP 429 condition cleared. It still does **not** identify whether the earlier generic `Resource has been exhausted (e.g. check quota)` response represented daily quota exhaustion, a rate limit, or another Google quota dimension. BUG-039 therefore remains an explicit deferred diagnostic/copy follow-up and is not claimed fixed by v1.4.53.
 
