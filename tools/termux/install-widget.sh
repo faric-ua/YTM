@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 
-REPO="/storage/emulated/0/Documents/YTM"
+REPO="${YTM_REPO_DIR:-$HOME/YTM}"
 MENU="$REPO/tools/termux/ytm-menu.sh"
 SHORTCUT_DIR="$HOME/.shortcuts"
 SHORTCUT="$SHORTCUT_DIR/YTM Importer"
