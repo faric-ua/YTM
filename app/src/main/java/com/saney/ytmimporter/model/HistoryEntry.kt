@@ -5,6 +5,7 @@ enum class HistoryStatus {
     COMPLETED,
     PARTIAL,
     PENDING_QUOTA,
+    PENDING_LIMIT,
     FAILED
 }
 
