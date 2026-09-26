@@ -330,6 +330,7 @@ class HistoryStore(context: Context) {
             .put("duplicateCount", entry.duplicateCount)
             .put("missingCount", entry.missingCount)
             .put("lastError", entry.lastError ?: JSONObject.NULL)
+            .put("localPlaylistId", entry.localPlaylistId ?: JSONObject.NULL)
             .put(
                 "tracks",
                 JSONArray().also { array ->
@@ -406,7 +407,8 @@ class HistoryStore(context: Context) {
             duplicateCount = json.optInt("duplicateCount", 0),
             missingCount = json.optInt("missingCount", 0),
             lastError = nullableString(json, "lastError"),
-            tracks = tracks.sortedBy { it.index }
+            tracks = tracks.sortedBy { it.index },
+            localPlaylistId = nullableString(json, "localPlaylistId")
         )
     }
 
