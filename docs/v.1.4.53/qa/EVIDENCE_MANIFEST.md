@@ -25,3 +25,5 @@
 | Release tag | `v1.4.53` | points to exact phone-tested source `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5` | GitHub |
 | Checkpoint tag | `checkpoint-v1.4.53-phone-pass` | points to the same exact phone-tested source | GitHub |
 | Stable assets | GitHub Release `v1.4.53` | APK + SHA-256 + updater manifest published; APK SHA-256 `841019959d02d4e5368a6cc954d815563ac85535e7bc4a577b69653d21acaf2e` | GitHub Release |
+| OTA equal-version smoke | phone screenshot, 2026-09-26 | installed `1.4.53 (96)` matched stable `1.4.53 (96)`; updater returned `Оновлень немає` and offered no download/install action | Conversation screenshot |
+| Final Termux release status | phone/Termux output, 2026-09-26 | local/remote HEAD `2472bb25908c92582c877b13f2a80d2e74e80123` synced; validation run `36251182307` PASS; tags/release present; `CLOSEOUT: FINAL` | Conversation evidence |
