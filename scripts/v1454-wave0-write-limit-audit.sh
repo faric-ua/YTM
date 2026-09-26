@@ -109,7 +109,9 @@ grep -Fq 'PlaylistLinkagePolicy.current' "$PLAYLIST_UI" ||
   fail "Playlist Hub linkage status missing"
 grep -Fq 'YTM ID:' "$PLAYLIST_UI" ||
   fail "Playlist Hub stable YTM identifier missing"
-grep -Fq 'PlaylistLinkagePolicy.history' "$HISTORY_UI" ||
+grep -Fq 'PlaylistLinkagePolicy' "$HISTORY_UI" ||
+  fail "History linkage policy missing"
+grep -Fq '.history(entry)' "$HISTORY_UI" ||
   fail "History linkage status missing"
 grep -Fq 'sourcePlaylistId =' "$REVIEW" ||
   fail "working-project linkage export missing"
