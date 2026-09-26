@@ -16,6 +16,8 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import com.saney.ytmimporter.model.PlaylistLinkagePolicy
+import com.saney.ytmimporter.model.PlaylistLinkageState
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
@@ -514,6 +516,73 @@ class PlaylistActivity : Activity() {
                         palette.text
                     )
                     maxLines = 3
+                }
+            )
+
+            val linkageState =
+                PlaylistLinkagePolicy.current(
+                    tracks = tracks,
+                    destinationPlaylistId =
+                        snapshot.destinationPlaylistId
+                )
+
+            addView(
+                TextView(
+                    this@PlaylistActivity
+                ).apply {
+                    text =
+                        buildString {
+                            append(
+                                PlaylistLinkagePolicy
+                                    .label(linkageState)
+                            )
+
+                            if (
+                                linkageState in
+                                    setOf(
+                                        PlaylistLinkageState
+                                            .LINKED_YTM,
+                                        PlaylistLinkageState
+                                            .PENDING_WRITE
+                                    ) &&
+                                !snapshot
+                                    .destinationPlaylistTitle
+                                    .isNullOrBlank()
+                            ) {
+                                append(": ")
+                                append(
+                                    snapshot
+                                        .destinationPlaylistTitle
+                                )
+                            }
+
+                            if (
+                                !snapshot
+                                    .destinationPlaylistId
+                                    .isNullOrBlank()
+                            ) {
+                                append("\nYTM ID: ")
+                                append(
+                                    snapshot
+                                        .destinationPlaylistId
+                                )
+                            }
+                        }
+                    textSize = 13f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.accent
+                    )
+                    setTextIsSelectable(true)
+                    setPadding(
+                        0,
+                        dp(7),
+                        0,
+                        0
+                    )
                 }
             )
 
