@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.53 — Quota Recovery / Durable Resume — DEVELOPMENT
+v1.4.53 — Quota Recovery / Durable Resume — FINAL / OTA SMOKE PENDING
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -122,18 +122,24 @@ Planned after v1.4.53 stabilization. Do not start app-code implementation before
 - [x] create release documentation before app-code changes
 - [x] dedicated branch `feat/v1.4.53-quota-recovery`
 - [x] bump app identity to v1.4.53 / versionCode 96
-- [ ] BUG-036: durable Search quota resume job
-- [ ] Queue distinguishes SEARCH and WRITE recovery jobs
-- [ ] Search waiting-for-quota state is not shown as ordinary permanent failure
-- [ ] Search recovery survives restart and unrelated current-playlist replacement
-- [ ] explicit Search Resume restores snapshot and searches only waiting tracks
-- [ ] BUG-037: total local quota estimate includes Search cost (100 units/call)
-- [ ] write preflight uses corrected total-unit estimate
-- [ ] BUG-038: controlled History JSON durability reproduction
-- [ ] UX-029: quota copy points to the real resume mechanism
-- [ ] Full Backup / Restore includes Search recovery queue state
-- [ ] static/full preflight
-- [ ] signed phone QA
+- [x] BUG-036: durable Search quota resume job
+- [x] Queue distinguishes SEARCH and WRITE recovery jobs
+- [x] Search waiting-for-quota state is not shown as ordinary permanent failure
+- [x] Search recovery survives restart and unrelated current-playlist replacement
+- [x] explicit Search Resume restores snapshot and searches only waiting tracks
+- [x] BUG-037: Search 100-call bucket separated from non-Search 10,000-unit estimate
+- [x] WAITING_QUOTA tracks are excluded from write candidates until resolved
+- [x] BUG-038: controlled History JSON durability reproduction — 0 removed IDs / 0 changed pre-existing records
+- [x] UX-029: quota copy points to the real resume mechanism
+- [x] Full Backup / Restore includes Search recovery queue state
+- [x] static/full preflight
+- [x] signed phone QA — Tests 1–5 PASS
+- [x] stable publication: `v1.4.53` + `checkpoint-v1.4.53-phone-pass` on exact tested source; publisher run `36250364471` PASS
+- [ ] post-publication equal-version updater smoke
+
+Deferred non-blocking follow-ups:
+- BUG-039 — generic write HTTP 429 classification remains ambiguous between daily quota, rate limit and other quota dimensions.
+- UX-030 — expose explicit local-only / linked-to-YTM / pending-write state from persisted remote playlistId.
 
 ## v1.4.52 — URL Snapshot / Home UX Polish
 
