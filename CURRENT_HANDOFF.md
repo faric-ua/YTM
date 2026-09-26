@@ -433,3 +433,18 @@ Recorded for the next corrective release:
 
 Do not change the stable v1.4.52 app binary for these findings. Finish the
 equal-version OTA smoke, then address the findings in the next corrective release.
+
+## v1.4.53 phone QA progress — 2026-09-26
+
+- Test 1 PASS — durable SEARCH job created on real server Search quota stop; rotation preserved detail and did not auto-resume.
+- Test 2 PASS — app restart + unrelated 31-track import did not overwrite SEARCH/WRITE pending snapshots.
+- Test 4 PASS — existing What Evil Lurks WRITE job preserved 0/4, same account/channel, playlistId absent, no duplicate/auto-write.
+- BUG-037 PASS — patched UI shows Search 64/100 separately from non-Search units 3907/10000 after in-place update.
+- Test 5 baseline: History JSON captured with 93 entries; Firestarter local-import id `local-import-9cbabf9d-f5e9-4ee3-a348-21bb2cd6bf63`; post-resume comparison pending.
+- Test 3 is blocked only by Search quota reset; after reset resume Firestarter and verify only the one WAITING_QUOTA track is searched.
+- BUG-039 remains OPEN: ambiguous write HTTP 429 is still classified too broadly as quota.
+
+## Next release planning
+
+- v1.4.54 planning skeleton exists under `docs/v.1.4.54/`: History Recovery + Safe Bulk Sync.
+- Do not start v1.4.54 app code until v1.4.53 phone QA and stable closeout are complete.
