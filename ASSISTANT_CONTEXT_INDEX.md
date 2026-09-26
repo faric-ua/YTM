@@ -164,6 +164,21 @@ retrospective gaps rather than invented evidence.
 - `docs/v.1.4.53/qa/EVIDENCE_MANIFEST.md`
 - `docs/v.1.4.53/diagrams/QUOTA_RECOVERY_FLOW.md`
 
+### Active v1.4.54 development release
+
+- `docs/design/V1454_HISTORY_SAFE_BULK_SYNC_CONTRACT.md`
+- `docs/design/V1454_HISTORY_SAFE_BULK_SYNC_FLOW.md`
+- `docs/v.1.4.54/RELEASE_META.json`
+- `docs/v.1.4.54/RELEASE.md`
+- `docs/v.1.4.54/REGRESSION_CHECKLIST.md`
+- `docs/v.1.4.54/qa/PHONE_TEST.md`
+- `docs/v.1.4.54/qa/BUG_REGISTER.md`
+- `docs/v.1.4.54/qa/EVIDENCE_MANIFEST.md`
+- `docs/v.1.4.54/diagrams/HISTORY_BULK_SYNC_FLOW.md`
+
+Wave 0 protects BUG-039 write-limit classification/recovery before History recovery
+and bulk-sync execution are implemented.
+
 ## Audit rule
 
 Do not guess which old audit matters.
