@@ -57,7 +57,8 @@ if grep -Fq 'SEARCH_LIST_COST' "$QUOTA"; then
 fi
 
 grep -Fq 'BUG-038' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 investigation not carried into release"
-grep -Fq 'root cause not yet proven' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 uncertainty guard missing"
+grep -Fq 'CLOSED / CONTROLLED RETEST PASS' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 controlled retest closure missing"
+grep -Fq 'removed IDs: 0' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 no-deletion evidence missing"
 
 python -B - <<'PY'
 from pathlib import Path
@@ -97,5 +98,5 @@ echo "- waiting-quota Search semantics"
 echo "- write PendingJob backward compatibility"
 echo "- granular Search quota separated from general 10k-unit bucket"
 echo "- WAITING_QUOTA blocked from destination write"
-echo "- BUG-038 remains evidence-driven / no speculative closure"
+echo "- BUG-038 controlled retest closure remains evidence-driven / no deletion reproduced"
 echo "- v1.4.53 JVM policy tests + release docs present"
