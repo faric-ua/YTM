@@ -37,7 +37,10 @@ Current release state:
 - retryable playlist-create/track-add limits persist the WRITE job and pause reason in Queue; no automatic retry is started.
 - user guidance for frequent playlist creation/write throttling says to wait, avoid rapid retries, and Resume manually; no unverified cooldown/reset time is shown.
 - legacy v1.4.53 Pending Queue data remains backward-compatible.
-- UX-030 remains planned in v1.4.54 linkage/History recovery.
+- UX-030 linkage visibility is implemented: explicit `Лише локально` / `Пов'язано з YTM` / `Очікує Search` / `Очікує запис у YTM`, using persisted playlistId rather than title matching.
+- UX-030 persists YTM target title as display metadata through current workspace, Pending WRITE/Search recovery and YTM Project round-trip; Playlist Hub exposes the stable YTM ID.
+- UX-030 app/code static/JVM/full-preflight PASS: source `f00ee7a4b6f0ab6fc4533d9b7c7610046972181a`, Validate Android run `36267305742`.
+- UX-030 real-phone gate is still pending; do not start History Recovery until that targeted gate passes.
 - Wave 0 static/JVM/full preflight: **PASS** on app/code source `51a308c537f969cef2f9255038df442cf7ec7c1e`, Validate Android run `36257551798`.
 - final pre-phone branch HEAD `9daa9027981551539d2fdfa76d08faa4620aeee6` passed Validate Android run `36257890045`.
 - signed candidate run `36261268460` from exact source `9daa9027981551539d2fdfa76d08faa4620aeee6`: **SUCCESS**.
@@ -358,8 +361,8 @@ R3 phone acceptance is defined in `docs/v.1.4.47/qa/PHONE_TEST_R3.md`.
    - signed build run `36261268460` PASS from the same source;
    - in-place phone install preserved state and normal create/add completed 4/4 with 0 errors.
 4. Do not manufacture HTTP 429; preserve natural limit evidence if it occurs later.
-5. Implement UX-030 first: make local-only / linked-to-YTM / pending Search / pending Write state explicit without title-based identity.
-6. Then implement the durable History recovery foundation (`localPlaylistKey`, workspace lineage/snapshot, explicit restore with no auto-Search or auto-write).
+5. Run the targeted UX-030 phone gate from `docs/v.1.4.54/qa/PHONE_TEST.md`; verify linked/local History + current-workspace wording, stable playlistId visibility, rotation/restart persistence and no auto-Search/write.
+6. Only after `UX030+`, implement the durable History recovery foundation (`localPlaylistKey`, workspace lineage/snapshot, explicit restore with no auto-Search or auto-write).
 7. Do not start Bulk Sync execution/rollback work until linkage + History recovery contracts are implemented and gated.
 
 ## 8. Working contract
