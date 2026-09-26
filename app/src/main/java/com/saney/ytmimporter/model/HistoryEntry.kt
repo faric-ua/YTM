@@ -43,5 +43,6 @@ data class HistoryEntry(
     val duplicateCount: Int,
     val missingCount: Int,
     val lastError: String?,
-    val tracks: List<HistoryTrack>
+    val tracks: List<HistoryTrack>,
+    val localPlaylistId: String? = null
 )
