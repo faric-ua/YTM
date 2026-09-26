@@ -44,8 +44,8 @@ Implemented development contract:
 
 ## Version
 
-- planned versionName: `1.4.53`
-- planned versionCode: `96`
+- versionName: `1.4.53`
+- versionCode: `96`
 - branch: `feat/v1.4.53-quota-recovery`
 - stable baseline: `v1.4.52`
 - baseline app source: `d857ce8c42511b16357060e6639ed67d548f9f31`
@@ -67,13 +67,61 @@ Current implementation:
 
 ## Status
 
-**BUG-037 PATCH — STATIC/FULL VALIDATION PENDING**
+**FINAL — TARGETED PHONE QA PASS / QUOTA RECOVERY RELEASE**
 
-Validation evidence:
-- exact validated source HEAD: `cf9e3778cc9e1010ba834ed865f6d1ff96c24b33`;
-- Validate Android run: `36176662561` — **SUCCESS**;
-- release preflight: PASS;
-- JVM unit tests: PASS;
-- unsigned release assemble: PASS.
+Accepted phone-tested app identity:
+- app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`;
+- signed run: `36195438071`;
+- version: `1.4.53 (96)`;
+- phone-test date: `2026-09-26`.
 
-Historical signed candidate run `36178783613` from app source `454979093c0e108fe629aefe7db4bece97334575` was installed on the phone and exposed BUG-037: Search was incorrectly charged into the legacy 10,000-unit bucket. Google moved `search.list` to its own granular quota bucket on 2026-06-01. The candidate is superseded; the granular-quota patch requires static/full validation, a new signed build and targeted phone retest.
+Validation/build evidence:
+- Validate Android run: `36194608351` — **SUCCESS** on the exact app source;
+- Build Signed Android APK run: `36195438071` — **SUCCESS** on the same app source.
+
+Targeted phone results:
+- Test 1 PASS — Search quota stop created a durable SEARCH job; resolved tracks stayed resolved; Queue detail survived rotation without auto-resume;
+- Test 2 PASS — restart + unrelated import preserved independent SEARCH and WRITE pending snapshots;
+- Test 3 PASS — after reset, explicit Search resume retried only the one WAITING_QUOTA track, consumed one Search call, removed the SEARCH job only on completion, and did not auto-write remotely;
+- Test 4 PASS — existing WRITE job preserved account/playlist semantics across the release and later resumed successfully from Queue to 4/4; Queue then became empty;
+- Test 5 PASS — History JSON comparison found 0 removed IDs and 0 changed pre-existing records; exactly one expected completed Firestarter WRITE record was added.
+
+Release findings:
+- BUG-036 CLOSED / PHONE PASS;
+- BUG-037 CLOSED / PHONE RETEST PASS;
+- BUG-038 CLOSED / CONTROLLED RETEST PASS — no separate History deletion defect reproduced;
+- UX-029 CLOSED / PHONE PASS.
+
+Non-blocking follow-ups intentionally carried forward:
+- BUG-039 — generic HTTP 429 write error classification remains ambiguous between daily quota/rate-limit/other quota dimensions; recovery itself is proven healthy;
+- UX-030 — make local-only / linked-to-YTM / pending-write linkage more visible using persisted remote playlistId rather than title inference.
+
+This is a targeted v1.4.53 quota-recovery acceptance, not a claim that every historical full-app regression was rerun.
+
+## Stable publication
+
+Stable publication completed on 2026-09-26.
+
+- release tag: `v1.4.53`;
+- checkpoint tag: `checkpoint-v1.4.53-phone-pass`;
+- both tags point to the exact phone-tested app source `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`;
+- exact accepted signed build remains GitHub Actions run `36195438071`;
+- stable publisher run: `36250364471` — PASS;
+- published assets: signed APK, APK SHA-256, and `YTM-Importer-update.json`;
+- published APK SHA-256: `841019959d02d4e5368a6cc954d815563ac85535e7bc4a577b69653d21acaf2e`;
+- no rebuild was used for stable publication.
+
+## OTA equal-version smoke
+
+Post-publication phone smoke passed on 2026-09-26.
+
+Installed:
+- YTM Importer `1.4.53 (96)`.
+
+Production updater result:
+- `Оновлень немає`;
+- `Встановлена версія відповідає поточній стабільній версії`;
+- stable version displayed as `1.4.53 (96)`;
+- no APK download/install action was offered.
+
+Result: **OTA+ / PASS**.
