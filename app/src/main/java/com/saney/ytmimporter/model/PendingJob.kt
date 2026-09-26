@@ -10,6 +10,14 @@ enum class PendingOperation {
     SEARCH
 }
 
+enum class PendingPauseReason {
+    SEARCH_QUOTA,
+    DAILY_QUOTA,
+    RATE_LIMIT,
+    RESOURCE_LIMIT,
+    UNKNOWN_API_LIMIT
+}
+
 data class PendingTrack(
     val originalTitle: String,
     val originalArtist: String,
@@ -61,6 +69,7 @@ data class PendingJob(
     val failedCount: Int,
     val remainingTracks: List<PendingTrack>,
     val lastError: String?,
+    val pauseReason: PendingPauseReason? = null,
     val operation: PendingOperation = PendingOperation.WRITE,
     val recoveryKey: String? = null,
     val preserveExistingExact: Boolean = false,
