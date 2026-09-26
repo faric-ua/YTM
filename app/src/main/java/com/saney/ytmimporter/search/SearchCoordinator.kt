@@ -404,8 +404,7 @@ class SearchCoordinator(
         track: Track
     ): Boolean =
         !track.selectedVideoId.isNullOrBlank() &&
-            track.status == TrackStatus.MATCHED &&
-            track.candidates.isEmpty()
+            track.status == TrackStatus.MATCHED
 
     private fun applySearchCandidates(
         track: Track,
