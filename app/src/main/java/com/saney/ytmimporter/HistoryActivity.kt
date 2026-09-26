@@ -536,7 +536,11 @@ class HistoryActivity : Activity() {
                             Typeface.BOLD
                         )
                         setTextColor(
-                            ACCENT
+                            AppThemeManager
+                                .palette(
+                                    this@HistoryActivity
+                                )
+                                .accent
                         )
                         setTextIsSelectable(true)
                         setPadding(
