@@ -7,7 +7,7 @@
   "branch": "feat/v1.4.54-history-bulk-sync",
   "appSourceSha": null,
   "signedRun": null,
-  "qaStatus": "WAVE 0 BUG-039 IMPLEMENTED — STATIC/JVM/FULL PREFLIGHT PENDING; UX-030/HISTORY RECOVERY/BULK SYNC NEXT",
+  "qaStatus": "WAVE 0 BUG-039 STATIC/JVM/FULL PREFLIGHT PASS — SIGNED CANDIDATE + TARGETED PHONE SMOKE PENDING; UX-030/HISTORY RECOVERY/BULK SYNC NEXT",
   "tag": null,
   "checkpointTag": null,
   "phoneTestDate": null
