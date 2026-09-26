@@ -6,7 +6,7 @@ Current live resume snapshot: CURRENT_HANDOFF.md
 Active development release (v1.4.53 Quota Recovery / Durable Resume):
 - branch: `feat/v1.4.53-quota-recovery`;
 - versionName / versionCode: 1.4.53 / 96;
-- release phase: development — granular-quota patch validation + signed build PASS; phone retest pending;
+- release phase: development — signed candidate phone QA in progress; Tests 1/2/4 PASS, Test 3 + post-reset History comparison pending;
 - stable baseline remains v1.4.52 / source d857ce8c42511b16357060e6639ed67d548f9f31 / signed run 36041226156;
 - BUG-036 implementation: Search quota exhaustion uses WAITING_QUOTA and persists a SEARCH recovery job with a full playlist snapshot in the existing Pending Queue store;
 - Queue distinguishes SEARCH and WRITE jobs; Search Resume is explicit and processes only waiting Search tracks;
@@ -735,3 +735,4 @@ v1.4.43 NOT PHONE-TESTED YET — BUG-013 AUTH FRESHNESS
 - 2026-09-24: UX-026 PHONE PASS on Samsung Galaxy A26 5G, signed run 35943953149, app source 226d2453ef3b4a34cb7db7be0c42ae84c8f624a0. Inline URL clear button works as intended and starts no automatic work.
 - Termux menu item 4 final direction: open the original verified APK folder under Documents/YTM/artifacts/apk/...; do not duplicate APK into Download and do not launch SAI/package installer directly.
 - v1.4.51 next gate: U51-6 explicit local snapshot handoff, then closeout if PASS.
+- v1.4.54 planning skeleton prepared (History Recovery / Safe Bulk Sync); app-code work blocked until v1.4.53 closeout.
