@@ -3289,6 +3289,15 @@ class ImportActivity : Activity() {
             imported = project.playlist,
             sourceLabel =
                 "YTM Project ($fileName)",
+            destinationPlaylistId =
+                project.sourcePlaylistId,
+            destinationPlaylistTitle =
+                project.sourcePlaylistTitle
+                    ?: project.playlist.name
+                        .takeIf {
+                            !project.sourcePlaylistId
+                                .isNullOrBlank()
+                        },
             message =
                 "YTM Project: " +
                     "${project.playlist.tracks.size} треків. " +
@@ -3303,7 +3312,9 @@ class ImportActivity : Activity() {
     private fun finishImport(
         imported: ImportedPlaylist,
         sourceLabel: String,
-        message: String
+        message: String,
+        destinationPlaylistId: String? = null,
+        destinationPlaylistTitle: String? = null
     ) {
         imported.tracks
             .forEachIndexed {
@@ -3316,7 +3327,11 @@ class ImportActivity : Activity() {
 
         currentPlaylistStore.save(
             playlist = imported,
-            sourceLabel = sourceLabel
+            sourceLabel = sourceLabel,
+            destinationPlaylistId =
+                destinationPlaylistId,
+            destinationPlaylistTitle =
+                destinationPlaylistTitle
         )
 
         historyStore.upsert(
