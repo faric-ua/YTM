@@ -58,7 +58,7 @@ fi
 
 grep -Fq 'BUG-038' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 evidence record not carried into release"
 grep -Fq 'CONTROLLED RETEST PASS' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 controlled retest evidence missing"
-grep -Fq '0 changed common records' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 stable-record comparison missing"
+grep -Fq 'changed common records: 0' docs/v.1.4.53/qa/BUG_REGISTER.md   || fail "BUG-038 stable-record comparison missing"
 
 python -B - <<'PY'
 from pathlib import Path
