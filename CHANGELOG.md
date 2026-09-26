@@ -15,6 +15,7 @@
 - Final tested app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`; signed run: `36195438071`; versionCode 96.
 - Stable `v1.4.53` and `checkpoint-v1.4.53-phone-pass` published on the exact tested source; publisher run `36250364471` PASS.
 - Release assets: signed APK, SHA-256 file and updater manifest; no rebuild was used for publication.
+- Production updater equal-version smoke PASS for installed/stable `1.4.53 (96)`: `Оновлень немає` (`OTA+`).
 
 ## v1.4.52
 
