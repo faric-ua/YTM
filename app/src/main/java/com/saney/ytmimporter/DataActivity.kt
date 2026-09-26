@@ -1915,6 +1915,9 @@ class DataActivity : Activity() {
             HistoryStatus.PENDING_QUOTA ->
                 "Очікує квоти"
 
+            HistoryStatus.PENDING_LIMIT ->
+                "Пауза через ліміт API"
+
             HistoryStatus.FAILED ->
                 "Помилка"
         }
