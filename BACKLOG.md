@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.53 — Quota Recovery / Durable Resume — DEVELOPMENT
+v1.4.53 — Quota Recovery / Durable Resume — FINAL / OTA+
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -81,23 +81,65 @@ v1.4.53 — Quota Recovery / Durable Resume — DEVELOPMENT
 - [x] final release documentation/checkpoint closeout
 - [x] publish stable v1.4.49 + final equal-version recheck — `FINAL+`
 
+
+## v1.4.54 — History Recovery + Safe Bulk Sync
+
+Contract: `docs/design/V1454_HISTORY_SAFE_BULK_SYNC_CONTRACT.md`  
+Flow: `docs/design/V1454_HISTORY_SAFE_BULK_SYNC_FLOW.md`
+
+Planned after v1.4.53 stabilization. Do not start app-code implementation before v1.4.53 phone QA/closeout.
+
+### History → current workspace
+- [ ] Add `Відновити як поточний плейлист` from History detail/actions.
+- [ ] Restore exact track order, selected videoId/title/channel, manual-selection flag and track status where available.
+- [ ] If a History entry has a remote `playlistId`, preserve the linkage in `CurrentPlaylistStore.destinationPlaylistId`.
+- [ ] Local-import History must remain distinguishable from YTM-write History; never infer remote linkage from title alone.
+- [ ] Persist Search results back into a durable restorable snapshot so importing another playlist does not discard already-resolved videoId work.
+- [ ] Restoring a History playlist must not auto-run Search or YTM write; explicit user action only.
+
+### One-tap safe bulk sync
+- [ ] Add `Синхронізувати всі` for eligible local/restorable playlists.
+- [ ] Preflight must create a local Full Backup checkpoint before any remote write.
+- [ ] Preflight must create a read-only remote account checkpoint (playlist IDs, title/privacy, ordered playlistItem IDs/video IDs) before any remote write.
+- [ ] Build and show a dry-run plan: NEW / LINKED / ALREADY_SYNCED / NEEDS_SEARCH / PENDING / BLOCKED plus estimated API usage.
+- [ ] User confirmation required after preview; rotation/recreation must not auto-start the sync.
+- [ ] Execute as a durable session with per-playlist progress and explicit pause/resume across quota/auth/rate-limit stops.
+- [ ] Record a mutation ledger for every remote change made by the sync session.
+- [ ] Existing remote playlists must never be modified by title-only matching; use persisted playlistId or an explicit user mapping.
+- [ ] Rollback must revert only mutations created by that sync session; never delete unrelated pre-existing YTM content.
+- [ ] To support exact rollback of additions into existing playlists, `playlistItems.insert` must return/store the created playlistItem id and YouTubeApi must support playlist-item delete.
+- [ ] Playlists created by the sync session may be rolled back via existing `deletePlaylist()` only when the session ledger proves ownership.
+- [ ] If rollback itself is interrupted by quota/auth/rate-limit, persist a durable ROLLBACK recovery job and resume explicitly later.
+- [ ] Local rollback and remote rollback are separate states and must be reported separately in UI/History.
+
+### Safety contract
+- [ ] A checkpoint is not claimed as a full remote rollback unless the mutation ledger contains enough identifiers to reverse every performed mutation.
+- [ ] Bulk sync never auto-deletes remote playlists/items merely because they are absent locally.
+- [ ] Destructive reconciliation, if ever added, requires a separate explicit mode and confirmation.
+
 ## v1.4.53 — Quota Recovery / Durable Resume
 
 - [x] create release documentation before app-code changes
 - [x] dedicated branch `feat/v1.4.53-quota-recovery`
 - [x] bump app identity to v1.4.53 / versionCode 96
-- [ ] BUG-036: durable Search quota resume job
-- [ ] Queue distinguishes SEARCH and WRITE recovery jobs
-- [ ] Search waiting-for-quota state is not shown as ordinary permanent failure
-- [ ] Search recovery survives restart and unrelated current-playlist replacement
-- [ ] explicit Search Resume restores snapshot and searches only waiting tracks
-- [ ] BUG-037: total local quota estimate includes Search cost (100 units/call)
-- [ ] write preflight uses corrected total-unit estimate
-- [ ] BUG-038: controlled History JSON durability reproduction
-- [ ] UX-029: quota copy points to the real resume mechanism
-- [ ] Full Backup / Restore includes Search recovery queue state
-- [ ] static/full preflight
-- [ ] signed phone QA
+- [x] BUG-036: durable Search quota resume job
+- [x] Queue distinguishes SEARCH and WRITE recovery jobs
+- [x] Search waiting-for-quota state is not shown as ordinary permanent failure
+- [x] Search recovery survives restart and unrelated current-playlist replacement
+- [x] explicit Search Resume restores snapshot and searches only waiting tracks
+- [x] BUG-037: Search 100-call bucket separated from non-Search 10,000-unit estimate
+- [x] WAITING_QUOTA tracks are excluded from write candidates until resolved
+- [x] BUG-038: controlled History JSON durability reproduction — 0 removed IDs / 0 changed pre-existing records
+- [x] UX-029: quota copy points to the real resume mechanism
+- [x] Full Backup / Restore includes Search recovery queue state
+- [x] static/full preflight
+- [x] signed phone QA — Tests 1–5 PASS
+- [x] stable publication: `v1.4.53` + `checkpoint-v1.4.53-phone-pass` on exact tested source; publisher run `36250364471` PASS
+- [x] post-publication equal-version updater smoke: installed/stable `1.4.53 (96)` → `Оновлень немає` (`OTA+`)
+
+Deferred non-blocking follow-ups:
+- BUG-039 — generic write HTTP 429 classification remains ambiguous between daily quota, rate limit and other quota dimensions.
+- UX-030 — expose explicit local-only / linked-to-YTM / pending-write state from persisted remote playlistId.
 
 ## v1.4.52 — URL Snapshot / Home UX Polish
 
