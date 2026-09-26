@@ -2,13 +2,13 @@
   "schema": 1,
   "versionName": "1.4.53",
   "versionCode": 96,
-  "phase": "development",
+  "phase": "final",
   "feature": "Quota Recovery / Durable Resume",
   "branch": "feat/v1.4.53-quota-recovery",
-  "appSourceSha": null,
-  "signedRun": null,
-  "qaStatus": "BUG-037 PATCH — STATIC/FULL VALIDATION PENDING",
-  "tag": null,
-  "checkpointTag": null,
-  "phoneTestDate": null
+  "appSourceSha": "ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5",
+  "signedRun": 36195438071,
+  "qaStatus": "PHONE QA PASS — TESTS 1-5 COMPLETE; BUG-036/037/038 CLOSED; STABLE RELEASE PUBLISHED; BUG-039/UX-030 DEFERRED FOLLOW-UP",
+  "tag": "v1.4.53",
+  "checkpointTag": "checkpoint-v1.4.53-phone-pass",
+  "phoneTestDate": "2026-09-26"
 }
