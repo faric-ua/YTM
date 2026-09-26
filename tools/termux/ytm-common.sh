@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-YTM_REPO_DIR="${YTM_REPO_DIR:-/storage/emulated/0/Documents/YTM}"
+YTM_REPO_DIR="${YTM_REPO_DIR:-$HOME/YTM}"
+YTM_SHARED_DIR="${YTM_SHARED_DIR:-/storage/emulated/0/Documents/YTM}"
+YTM_ARTIFACT_DIR="${YTM_ARTIFACT_DIR:-$YTM_SHARED_DIR/artifacts/apk}"
 YTM_GH_REPO="${YTM_GH_REPO:-faric-ua/YTM}"
 YTM_WORKFLOW="${YTM_WORKFLOW:-build-apk.yml}"
 YTM_STATE_DIR="${YTM_STATE_DIR:-$HOME/.ytm-importer}"
@@ -19,7 +21,7 @@ ytm_fail() {
 
 ytm_require_repo() {
   [ -d "$YTM_REPO_DIR/.git" ] ||
-    ytm_fail "YTM repository not found: $YTM_REPO_DIR"
+    ytm_fail "Private YTM repository not found: $YTM_REPO_DIR (clone it under Termux HOME; shared /storage is not supported for Git)"
 
   ytm_ensure_https_origin
 }
