@@ -917,6 +917,10 @@ class ImportActivity : Activity() {
                         imported = imported,
                         sourceLabel =
                             "YouTube/YTM (${playlistInfo.title})",
+                        destinationPlaylistId =
+                            playlistInfo.id,
+                        destinationPlaylistTitle =
+                            playlistInfo.title,
                         message =
                             "YTM playlist імпортовано: " +
                                 "${imported.tracks.size} треків • " +
@@ -3298,6 +3302,8 @@ class ImportActivity : Activity() {
                             !project.sourcePlaylistId
                                 .isNullOrBlank()
                         },
+            localPlaylistId =
+                project.sourceLocalPlaylistId,
             message =
                 "YTM Project: " +
                     "${project.playlist.tracks.size} треків. " +
@@ -3314,7 +3320,8 @@ class ImportActivity : Activity() {
         sourceLabel: String,
         message: String,
         destinationPlaylistId: String? = null,
-        destinationPlaylistTitle: String? = null
+        destinationPlaylistTitle: String? = null,
+        localPlaylistId: String? = null
     ) {
         imported.tracks
             .forEachIndexed {
@@ -3325,20 +3332,39 @@ class ImportActivity : Activity() {
                     index
             }
 
+        val resolvedLocalPlaylistId =
+            localPlaylistId
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+                ?: UUID.randomUUID()
+                    .toString()
+
+        val historyEntry =
+            localImportHistoryEntry(
+                imported = imported,
+                sourceLabel = sourceLabel,
+                localPlaylistId =
+                    resolvedLocalPlaylistId,
+                destinationPlaylistId =
+                    destinationPlaylistId
+            )
+
         currentPlaylistStore.save(
             playlist = imported,
             sourceLabel = sourceLabel,
             destinationPlaylistId =
                 destinationPlaylistId,
             destinationPlaylistTitle =
-                destinationPlaylistTitle
+                destinationPlaylistTitle,
+            localPlaylistId =
+                resolvedLocalPlaylistId,
+            sourceHistoryId =
+                historyEntry.id
         )
 
         historyStore.upsert(
-            localImportHistoryEntry(
-                imported = imported,
-                sourceLabel = sourceLabel
-            )
+            historyEntry
         )
 
         setResult(
@@ -3348,6 +3374,10 @@ class ImportActivity : Activity() {
                     EXTRA_IMPORT_MESSAGE,
                     message
                 )
+                .putExtra(
+                    EXTRA_IMPORT_HISTORY_ENTRY_ID,
+                    historyEntry.id
+                )
         )
 
         finish()
@@ -3355,7 +3385,9 @@ class ImportActivity : Activity() {
 
     private fun localImportHistoryEntry(
         imported: ImportedPlaylist,
-        sourceLabel: String
+        sourceLabel: String,
+        localPlaylistId: String,
+        destinationPlaylistId: String?
     ): HistoryEntry {
         val now =
             System.currentTimeMillis()
@@ -3372,7 +3404,8 @@ class ImportActivity : Activity() {
             sourceLabel = sourceLabel,
             playlistName =
                 imported.name,
-            playlistId = null,
+            playlistId =
+                destinationPlaylistId,
             privacyStatus = "local",
             destination =
                 PendingDestination.NEW_PLAYLIST,
@@ -3414,7 +3447,9 @@ class ImportActivity : Activity() {
                                 track.manuallySelected,
                             error = null
                         )
-                    }
+                    },
+            localPlaylistId =
+                localPlaylistId
         )
     }
 
