@@ -448,3 +448,18 @@ equal-version OTA smoke, then address the findings in the next corrective releas
 
 - v1.4.54 planning skeleton exists under `docs/v.1.4.54/`: History Recovery + Safe Bulk Sync.
 - Do not start v1.4.54 app code until v1.4.53 phone QA and stable closeout are complete.
+## Resume point — 2026-09-26 v1.4.53 phone QA PASS
+
+- Branch: `feat/v1.4.53-quota-recovery`.
+- versionName / versionCode: `1.4.53 (96)`.
+- Exact phone-tested app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
+- Exact successful signed run: `36195438071`.
+- Phone QA Tests 1–5: **PASS**.
+- BUG-036 CLOSED / PHONE PASS — durable Search quota resume survived rotation, restart, unrelated import and resumed only WAITING_QUOTA work.
+- BUG-037 CLOSED / PHONE RETEST PASS — Search bucket and non-Search 10,000-unit estimate are separated on phone.
+- BUG-038 CLOSED / CONTROLLED RETEST PASS — baseline 93 → post-resume 94 History records, 0 removed IDs, 0 changed common records, one expected new write record.
+- Test 4 final WRITE execution PASS — What Evil Lurks resumed from Queue and completed 4/4; Queue became empty; remote playlist id `PLb2lfAgoEJr4`.
+- BUG-039 remains an explicit deferred follow-up: generic write HTTP 429 classification is still ambiguous even though recovery is proven healthy.
+- UX-030 remains a deferred UX follow-up for explicit local↔YTM linkage visibility.
+- Next gate: validate the current docs HEAD, then use Termux menu item 1 (sync) followed by menu item 8 (Finalize stable release). No new app rebuild is required; stable tags must point to the phone-tested app source above.
+
