@@ -1485,6 +1485,9 @@ class HistoryActivity : Activity() {
             HistoryStatus.PENDING_QUOTA ->
                 "Очікує квоти"
 
+            HistoryStatus.PENDING_LIMIT ->
+                "Пауза через ліміт API"
+
             HistoryStatus.FAILED ->
                 "Помилка"
         }
@@ -1497,6 +1500,7 @@ class HistoryActivity : Activity() {
             HistoryStatus.COMPLETED -> "✓"
             HistoryStatus.PARTIAL -> "◐"
             HistoryStatus.PENDING_QUOTA -> "⏳"
+            HistoryStatus.PENDING_LIMIT -> "⏸"
             HistoryStatus.FAILED -> "×"
         }
 
@@ -1512,7 +1516,8 @@ class HistoryActivity : Activity() {
 
             HistoryStatus.RUNNING,
             HistoryStatus.PARTIAL,
-            HistoryStatus.PENDING_QUOTA ->
+            HistoryStatus.PENDING_QUOTA,
+            HistoryStatus.PENDING_LIMIT ->
                 palette.semantic.warning
 
             HistoryStatus.FAILED ->
