@@ -58,6 +58,58 @@ Result:
 - Natural 429/limit behavior remains evidence-on-occurrence only; do not manufacture rate limits.
 - Next development scope: UX-030 explicit local↔YTM linkage visibility, then History Recovery.
 
+## UX-030 — explicit local ↔ YTM linkage gate
+
+Run this gate before starting History Recovery. Do not start Bulk Sync Tests 3+ yet.
+
+Exact static/JVM/full-preflight evidence before this phone gate:
+- app/code source `f00ee7a4b6f0ab6fc4533d9b7c7610046972181a`;
+- Validate Android run `36267305742`: **PASS**;
+- `PlaylistLinkagePolicy` is covered by JVM tests for local-only, linked, pending Search and pending Write precedence;
+- linkage identity uses persisted playlistId only; playlist title is display metadata, never identity.
+
+A. Linked current workspace:
+1. Open the current workspace that was written to a known YTM playlist.
+2. Inspect Home `Поточний плейлист`.
+3. Open Playlist Hub.
+
+PASS:
+- Home says `Пов'язано з YTM`;
+- Playlist Hub says `Пов'язано з YTM` and shows the exact persisted `YTM ID`;
+- when a persisted target title exists it is display-only next to the linkage status.
+
+B. Local-only workspace:
+1. Open/import a workspace that has never been written to YTM.
+2. Inspect Home and Playlist Hub.
+
+PASS:
+- both say `Лише локально`;
+- matching/similar playlist titles must not create a remote link.
+
+C. History visibility:
+1. Open History.
+2. Inspect one completed linked write entry and one local-import entry.
+3. Open each detail.
+
+PASS:
+- linked write entry says `Пов'язано з YTM` and exposes its persisted playlistId where available;
+- local-import entry says `Лише локально`;
+- list/detail wording agrees.
+
+D. Pending states, only when naturally available:
+- existing SEARCH recovery work must show `Очікує Search`;
+- existing WRITE pending work must show `Очікує запис у YTM`;
+- do not manufacture quota/rate-limit failures to create these states.
+
+Rotation/restart smoke:
+- linkage wording restores from persisted state;
+- no Search or YTM write auto-starts.
+
+Result notation: `UX030+` / `UX030-`.
+
+After `UX030+`, begin History Recovery Tests 1–2. Bulk Sync Tests 3+ stay blocked until the History Recovery contract is implemented.
+
+
 ## Test 1 — Search work survives workspace replacement
 
 1. Import playlist A with at least 4 uncached tracks.
