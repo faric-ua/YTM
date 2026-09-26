@@ -1238,7 +1238,9 @@ class ReviewActivity : Activity() {
                 sourcePlaylistId =
                     snapshot.destinationPlaylistId,
                 sourcePlaylistTitle =
-                    snapshot.destinationPlaylistTitle
+                    snapshot.destinationPlaylistTitle,
+                sourceLocalPlaylistId =
+                    snapshot.localPlaylistId
             )
     }
 
@@ -1801,7 +1803,13 @@ class ReviewActivity : Activity() {
             sourceLabel =
                 snapshot.sourceLabel,
             destinationPlaylistId =
-                snapshot.destinationPlaylistId
+                snapshot.destinationPlaylistId,
+            destinationPlaylistTitle =
+                snapshot.destinationPlaylistTitle,
+            localPlaylistId =
+                snapshot.localPlaylistId,
+            sourceHistoryId =
+                snapshot.sourceHistoryId
         )
     }
 
