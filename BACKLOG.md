@@ -84,6 +84,9 @@ v1.4.53 — Quota Recovery / Durable Resume — DEVELOPMENT
 
 ## v1.4.54 — History Recovery + Safe Bulk Sync
 
+Contract: `docs/design/V1454_HISTORY_SAFE_BULK_SYNC_CONTRACT.md`  
+Flow: `docs/design/V1454_HISTORY_SAFE_BULK_SYNC_FLOW.md`
+
 Planned after v1.4.53 stabilization. Do not start app-code implementation before v1.4.53 phone QA/closeout.
 
 ### History → current workspace
