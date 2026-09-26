@@ -21,7 +21,7 @@ Active development release (v1.4.54 History Recovery / Safe Bulk Sync):
 - signed candidate run 36261268460 PASS from the same source;
 - Wave 0 phone smoke W0+ / PASS: in-place update preserved account/current workspace, Queue opened cleanly with no phantom jobs/auto-start, and controlled create/add wrote 4/4 tracks with 0 errors and no false pause;
 - natural 429/limit behavior remains evidence-on-occurrence only; do not deliberately manufacture rate limits;
-- next gate: History Recovery Tests 1–2; Bulk Sync remains blocked until the History Recovery contract is implemented.
+- next gate: implement History Recovery, including a History action to restore an entry as the current workspace; only then run Tests 1–2. Bulk Sync remains blocked until History Recovery is implemented and accepted.
 
 Current accepted release (v1.4.53 Quota Recovery / Durable Resume — FINAL):
 - active branch: `feat/v1.4.53-quota-recovery`;
