@@ -94,7 +94,7 @@ b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 fe23b63f001e4fd5  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 a2460161a7f09851  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 840d2dea2e562c2e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
-1ae620df113f1116  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+43ab082ff8455f8f  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 543310163c294d4e  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 386c85ad84f92229  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 b5ebe5a06b46482f  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
@@ -113,13 +113,13 @@ a27466468fd212eb  app/src/main/java/com/saney/ytmimporter/destination/Destinatio
 e6e942f2d29c4411  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 fa811d96022d60da  app/src/main/java/com/saney/ytmimporter/model/HistoryEntry.kt
 0ebedf4ffb5635e3  app/src/main/java/com/saney/ytmimporter/model/HistoryResultSemantics.kt
-a9379a7fe3ad0730  app/src/main/java/com/saney/ytmimporter/model/PendingJob.kt
-72067e6a1f92f513  app/src/main/java/com/saney/ytmimporter/model/PlaylistLinkagePolicy.kt
+f525c62ff7a8b215  app/src/main/java/com/saney/ytmimporter/model/PendingJob.kt
+874ae278f1f1449f  app/src/main/java/com/saney/ytmimporter/model/PlaylistLinkagePolicy.kt
 fc2c55a80f97a771  app/src/main/java/com/saney/ytmimporter/model/Track.kt
 3b490140eb947377  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
 a2c5e210bdc20489  app/src/main/java/com/saney/ytmimporter/review/ReviewRemoteOperations.kt
 d0767455f0999196  app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
-6f9c8972ab5f63df  app/src/main/java/com/saney/ytmimporter/search/SearchRecoveryCoordinator.kt
+0d8d2f24a017560d  app/src/main/java/com/saney/ytmimporter/search/SearchRecoveryCoordinator.kt
 bdde39d426919354  app/src/main/java/com/saney/ytmimporter/search/SearchRecoveryPolicy.kt
 fe547e95ea63aab3  app/src/main/java/com/saney/ytmimporter/storage/AccountBackupNaming.kt
 571054e025251aa9  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryDeltaChainRestorer.kt
@@ -131,7 +131,7 @@ a5eb6b111ae22f10  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylis
 52e409baf9a0ed79  app/src/main/java/com/saney/ytmimporter/storage/DirectDownloadFileQuery.kt
 72a776cd95f12ce8  app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
 4dbc682a0ca0cab1  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
-ef8d0254fbfc4760  app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
+65068cada543cf34  app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
 518f8f3a9809913e  app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt
 3de6e763afc03c12  app/src/main/java/com/saney/ytmimporter/storage/QuotaMath.kt
 9963292203c7faad  app/src/main/java/com/saney/ytmimporter/storage/QuotaTracker.kt
@@ -160,7 +160,7 @@ ef7080f7c90cb7fa  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapsho
 334967fe2e7b875e  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotSourceParser.kt
 8f37dfaead29bd52  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotTitleBackfill.kt
 6ee94d5b4dd3fcaa  app/src/main/java/com/saney/ytmimporter/util/ErrorMessages.kt
-6d45a0b31f4fac4c  app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt
+55f5b759b97d5fe8  app/src/main/java/com/saney/ytmimporter/write/PlaylistWriteCoordinator.kt
 75aa895d46d42f9b  app/src/main/java/com/saney/ytmimporter/write/WritePausePolicy.kt
 49ea39322f16188f  app/src/main/java/com/saney/ytmimporter/youtube/MatchScorer.kt
 df98593f1614f580  app/src/main/java/com/saney/ytmimporter/youtube/PlaylistEditPolicy.kt
@@ -195,7 +195,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 7c794e3e8b44bad5  app/src/main/res/values/strings.xml
 9d05e1fd1b661172  app/src/main/res/values/styles.xml
 5dfe2d611d0acf07  app/src/main/res/xml/file_paths.xml
-433ba5794f0f42d6  app/src/test/java/com/saney/ytmimporter/model/PlaylistLinkagePolicyTest.kt
+7c5b8d04a486fb9a  app/src/test/java/com/saney/ytmimporter/model/PlaylistLinkagePolicyTest.kt
 e2c34610a3853bc3  app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt
 a5cfdda45ea01b81  app/src/test/java/com/saney/ytmimporter/storage/QuotaMathTest.kt
 88f7699b54a2e28b  app/src/test/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicyTest.kt
@@ -1692,7 +1692,7 @@ ab1026878a043c72  scripts/v1451-url-qa-corrective-r1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 f834e1746373fdba  scripts/v1452-ux-polish-audit.sh
 d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
-38c3f1a76e618fff  scripts/v1454-wave0-write-limit-audit.sh
+fb09bd0b60f3c042  scripts/v1454-wave0-write-limit-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 8a4753c11d9a562b  tools/termux/install-widget.sh
