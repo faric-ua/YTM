@@ -36,6 +36,28 @@ rate/resource/generic-429 variants; phone QA must not manufacture API abuse.
 
 Result notation: `W0+` / `W0-`; natural-limit evidence can be added separately.
 
+### Wave 0 phone result — 2026-09-26: W0+
+
+Exact candidate:
+- source: `9daa9027981551539d2fdfa76d08faa4620aeee6`;
+- signed build run: `36261268460`;
+- installed in place over real v1.4.53 data without clearing app data.
+
+Observed:
+- app launched as v1.4.54 with Google/YTM account state intact;
+- current workspace `The Prodigy - What Evil Lurks (1991)` remained present with 4 resolved tracks;
+- no Search or YTM write auto-started after launch;
+- Queue opened normally and was empty; no phantom SEARCH/WRITE recovery job appeared;
+- one controlled new private playlist `YTM v1.4.54 W0 test` was created through the ordinary write path;
+- all 4 selected tracks were added successfully;
+- final result: added 4, errors 0;
+- no false quota/rate-limit pause appeared.
+
+Result:
+- **W0+ / PHONE PASS for the normal regression path**.
+- Natural 429/limit behavior remains evidence-on-occurrence only; do not manufacture rate limits.
+- Next development scope: UX-030 explicit local↔YTM linkage visibility, then History Recovery.
+
 ## Test 1 — Search work survives workspace replacement
 
 1. Import playlist A with at least 4 uncached tracks.
