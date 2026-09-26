@@ -6,7 +6,7 @@ fail() {
   exit 1
 }
 
-BUILD="app/build.gradle.kts"
+META="docs/v.1.4.53/RELEASE_META.json"
 TRACK="app/src/main/java/com/saney/ytmimporter/model/Track.kt"
 PENDING_MODEL="app/src/main/java/com/saney/ytmimporter/model/PendingJob.kt"
 PENDING_STORE="app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt"
@@ -19,13 +19,13 @@ DEST="app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator
 QUOTA="app/src/main/java/com/saney/ytmimporter/storage/QuotaTracker.kt"
 QUOTA_MATH="app/src/main/java/com/saney/ytmimporter/storage/QuotaMath.kt"
 
-for path in   "$BUILD"   "$TRACK"   "$PENDING_MODEL"   "$PENDING_STORE"   "$SEARCH"   "$RECOVERY"   "$POLICY"   "$QUEUE"   "$MAIN"   "$DEST"   "$QUOTA"   "$QUOTA_MATH"   app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt   app/src/test/java/com/saney/ytmimporter/storage/QuotaMathTest.kt   docs/v.1.4.53/RELEASE.md   docs/v.1.4.53/REGRESSION_CHECKLIST.md   docs/v.1.4.53/qa/PHONE_TEST.md   docs/v.1.4.53/qa/BUG_REGISTER.md   docs/v.1.4.53/diagrams/QUOTA_RECOVERY_FLOW.md
+for path in   "$META"   "$TRACK"   "$PENDING_MODEL"   "$PENDING_STORE"   "$SEARCH"   "$RECOVERY"   "$POLICY"   "$QUEUE"   "$MAIN"   "$DEST"   "$QUOTA"   "$QUOTA_MATH"   app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt   app/src/test/java/com/saney/ytmimporter/storage/QuotaMathTest.kt   docs/v.1.4.53/RELEASE.md   docs/v.1.4.53/REGRESSION_CHECKLIST.md   docs/v.1.4.53/qa/PHONE_TEST.md   docs/v.1.4.53/qa/BUG_REGISTER.md   docs/v.1.4.53/diagrams/QUOTA_RECOVERY_FLOW.md
 do
   test -f "$path" || fail "missing v1.4.53 artifact: $path"
 done
 
-grep -Fq 'versionCode = 96' "$BUILD"   || fail "versionCode 96 missing"
-grep -Fq 'versionName = "1.4.53"' "$BUILD"   || fail "versionName 1.4.53 missing"
+grep -Fq '"versionCode": 96' "$META" || fail "historical v1.4.53 versionCode missing"
+grep -Fq '"versionName": "1.4.53"' "$META" || fail "historical v1.4.53 versionName missing"
 
 grep -Fq 'WAITING_QUOTA' "$TRACK"   || fail "WAITING_QUOTA track state missing"
 grep -Fq 'SEARCH' "$PENDING_MODEL"   || fail "SEARCH pending operation missing"
@@ -91,7 +91,7 @@ if (
 PY
 
 echo "PASS:"
-echo "- v1.4.53 identity"
+echo "- historical v1.4.53 identity + current recovery invariants"
 echo "- durable Search recovery payload + Queue route"
 echo "- waiting-quota Search semantics"
 echo "- write PendingJob backward compatibility"
