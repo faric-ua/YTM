@@ -69,3 +69,20 @@ Expected:
 - any mutation is attributable to explicit app behavior.
 
 Result format: `5+` / `5-` / `5?` if BUG-038 remains unreproduced
+
+## Final accepted result
+
+- Test 1: PASS — durable SEARCH job + rotation lifecycle.
+- Test 2: PASS — restart + unrelated import isolation.
+- Test 3: PASS — after quota reset, explicit resume searched only the one WAITING_QUOTA track and did not auto-write remotely.
+- Test 4: PASS — existing WRITE job later resumed from Queue and completed 4/4; Queue became empty.
+- Test 5: PASS — History baseline 93 → 94 records; 0 removed IDs, 0 changed common records, one expected completed Firestarter WRITE record added.
+
+Accepted findings:
+- BUG-036 CLOSED / PHONE PASS.
+- BUG-037 CLOSED / PHONE RETEST PASS.
+- BUG-038 CLOSED / CONTROLLED RETEST PASS.
+- UX-029 CLOSED / PHONE PASS.
+- BUG-039 and UX-030 remain deferred non-blocking follow-ups.
+
+Stable publication on 2026-09-26 reused the exact phone-tested APK from run `36195438071`; publisher run `36250364471` PASS. Equal-version production updater smoke remains post-publication.
