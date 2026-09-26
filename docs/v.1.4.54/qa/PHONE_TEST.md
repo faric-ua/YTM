@@ -131,11 +131,15 @@ Observed on real phone:
 
 Result:
 - **UX030+ / PHONE PASS**.
-- History Recovery Tests 1–2 may begin.
+- UX-030 is closed. History Recovery is the next implementation scope.
+- Tests 1–2 below are acceptance criteria for that not-yet-implemented feature; do not execute them until the restore action exists in the app.
 - Bulk Sync Tests 3+ remain blocked until the History Recovery contract is implemented.
 
 
 ## Test 1 — Search work survives workspace replacement
+
+**Implementation gate:** NOT YET EXECUTABLE. The current History UI does not yet expose `Відновити як поточний плейлист`; implement History Recovery first, then run this test.
+
 
 1. Import playlist A with at least 4 uncached tracks.
 2. Search until all tracks resolve.
