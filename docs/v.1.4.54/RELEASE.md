@@ -58,6 +58,12 @@ Implemented contract:
   errors in the local quota tracker;
 - old v1.4.53 PendingJob JSON without `pauseReason` remains readable.
 
+Automated Wave 0 gate:
+- static/full release preflight: PASS;
+- JVM unit tests: PASS;
+- unsigned release assemble: PASS;
+- evidence: Validate Android run `36257551798` on app/code source `51a308c537f969cef2f9255038df442cf7ec7c1e`.
+
 Wave 0 has automated policy coverage but is not phone-accepted until a signed
 candidate passes the targeted smoke. Do not deliberately spam playlist creation
 to force a server rate limit; natural 429 evidence may be used when it occurs.
