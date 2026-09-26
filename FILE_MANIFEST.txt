@@ -128,7 +128,7 @@ c046586be53a0584  artifacts/README.md
 b5254cf3a3d76197  BACKLOG.md
 1ad29e43e790095c  build.gradle.kts
 87833dd45ad7e7d1  CHANGELOG.md
-013941fc4cbffb24  CURRENT_HANDOFF.md
+c30d3febc92c6765  CURRENT_HANDOFF.md
 03fc725ca9b1f89a  docs/ASSISTANT_TOOL_MAP.md
 3b9bd37be48356b4  docs/assistant-kit/AUDIT_CATALOG.md
 c7cfb26f505e326b  docs/assistant-kit/CONTEXT_FILES.txt
@@ -187,7 +187,7 @@ bda0e19ca6c2e07d  docs/design/exclusive/skins/prototypes/polyglot-ku-japanese-me
 94f84a2ed75ff8de  docs/design/V1454_HISTORY_SAFE_BULK_SYNC_CONTRACT.md
 96bb07fec24f81fc  docs/design/V1454_HISTORY_SAFE_BULK_SYNC_FLOW.md
 4d76747d3ede3605  docs/documentation/DOCUMENTATION_GAP_AUDIT_2026-09-22.md
-706b8b706ac31c29  docs/documentation/HISTORICAL_RELEASE_MATRIX.md
+5f97e524a88c44dd  docs/documentation/HISTORICAL_RELEASE_MATRIX.md
 3c8c6e273019f706  docs/HANDOFF_HARDENING_2026-09-17.md
 1c2281d82e35a871  docs/issues/BUG-002/evidence/BUG002-dialog-entrance-motion-v1.4.27-2026-09-17.mp4
 1187e545d7e7e395  docs/issues/BUG-002/README.md
@@ -1349,8 +1349,8 @@ fd69481136a89785  docs/v.1.4.52/REGRESSION_CHECKLIST.md
 d78e82a752c4c06d  docs/v.1.4.52/RELEASE.md
 b2abc056e563f5a8  docs/v.1.4.53/diagrams/QUOTA_RECOVERY_FLOW.md
 40467379c4c698f0  docs/v.1.4.53/diagrams/README.md
-df14adeafde7055e  docs/v.1.4.53/qa/BUG_REGISTER.md
-43dd773ec58b9b38  docs/v.1.4.53/qa/EVIDENCE_MANIFEST.md
+30aba9ad7fb3f4b9  docs/v.1.4.53/qa/BUG_REGISTER.md
+93c6317fb709c602  docs/v.1.4.53/qa/EVIDENCE_MANIFEST.md
 b37112f413dd3b86  docs/v.1.4.53/qa/PHONE_TEST.md
 011b90ab759e0a17  docs/v.1.4.54/REGRESSION_CHECKLIST.md
 58bbe62d52f7f62b  docs/v.1.4.54/RELEASE.md
@@ -1361,8 +1361,8 @@ bc685206ab325e8d  docs/v.1.4.54/qa/BUG_REGISTER.md
 7aca7a39d8206195  docs/v.1.4.54/qa/EVIDENCE_MANIFEST.md
 45727685a4a71703  docs/v.1.4.54/qa/PHONE_TEST.md
 4a7447723ed8f5f9  docs/v.1.4.53/REGRESSION_CHECKLIST.md
-dcf3e1bb747812b1  docs/v.1.4.53/RELEASE_META.json
-d5e7a85b4c547f1f  docs/v.1.4.53/RELEASE.md
+03bcb9d770a5f7fd  docs/v.1.4.53/RELEASE_META.json
+bf4d420564582abf  docs/v.1.4.53/RELEASE.md
 34feef4923c89b09  docs/v.1.4.6/diagrams/ACTION_HIERARCHY.md
 f28a02002d244772  docs/v.1.4.6/diagrams/README.md
 8a3ac24c51001e0b  docs/v.1.4.6/diagrams/SERVICE_FLOW.md
@@ -1621,7 +1621,7 @@ ab1026878a043c72  scripts/v1451-url-qa-corrective-r1-audit.sh
 1a276065be4bb479  scripts/v1451-url-source-wave1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 f834e1746373fdba  scripts/v1452-ux-polish-audit.sh
-df7d4d1a4f06379d  scripts/v1453-quota-recovery-audit.sh
+313eaa21c456731b  scripts/v1453-quota-recovery-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 65ab747cc4661d42  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
