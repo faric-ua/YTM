@@ -2,7 +2,7 @@
   "schema": 1,
   "versionName": "1.4.53",
   "versionCode": 96,
-  "phase": "phone-pass",
+  "phase": "development",
   "feature": "Quota Recovery / Durable Resume",
   "branch": "feat/v1.4.53-quota-recovery",
   "appSourceSha": "ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5",
