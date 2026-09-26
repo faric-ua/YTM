@@ -2,14 +2,15 @@
 
 ## Release gate
 
-This release is **planning-only** until v1.4.53 is phone-accepted and closed.
-Do not change app code for v1.4.54 from the v1.4.53 release branch.
+v1.4.53 is final, published and OTA-equal-version accepted.
 
-Planned identity:
+Current identity:
 - versionName: `1.4.54`;
 - versionCode: `97`;
-- planned branch: `feat/v1.4.54-history-bulk-sync`;
-- stable baseline: the final accepted v1.4.53 source.
+- branch: `feat/v1.4.54-history-bulk-sync`;
+- exact stable/app baseline: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5` (v1.4.53 phone-tested source).
+
+The v1.4.54 branch was created directly from that exact phone-tested source.
 
 ## Goal
 
@@ -26,6 +27,40 @@ The release must solve the real user workflow:
 5. create a recovery checkpoint before the first remote mutation;
 6. survive quota/auth/rate-limit interruptions without restarting from zero;
 7. roll back only changes made by that bulk-sync session.
+
+## Wave 0 — BUG-039 / write-limit safety
+
+Before History recovery and bulk sync, v1.4.54 hardens the write-limit contract
+needed by every later durable session.
+
+Implemented contract:
+- YouTube API failures are classified as `DAILY_QUOTA`, `RATE_LIMIT`,
+  `RESOURCE_LIMIT`, or `UNKNOWN_429`;
+- a generic HTTP 429 such as `Resource has been exhausted (e.g. check quota)`
+  is **not** treated as proof of daily quota exhaustion;
+- structured error `status`, legacy `errors[].reason`, and
+  `details[].reason` are retained for classification;
+- explicit daily-quota reasons still use the existing quota-pause path;
+- rate/resource/unknown-429 write failures preserve the WRITE job in Queue with a
+  durable `PendingPauseReason`;
+- playlist creation and playlist-item insertion both pause rather than discard
+  unfinished work when a retryable write limit is detected;
+- no automatic retry loop is started after a write limit;
+- the user is told to wait and resume manually from Queue;
+- the app does not invent a cooldown duration or daily-reset time when Google did
+  not provide one;
+- if frequent playlist creation triggers a temporary server-side limit, the UI
+  explains that too many write requests may be the cause and warns against rapid
+  repeated retries;
+- permanent errors such as `maxPlaylistExceeded` remain ordinary failures rather
+  than being disguised as a temporary pause;
+- transient write-limit failures do not get recorded as confirmed daily-quota
+  errors in the local quota tracker;
+- old v1.4.53 PendingJob JSON without `pauseReason` remains readable.
+
+Wave 0 has automated policy coverage but is not phone-accepted until a signed
+candidate passes the targeted smoke. Do not deliberately spam playlist creation
+to force a server rate limit; natural 429 evidence may be used when it occurs.
 
 ## User-facing contract
 
