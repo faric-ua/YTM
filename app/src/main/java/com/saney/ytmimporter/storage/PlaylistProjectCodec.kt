@@ -13,6 +13,7 @@ data class PlaylistProjectImport(
     val playlist: ImportedPlaylist,
     val sourceHistoryId: String?,
     val sourcePlaylistId: String?,
+    val sourcePlaylistTitle: String?,
     val sourcePrivacyStatus: String?,
     val sourceDestination: PendingDestination?,
     val exactSelectionCount: Int,
@@ -31,7 +32,9 @@ object PlaylistProjectCodec {
     fun exportWorkingPlaylist(
         playlist: ImportedPlaylist,
         sourceLabel: String,
-        appVersion: String
+        appVersion: String,
+        sourcePlaylistId: String? = null,
+        sourcePlaylistTitle: String? = null
     ): String {
         val tracks = JSONArray()
 
@@ -48,7 +51,14 @@ object PlaylistProjectCodec {
         val playlistJson =
             JSONObject()
                 .put("name", playlist.name)
-                .put("sourcePlaylistId", JSONObject.NULL)
+                .put(
+                    "sourcePlaylistId",
+                    sourcePlaylistId ?: JSONObject.NULL
+                )
+                .put(
+                    "sourcePlaylistTitle",
+                    sourcePlaylistTitle ?: JSONObject.NULL
+                )
                 .put("privacyStatus", JSONObject.NULL)
                 .put("sourceDestination", JSONObject.NULL)
                 .put("tracks", tracks)
@@ -93,6 +103,10 @@ object PlaylistProjectCodec {
                 .put(
                     "sourcePlaylistId",
                     sourcePlaylistId
+                )
+                .put(
+                    "sourcePlaylistTitle",
+                    playlist.name
                 )
                 .put(
                     "privacyStatus",
@@ -168,6 +182,10 @@ object PlaylistProjectCodec {
                 .put(
                     "sourcePlaylistId",
                     entry.playlistId ?: JSONObject.NULL
+                )
+                .put(
+                    "sourcePlaylistTitle",
+                    entry.playlistName
                 )
                 .put("privacyStatus", entry.privacyStatus)
                 .put(
@@ -401,6 +419,11 @@ object PlaylistProjectCodec {
                 nullableString(
                     playlistJson,
                     "sourcePlaylistId"
+                ),
+            sourcePlaylistTitle =
+                nullableString(
+                    playlistJson,
+                    "sourcePlaylistTitle"
                 ),
             sourcePrivacyStatus =
                 nullableString(
