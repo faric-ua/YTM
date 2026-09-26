@@ -5,6 +5,13 @@ YTM_GH_REPO="${YTM_GH_REPO:-faric-ua/YTM}"
 YTM_WORKFLOW="${YTM_WORKFLOW:-build-apk.yml}"
 YTM_STATE_DIR="${YTM_STATE_DIR:-$HOME/.ytm-importer}"
 
+# Every toolkit command must survive being launched from a deleted/stale cwd.
+# Git resolves the process cwd before honoring -C, so re-anchor first.
+cd "$HOME" || {
+  echo "FAIL: cannot enter Termux home: $HOME" >&2
+  exit 1
+}
+
 ytm_fail() {
   echo "FAIL: $*" >&2
   exit 1
