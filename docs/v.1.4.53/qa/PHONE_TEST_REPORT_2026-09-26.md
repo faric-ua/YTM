@@ -89,4 +89,15 @@ The accepted phone-tested package was published unchanged as stable `v1.4.53`.
 - publisher run: `36250364471` — PASS;
 - APK SHA-256: `841019959d02d4e5368a6cc954d815563ac85535e7bc4a577b69653d21acaf2e`.
 
-An equal-version production updater smoke is still required after publication; it is not a rerun of the targeted functional phone tests above.
+## OTA equal-version smoke
+
+PASS on phone, 2026-09-26.
+
+Observed:
+- installed: `YTM Importer 1.4.53 (96)`;
+- updater: `Оновлень немає`;
+- copy: `Встановлена версія відповідає поточній стабільній версії`;
+- stable version displayed: `1.4.53 (96)`;
+- no download/install action was offered.
+
+Result: **OTA+ / PASS**.
