@@ -1,18 +1,20 @@
 # Журнал змін (Changelog)
 
-## v1.4.53 — development
+## v1.4.53
 
-- Search quota exhaustion no longer turns unsearched remainder into ordinary permanent-looking failures; affected rows use `WAITING_QUOTA`.
-- Search quota pauses are persisted as durable SEARCH recovery jobs in the existing Pending Queue store.
-- SEARCH jobs carry a full playlist/search-state snapshot, survive app restart/current-workspace replacement, and resume only after an explicit user action.
-- Queue distinguishes Search recovery from YouTube/YTM write recovery and exposes `Продовжити пошук`.
-- Existing WRITE PendingJob JSON remains backward-compatible through a default WRITE operation type.
-- Local total API-unit estimate now includes `search.list` at 100 units per call; quota labels distinguish Search calls from total API units.
+- Search quota exhaustion now preserves unresolved work as `WAITING_QUOTA` instead of ordinary permanent-looking failures.
+- Search quota pauses persist as durable SEARCH recovery jobs with full playlist/search-state snapshots in Pending Queue.
+- SEARCH recovery survives app restart and unrelated current-workspace replacement; resume is explicit and retries only still-waiting tracks.
+- Queue distinguishes SEARCH and WRITE recovery while preserving backward-compatible WRITE PendingJob data.
+- Quota UI separates the Search 100-calls/day bucket from the non-Search 10,000-unit local estimate; server-reported quota state remains authoritative.
 - WAITING_QUOTA tracks are excluded from destination writes until Search recovery completes.
-- Full Backup/Restore carries Search recovery state through the already-restored `pending_jobs_v1` preference group.
-- BUG-038 History durability remains an evidence-driven investigation; no speculative History persistence change is included yet.
-- versionCode 96 / versionName 1.4.53.
-- Static/full validation PASS; signed candidate build `36178783613` from app source `454979093c0e108fe629aefe7db4bece97334575` PASS and installed on phone; phone QA is pending.
+- Full Backup/Restore carries Search recovery state through `pending_jobs_v1`.
+- Phone QA Tests 1–5 PASS: Search resume lifecycle/isolation, one-track post-reset resume, existing WRITE recovery to 4/4, and controlled History JSON durability comparison.
+- BUG-036 CLOSED / PHONE PASS; BUG-037 CLOSED / PHONE RETEST PASS; BUG-038 CLOSED / CONTROLLED RETEST PASS; UX-029 CLOSED / PHONE PASS.
+- BUG-039 (ambiguous generic HTTP 429 classification) and UX-030 (explicit local↔YTM linkage visibility) remain deferred non-blocking follow-ups.
+- Final tested app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`; signed run: `36195438071`; versionCode 96.
+- Stable `v1.4.53` and `checkpoint-v1.4.53-phone-pass` published on the exact tested source; publisher run `36250364471` PASS.
+- Release assets: signed APK, SHA-256 file and updater manifest; no rebuild was used for publication.
 
 ## v1.4.52
 
