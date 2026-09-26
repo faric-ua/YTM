@@ -18,7 +18,7 @@ Current accepted release (v1.4.53 Quota Recovery / Durable Resume — FINAL):
 - existing WRITE recovery completed 4/4 after quota recovery and Queue became empty;
 - controlled History comparison: baseline 93 → 94 records, 0 removed IDs, 0 changed common records;
 - stable GitHub Release includes APK, SHA-256 and updater manifest;
-- post-publication equal-version updater smoke remains;
+- post-publication equal-version updater smoke PASS: installed/stable 1.4.53 (96) → `Оновлень немає` (`OTA+`);
 - BUG-039 and UX-030 remain deferred non-blocking follow-ups.
 
 Previous stable release (v1.4.52 URL Snapshot / Home UX Polish — FINAL):
