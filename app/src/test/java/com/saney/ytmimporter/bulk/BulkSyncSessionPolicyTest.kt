@@ -263,6 +263,141 @@ class BulkSyncSessionPolicyTest {
     }
 
     @Test
+    fun interruptedPreparedInsert_fromSessionCreatedPlaylist_canResume() {
+        val base =
+            sessionWithNewRow()
+
+        val createId =
+            BulkSyncExecutionPolicy
+                .createOperationId(
+                    sessionId =
+                        base.sessionId,
+                    localPlaylistId =
+                        "new"
+                )
+
+        val insertId =
+            BulkSyncExecutionPolicy
+                .insertOperationId(
+                    sessionId =
+                        base.sessionId,
+                    localPlaylistId =
+                        "new",
+                    trackIndex = 0,
+                    videoId =
+                        "AAAAAAAAAAA"
+                )
+
+        val session =
+            base.copy(
+                state =
+                    BulkSyncSessionState
+                        .PAUSED_INTERRUPTED,
+                plan =
+                    listOf(
+                        base.plan.single()
+                            .copy(
+                                state =
+                                    BulkSyncSessionRowState
+                                        .INSERTING,
+                                remotePlaylistId =
+                                    "remote-new"
+                            )
+                    ),
+                mutationLedger =
+                    listOf(
+                        BulkSyncMutation(
+                            operationId =
+                                createId,
+                            type =
+                                BulkSyncMutationType
+                                    .CREATE_PLAYLIST,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId = null,
+                            trackIndex = null,
+                            status =
+                                BulkSyncMutationStatus
+                                    .APPLIED,
+                            updatedAt = 1L
+                        ),
+                        BulkSyncMutation(
+                            operationId =
+                                insertId,
+                            type =
+                                BulkSyncMutationType
+                                    .INSERT_PLAYLIST_ITEM,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId =
+                                "AAAAAAAAAAA",
+                            trackIndex = 0,
+                            status =
+                                BulkSyncMutationStatus
+                                    .PREPARED,
+                            updatedAt = 2L
+                        )
+                    )
+            )
+
+        assertTrue(
+            BulkSyncExecutionPolicy
+                .canExplicitlyResume(
+                    session
+                )
+        )
+    }
+
+    @Test
+    fun interruptedPreparedCreate_cannotResumeBlindly() {
+        val base =
+            sessionWithNewRow()
+
+        val session =
+            base.copy(
+                state =
+                    BulkSyncSessionState
+                        .PAUSED_INTERRUPTED,
+                mutationLedger =
+                    listOf(
+                        BulkSyncMutation(
+                            operationId =
+                                BulkSyncExecutionPolicy
+                                    .createOperationId(
+                                        sessionId =
+                                            base.sessionId,
+                                        localPlaylistId =
+                                            "new"
+                                    ),
+                            type =
+                                BulkSyncMutationType
+                                    .CREATE_PLAYLIST,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId = null,
+                            videoId = null,
+                            trackIndex = null,
+                            status =
+                                BulkSyncMutationStatus
+                                    .PREPARED,
+                            updatedAt = 1L
+                        )
+                    )
+            )
+
+        assertTrue(
+            !BulkSyncExecutionPolicy
+                .canExplicitlyResume(
+                    session
+                )
+        )
+    }
+
+    @Test
     fun preparedInsert_exactRemotePrefix_isApplied() {
         val resolution =
             BulkSyncExecutionPolicy
