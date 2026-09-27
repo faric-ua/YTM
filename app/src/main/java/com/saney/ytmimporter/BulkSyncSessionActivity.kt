@@ -13,12 +13,14 @@ import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.bulk.BulkSyncExecutionPolicy
 import com.saney.ytmimporter.bulk.BulkSyncExecutor
+import com.saney.ytmimporter.bulk.BulkSyncQaFaultPolicy
 import com.saney.ytmimporter.bulk.BulkSyncMutationStatus
 import com.saney.ytmimporter.bulk.BulkSyncMutationType
 import com.saney.ytmimporter.bulk.BulkSyncSession
 import com.saney.ytmimporter.bulk.BulkSyncSessionRow
 import com.saney.ytmimporter.bulk.BulkSyncSessionRowState
 import com.saney.ytmimporter.bulk.BulkSyncSessionState
+import com.saney.ytmimporter.storage.BulkSyncQaFaultStore
 import com.saney.ytmimporter.storage.BulkSyncSessionStore
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.QuotaTracker
@@ -71,7 +73,14 @@ class BulkSyncSessionActivity : Activity() {
             currentPlaylistStore =
                 CurrentPlaylistStore(this),
             quotaTracker =
-                QuotaTracker(this)
+                QuotaTracker(this),
+            qaInsertFault = {
+                BulkSyncQaFaultStore(this)
+                    .consume()
+                    ?.let(
+                        BulkSyncQaFaultPolicy::asException
+                    )
+            }
         )
     }
 
