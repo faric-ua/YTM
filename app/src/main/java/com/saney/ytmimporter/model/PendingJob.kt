@@ -43,6 +43,7 @@ data class PendingSearchTrack(
     val status: String,
     val manuallySelected: Boolean,
     val error: String?,
+    val durableExactSelection: Boolean = false,
     val historyIndex: Int?,
     val candidates: List<PendingSearchCandidate>
 )
