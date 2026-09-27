@@ -1526,7 +1526,7 @@ dbd88dc2880407d4  scripts/v1426-qa-close-audit.sh
 ca3ec8184486b75e  scripts/v1426-selective-export-audit.sh
 660cc18ba0c72641  scripts/v1427_patchlib.py
 b1c73001a73fc253  scripts/v1427-apply-selftest.py
-5a63f83cb7e8b451  scripts/v1427-exact-id-search-audit.py
+827a78495ba44d4c  scripts/v1427-exact-id-search-audit.py
 498d10b990936850  scripts/v1427-qa-close-audit.sh
 7edc003b0119190d  scripts/v1428-manifest-import-audit.sh
 17ce9342abf81f91  scripts/v1428-qa-close-audit.sh
