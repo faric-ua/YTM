@@ -44,3 +44,19 @@ materially less readable; that exception should be explicit and testable.
 
 Static layout audits prove the shared adaptive mechanism is wired. Real-phone
 portrait/landscape screenshots prove actual readability and spacing.
+
+## Button-label readability
+
+Footer/dialog action labels are treated as first-class layout constraints:
+
+- prefer one-line labels for confirmation/footer actions;
+- if a peer action label would wrap or become cramped, switch the whole action group to
+  a vertical stack instead of squeezing one button;
+- do not reduce text size merely to keep actions on one row;
+- enabled, disabled, primary, secondary and destructive states must remain visually
+  distinguishable in both portrait and landscape;
+- user-facing labels use concise verbs and avoid raw implementation terminology.
+
+The full per-window visual/lifecycle test matrix is defined in
+`docs/design/UI_WINDOW_QA_CONTRACT.md`.
+
