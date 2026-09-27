@@ -103,4 +103,12 @@ grep -Fq 'preparedInsert_missingAtExpectedPosition_isNotApplied' "$SESSION_TEST"
 
 grep -Fq 'preparedInsert_remotePrefixMismatch_isUnknown' "$SESSION_TEST"   || fail "Prepared insert ambiguity JVM coverage missing"
 
+grep -Fq 'canExplicitlyResume' "$EXECUTION_POLICY"   || fail "Explicit Bulk resume policy missing"
+
+grep -Fq 'canExplicitlyResume' "$SESSION_ACTIVITY"   || fail "Bulk session UI does not use explicit resume policy"
+
+grep -Fq 'interruptedPreparedInsert_fromSessionCreatedPlaylist_canResume' "$SESSION_TEST"   || fail "Recoverable PREPARED insert resume coverage missing"
+
+grep -Fq 'interruptedPreparedCreate_cannotResumeBlindly' "$SESSION_TEST"   || fail "PREPARED create blind-resume guard coverage missing"
+
 echo "PASS: v1.4.54 Bulk Sync Test 3 + Test 4 durable-session foundation"
