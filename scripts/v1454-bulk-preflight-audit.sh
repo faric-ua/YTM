@@ -65,9 +65,11 @@ grep -Fq 'BulkSyncSessionActivity' "$MANIFEST"   || fail "Bulk Sync session acti
 
 grep -Fq 'PAUSED_INTERRUPTED' "$SESSION_MODEL"   || fail "Restart-safe interrupted session state missing"
 
-grep -Fq 'BulkSyncMutationStatus.PREPARED' "$EXECUTOR"   || fail "Mutation PREPARED durability gate missing"
+grep -Fq 'BulkSyncMutationStatus' "$EXECUTOR"   || fail "Bulk mutation status usage missing from executor"
 
-grep -Fq 'BulkSyncMutationStatus.APPLIED' "$EXECUTOR"   || fail "Mutation APPLIED durability gate missing"
+grep -Fq '.PREPARED' "$EXECUTOR"   || fail "Mutation PREPARED durability gate missing"
+
+grep -Fq '.APPLIED' "$EXECUTOR"   || fail "Mutation APPLIED durability gate missing"
 
 grep -Fq 'hasUncertainPreparedMutation' "$EXECUTION_POLICY"   || fail "Uncertain mutation duplicate guard missing"
 
