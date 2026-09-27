@@ -637,22 +637,10 @@ class BulkSyncSessionActivity : Activity() {
         }
 
         val resumable =
-            session.state in
-                setOf(
-                    BulkSyncSessionState.READY,
-                    BulkSyncSessionState
-                        .PAUSED_WRITE_QUOTA,
-                    BulkSyncSessionState
-                        .PAUSED_RATE_LIMIT,
-                    BulkSyncSessionState
-                        .PAUSED_AUTH,
-                    BulkSyncSessionState
-                        .PAUSED_INTERRUPTED
-                ) &&
-                !BulkSyncExecutionPolicy
-                    .hasUncertainPreparedMutation(
-                        session
-                    )
+            BulkSyncExecutionPolicy
+                .canExplicitlyResume(
+                    session
+                )
 
         primaryButton.text =
             if (
