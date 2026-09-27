@@ -364,7 +364,10 @@ class SearchCoordinator(
 
         if (
             preserveExistingExact &&
-            hasCanonicalExactSelection(track)
+            (
+                hasCanonicalExactSelection(track) ||
+                    hasDurableExactSelection(track)
+            )
         ) {
             return false
         }
@@ -389,7 +392,10 @@ class SearchCoordinator(
 
         val keepExactSelection =
             preserveExistingExact &&
-                hasCanonicalExactSelection(track)
+                (
+                    hasCanonicalExactSelection(track) ||
+                        hasDurableExactSelection(track)
+                )
 
         return if (
             keepExactSelection
@@ -404,6 +410,14 @@ class SearchCoordinator(
         track: Track
     ): Boolean =
         !track.selectedVideoId.isNullOrBlank() &&
+            track.status == TrackStatus.MATCHED &&
+            track.candidates.isEmpty()
+
+    private fun hasDurableExactSelection(
+        track: Track
+    ): Boolean =
+        track.durableExactSelection &&
+            !track.selectedVideoId.isNullOrBlank() &&
             track.status == TrackStatus.MATCHED
 
     private fun applySearchCandidates(
