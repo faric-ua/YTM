@@ -72,7 +72,8 @@ class PlaylistWriteCoordinator(
         privacyStatus: String,
         destination: PendingDestination,
         tracks: List<Track>,
-        account: AccountContext
+        account: AccountContext,
+        localPlaylistId: String? = null
     ): PendingJob {
         val now = System.currentTimeMillis()
 
@@ -90,6 +91,7 @@ class PlaylistWriteCoordinator(
             googleEmail = account.googleEmail,
             youtubeChannelId = account.youtubeChannelId,
             youtubeChannelTitle = account.youtubeChannelTitle,
+            localPlaylistId = localPlaylistId,
             totalCount = tracks.size,
             addedCount = 0,
             failedCount = 0,

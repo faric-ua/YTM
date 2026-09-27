@@ -95,6 +95,11 @@ class PendingJobStore(context: Context) {
                 job.destinationPlaylistTitle
                     ?: JSONObject.NULL
             )
+            .put(
+                "localPlaylistId",
+                job.localPlaylistId
+                    ?: JSONObject.NULL
+            )
             .put("privacyStatus", job.privacyStatus)
             .put("destination", job.destination.name)
             .put("googleEmail", job.googleEmail ?: JSONObject.NULL)
@@ -161,6 +166,11 @@ class PendingJobStore(context: Context) {
                 nullableString(
                     json,
                     "destinationPlaylistTitle"
+                ),
+            localPlaylistId =
+                nullableString(
+                    json,
+                    "localPlaylistId"
                 ),
             privacyStatus = json.optString("privacyStatus", "private"),
             destination =

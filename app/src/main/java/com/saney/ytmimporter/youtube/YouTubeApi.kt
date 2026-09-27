@@ -143,7 +143,10 @@ class YouTubeApi(
         )
     }
 
-    fun listMyPlaylists(accessToken: String): List<YouTubePlaylistInfo> {
+    fun listMyPlaylists(
+        accessToken: String,
+        onListRequest: () -> Unit = {}
+    ): List<YouTubePlaylistInfo> {
         val result = mutableListOf<YouTubePlaylistInfo>()
         var pageToken: String? = null
         var pages = 0
@@ -160,6 +163,7 @@ class YouTubeApi(
                     URLEncoder.encode(pageToken, Charsets.UTF_8.name())
             }
 
+            onListRequest()
             val response = request("GET", url, accessToken)
             requireSuccess(response, "Список плейлистів")
 

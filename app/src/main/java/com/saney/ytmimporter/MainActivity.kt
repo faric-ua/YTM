@@ -2208,7 +2208,11 @@ class MainActivity : Activity() {
                                                 youtubeChannelInfo?.id,
                                                 youtubeChannelInfo?.title
                                             ),
-                                        lastError = "Search quota exceeded"
+                                        lastError = "Search quota exceeded",
+                                        localPlaylistId =
+                                            currentPlaylistStore
+                                                .load()
+                                                ?.localPlaylistId
                                     )
                                 persistCurrentWorkspace()
                                 updatePendingButton()
@@ -2845,7 +2849,11 @@ class MainActivity : Activity() {
                     privacyStatus = target.privacyStatus,
                     destination = PendingDestination.EXISTING_PLAYLIST,
                     tracks = selected,
-                    account = currentWriteAccountContext()
+                    account = currentWriteAccountContext(),
+                    localPlaylistId =
+                        currentPlaylistStore
+                            .load()
+                            ?.localPlaylistId
                 )
 
             pendingJobStore.upsert(job)
@@ -2891,7 +2899,11 @@ class MainActivity : Activity() {
                     privacyStatus = privacyStatus,
                     destination = PendingDestination.NEW_PLAYLIST,
                     tracks = selected,
-                    account = currentWriteAccountContext()
+                    account = currentWriteAccountContext(),
+                    localPlaylistId =
+                        currentPlaylistStore
+                            .load()
+                            ?.localPlaylistId
                 )
 
             pendingJobStore.upsert(job)

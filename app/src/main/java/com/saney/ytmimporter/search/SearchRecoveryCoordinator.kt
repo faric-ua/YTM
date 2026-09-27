@@ -27,7 +27,8 @@ class SearchRecoveryCoordinator(
         preserveExistingExact: Boolean,
         requestedJobId: String?,
         account: AccountContext,
-        lastError: String?
+        lastError: String?,
+        localPlaylistId: String? = null
     ): PendingJob {
         val now =
             System.currentTimeMillis()
@@ -81,6 +82,10 @@ class SearchRecoveryCoordinator(
                     account.youtubeChannelId,
                 youtubeChannelTitle =
                     account.youtubeChannelTitle,
+                localPlaylistId =
+                    localPlaylistId
+                        ?: existing
+                            ?.localPlaylistId,
                 totalCount =
                     playlist.tracks.size,
                 addedCount =

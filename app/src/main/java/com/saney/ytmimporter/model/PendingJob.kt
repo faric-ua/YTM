@@ -75,5 +75,6 @@ data class PendingJob(
     val recoveryKey: String? = null,
     val preserveExistingExact: Boolean = false,
     val searchSnapshot: PendingSearchSnapshot? = null,
-    val destinationPlaylistTitle: String? = null
+    val destinationPlaylistTitle: String? = null,
+    val localPlaylistId: String? = null
 )
