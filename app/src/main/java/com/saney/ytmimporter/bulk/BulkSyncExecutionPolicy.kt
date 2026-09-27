@@ -1,5 +1,17 @@
 package com.saney.ytmimporter.bulk
 
+sealed class BulkSyncPreparedInsertResolution {
+    data class Applied(
+        val remoteItemIndex: Int
+    ) : BulkSyncPreparedInsertResolution()
+
+    data object NotApplied :
+        BulkSyncPreparedInsertResolution()
+
+    data object Unknown :
+        BulkSyncPreparedInsertResolution()
+}
+
 sealed class BulkSyncNextMutation {
     data class CreatePlaylist(
         val rowIndex: Int,
@@ -46,6 +58,62 @@ object BulkSyncExecutionPolicy {
             it.status ==
                 BulkSyncMutationStatus.PREPARED
         }
+
+    fun resolvePreparedInsert(
+        expectedVideoIds: List<String>,
+        preparedIndex: Int,
+        remoteVideoIds: List<String>
+    ): BulkSyncPreparedInsertResolution {
+        if (
+            preparedIndex !in
+            expectedVideoIds.indices
+        ) {
+            return BulkSyncPreparedInsertResolution
+                .Unknown
+        }
+
+        val before =
+            expectedVideoIds.take(
+                preparedIndex
+            )
+
+        if (
+            remoteVideoIds.size <
+            before.size ||
+            remoteVideoIds.take(
+                before.size
+            ) != before
+        ) {
+            return BulkSyncPreparedInsertResolution
+                .Unknown
+        }
+
+        if (
+            remoteVideoIds.size ==
+            before.size
+        ) {
+            return BulkSyncPreparedInsertResolution
+                .NotApplied
+        }
+
+        return if (
+            remoteVideoIds.take(
+                preparedIndex + 1
+            ) ==
+            expectedVideoIds.take(
+                preparedIndex + 1
+            )
+        ) {
+            BulkSyncPreparedInsertResolution
+                .Applied(
+                    remoteItemIndex =
+                        preparedIndex
+                )
+        } else {
+            BulkSyncPreparedInsertResolution
+                .Unknown
+        }
+    }
 
     fun nextMutation(
         session: BulkSyncSession
