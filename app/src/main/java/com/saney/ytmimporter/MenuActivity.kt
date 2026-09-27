@@ -200,6 +200,13 @@ class MenuActivity : Activity() {
 
         addAction(
             content = content,
+            title = "Синхронізувати всі",
+            subtitle = "Read-only Bulk preflight без віддалених змін",
+            action = ACTION_BULK_SYNC
+        )
+
+        addAction(
+            content = content,
             title = "Заміни",
             subtitle = "Перевірити ручні заміни",
             action = ACTION_REPLACEMENTS
@@ -785,6 +792,14 @@ class MenuActivity : Activity() {
                             ACTION_OPEN_YTM ->
                                 openTargetInYtm()
 
+                            ACTION_BULK_SYNC ->
+                                startActivity(
+                                    Intent(
+                                        this@MenuActivity,
+                                        BulkSyncPreviewActivity::class.java
+                                    )
+                                )
+
                             ACTION_DATA ->
                                 startActivity(
                                     Intent(
@@ -853,6 +868,8 @@ class MenuActivity : Activity() {
             "REPLACEMENTS"
         const val ACTION_OPEN_YTM =
             "OPEN_YTM"
+        const val ACTION_BULK_SYNC =
+            "BULK_SYNC"
         const val ACTION_DATA =
             "DATA"
         const val ACTION_SERVICE =
