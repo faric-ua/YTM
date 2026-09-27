@@ -930,8 +930,6 @@ class BulkSyncPreviewActivity : Activity() {
                     captureBaseline(
                         accessToken =
                             token,
-                        summary =
-                            summary,
                         auth =
                             auth
                     )
@@ -1004,7 +1002,6 @@ class BulkSyncPreviewActivity : Activity() {
 
     private fun captureBaseline(
         accessToken: String,
-        summary: BulkSyncPlanSummary,
         auth: AuthSessionStore.Snapshot
     ): Pair<BulkSyncRemoteBaseline, Int> {
         var readUnits = 0
@@ -1024,31 +1021,15 @@ class BulkSyncPreviewActivity : Activity() {
                 it.id
             }
 
-        val linkedIds =
-            summary.rows
-                .mapNotNull {
-                    it.destinationPlaylistId
-                        ?.takeIf(
-                            String::isNotBlank
-                        )
-                }
-                .distinct()
-
         val playlists =
-            linkedIds.mapNotNull {
-                    playlistId ->
-                val info =
-                    ownedById[
-                        playlistId
-                    ]
-                        ?: return@mapNotNull null
-
+            owned.map {
+                    info ->
                 val snapshot =
                     api.listPlaylistSnapshotItems(
                         accessToken =
                             accessToken,
                         playlistId =
-                            playlistId
+                            info.id
                     ) {
                         readUnits +=
                             QuotaTracker
