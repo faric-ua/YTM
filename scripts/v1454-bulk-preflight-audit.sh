@@ -89,4 +89,18 @@ grep -Fq 'coldOpen_neverAutoResumesRunningSession' "$SESSION_TEST"   || fail "Bu
 
 grep -Fq 'preparedMutation_blocksBlindRetry' "$SESSION_TEST"   || fail "Bulk uncertain-write safety JVM coverage missing"
 
+grep -Fq 'resolvePreparedInsert' "$EXECUTION_POLICY"   || fail "Interrupted insert reconciliation policy missing"
+
+grep -Fq 'reconcilePrepared' "$EXECUTOR"   || fail "Interrupted insert reconciliation executor missing"
+
+grep -Fq 'createdPlaylistItemId' "$EXECUTOR"   || fail "Created playlistItemId is not persisted in Bulk ledger"
+
+grep -Fq 'return JSONObject' app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt   || fail "playlistItems.insert response id path missing"
+
+grep -Fq 'preparedInsert_exactRemotePrefix_isApplied' "$SESSION_TEST"   || fail "Prepared insert applied-recovery JVM coverage missing"
+
+grep -Fq 'preparedInsert_missingAtExpectedPosition_isNotApplied' "$SESSION_TEST"   || fail "Prepared insert no-op recovery JVM coverage missing"
+
+grep -Fq 'preparedInsert_remotePrefixMismatch_isUnknown' "$SESSION_TEST"   || fail "Prepared insert ambiguity JVM coverage missing"
+
 echo "PASS: v1.4.54 Bulk Sync Test 3 + Test 4 durable-session foundation"
