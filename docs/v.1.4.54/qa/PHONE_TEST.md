@@ -381,15 +381,42 @@ BUG-042 and BUG-043 are both closed.
 
 ## Test 5 — Quota pause
 
-1. Run a session that reaches Search or write quota/rate-limit.
-2. Capture session state.
-3. Restart/rotate.
+Phone setup before Test 5:
+- local Search estimate: 0/100;
+- local non-Search estimate: 2571/10000;
+- ≈7429 non-Search units remain.
+
+Do **not** burn the real daily quota just to trigger this QA case.
+
+A temporary one-shot phone-QA hook is available on the Quota screen:
+- `QA — Test 5` → `Увімкнути Test 5 quota pause`;
+- it arms only the **next Bulk playlistItems.insert**;
+- the armed insert is not sent remotely;
+- instead it injects the same classified `YouTubeApiException` path with `DAILY_QUOTA`;
+- the hook auto-consumes after one insert attempt;
+- normal production pause handling, durable mutation/session state and Resume UI are used after injection.
+
+Controlled flow:
+1. Arm the one-shot Test 5 quota fault.
+2. Start a controlled Bulk session with exactly one NEW playlist and at least one ready track.
+3. Allow playlist creation; first insert must pause with write-quota reason.
+4. Capture the paused session.
+5. Rotate, then force-close/reopen.
+6. Verify no automatic continuation and durable state.
+7. After evidence, explicit Resume may be used to prove remaining work can continue once the one-shot fault is gone.
 
 PASS:
-- session is PAUSED with the correct reason;
-- completed playlist work remains completed;
+- session is `PAUSED_WRITE_QUOTA` with the correct user reason;
+- already-created playlist remains durably recorded;
+- failed insert remains retryable rather than terminal/duplicated;
 - remaining work stays pending;
-- no automatic resume.
+- rotation preserves the paused view;
+- cold restart never auto-resumes;
+- explicit Resume is available;
+- after explicit Resume, execution continues safely.
+
+Release hygiene:
+- this temporary QA hook must be removed before final v1.4.54 release closeout.
 
 Result: `5+` / `5-`.
 
