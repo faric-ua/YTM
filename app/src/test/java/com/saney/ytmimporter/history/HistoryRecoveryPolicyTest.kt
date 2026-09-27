@@ -74,6 +74,10 @@ class HistoryRecoveryPolicyTest {
             TrackStatus.MATCHED,
             plan.playlist.tracks[0].status
         )
+        assertTrue(
+            plan.playlist.tracks[0]
+                .durableExactSelection
+        )
     }
 
     @Test
@@ -120,7 +124,9 @@ class HistoryRecoveryPolicyTest {
         assertEquals("generated", plan.localPlaylistId)
         assertNull(plan.destinationPlaylistId)
         assertEquals(TrackStatus.MATCHED, plan.playlist.tracks[0].status)
+        assertTrue(plan.playlist.tracks[0].durableExactSelection)
         assertEquals(TrackStatus.NEW, plan.playlist.tracks[1].status)
+        assertFalse(plan.playlist.tracks[1].durableExactSelection)
         assertNull(plan.playlist.tracks[1].error)
     }
 
