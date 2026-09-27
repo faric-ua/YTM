@@ -31,6 +31,7 @@ data class Track(
     var candidates: List<SearchCandidate> = emptyList(),
     var manuallySelected: Boolean = false,
     var error: String? = null,
+    var durableExactSelection: Boolean = false,
     var historyIndex: Int? = null
 ) {
     val query: String
