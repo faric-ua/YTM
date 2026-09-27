@@ -71,6 +71,7 @@ object BulkSyncPreflightPolicy {
             localPlaylists.map { local ->
                 classify(
                     local = local,
+                    allLocalPlaylists = localPlaylists,
                     pendingJobs = pendingJobs,
                     connected = connected,
                     remote = remote
@@ -92,6 +93,7 @@ object BulkSyncPreflightPolicy {
 
     private fun classify(
         local: BulkSyncLocalPlaylist,
+        allLocalPlaylists: List<BulkSyncLocalPlaylist>,
         pendingJobs: List<PendingJob>,
         connected: Boolean,
         remote: BulkSyncRemoteSnapshot
@@ -113,6 +115,7 @@ object BulkSyncPreflightPolicy {
         val pendingOwner =
             pendingOwner(
                 local = local,
+                allLocalPlaylists = allLocalPlaylists,
                 pendingJobs = pendingJobs
             )
 
@@ -278,6 +281,7 @@ object BulkSyncPreflightPolicy {
 
     private fun pendingOwner(
         local: BulkSyncLocalPlaylist,
+        allLocalPlaylists: List<BulkSyncLocalPlaylist>,
         pendingJobs: List<PendingJob>
     ): PendingJob? {
         pendingJobs.firstOrNull {
@@ -311,8 +315,107 @@ object BulkSyncPreflightPolicy {
             }?.let { return it }
         }
 
+        val legacyWriteCandidates =
+            pendingJobs.filter {
+                it.operation == PendingOperation.WRITE &&
+                    it.localPlaylistId.isNullOrBlank() &&
+                    it.playlistId.isNullOrBlank() &&
+                    legacyWriteMatches(
+                        local = local,
+                        job = it
+                    )
+            }
+
+        if (legacyWriteCandidates.size == 1) {
+            val job = legacyWriteCandidates.single()
+
+            val matchingLocalCount =
+                allLocalPlaylists.count {
+                    candidate ->
+                    legacyWriteMatches(
+                        local = candidate,
+                        job = job
+                    )
+                }
+
+            if (matchingLocalCount == 1) {
+                return job
+            }
+        }
+
         return null
     }
+
+    private fun legacyWriteMatches(
+        local: BulkSyncLocalPlaylist,
+        job: PendingJob
+    ): Boolean {
+        if (
+            job.operation != PendingOperation.WRITE ||
+            job.remainingTracks.isEmpty() ||
+            job.sourceLabel != local.sourceLabel ||
+            job.playlistName != local.playlistName
+        ) {
+            return false
+        }
+
+        val localPendingTracks =
+            local.tracks.filter {
+                it.status == TrackStatus.PENDING
+            }
+
+        if (
+            localPendingTracks.isEmpty() ||
+            localPendingTracks.any {
+                it.selectedVideoId.isNullOrBlank()
+            }
+        ) {
+            return false
+        }
+
+        val localIdentity =
+            localPendingTracks.map {
+                PendingTrackIdentity(
+                    historyIndex =
+                        it.historyIndex,
+                    originalTitle =
+                        it.originalTitle,
+                    originalArtist =
+                        it.originalArtist,
+                    videoId =
+                        requireNotNull(
+                            it.selectedVideoId
+                        )
+                )
+            }
+
+        val jobIdentity =
+            job.remainingTracks.map {
+                PendingTrackIdentity(
+                    historyIndex =
+                        it.historyIndex
+                            .takeIf {
+                                index ->
+                                index >= 0
+                            },
+                    originalTitle =
+                        it.originalTitle,
+                    originalArtist =
+                        it.originalArtist,
+                    videoId =
+                        it.videoId
+                )
+            }
+
+        return localIdentity == jobIdentity
+    }
+
+    private data class PendingTrackIdentity(
+        val historyIndex: Int?,
+        val originalTitle: String,
+        val originalArtist: String,
+        val videoId: String
+    )
 
     private fun requiresReviewOrSearch(track: Track): Boolean {
         if (track.status == TrackStatus.SKIPPED) {
