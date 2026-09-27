@@ -343,15 +343,40 @@ Result:
 - failed terminal mutation is not retried;
 - durable partial result remains inspectable.
 
-### Test 4 current result
+### Test 4 final remote verification
 
-**4- / pending final remote verification.**
+The destination was opened in the regular YouTube app after the completed recovery flow.
 
-The durable restart/reconcile/continuation path itself is phone-accepted. Before changing Test 4 to `4+`, verify the destination `db ost` in YouTube Music:
-- only one destination playlist exists for this controlled run;
-- it contains 18 successfully added items;
-- the deleted/unavailable item is absent;
-- no duplicate item was introduced by restart reconciliation.
+Observed:
+- playlist title: `db ost`;
+- privacy: private;
+- attribution: `Створено через YTM Importer`;
+- remote item count: **18 videos**.
+
+Combined with the recorded durable-session evidence:
+- `Створено плейлистів: 1` remained unchanged during both recovery continuations;
+- the same persisted YTM playlist identity was retained across in-place updates and resumes;
+- final session result was 18/19 with exactly one terminal `Deleted video` failure;
+- no second create operation occurred during reconciliation/resume.
+
+This is consistent with exactly 18 successful remote inserts and one unavailable source item.
+
+### Test 4 final result
+
+**4+ / PHONE PASS.**
+
+Accepted behaviors:
+- explicit Start only;
+- durable progress survives force-close;
+- cold reopen never auto-resumes;
+- recoverable PREPARED insert can be explicitly reconciled and resumed;
+- no blind retry of ambiguous PREPARED work;
+- terminal per-track 404 does not stop unrelated remaining inserts;
+- terminal failure identity/reason stays durable and visible;
+- recovery preserves the same destination playlist;
+- final remote destination contains 18 videos for the 18 successful inserts.
+
+BUG-042 and BUG-043 are both closed.
 
 
 ## Test 5 — Quota pause
