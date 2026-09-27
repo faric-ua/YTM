@@ -423,6 +423,11 @@ class PendingJobStore(context: Context) {
                             item,
                             "error"
                         ),
+                    durableExactSelection =
+                        item.optBoolean(
+                            "durableExactSelection",
+                            false
+                        ),
                     historyIndex =
                         nullableInt(
                             item,
