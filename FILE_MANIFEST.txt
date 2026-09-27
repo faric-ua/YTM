@@ -51,7 +51,7 @@ f6f5d434b3715d4d  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylis
 52e409baf9a0ed79  app/src/main/java/com/saney/ytmimporter/storage/DirectDownloadFileQuery.kt
 835027dec859c077  app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
 4dbc682a0ca0cab1  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
-1b18490e976ddd6b  app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
+042f6923e4111c35  app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
 d67cc3786098a8d2  app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt
 3de6e763afc03c12  app/src/main/java/com/saney/ytmimporter/storage/QuotaMath.kt
 9963292203c7faad  app/src/main/java/com/saney/ytmimporter/storage/QuotaTracker.kt
