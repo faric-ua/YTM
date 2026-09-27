@@ -15,7 +15,9 @@ class BulkSyncExecutor(
     private val sessionStore: BulkSyncSessionStore,
     private val restorableStore: RestorablePlaylistStore,
     private val currentPlaylistStore: CurrentPlaylistStore,
-    private val quotaTracker: QuotaTracker
+    private val quotaTracker: QuotaTracker,
+    private val qaInsertFault:
+        (() -> YouTubeApiException?)? = null
 ) {
     fun execute(
         accessToken: String,
@@ -703,6 +705,27 @@ class BulkSyncExecutor(
             QuotaTracker
                 .PLAYLIST_ITEM_INSERT_COST
         )
+
+        qaInsertFault
+            ?.invoke()
+            ?.let {
+                error ->
+                return handleFailure(
+                    session =
+                        working,
+                    rowIndex =
+                        next.rowIndex,
+                    operationId =
+                        next.operationId,
+                    action =
+                        WritePauseAction
+                            .ADD_TRACK,
+                    error =
+                        error,
+                    onProgress =
+                        onProgress
+                )
+            }
 
         return try {
             val createdPlaylistItemId =
