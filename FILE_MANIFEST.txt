@@ -90,7 +90,7 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 9efd52561bd57811  app/proguard-rules.pro
 225ac193e694b7ec  app/src/main/AndroidManifest.xml
 e44dedc560eeaa11  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
-ec6ebb9451be30df  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
+2f4dd511417e247a  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 9e5252664b4ab395  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 3899b19733e58253  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
@@ -109,7 +109,7 @@ efe4de8326bcb3ec  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 99e25606f1e7db96  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
 5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
-a39dba4eb788e714  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutionPolicy.kt
+11b411e41bd2b38a  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutionPolicy.kt
 fff780637234c942  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutor.kt
 ff6ee274bacb9f4a  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicy.kt
 e0f75f54425f640b  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSession.kt
@@ -207,7 +207,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 9d05e1fd1b661172  app/src/main/res/values/styles.xml
 5dfe2d611d0acf07  app/src/main/res/xml/file_paths.xml
 351daabcfb9ec663  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicyTest.kt
-231fa716380ff22d  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt
+2e344f974a0be51d  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt
 ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecoveryPolicyTest.kt
 7c5b8d04a486fb9a  app/src/test/java/com/saney/ytmimporter/model/PlaylistLinkagePolicyTest.kt
 e2c34610a3853bc3  app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt
@@ -1706,7 +1706,7 @@ ab1026878a043c72  scripts/v1451-url-qa-corrective-r1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 f834e1746373fdba  scripts/v1452-ux-polish-audit.sh
 d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
-9a517518c4f53ea9  scripts/v1454-bulk-preflight-audit.sh
+74826f8650dcd743  scripts/v1454-bulk-preflight-audit.sh
 ed8375bb50567b62  scripts/v1454-wave0-write-limit-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
