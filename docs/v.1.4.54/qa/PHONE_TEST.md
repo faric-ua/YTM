@@ -247,21 +247,58 @@ PASS:
 
 Result: `4+` / `4-`.
 
-### Test 4 phone evidence — partial, 2026-09-27
+### Test 4 phone evidence — 2026-09-27
 
-Observed on installed signed v1.4.54 candidate:
-- durable session was created with 14 plan rows and an account-wide remote baseline of 61 playlists;
+Two phone runs were executed.
+
+#### Run A — normal durable execution
+
+- durable session created with 14 plan rows and an account-wide baseline of 61 playlists;
 - before Start: 0 playlists created, 0 tracks added;
-- both NEW rows were materialized as `Готовий новий плейлист • 0/12`;
-- LINKED remained deferred, NEEDS_SEARCH remained skipped, PENDING remained owned by Queue;
-- after explicit `Почати синхронізацію`, execution progressed through durable ledger states;
-- during active writes the UI showed one transient PREPARED mutation while confirmed counters advanced (for example 1 created / 4 added, then 1 created / 8 added);
-- execution completed successfully with `Створено плейлистів: 2 • додано треків: 24`;
-- final session state was `Завершено`.
+- two NEW rows were materialized as `Готовий новий плейлист • 0/12`;
+- LINKED remained deferred, NEEDS_SEARCH remained skipped, PENDING remained Queue-owned;
+- after explicit Start, confirmed counters advanced while one transient PREPARED mutation represented the in-flight write;
+- session completed successfully: 2 playlists created, 24 tracks added;
+- final state: `Завершено`.
 
-This proves the Wave 3 NEW execution path and durable progress UI work on phone. The required mid-run force-close/reopen part was **not exercised** because the two 12-track playlists completed too quickly. Do not mark Test 4 as `4+` yet; perform a targeted interrupted-session retest separately.
+Result for normal Wave 3 NEW execution: **PASS**.
 
-Result: **partial PASS / restart subtest pending**.
+#### Run B — controlled force-close / restart
+
+Controlled playlist:
+- `db ost`;
+- 19 tracks;
+- 19 exact ready videoIds;
+- one and only one NEW row in preview;
+- planned work: create 1 + insert 19.
+
+Observed from two screen recordings:
+- durable session started only after explicit Start;
+- remote playlist creation completed;
+- insert counters advanced while one mutation remained PREPARED/in-flight;
+- app was removed from Recents during active write execution;
+- app was reopened manually;
+- Home remained stable with no automatic Bulk resume;
+- current playlist retained the new remote linkage;
+- opening `Поточна Bulk-сесія` restored:
+  - `Пауза — попередній запуск перервано`;
+  - created playlists: 1;
+  - confirmed added tracks: 3;
+  - PREPARED without confirmation: 1.
+
+This proves:
+- cold reopen does not auto-resume: **PASS**;
+- durable progress survives process death: **PASS**;
+- PREPARED mutation survives process death: **PASS**.
+
+Failure:
+- `Продовжити` was disabled even though the remaining PREPARED mutation is an insert into a playlist durably created by the same session;
+- this blocks the intended reconcile-first explicit recovery path;
+- recorded as **BUG-042 / issue #31**.
+
+Test 4 result on the installed candidate: **4-**.
+
+The failure is narrowed to the Resume UI gate. Retest the same interrupted-session path after installing the BUG-042 fix in-place; preserve app data so the interrupted durable session remains available.
 
 
 ## Test 5 — Quota pause
