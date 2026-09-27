@@ -19,9 +19,13 @@ EXECUTION_POLICY="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecution
 EXECUTOR="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutor.kt"
 SESSION_ACTIVITY="app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt"
 SESSION_TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt"
+QA_FAULT="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncQaFault.kt"
+QA_FAULT_STORE="app/src/main/java/com/saney/ytmimporter/storage/BulkSyncQaFaultStore.kt"
+QA_FAULT_TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncQaFaultPolicyTest.kt"
+QUOTA_ACTIVITY="app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt"
 BACKUP="app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt"
 
-for file in "$POLICY" "$PREVIEW" "$MENU" "$MANIFEST" "$TEST"   "$SESSION_MODEL" "$SESSION_STORE" "$CHECKPOINT_STORE" "$SESSION_FACTORY"   "$EXECUTION_POLICY" "$EXECUTOR" "$SESSION_ACTIVITY" "$SESSION_TEST" "$BACKUP"; do
+for file in "$POLICY" "$PREVIEW" "$MENU" "$MANIFEST" "$TEST"   "$SESSION_MODEL" "$SESSION_STORE" "$CHECKPOINT_STORE" "$SESSION_FACTORY"   "$EXECUTION_POLICY" "$EXECUTOR" "$SESSION_ACTIVITY" "$SESSION_TEST" "$QA_FAULT" "$QA_FAULT_STORE" "$QA_FAULT_TEST" "$QUOTA_ACTIVITY" "$BACKUP"; do
   [ -f "$file" ] || fail "Missing Bulk Sync foundation file: $file"
 done
 
@@ -121,4 +125,12 @@ grep -Fq 'restartPrefix_omitsTerminalFailedTrack' "$SESSION_TEST"   || fail "Res
 
 grep -Fq 'expectedRemoteVideoIdsThroughPrepared' "$EXECUTION_POLICY"   || fail "Terminal-aware restart prefix policy missing"
 
-echo "PASS: v1.4.54 Bulk Sync Test 3 + Test 4 durable-session foundation"
+grep -Fq 'BulkSyncQaFaultPolicy' "$SESSION_ACTIVITY"   || fail "Bulk Test 5 QA fault is not wired into session execution"
+
+grep -Fq 'qaInsertFault' "$EXECUTOR"   || fail "Bulk executor QA insert fault seam missing"
+
+grep -Fq 'BulkSyncQaFaultStore' "$QUOTA_ACTIVITY"   || fail "Quota screen Test 5 control missing"
+
+grep -Fq 'dailyQuotaFault_isClassifiedAsDailyQuota' "$QA_FAULT_TEST"   || fail "Bulk Test 5 QA fault classification coverage missing"
+
+echo "PASS: v1.4.54 Bulk Sync Test 3 + Test 5 foundation"
