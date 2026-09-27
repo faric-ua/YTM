@@ -996,24 +996,60 @@ class YouTubeApi(
         )
     }
 
-    fun addVideo(accessToken: String, playlistId: String, videoId: String) {
-        val url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet"
-        val body = JSONObject()
-            .put(
-                "snippet",
-                JSONObject()
-                    .put("playlistId", playlistId)
-                    .put(
-                        "resourceId",
-                        JSONObject()
-                            .put("kind", "youtube#video")
-                            .put("videoId", videoId)
-                    )
-            )
-            .toString()
+    fun addVideo(
+        accessToken: String,
+        playlistId: String,
+        videoId: String
+    ): String {
+        val url =
+            "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet"
 
-        val response = request("POST", url, accessToken, body)
-        requireSuccess(response, "Додавання треку")
+        val body =
+            JSONObject()
+                .put(
+                    "snippet",
+                    JSONObject()
+                        .put(
+                            "playlistId",
+                            playlistId
+                        )
+                        .put(
+                            "resourceId",
+                            JSONObject()
+                                .put(
+                                    "kind",
+                                    "youtube#video"
+                                )
+                                .put(
+                                    "videoId",
+                                    videoId
+                                )
+                        )
+                )
+                .toString()
+
+        val response =
+            request(
+                "POST",
+                url,
+                accessToken,
+                body
+            )
+
+        requireSuccess(
+            response,
+            "Додавання треку"
+        )
+
+        return JSONObject(
+            response.body
+        ).optString(
+            "id"
+        ).takeIf {
+            it.isNotBlank()
+        } ?: throw IllegalStateException(
+            "YouTube не повернув playlistItemId після додавання треку"
+        )
     }
 
     private fun request(
