@@ -11,6 +11,9 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
+import com.saney.ytmimporter.bulk.BulkSyncQaFaultKind
+import com.saney.ytmimporter.storage.BulkSyncQaFaultStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
@@ -166,6 +169,78 @@ class QuotaActivity : Activity() {
                 }
             )
         }
+
+        val qaFaultStore =
+            BulkSyncQaFaultStore(this)
+        val armedFault =
+            qaFaultStore.peek()
+
+        content.addView(
+            sectionTitle(
+                "QA — Test 5"
+            )
+        )
+
+        content.addView(
+            card().apply {
+                addView(
+                    bodyText(
+                        if (armedFault == null) {
+                            "Одноразовий контрольований тест паузи. " +
+                                "Після ввімкнення наступний Bulk insert не буде " +
+                                "відправлено в YouTube: застосунок отримає " +
+                                "симульоване повідомлення про вичерпання добової квоти. " +
+                                "Після одного спрацювання QA fault автоматично вимикається."
+                        } else {
+                            "QA fault увімкнено: наступний Bulk insert симулює " +
+                                "вичерпання добової квоти без remote insert. " +
+                                "Після спрацювання режим вимкнеться автоматично."
+                        }
+                    )
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            if (armedFault == null) {
+                                "Увімкнути Test 5 quota pause"
+                            } else {
+                                "Скасувати Test 5 fault"
+                            },
+                        primary =
+                            armedFault == null
+                    ) {
+                        if (armedFault == null) {
+                            qaFaultStore.arm(
+                                BulkSyncQaFaultKind
+                                    .DAILY_QUOTA
+                            )
+                            Toast.makeText(
+                                this@QuotaActivity,
+                                "Test 5: наступний Bulk insert симулює daily quota.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            qaFaultStore.clear()
+                            Toast.makeText(
+                                this@QuotaActivity,
+                                "Test 5 fault вимкнено.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        render()
+                    },
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        dp(54)
+                    ).apply {
+                        topMargin =
+                            dp(12)
+                    }
+                )
+            }
+        )
 
         scroll.addView(content)
 
