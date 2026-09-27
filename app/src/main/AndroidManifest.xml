@@ -52,6 +52,12 @@
             android:screenOrientation="unspecified" />
 
         <activity
+            android:name=".BulkSyncSessionActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".PlaylistActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />
