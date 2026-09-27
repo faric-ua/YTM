@@ -37,8 +37,27 @@ object HistoryRecoveryPolicy {
                 sourceHistoryId =
                     entry.id,
                 playlist =
-                    durableSnapshot
-                        .playlist,
+                    ImportedPlaylist(
+                        name =
+                            durableSnapshot
+                                .playlist
+                                .name,
+                        tracks =
+                            durableSnapshot
+                                .playlist
+                                .tracks
+                                .map {
+                                        track ->
+                                    track.copy(
+                                        durableExactSelection =
+                                            !track.selectedVideoId
+                                                .isNullOrBlank() &&
+                                                track.status ==
+                                                    TrackStatus.MATCHED
+                                    )
+                                }
+                                .toMutableList()
+                    ),
                 sourceLabel =
                     durableSnapshot
                         .sourceLabel,
@@ -105,6 +124,8 @@ object HistoryRecoveryPolicy {
                             hasExactVideo &&
                                 stored.manuallySelected,
                         error = null,
+                        durableExactSelection =
+                            hasExactVideo,
                         historyIndex =
                             stored.index
                     )
