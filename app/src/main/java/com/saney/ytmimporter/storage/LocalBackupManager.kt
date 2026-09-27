@@ -26,10 +26,38 @@ data class RestoreSummary(
 class LocalBackupManager(
     private val context: Context
 ) {
-    fun createBackupJson(): String {
-        val groups = buildPreferencesJson()
-        val checksum = sha256(groups.toString())
-        val totalValues = countValues(groups)
+    fun createBackupJson(): String =
+        createBackupJson(
+            prefsNames =
+                PREFS_NAMES
+        )
+
+    fun createBulkSyncCheckpointJson(): String =
+        createBackupJson(
+            prefsNames =
+                PREFS_NAMES.filterNot {
+                    it ==
+                        BulkSyncCheckpointStore
+                            .PREFS_NAME
+                }
+        )
+
+    private fun createBackupJson(
+        prefsNames: List<String>
+    ): String {
+        val groups =
+            buildPreferencesJson(
+                prefsNames
+            )
+        val checksum =
+            sha256(
+                groups.toString()
+            )
+        val totalValues =
+            countValues(
+                groups,
+                prefsNames
+            )
 
         return JSONObject()
             .put("format", FORMAT)
@@ -40,6 +68,7 @@ class LocalBackupManager(
             .put(
                 "note",
                 "Backup may contain playlist history, Search/Write Pending Queue jobs, " +
+                    "restorable playlists, Bulk Sync sessions/checkpoints, " +
                     "Google email, YouTube channel IDs and cached search results. " +
                     "It does NOT contain OAuth access tokens, passwords " +
                     "or signing keys. SearchCache and URL snapshot cache are persistent " +
@@ -284,10 +313,12 @@ class LocalBackupManager(
             .apply()
     }
 
-    private fun buildPreferencesJson(): JSONObject {
+    private fun buildPreferencesJson(
+        prefsNames: List<String>
+    ): JSONObject {
         val groups = JSONObject()
 
-        PREFS_NAMES.forEach { prefsName ->
+        prefsNames.forEach { prefsName ->
             val prefs =
                 context.getSharedPreferences(
                     prefsName,
@@ -340,10 +371,14 @@ class LocalBackupManager(
         }
     }
 
-    private fun countValues(groups: JSONObject): Int {
+    private fun countValues(
+        groups: JSONObject,
+        prefsNames: List<String> =
+            PREFS_NAMES
+    ): Int {
         var total = 0
 
-        PREFS_NAMES.forEach { prefsName ->
+        prefsNames.forEach { prefsName ->
             total +=
                 groups.optJSONObject(prefsName)
                     ?.length()
@@ -580,7 +615,10 @@ class LocalBackupManager(
                 "quota_tracker_v1",
                 "youtube_search_cache",
                 "url_snapshot_cache_v1",
-                "current_playlist_v1"
+                "current_playlist_v1",
+                "restorable_playlist_v1",
+                BulkSyncSessionStore.PREFS_NAME,
+                BulkSyncCheckpointStore.PREFS_NAME
             )
 
         private val RESTORABLE_PREFS_NAMES =
