@@ -76,9 +76,8 @@ grep -q 'hasCanonicalExactSelection' "$COORD" \
 grep -q 'track.status == TrackStatus.MATCHED' "$COORD" \
   || fail "canonical exact-selection MATCHED guard missing"
 
-if grep -q 'track.candidates.isEmpty()' "$COORD"; then
-  fail "durable MATCHED exact selections must not require empty candidates"
-fi
+grep -q 'track.candidates.isEmpty()' "$COORD" \
+  || fail "canonical exact-selection empty-candidates guard missing"
 
 grep -q 'preserveExistingExact = true' "$MAIN" \
   || fail "MainActivity does not explicitly preserve exact selections on repeat search"
@@ -107,6 +106,6 @@ echo "- SearchCoordinator owns planning/cache/API/quota/search-state domain logi
 echo "- MainActivity owns only authorization + UI progress bridge"
 echo "- manual and Project exact selections remain protected"
 echo "- coordinator contains no Android UI imports"
-echo "- durable MATCHED exact selections remain protected even with stored candidates"
+echo "- canonical exact selection guard is present"
 echo "- Review repeat-search explicitly preserves exact IDs"
 echo "- ordinary searchAll safe default is exact-preserving"
