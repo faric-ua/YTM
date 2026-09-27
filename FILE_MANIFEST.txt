@@ -47,7 +47,7 @@ fe547e95ea63aab3  app/src/main/java/com/saney/ytmimporter/storage/AccountBackupN
 c606025da7de4466  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryIncrementalBackup.kt
 8b1bd44762ebc099  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryManifestImporter.kt
 21f9907bf0ae81c8  app/src/main/java/com/saney/ytmimporter/storage/AllFilesAccess.kt
-f6f5d434b3715d4d  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
+23c11dcbf00e9bd9  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
 52e409baf9a0ed79  app/src/main/java/com/saney/ytmimporter/storage/DirectDownloadFileQuery.kt
 835027dec859c077  app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
 4dbc682a0ca0cab1  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
