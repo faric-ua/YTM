@@ -229,7 +229,7 @@ c046586be53a0584  artifacts/README.md
 da6db67c9017a470  docs/README.md
 bb063331c071e088  docs/WORKFLOW_LESSONS.md
 d7ce90f628bcd703  docs/assistant-kit/AUDIT_CATALOG.md
-9d744b75d5fd8958  docs/assistant-kit/CONTEXT_FILES.txt
+1d15e6a9410c30db  docs/assistant-kit/CONTEXT_FILES.txt
 32b0a039d0111864  docs/assistant-kit/PORTABLE_AUDITS.txt
 b07c7177d0a2b73e  docs/assistant-kit/README.md
 ac598ab37685b5df  docs/assistant-kit/RELEASE_DOCUMENTATION_CONTRACT.md
@@ -248,9 +248,11 @@ ac1508588acac2e0  docs/assistant-kit/portable/templates/PHONE_TEST.md.template
 c9a0f203088b48a9  docs/assistant-kit/portable/templates/RELEASE.md.template
 2d333ebed3c466b5  docs/assistant-kit/portable/templates/RELEASE_META.json.template
 51098420dcf58c17  docs/assistant-kit/portable/templates/TEST_RUN.md.template
-9b79bc6e6a64a9e4  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
+519b2e691040a199  docs/assistant-kit/portable/templates/UI_WINDOW_QA.md.template
+eaedf65ec6f1bc1b  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
 15e4b7411a52b7f0  docs/design/THEME_STATE_REFERENCE.md
 663807a41f7e5fd7  docs/design/TILE_UI_CONTRACT.md
+33010f0f3f469429  docs/design/UI_WINDOW_QA_CONTRACT.md
 94f84a2ed75ff8de  docs/design/V1454_HISTORY_SAFE_BULK_SYNC_CONTRACT.md
 96bb07fec24f81fc  docs/design/V1454_HISTORY_SAFE_BULK_SYNC_FLOW.md
 763946037aa1169a  docs/design/exclusive/ASSET_MANIFEST.md
@@ -1487,7 +1489,7 @@ d8d981601292bcf3  docs/v.1.4.8/diagrams/DIALOG_SAFE_VIEWPORT.md
 463352aea3df25d4  docs/v.1.4.9/diagrams/README.md
 d5f372c6d46ad7c8  gradle.properties
 27babf33a4b6e259  qa/BUG_REGISTER.md
-607a79dbdf7d4a75  qa/MASTER_TEST_PLAN.md
+911bb50fbd02b1a4  qa/MASTER_TEST_PLAN.md
 084a4e801c888158  qa/TEST_DATA.md
 e73ddc7565ea4b94  qa/TEST_EVIDENCE_POLICY.md
 0ebca1c1dcd8af3f  qa/TEST_RUN_TEMPLATE.md
