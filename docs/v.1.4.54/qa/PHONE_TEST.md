@@ -247,6 +247,23 @@ PASS:
 
 Result: `4+` / `4-`.
 
+### Test 4 phone evidence — partial, 2026-09-27
+
+Observed on installed signed v1.4.54 candidate:
+- durable session was created with 14 plan rows and an account-wide remote baseline of 61 playlists;
+- before Start: 0 playlists created, 0 tracks added;
+- both NEW rows were materialized as `Готовий новий плейлист • 0/12`;
+- LINKED remained deferred, NEEDS_SEARCH remained skipped, PENDING remained owned by Queue;
+- after explicit `Почати синхронізацію`, execution progressed through durable ledger states;
+- during active writes the UI showed one transient PREPARED mutation while confirmed counters advanced (for example 1 created / 4 added, then 1 created / 8 added);
+- execution completed successfully with `Створено плейлистів: 2 • додано треків: 24`;
+- final session state was `Завершено`.
+
+This proves the Wave 3 NEW execution path and durable progress UI work on phone. The required mid-run force-close/reopen part was **not exercised** because the two 12-track playlists completed too quickly. Do not mark Test 4 as `4+` yet; perform a targeted interrupted-session retest separately.
+
+Result: **partial PASS / restart subtest pending**.
+
+
 ## Test 5 — Quota pause
 
 1. Run a session that reaches Search or write quota/rate-limit.
