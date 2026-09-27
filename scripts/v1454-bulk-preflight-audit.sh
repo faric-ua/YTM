@@ -11,8 +11,17 @@ PREVIEW="app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt"
 MENU="app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
 MANIFEST="app/src/main/AndroidManifest.xml"
 TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicyTest.kt"
+SESSION_MODEL="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSession.kt"
+SESSION_STORE="app/src/main/java/com/saney/ytmimporter/storage/BulkSyncSessionStore.kt"
+CHECKPOINT_STORE="app/src/main/java/com/saney/ytmimporter/storage/BulkSyncCheckpointStore.kt"
+SESSION_FACTORY="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSessionFactory.kt"
+EXECUTION_POLICY="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutionPolicy.kt"
+EXECUTOR="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutor.kt"
+SESSION_ACTIVITY="app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt"
+SESSION_TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt"
+BACKUP="app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt"
 
-for file in "$POLICY" "$PREVIEW" "$MENU" "$MANIFEST" "$TEST"; do
+for file in "$POLICY" "$PREVIEW" "$MENU" "$MANIFEST" "$TEST"   "$SESSION_MODEL" "$SESSION_STORE" "$CHECKPOINT_STORE" "$SESSION_FACTORY"   "$EXECUTION_POLICY" "$EXECUTOR" "$SESSION_ACTIVITY" "$SESSION_TEST" "$BACKUP"; do
   [ -f "$file" ] || fail "Missing Bulk Sync foundation file: $file"
 done
 
@@ -34,9 +43,11 @@ grep -Fq 'estimatedSearchCalls' "$PREVIEW"   || fail "Search estimate missing fr
 
 grep -Fq 'estimatedWriteUnits' "$PREVIEW"   || fail "Non-Search estimate missing from Bulk preview"
 
-grep -Fq 'isEnabled = false' "$PREVIEW"   || fail "Bulk execution gate must remain disabled in Test 3 foundation"
+grep -Fq 'BulkSyncSessionFactory' "$PREVIEW"   || fail "Bulk preview does not create a durable session after explicit confirmation"
 
-for forbidden in   'createPlaylist('   'insertPlaylistItem('   'deletePlaylist('   'deletePlaylistItem('; do
+grep -Fq 'BulkSyncSessionActivity::class.java' "$PREVIEW"   || fail "Bulk preview does not hand off to the session screen"
+
+for forbidden in   'createPlaylist('   'addVideo('   'insertPlaylistItem('   'deletePlaylist('   'deletePlaylistItem('; do
   if grep -Fq "$forbidden" "$PREVIEW"; then
     fail "Remote mutation leaked into read-only Bulk preview: $forbidden"
   fi
@@ -50,4 +61,30 @@ grep -Fq 'legacyWriteWithoutIds_doesNotMatchByPlaylistTitleOnly' "$TEST"   || fa
 
 grep -Fq 'legacyWriteWithoutIds_requiresUniqueLocalOwner' "$TEST"   || fail "Legacy WRITE unique-owner safety coverage missing"
 
-echo "PASS: v1.4.54 Bulk Sync Test 3 read-only foundation"
+grep -Fq 'BulkSyncSessionActivity' "$MANIFEST"   || fail "Bulk Sync session activity is not registered"
+
+grep -Fq 'PAUSED_INTERRUPTED' "$SESSION_MODEL"   || fail "Restart-safe interrupted session state missing"
+
+grep -Fq 'BulkSyncMutationStatus.PREPARED' "$EXECUTOR"   || fail "Mutation PREPARED durability gate missing"
+
+grep -Fq 'BulkSyncMutationStatus.APPLIED' "$EXECUTOR"   || fail "Mutation APPLIED durability gate missing"
+
+grep -Fq 'hasUncertainPreparedMutation' "$EXECUTION_POLICY"   || fail "Uncertain mutation duplicate guard missing"
+
+grep -Fq 'normalizeAfterColdOpen' "$SESSION_ACTIVITY"   || fail "Session cold-open pause normalization missing"
+
+grep -Fq 'createBulkSyncCheckpointJson' "$PREVIEW"   || fail "Bulk local checkpoint creation missing"
+
+grep -Fq 'restorable_playlist_v1' "$BACKUP"   || fail "Full Backup does not include RestorablePlaylistStore"
+
+grep -Fq 'BulkSyncSessionStore.PREFS_NAME' "$BACKUP"   || fail "Full Backup does not include BulkSyncSessionStore"
+
+grep -Fq 'BulkSyncCheckpointStore.PREFS_NAME' "$BACKUP"   || fail "Full Backup does not include Bulk checkpoints"
+
+grep -Fq 'appliedMutations_areNotScheduledAgain' "$SESSION_TEST"   || fail "Bulk idempotent-resume JVM coverage missing"
+
+grep -Fq 'coldOpen_neverAutoResumesRunningSession' "$SESSION_TEST"   || fail "Bulk restart JVM coverage missing"
+
+grep -Fq 'preparedMutation_blocksBlindRetry' "$SESSION_TEST"   || fail "Bulk uncertain-write safety JVM coverage missing"
+
+echo "PASS: v1.4.54 Bulk Sync Test 3 + Test 4 durable-session foundation"
