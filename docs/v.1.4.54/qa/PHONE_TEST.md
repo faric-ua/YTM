@@ -218,6 +218,23 @@ Result:
 
 ## Test 4 — Bulk session + restart
 
+**Implementation gate — READY FOR SIGNED PHONE QA.**
+
+Validated Wave 3 foundation before phone QA:
+- app source: `28a44a0e5e22f12f3337cd78fc572c258f47eb6e`;
+- Validate Android run: `36337826120` — PASS;
+- session creation persists a local Full Backup checkpoint and a fresh account-wide read-only remote baseline before any write;
+- preview still performs no remote mutation; creating the durable session does not auto-start execution;
+- Wave 3 executes only NEW rows; LINKED is explicitly deferred to the append-safe wave;
+- session progress and mutation ledger are durable;
+- restart/cold-open never auto-resumes a RUNNING session;
+- each remote mutation is persisted as PREPARED before request and APPLIED after confirmed success;
+- successful playlistItems.insert stores the created playlistItemId;
+- interrupted PREPARED inserts into a session-created playlist are reconciled by exact ordered remote prefix on explicit Resume; ambiguity blocks blind retry;
+- an uncertain PREPARED CREATE remains blocked rather than guessing by playlist title.
+
+**Phone safety note:** every NEW row in the confirmed Wave 3 plan is executable. Before pressing `Почати синхронізацію`, verify the exact NEW playlist set and do not proceed with unintended playlists.
+
 1. Confirm a controlled bulk plan.
 2. Allow at least one mutation.
 3. Force-close app.
