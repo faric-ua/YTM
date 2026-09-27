@@ -59,6 +59,8 @@ object SearchRecoveryPolicy {
                             track.manuallySelected,
                         error =
                             track.error,
+                        durableExactSelection =
+                            track.durableExactSelection,
                         historyIndex =
                             track.historyIndex,
                         candidates =
@@ -122,6 +124,8 @@ object SearchRecoveryPolicy {
                                 stored.manuallySelected,
                             error =
                                 stored.error,
+                            durableExactSelection =
+                                stored.durableExactSelection,
                             historyIndex =
                                 stored.historyIndex
                         )
