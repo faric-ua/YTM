@@ -234,6 +234,301 @@ class BulkSyncSessionPolicyTest {
     }
 
     @Test
+    fun terminalFailedTrack_isSkippedByScheduler() {
+        val base =
+            sessionWithNewRow()
+
+        val createId =
+            BulkSyncExecutionPolicy
+                .createOperationId(
+                    sessionId =
+                        base.sessionId,
+                    localPlaylistId =
+                        "new"
+                )
+
+        val firstInsertId =
+            BulkSyncExecutionPolicy
+                .insertOperationId(
+                    sessionId =
+                        base.sessionId,
+                    localPlaylistId =
+                        "new",
+                    trackIndex = 0,
+                    videoId =
+                        "AAAAAAAAAAA"
+                )
+
+        val session =
+            base.copy(
+                plan =
+                    listOf(
+                        base.plan.single()
+                            .copy(
+                                state =
+                                    BulkSyncSessionRowState
+                                        .INSERTING,
+                                remotePlaylistId =
+                                    "remote-new"
+                            )
+                    ),
+                mutationLedger =
+                    listOf(
+                        BulkSyncMutation(
+                            operationId =
+                                createId,
+                            type =
+                                BulkSyncMutationType
+                                    .CREATE_PLAYLIST,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId = null,
+                            trackIndex = null,
+                            status =
+                                BulkSyncMutationStatus
+                                    .APPLIED,
+                            updatedAt = 1L
+                        ),
+                        BulkSyncMutation(
+                            operationId =
+                                firstInsertId,
+                            type =
+                                BulkSyncMutationType
+                                    .INSERT_PLAYLIST_ITEM,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId =
+                                "AAAAAAAAAAA",
+                            trackIndex = 0,
+                            status =
+                                BulkSyncMutationStatus
+                                    .TERMINAL_FAILED,
+                            error =
+                                "HTTP 404 — Video not found.",
+                            updatedAt = 2L
+                        )
+                    )
+            )
+
+        val next =
+            BulkSyncExecutionPolicy
+                .nextMutation(
+                    session
+                ) as BulkSyncNextMutation
+                    .InsertPlaylistItem
+
+        assertEquals(
+            "BBBBBBBBBBB",
+            next.videoId
+        )
+    }
+
+    @Test
+    fun legacyPartialInsertFailure_becomesExplicitlyResumableTerminalSkip() {
+        val base =
+            sessionWithNewRow()
+
+        val failedId =
+            BulkSyncExecutionPolicy
+                .insertOperationId(
+                    sessionId =
+                        base.sessionId,
+                    localPlaylistId =
+                        "new",
+                    trackIndex = 0,
+                    videoId =
+                        "AAAAAAAAAAA"
+                )
+
+        val legacy =
+            base.copy(
+                state =
+                    BulkSyncSessionState
+                        .PARTIAL_FAILED,
+                plan =
+                    listOf(
+                        base.plan.single()
+                            .copy(
+                                state =
+                                    BulkSyncSessionRowState
+                                        .FAILED,
+                                remotePlaylistId =
+                                    "remote-new",
+                                lastError =
+                                    "HTTP 404 — Video not found."
+                            )
+                    ),
+                mutationLedger =
+                    listOf(
+                        BulkSyncMutation(
+                            operationId =
+                                BulkSyncExecutionPolicy
+                                    .createOperationId(
+                                        sessionId =
+                                            base.sessionId,
+                                        localPlaylistId =
+                                            "new"
+                                    ),
+                            type =
+                                BulkSyncMutationType
+                                    .CREATE_PLAYLIST,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId = null,
+                            trackIndex = null,
+                            status =
+                                BulkSyncMutationStatus
+                                    .APPLIED,
+                            updatedAt = 1L
+                        ),
+                        BulkSyncMutation(
+                            operationId =
+                                failedId,
+                            type =
+                                BulkSyncMutationType
+                                    .INSERT_PLAYLIST_ITEM,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId =
+                                "AAAAAAAAAAA",
+                            trackIndex = 0,
+                            status =
+                                BulkSyncMutationStatus
+                                    .FAILED,
+                            updatedAt = 2L
+                        )
+                    ),
+                lastError =
+                    "HTTP 404 — Video not found."
+            )
+
+        val restored =
+            BulkSyncExecutionPolicy
+                .normalizeAfterColdOpen(
+                    legacy
+                )
+
+        assertEquals(
+            BulkSyncSessionState
+                .PAUSED_INTERRUPTED,
+            restored.state
+        )
+        assertTrue(
+            restored.mutationLedger.any {
+                it.operationId ==
+                    failedId &&
+                    it.status ==
+                        BulkSyncMutationStatus
+                            .TERMINAL_FAILED
+            }
+        )
+        assertTrue(
+            BulkSyncExecutionPolicy
+                .canExplicitlyResume(
+                    restored
+                )
+        )
+    }
+
+    @Test
+    fun restartPrefix_omitsTerminalFailedTrack() {
+        val base =
+            sessionWithNewRow()
+
+        val row =
+            base.plan.single()
+                .copy(
+                    remotePlaylistId =
+                        "remote-new"
+                )
+
+        val firstInsertId =
+            BulkSyncExecutionPolicy
+                .insertOperationId(
+                    sessionId =
+                        base.sessionId,
+                    localPlaylistId =
+                        "new",
+                    trackIndex = 0,
+                    videoId =
+                        "AAAAAAAAAAA"
+                )
+
+        val session =
+            base.copy(
+                plan =
+                    listOf(row),
+                mutationLedger =
+                    listOf(
+                        BulkSyncMutation(
+                            operationId =
+                                firstInsertId,
+                            type =
+                                BulkSyncMutationType
+                                    .INSERT_PLAYLIST_ITEM,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId =
+                                "AAAAAAAAAAA",
+                            trackIndex = 0,
+                            status =
+                                BulkSyncMutationStatus
+                                    .TERMINAL_FAILED,
+                            error =
+                                "HTTP 404 — Video not found.",
+                            updatedAt = 1L
+                        )
+                    )
+            )
+
+        val expected =
+            BulkSyncExecutionPolicy
+                .expectedRemoteVideoIdsThroughPrepared(
+                    session =
+                        session,
+                    row =
+                        row,
+                    preparedRowTrackIndex = 1
+                )
+
+        assertEquals(
+            listOf(
+                "BBBBBBBBBBB"
+            ),
+            expected
+        )
+
+        val resolution =
+            BulkSyncExecutionPolicy
+                .resolvePreparedInsert(
+                    expectedVideoIds =
+                        expected,
+                    preparedIndex =
+                        expected.lastIndex,
+                    remoteVideoIds =
+                        listOf(
+                            "BBBBBBBBBBB"
+                        )
+                )
+
+        assertTrue(
+            resolution is
+                BulkSyncPreparedInsertResolution
+                    .Applied
+        )
+    }
+
+    @Test
     fun coldOpen_neverAutoResumesRunningSession() {
         val running =
             sessionWithNewRow()
