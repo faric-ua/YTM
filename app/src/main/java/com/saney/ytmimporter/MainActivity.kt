@@ -2849,7 +2849,6 @@ class MainActivity : Activity() {
                     account = currentWriteAccountContext(),
                     localPlaylistId = currentPlaylistStore.load()?.localPlaylistId
                 )
-
             pendingJobStore.upsert(job)
             updatePendingButton()
 
@@ -2896,7 +2895,6 @@ class MainActivity : Activity() {
                     account = currentWriteAccountContext(),
                     localPlaylistId = currentPlaylistStore.load()?.localPlaylistId
                 )
-
             pendingJobStore.upsert(job)
             updatePendingButton()
 
