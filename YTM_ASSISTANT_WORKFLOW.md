@@ -283,3 +283,18 @@ For every version that reaches a successful signed GitHub Actions build:
 5. never describe an uninstalled build as the user's current app version.
 
 Repository version, signed-build version, and phone-installed version are three separate states and must be tracked separately.
+
+## 22. Active plan / crash-recovery checklist
+
+`ACTIVE_PLAN.md` is mandatory mutable execution state.
+
+Rules:
+1. Before a multi-step implementation, release, research, migration or QA task, create/update an ordered checkbox plan.
+2. After every successful project-progress step, mark the exact verified item `[x]` before closing the work.
+3. After every user-confirmed phone PASS/FAIL, update `ACTIVE_PLAN.md` plus the relevant QA/finding/handoff files in the same documentation wave.
+4. The first unchecked checkbox is the default resume point after a chat/session loss.
+5. Do not check work because it was planned, discussed, coded, built or expected; check only what the current evidence proves.
+6. If scope changes, rewrite the remaining unchecked plan so it stays truthful.
+7. Pure Q&A that does not change project state does not require a repository commit.
+
+`CURRENT_HANDOFF.md` remains the concise state snapshot. `ACTIVE_PLAN.md` is the ordered working checklist. A session should not end after meaningful project progress with both files stale.

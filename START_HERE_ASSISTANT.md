@@ -114,18 +114,19 @@ Before changing the project, read in this order:
 
 1. `START_HERE_ASSISTANT.md` — this file.
 2. `CURRENT_HANDOFF.md` — exact mutable crash-recovery/resume point.
-3. `YTM_ASSISTANT_WORKFLOW.md` — collaboration and safety contract.
-4. `PROJECT_STATUS.txt` — current technical/product state.
-5. `BACKLOG.md` — roadmap and unfinished work.
-6. `RELEASE_TEST_STATUS.md` — what is actually phone-tested.
-7. `qa/BUG_REGISTER.md` and `OPEN_QUESTIONS.md` — known bugs and deferred decisions.
-8. `docs/ASSISTANT_TOOL_MAP.md` — available workflow tools and when to use them.
-9. `TERMUX_COMMANDS.md` — reusable phone/Git commands.
-10. `docs/WORKFLOW_LESSONS.md` — mistakes that must not be repeated.
-11. `docs/BUILD_ARTIFACT_CONVENTION.md` — stable APK/download folder convention.
-12. Relevant current release folder under `docs/v.X.Y.Z/`.
-13. `docs/tutorial/ROADMAP.md` and the relevant tutorial chapter.
-14. If working on exclusive skins/avatars, read `docs/design/exclusive/README.md` and `ASSET_MANIFEST.md`.
+3. `ACTIVE_PLAN.md` — live ordered checkbox plan; first unchecked item is the default resume point.
+4. `YTM_ASSISTANT_WORKFLOW.md` — collaboration and safety contract.
+5. `PROJECT_STATUS.txt` — current technical/product state.
+6. `BACKLOG.md` — roadmap and unfinished work.
+7. `RELEASE_TEST_STATUS.md` — what is actually phone-tested.
+8. `qa/BUG_REGISTER.md` and `OPEN_QUESTIONS.md` — known bugs and deferred decisions.
+9. `docs/ASSISTANT_TOOL_MAP.md` — available workflow tools and when to use them.
+10. `TERMUX_COMMANDS.md` — reusable phone/Git commands.
+11. `docs/WORKFLOW_LESSONS.md` — mistakes that must not be repeated.
+12. `docs/BUILD_ARTIFACT_CONVENTION.md` — stable APK/download folder convention.
+13. Relevant current release folder under `docs/v.X.Y.Z/`.
+14. `docs/tutorial/ROADMAP.md` and the relevant tutorial chapter.
+15. If working on exclusive skins/avatars, read `docs/design/exclusive/README.md` and `ASSET_MANIFEST.md`.
 
 If these sources disagree, prefer the newest current root status/policy files over an older historical release snapshot.
 
