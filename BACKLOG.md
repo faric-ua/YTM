@@ -41,6 +41,7 @@ v1.4.54 — History Recovery / Safe Bulk Sync — DEVELOPMENT / WAVE 0
 - BUG-030 Play Protect blocks/warns on the sideloaded updater-enabled APK — OPEN NON-BLOCKING DISTRIBUTION/REPUTATION FOLLOW-UP; exact final RC installed successfully after explicit user override; root cause/false-positive review remains separate from functional updater PASS.
 - UX-027 URL Snapshot duplicate-choice action layout — OPEN NON-BLOCKING; use one adaptive horizontal row only when width safely fits both labels, stacked fallback otherwise.
 - UX-028 Home last-action detail drill-down — OPEN NON-BLOCKING; History already has full URL-snapshot detail, but the truncated Home summary has no obvious direct navigation to it.
+- UX-031 Bulk Sync Preview Readability — OPEN; make Bulk preview cards scannable: visually separate playlist title, state and metrics; render NEW / LINKED / ALREADY_SYNCED / NEEDS_SEARCH / PENDING / BLOCKED with semantic color accents/badges instead of relying on raw all-caps text; keep text labels as the accessibility fallback.
 
 
 ## v1.4.49 — In-app Updater
@@ -119,6 +120,8 @@ created from exact phone-tested v1.4.53 source
 - [ ] Preflight must create a local Full Backup checkpoint before any remote write.
 - [ ] Preflight must create a read-only remote account checkpoint (playlist IDs, title/privacy, ordered playlistItem IDs/video IDs) before any remote write.
 - [ ] Build and show a dry-run plan: NEW / LINKED / ALREADY_SYNCED / NEEDS_SEARCH / PENDING / BLOCKED plus estimated API usage.
+- [ ] UX-031: use semantic color-coded state badges/labels in Bulk preview (for example success for ALREADY_SYNCED, danger/error for BLOCKED, attention for PENDING/NEEDS_SEARCH), while preserving readable text labels and contrast across skins.
+- [ ] UX-031: redesign each Bulk preview card hierarchy: playlist title as the primary line, status badge separated from the title, compact metrics row (`tracks`, `ready`, `unresolved`, planned create/add), and the reason/explanation as secondary text; avoid one dense bold text block.
 - [ ] User confirmation required after preview; rotation/recreation must not auto-start the sync.
 - [ ] Execute as a durable session with per-playlist progress and explicit pause/resume across quota/auth/rate-limit stops.
 - [ ] Record a mutation ledger for every remote change made by the sync session.
