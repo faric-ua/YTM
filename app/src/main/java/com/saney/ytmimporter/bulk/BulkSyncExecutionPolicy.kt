@@ -59,6 +59,71 @@ object BulkSyncExecutionPolicy {
                 BulkSyncMutationStatus.PREPARED
         }
 
+    fun canExplicitlyResume(
+        session: BulkSyncSession
+    ): Boolean {
+        if (
+            session.state !in
+            setOf(
+                BulkSyncSessionState.READY,
+                BulkSyncSessionState
+                    .PAUSED_WRITE_QUOTA,
+                BulkSyncSessionState
+                    .PAUSED_RATE_LIMIT,
+                BulkSyncSessionState
+                    .PAUSED_AUTH,
+                BulkSyncSessionState
+                    .PAUSED_INTERRUPTED
+            )
+        ) {
+            return false
+        }
+
+        val prepared =
+            session.mutationLedger
+                .filter {
+                    it.status ==
+                        BulkSyncMutationStatus
+                            .PREPARED
+                }
+
+        if (prepared.isEmpty()) {
+            return true
+        }
+
+        return prepared.all {
+                mutation ->
+            if (
+                mutation.type !=
+                BulkSyncMutationType
+                    .INSERT_PLAYLIST_ITEM
+            ) {
+                return@all false
+            }
+
+            val remoteId =
+                mutation.remotePlaylistId
+                    ?.takeIf(
+                        String::isNotBlank
+                    )
+                    ?: return@all false
+
+            session.mutationLedger.any {
+                applied ->
+                applied.type ==
+                    BulkSyncMutationType
+                        .CREATE_PLAYLIST &&
+                    applied.localPlaylistId ==
+                        mutation.localPlaylistId &&
+                    applied.remotePlaylistId ==
+                        remoteId &&
+                    applied.status ==
+                        BulkSyncMutationStatus
+                            .APPLIED
+            }
+        }
+    }
+
     fun resolvePreparedInsert(
         expectedVideoIds: List<String>,
         preparedIndex: Int,
