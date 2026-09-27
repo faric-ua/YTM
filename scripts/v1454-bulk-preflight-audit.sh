@@ -44,4 +44,10 @@ done
 
 grep -Fq 'searchAndOtherApiEstimates_staySeparate' "$TEST"   || fail "Bulk quota-separation JVM coverage missing"
 
+grep -Fq 'legacyWriteWithoutIds_matchesExactPendingTrackIdentity' "$TEST"   || fail "Legacy WRITE pending-ownership JVM coverage missing"
+
+grep -Fq 'legacyWriteWithoutIds_doesNotMatchByPlaylistTitleOnly' "$TEST"   || fail "Legacy WRITE title-only safety coverage missing"
+
+grep -Fq 'legacyWriteWithoutIds_requiresUniqueLocalOwner' "$TEST"   || fail "Legacy WRITE unique-owner safety coverage missing"
+
 echo "PASS: v1.4.54 Bulk Sync Test 3 read-only foundation"
