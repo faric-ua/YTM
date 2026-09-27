@@ -1,0 +1,792 @@
+package com.saney.ytmimporter.bulk
+
+import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.storage.QuotaTracker
+import com.saney.ytmimporter.storage.RestorablePlaylistStore
+import com.saney.ytmimporter.storage.BulkSyncSessionStore
+import com.saney.ytmimporter.write.WritePauseAction
+import com.saney.ytmimporter.write.WritePausePolicy
+import com.saney.ytmimporter.youtube.YouTubeApi
+import com.saney.ytmimporter.youtube.YouTubeApiException
+import com.saney.ytmimporter.youtube.YouTubeLimitKind
+
+class BulkSyncExecutor(
+    private val api: YouTubeApi,
+    private val sessionStore: BulkSyncSessionStore,
+    private val restorableStore: RestorablePlaylistStore,
+    private val currentPlaylistStore: CurrentPlaylistStore,
+    private val quotaTracker: QuotaTracker
+) {
+    fun execute(
+        accessToken: String,
+        sessionId: String,
+        onProgress: (BulkSyncSession) -> Unit = {}
+    ): BulkSyncSession {
+        var session =
+            sessionStore.get(sessionId)
+                ?: throw IllegalStateException(
+                    "Bulk-сесію не знайдено"
+                )
+
+        if (
+            BulkSyncExecutionPolicy
+                .hasUncertainPreparedMutation(
+                    session
+                )
+        ) {
+            session =
+                session.copy(
+                    state =
+                        BulkSyncSessionState
+                            .PAUSED_INTERRUPTED,
+                    updatedAt =
+                        System.currentTimeMillis(),
+                    lastError =
+                        "Є PREPARED mutation з невідомим remote результатом. " +
+                            "Автоматичний retry заблоковано, щоб не створити дублікат."
+                )
+
+            save(
+                session,
+                onProgress
+            )
+            return session
+        }
+
+        session =
+            session.copy(
+                state =
+                    BulkSyncSessionState.RUNNING,
+                updatedAt =
+                    System.currentTimeMillis(),
+                lastError =
+                    null
+            )
+
+        save(
+            session,
+            onProgress
+        )
+
+        while (true) {
+            val next =
+                BulkSyncExecutionPolicy
+                    .nextMutation(
+                        session
+                    )
+
+            if (next == null) {
+                session =
+                    completeRows(
+                        session
+                    ).copy(
+                        state =
+                            BulkSyncSessionState
+                                .COMPLETED,
+                        currentPlanIndex =
+                            session.plan.size,
+                        updatedAt =
+                            System.currentTimeMillis(),
+                        lastError =
+                            null
+                    )
+
+                save(
+                    session,
+                    onProgress
+                )
+                return session
+            }
+
+            session =
+                when (next) {
+                    is BulkSyncNextMutation
+                        .CreatePlaylist ->
+                        createPlaylist(
+                            accessToken =
+                                accessToken,
+                            session =
+                                session,
+                            next =
+                                next,
+                            onProgress =
+                                onProgress
+                        )
+
+                    is BulkSyncNextMutation
+                        .InsertPlaylistItem ->
+                        insertItem(
+                            accessToken =
+                                accessToken,
+                            session =
+                                session,
+                            next =
+                                next,
+                            onProgress =
+                                onProgress
+                        )
+                }
+
+            if (
+                session.state !=
+                BulkSyncSessionState.RUNNING
+            ) {
+                return session
+            }
+        }
+    }
+
+    private fun createPlaylist(
+        accessToken: String,
+        session: BulkSyncSession,
+        next: BulkSyncNextMutation.CreatePlaylist,
+        onProgress: (BulkSyncSession) -> Unit
+    ): BulkSyncSession {
+        val row =
+            session.plan[
+                next.rowIndex
+            ]
+
+        var working =
+            session
+                .replaceRow(
+                    index =
+                        next.rowIndex,
+                    row =
+                        row.copy(
+                            state =
+                                BulkSyncSessionRowState
+                                    .CREATING,
+                            lastError =
+                                null
+                        )
+                )
+                .replaceMutation(
+                    BulkSyncMutation(
+                        operationId =
+                            next.operationId,
+                        type =
+                            BulkSyncMutationType
+                                .CREATE_PLAYLIST,
+                        localPlaylistId =
+                            row.localPlaylistId,
+                        remotePlaylistId =
+                            null,
+                        videoId =
+                            null,
+                        trackIndex =
+                            null,
+                        status =
+                            BulkSyncMutationStatus
+                                .PREPARED,
+                        updatedAt =
+                            System.currentTimeMillis()
+                    )
+                )
+                .copy(
+                    currentPlanIndex =
+                        next.rowIndex,
+                    updatedAt =
+                        System.currentTimeMillis()
+                )
+
+        save(
+            working,
+            onProgress
+        )
+
+        quotaTracker.recordGeneralUnits(
+            QuotaTracker.PLAYLIST_CREATE_COST
+        )
+
+        return try {
+            val playlistId =
+                api.createPlaylist(
+                    accessToken =
+                        accessToken,
+                    title =
+                        row.playlistName,
+                    privacyStatus =
+                        row.privacyStatus
+                )
+
+            val now =
+                System.currentTimeMillis()
+
+            working =
+                working
+                    .replaceMutation(
+                        BulkSyncMutation(
+                            operationId =
+                                next.operationId,
+                            type =
+                                BulkSyncMutationType
+                                    .CREATE_PLAYLIST,
+                            localPlaylistId =
+                                row.localPlaylistId,
+                            remotePlaylistId =
+                                playlistId,
+                            videoId =
+                                null,
+                            trackIndex =
+                                null,
+                            status =
+                                BulkSyncMutationStatus
+                                    .APPLIED,
+                            updatedAt =
+                                now
+                        )
+                    )
+                    .replaceRow(
+                        index =
+                            next.rowIndex,
+                        row =
+                            row.copy(
+                                state =
+                                    BulkSyncSessionRowState
+                                        .INSERTING,
+                                remotePlaylistId =
+                                    playlistId,
+                                lastError =
+                                    null
+                            )
+                    )
+                    .copy(
+                        updatedAt =
+                            now
+                    )
+
+            save(
+                working,
+                onProgress
+            )
+
+            persistRemoteLink(
+                localPlaylistId =
+                    row.localPlaylistId,
+                playlistId =
+                    playlistId,
+                playlistTitle =
+                    row.playlistName
+            )
+
+            working
+        } catch (error: Throwable) {
+            handleFailure(
+                session =
+                    working,
+                rowIndex =
+                    next.rowIndex,
+                operationId =
+                    next.operationId,
+                action =
+                    WritePauseAction
+                        .CREATE_PLAYLIST,
+                error =
+                    error,
+                onProgress =
+                    onProgress
+            )
+        }
+    }
+
+    private fun insertItem(
+        accessToken: String,
+        session: BulkSyncSession,
+        next: BulkSyncNextMutation.InsertPlaylistItem,
+        onProgress: (BulkSyncSession) -> Unit
+    ): BulkSyncSession {
+        val row =
+            session.plan[
+                next.rowIndex
+            ]
+
+        var working =
+            session
+                .replaceRow(
+                    index =
+                        next.rowIndex,
+                    row =
+                        row.copy(
+                            state =
+                                BulkSyncSessionRowState
+                                    .INSERTING,
+                            remotePlaylistId =
+                                next.remotePlaylistId,
+                            lastError =
+                                null
+                        )
+                )
+                .replaceMutation(
+                    BulkSyncMutation(
+                        operationId =
+                            next.operationId,
+                        type =
+                            BulkSyncMutationType
+                                .INSERT_PLAYLIST_ITEM,
+                        localPlaylistId =
+                            row.localPlaylistId,
+                        remotePlaylistId =
+                            next.remotePlaylistId,
+                        videoId =
+                            next.videoId,
+                        trackIndex =
+                            row.tracks[
+                                next.trackIndex
+                            ].trackIndex,
+                        status =
+                            BulkSyncMutationStatus
+                                .PREPARED,
+                        updatedAt =
+                            System.currentTimeMillis()
+                    )
+                )
+                .copy(
+                    currentPlanIndex =
+                        next.rowIndex,
+                    updatedAt =
+                        System.currentTimeMillis()
+                )
+
+        save(
+            working,
+            onProgress
+        )
+
+        quotaTracker.recordGeneralUnits(
+            QuotaTracker
+                .PLAYLIST_ITEM_INSERT_COST
+        )
+
+        return try {
+            api.addVideo(
+                accessToken =
+                    accessToken,
+                playlistId =
+                    next.remotePlaylistId,
+                videoId =
+                    next.videoId
+            )
+
+            val now =
+                System.currentTimeMillis()
+
+            working =
+                working
+                    .replaceMutation(
+                        BulkSyncMutation(
+                            operationId =
+                                next.operationId,
+                            type =
+                                BulkSyncMutationType
+                                    .INSERT_PLAYLIST_ITEM,
+                            localPlaylistId =
+                                row.localPlaylistId,
+                            remotePlaylistId =
+                                next.remotePlaylistId,
+                            videoId =
+                                next.videoId,
+                            trackIndex =
+                                row.tracks[
+                                    next.trackIndex
+                                ].trackIndex,
+                            createdPlaylistItemId =
+                                null,
+                            status =
+                                BulkSyncMutationStatus
+                                    .APPLIED,
+                            updatedAt =
+                                now
+                        )
+                    )
+                    .copy(
+                        updatedAt =
+                            now
+                    )
+
+            if (
+                BulkSyncExecutionPolicy
+                    .nextMutation(
+                        working
+                    ) == null ||
+                rowHasNoRemainingMutation(
+                    working,
+                    next.rowIndex
+                )
+            ) {
+                working =
+                    working.replaceRow(
+                        index =
+                            next.rowIndex,
+                        row =
+                            working.plan[
+                                next.rowIndex
+                            ].copy(
+                                state =
+                                    BulkSyncSessionRowState
+                                        .COMPLETED,
+                                lastError =
+                                    null
+                            )
+                    )
+            }
+
+            save(
+                working,
+                onProgress
+            )
+
+            working
+        } catch (error: Throwable) {
+            handleFailure(
+                session =
+                    working,
+                rowIndex =
+                    next.rowIndex,
+                operationId =
+                    next.operationId,
+                action =
+                    WritePauseAction
+                        .ADD_TRACK,
+                error =
+                    error,
+                onProgress =
+                    onProgress
+            )
+        }
+    }
+
+    private fun rowHasNoRemainingMutation(
+        session: BulkSyncSession,
+        rowIndex: Int
+    ): Boolean {
+        val row =
+            session.plan[
+                rowIndex
+            ]
+
+        return row.tracks.all {
+                track ->
+            val operationId =
+                BulkSyncExecutionPolicy
+                    .insertOperationId(
+                        sessionId =
+                            session.sessionId,
+                        localPlaylistId =
+                            row.localPlaylistId,
+                        trackIndex =
+                            track.trackIndex,
+                        videoId =
+                            track.videoId
+                    )
+
+            session.mutationLedger.any {
+                it.operationId ==
+                    operationId &&
+                    it.status ==
+                        BulkSyncMutationStatus
+                            .APPLIED
+            }
+        }
+    }
+
+    private fun handleFailure(
+        session: BulkSyncSession,
+        rowIndex: Int,
+        operationId: String,
+        action: WritePauseAction,
+        error: Throwable,
+        onProgress: (BulkSyncSession) -> Unit
+    ): BulkSyncSession {
+        val apiError =
+            error as?
+                YouTubeApiException
+
+        if (apiError == null) {
+            val uncertain =
+                session.copy(
+                    state =
+                        BulkSyncSessionState
+                            .PAUSED_INTERRUPTED,
+                    updatedAt =
+                        System.currentTimeMillis(),
+                    lastError =
+                        "Немає підтвердженого HTTP результату останнього write. " +
+                            "Mutation лишено PREPARED, повтор заблоковано: " +
+                            safeError(error)
+                )
+
+            save(
+                uncertain,
+                onProgress
+            )
+            return uncertain
+        }
+
+        var failed =
+            session.replaceMutationStatus(
+                operationId =
+                    operationId,
+                status =
+                    BulkSyncMutationStatus
+                        .FAILED
+            )
+
+        val state: BulkSyncSessionState
+        val message: String
+
+        when {
+            apiError.httpCode == 401 -> {
+                state =
+                    BulkSyncSessionState
+                        .PAUSED_AUTH
+                message =
+                    "Google/YTM authorization потрібна знову. " +
+                        "Підключіться на Home і продовжіть сесію вручну."
+            }
+
+            apiError.limitKind ==
+                YouTubeLimitKind.DAILY_QUOTA -> {
+                quotaTracker.recordQuotaError(
+                    apiError.message
+                )
+                state =
+                    BulkSyncSessionState
+                        .PAUSED_WRITE_QUOTA
+                message =
+                    WritePausePolicy.userMessage(
+                        kind =
+                            YouTubeLimitKind
+                                .DAILY_QUOTA,
+                        action =
+                            action
+                    )
+            }
+
+            apiError.limitKind != null -> {
+                state =
+                    BulkSyncSessionState
+                        .PAUSED_RATE_LIMIT
+                message =
+                    WritePausePolicy.userMessage(
+                        kind =
+                            requireNotNull(
+                                apiError.limitKind
+                            ),
+                        action =
+                            action
+                    )
+            }
+
+            else -> {
+                state =
+                    BulkSyncSessionState
+                        .PARTIAL_FAILED
+                message =
+                    safeError(apiError)
+
+                failed =
+                    failed.replaceRow(
+                        index =
+                            rowIndex,
+                        row =
+                            failed.plan[
+                                rowIndex
+                            ].copy(
+                                state =
+                                    BulkSyncSessionRowState
+                                        .FAILED,
+                                lastError =
+                                    message
+                            )
+                    )
+            }
+        }
+
+        failed =
+            failed.copy(
+                state =
+                    state,
+                updatedAt =
+                    System.currentTimeMillis(),
+                lastError =
+                    message
+            )
+
+        save(
+            failed,
+            onProgress
+        )
+        return failed
+    }
+
+    private fun completeRows(
+        session: BulkSyncSession
+    ): BulkSyncSession {
+        var result = session
+
+        session.plan.forEachIndexed {
+                index,
+                row ->
+            if (
+                row.state in
+                setOf(
+                    BulkSyncSessionRowState.READY,
+                    BulkSyncSessionRowState.CREATING,
+                    BulkSyncSessionRowState.INSERTING
+                ) &&
+                rowHasNoRemainingMutation(
+                    result,
+                    index
+                ) &&
+                !row.remotePlaylistId
+                    .isNullOrBlank()
+            ) {
+                result =
+                    result.replaceRow(
+                        index =
+                            index,
+                        row =
+                            row.copy(
+                                state =
+                                    BulkSyncSessionRowState
+                                        .COMPLETED,
+                                lastError =
+                                    null
+                            )
+                    )
+            }
+        }
+
+        return result
+    }
+
+    private fun persistRemoteLink(
+        localPlaylistId: String,
+        playlistId: String,
+        playlistTitle: String
+    ) {
+        val current =
+            currentPlaylistStore.load()
+
+        val snapshot =
+            restorableStore.get(
+                localPlaylistId
+            )
+                ?: return
+
+        val updated =
+            snapshot.copy(
+                updatedAt =
+                    System.currentTimeMillis(),
+                destinationPlaylistId =
+                    playlistId,
+                destinationPlaylistTitle =
+                    playlistTitle
+            )
+
+        restorableStore.upsert(
+            updated
+        )
+
+        if (
+            current?.localPlaylistId ==
+            localPlaylistId
+        ) {
+            currentPlaylistStore.save(
+                playlist =
+                    updated.playlist,
+                sourceLabel =
+                    updated.sourceLabel,
+                destinationPlaylistId =
+                    playlistId,
+                destinationPlaylistTitle =
+                    playlistTitle,
+                localPlaylistId =
+                    localPlaylistId,
+                sourceHistoryId =
+                    updated.sourceHistoryId
+            )
+        }
+    }
+
+    private fun save(
+        session: BulkSyncSession,
+        onProgress: (BulkSyncSession) -> Unit
+    ) {
+        sessionStore.upsert(
+            session
+        )
+        onProgress(session)
+    }
+
+    private fun safeError(
+        error: Throwable
+    ): String =
+        error.message
+            ?.trim()
+            ?.take(300)
+            ?.takeIf {
+                it.isNotBlank()
+            }
+            ?: error.javaClass
+                .simpleName
+
+    private fun BulkSyncSession.replaceRow(
+        index: Int,
+        row: BulkSyncSessionRow
+    ): BulkSyncSession {
+        val rows =
+            plan.toMutableList()
+
+        rows[index] = row
+
+        return copy(
+            plan = rows
+        )
+    }
+
+    private fun BulkSyncSession.replaceMutation(
+        mutation: BulkSyncMutation
+    ): BulkSyncSession {
+        val entries =
+            mutationLedger
+                .filterNot {
+                    it.operationId ==
+                        mutation.operationId
+                }
+                .toMutableList()
+
+        entries += mutation
+
+        return copy(
+            mutationLedger = entries
+        )
+    }
+
+    private fun BulkSyncSession.replaceMutationStatus(
+        operationId: String,
+        status: BulkSyncMutationStatus
+    ): BulkSyncSession {
+        val entries =
+            mutationLedger.map {
+                if (
+                    it.operationId ==
+                    operationId
+                ) {
+                    it.copy(
+                        status =
+                            status,
+                        updatedAt =
+                            System.currentTimeMillis()
+                    )
+                } else {
+                    it
+                }
+            }
+
+        return copy(
+            mutationLedger = entries
+        )
+    }
+}
