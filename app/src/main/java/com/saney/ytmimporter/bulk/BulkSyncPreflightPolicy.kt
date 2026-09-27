@@ -7,6 +7,7 @@ import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.search.SearchRecoveryPolicy
 import com.saney.ytmimporter.storage.QuotaTracker
+import java.io.Serializable
 
 enum class BulkSyncPlanState {
     NEW,
@@ -48,13 +49,13 @@ data class BulkSyncPlanRow(
     val plannedInsertCount: Int,
     val estimatedWriteUnits: Int,
     val reason: String
-)
+) : Serializable
 
 data class BulkSyncPlanSummary(
     val rows: List<BulkSyncPlanRow>,
     val estimatedSearchCalls: Int,
     val estimatedWriteUnits: Int
-) {
+) : Serializable {
     fun count(state: BulkSyncPlanState): Int =
         rows.count { it.state == state }
 }
