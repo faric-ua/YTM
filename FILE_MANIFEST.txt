@@ -1560,7 +1560,7 @@ f75b8b36a7450697  scripts/v1442-recent-file-selector-audit.sh
 981b207aa1345248  scripts/v1444-r1-audit.sh
 c68b43b6016527d5  scripts/v1445-title-emphasis-audit.sh
 ab6b0c219977b0b8  scripts/v1446-home-layout-audit.sh
-a1f98ca87228f78b  scripts/v1447-playlist-hub-audit.sh
+eeb3b6cdc7f27514  scripts/v1447-playlist-hub-audit.sh
 669373cbfc266f99  scripts/v1447-r1-audit.sh
 c976a181535a2fc4  scripts/v1447-r2-audit.sh
 d0c995d43c6de345  scripts/v1447-r3-consolidation-audit.sh
