@@ -192,6 +192,30 @@ PASS:
 
 Result: `3+` / `3-`.
 
+### Test 3 phone result — 2026-09-27: 3+
+
+Exact accepted candidate:
+- source: `e0362e122d612cd8fa18e361b2cff302df283b3b`;
+- Validate Android run: `36332906386` — PASS;
+- signed build run: `36333728905` — PASS.
+
+Observed on real phone:
+- Bulk preview remained read-only; the execution button stayed disabled;
+- classifications were verified for NEW, NEEDS_SEARCH, ALREADY_SYNCED and LINKED;
+- LINKED was reproduced safely by changing one local selected videoId while preserving the persisted YTM playlist ID; preview planned only one add-only insert and did not create a new playlist;
+- a natural legacy WRITE Queue job for `The Prodigy - Baby's Got A Temper (2002)` initially exposed BUG-040 because the old job lacked `localPlaylistId`;
+- BUG-040 was fixed without title-only matching: the legacy fallback requires exact pending-track identity and unique local ownership;
+- retest showed `PENDING 1`, `BLOCKED 0`, and the queued playlist was correctly classified as PENDING;
+- Search usage and non-Search/write estimates were shown separately;
+- rotation restored the completed preview without rebuilding/starting work;
+- Cancel returned to Menu and remained a no-op;
+- remote verification in YouTube Music confirmed the linked test playlist still had 4 tracks and the locally changed selected videoId was not written remotely.
+
+Result:
+- **3+ / PHONE PASS**.
+- BUG-040 is closed.
+- Tests 4+ remain blocked until the durable Bulk execution/session/rollback implementation exists.
+
 ## Test 4 — Bulk session + restart
 
 1. Confirm a controlled bulk plan.
