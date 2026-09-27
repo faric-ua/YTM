@@ -60,9 +60,12 @@ if unsafe_search_all_signature in main:
 if "hasCanonicalExactSelection(track)" not in coord:
     fail("canonical exact-selection helper is not used")
 
-helper = '    private fun hasCanonicalExactSelection(\n        track: Track\n    ): Boolean =\n        !track.selectedVideoId.isNullOrBlank() &&\n            track.status == TrackStatus.MATCHED &&\n            track.candidates.isEmpty()\n'
+helper = '    private fun hasCanonicalExactSelection(\n        track: Track\n    ): Boolean =\n        !track.selectedVideoId.isNullOrBlank() &&\n            track.status == TrackStatus.MATCHED\n'
 if helper not in coord:
     fail("canonical exact-selection predicate is incomplete")
+
+if "track.candidates.isEmpty()" in coord:
+    fail("durable exact selections must not depend on empty candidates")
 
 if "PreservedSelection.MANUAL" not in coord:
     fail("manual preserved-selection state missing")
@@ -92,7 +95,7 @@ print("PASS:")
 print("- v1.4.27 exact-ID structural invariant is version-independent")
 print("- Review repeat-search exact preservation")
 print("- ordinary searchAll exact-preserving default")
-print("- SearchCoordinator canonical exact predicate")
+print("- SearchCoordinator canonical exact predicate preserves durable MATCHED IDs")
 print("- manual/project exact preserved states")
 print("- Review quota wording")
 print("- phone QA status is checked by the separate immutable v1427 QA-close audit")
