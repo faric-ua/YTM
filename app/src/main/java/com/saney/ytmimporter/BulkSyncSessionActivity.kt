@@ -535,6 +535,14 @@ class BulkSyncSessionActivity : Activity() {
                             .PREPARED
                 }
 
+        val terminalFailed =
+            session.mutationLedger
+                .count {
+                    it.status ==
+                        BulkSyncMutationStatus
+                            .TERMINAL_FAILED
+                }
+
         statusText.text =
             "Стан: " +
                 sessionStateLabel(
@@ -592,6 +600,16 @@ class BulkSyncSessionActivity : Activity() {
                         "⚠ PREPARED без підтвердження: "
                     )
                     append(prepared)
+                }
+
+                if (terminalFailed > 0) {
+                    append("\n")
+                    append(
+                        "Не додано треків: "
+                    )
+                    append(
+                        terminalFailed
+                    )
                 }
 
                 if (
@@ -693,6 +711,36 @@ class BulkSyncSessionActivity : Activity() {
             }
         }
 
+        val terminalFailures =
+            row.tracks.mapNotNull {
+                track ->
+            val operationId =
+                BulkSyncExecutionPolicy
+                    .insertOperationId(
+                        sessionId =
+                            session.sessionId,
+                        localPlaylistId =
+                            row.localPlaylistId,
+                        trackIndex =
+                            track.trackIndex,
+                        videoId =
+                            track.videoId
+                    )
+
+            session.mutationLedger
+                .lastOrNull {
+                    it.operationId ==
+                        operationId &&
+                        it.status ==
+                            BulkSyncMutationStatus
+                                .TERMINAL_FAILED
+                }
+                ?.let {
+                    mutation ->
+                    track to mutation
+                }
+        }
+
         return TextView(this).apply {
             text =
                 buildString {
@@ -741,6 +789,52 @@ class BulkSyncSessionActivity : Activity() {
                     }
 
                     if (
+                        terminalFailures.isNotEmpty()
+                    ) {
+                        append("\nНе додано: ")
+                        append(
+                            terminalFailures.size
+                        )
+
+                        terminalFailures
+                            .take(5)
+                            .forEach {
+                                    (track, mutation) ->
+                                append("\n• ")
+                                append(
+                                    track.originalArtist
+                                        .takeIf {
+                                            it.isNotBlank()
+                                        }
+                                        ?.let {
+                                            it + " — "
+                                        }
+                                        .orEmpty()
+                                )
+                                append(
+                                    track.originalTitle
+                                )
+
+                                mutation.error
+                                    ?.takeIf {
+                                        it.isNotBlank()
+                                    }
+                                    ?.let {
+                                        reason ->
+                                        append(": ")
+                                        append(reason)
+                                    }
+                            }
+
+                        if (
+                            terminalFailures.size > 5
+                        ) {
+                            append("\n… ще ")
+                            append(
+                                terminalFailures.size - 5
+                            )
+                        }
+                    } else if (
                         !row.lastError
                             .isNullOrBlank()
                     ) {
@@ -848,6 +942,9 @@ class BulkSyncSessionActivity : Activity() {
 
             BulkSyncSessionRowState.BLOCKED ->
                 "Заблоковано"
+
+            BulkSyncSessionRowState.PARTIAL_FAILED ->
+                "Завершено частково"
 
             BulkSyncSessionRowState.FAILED ->
                 "Помилка"
