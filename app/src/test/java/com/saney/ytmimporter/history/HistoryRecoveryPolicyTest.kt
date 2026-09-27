@@ -17,7 +17,7 @@ import org.junit.Test
 
 class HistoryRecoveryPolicyTest {
     @Test
-    fun durableSnapshot_winsAndPreservesSearchState() {
+    fun durableSnapshot_preservesSearchStateAndHistoryLinkage() {
         val entry =
             historyEntry(
                 localPlaylistId = "local-1",
@@ -68,12 +68,63 @@ class HistoryRecoveryPolicyTest {
 
         assertTrue(plan.usedDurableSnapshot)
         assertEquals("local-1", plan.localPlaylistId)
-        assertEquals("remote-2", plan.destinationPlaylistId)
+        assertEquals("remote-1", plan.destinationPlaylistId)
+        assertEquals("Playlist", plan.destinationPlaylistTitle)
         assertEquals(1, plan.playlist.tracks[0].candidates.size)
         assertEquals(
             TrackStatus.MATCHED,
             plan.playlist.tracks[0].status
         )
+        assertTrue(
+            plan.playlist.tracks[0]
+                .durableExactSelection
+        )
+    }
+
+    @Test
+    fun durableSnapshot_doesNotPromoteLocalHistoryToRemote() {
+        val entry =
+            historyEntry(
+                localPlaylistId = "local-1",
+                playlistId = null
+            )
+
+        val durable =
+            RestorablePlaylistSnapshot(
+                localPlaylistId = "local-1",
+                sourceHistoryId = entry.id,
+                playlist =
+                    ImportedPlaylist(
+                        name = "Recovered",
+                        tracks =
+                            mutableListOf(
+                                Track(
+                                    originalTitle = "Track",
+                                    originalArtist = "Artist",
+                                    selectedVideoId = "AAAAAAAAAAA",
+                                    selectedTitle = "Selected",
+                                    selectedChannel = "Channel",
+                                    status = TrackStatus.MATCHED
+                                )
+                            )
+                    ),
+                sourceLabel = "File",
+                createdAt = 1L,
+                updatedAt = 2L,
+                destinationPlaylistId = "remote-2",
+                destinationPlaylistTitle = "Remote title"
+            )
+
+        val plan =
+            HistoryRecoveryPolicy.plan(
+                entry = entry,
+                durableSnapshot = durable,
+                generatedLocalPlaylistId = "generated"
+            )
+
+        assertTrue(plan.usedDurableSnapshot)
+        assertNull(plan.destinationPlaylistId)
+        assertNull(plan.destinationPlaylistTitle)
         assertTrue(
             plan.playlist.tracks[0]
                 .durableExactSelection

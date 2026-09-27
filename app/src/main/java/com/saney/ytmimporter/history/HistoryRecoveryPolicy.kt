@@ -62,11 +62,27 @@ object HistoryRecoveryPolicy {
                     durableSnapshot
                         .sourceLabel,
                 destinationPlaylistId =
-                    durableSnapshot
-                        .destinationPlaylistId,
+                    entry.playlistId
+                        ?.takeIf {
+                            it.isNotBlank()
+                        },
                 destinationPlaylistTitle =
-                    durableSnapshot
-                        .destinationPlaylistTitle,
+                    entry.playlistId
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                        ?.let {
+                                historyPlaylistId ->
+                            durableSnapshot
+                                .destinationPlaylistTitle
+                                ?.takeIf {
+                                    !it.isNullOrBlank() &&
+                                        durableSnapshot
+                                            .destinationPlaylistId ==
+                                            historyPlaylistId
+                                }
+                                ?: entry.playlistName
+                        },
                 usedDurableSnapshot =
                     true
             )
