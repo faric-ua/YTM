@@ -14,6 +14,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.storage.BulkSyncSessionStore
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.ReplacementLogDialog
@@ -203,6 +204,13 @@ class MenuActivity : Activity() {
             title = "Синхронізувати всі",
             subtitle = "Read-only Bulk preflight без віддалених змін",
             action = ACTION_BULK_SYNC
+        )
+
+        addAction(
+            content = content,
+            title = "Поточна Bulk-сесія",
+            subtitle = "Прогрес / pause / explicit resume після restart",
+            action = ACTION_BULK_SESSION
         )
 
         addAction(
@@ -800,6 +808,33 @@ class MenuActivity : Activity() {
                                     )
                                 )
 
+                            ACTION_BULK_SESSION -> {
+                                val session =
+                                    BulkSyncSessionStore(
+                                        this@MenuActivity
+                                    ).active()
+                                        ?: BulkSyncSessionStore(
+                                            this@MenuActivity
+                                        ).latest()
+
+                                if (session == null) {
+                                    toast(
+                                        "Bulk-сесій ще немає"
+                                    )
+                                } else {
+                                    startActivity(
+                                        Intent(
+                                            this@MenuActivity,
+                                            BulkSyncSessionActivity::class.java
+                                        ).putExtra(
+                                            BulkSyncSessionActivity
+                                                .EXTRA_SESSION_ID,
+                                            session.sessionId
+                                        )
+                                    )
+                                }
+                            }
+
                             ACTION_DATA ->
                                 startActivity(
                                     Intent(
@@ -870,6 +905,8 @@ class MenuActivity : Activity() {
             "OPEN_YTM"
         const val ACTION_BULK_SYNC =
             "BULK_SYNC"
+        const val ACTION_BULK_SESSION =
+            "BULK_SESSION"
         const val ACTION_DATA =
             "DATA"
         const val ACTION_SERVICE =
