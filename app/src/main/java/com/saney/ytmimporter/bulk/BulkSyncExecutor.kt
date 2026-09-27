@@ -701,11 +701,6 @@ class BulkSyncExecutor(
             onProgress
         )
 
-        quotaTracker.recordGeneralUnits(
-            QuotaTracker
-                .PLAYLIST_ITEM_INSERT_COST
-        )
-
         qaInsertFault
             ?.invoke()
             ?.let {
@@ -726,6 +721,11 @@ class BulkSyncExecutor(
                         onProgress
                 )
             }
+
+        quotaTracker.recordGeneralUnits(
+            QuotaTracker
+                .PLAYLIST_ITEM_INSERT_COST
+        )
 
         return try {
             val createdPlaylistItemId =
