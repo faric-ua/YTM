@@ -26,6 +26,7 @@ enum class BulkSyncSessionRowState {
     NEEDS_SEARCH,
     PENDING,
     BLOCKED,
+    PARTIAL_FAILED,
     FAILED
 }
 
@@ -38,6 +39,7 @@ enum class BulkSyncMutationStatus {
     PREPARED,
     APPLIED,
     FAILED,
+    TERMINAL_FAILED,
     ROLLED_BACK
 }
 
@@ -91,6 +93,7 @@ data class BulkSyncMutation(
     val trackIndex: Int?,
     val createdPlaylistItemId: String? = null,
     val status: BulkSyncMutationStatus,
+    val error: String? = null,
     val updatedAt: Long
 )
 
