@@ -32,23 +32,110 @@ object BulkSyncExecutionPolicy {
         session: BulkSyncSession
     ): BulkSyncSession {
         if (
-            session.state !=
+            session.state ==
             BulkSyncSessionState.RUNNING
         ) {
-            return session
+            return session.copy(
+                state =
+                    BulkSyncSessionState
+                        .PAUSED_INTERRUPTED,
+                updatedAt =
+                    System.currentTimeMillis(),
+                lastError =
+                    "Попередній запуск був перерваний. " +
+                        "Автоматичне продовження вимкнено; " +
+                        "перевірте стан і натисніть «Продовжити»."
+            )
         }
 
-        return session.copy(
-            state =
-                BulkSyncSessionState
-                    .PAUSED_INTERRUPTED,
-            updatedAt =
-                System.currentTimeMillis(),
-            lastError =
-                "Попередній запуск був перерваний. " +
-                    "Автоматичне продовження вимкнено; " +
-                    "перевірте стан і натисніть «Продовжити»."
-        )
+        if (
+            session.state ==
+            BulkSyncSessionState.PARTIAL_FAILED
+        ) {
+            val legacyFailedInsert =
+                session.mutationLedger
+                    .lastOrNull {
+                        it.type ==
+                            BulkSyncMutationType
+                                .INSERT_PLAYLIST_ITEM &&
+                            it.status ==
+                                BulkSyncMutationStatus
+                                    .FAILED
+                    }
+
+            if (legacyFailedInsert != null) {
+                val rowIndex =
+                    session.plan.indexOfFirst {
+                        it.localPlaylistId ==
+                            legacyFailedInsert
+                                .localPlaylistId
+                    }
+
+                if (rowIndex >= 0) {
+                    val rows =
+                        session.plan
+                            .toMutableList()
+
+                    val row =
+                        rows[rowIndex]
+
+                    val reason =
+                        legacyFailedInsert.error
+                            ?: row.lastError
+                            ?: session.lastError
+                            ?: "Трек не вдалося додати"
+
+                    rows[rowIndex] =
+                        row.copy(
+                            state =
+                                BulkSyncSessionRowState
+                                    .INSERTING,
+                            lastError =
+                                reason
+                        )
+
+                    val ledger =
+                        session.mutationLedger
+                            .map {
+                                mutation ->
+                                if (
+                                    mutation.operationId ==
+                                    legacyFailedInsert
+                                        .operationId
+                                ) {
+                                    mutation.copy(
+                                        status =
+                                            BulkSyncMutationStatus
+                                                .TERMINAL_FAILED,
+                                        error =
+                                            reason,
+                                        updatedAt =
+                                            System.currentTimeMillis()
+                                    )
+                                } else {
+                                    mutation
+                                }
+                            }
+
+                    return session.copy(
+                        state =
+                            BulkSyncSessionState
+                                .PAUSED_INTERRUPTED,
+                        plan =
+                            rows,
+                        mutationLedger =
+                            ledger,
+                        updatedAt =
+                            System.currentTimeMillis(),
+                        lastError =
+                            "Один трек не вдалося додати. " +
+                                "Решту можна безпечно продовжити вручну."
+                    )
+                }
+            }
+        }
+
+        return session
     }
 
     fun hasUncertainPreparedMutation(
@@ -243,17 +330,21 @@ object BulkSyncExecutionPolicy {
                             track.videoId
                     )
 
-                val applied =
+                val resolved =
                     session.mutationLedger
                         .any {
                             it.operationId ==
                                 operationId &&
-                                it.status ==
-                                    BulkSyncMutationStatus
-                                        .APPLIED
+                                it.status in
+                                    setOf(
+                                        BulkSyncMutationStatus
+                                            .APPLIED,
+                                        BulkSyncMutationStatus
+                                            .TERMINAL_FAILED
+                                    )
                         }
 
-                if (!applied) {
+                if (!resolved) {
                     return BulkSyncNextMutation
                         .InsertPlaylistItem(
                             rowIndex =
