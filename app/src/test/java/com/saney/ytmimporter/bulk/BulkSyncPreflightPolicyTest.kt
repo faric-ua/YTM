@@ -4,6 +4,7 @@ import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.PendingJob
 import com.saney.ytmimporter.model.PendingOperation
+import com.saney.ytmimporter.model.PendingTrack
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.search.SearchRecoveryPolicy
@@ -205,6 +206,164 @@ class BulkSyncPreflightPolicyTest {
     }
 
     @Test
+    fun legacyWriteWithoutIds_matchesExactPendingTrackIdentity() {
+        val pendingTrack =
+            Track(
+                originalTitle = "One",
+                originalArtist = "Artist",
+                selectedVideoId = "AAAAAAAAAAA",
+                selectedTitle = "One",
+                selectedChannel = "Channel",
+                status = TrackStatus.PENDING,
+                historyIndex = 7
+            )
+
+        val summary =
+            plan(
+                local(
+                    id = "local-legacy",
+                    remoteId = null,
+                    tracks = listOf(pendingTrack)
+                ),
+                pending =
+                    listOf(
+                        pendingJob(
+                            operation = PendingOperation.WRITE,
+                            localPlaylistId = null,
+                            remainingTracks =
+                                listOf(
+                                    PendingTrack(
+                                        originalTitle = "One",
+                                        originalArtist = "Artist",
+                                        videoId = "AAAAAAAAAAA",
+                                        selectedTitle = "One",
+                                        selectedChannel = "Channel",
+                                        historyIndex = 7
+                                    )
+                                )
+                        )
+                    )
+            )
+
+        assertEquals(
+            BulkSyncPlanState.PENDING,
+            summary.rows.single().state
+        )
+    }
+
+    @Test
+    fun legacyWriteWithoutIds_doesNotMatchByPlaylistTitleOnly() {
+        val summary =
+            plan(
+                local(
+                    id = "local-legacy",
+                    remoteId = null,
+                    tracks =
+                        listOf(
+                            Track(
+                                originalTitle = "One",
+                                originalArtist = "Artist",
+                                selectedVideoId = "AAAAAAAAAAA",
+                                selectedTitle = "One",
+                                selectedChannel = "Channel",
+                                status = TrackStatus.PENDING,
+                                historyIndex = 7
+                            )
+                        )
+                ),
+                pending =
+                    listOf(
+                        pendingJob(
+                            operation = PendingOperation.WRITE,
+                            localPlaylistId = null,
+                            remainingTracks =
+                                listOf(
+                                    PendingTrack(
+                                        originalTitle = "Different",
+                                        originalArtist = "Artist",
+                                        videoId = "BBBBBBBBBBB",
+                                        selectedTitle = "Different",
+                                        selectedChannel = "Channel",
+                                        historyIndex = 7
+                                    )
+                                )
+                        )
+                    )
+            )
+
+        assertEquals(
+            BulkSyncPlanState.BLOCKED,
+            summary.rows.single().state
+        )
+    }
+
+    @Test
+    fun legacyWriteWithoutIds_requiresUniqueLocalOwner() {
+        val first =
+            local(
+                id = "local-1",
+                remoteId = null,
+                tracks =
+                    listOf(
+                        Track(
+                            originalTitle = "One",
+                            originalArtist = "Artist",
+                            selectedVideoId = "AAAAAAAAAAA",
+                            selectedTitle = "One",
+                            selectedChannel = "Channel",
+                            status = TrackStatus.PENDING,
+                            historyIndex = 7
+                        )
+                    )
+            )
+
+        val second =
+            first.copy(
+                localPlaylistId = "local-2"
+            )
+
+        val summary =
+            BulkSyncPreflightPolicy.build(
+                localPlaylists =
+                    listOf(
+                        first,
+                        second
+                    ),
+                pendingJobs =
+                    listOf(
+                        pendingJob(
+                            operation = PendingOperation.WRITE,
+                            localPlaylistId = null,
+                            remainingTracks =
+                                listOf(
+                                    PendingTrack(
+                                        originalTitle = "One",
+                                        originalArtist = "Artist",
+                                        videoId = "AAAAAAAAAAA",
+                                        selectedTitle = "One",
+                                        selectedChannel = "Channel",
+                                        historyIndex = 7
+                                    )
+                                )
+                        )
+                    ),
+                connected = true,
+                remote =
+                    BulkSyncRemoteSnapshot(
+                        inventoryAvailable = true,
+                        ownedPlaylistIds = emptySet(),
+                        orderedVideoIdsByPlaylistId = emptyMap()
+                    )
+            )
+
+        assertTrue(
+            summary.rows.all {
+                it.state == BulkSyncPlanState.BLOCKED
+            }
+        )
+    }
+
+    @Test
     fun legacySearchRecoveryKey_matchesWithoutTitleGuessing() {
         val local =
             local(
@@ -357,7 +516,8 @@ class BulkSyncPreflightPolicyTest {
     private fun pendingJob(
         operation: PendingOperation,
         localPlaylistId: String?,
-        recoveryKey: String? = null
+        recoveryKey: String? = null,
+        remainingTracks: List<PendingTrack> = emptyList()
     ): PendingJob =
         PendingJob(
             id = "job-1",
@@ -374,7 +534,7 @@ class BulkSyncPreflightPolicyTest {
             totalCount = 1,
             addedCount = 0,
             failedCount = 0,
-            remainingTracks = emptyList(),
+            remainingTracks = remainingTracks,
             lastError = null,
             operation = operation,
             recoveryKey = recoveryKey,
