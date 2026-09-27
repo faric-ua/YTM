@@ -816,6 +816,29 @@ Expected:
 - nested screens return to expected parent;
 - Service submenu closes back to Service screen, not unexpectedly to Home.
 
+## M-06 — Window contract audit
+Priority: P0 for every new or materially changed user-facing window
+
+Use `docs/design/UI_WINDOW_QA_CONTRACT.md`.
+
+For the changed screen/dialog/help/progress/result window verify:
+- element inventory and hierarchy;
+- button semantics, tone and labels;
+- portrait;
+- landscape;
+- portrait → landscape;
+- landscape → portrait;
+- long title/button/error text where relevant;
+- loading/ready/error/blocked/completed states where relevant;
+- Back/Cancel/Close ownership;
+- no stale status after state transition;
+- rotation does not auto-run work;
+- force-close/restart does not auto-resume durable/remote work;
+- explicit recovery is available only when safe.
+
+Record separate Visual / Layout / Lifecycle / Functional results.
+A single screenshot is not enough to mark the entire window PASS.
+
 ---
 
 # N. PRIVACY / SECURITY
@@ -931,6 +954,7 @@ Before marking a release `PHONE TESTED`, record:
 [ ] Installed on real phone
 [ ] P0 cases PASS
 [ ] Release-specific regression PASS
+[ ] New/changed windows passed UI Window QA Contract
 [ ] No unreviewed FAIL/BLOCKED P0
 [ ] RELEASE_TEST_STATUS.md updated
 ```
