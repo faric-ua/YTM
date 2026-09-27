@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
@@ -9,15 +10,23 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
+import com.saney.ytmimporter.bulk.BulkSyncBaselineItem
+import com.saney.ytmimporter.bulk.BulkSyncBaselinePlaylist
 import com.saney.ytmimporter.bulk.BulkSyncLocalPlaylist
 import com.saney.ytmimporter.bulk.BulkSyncPlanRow
 import com.saney.ytmimporter.bulk.BulkSyncPlanState
 import com.saney.ytmimporter.bulk.BulkSyncPlanSummary
 import com.saney.ytmimporter.bulk.BulkSyncPreflightPolicy
+import com.saney.ytmimporter.bulk.BulkSyncRemoteBaseline
 import com.saney.ytmimporter.bulk.BulkSyncRemoteSnapshot
+import com.saney.ytmimporter.bulk.BulkSyncSessionFactory
 import com.saney.ytmimporter.search.SearchCoordinator
+import com.saney.ytmimporter.storage.BulkSyncCheckpointStore
+import com.saney.ytmimporter.storage.BulkSyncSessionStore
+import com.saney.ytmimporter.storage.LocalBackupManager
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
@@ -61,6 +70,8 @@ class BulkSyncPreviewActivity : Activity() {
         TextView
     private lateinit var rowsContainer:
         LinearLayout
+    private lateinit var confirmationButton:
+        Button
 
     private var plan:
         BulkSyncPlanSummary? = null
@@ -301,14 +312,19 @@ class BulkSyncPreviewActivity : Activity() {
                 )
             }
 
-        actions.addView(
+        confirmationButton =
             Button(this).apply {
                 text =
-                    "Підтвердити синхронізацію — ще не активовано"
+                    "Створити Bulk-сесію"
                 isAllCaps = false
                 isEnabled = false
-                alpha = 0.55f
-            },
+                setOnClickListener {
+                    confirmPlan()
+                }
+            }
+
+        actions.addView(
+            confirmationButton,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -348,6 +364,8 @@ class BulkSyncPreviewActivity : Activity() {
         }
 
         loading = true
+        confirmationButton.isEnabled =
+            false
         statusText.text =
             "Будую read-only preview. Віддалені зміни не виконуються."
         summaryText.text =
@@ -612,10 +630,17 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 append("\n\n")
                 append(
-                    "Test 3 foundation: preview only; " +
-                        "кнопка виконання навмисно вимкнена."
+                    "Wave 3: після підтвердження створюється durable session. " +
+                        "Remote writes стартують тільки окремою дією на екрані сесії. " +
+                        "У цій хвилі виконуються лише NEW; LINKED відкладено."
                 )
             }
+
+        confirmationButton.isEnabled =
+            !loading &&
+                summary.count(
+                    BulkSyncPlanState.NEW
+                ) > 0
 
         rowsContainer.removeAllViews()
 
@@ -784,6 +809,317 @@ class BulkSyncPreviewActivity : Activity() {
                 )
             }
         }
+    }
+
+    private fun confirmPlan() {
+        val summary =
+            plan
+                ?: return
+
+        val sessionStore =
+            BulkSyncSessionStore(this)
+
+        val existing =
+            sessionStore.active()
+
+        if (
+            existing != null &&
+            !existing.isTerminal
+        ) {
+            UiChrome.alertBuilder(this)
+                .setTitle(
+                    "Є незавершена Bulk-сесія"
+                )
+                .setMessage(
+                    "Спочатку відкрийте вже створену сесію. " +
+                        "Нова сесія не буде створена поверх незавершеної."
+                )
+                .setNegativeButton(
+                    "Скасувати",
+                    null
+                )
+                .setPositiveButton(
+                    "Відкрити"
+                ) { _, _ ->
+                    openSession(
+                        existing.sessionId
+                    )
+                }
+                .show()
+            return
+        }
+
+        val newCount =
+            summary.count(
+                BulkSyncPlanState.NEW
+            )
+
+        if (newCount <= 0) {
+            toast(
+                "У Wave 3 немає NEW-плейлистів для виконання."
+            )
+            return
+        }
+
+        UiChrome.alertBuilder(this)
+            .setTitle(
+                "Створити Bulk-сесію?"
+            )
+            .setMessage(
+                "Буде створено локальний Full Backup checkpoint і свіжий " +
+                    "read-only remote baseline.\n\n" +
+                    "До сесії потрапить " +
+                    newCount +
+                    " NEW-плейлист(ів). Нові YTM-плейлисти створюються як приватні.\n\n" +
+                    "LINKED / NEEDS_SEARCH / PENDING / BLOCKED у Wave 3 " +
+                    "не виконуються. Після створення сесії remote writes " +
+                    "ще не стартують автоматично."
+            )
+            .setNegativeButton(
+                "Скасувати",
+                null
+            )
+            .setPositiveButton(
+                "Створити сесію"
+            ) { _, _ ->
+                prepareSession(
+                    summary
+                )
+            }
+            .show()
+    }
+
+    private fun prepareSession(
+        summary: BulkSyncPlanSummary
+    ) {
+        if (loading) {
+            return
+        }
+
+        val auth =
+            AuthSessionStore.current()
+
+        val token =
+            auth.accessToken
+                ?.takeIf(
+                    String::isNotBlank
+                )
+                ?: return toast(
+                    "Підключіть Google / YTM перед створенням Bulk-сесії."
+                )
+
+        loading = true
+        confirmationButton.isEnabled =
+            false
+        statusText.text =
+            "Створюю local checkpoint і свіжий read-only remote baseline…"
+
+        executor.execute {
+            try {
+                val checkpointJson =
+                    LocalBackupManager(this)
+                        .createBulkSyncCheckpointJson()
+
+                val checkpoint =
+                    BulkSyncCheckpointStore(this)
+                        .save(
+                            checkpointJson
+                        )
+
+                val baselineResult =
+                    captureBaseline(
+                        accessToken =
+                            token,
+                        summary =
+                            summary,
+                        auth =
+                            auth
+                    )
+
+                if (
+                    baselineResult.second >
+                    0
+                ) {
+                    quotaTracker.recordGeneralUnits(
+                        baselineResult.second
+                    )
+                }
+
+                val session =
+                    BulkSyncSessionFactory
+                        .create(
+                            summary =
+                                summary,
+                            snapshots =
+                                restorableStore
+                                    .getAll(),
+                            checkpointId =
+                                checkpoint
+                                    .checkpointId,
+                            baseline =
+                                baselineResult
+                                    .first
+                        )
+
+                BulkSyncSessionStore(this)
+                    .upsert(
+                        session
+                    )
+
+                runOnUiThread {
+                    if (
+                        !isFinishing &&
+                        !isDestroyed
+                    ) {
+                        loading = false
+                        openSession(
+                            session.sessionId
+                        )
+                    }
+                }
+            } catch (error: Throwable) {
+                runOnUiThread {
+                    if (
+                        !isFinishing &&
+                        !isDestroyed
+                    ) {
+                        loading = false
+                        confirmationButton.isEnabled =
+                            summary.count(
+                                BulkSyncPlanState.NEW
+                            ) > 0
+                        statusText.text =
+                            "Preview готовий. Сесію не створено."
+                        toast(
+                            "Не вдалося створити Bulk-сесію: " +
+                                safeError(
+                                    error
+                                )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun captureBaseline(
+        accessToken: String,
+        summary: BulkSyncPlanSummary,
+        auth: AuthSessionStore.Snapshot
+    ): Pair<BulkSyncRemoteBaseline, Int> {
+        var readUnits = 0
+
+        val owned =
+            api.listMyPlaylists(
+                accessToken =
+                    accessToken
+            ) {
+                readUnits +=
+                    QuotaTracker
+                        .SIMPLE_LIST_COST
+            }
+
+        val ownedById =
+            owned.associateBy {
+                it.id
+            }
+
+        val linkedIds =
+            summary.rows
+                .mapNotNull {
+                    it.destinationPlaylistId
+                        ?.takeIf(
+                            String::isNotBlank
+                        )
+                }
+                .distinct()
+
+        val playlists =
+            linkedIds.mapNotNull {
+                    playlistId ->
+                val info =
+                    ownedById[
+                        playlistId
+                    ]
+                        ?: return@mapNotNull null
+
+                val snapshot =
+                    api.listPlaylistSnapshotItems(
+                        accessToken =
+                            accessToken,
+                        playlistId =
+                            playlistId
+                    ) {
+                        readUnits +=
+                            QuotaTracker
+                                .SIMPLE_LIST_COST
+                    }
+
+                BulkSyncBaselinePlaylist(
+                    playlistId =
+                        info.id,
+                    title =
+                        info.title,
+                    privacyStatus =
+                        info.privacyStatus,
+                    items =
+                        snapshot.items.map {
+                            item ->
+                            BulkSyncBaselineItem(
+                                playlistItemId =
+                                    item.playlistItemId,
+                                sourcePosition =
+                                    item.sourcePosition,
+                                videoId =
+                                    item.videoId
+                            )
+                        }
+                )
+            }
+
+        return Pair(
+            BulkSyncRemoteBaseline(
+                capturedAt =
+                    System.currentTimeMillis(),
+                googleEmail =
+                    auth.googleAccountInfo
+                        ?.email,
+                youtubeChannelId =
+                    auth.youtubeChannelInfo
+                        ?.id,
+                youtubeChannelTitle =
+                    auth.youtubeChannelInfo
+                        ?.title,
+                playlists =
+                    playlists
+            ),
+            readUnits
+        )
+    }
+
+    private fun openSession(
+        sessionId: String
+    ) {
+        startActivity(
+            Intent(
+                this,
+                BulkSyncSessionActivity::class.java
+            ).putExtra(
+                BulkSyncSessionActivity
+                    .EXTRA_SESSION_ID,
+                sessionId
+            )
+        )
+    }
+
+    private fun toast(
+        message: String
+    ) {
+        Toast.makeText(
+            this,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun planText(
