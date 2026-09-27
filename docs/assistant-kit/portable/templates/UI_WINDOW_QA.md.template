@@ -1,0 +1,118 @@
+# UI Window QA — <WINDOW_NAME>
+
+Release:
+Build/source:
+Device:
+Date:
+
+## Route
+
+Parent screen:
+Entry action:
+Expected Back destination:
+Expected Cancel/Close destination:
+
+## Element inventory
+
+| Element | Role | Expected position | Visual contract | Behavior |
+| --- | --- | --- | --- | --- |
+| Header/title | | | | |
+| Main content | | | | |
+| Status/progress | | | | |
+| Primary action | | | | |
+| Secondary action(s) | | | | |
+| Destructive action | | | | |
+| Footer | | | | |
+
+## Layout matrix
+
+- [ ] Portrait — initial/ready
+- [ ] Landscape — initial/ready
+- [ ] Portrait → landscape
+- [ ] Landscape → portrait
+- [ ] Long title
+- [ ] Long button label
+- [ ] Long error/status text
+- [ ] Last content item reachable
+- [ ] Footer does not cover content
+- [ ] Modal stays inside viewport
+
+## Button audit
+
+- [ ] Primary action is visually obvious
+- [ ] Secondary action is not stronger than primary
+- [ ] Destructive action has danger semantics
+- [ ] Disabled state is visually obvious
+- [ ] Enabled state matches actual executable behavior
+- [ ] Labels are concise user-facing verbs
+- [ ] No raw enum/debug/implementation wording in primary UI
+- [ ] No accidental two-line footer/dialog labels
+- [ ] Action row stacks when width is insufficient
+- [ ] Touch targets remain usable in portrait and landscape
+
+## State matrix
+
+Mark relevant states:
+
+- [ ] Ready
+- [ ] Loading/preparing
+- [ ] Empty
+- [ ] Validation error
+- [ ] Recoverable error
+- [ ] Blocked
+- [ ] Running
+- [ ] Paused
+- [ ] Completed
+- [ ] Partial failure
+
+For each tested state:
+- [ ] text matches actual state
+- [ ] button availability matches actual state
+- [ ] no stale text from previous state
+- [ ] counters/status are consistent
+
+## Lifecycle
+
+- [ ] Rotation restores semantic state
+- [ ] Rotation does not auto-run work
+- [ ] Open modal/help/editor restores where required
+- [ ] Draft input survives rotation where required
+- [ ] Back has correct owner
+- [ ] Cancel = no-op where specified
+- [ ] Close returns to expected parent
+- [ ] Child/external return does not duplicate actions
+
+For durable/remote flows:
+- [ ] Force-close mid-operation
+- [ ] Reopen does not auto-resume
+- [ ] Durable progress/ledger restored
+- [ ] Explicit resume available only when safe
+- [ ] Uncertain mutation does not blind-retry
+- [ ] No duplicate remote mutation
+
+## Theme sanity
+
+- [ ] Neon
+- [ ] Blue
+- [ ] Green
+- [ ] Status not conveyed by color alone
+
+## Evidence
+
+Portrait screenshot:
+Landscape screenshot:
+Critical modal/state screenshot:
+Lifecycle video:
+
+## Result
+
+Visual:
+Layout:
+Buttons:
+Navigation:
+Rotation:
+Restart:
+Functional:
+
+Overall: PASS / PARTIAL / FAIL / BLOCKED
+Notes:
