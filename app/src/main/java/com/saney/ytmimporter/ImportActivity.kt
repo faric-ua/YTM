@@ -3345,9 +3345,7 @@ class ImportActivity : Activity() {
                 imported = imported,
                 sourceLabel = sourceLabel,
                 localPlaylistId =
-                    resolvedLocalPlaylistId,
-                destinationPlaylistId =
-                    destinationPlaylistId
+                    resolvedLocalPlaylistId
             )
 
         currentPlaylistStore.save(
@@ -3386,8 +3384,7 @@ class ImportActivity : Activity() {
     private fun localImportHistoryEntry(
         imported: ImportedPlaylist,
         sourceLabel: String,
-        localPlaylistId: String,
-        destinationPlaylistId: String?
+        localPlaylistId: String
     ): HistoryEntry {
         val now =
             System.currentTimeMillis()
@@ -3404,8 +3401,7 @@ class ImportActivity : Activity() {
             sourceLabel = sourceLabel,
             playlistName =
                 imported.name,
-            playlistId =
-                destinationPlaylistId,
+            playlistId = null,
             privacyStatus = "local",
             destination =
                 PendingDestination.NEW_PLAYLIST,
