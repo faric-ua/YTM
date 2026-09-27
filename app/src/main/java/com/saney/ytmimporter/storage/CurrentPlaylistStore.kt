@@ -166,8 +166,7 @@ class CurrentPlaylistStore(
                 )
 
             require(
-                schemaVersion in
-                    1..SCHEMA_VERSION
+                schemaVersion in 1..SCHEMA_VERSION
             ) {
                 "Unsupported current-playlist schema"
             }
