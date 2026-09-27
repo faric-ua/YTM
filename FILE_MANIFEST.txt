@@ -20,7 +20,7 @@ a27466468fd212eb  app/src/main/java/com/saney/ytmimporter/destination/Destinatio
 b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 b06493685939aa92  app/src/main/java/com/saney/ytmimporter/history/HistoryRecoveryPolicy.kt
 3899b19733e58253  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-561b092f2aa3fa52  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+9d66a85dfd788a10  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 840d2dea2e562c2e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
 49624c56f5b22753  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 543310163c294d4e  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
