@@ -76,19 +76,41 @@ class BulkSyncExecutor(
                     )
 
             if (next == null) {
-                session =
+                val completed =
                     completeRows(
                         session
-                    ).copy(
+                    )
+
+                val terminalFailures =
+                    completed.mutationLedger
+                        .count {
+                            it.status ==
+                                BulkSyncMutationStatus
+                                    .TERMINAL_FAILED
+                        }
+
+                session =
+                    completed.copy(
                         state =
-                            BulkSyncSessionState
-                                .COMPLETED,
+                            if (terminalFailures > 0) {
+                                BulkSyncSessionState
+                                    .PARTIAL_FAILED
+                            } else {
+                                BulkSyncSessionState
+                                    .COMPLETED
+                            },
                         currentPlanIndex =
-                            session.plan.size,
+                            completed.plan.size,
                         updatedAt =
                             System.currentTimeMillis(),
                         lastError =
-                            null
+                            if (terminalFailures > 0) {
+                                "Не додано треків: " +
+                                    terminalFailures +
+                                    ". Решту операцій завершено."
+                            } else {
+                                null
+                            }
                     )
 
                 save(
@@ -289,15 +311,35 @@ class BulkSyncExecutor(
                     )
             }
 
+            val expectedRemoteIds =
+                BulkSyncExecutionPolicy
+                    .expectedRemoteVideoIdsThroughPrepared(
+                        session =
+                            session,
+                        row =
+                            row,
+                        preparedRowTrackIndex =
+                            rowTrackIndex
+                    )
+
+            if (expectedRemoteIds.isEmpty()) {
+                return pauseUnknownPrepared(
+                    session =
+                        session,
+                    message =
+                        "Не вдалося побудувати очікуваний remote prefix для PREPARED insert.",
+                    onProgress =
+                        onProgress
+                )
+            }
+
             val resolution =
                 BulkSyncExecutionPolicy
                     .resolvePreparedInsert(
                         expectedVideoIds =
-                            row.tracks.map {
-                                it.videoId
-                            },
+                            expectedRemoteIds,
                         preparedIndex =
-                            rowTrackIndex,
+                            expectedRemoteIds.lastIndex,
                         remoteVideoIds =
                             remote.items.mapNotNull {
                                 it.videoId
@@ -353,8 +395,18 @@ class BulkSyncExecutor(
                                         rowIndex
                                     ].copy(
                                         state =
-                                            BulkSyncSessionRowState
-                                                .COMPLETED,
+                                            if (
+                                                rowHasTerminalFailures(
+                                                    reconciled,
+                                                    rowIndex
+                                                )
+                                            ) {
+                                                BulkSyncSessionRowState
+                                                    .PARTIAL_FAILED
+                                            } else {
+                                                BulkSyncSessionRowState
+                                                    .COMPLETED
+                                            },
                                         lastError =
                                             null
                                     )
@@ -718,8 +770,18 @@ class BulkSyncExecutor(
                                 next.rowIndex
                             ].copy(
                                 state =
-                                    BulkSyncSessionRowState
-                                        .COMPLETED,
+                                    if (
+                                        rowHasTerminalFailures(
+                                            working,
+                                            next.rowIndex
+                                        )
+                                    ) {
+                                        BulkSyncSessionRowState
+                                            .PARTIAL_FAILED
+                                    } else {
+                                        BulkSyncSessionRowState
+                                            .COMPLETED
+                                    },
                                 lastError =
                                     null
                             )
@@ -778,9 +840,13 @@ class BulkSyncExecutor(
             session.mutationLedger.any {
                 it.operationId ==
                     operationId &&
-                    it.status ==
-                        BulkSyncMutationStatus
-                            .APPLIED
+                    it.status in
+                        setOf(
+                            BulkSyncMutationStatus
+                                .APPLIED,
+                            BulkSyncMutationStatus
+                                .TERMINAL_FAILED
+                        )
             }
         }
     }
@@ -874,27 +940,76 @@ class BulkSyncExecutor(
             }
 
             else -> {
-                state =
-                    BulkSyncSessionState
-                        .PARTIAL_FAILED
                 message =
                     safeError(apiError)
 
-                failed =
-                    failed.replaceRow(
-                        index =
-                            rowIndex,
-                        row =
-                            failed.plan[
-                                rowIndex
-                            ].copy(
-                                state =
-                                    BulkSyncSessionRowState
-                                        .FAILED,
-                                lastError =
-                                    message
+                if (
+                    action ==
+                    WritePauseAction.ADD_TRACK
+                ) {
+                    val currentMutation =
+                        session.mutationLedger
+                            .lastOrNull {
+                                it.operationId ==
+                                    operationId
+                            }
+
+                    failed =
+                        if (currentMutation != null) {
+                            session.replaceMutation(
+                                currentMutation.copy(
+                                    status =
+                                        BulkSyncMutationStatus
+                                            .TERMINAL_FAILED,
+                                    error =
+                                        message,
+                                    updatedAt =
+                                        System.currentTimeMillis()
+                                )
                             )
-                    )
+                        } else {
+                            failed
+                        }
+
+                    failed =
+                        failed.replaceRow(
+                            index =
+                                rowIndex,
+                            row =
+                                failed.plan[
+                                    rowIndex
+                                ].copy(
+                                    state =
+                                        BulkSyncSessionRowState
+                                            .INSERTING,
+                                    lastError =
+                                        message
+                                )
+                        )
+
+                    state =
+                        BulkSyncSessionState.RUNNING
+                } else {
+                    state =
+                        BulkSyncSessionState
+                            .PARTIAL_FAILED
+
+                    failed =
+                        failed.replaceRow(
+                            index =
+                                rowIndex,
+                            row =
+                                failed.plan[
+                                    rowIndex
+                                ].copy(
+                                    state =
+                                        BulkSyncSessionRowState
+                                            .FAILED,
+                                    lastError =
+                                        message
+                                )
+                        )
+                }
             }
         }
 
@@ -905,7 +1020,14 @@ class BulkSyncExecutor(
                 updatedAt =
                     System.currentTimeMillis(),
                 lastError =
-                    message
+                    if (
+                        state ==
+                        BulkSyncSessionState.RUNNING
+                    ) {
+                        null
+                    } else {
+                        message
+                    }
             )
 
         save(
@@ -913,6 +1035,40 @@ class BulkSyncExecutor(
             onProgress
         )
         return failed
+    }
+
+    private fun rowHasTerminalFailures(
+        session: BulkSyncSession,
+        rowIndex: Int
+    ): Boolean {
+        val row =
+            session.plan[
+                rowIndex
+            ]
+
+        return row.tracks.any {
+                track ->
+            val operationId =
+                BulkSyncExecutionPolicy
+                    .insertOperationId(
+                        sessionId =
+                            session.sessionId,
+                        localPlaylistId =
+                            row.localPlaylistId,
+                        trackIndex =
+                            track.trackIndex,
+                        videoId =
+                            track.videoId
+                    )
+
+            session.mutationLedger.any {
+                it.operationId ==
+                    operationId &&
+                    it.status ==
+                        BulkSyncMutationStatus
+                            .TERMINAL_FAILED
+            }
+        }
     }
 
     private fun completeRows(
@@ -944,8 +1100,18 @@ class BulkSyncExecutor(
                         row =
                             row.copy(
                                 state =
-                                    BulkSyncSessionRowState
-                                        .COMPLETED,
+                                    if (
+                                        rowHasTerminalFailures(
+                                            result,
+                                            index
+                                        )
+                                    ) {
+                                        BulkSyncSessionRowState
+                                            .PARTIAL_FAILED
+                                    } else {
+                                        BulkSyncSessionRowState
+                                            .COMPLETED
+                                    },
                                 lastError =
                                     null
                             )
