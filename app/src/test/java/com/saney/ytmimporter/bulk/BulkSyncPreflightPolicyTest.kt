@@ -115,6 +115,72 @@ class BulkSyncPreflightPolicyTest {
     }
 
     @Test
+    fun searchAndOtherApiEstimates_staySeparate() {
+        val summary =
+            BulkSyncPreflightPolicy.build(
+                localPlaylists =
+                    listOf(
+                        local(
+                            id = "needs-search",
+                            remoteId = null,
+                            tracks =
+                                listOf(
+                                    Track(
+                                        originalTitle = "Missing",
+                                        originalArtist = "Artist",
+                                        status = TrackStatus.NEW
+                                    )
+                                ),
+                            estimatedSearchCalls = 1
+                        ),
+                        local(
+                            id = "ready-new",
+                            remoteId = null,
+                            tracks =
+                                listOf(
+                                    ready("AAAAAAAAAAA")
+                                )
+                        )
+                    ),
+                pendingJobs = emptyList(),
+                connected = true,
+                remote =
+                    BulkSyncRemoteSnapshot(
+                        inventoryAvailable = true,
+                        ownedPlaylistIds = emptySet(),
+                        orderedVideoIdsByPlaylistId = emptyMap()
+                    )
+            )
+
+        assertEquals(
+            1,
+            summary.estimatedSearchCalls
+        )
+        assertEquals(
+            100,
+            summary.estimatedWriteUnits
+        )
+        assertEquals(
+            0,
+            summary.rows
+                .first {
+                    it.localPlaylistId ==
+                        "needs-search"
+                }
+                .estimatedWriteUnits
+        )
+        assertEquals(
+            0,
+            summary.rows
+                .first {
+                    it.localPlaylistId ==
+                        "ready-new"
+                }
+                .estimatedSearchCalls
+        )
+    }
+
+    @Test
     fun pendingLocalPlaylistId_hasPriority() {
         val summary =
             plan(
