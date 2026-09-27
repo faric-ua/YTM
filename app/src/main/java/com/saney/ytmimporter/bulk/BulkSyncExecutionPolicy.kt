@@ -211,6 +211,50 @@ object BulkSyncExecutionPolicy {
         }
     }
 
+    fun expectedRemoteVideoIdsThroughPrepared(
+        session: BulkSyncSession,
+        row: BulkSyncSessionRow,
+        preparedRowTrackIndex: Int
+    ): List<String> {
+        if (
+            preparedRowTrackIndex !in
+            row.tracks.indices
+        ) {
+            return emptyList()
+        }
+
+        return row.tracks
+            .take(
+                preparedRowTrackIndex + 1
+            )
+            .filterNot {
+                track ->
+                val operationId =
+                    insertOperationId(
+                        sessionId =
+                            session.sessionId,
+                        localPlaylistId =
+                            row.localPlaylistId,
+                        trackIndex =
+                            track.trackIndex,
+                        videoId =
+                            track.videoId
+                    )
+
+                session.mutationLedger.any {
+                    mutation ->
+                    mutation.operationId ==
+                        operationId &&
+                        mutation.status ==
+                            BulkSyncMutationStatus
+                                .TERMINAL_FAILED
+                }
+            }
+            .map {
+                it.videoId
+            }
+    }
+
     fun resolvePreparedInsert(
         expectedVideoIds: List<String>,
         preparedIndex: Int,
