@@ -111,4 +111,14 @@ grep -Fq 'interruptedPreparedInsert_fromSessionCreatedPlaylist_canResume' "$SESS
 
 grep -Fq 'interruptedPreparedCreate_cannotResumeBlindly' "$SESSION_TEST"   || fail "PREPARED create blind-resume guard coverage missing"
 
+grep -Fq 'TERMINAL_FAILED' "$SESSION_MODEL"   || fail "Terminal Bulk mutation status missing"
+
+grep -Fq 'terminalFailedTrack_isSkippedByScheduler' "$SESSION_TEST"   || fail "Terminal track scheduler coverage missing"
+
+grep -Fq 'legacyPartialInsertFailure_becomesExplicitlyResumableTerminalSkip' "$SESSION_TEST"   || fail "Legacy partial insert recovery coverage missing"
+
+grep -Fq 'restartPrefix_omitsTerminalFailedTrack' "$SESSION_TEST"   || fail "Restart prefix terminal-skip coverage missing"
+
+grep -Fq 'expectedRemoteVideoIdsThroughPrepared' "$EXECUTION_POLICY"   || fail "Terminal-aware restart prefix policy missing"
+
 echo "PASS: v1.4.54 Bulk Sync Test 3 + Test 4 durable-session foundation"
