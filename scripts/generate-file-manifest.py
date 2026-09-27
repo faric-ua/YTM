@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import difflib
 import hashlib
 import re
 import subprocess
@@ -82,7 +83,32 @@ def main():
                 "FAIL: FILE_MANIFEST.txt missing"
             )
 
-        if OUTPUT.read_text() != expected:
+        current = OUTPUT.read_text()
+
+        if current != expected:
+            status = subprocess.check_output(
+                ["git", "status", "--short"],
+                text=True,
+            ).strip()
+
+            diff = "".join(
+                difflib.unified_diff(
+                    current.splitlines(keepends=True),
+                    expected.splitlines(keepends=True),
+                    fromfile="FILE_MANIFEST.txt",
+                    tofile="expected",
+                    n=1,
+                )
+            )
+
+            if status:
+                print("Repository status before manifest failure:")
+                print(status)
+
+            if diff:
+                print("Manifest diff:")
+                print(diff[:12000])
+
             raise SystemExit(
                 "FAIL: FILE_MANIFEST.txt is stale; "
                 "run scripts/generate-file-manifest.py"

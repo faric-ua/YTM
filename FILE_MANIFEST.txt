@@ -1486,7 +1486,7 @@ d12807dd24d0e266  scripts/dialog-style-audit.sh
 62193ffaa1f110da  scripts/download-latest-apk.sh
 1a3d4a85667420f2  scripts/export-assistant-project-skeleton.py
 bf316be6ac1503fb  scripts/generate-audit-catalog.py
-a70421aa086a5c61  scripts/generate-file-manifest.py
+6ff13d0109d54891  scripts/generate-file-manifest.py
 8376d7274a01a47c  scripts/generate-release-documentation-matrix.py
 7d7193fd9798ed62  scripts/mainactivity-audit.sh
 8fe538a35721c634  scripts/mainactivity-cleanup-audit.sh
