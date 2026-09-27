@@ -136,6 +136,300 @@ class BulkSyncExecutor(
         }
     }
 
+    fun reconcilePrepared(
+        accessToken: String,
+        sessionId: String,
+        onProgress: (BulkSyncSession) -> Unit = {}
+    ): BulkSyncSession {
+        var session =
+            sessionStore.get(
+                sessionId
+            ) ?: throw IllegalStateException(
+                "Bulk-сесію не знайдено"
+            )
+
+        val prepared =
+            session.mutationLedger
+                .filter {
+                    it.status ==
+                        BulkSyncMutationStatus
+                            .PREPARED
+                }
+
+        if (prepared.isEmpty()) {
+            return session
+        }
+
+        for (mutation in prepared) {
+            if (
+                mutation.type ==
+                BulkSyncMutationType
+                    .CREATE_PLAYLIST
+            ) {
+                session =
+                    session.copy(
+                        state =
+                            BulkSyncSessionState
+                                .PAUSED_INTERRUPTED,
+                        updatedAt =
+                            System.currentTimeMillis(),
+                        lastError =
+                            "Невідомо, чи завершилося створення плейлиста. " +
+                                "Безпечний автоматичний retry неможливий без persisted remote ID."
+                    )
+                save(
+                    session,
+                    onProgress
+                )
+                return session
+            }
+
+            val remoteId =
+                mutation.remotePlaylistId
+                    ?: continue
+
+            val rowIndex =
+                session.plan
+                    .indexOfFirst {
+                        it.localPlaylistId ==
+                            mutation.localPlaylistId
+                    }
+
+            if (rowIndex < 0) {
+                return pauseUnknownPrepared(
+                    session =
+                        session,
+                    message =
+                        "Не знайдено локальний рядок для PREPARED insert.",
+                    onProgress =
+                        onProgress
+                )
+            }
+
+            val row =
+                session.plan[
+                    rowIndex
+                ]
+
+            val createdBySession =
+                session.mutationLedger
+                    .any {
+                        it.type ==
+                            BulkSyncMutationType
+                                .CREATE_PLAYLIST &&
+                            it.localPlaylistId ==
+                                row.localPlaylistId &&
+                            it.remotePlaylistId ==
+                                remoteId &&
+                            it.status ==
+                                BulkSyncMutationStatus
+                                    .APPLIED
+                    }
+
+            if (!createdBySession) {
+                return pauseUnknownPrepared(
+                    session =
+                        session,
+                    message =
+                        "PREPARED insert стосується не session-created playlist; " +
+                            "автоматичне припущення заборонено.",
+                    onProgress =
+                        onProgress
+                )
+            }
+
+            val preparedTrackIndex =
+                mutation.trackIndex
+                    ?: return pauseUnknownPrepared(
+                        session =
+                            session,
+                        message =
+                            "У PREPARED insert відсутній trackIndex.",
+                        onProgress =
+                            onProgress
+                    )
+
+            val rowTrackIndex =
+                row.tracks.indexOfFirst {
+                    it.trackIndex ==
+                        preparedTrackIndex &&
+                        it.videoId ==
+                            mutation.videoId
+                }
+
+            if (rowTrackIndex < 0) {
+                return pauseUnknownPrepared(
+                    session =
+                        session,
+                    message =
+                        "PREPARED insert не збігається з durable session plan.",
+                    onProgress =
+                        onProgress
+                )
+            }
+
+            var readUnits = 0
+
+            val remote =
+                api.listPlaylistSnapshotItems(
+                    accessToken =
+                        accessToken,
+                    playlistId =
+                        remoteId
+                ) {
+                    readUnits +=
+                        QuotaTracker
+                            .SIMPLE_LIST_COST
+                }
+
+            if (readUnits > 0) {
+                quotaTracker
+                    .recordGeneralUnits(
+                        readUnits
+                    )
+            }
+
+            val resolution =
+                BulkSyncExecutionPolicy
+                    .resolvePreparedInsert(
+                        expectedVideoIds =
+                            row.tracks.map {
+                                it.videoId
+                            },
+                        preparedIndex =
+                            rowTrackIndex,
+                        remoteVideoIds =
+                            remote.items.mapNotNull {
+                                it.videoId
+                                    ?.takeIf(
+                                        String::isNotBlank
+                                    )
+                            }
+                    )
+
+            session =
+                when (resolution) {
+                    is BulkSyncPreparedInsertResolution
+                        .Applied -> {
+                        val item =
+                            remote.items.getOrNull(
+                                resolution
+                                    .remoteItemIndex
+                            )
+
+                        val reconciled =
+                            session.replaceMutation(
+                                mutation.copy(
+                                    createdPlaylistItemId =
+                                        item?.playlistItemId,
+                                    status =
+                                        BulkSyncMutationStatus
+                                            .APPLIED,
+                                    updatedAt =
+                                        System.currentTimeMillis()
+                                )
+                            ).copy(
+                                state =
+                                    BulkSyncSessionState
+                                        .PAUSED_INTERRUPTED,
+                                updatedAt =
+                                    System.currentTimeMillis(),
+                                lastError =
+                                    "Перерваний insert підтверджено read-only snapshot. " +
+                                        "Натисніть «Продовжити», щоб перейти до наступної mutation."
+                            )
+
+                        if (
+                            rowHasNoRemainingMutation(
+                                reconciled,
+                                rowIndex
+                            )
+                        ) {
+                            reconciled.replaceRow(
+                                index =
+                                    rowIndex,
+                                row =
+                                    reconciled.plan[
+                                        rowIndex
+                                    ].copy(
+                                        state =
+                                            BulkSyncSessionRowState
+                                                .COMPLETED,
+                                        lastError =
+                                            null
+                                    )
+                            )
+                        } else {
+                            reconciled
+                        }
+                    }
+
+                    BulkSyncPreparedInsertResolution
+                        .NotApplied ->
+                        session.replaceMutation(
+                            mutation.copy(
+                                status =
+                                    BulkSyncMutationStatus
+                                        .FAILED,
+                                updatedAt =
+                                    System.currentTimeMillis()
+                            )
+                        ).copy(
+                            state =
+                                BulkSyncSessionState
+                                    .PAUSED_INTERRUPTED,
+                            updatedAt =
+                                System.currentTimeMillis(),
+                            lastError =
+                                "Read-only snapshot підтвердив, що перерваний insert не застосовано. " +
+                                    "Натисніть «Продовжити» для безпечного retry."
+                        )
+
+                    BulkSyncPreparedInsertResolution
+                        .Unknown ->
+                        return pauseUnknownPrepared(
+                            session =
+                                session,
+                            message =
+                                "Remote snapshot не дозволяє однозначно визначити результат PREPARED insert. " +
+                                    "Retry заблоковано, щоб не створити дублікат.",
+                            onProgress =
+                                onProgress
+                        )
+                }
+
+            save(
+                session,
+                onProgress
+            )
+        }
+
+        return session
+    }
+
+    private fun pauseUnknownPrepared(
+        session: BulkSyncSession,
+        message: String,
+        onProgress: (BulkSyncSession) -> Unit
+    ): BulkSyncSession {
+        val paused =
+            session.copy(
+                state =
+                    BulkSyncSessionState
+                        .PAUSED_INTERRUPTED,
+                updatedAt =
+                    System.currentTimeMillis(),
+                lastError =
+                    message
+            )
+
+        save(
+            paused,
+            onProgress
+        )
+        return paused
+    }
+
     private fun createPlaylist(
         accessToken: String,
         session: BulkSyncSession,
@@ -359,14 +653,15 @@ class BulkSyncExecutor(
         )
 
         return try {
-            api.addVideo(
-                accessToken =
-                    accessToken,
-                playlistId =
-                    next.remotePlaylistId,
-                videoId =
-                    next.videoId
-            )
+            val createdPlaylistItemId =
+                api.addVideo(
+                    accessToken =
+                        accessToken,
+                    playlistId =
+                        next.remotePlaylistId,
+                    videoId =
+                        next.videoId
+                )
 
             val now =
                 System.currentTimeMillis()
@@ -391,7 +686,7 @@ class BulkSyncExecutor(
                                     next.trackIndex
                                 ].trackIndex,
                             createdPlaylistItemId =
-                                null,
+                                createdPlaylistItemId,
                             status =
                                 BulkSyncMutationStatus
                                     .APPLIED,
