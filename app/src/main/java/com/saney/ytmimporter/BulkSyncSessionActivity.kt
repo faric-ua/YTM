@@ -390,20 +390,6 @@ class BulkSyncSessionActivity : Activity() {
             sessionStore.get(id)
                 ?: return renderMissing()
 
-        if (
-            BulkSyncExecutionPolicy
-                .hasUncertainPreparedMutation(
-                    session
-                )
-        ) {
-            toast(
-                "Є PREPARED mutation з невідомим результатом. " +
-                    "Retry заблоковано, щоб не створити дублікат."
-            )
-            render(session)
-            return
-        }
-
         val token =
             AuthSessionStore.current()
                 .accessToken
@@ -438,23 +424,60 @@ class BulkSyncSessionActivity : Activity() {
 
         worker.execute {
             try {
-                bulkExecutor.execute(
-                    accessToken =
-                        token,
-                    sessionId =
-                        id
-                ) {
-                        progress ->
-                    runOnUiThread {
-                        if (
-                            !isFinishing &&
-                            !isDestroyed
-                        ) {
-                            render(
-                                progress
-                            )
+                val progressCallback:
+                    (BulkSyncSession) -> Unit =
+                    {
+                            progress ->
+                        runOnUiThread {
+                            if (
+                                !isFinishing &&
+                                !isDestroyed
+                            ) {
+                                render(
+                                    progress
+                                )
+                            }
                         }
                     }
+
+                var executable =
+                    sessionStore.get(id)
+                        ?: throw IllegalStateException(
+                            "Bulk-сесію не знайдено"
+                        )
+
+                if (
+                    BulkSyncExecutionPolicy
+                        .hasUncertainPreparedMutation(
+                            executable
+                        )
+                ) {
+                    executable =
+                        bulkExecutor
+                            .reconcilePrepared(
+                                accessToken =
+                                    token,
+                                sessionId =
+                                    id,
+                                onProgress =
+                                    progressCallback
+                            )
+                }
+
+                if (
+                    !BulkSyncExecutionPolicy
+                        .hasUncertainPreparedMutation(
+                            executable
+                        )
+                ) {
+                    bulkExecutor.execute(
+                        accessToken =
+                            token,
+                        sessionId =
+                            id,
+                        onProgress =
+                            progressCallback
+                    )
                 }
             } catch (error: Throwable) {
                 runOnUiThread {
