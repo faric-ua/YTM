@@ -545,6 +545,10 @@ class BulkSyncSessionStore(
                 "status",
                 mutation.status.name
             )
+            .putNullable(
+                "error",
+                mutation.error
+            )
             .put(
                 "updatedAt",
                 mutation.updatedAt
@@ -599,6 +603,10 @@ class BulkSyncSessionStore(
                     ),
                     BulkSyncMutationStatus
                         .PREPARED
+                ),
+            error =
+                root.optNullableString(
+                    "error"
                 ),
             updatedAt =
                 root.optLong(
