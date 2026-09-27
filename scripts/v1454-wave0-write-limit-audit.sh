@@ -29,12 +29,15 @@ PLAYLIST_UI="app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt"
 HISTORY_UI="app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt"
 REVIEW="app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
 IMPORT="app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
+RESTORABLE="app/src/main/java/com/saney/ytmimporter/storage/RestorablePlaylistStore.kt"
+RECOVERY="app/src/main/java/com/saney/ytmimporter/history/HistoryRecoveryPolicy.kt"
+RECOVERY_TEST="app/src/test/java/com/saney/ytmimporter/history/HistoryRecoveryPolicyTest.kt"
 
 for path in \
   "$BUILD" "$LIMIT" "$API" "$PAUSE" "$WRITE" "$PENDING" "$STORE" \
   "$QUEUE" "$MAIN" "$HISTORY" "$ERRORS" "$LIMIT_TEST" "$PAUSE_TEST" \
   "$BUGS" "$PHONE" "$CURRENT_STORE" "$PROJECT_CODEC" "$LINKAGE" \
-  "$LINKAGE_TEST" "$PLAYLIST_UI" "$HISTORY_UI" "$REVIEW" "$IMPORT"
+  "$LINKAGE_TEST" "$PLAYLIST_UI" "$HISTORY_UI" "$REVIEW" "$IMPORT"   "$RESTORABLE" "$RECOVERY" "$RECOVERY_TEST"
 do
   test -f "$path" || fail "missing v1.4.54 Wave 0 artifact: $path"
 done
@@ -96,8 +99,8 @@ grep -Fq 'destinationPlaylistId' "$LINKAGE" ||
 grep -Fq 'val destinationPlaylistTitle: String? = null' "$CURRENT_STORE" ||
   fail "current workspace YTM target title missing"
 grep -A1 -F 'private const val SCHEMA_VERSION =' "$CURRENT_STORE" |
-  grep -Fq '3' ||
-  fail "CurrentPlaylistStore schema v3 missing"
+  grep -Fq '4' ||
+  fail "CurrentPlaylistStore schema v4 missing"
 grep -Fq 'in 1..SCHEMA_VERSION' "$CURRENT_STORE" ||
   fail "CurrentPlaylistStore backward-read range missing"
 
@@ -121,6 +124,33 @@ grep -Fq 'project.sourcePlaylistId' "$IMPORT" ||
   fail "YTM Project linkage restore missing"
 grep -Fq 'sourcePlaylistTitle' "$PROJECT_CODEC" ||
   fail "YTM Project target-title metadata missing"
+grep -Fq 'sourceLocalPlaylistId' "$PROJECT_CODEC" ||
+  fail "YTM Project local playlist identity missing"
+
+grep -Fq 'localPlaylistId' "$CURRENT_STORE" ||
+  fail "current workspace stable localPlaylistId missing"
+grep -Fq 'RestorablePlaylistStore' "$CURRENT_STORE" ||
+  fail "current workspace does not write through to recovery catalog"
+grep -Fq 'class RestorablePlaylistStore' "$RESTORABLE" ||
+  fail "RestorablePlaylistStore missing"
+grep -Fq 'selectedVideoId' "$RESTORABLE" ||
+  fail "restorable snapshot exact videoId persistence missing"
+grep -Fq 'candidates' "$RESTORABLE" ||
+  fail "restorable snapshot Search candidates missing"
+grep -Fq 'object HistoryRecoveryPolicy' "$RECOVERY" ||
+  fail "History recovery policy missing"
+grep -Fq 'TrackStatus.MATCHED' "$RECOVERY" ||
+  fail "legacy known-video fallback must restore as MATCHED"
+grep -Fq 'TrackStatus.NEW' "$RECOVERY" ||
+  fail "legacy unknown-video fallback must restore as NEW"
+grep -Fq 'Відновити як поточний плейлист' "$HISTORY_UI" ||
+  fail "History restore action missing"
+grep -Fq 'Search і запис у YTM не запускатимуться автоматично' "$HISTORY_UI" ||
+  fail "History restore no-auto-run copy missing"
+grep -Fq 'HistoryRecoveryPolicy.plan' "$HISTORY_UI" ||
+  fail "History restore does not use recovery policy"
+grep -Fq 'HistoryRecoveryPolicyTest' "$RECOVERY_TEST" ||
+  fail "History recovery JVM coverage missing"
 
 grep -Fq 'pendingWriteOverridesExistingRemoteLink' "$LINKAGE_TEST" ||
   fail "pending WRITE precedence test missing"
@@ -140,5 +170,8 @@ echo "- playlistId-only remote linkage identity"
 echo "- YTM target title + stable ID surfaced on current playlist"
 echo "- History linkage visibility"
 echo "- YTM Project linkage round-trip"
-echo "- CurrentPlaylistStore schema v3 with legacy read compatibility"
+echo "- CurrentPlaylistStore schema v4 with legacy read compatibility"
+echo "- durable RestorablePlaylistStore write-through catalog"
+echo "- History restore as current with legacy fallback and no auto-run"
+echo "- YTM Project local identity round-trip"
 echo "- UX-030 JVM precedence coverage"
