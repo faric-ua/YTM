@@ -88,14 +88,15 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 69c214a4a09a9532  YTM_ASSISTANT_WORKFLOW.md
 0bfdea0eb1f02eb1  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
-ce278ee8fa660bda  app/src/main/AndroidManifest.xml
+d668de0d3b7018af  app/src/main/AndroidManifest.xml
+29a81b88e24abf9c  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 9e5252664b4ab395  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 3899b19733e58253  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 9d66a85dfd788a10  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 840d2dea2e562c2e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
 0ce8d6c49a4b8deb  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-543310163c294d4e  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
+191f31e7b097d53e  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 386c85ad84f92229  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 b5ebe5a06b46482f  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
 74df037160be110f  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
@@ -107,7 +108,7 @@ efe4de8326bcb3ec  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 99e25606f1e7db96  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
 5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
-85e5bd5fbd069027  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicy.kt
+9253646400bb6e2a  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicy.kt
 9430712c6f05319e  app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt
 64dfbecaec3cc3a7  app/src/main/java/com/saney/ytmimporter/destination/DestinationForwardedWritePlan.kt
 a27466468fd212eb  app/src/main/java/com/saney/ytmimporter/destination/DestinationRemoteOperations.kt
@@ -198,7 +199,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 7c794e3e8b44bad5  app/src/main/res/values/strings.xml
 9d05e1fd1b661172  app/src/main/res/values/styles.xml
 5dfe2d611d0acf07  app/src/main/res/xml/file_paths.xml
-7a203bd21389b8df  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicyTest.kt
+010b3440a1635bf2  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicyTest.kt
 ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecoveryPolicyTest.kt
 7c5b8d04a486fb9a  app/src/test/java/com/saney/ytmimporter/model/PlaylistLinkagePolicyTest.kt
 e2c34610a3853bc3  app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt
@@ -1560,7 +1561,7 @@ e70d8ddc6e50124b  scripts/project-handoff-audit.sh
 34a319998981b650  scripts/release-close-audit.sh
 bd496d2802fc4272  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-5c0427ecff083fac  scripts/release-preflight.sh
+5a8c087dd8d0906a  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1697,6 +1698,7 @@ ab1026878a043c72  scripts/v1451-url-qa-corrective-r1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 f834e1746373fdba  scripts/v1452-ux-polish-audit.sh
 d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
+48b844358927b777  scripts/v1454-bulk-preflight-audit.sh
 ed8375bb50567b62  scripts/v1454-wave0-write-limit-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
