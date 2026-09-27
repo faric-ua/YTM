@@ -322,6 +322,10 @@ class RestorablePlaylistStore(
                 "error",
                 track.error
             )
+            .put(
+                "durableExactSelection",
+                track.durableExactSelection
+            )
             .putNullable(
                 "historyIndex",
                 track.historyIndex
@@ -453,6 +457,11 @@ class RestorablePlaylistStore(
             error =
                 root.optNullableString(
                     "error"
+                ),
+            durableExactSelection =
+                root.optBoolean(
+                    "durableExactSelection",
+                    false
                 ),
             historyIndex =
                 root.optNullableInt(
