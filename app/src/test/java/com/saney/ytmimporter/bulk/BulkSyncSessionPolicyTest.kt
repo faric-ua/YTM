@@ -263,6 +263,81 @@ class BulkSyncSessionPolicyTest {
     }
 
     @Test
+    fun preparedInsert_exactRemotePrefix_isApplied() {
+        val resolution =
+            BulkSyncExecutionPolicy
+                .resolvePreparedInsert(
+                    expectedVideoIds =
+                        listOf(
+                            "AAAAAAAAAAA",
+                            "BBBBBBBBBBB",
+                            "CCCCCCCCCCC"
+                        ),
+                    preparedIndex = 1,
+                    remoteVideoIds =
+                        listOf(
+                            "AAAAAAAAAAA",
+                            "BBBBBBBBBBB"
+                        )
+                )
+
+        assertTrue(
+            resolution is
+                BulkSyncPreparedInsertResolution
+                    .Applied
+        )
+    }
+
+    @Test
+    fun preparedInsert_missingAtExpectedPosition_isNotApplied() {
+        val resolution =
+            BulkSyncExecutionPolicy
+                .resolvePreparedInsert(
+                    expectedVideoIds =
+                        listOf(
+                            "AAAAAAAAAAA",
+                            "BBBBBBBBBBB"
+                        ),
+                    preparedIndex = 1,
+                    remoteVideoIds =
+                        listOf(
+                            "AAAAAAAAAAA"
+                        )
+                )
+
+        assertTrue(
+            resolution ===
+                BulkSyncPreparedInsertResolution
+                    .NotApplied
+        )
+    }
+
+    @Test
+    fun preparedInsert_remotePrefixMismatch_isUnknown() {
+        val resolution =
+            BulkSyncExecutionPolicy
+                .resolvePreparedInsert(
+                    expectedVideoIds =
+                        listOf(
+                            "AAAAAAAAAAA",
+                            "BBBBBBBBBBB"
+                        ),
+                    preparedIndex = 1,
+                    remoteVideoIds =
+                        listOf(
+                            "ZZZZZZZZZZZ",
+                            "BBBBBBBBBBB"
+                        )
+                )
+
+        assertTrue(
+            resolution ===
+                BulkSyncPreparedInsertResolution
+                    .Unknown
+        )
+    }
+
+    @Test
     fun preparedMutation_blocksBlindRetry() {
         val session =
             sessionWithNewRow()
