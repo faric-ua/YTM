@@ -383,6 +383,15 @@ object PlaylistProjectCodec {
                         } else {
                             null
                         },
+                    durableExactSelection =
+                        if (schemaVersion >= 3) {
+                            item.optBoolean(
+                                "durableExactSelection",
+                                false
+                            )
+                        } else {
+                            false
+                        },
                     historyIndex =
                         item.optInt(
                             "position",
@@ -486,6 +495,10 @@ object PlaylistProjectCodec {
             .put(
                 "sourceError",
                 track.error ?: JSONObject.NULL
+            )
+            .put(
+                "durableExactSelection",
+                track.durableExactSelection
             )
             .put(
                 "candidates",
