@@ -291,14 +291,67 @@ This proves:
 - durable progress survives process death: **PASS**;
 - PREPARED mutation survives process death: **PASS**.
 
-Failure:
-- `Продовжити` was disabled even though the remaining PREPARED mutation is an insert into a playlist durably created by the same session;
-- this blocks the intended reconcile-first explicit recovery path;
+Initial failure:
+- `Продовжити` was disabled even though the remaining PREPARED mutation was an insert into a playlist durably created by the same session;
 - recorded as **BUG-042 / issue #31**.
 
-Test 4 result on the installed candidate: **4-**.
+#### Run B continuation — BUG-042 retest
 
-The failure is narrowed to the Resume UI gate. Retest the same interrupted-session path after installing the BUG-042 fix in-place; preserve app data so the interrupted durable session remains available.
+The BUG-042 signed candidate was installed **in-place** over the interrupted-session phone data.
+
+Observed:
+- Home retained `db ost`, its remote linkage and the existing Queue state;
+- no Bulk operation auto-resumed after app launch;
+- the same interrupted session reopened with 1 playlist created, 3 confirmed inserts and PREPARED 1;
+- `Продовжити` was enabled;
+- one explicit Resume entered reconciliation and execution advanced beyond the pre-crash boundary.
+
+Result:
+- **BUG-042 PASS / CLOSED**.
+
+During this continuation, a separate terminal item error appeared:
+- one insert returned `HTTP 404 — Video not found`;
+- old Bulk behavior stopped the whole session at 6/19;
+- recorded as **BUG-043 / issue #32**.
+
+#### Run B continuation — BUG-043 retest + video review
+
+Fix source:
+- `3e9967f7897f8d1d4409e93666413af7a12115a3`;
+- Validate Android run `36355526661` — PASS;
+- signed APK run `36356575193` — PASS.
+
+The fixed APK was again installed **in-place**, preserving the same 6/19 durable session.
+
+Observed on device and confirmed in the uploaded 37.8 s recording:
+- cold launch did not auto-resume;
+- the old partial failure was migrated to `Пауза — попередній запуск перервано`;
+- progress stayed 6/19;
+- terminal failure stayed durable as `Не додано треків: 1`;
+- row detail identified `YouTube — Deleted video`;
+- reason stayed `HTTP 404 — Video not found`;
+- explicit Resume continued the same session;
+- visible confirmed progress advanced through 7/19, 10/19, 13/19, 15/19, 17/19 and 18/19;
+- `Створено плейлистів: 1` remained unchanged;
+- final row state: `Завершено частково • 18/19`;
+- final session state: `Частково завершено з помилкою`;
+- terminal failure remained visible and Resume became disabled after completion.
+
+Result:
+- **BUG-043 PASS / CLOSED**;
+- terminal per-track failure no longer blocks remaining independent writes;
+- failed terminal mutation is not retried;
+- durable partial result remains inspectable.
+
+### Test 4 current result
+
+**4- / pending final remote verification.**
+
+The durable restart/reconcile/continuation path itself is phone-accepted. Before changing Test 4 to `4+`, verify the destination `db ost` in YouTube Music:
+- only one destination playlist exists for this controlled run;
+- it contains 18 successfully added items;
+- the deleted/unavailable item is absent;
+- no duplicate item was introduced by restart reconciliation.
 
 
 ## Test 5 — Quota pause
