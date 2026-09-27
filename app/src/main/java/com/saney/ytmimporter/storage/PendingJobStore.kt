@@ -272,6 +272,10 @@ class PendingJobStore(context: Context) {
                                         ?: JSONObject.NULL
                                 )
                                 .put(
+                                    "durableExactSelection",
+                                    track.durableExactSelection
+                                )
+                                .put(
                                     "historyIndex",
                                     track.historyIndex
                                         ?: JSONObject.NULL
