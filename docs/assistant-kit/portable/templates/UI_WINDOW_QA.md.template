@@ -12,17 +12,27 @@ Entry action:
 Expected Back destination:
 Expected Cancel/Close destination:
 
+## Window composition
+
+Expected structure:
+
+- Header/top area: fixed / N/A
+- Content area: scrollable
+- Action footer: fixed at bottom, always visible
+- Footer action layout: horizontal / stacked / adaptive
+- Scroll container must not contain footer actions
+
 ## Element inventory
 
 | Element | Role | Expected position | Visual contract | Behavior |
 | --- | --- | --- | --- | --- |
-| Header/title | | | | |
-| Main content | | | | |
-| Status/progress | | | | |
-| Primary action | | | | |
-| Secondary action(s) | | | | |
-| Destructive action | | | | |
-| Footer | | | | |
+| Header/title | | fixed top / content top | | |
+| Main content | | scrollable area | | |
+| Status/progress | | content / fixed, specify | | |
+| Primary action | | fixed footer | | |
+| Secondary action(s) | | fixed footer | | |
+| Destructive action | | fixed footer | | |
+| Footer | | fixed bottom | always visible | never scrolls with content |
 
 ## Layout matrix
 
@@ -34,7 +44,12 @@ Expected Cancel/Close destination:
 - [ ] Long button label
 - [ ] Long error/status text
 - [ ] Last content item reachable
-- [ ] Footer does not cover content
+- [ ] Footer is visible without scrolling
+- [ ] Footer actions are outside the scroll container
+- [ ] Footer does not move with content scroll
+- [ ] Footer does not cover the last content item
+- [ ] Portrait: fixed footer remains visible
+- [ ] Landscape: fixed footer remains visible
 - [ ] Modal stays inside viewport
 
 ## Button audit
@@ -48,6 +63,8 @@ Expected Cancel/Close destination:
 - [ ] No raw enum/debug/implementation wording in primary UI
 - [ ] No accidental two-line footer/dialog labels
 - [ ] Action row stacks when width is insufficient
+- [ ] Adaptive row/stack happens inside the fixed footer
+- [ ] No completion/close/confirm action requires scrolling to reach it
 - [ ] Touch targets remain usable in portrait and landscape
 
 ## State matrix
