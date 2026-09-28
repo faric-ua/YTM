@@ -27,8 +27,15 @@ grep -Fq 'minButtonWidthDp: Int = 180' "$UI" || fail "minimum action width guard
 grep -Fq 'paint.measureText(' "$UI" || fail "dialog label width is not measured"
 grep -Fq 'fun addAdaptiveActionButtons(' "$UI" || fail "shared adaptive screen-action renderer missing"
 
-grep -A120 -F 'private fun addDialogActions(' "$UI" |
-  grep -Fq 'useHorizontalDialogActionRow(' ||
+DIALOG_ACTION_BLOCK="$(
+  awk '
+    /private fun addDialogActions\(/ { capture = 1 }
+    capture { print }
+    /private fun orderHorizontalActions\(/ { exit }
+  ' "$UI"
+)"
+
+grep -Fq 'useHorizontalDialogActionRow(' <<<"$DIALOG_ACTION_BLOCK" ||
   fail "modal actions do not use the label-aware width decision"
 
 if grep -Fq 'val compactRow' "$UI"; then
