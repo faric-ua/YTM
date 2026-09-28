@@ -25,14 +25,22 @@ Purpose: single source of truth for continuing this release after a chat reset, 
 
 The latest signed APK is installed in-place.
 
-The user opened:
-`Квота API → QA — Test 5`
-
 Phone evidence confirms:
-- one-shot Test 5 fault is still armed;
-- UI says the next Bulk insert will simulate daily quota exhaustion;
+- one-shot Test 5 fault remained armed after the latest in-place update;
 - no Test 5 Bulk insert has fired yet;
 - therefore the one-shot fault must remain armed.
+
+UX-037 phone retest is now in progress on Bulk Preview Help.
+
+Portrait evidence:
+- Help is open over `Синхронізувати всі`;
+- `Зрозуміло` remains visible in a fixed bottom footer while the Help content is scrolled;
+- scrolling is confined to the Help content area;
+- no write/session action started.
+
+Current checkpoint:
+- Help remains open in portrait;
+- next action is rotation to landscape without closing Help.
 
 Do NOT:
 - clear app data;
@@ -51,22 +59,21 @@ Finish the work that was interrupted before Test 5:
 
 ## Immediate next phone action
 
-From the currently open Quota screen:
+With Bulk Preview Help still open:
 
-`Back → Home → Menu → Синхронізувати всі → wait for Bulk preview → ?`
+`rotate phone to landscape → wait for recreation → stop`
 
 Checkpoint:
-- stop with Bulk Preview Help open;
-- verify `Зрозуміло` is visible without scrolling;
-- verify only Help content scrolls;
-- send screenshot before continuing.
+- Help must restore automatically over the same Bulk Preview;
+- `Зрозуміло` must remain visible in the fixed footer;
+- content must remain scrollable independently;
+- no write/session action may start;
+- capture screenshot before continuing.
 
-After that, phone QA should cover:
-- portrait;
-- landscape;
-- portrait ↔ landscape restoration;
-- closing Help returns to same Bulk preview;
-- no write/session starts because Help was opened/restored.
+After that:
+- rotate back to portrait;
+- close Help;
+- verify return to the same Bulk Preview with no automatic work.
 
 Then:
 - press `Створити Bulk-сесію`;
