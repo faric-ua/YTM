@@ -6,23 +6,24 @@ Current live resume snapshot: CURRENT_HANDOFF.md
 Active development release (v1.4.54 History Recovery / Safe Bulk Sync):
 - branch: `feat/v1.4.54-history-bulk-sync`;
 - versionName / versionCode: 1.4.54 / 97;
-- exact baseline: v1.4.53 phone-tested source ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5;
-- Wave 0 owns BUG-039 before History/Bulk Sync implementation;
-- generic HTTP 429 no longer implies confirmed daily quota;
-- write limits classify DAILY_QUOTA / RATE_LIMIT / RESOURCE_LIMIT / UNKNOWN_429;
-- retryable CREATE/ADD write limits preserve unfinished work in Queue with durable pauseReason;
-- no automatic retry occurs after write-limit pause; user must wait and explicitly Resume;
-- frequent playlist-creation/write limiting gets explicit guidance not to spam retries; no fake cooldown/reset is shown;
-- old v1.4.53 PendingJob JSON remains readable without pauseReason;
-- UX-030 linkage visibility is implemented with explicit local / linked / pending Search / pending Write states based on persisted IDs, not playlist-title matching;
-- UX-030 target-title metadata now survives current workspace, Pending recovery and YTM Project round-trip; Playlist Hub exposes the stable YTM ID;
-- UX-030 static/JVM/full-preflight PASS on app/code source f00ee7a4b6f0ab6fc4533d9b7c7610046972181a, Validate Android run 36267305742; real-phone gate UX030+ PASS on installed source 90d470ddbe6d7158613f7a069d8f6cd3596804dc / signed run 36276086140;
-- final Wave 0 exact-HEAD validation PASS: Validate Android run 36257890045 on source 9daa9027981551539d2fdfa76d08faa4620aeee6;
-- signed candidate run 36261268460 PASS from the same source;
-- Wave 0 phone smoke W0+ / PASS: in-place update preserved account/current workspace, Queue opened cleanly with no phantom jobs/auto-start, and controlled create/add wrote 4/4 tracks with 0 errors and no false pause;
-- natural 429/limit behavior remains evidence-on-occurrence only; do not deliberately manufacture rate limits;
-- next gate: implement History Recovery, including a History action to restore an entry as the current workspace; only then run Tests 1–2. Bulk Sync remains blocked until History Recovery is implemented and accepted.
-
+- exact stable baseline: v1.4.53 phone-tested source ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5;
+- Tests 1–2 History Recovery / linkage: PHONE PASS;
+- Test 3 Bulk read-only preflight: PHONE PASS;
+- Test 4 durable Bulk session / force-close / PREPARED reconcile: PHONE PASS;
+- Test 5: PAUSED before first controlled insert; one-shot DAILY_QUOTA QA fault remains armed;
+- installed phone source: 552c387a5626ab0fd7e501aff946741610f41f6d;
+- installed source Validate Android: 36372799066 PASS;
+- installed signed build: 36374659541 PASS;
+- BUG-044: old completed-partial 18/19 session no longer reopens, but fresh 19-track READY session acceptance remains pending;
+- BUG-045 original narrow portrait action-wrap symptom: PHONE PASS on installed 552c source;
+- UX-037 Bulk Preview Help: portrait/landscape/rotation/close PASS; Bulk Session Help pending;
+- UX-038 / issue #37: OPEN BLOCKER — project-wide window/footer/button contract consolidation;
+- shared action-bearing dialogs now converge on one fixed-footer shell;
+- modal row/stack decision is label-aware; action count alone cannot force a row;
+- ListSelector / Bulk Preview / Bulk Session now share the adaptive footer renderer;
+- `scripts/ui-window-contract-audit.sh` is part of release preflight and the portable audit inventory;
+- canonical audit: docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md;
+- next gate: exact-HEAD static validation → signed build → in-place install → one consolidated representative window matrix → one fresh Bulk-session creation checkpoint; only then may Test 5 execute its first controlled insert.
 Current accepted release (v1.4.53 Quota Recovery / Durable Resume — FINAL):
 - active branch: `feat/v1.4.53-quota-recovery`;
 - release documentation phase: final;
