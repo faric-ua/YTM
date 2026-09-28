@@ -31,9 +31,9 @@ Do not rerun Tests 1–4 just because the branch has advanced.
 ## Exact phone checkpoint
 
 Installed APK:
-- exact source: `552c387a5626ab0fd7e501aff946741610f41f6d`
-- Validate Android: run `36372799066` — PASS
-- signed build: run `36374659541` — PASS
+- exact source: `d34f37a46d115b288d64a609e2aead266345be53`
+- Validate Android: run `36377631268` — PASS
+- signed build: run `36447530331` — PASS
 - installed **in-place**; app data was not cleared
 
 Test 5 controlled state:
@@ -66,6 +66,32 @@ Do not:
 - press `Почати синхронізацію`;
 - create unrelated Bulk sessions or YTM writes;
 - keep testing individual windows on the currently installed candidate.
+
+## BUG-046 status — issue #38
+
+Phone finding on signed source `d34f37a46d115b288d64a609e2aead266345be53`:
+- `Створити Bulk-сесію?` was open in portrait;
+- portrait → landscape recreated Bulk Preview but the confirmation disappeared;
+- the underlying Preview remained read-only;
+- no confirmation action executed;
+- no Bulk session creation or remote write started;
+- Test 5 DAILY_QUOTA fault therefore remains armed.
+
+Root cause:
+Bulk Preview Help had explicit recreation state, but create-session / active-session
+confirmations bypassed the existing `RestorableModalController`.
+
+Branch fix:
+- Bulk Preview confirmations now use `RestorableModalController`;
+- semantic modal id is saved/restored through `STATE_PREVIEW_MODAL`;
+- restore happens after content/plan restoration;
+- explicit buttons clear modal state before executing their action;
+- system recreation restores the same modal without executing an action;
+- `scripts/ui-window-contract-audit.sh` now requires this lifecycle contract.
+
+Acceptance before continuing the UX-038 matrix:
+portrait open → landscape → portrait must preserve the same confirmation, reflow only,
+execute nothing, then explicit `Скасувати` must return to the same Preview.
 
 ## BUG-044 status — issue #34
 
@@ -223,6 +249,7 @@ pause/restart/resume semantics pass.
 - #35 — UX-037: Bulk Preview/Session lifecycle-safe Help
 - #36 — BUG-045: narrow dialog action row wrapped label
 - #37 — UX-038: project-wide window/footer contract consolidation
+- #38 — BUG-046: Bulk create-session confirmation disappears on rotation
 
 ## Recovery order in a new chat
 
