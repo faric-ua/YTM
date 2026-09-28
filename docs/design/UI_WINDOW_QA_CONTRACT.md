@@ -317,3 +317,49 @@ Release-specific `PHONE_TEST.md` може скорочувати нерелев�
 - `TILE_UI_CONTRACT.md`;
 - `qa/MASTER_TEST_PLAN.md`;
 - release-specific `docs/v.X.Y.Z/qa/PHONE_TEST.md`.
+
+
+## 12. Static-first enforcement
+
+Phone QA is not the place to discover violations that can be proven from source.
+
+Before a new or changed window enters phone QA:
+
+1. the shared window/footer static audit must pass;
+2. the release preflight must pass on the exact app source;
+3. known shared-component violations are fixed at the shared layer before feature-specific retesting starts;
+4. only then is a signed candidate produced for visual/lifecycle evidence.
+
+If a phone finding exposes a **shared** UI defect, stop the feature test at that
+checkpoint. Do not keep walking through later feature steps while the common window
+contract is known to be broken. Fix the shared component, audit all consumers,
+revalidate, install in-place when state must be preserved, and resume from the
+recorded phone checkpoint.
+
+Canonical enforcement:
+- `scripts/ui-window-contract-audit.sh`;
+- `scripts/release-preflight.sh`.
+
+A shared `UiChrome` change is never accepted from one screenshot alone. Its static
+audit scope covers every shared modal consumer, and phone QA uses a representative
+matrix rather than rediscovering the same defect window by window.
+
+## 13. Canonical shared-modal architecture
+
+Action-bearing YTM modals use one composition:
+
+1. fixed header/title area;
+2. one scrollable content viewport;
+3. one fixed action footer outside that scroll viewport.
+
+The canonical renderer is the shared fixed-footer pipeline in `UiChrome`.
+`showMessageDialog`, `showRecordDialog`, `showContentDialog`,
+`showMultiChoiceDialog`, menu close actions, and compatibility
+`StableAlertBuilder` routes must converge on it.
+
+A new action-bearing modal must not call the legacy whole-card scroll shell directly.
+That shell may exist only for genuinely actionless content.
+
+For Help windows, the UI shell is only half the contract: the owning Activity must
+also persist the semantic “Help is open” state and restore it after recreation without
+executing an action.
