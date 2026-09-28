@@ -10,20 +10,20 @@ Last updated: **2026-09-28**
 > `docs/v.1.4.54/CURRENT_STATE.md`
 >
 > Current phone checkpoint:
-> - installed signed functional APK is still source `ced8a23ac2b172c88246d0b269c1892d56b0037c`;
+> - installed signed APK source: `552c387a5626ab0fd7e501aff946741610f41f6d`;
+> - Validate Android `36372799066` — PASS; signed run `36374659541` — PASS;
 > - Test 1–4 are phone PASS;
-> - Test 5 one-shot DAILY_QUOTA fault is still armed and has not fired;
-> - Bulk Preview Help fixed-footer behavior passed portrait + landscape + both rotations + close/no-op;
-> - BUG-044 retest advanced past the old completed-partial-session guard: the old 18/19 session did not reopen;
-> - session preparation then failed after entering `Створюю local checkpoint і свіжий read-only remote baseline…`, returning to Preview with `Сесію не створено`;
-> - no Bulk insert or remote write started; exact preparation exception was not captured because the old build exposed it only through a transient Toast;
-> - BUG-045 / issue #36 was found from the same phone run: narrow confirmation dialogs forced 2–3 actions into one row and wrapped `Створити сесію`;
-> - shared action-layout fix commit: `1553d25ea9ebfedb3b23226f818d60acd72cf82f`;
-> - follow-up diagnostic commit: `2ea18371f5fb6dd00742e5855374dc15a5770c3a` keeps Bulk session creation failure reason visible in Preview;
-> - immediate next action is **not** another retry on the old APK: validate/build/install the new in-place candidate, then retry `Створити Bulk-сесію` exactly once and stop on either the fresh session screen or the persistent failure reason.
+> - Test 5 one-shot DAILY_QUOTA fault is still **armed and has not fired**;
+> - no Test 5 Bulk insert has been attempted;
+> - latest portrait confirmation retest proves the original BUG-045 symptom is fixed on the installed APK: `Створити сесію` / `Скасувати` are stacked full-width and the primary label stays on one line;
+> - the confirmation was not accepted; the latest screenshot returned to Bulk Preview in landscape; no new session/write started;
+> - phone QA is now intentionally **PAUSED** while UX-038 / issue #37 consolidates the project-wide window/footer/button contract;
+> - branch-side systemic cleanup now routes all action-bearing shared dialogs through one fixed-footer shell, makes modal row/stack selection label-aware, and migrates ListSelector/Bulk Preview/Bulk Session to shared adaptive footers;
+> - new static gate `scripts/ui-window-contract-audit.sh` is wired into release preflight and the portable audit catalog;
+> - work/QA logs are consolidated in `docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md`, `docs/v.1.4.54/CURRENT_STATE.md`, PHONE_TEST, BUG_REGISTER, EVIDENCE_MANIFEST, REGRESSION_CHECKLIST, RELEASE and BACKLOG;
+> - tomorrow do **not** resume Test 5 first: exact-HEAD static validation → signed build → in-place install → one consolidated representative window matrix → one fresh Bulk-session creation attempt → STOP at READY 19/19 or persistent preparation error.
 >
-> Do not clear app data, uninstall the app, cancel the Test 5 fault, retry session creation repeatedly on the old APK, or start unrelated Bulk writes.
-
+> Do not clear app data, uninstall, cancel/re-arm the Test 5 fault, start unrelated Bulk/YTM writes, or continue one-window-at-a-time phone testing tonight.
 
 ## 1. Resume point
 
@@ -51,7 +51,7 @@ Current release state:
 - versionCode: **97**
 - feature: **History Recovery / Safe Bulk Sync**
 - branch: `feat/v1.4.54-history-bulk-sync`
-- phase: **development / Wave 0**
+- phase: **development / Test 5 paused — UX-038 project-wide UI consolidation**
 - branch base is the exact v1.4.53 phone-tested app source `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
 - BUG-039 Wave 0 implementation: structured write-limit classification distinguishes confirmed daily quota, rate limit, resource limit and ambiguous HTTP 429.
 - generic `Resource has been exhausted (e.g. check quota)` is no longer enough to claim daily quota.
@@ -67,7 +67,7 @@ Current release state:
 - signed candidate run `36261268460` from exact source `9daa9027981551539d2fdfa76d08faa4620aeee6`: **SUCCESS**.
 - Wave 0 phone smoke: **W0+ / PASS** — install-over v1.4.53 preserved account/current workspace, Queue opened cleanly with no phantom jobs or auto-start, and controlled playlist `YTM v1.4.54 W0 test` completed 4/4 adds with 0 errors and no false pause.
 - natural 429/limit phone evidence remains opportunistic only; do not intentionally spam playlist creation to manufacture 429.
-- next scope: **implement History Recovery** (including `Відновити як поточний плейлист` from History), then run Tests 1–2; Bulk Sync stays blocked until that contract is implemented and phone-accepted.
+- current acceptance: Tests 1–4 are phone PASS; Test 5 is paused before its first controlled insert behind the UX-038 window/footer gate.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
