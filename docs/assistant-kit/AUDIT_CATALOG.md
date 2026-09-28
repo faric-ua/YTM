@@ -5,7 +5,7 @@ This file is generated from the repository audit scripts.
 Do not hand-edit the inventory; update scripts or
 `docs/assistant-kit/PORTABLE_AUDITS.txt`, then regenerate.
 
-Total audit scripts: **114**
+Total audit scripts: **115**
 
 ## Portable/system subset
 
@@ -25,6 +25,7 @@ contracts.
 - `scripts/rotation-layout-audit.sh`
 - `scripts/service-navigation-audit.sh`
 - `scripts/ui-chrome-audit.sh`
+- `scripts/ui-window-contract-audit.sh`
 - `scripts/v1432-dialog-first-frame-audit.sh`
 - `scripts/v1433-dialog-unification-audit.sh`
 - `scripts/v1434-back-navigation-audit.sh`
@@ -78,6 +79,7 @@ contracts.
 - `scripts/search-coordinator-audit.sh`
 - `scripts/service-navigation-audit.sh`
 - `scripts/ui-chrome-audit.sh`
+- `scripts/ui-window-contract-audit.sh`
 
 ## Versioned/historical audits
 
