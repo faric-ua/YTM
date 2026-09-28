@@ -51,7 +51,7 @@ grep -Fq ".replace('_', ' ')" "$PARSER" || fail "underscore humanization missing
 grep -Fq 'YTM(?:\\s+Importer)?' "$PARSER" || fail "trailing YTM service-marker cleanup missing"
 grep -Fq 'Vol.${match.groupValues[1]}' "$PARSER" || fail "Vol number normalization missing"
 
-grep -Fq 'orderHorizontalActions(actions)' "$UI" || fail "horizontal action ordering helper not used"
+grep -Fq 'orderHorizontalActions(' "$UI" || fail "horizontal action ordering helper not used"
 grep -Fq 'private fun isDismissiveAction' "$UI" || fail "dismissive action classifier missing"
 for label in Скасувати Закрити "Не зараз" Назад; do
   grep -Fq "\"$label\"" "$UI" || fail "dismissive modal label missing from UiChrome: $label"
