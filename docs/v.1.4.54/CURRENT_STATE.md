@@ -5,10 +5,13 @@ Purpose: single source of truth for continuing this release after a chat reset, 
 ## Branch / candidate
 
 - Branch: `feat/v1.4.54-history-bulk-sync`
-- Functional candidate HEAD before this handoff document: `ced8a23ac2b172c88246d0b269c1892d56b0037c`
-- Validate Android: run `36367212621` — PASS
-- Signed APK: run `36369475053` — PASS
+- Installed signed phone candidate: `ced8a23ac2b172c88246d0b269c1892d56b0037c`
+- Installed candidate Validate Android: run `36367212621` — PASS
+- Installed signed APK: run `36369475053` — PASS
 - Installation: in-place over existing app data
+- BUG-045 shared action-layout fix: `1553d25ea9ebfedb3b23226f818d60acd72cf82f`
+- persistent Bulk session creation-error diagnostic: `2ea18371f5fb6dd00742e5855374dc15a5770c3a`
+- latest validation before this handoff refresh: run `36372305644` — PASS on `f61d30afc62682f9dde9c3ad05eb070c7200112b`; a newer validation is required after the diagnostic + handoff updates.
 
 ## Test status
 
@@ -17,55 +20,41 @@ Purpose: single source of truth for continuing this release after a chat reset, 
 - Test 3 — Bulk preflight read-only: 3+ / PHONE PASS
 - Test 4 — Bulk session + restart/reconcile: 4+ / PHONE PASS
 - UX-037 — Bulk Preview Help fixed-footer + rotation + close: PASS; Bulk Session Help still pending before issue closure
-- BUG-044 — finished PARTIAL_FAILED session blocks new session: code fix present, phone retest pending
+- BUG-044 — finished PARTIAL_FAILED session blocks new session: old 18/19 session no longer reopened during retest, but fresh session creation then failed during checkpoint/baseline preparation; acceptance remains pending
+- BUG-045 / #36 — narrow dialog action row wrapped `Створити сесію`: shared fix present, phone retest pending
 - Test 5 — quota pause: ACTIVE / NOT COMPLETE
 - Tests 6–9: NOT STARTED
 
 ## Exact current phone checkpoint
 
-The latest signed APK is installed in-place.
+The installed signed APK is still the pre-BUG-045 candidate and remains installed in-place.
 
-Phone evidence confirms:
-- one-shot Test 5 fault remained armed after the latest in-place update;
-- no Test 5 Bulk insert has fired yet;
-- therefore the one-shot fault must remain armed.
+Phone evidence from the latest retest:
+- one-shot Test 5 DAILY_QUOTA fault is still armed;
+- no Bulk playlistItems.insert has fired;
+- Bulk Preview Help already passed portrait + landscape + both rotations + close/no-op;
+- the controlled preview still shows `NEW 1 · db ost`, 19 ready videoIds, 0 unresolved;
+- after tapping `Створити Bulk-сесію`, the confirmation dialog exposed BUG-045: `Створити сесію` wrapped onto two lines instead of the peer action group stacking;
+- after confirming, the flow entered `Створюю local checkpoint і свіжий read-only remote baseline…`;
+- importantly, the old completed-partial `db ost 18/19` session did **not** reopen, so the original BUG-044 guard no longer blocked the path;
+- session preparation then failed and returned to Preview with `Preview готовий. Сесію не створено.`;
+- no fresh READY session screen was reached;
+- no remote write started;
+- the exact exception was not captured because this installed build exposed the reason only through a transient Toast.
 
-UX-037 phone retest is now in progress on Bulk Preview Help.
+Code follow-up now present on the branch:
+- BUG-045 fix removes the unconditional 2–3-action horizontal fallback from shared `UiChrome`; width-first row/stack behavior is now authoritative;
+- Bulk session creation failures now keep `safeError(error)` visible in the Preview status instead of relying only on the transient Toast.
 
-Portrait evidence:
-- Help is open over `Синхронізувати всі`;
-- `Зрозуміло` remains visible in a fixed bottom footer while the Help content is scrolled;
-- scrolling is confined to the Help content area;
-- no write/session action started.
-
-Current checkpoint:
-- Bulk Preview Help passed portrait fixed-footer behavior;
-- portrait → landscape rotation restored Help over the same Bulk Preview;
-- fixed footer action `Зрозуміло` remained visible in landscape;
-- landscape → portrait restored Help again;
-- closing Help returned to the same Bulk Preview;
-- no session/write operation started because of Help open/restore/close.
-
-Latest phone screenshot after Help close:
-- screen: `Синхронізувати всі` Bulk Preview;
-- status: `Preview готовий. Жодних remote mutations не виконано.`;
-- playlists: 16;
-- NEW 1;
-- LINKED 2;
-- ALREADY_SYNCED 11;
-- NEEDS_SEARCH 1;
-- PENDING 1;
-- BLOCKED 0;
-- Search API estimate: 13;
-- write/general estimate after explicit confirmation: 1100;
-- read-only remote snapshot already used: 15 units;
-- visible NEW row: `db ost`;
-- `Створити Bulk-сесію` is enabled;
-- `Скасувати` is enabled.
-
-The one-shot Test 5 quota fault is still armed because no Bulk insert has occurred.
+Current phone screen:
+- `Синхронізувати всі` Preview;
+- `NEW · db ost`;
+- 19 tracks / 19 ready videoIds / unresolved 0;
+- `Створити Bulk-сесію` is enabled again;
+- status says the session was not created.
 
 Do NOT:
+- tap `Створити Bulk-сесію` again on the currently installed old APK;
 - clear app data;
 - uninstall/reinstall;
 - cancel the Test 5 fault;
@@ -73,29 +62,29 @@ Do NOT:
 
 ## Current task
 
-Finish the work that was interrupted before Test 5:
-
-1. Retest UX-037 on the new fixed-footer Help shell.
-2. Retest BUG-044 by creating a fresh Bulk session while an old completed-partial session exists.
-3. Complete Test 5 quota-pause flow.
-4. Only after Test 5 passes, continue to Tests 6–9.
+1. Validate and sign a new candidate containing BUG-045 + persistent creation-error diagnostics.
+2. Install it **in-place**, preserving the armed Test 5 fault and all app data.
+3. Retest the narrow confirmation layout.
+4. Retry `Створити Bulk-сесію` exactly once.
+5. Stop on the first evidence checkpoint:
+   - if the fresh Bulk Session screen opens, capture it before `Почати синхронізацію`;
+   - if preparation fails again, capture the now-persistent exact reason from Preview.
+6. Only after a fresh READY session is confirmed, continue Test 5.
 
 ## Immediate next phone action
 
-The phone is currently stopped on the ready Bulk Preview in portrait.
+**No further action on the currently installed APK.**
 
-Next action:
+After the new signed candidate is available:
+- install it in-place;
+- return to the same controlled Bulk Preview without clearing data;
+- verify `db ost` still shows 19 ready tracks;
+- tap `Створити Bulk-сесію`;
+- verify the confirmation actions do not wrap incorrectly;
+- confirm once;
+- then STOP on either the new Bulk Session screen or the persistent creation-error text.
 
-`Створити Bulk-сесію` → wait until the Bulk session screen opens → **stop**.
-
-Checkpoint for BUG-044 retest:
-- a new Test 5 Bulk session must be created;
-- it must be the fresh `db ost` plan with 19 ready tracks;
-- it must NOT reopen the old completed-partial `db ost 18/19` session;
-- no remote writes should start automatically;
-- `Почати синхронізацію` should be available for the new READY session.
-
-Do NOT press `Почати синхронізацію` until screenshot/evidence of the new session is reviewed.
+Do NOT press `Почати синхронізацію` until the fresh session screen is reviewed.
 
 ## Test 5 expected flow after BUG-044 retest
 
@@ -121,6 +110,7 @@ Controlled source:
 
 - #34 — BUG-044: Finished PARTIAL_FAILED Bulk session blocks creation of a new session
 - #35 — UX-037: lifecycle-safe Help windows for Bulk preview/session terminology
+- #36 — BUG-045: Narrow dialog action rows wrap labels instead of stacking
 
 ## Phone-QA interaction rule
 
