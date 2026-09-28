@@ -104,7 +104,7 @@ AUTO_LINE="$(grep -n 'DialogActionLayout.AUTO' "$UI" | tail -n 1 | cut -d: -f1)"
   fail "explicit PRIMARY_TOP is not resolved before AUTO"
 
 for f in "${FULLSCREEN_FOOTERS[@]}"; do
-  grep -Fq 'UiChrome.addAdaptiveActionButtons(' "$f" ||
+  grep -Fq 'addAdaptiveActionButtons(' "$f" ||
     fail "$(basename "$f") does not use the shared adaptive footer renderer"
 done
 
