@@ -252,11 +252,11 @@ ac1508588acac2e0  docs/assistant-kit/portable/templates/PHONE_TEST.md.template
 c9a0f203088b48a9  docs/assistant-kit/portable/templates/RELEASE.md.template
 2d333ebed3c466b5  docs/assistant-kit/portable/templates/RELEASE_META.json.template
 51098420dcf58c17  docs/assistant-kit/portable/templates/TEST_RUN.md.template
-519b2e691040a199  docs/assistant-kit/portable/templates/UI_WINDOW_QA.md.template
-eaedf65ec6f1bc1b  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
+b5a3b20a13672a30  docs/assistant-kit/portable/templates/UI_WINDOW_QA.md.template
+ad77de8b561b16d6  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
 15e4b7411a52b7f0  docs/design/THEME_STATE_REFERENCE.md
 663807a41f7e5fd7  docs/design/TILE_UI_CONTRACT.md
-33010f0f3f469429  docs/design/UI_WINDOW_QA_CONTRACT.md
+3f84cb1d80afa9d6  docs/design/UI_WINDOW_QA_CONTRACT.md
 94f84a2ed75ff8de  docs/design/V1454_HISTORY_SAFE_BULK_SYNC_CONTRACT.md
 96bb07fec24f81fc  docs/design/V1454_HISTORY_SAFE_BULK_SYNC_FLOW.md
 763946037aa1169a  docs/design/exclusive/ASSET_MANIFEST.md
