@@ -244,3 +244,35 @@ from the preserved phone checkpoint.
 
 Do not continue generating feature-specific retest loops on top of a known shared
 UI defect.
+
+
+### W-007 — action confirmation lifecycle was not enforced
+
+Phone evidence on signed source
+`d34f37a46d115b288d64a609e2aead266345be53` exposed a lifecycle gap after
+the layout/static consolidation:
+
+- `Створити Bulk-сесію?` was open in portrait;
+- rotating to landscape recreated the parent Preview;
+- the confirmation disappeared;
+- no action executed and no remote write started.
+
+Root cause:
+Bulk Preview Help persisted semantic open state, but its action confirmations did not.
+The project already had `RestorableModalController`, so this was contract drift, not
+missing infrastructure.
+
+Correction:
+- Bulk Preview create-session and active-session confirmations now use
+  `RestorableModalController`;
+- open modal id/args are saved/restored across Activity recreation;
+- restoration never executes an action;
+- explicit buttons clear semantic modal state before executing;
+- the UI window static gate now requires the Bulk Preview confirmation lifecycle
+  contract.
+
+Phone acceptance:
+portrait open → landscape → portrait must keep the same confirmation visible, allow
+layout reflow only, execute nothing, then explicit Cancel returns to the same Preview.
+
+This finding is tracked as BUG-046 / issue #38.
