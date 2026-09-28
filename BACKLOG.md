@@ -100,10 +100,10 @@ created from exact phone-tested v1.4.53 source
 - [x] Test 3 Bulk read-only preflight — PHONE PASS.
 - [x] Test 4 durable Bulk session / force-close / reconcile — PHONE PASS.
 - [x] BUG-045 original narrow portrait confirmation symptom — PHONE PASS on source `552c387a5626ab0fd7e501aff946741610f41f6d`.
-- [ ] UX-038 consolidated project-wide window/footer matrix — BLOCKING.
-- [ ] BUG-044 fresh 19-track READY session acceptance — blocked behind UX-038 candidate.
-- [ ] Test 5 quota pause — not executed; one-shot DAILY_QUOTA fault remains armed.
-- [ ] Tests 6–9 — not started.
+- [~] UX-038 consolidated project-wide window/footer matrix — functional/lifecycle gate PASS; natural 3-action record/result sample deferred, UX-033 skin styling tracked separately.
+- [x] BUG-044 fresh 19-track READY session acceptance — PHONE PASS / CLOSED.
+- [x] Test 5 quota pause / rotation / cold reopen / explicit resume — 5+ PHONE PASS.
+- [ ] Tests 6–9 — Test 6–8 blocked on Wave 4 rollback implementation; Test 9 later.
 
 Static source of truth:
 `docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md`.
@@ -137,7 +137,7 @@ Static source of truth:
 - [x] Session preparation creates a read-only remote account baseline before remote write.
 - [x] Dry-run plan shows NEW / LINKED / ALREADY_SYNCED / NEEDS_SEARCH / PENDING / BLOCKED and API estimates — Test 3 phone PASS.
 - [x] Explicit confirmation required; preview rotation/recreation does not auto-start sync.
-- [x] Durable Bulk session with persisted progress / explicit resume is implemented; restart/reconcile Test 4 phone PASS; Test 5 quota pause still pending.
+- [x] Durable Bulk session with persisted progress / explicit resume is implemented; Tests 4 and 5 phone PASS.
 - [x] Durable PREPARED/APPLIED mutation ledger is implemented and survived force-close in Test 4.
 - [x] Existing remote identity uses persisted playlistId; no title-only matching.
 - [ ] Rollback must revert only mutations created by that sync session; never delete unrelated pre-existing YTM content.
