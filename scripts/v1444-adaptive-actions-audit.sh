@@ -46,7 +46,7 @@ grep -Fq 'orderHorizontalActions(items)' "$UI" ||
   fail "UX-018 horizontal action ordering missing"
 
 for f in "$STORAGE" "$RECENT" "$LIST_SELECTOR" "$BULK_PREVIEW" "$BULK_SESSION" "$URL_SNAPSHOT"; do
-  grep -Fq 'UiChrome.addAdaptiveActionButtons(' "$f" ||
+  grep -Fq 'addAdaptiveActionButtons(' "$f" ||
     fail "$(basename "$f") footer not migrated to shared adaptive layout"
 done
 
