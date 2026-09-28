@@ -1058,7 +1058,7 @@ class BulkSyncSessionActivity : Activity() {
         helpDialogOpen = true
 
         helpDialog =
-            UiChrome.showMessageDialog(
+            UiChrome.showFixedFooterMessageDialog(
                 activity = this,
                 title =
                     BulkSyncHelpContent
