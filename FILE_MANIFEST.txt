@@ -252,7 +252,7 @@ ac1508588acac2e0  docs/assistant-kit/portable/templates/PHONE_TEST.md.template
 c9a0f203088b48a9  docs/assistant-kit/portable/templates/RELEASE.md.template
 2d333ebed3c466b5  docs/assistant-kit/portable/templates/RELEASE_META.json.template
 51098420dcf58c17  docs/assistant-kit/portable/templates/TEST_RUN.md.template
-b5a3b20a13672a30  docs/assistant-kit/portable/templates/UI_WINDOW_QA.md.template
+50133b42aa9ddedb  docs/assistant-kit/portable/templates/UI_WINDOW_QA.md.template
 401cdbddde7fb9af  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
 15e4b7411a52b7f0  docs/design/THEME_STATE_REFERENCE.md
 663807a41f7e5fd7  docs/design/TILE_UI_CONTRACT.md
