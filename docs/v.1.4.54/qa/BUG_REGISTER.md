@@ -134,3 +134,26 @@ Audit document:
 Status:
 **OPEN — static consolidation underway; consolidated representative phone matrix
 required before Test 5 resumes.**
+
+
+### BUG-046 / issue #38 — Bulk create-session confirmation disappears on rotation
+
+Phone evidence:
+- exact installed source: `d34f37a46d115b288d64a609e2aead266345be53`;
+- signed run: `36447530331`;
+- `Створити Bulk-сесію?` opened correctly in portrait;
+- portrait → landscape dismissed the confirmation and exposed the underlying Preview;
+- no action executed and no remote write started.
+
+Root cause:
+Bulk Preview confirmations were not owned by `RestorableModalController`.
+
+Fix:
+- persist and restore semantic confirmation state;
+- restore after Preview content/plan is ready;
+- never execute confirmation action on recreation;
+- clear state only on explicit action/cancel;
+- static UI gate now asserts this contract.
+
+Status:
+**OPEN — source fix present, exact fixed candidate validation + signed phone retest pending.**
