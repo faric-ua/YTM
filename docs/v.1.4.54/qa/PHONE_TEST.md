@@ -493,19 +493,22 @@ Observed during representative confirmation lifecycle check:
 3. Rotating to landscape removed the modal and returned to the underlying Preview.
 4. No action fired, no session was created and no remote write started.
 
-Result:
-- layout aspect of BUG-045 remains PASS;
-- confirmation lifecycle is **FAIL** and recorded as BUG-046 / issue #38;
-- Test 5 remains paused and its one-shot DAILY_QUOTA fault remains armed.
+Initial result:
+- layout aspect of BUG-045 remained PASS;
+- confirmation lifecycle initially failed and was recorded as BUG-046 / issue #38;
+- Test 5 stayed paused and its one-shot DAILY_QUOTA fault remained armed.
 
-Retest gate after fixed signed candidate:
-- open create-session confirmation in portrait;
-- rotate to landscape;
-- rotate back to portrait;
-- modal must remain open throughout;
-- only layout may reflow;
-- no action may execute;
-- explicit `Скасувати` returns to the same Preview.
+Final BUG-046 retest on signed source `83d1cec92482841fd660df90a92137a77cbf8c29`
+(run `36450498230`) was captured in one continuous video:
+- confirmation opened in portrait;
+- portrait → landscape preserved it;
+- landscape → portrait preserved it again;
+- only layout reflowed;
+- no action executed automatically;
+- explicit `Скасувати` returned to the same Preview;
+- no session creation or remote write started.
+
+Result: **BUG-046 PASS / CLOSED**.
 
 ## Test 6 — Rollback newly created playlist
 
