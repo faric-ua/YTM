@@ -18,30 +18,43 @@ if grep -q 'flatDialogActionButton' "$UI"; then
   fail "obsolete flat trailing dialog action still present"
 fi
 
-grep -q 'trailingTextAction' "$UI" \
-  || fail "AUTO three-action hierarchy missing"
+if grep -q 'trailingTextAction\|val compactRow' "$UI"; then
+  fail "obsolete forced horizontal dialog fallback returned"
+fi
 
-AUTO_BLOCK="$(
-  awk '
-    /val trailingTextAction/ { capture = 1 }
-    capture { print }
-    /val compactRow/ { exit }
-  ' "$UI"
-)"
+grep -Fq 'private fun useHorizontalDialogActionRow(' "$UI" \
+  || fail "dialog-label-aware width guard missing"
 
-grep -Fq 'dialogActionButton(' <<<"$AUTO_BLOCK" \
-  || fail "AUTO trailing Close/Back is not boxed"
+grep -Fq 'paint.measureText(' "$UI" \
+  || fail "dialog action width guard does not account for label width"
 
-VERTICAL_BLOCK="$(
-  awk '
-    /actionLayout == DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE/ { capture = 1 }
-    capture { print }
-    /actionLayout == DialogActionLayout.PRIMARY_TOP/ { exit }
-  ' "$UI"
-)"
+grep -Fq 'maxLines = 1' "$UI" \
+  || fail "dialog action labels are allowed to wrap"
 
-grep -Fq 'dialogActionButton(' <<<"$VERTICAL_BLOCK" \
-  || fail "vertical dismissive Close/Back is not boxed"
+VERTICAL_LINE="$(grep -n 'DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE' "$UI" | head -n 1 | cut -d: -f1)"
+PRIMARY_LINE="$(grep -n 'DialogActionLayout.PRIMARY_TOP' "$UI" | head -n 1 | cut -d: -f1)"
+AUTO_LINE="$(grep -n 'DialogActionLayout.AUTO' "$UI" | tail -n 1 | cut -d: -f1)"
+
+[ -n "$VERTICAL_LINE" ] && [ -n "$PRIMARY_LINE" ] && [ -n "$AUTO_LINE" ] \
+  || fail "dialog action layout branches missing"
+
+[ "$VERTICAL_LINE" -lt "$PRIMARY_LINE" ] \
+  || fail "explicit vertical layout must be resolved before PRIMARY_TOP"
+
+[ "$PRIMARY_LINE" -lt "$AUTO_LINE" ] \
+  || fail "explicit PRIMARY_TOP must be resolved before AUTO width-first layout"
+
+grep -A12 -F 'DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE' "$UI" |
+  grep -Fq 'addVertical(actions)' ||
+  fail "explicit vertical dialog layout no longer stays vertical"
+
+grep -A48 -F 'DialogActionLayout.PRIMARY_TOP' "$UI" |
+  grep -Fq 'useHorizontalDialogActionRow(' ||
+  fail "PRIMARY_TOP secondary actions are not width-aware"
+
+grep -A20 -F 'DialogActionLayout.AUTO' "$UI" |
+  grep -Fq 'useHorizontalDialogActionRow(' ||
+  fail "AUTO dialog actions do not use label-aware width-first layout"
 
 grep -q 'ServiceActivity::class.java' "$MAIN" \
   || fail "Main does not open ServiceActivity"
@@ -79,6 +92,8 @@ grep -A12 'private fun showServiceTools()' "$MAIN" | grep -q 'ServiceActivity::c
 
 echo 'PASS:'
 echo '- dismissive Close/Back actions use normal boxed dialog chrome'
-echo '- AUTO three-action hierarchy remains intact'
+echo '- explicit dialog layouts keep their declared hierarchy'
+echo '- AUTO dialogs use label-aware width-first row/stack behavior'
+echo '- dialog footer labels stay single-line'
 echo '- Service keeps nested navigation inside ServiceActivity'
 echo '- replacement-log action labels are explicit'
