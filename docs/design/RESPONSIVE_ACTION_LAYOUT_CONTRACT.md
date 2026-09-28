@@ -71,3 +71,27 @@ Footer/dialog action labels are treated as first-class layout constraints:
 The full per-window visual/lifecycle test matrix is defined in
 `docs/design/UI_WINDOW_QA_CONTRACT.md`.
 
+
+
+## Enforced implementation rules
+
+The width-first rule is mechanically enforced, not left to visual judgment.
+
+For modal footer actions:
+- the row decision accounts for the rendered label width, not only action count;
+- an expression equivalent to `actions.size <= 3` is not sufficient to force a row;
+- if the complete peer group does not fit, the complete group stacks;
+- dialog footer labels remain one line;
+- dialog labels are not auto-shrunk merely to preserve a row;
+- explicit semantic layouts such as primary-on-top or forced vertical are resolved
+  before AUTO width-based layout.
+
+For full-screen chooser/selector/footer action groups, use
+`UiChrome.addAdaptiveActionButtons(...)` instead of hand-built permanently
+horizontal rows.
+
+Current static gate:
+`scripts/ui-window-contract-audit.sh`.
+
+This rule exists specifically to prevent a shared layout regression from being found
+repeatedly during unrelated feature QA.
