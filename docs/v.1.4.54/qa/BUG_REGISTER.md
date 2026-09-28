@@ -155,5 +155,14 @@ Fix:
 - clear state only on explicit action/cancel;
 - static UI gate now asserts this contract.
 
+Final phone retest:
+- exact fixed source: `83d1cec92482841fd660df90a92137a77cbf8c29`;
+- signed run: `36450498230`;
+- continuous video proved portrait → landscape → portrait keeps the same confirmation open;
+- layout reflows only;
+- no action executes automatically;
+- explicit `Скасувати` returns to the same Bulk Preview;
+- no session creation or remote write occurs.
+
 Status:
-**OPEN — source fix present, exact fixed candidate validation + signed phone retest pending.**
+**PASS / CLOSED.**
