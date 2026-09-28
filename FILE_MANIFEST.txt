@@ -15,7 +15,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 6e5a0c4832d35dfb  ASSISTANT_CONTEXT_INDEX.md
 96ac72cc48a56178  BACKLOG.md
 702ad9ff87e4f1d8  CHANGELOG.md
-da64cf0a1c4d04aa  CURRENT_HANDOFF.md
+ed1dc8e8bb85447c  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -89,7 +89,7 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 0bfdea0eb1f02eb1  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 225ac193e694b7ec  app/src/main/AndroidManifest.xml
-91689ee6ef1d50fd  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
+f4cfa64c71463820  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 13428b9f58e270fc  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 9e5252664b4ab395  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
@@ -1459,7 +1459,7 @@ fdc76d59bea62f62  docs/v.1.4.53/qa/PHONE_TEST.md
 e8b4e254a09b344b  docs/v.1.4.53/qa/PHONE_TEST_REPORT_2026-09-26.md
 72c430dad863111e  docs/v.1.4.53/qa/STABILIZATION_CHECKPOINT.md
 1ca958c0f7b04ad2  docs/v.1.4.53/qa/TEST_RUN_2026-09-26.md
-c93d07fb3d69fb1d  docs/v.1.4.54/CURRENT_STATE.md
+3220fec67801fb73  docs/v.1.4.54/CURRENT_STATE.md
 e4fdc34f22a86ab7  docs/v.1.4.54/REGRESSION_CHECKLIST.md
 b703cddac78f8f4b  docs/v.1.4.54/RELEASE.md
 cc81c54f63997585  docs/v.1.4.54/RELEASE_META.json
