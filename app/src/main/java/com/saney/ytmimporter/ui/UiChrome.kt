@@ -802,6 +802,128 @@ object UiChrome {
         )
     }
 
+    fun showFixedFooterMessageDialog(
+        activity: Activity,
+        title: String,
+        message: String,
+        actions: List<DialogAction>,
+        subtitle: String? = null,
+        actionLayout: DialogActionLayout = DialogActionLayout.AUTO
+    ): Dialog {
+        val palette =
+            AppThemeManager.palette(activity)
+
+        val dialog =
+            customDialog(activity)
+
+        val card =
+            dialogCard(activity)
+
+        addDialogHeader(
+            activity = activity,
+            card = card,
+            title = title,
+            subtitle = subtitle
+        )
+
+        val contentScroll =
+            ScrollView(activity).apply {
+                isFillViewport = true
+                overScrollMode =
+                    View.OVER_SCROLL_IF_CONTENT_SCROLLS
+                isVerticalScrollBarEnabled = true
+            }
+
+        val content =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+            }
+
+        content.addView(
+            TextView(activity).apply {
+                text = message
+                textSize = 15f
+                setTextColor(
+                    palette.text
+                )
+                setTextIsSelectable(true)
+                setLineSpacing(
+                    0f,
+                    1.08f
+                )
+                setPadding(
+                    0,
+                    dp(context, 6),
+                    0,
+                    dp(context, 12)
+                )
+            },
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT,
+                ViewGroup.LayoutParams
+                    .WRAP_CONTENT
+            )
+        )
+
+        contentScroll.addView(
+            content,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT,
+                ViewGroup.LayoutParams
+                    .WRAP_CONTENT
+            )
+        )
+
+        card.addView(
+            contentScroll,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        val footer =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    0,
+                    dp(context, 10),
+                    0,
+                    0
+                )
+            }
+
+        addDialogActions(
+            activity = activity,
+            dialog = dialog,
+            card = footer,
+            actions = actions,
+            actionLayout = actionLayout
+        )
+
+        card.addView(
+            footer,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT,
+                ViewGroup.LayoutParams
+                    .WRAP_CONTENT
+            )
+        )
+
+        return showFixedFooterDialog(
+            activity = activity,
+            dialog = dialog,
+            card = card
+        )
+    }
+
     fun showMessageDialog(
         activity: Activity,
         title: String,
@@ -1483,6 +1605,224 @@ object UiChrome {
                 SpaceView(activity, dp(activity, 8))
             )
         }
+    }
+
+    private fun showFixedFooterDialog(
+        activity: Activity,
+        dialog: Dialog,
+        card: LinearLayout
+    ): Dialog {
+        val horizontalInset =
+            dp(activity, 18)
+
+        val minimumVerticalInset =
+            dp(activity, 12)
+
+        val outer =
+            FrameLayout(activity).apply {
+                alpha = 0f
+            }
+
+        outer.addView(
+            card,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT,
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT
+            )
+        )
+
+        fun configureWindow() {
+            val window =
+                dialog.window
+                    ?: return
+
+            window.setWindowAnimations(0)
+            window.attributes =
+                window.attributes.apply {
+                    windowAnimations = 0
+                }
+
+            window.setGravity(
+                Gravity.TOP or
+                    Gravity.CENTER_HORIZONTAL
+            )
+
+            WindowCompat
+                .setDecorFitsSystemWindows(
+                    window,
+                    false
+                )
+
+            window.setBackgroundDrawable(
+                ColorDrawable(
+                    Color.TRANSPARENT
+                )
+            )
+
+            window.setLayout(
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT,
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT
+            )
+        }
+
+        var insetsApplied =
+            false
+
+        var stablePreDraws =
+            0
+
+        var lastGeometry:
+            String? = null
+
+        dialog.setContentView(
+            outer
+        )
+
+        fun hideDecor() {
+            dialog.window
+                ?.decorView
+                ?.alpha = 0f
+        }
+
+        fun revealAfterStableGeometry() {
+            val decor =
+                dialog.window
+                    ?.decorView
+                    ?: return
+
+            decor.viewTreeObserver
+                .addOnPreDrawListener(
+                    object :
+                        ViewTreeObserver
+                            .OnPreDrawListener {
+                        override fun onPreDraw():
+                            Boolean {
+                            if (!insetsApplied) {
+                                return true
+                            }
+
+                            val geometry =
+                                listOf(
+                                    outer.measuredWidth,
+                                    outer.measuredHeight,
+                                    outer.paddingLeft,
+                                    outer.paddingTop,
+                                    outer.paddingRight,
+                                    outer.paddingBottom,
+                                    card.measuredWidth,
+                                    card.measuredHeight
+                                ).joinToString(
+                                    ":"
+                                )
+
+                            if (
+                                outer.measuredWidth <= 0 ||
+                                outer.measuredHeight <= 0 ||
+                                card.measuredWidth <= 0 ||
+                                card.measuredHeight <= 0
+                            ) {
+                                stablePreDraws = 0
+                                return true
+                            }
+
+                            if (
+                                geometry ==
+                                lastGeometry
+                            ) {
+                                stablePreDraws += 1
+                            } else {
+                                lastGeometry =
+                                    geometry
+                                stablePreDraws = 0
+                            }
+
+                            if (
+                                stablePreDraws >= 1
+                            ) {
+                                if (
+                                    decor
+                                        .viewTreeObserver
+                                        .isAlive
+                                ) {
+                                    decor
+                                        .viewTreeObserver
+                                        .removeOnPreDrawListener(
+                                            this
+                                        )
+                                }
+
+                                outer.alpha = 1f
+                                decor.alpha = 1f
+                            }
+
+                            return true
+                        }
+                    }
+                )
+        }
+
+        ViewCompat
+            .setOnApplyWindowInsetsListener(
+                outer
+            ) {
+                    view,
+                    insets ->
+                val safeInsets =
+                    insets.getInsets(
+                        WindowInsetsCompat.Type
+                            .systemBars() or
+                            WindowInsetsCompat.Type
+                                .displayCutout()
+                    )
+
+                view.setPadding(
+                    horizontalInset,
+                    maxOf(
+                        minimumVerticalInset,
+                        safeInsets.top +
+                            dp(
+                                activity,
+                                8
+                            )
+                    ),
+                    horizontalInset,
+                    maxOf(
+                        minimumVerticalInset,
+                        safeInsets.bottom +
+                            dp(
+                                activity,
+                                8
+                            )
+                    )
+                )
+
+                insetsApplied = true
+                stablePreDraws = 0
+                lastGeometry = null
+                view.requestLayout()
+
+                insets
+            }
+
+        hideDecor()
+        configureWindow()
+
+        dialog.show()
+
+        hideDecor()
+        configureWindow()
+        revealAfterStableGeometry()
+
+        ViewCompat
+            .requestApplyInsets(
+                outer
+            )
+
+        return dialog
     }
 
     private fun showCustomDialog(
