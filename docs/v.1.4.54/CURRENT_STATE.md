@@ -16,7 +16,7 @@ Purpose: single source of truth for continuing this release after a chat reset, 
 - Test 2 — local ↔ remote linkage: PASS
 - Test 3 — Bulk preflight read-only: 3+ / PHONE PASS
 - Test 4 — Bulk session + restart/reconcile: 4+ / PHONE PASS
-- UX-037 — Bulk Help terminology + window behavior: PARTIAL, phone retest pending
+- UX-037 — Bulk Preview Help fixed-footer + rotation + close: PASS; Bulk Session Help still pending before issue closure
 - BUG-044 — finished PARTIAL_FAILED session blocks new session: code fix present, phone retest pending
 - Test 5 — quota pause: ACTIVE / NOT COMPLETE
 - Tests 6–9: NOT STARTED
@@ -39,11 +39,31 @@ Portrait evidence:
 - no write/session action started.
 
 Current checkpoint:
-- Bulk Preview Help was rotated portrait → landscape without closing;
-- Help restored automatically over the same Bulk Preview;
-- fixed footer action `Зрозуміло` remains visible in landscape;
-- no write/session action started;
-- next action is rotate back to portrait, close Help, and verify return to the same Bulk Preview with no automatic work.
+- Bulk Preview Help passed portrait fixed-footer behavior;
+- portrait → landscape rotation restored Help over the same Bulk Preview;
+- fixed footer action `Зрозуміло` remained visible in landscape;
+- landscape → portrait restored Help again;
+- closing Help returned to the same Bulk Preview;
+- no session/write operation started because of Help open/restore/close.
+
+Latest phone screenshot after Help close:
+- screen: `Синхронізувати всі` Bulk Preview;
+- status: `Preview готовий. Жодних remote mutations не виконано.`;
+- playlists: 16;
+- NEW 1;
+- LINKED 2;
+- ALREADY_SYNCED 11;
+- NEEDS_SEARCH 1;
+- PENDING 1;
+- BLOCKED 0;
+- Search API estimate: 13;
+- write/general estimate after explicit confirmation: 1100;
+- read-only remote snapshot already used: 15 units;
+- visible NEW row: `db ost`;
+- `Створити Bulk-сесію` is enabled;
+- `Скасувати` is enabled.
+
+The one-shot Test 5 quota fault is still armed because no Bulk insert has occurred.
 
 Do NOT:
 - clear app data;
@@ -62,20 +82,20 @@ Finish the work that was interrupted before Test 5:
 
 ## Immediate next phone action
 
-With Bulk Preview Help still open in landscape:
+The phone is currently stopped on the ready Bulk Preview in portrait.
 
-`rotate back to portrait → wait for Help restoration → tap Зрозуміло → stop on Bulk Preview`
+Next action:
 
-Checkpoint:
-- Help must restore in portrait before closing;
-- closing Help returns to the same Bulk Preview;
-- no session/write operation may start;
-- capture the Bulk Preview screenshot before continuing to BUG-044 retest.
+`Створити Bulk-сесію` → wait until the Bulk session screen opens → **stop**.
 
-Then:
-- press `Створити Bulk-сесію`;
-- verify a NEW Test 5 session is actually created (BUG-044 retest);
-- stop before `Почати синхронізацію` for evidence.
+Checkpoint for BUG-044 retest:
+- a new Test 5 Bulk session must be created;
+- it must be the fresh `db ost` plan with 19 ready tracks;
+- it must NOT reopen the old completed-partial `db ost 18/19` session;
+- no remote writes should start automatically;
+- `Почати синхронізацію` should be available for the new READY session.
+
+Do NOT press `Почати синхронізацію` until screenshot/evidence of the new session is reviewed.
 
 ## Test 5 expected flow after BUG-044 retest
 
