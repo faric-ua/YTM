@@ -371,8 +371,6 @@ class BulkSyncPreviewActivity : Activity() {
 
         val actions =
             LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
                 setPadding(
                     dp(12),
                     dp(8),
@@ -386,35 +384,32 @@ class BulkSyncPreviewActivity : Activity() {
                 text =
                     "Створити Bulk-сесію"
                 isAllCaps = false
+                textSize = 15f
                 isEnabled = false
                 setOnClickListener {
                     confirmPlan()
                 }
             }
 
-        actions.addView(
-            confirmationButton,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-        actions.addView(
+        val cancelButton =
             Button(this).apply {
                 text = "Скасувати"
                 isAllCaps = false
+                textSize = 15f
                 setOnClickListener {
                     finish()
                 }
-            },
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                topMargin =
-                    dp(8)
             }
+
+        UiChrome.addAdaptiveActionButtons(
+            activity = this,
+            container = actions,
+            buttons =
+                listOf(
+                    confirmationButton,
+                    cancelButton
+                ),
+            buttonHeightDp = 54
         )
 
         root.addView(actions)
