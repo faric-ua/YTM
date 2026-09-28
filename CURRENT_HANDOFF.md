@@ -2,7 +2,24 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-26**
+Last updated: **2026-09-28**
+
+> **ACTIVE v1.4.54 HANDOFF — READ FIRST**
+>
+> The detailed live state is maintained in:
+> `docs/v.1.4.54/CURRENT_STATE.md`
+>
+> Current phone checkpoint:
+> - latest signed functional APK source: `ced8a23ac2b172c88246d0b269c1892d56b0037c`;
+> - Test 1–4 are phone PASS;
+> - Test 5 one-shot DAILY_QUOTA fault is still armed and has not fired;
+> - Bulk Preview Help fixed-footer behavior passed portrait + landscape + both rotations + close/no-op;
+> - phone is currently stopped on ready `Синхронізувати всі` preview with `NEW 1 · db ost`;
+> - immediate next action: tap `Створити Bulk-сесію`, wait for the session screen, then STOP before `Почати синхронізацію`;
+> - this is the BUG-044 phone retest. The new session must be fresh `db ost` 19-track READY, not the old completed-partial 18/19 session.
+>
+> Do not clear app data, uninstall the app, cancel the Test 5 fault, or start unrelated Bulk writes.
+
 
 ## 1. Resume point
 
