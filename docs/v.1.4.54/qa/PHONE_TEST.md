@@ -549,6 +549,26 @@ Next steps before Resume:
 - verify no automatic continuation and durable pause state;
 - then explicit Resume may be tested.
 
+### Test 5 paused-state rotation video — PASS / cold reopen still pending
+
+Continuous phone video after the initial DAILY_QUOTA pause confirms:
+- paused Bulk Session stays at `Пауза — write quota`;
+- NEW `db ost` stays `0/19`;
+- portrait → landscape → portrait does not auto-resume;
+- `Продовжити` remains available and was not pressed;
+- later reopening through the launcher returns to Home and then `Поточна Bulk-сесія` still shows the paused `0/19` state.
+
+However, the recording does **not** conclusively show task/process removal:
+the YTM task card remains visible in Recents before the app is relaunched. Therefore
+rotation persistence is accepted, while the dedicated cold-reopen / no-auto-resume
+step remains pending.
+
+Required next proof:
+- remove the YTM Importer task from Recents (or Force stop without clearing data);
+- relaunch the app;
+- open `Поточна Bulk-сесія`;
+- verify it is still `Пауза — write quota` at `0/19` and nothing resumed automatically.
+
 ## Test 6 — Rollback newly created playlist
 
 1. Let bulk sync create one controlled test playlist and add tracks.
