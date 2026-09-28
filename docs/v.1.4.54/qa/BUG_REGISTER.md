@@ -91,7 +91,7 @@ Status:
 
 Result: **PASS / CLOSED.**
 
-### BUG-045 / issue #36 — narrow modal forced wrapped action label
+### BUG-045 / issue #36 — narrow modal forced wrapped action label — CLOSED / PASS
 
 Phone finding:
 - `Створити сесію` wrapped to two lines beside `Скасувати`.
@@ -190,3 +190,20 @@ Expected shared fix:
 
 Status:
 **OPEN / NON-BLOCKING FOR THE PRESERVED TEST 5 SESSION — fix through UX-033, not a one-off Bulk patch.**
+
+
+### Test 5 quota-pause acceptance — PASS
+
+Phone acceptance completed on signed source
+`83d1cec92482841fd660df90a92137a77cbf8c29`.
+
+Verified:
+- one-shot DAILY_QUOTA pause at first Bulk insert;
+- paused state survives rotation;
+- paused state survives task removal + cold relaunch;
+- no automatic continuation;
+- explicit Resume continues safely;
+- final result is the expected 18/19 partial completion with one known terminal
+  unavailable source item.
+
+Result: **5+ / PHONE PASS.**
