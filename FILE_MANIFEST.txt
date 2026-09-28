@@ -15,7 +15,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 6e5a0c4832d35dfb  ASSISTANT_CONTEXT_INDEX.md
 819f1f207cf64274  BACKLOG.md
 702ad9ff87e4f1d8  CHANGELOG.md
-3c5eef085943d921  CURRENT_HANDOFF.md
+c6ccb17ede88ca1d  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -89,7 +89,7 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 0bfdea0eb1f02eb1  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 225ac193e694b7ec  app/src/main/AndroidManifest.xml
-9eee0a8112b92f97  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
+40038c923d9f81a0  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 5542fb852ba09c52  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 9e5252664b4ab395  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
@@ -1459,16 +1459,16 @@ fdc76d59bea62f62  docs/v.1.4.53/qa/PHONE_TEST.md
 e8b4e254a09b344b  docs/v.1.4.53/qa/PHONE_TEST_REPORT_2026-09-26.md
 72c430dad863111e  docs/v.1.4.53/qa/STABILIZATION_CHECKPOINT.md
 1ca958c0f7b04ad2  docs/v.1.4.53/qa/TEST_RUN_2026-09-26.md
-dba2dc02a394c0cf  docs/v.1.4.54/CURRENT_STATE.md
+f01f91ed9c00f190  docs/v.1.4.54/CURRENT_STATE.md
 aab9cbd3b8bdc522  docs/v.1.4.54/REGRESSION_CHECKLIST.md
 13d30b09aa2be609  docs/v.1.4.54/RELEASE.md
 cc81c54f63997585  docs/v.1.4.54/RELEASE_META.json
-b1bfd3975e705c98  docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md
+0cb99b7ee4184125  docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md
 78a32934c6d5a5d7  docs/v.1.4.54/diagrams/HISTORY_BULK_SYNC_FLOW.md
 30212d077c643c4a  docs/v.1.4.54/diagrams/README.md
-599ebae8d4499f01  docs/v.1.4.54/qa/BUG_REGISTER.md
+fff49f65fcb1087a  docs/v.1.4.54/qa/BUG_REGISTER.md
 a0f59bbd0c2cc0a3  docs/v.1.4.54/qa/EVIDENCE_MANIFEST.md
-bb89e6fbde66ff16  docs/v.1.4.54/qa/PHONE_TEST.md
+3db9a3d5efa56ea8  docs/v.1.4.54/qa/PHONE_TEST.md
 91953c8f5c13af7d  docs/v.1.4.6/REGRESSION_CHECKLIST.md
 b19a7931871c062d  docs/v.1.4.6/RELEASE.md
 34feef4923c89b09  docs/v.1.4.6/diagrams/ACTION_HIERARCHY.md
@@ -1583,7 +1583,7 @@ d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
 c310a0f949ed619b  scripts/service-navigation-audit.sh
 dd05198419970d1c  scripts/ui-chrome-audit.sh
-5dc52b2607703500  scripts/ui-window-contract-audit.sh
+7cf16ad8bf9c2208  scripts/ui-window-contract-audit.sh
 972992f79e831a4b  scripts/v1417-auth-flow-audit.sh
 8809b63eb0115a67  scripts/v1418-account-library-import-audit.sh
 20e454770c223a1a  scripts/v1419-account-library-export-audit.sh
