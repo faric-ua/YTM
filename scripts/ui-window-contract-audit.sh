@@ -115,6 +115,17 @@ for f in "${HELP_OWNERS[@]}"; do
     fail "$(basename "$f") Help state owner missing"
 done
 
+grep -Fq 'RestorableModalController' "$BULK_PREVIEW" ||
+  fail "Bulk Preview confirmation modal is not recreation-safe"
+grep -Fq 'STATE_PREVIEW_MODAL' "$BULK_PREVIEW" ||
+  fail "Bulk Preview confirmation modal state key missing"
+grep -Fq 'restoreAfterContentReady' "$BULK_PREVIEW" ||
+  fail "Bulk Preview confirmation is not restored after recreation"
+grep -Fq 'PreviewModal.CREATE_SESSION' "$BULK_PREVIEW" ||
+  fail "Bulk Preview create-session confirmation is not owned by restorable modal state"
+grep -Fq 'previewModalController.clearState()' "$BULK_PREVIEW" ||
+  fail "Bulk Preview explicit modal actions do not clear semantic modal state"
+
 if grep -R --include='*.kt' -n 'AlertDialog.Builder' "$SRC"; then
   fail "native AlertDialog.Builder runtime path returned"
 fi
@@ -127,4 +138,5 @@ echo '- dialog footer labels are single-line and are not auto-shrunk'
 echo '- explicit action layouts keep precedence over AUTO layout'
 echo '- chooser/selector/Bulk/URL Snapshot full-screen footers use shared adaptive row/stack rendering'
 echo '- known Help owners persist open state across recreation'
+echo '- Bulk Preview confirmations persist semantic open state across recreation without executing actions'
 echo '- native AlertDialog.Builder remains absent'
