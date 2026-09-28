@@ -481,6 +481,32 @@ Do **not** press `Почати синхронізацію` until this gate is co
 Current Test 5 result remains:
 **PAUSED / NOT EXECUTED — fault armed, first controlled insert not attempted.**
 
+### UX-038 matrix finding — BUG-046 (2026-09-28)
+
+Exact installed candidate:
+- source: `d34f37a46d115b288d64a609e2aead266345be53`;
+- signed run: `36447530331`.
+
+Observed during representative confirmation lifecycle check:
+1. Bulk Preview showed controlled `db ost` as 19 tracks / ready videoId 19 / unresolved 0.
+2. `Створити Bulk-сесію?` opened in portrait with the corrected stacked action layout.
+3. Rotating to landscape removed the modal and returned to the underlying Preview.
+4. No action fired, no session was created and no remote write started.
+
+Result:
+- layout aspect of BUG-045 remains PASS;
+- confirmation lifecycle is **FAIL** and recorded as BUG-046 / issue #38;
+- Test 5 remains paused and its one-shot DAILY_QUOTA fault remains armed.
+
+Retest gate after fixed signed candidate:
+- open create-session confirmation in portrait;
+- rotate to landscape;
+- rotate back to portrait;
+- modal must remain open throughout;
+- only layout may reflow;
+- no action may execute;
+- explicit `Скасувати` returns to the same Preview.
+
 ## Test 6 — Rollback newly created playlist
 
 1. Let bulk sync create one controlled test playlist and add tracks.
