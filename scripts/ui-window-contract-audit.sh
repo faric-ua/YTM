@@ -7,6 +7,7 @@ SRC="app/src/main/java/com/saney/ytmimporter"
 UI="$SRC/ui/UiChrome.kt"
 RESPONSIVE="docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md"
 WINDOW="docs/design/UI_WINDOW_QA_CONTRACT.md"
+BULK_PREVIEW="$SRC/BulkSyncPreviewActivity.kt"
 
 FULLSCREEN_FOOTERS=(
   "$SRC/StorageChooserActivity.kt"
