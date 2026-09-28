@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.app.Dialog
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.bulk.BulkSyncExecutionPolicy
 import com.saney.ytmimporter.bulk.BulkSyncExecutor
+import com.saney.ytmimporter.bulk.BulkSyncHelpContent
 import com.saney.ytmimporter.bulk.BulkSyncQaFaultPolicy
 import com.saney.ytmimporter.bulk.BulkSyncMutationStatus
 import com.saney.ytmimporter.bulk.BulkSyncMutationType
@@ -56,6 +58,12 @@ class BulkSyncSessionActivity : Activity() {
     private var running =
         false
 
+    private var helpDialogOpen =
+        false
+
+    private var helpDialog:
+        Dialog? = null
+
     private val api by lazy {
         YouTubeApi(
             accessTokenRecovery =
@@ -95,6 +103,14 @@ class BulkSyncSessionActivity : Activity() {
 
         sessionStore =
             BulkSyncSessionStore(this)
+
+        helpDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_HELP_DIALOG_OPEN,
+                    false
+                )
+                ?: false
 
         sessionId =
             intent.getStringExtra(
@@ -138,6 +154,27 @@ class BulkSyncSessionActivity : Activity() {
         }
 
         render(normalized)
+
+        if (helpDialogOpen) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showHelp()
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        outState.putBoolean(
+            STATE_HELP_DIALOG_OPEN,
+            helpDialogOpen
+        )
+
+        super.onSaveInstanceState(
+            outState
+        )
     }
 
     override fun onResume() {
@@ -153,6 +190,9 @@ class BulkSyncSessionActivity : Activity() {
     }
 
     override fun onDestroy() {
+        helpDialog
+            ?.setOnDismissListener(null)
+        helpDialog = null
         worker.shutdownNow()
         super.onDestroy()
     }
@@ -224,7 +264,7 @@ class BulkSyncSessionActivity : Activity() {
                 setPadding(
                     dp(12),
                     0,
-                    0,
+                    dp(8),
                     0
                 )
             },
@@ -232,6 +272,43 @@ class BulkSyncSessionActivity : Activity() {
                 0,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 1f
+            )
+        )
+
+        topBar.addView(
+            Button(this).apply {
+                text = "?"
+                isAllCaps = false
+                textSize = 20f
+                setTypeface(
+                    typeface,
+                    android.graphics.Typeface.BOLD
+                )
+                setTextColor(
+                    palette.text
+                )
+                minWidth = 0
+                minimumWidth = 0
+                minHeight = 0
+                minimumHeight = 0
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    0
+                )
+                background =
+                    AppThemeManager
+                        .neutralButtonDrawable(
+                            this@BulkSyncSessionActivity
+                        )
+                setOnClickListener {
+                    showHelp()
+                }
+            },
+            LinearLayout.LayoutParams(
+                dp(48),
+                dp(48)
             )
         )
 
@@ -971,6 +1048,42 @@ class BulkSyncSessionActivity : Activity() {
             true
     }
 
+    private fun showHelp() {
+        if (
+            helpDialog?.isShowing == true
+        ) {
+            return
+        }
+
+        helpDialogOpen = true
+
+        helpDialog =
+            UiChrome.showMessageDialog(
+                activity = this,
+                title =
+                    BulkSyncHelpContent
+                        .SESSION_TITLE,
+                message =
+                    BulkSyncHelpContent
+                        .sessionMessage,
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label = "Зрозуміло",
+                            tone =
+                                UiChrome.ActionTone
+                                    .ACCENT
+                        ) {}
+                    )
+            ).also {
+                dialog ->
+                dialog.setOnDismissListener {
+                    helpDialogOpen = false
+                    helpDialog = null
+                }
+            }
+    }
+
     private fun toast(
         message: String
     ) {
@@ -992,6 +1105,9 @@ class BulkSyncSessionActivity : Activity() {
         ).toInt()
 
     companion object {
+        private const val STATE_HELP_DIALOG_OPEN =
+            "bulk_sync_session_help_dialog_open"
+
         const val EXTRA_SESSION_ID =
             "bulk_sync_session_id"
     }
