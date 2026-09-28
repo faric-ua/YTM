@@ -33,6 +33,7 @@ import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
@@ -47,6 +48,11 @@ import java.util.concurrent.Executors
  * explicit confirmation contract.
  */
 class BulkSyncPreviewActivity : Activity() {
+    private enum class PreviewModal {
+        ACTIVE_SESSION,
+        CREATE_SESSION
+    }
+
     private val executor =
         Executors.newSingleThreadExecutor()
 
@@ -88,6 +94,9 @@ class BulkSyncPreviewActivity : Activity() {
     private var helpDialog:
         Dialog? = null
 
+    private lateinit var previewModalController:
+        RestorableModalController
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -118,6 +127,16 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 ?: false
 
+        previewModalController =
+            RestorableModalController(
+                activity = this,
+                stateKey =
+                    STATE_PREVIEW_MODAL
+            )
+        previewModalController.restore(
+            savedInstanceState
+        )
+
         buildUi()
 
         @Suppress("DEPRECATION")
@@ -142,6 +161,12 @@ class BulkSyncPreviewActivity : Activity() {
         } else {
             loadPreview()
         }
+
+        previewModalController
+            .restoreAfterContentReady(
+                renderer =
+                    ::renderPreviewModal
+            )
 
         if (helpDialogOpen) {
             window.decorView.post {
@@ -172,6 +197,10 @@ class BulkSyncPreviewActivity : Activity() {
             helpDialogOpen
         )
 
+        previewModalController.save(
+            outState
+        )
+
         super.onSaveInstanceState(
             outState
         )
@@ -181,6 +210,7 @@ class BulkSyncPreviewActivity : Activity() {
         helpDialog
             ?.setOnDismissListener(null)
         helpDialog = null
+        previewModalController.onDestroy()
         executor.shutdownNow()
         super.onDestroy()
     }
@@ -890,26 +920,21 @@ class BulkSyncPreviewActivity : Activity() {
             existing != null &&
             !existing.isTerminal
         ) {
-            UiChrome.alertBuilder(this)
-                .setTitle(
-                    "Є незавершена Bulk-сесія"
-                )
-                .setMessage(
-                    "Спочатку відкрийте вже створену сесію. " +
-                        "Нова сесія не буде створена поверх незавершеної."
-                )
-                .setNegativeButton(
-                    "Скасувати",
-                    null
-                )
-                .setPositiveButton(
-                    "Відкрити"
-                ) { _, _ ->
-                    openSession(
-                        existing.sessionId
-                    )
-                }
-                .show()
+            previewModalController.show(
+                modalId =
+                    PreviewModal
+                        .ACTIVE_SESSION
+                        .name,
+                args =
+                    Bundle().apply {
+                        putString(
+                            ARG_SESSION_ID,
+                            existing.sessionId
+                        )
+                    },
+                renderer =
+                    ::renderPreviewModal
+            )
             return
         }
 
@@ -925,32 +950,112 @@ class BulkSyncPreviewActivity : Activity() {
             return
         }
 
-        UiChrome.alertBuilder(this)
-            .setTitle(
-                "Створити Bulk-сесію?"
-            )
-            .setMessage(
-                "Буде створено локальний Full Backup checkpoint і свіжий " +
-                    "read-only remote baseline.\n\n" +
-                    "До сесії потрапить " +
-                    newCount +
-                    " NEW-плейлист(ів). Нові YTM-плейлисти створюються як приватні.\n\n" +
-                    "LINKED / NEEDS_SEARCH / PENDING / BLOCKED у Wave 3 " +
-                    "не виконуються. Після створення сесії remote writes " +
-                    "ще не стартують автоматично."
-            )
-            .setNegativeButton(
-                "Скасувати",
-                null
-            )
-            .setPositiveButton(
-                "Створити сесію"
-            ) { _, _ ->
-                prepareSession(
-                    summary
-                )
+        previewModalController.show(
+            modalId =
+                PreviewModal
+                    .CREATE_SESSION
+                    .name,
+            renderer =
+                ::renderPreviewModal
+        )
+    }
+
+    private fun renderPreviewModal(
+        modalId: String,
+        args: Bundle
+    ): Dialog? {
+        val modal =
+            PreviewModal
+                .values()
+                .firstOrNull {
+                    it.name ==
+                        modalId
+                }
+                ?: return null
+
+        return when (modal) {
+            PreviewModal.ACTIVE_SESSION -> {
+                val sessionId =
+                    args.getString(
+                        ARG_SESSION_ID
+                    )
+                        ?.takeIf(
+                            String::isNotBlank
+                        )
+                        ?: return null
+
+                UiChrome.alertBuilder(this)
+                    .setTitle(
+                        "Є незавершена Bulk-сесія"
+                    )
+                    .setMessage(
+                        "Спочатку відкрийте вже створену сесію. " +
+                            "Нова сесія не буде створена поверх незавершеної."
+                    )
+                    .setNegativeButton(
+                        "Скасувати"
+                    ) { _, _ ->
+                        previewModalController
+                            .clearState()
+                    }
+                    .setPositiveButton(
+                        "Відкрити"
+                    ) { _, _ ->
+                        previewModalController
+                            .clearState()
+                        openSession(
+                            sessionId
+                        )
+                    }
+                    .show()
             }
-            .show()
+
+            PreviewModal.CREATE_SESSION -> {
+                val summary =
+                    plan
+                        ?: return null
+
+                val newCount =
+                    summary.count(
+                        BulkSyncPlanState.NEW
+                    )
+
+                if (newCount <= 0) {
+                    return null
+                }
+
+                UiChrome.alertBuilder(this)
+                    .setTitle(
+                        "Створити Bulk-сесію?"
+                    )
+                    .setMessage(
+                        "Буде створено локальний Full Backup checkpoint і свіжий " +
+                            "read-only remote baseline.\n\n" +
+                            "До сесії потрапить " +
+                            newCount +
+                            " NEW-плейлист(ів). Нові YTM-плейлисти створюються як приватні.\n\n" +
+                            "LINKED / NEEDS_SEARCH / PENDING / BLOCKED у Wave 3 " +
+                            "не виконуються. Після створення сесії remote writes " +
+                            "ще не стартують автоматично."
+                    )
+                    .setNegativeButton(
+                        "Скасувати"
+                    ) { _, _ ->
+                        previewModalController
+                            .clearState()
+                    }
+                    .setPositiveButton(
+                        "Створити сесію"
+                    ) { _, _ ->
+                        previewModalController
+                            .clearState()
+                        prepareSession(
+                            summary
+                        )
+                    }
+                    .show()
+            }
+        }
     }
 
     private fun prepareSession(
@@ -1259,5 +1364,11 @@ class BulkSyncPreviewActivity : Activity() {
 
         private const val STATE_HELP_DIALOG_OPEN =
             "bulk_sync_preview_help_dialog_open"
+
+        private const val STATE_PREVIEW_MODAL =
+            "bulk_sync_preview_modal"
+
+        private const val ARG_SESSION_ID =
+            "session_id"
     }
 }
