@@ -32,7 +32,7 @@ ui, selector, recent, storage, review, menu = [Path(p).read_text(encoding="utf-8
 required_ui = [
     'fun showMenuDialog(',
     '): Dialog {',
-    'return showCustomDialog(',
+    'return showFixedFooterContentDialog(',
 ]
 for needle in required_ui:
     if needle not in ui:
@@ -197,7 +197,7 @@ grep -Fq 'STATE_REPLACEMENT_DIALOG_OPEN' "$PLAYLIST" || fail "Playlist replaceme
 grep -Fq 'STATE_CLEAR_WORKSPACE_DIALOG_OPEN' "$IMPORT" || fail "Import clear-workspace lifecycle state regressed"
 
 echo "PASS:"
-echo "- UiChrome showMenuDialog returns the shown Dialog"
+echo "- UiChrome showMenuDialog returns the canonical fixed-footer Dialog"
 echo "- ListSelector Help windows survive Activity recreation"
 echo "- Recent-file Help window survives Activity recreation"
 echo "- Storage chooser Help window survives Activity recreation"
