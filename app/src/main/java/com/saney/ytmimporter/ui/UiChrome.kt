@@ -1413,38 +1413,6 @@ object UiChrome {
             return
         }
 
-        val compactRow = actions.size <= 3
-
-        if (compactRow) {
-            val row = LinearLayout(activity).apply {
-                orientation = LinearLayout.HORIZONTAL
-            }
-
-            orderHorizontalActions(actions).forEachIndexed { index, action ->
-                row.addView(
-                    dialogActionButton(
-                        activity = activity,
-                        action = action
-                    ) {
-                        dialog.dismiss()
-                        action.onClick()
-                    },
-                    LinearLayout.LayoutParams(
-                        0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        1f
-                    ).apply {
-                        if (index > 0) {
-                            marginStart = dp(activity, 8)
-                        }
-                    }
-                )
-            }
-
-            card.addView(row)
-            return
-        }
-
         actions.forEachIndexed { index, action ->
             card.addView(
                 dialogActionButton(
