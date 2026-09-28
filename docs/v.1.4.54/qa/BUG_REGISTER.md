@@ -82,12 +82,14 @@ Corrective status:
 
 Result: **PASS / CLOSED.** No Test 5 insert has fired yet; the one-shot DAILY_QUOTA fault remains armed.
 
-### UX-037 / issue #35 — Bulk Help lifecycle/terminology
+### UX-037 / issue #35 — Bulk Help lifecycle/terminology — CLOSED / PASS
 
 Status:
 - Bulk Preview Help: portrait + landscape + both rotations + close/no-op PASS;
-- Bulk Session Help: still pending;
-- shared Help window composition is now included in UX-038 so the shell is not tested as an isolated one-off.
+- Bulk Session Help: continuous-video portrait/landscape/both-rotations/fixed-footer/close-no-op PASS;
+- no Help lifecycle action auto-started Bulk work.
+
+Result: **PASS / CLOSED.**
 
 ### BUG-045 / issue #36 — narrow modal forced wrapped action label
 
