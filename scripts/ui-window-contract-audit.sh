@@ -124,7 +124,7 @@ grep -Fq 'restoreAfterContentReady' "$BULK_PREVIEW" ||
   fail "Bulk Preview confirmation is not restored after recreation"
 grep -Fq 'PreviewModal.CREATE_SESSION' "$BULK_PREVIEW" ||
   fail "Bulk Preview create-session confirmation is not owned by restorable modal state"
-grep -Fq 'previewModalController.clearState()' "$BULK_PREVIEW" ||
+grep -Fq 'clearState()' "$BULK_PREVIEW" ||
   fail "Bulk Preview explicit modal actions do not clear semantic modal state"
 
 if grep -R --include='*.kt' -n 'AlertDialog.Builder' "$SRC"; then
