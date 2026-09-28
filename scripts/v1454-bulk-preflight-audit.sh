@@ -19,13 +19,14 @@ EXECUTION_POLICY="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecution
 EXECUTOR="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutor.kt"
 SESSION_ACTIVITY="app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt"
 SESSION_TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt"
+BULK_HELP="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncHelpContent.kt"
 QA_FAULT="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncQaFault.kt"
 QA_FAULT_STORE="app/src/main/java/com/saney/ytmimporter/storage/BulkSyncQaFaultStore.kt"
 QA_FAULT_TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncQaFaultPolicyTest.kt"
 QUOTA_ACTIVITY="app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt"
 BACKUP="app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt"
 
-for file in "$POLICY" "$PREVIEW" "$MENU" "$MANIFEST" "$TEST"   "$SESSION_MODEL" "$SESSION_STORE" "$CHECKPOINT_STORE" "$SESSION_FACTORY"   "$EXECUTION_POLICY" "$EXECUTOR" "$SESSION_ACTIVITY" "$SESSION_TEST" "$QA_FAULT" "$QA_FAULT_STORE" "$QA_FAULT_TEST" "$QUOTA_ACTIVITY" "$BACKUP"; do
+for file in "$POLICY" "$PREVIEW" "$MENU" "$MANIFEST" "$TEST"   "$SESSION_MODEL" "$SESSION_STORE" "$CHECKPOINT_STORE" "$SESSION_FACTORY"   "$EXECUTION_POLICY" "$EXECUTOR" "$SESSION_ACTIVITY" "$SESSION_TEST" "$BULK_HELP" "$QA_FAULT" "$QA_FAULT_STORE" "$QA_FAULT_TEST" "$QUOTA_ACTIVITY" "$BACKUP"; do
   [ -f "$file" ] || fail "Missing Bulk Sync foundation file: $file"
 done
 
@@ -123,7 +124,23 @@ grep -Fq 'legacyPartialInsertFailure_becomesExplicitlyResumableTerminalSkip' "$S
 
 grep -Fq 'restartPrefix_omitsTerminalFailedTrack' "$SESSION_TEST"   || fail "Restart prefix terminal-skip coverage missing"
 
+grep -Fq 'finishedPartialWithTerminalTrack_isTerminal' "$SESSION_TEST"   || fail "Finished partial-session terminality coverage missing"
+
+grep -Fq 'legacyPartialWithRetryableFailedInsert_isNotTerminal' "$SESSION_TEST"   || fail "Legacy retryable partial-session coverage missing"
+
 grep -Fq 'expectedRemoteVideoIdsThroughPrepared' "$EXECUTION_POLICY"   || fail "Terminal-aware restart prefix policy missing"
+
+grep -Fq 'Що означає Bulk Sync?' "$BULK_HELP"   || fail "Bulk preview Help content missing"
+
+grep -Fq 'Що таке Bulk-сесія?' "$BULK_HELP"   || fail "Bulk session Help content missing"
+
+grep -Fq 'STATE_HELP_DIALOG_OPEN' "$PREVIEW"   || fail "Bulk preview Help lifecycle state missing"
+
+grep -Fq 'STATE_HELP_DIALOG_OPEN' "$SESSION_ACTIVITY"   || fail "Bulk session Help lifecycle state missing"
+
+grep -Fq 'BulkSyncHelpContent' "$PREVIEW"   || fail "Bulk preview Help UI missing"
+
+grep -Fq 'BulkSyncHelpContent' "$SESSION_ACTIVITY"   || fail "Bulk session Help UI missing"
 
 grep -Fq 'BulkSyncQaFaultPolicy' "$SESSION_ACTIVITY"   || fail "Bulk Test 5 QA fault is not wired into session execution"
 
