@@ -11,6 +11,7 @@ scripts/result-modal-audit.sh
 scripts/rotation-layout-audit.sh
 scripts/service-navigation-audit.sh
 scripts/ui-chrome-audit.sh
+scripts/ui-window-contract-audit.sh
 scripts/v1432-dialog-first-frame-audit.sh
 scripts/v1433-dialog-unification-audit.sh
 scripts/v1434-back-navigation-audit.sh
