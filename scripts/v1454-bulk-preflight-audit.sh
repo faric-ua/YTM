@@ -142,6 +142,12 @@ grep -Fq 'BulkSyncHelpContent' "$PREVIEW"   || fail "Bulk preview Help UI missin
 
 grep -Fq 'BulkSyncHelpContent' "$SESSION_ACTIVITY"   || fail "Bulk session Help UI missing"
 
+grep -Fq 'showFixedFooterMessageDialog' "app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"   || fail "Fixed-footer dialog shell missing"
+
+grep -Fq 'showFixedFooterMessageDialog' "$PREVIEW"   || fail "Bulk preview Help is not using fixed footer"
+
+grep -Fq 'showFixedFooterMessageDialog' "$SESSION_ACTIVITY"   || fail "Bulk session Help is not using fixed footer"
+
 grep -Fq 'BulkSyncQaFaultPolicy' "$SESSION_ACTIVITY"   || fail "Bulk Test 5 QA fault is not wired into session execution"
 
 grep -Fq 'qaInsertFault' "$EXECUTOR"   || fail "Bulk executor QA insert fault seam missing"
