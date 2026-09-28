@@ -10,20 +10,21 @@ Last updated: **2026-09-28**
 > `docs/v.1.4.54/CURRENT_STATE.md`
 >
 > Current phone checkpoint:
-> - installed signed APK source: `552c387a5626ab0fd7e501aff946741610f41f6d`;
-> - Validate Android `36372799066` — PASS; signed run `36374659541` — PASS;
+> - installed signed APK source: `d34f37a46d115b288d64a609e2aead266345be53`;
+> - Validate Android `36377631268` — PASS; signed run `36447530331` — PASS;
 > - Test 1–4 are phone PASS;
 > - Test 5 one-shot DAILY_QUOTA fault is still **armed and has not fired**;
 > - no Test 5 Bulk insert has been attempted;
-> - latest portrait confirmation retest proves the original BUG-045 symptom is fixed on the installed APK: `Створити сесію` / `Скасувати` are stacked full-width and the primary label stays on one line;
-> - the confirmation was not accepted; the latest screenshot returned to Bulk Preview in landscape; no new session/write started;
-> - phone QA is now intentionally **PAUSED** while UX-038 / issue #37 consolidates the project-wide window/footer/button contract;
-> - branch-side systemic cleanup now routes all action-bearing shared dialogs through one fixed-footer shell, makes modal row/stack selection label-aware, and migrates ListSelector/Bulk Preview/Bulk Session to shared adaptive footers;
-> - new static gate `scripts/ui-window-contract-audit.sh` is wired into release preflight and the portable audit catalog;
-> - work/QA logs are consolidated in `docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md`, `docs/v.1.4.54/CURRENT_STATE.md`, PHONE_TEST, BUG_REGISTER, EVIDENCE_MANIFEST, REGRESSION_CHECKLIST, RELEASE and BACKLOG;
-> - tomorrow do **not** resume Test 5 first: exact-HEAD static validation → signed build → in-place install → one consolidated representative window matrix → one fresh Bulk-session creation attempt → STOP at READY 19/19 or persistent preparation error.
+> - controlled Bulk Preview still shows `db ost`: 19 tracks / ready videoId 19 / unresolved 0;
+> - BUG-045 portrait action layout is corrected;
+> - new UX-038 matrix finding: BUG-046 / issue #38 — `Створити Bulk-сесію?` disappeared on portrait→landscape rotation instead of restoring above the same Preview;
+> - no confirmation action executed and no session/write started during the failed rotation test;
+> - root cause: Bulk Preview confirmations bypassed the existing `RestorableModalController`;
+> - branch fix now persists/restores create-session and active-session confirmation state and extends `ui-window-contract-audit.sh`;
+> - phone QA is paused on the same Bulk Preview until an exact fixed candidate validates, signs and is installed in-place;
+> - next phone action after install: reopen `Створити Bulk-сесію?`, rotate portrait→landscape→portrait, verify the modal stays open and no action fires, then press `Скасувати`.
 >
-> Do not clear app data, uninstall, cancel/re-arm the Test 5 fault, start unrelated Bulk/YTM writes, or continue one-window-at-a-time phone testing tonight.
+> Do not clear app data, uninstall, cancel/re-arm the Test 5 fault, confirm session creation, or start unrelated Bulk/YTM writes.
 
 ## 1. Resume point
 
