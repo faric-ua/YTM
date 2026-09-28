@@ -66,7 +66,7 @@ A v1.4.54 implementation must not be accepted if any of these occurs:
 
 ## Late Bulk / window QA findings
 
-### BUG-044 / issue #34 — completed-partial Bulk session blocked a fresh session
+### BUG-044 / issue #34 — completed-partial Bulk session blocked a fresh session — CLOSED / PASS
 
 Initial phone symptom:
 - controlled `db ost` plan was NEW 1 / 19 ready;
@@ -75,10 +75,12 @@ Initial phone symptom:
 Corrective status:
 - code fix is present;
 - phone retest proved the old 18/19 session no longer reopened;
-- the flow advanced into fresh checkpoint / remote-baseline preparation;
-- that preparation then failed on the older candidate, so full BUG-044 acceptance is still pending.
+- fresh checkpoint + remote baseline completed;
+- a new Bulk Session opened in `Готово до запуску`;
+- NEW `db ost` is present at `0/19`;
+- no write started automatically.
 
-No Test 5 insert fired. The one-shot DAILY_QUOTA fault remains armed.
+Result: **PASS / CLOSED.** No Test 5 insert has fired yet; the one-shot DAILY_QUOTA fault remains armed.
 
 ### UX-037 / issue #35 — Bulk Help lifecycle/terminology
 
@@ -166,3 +168,23 @@ Final phone retest:
 
 Status:
 **PASS / CLOSED.**
+
+
+### UX-033 / issue #26 — Bulk footer buttons ignore active skin
+
+Phone evidence:
+- Blue skin is active;
+- Bulk Session cards/header correctly use the Blue palette;
+- footer buttons `Почати синхронізацію` / `Закрити` render as default gray Android buttons.
+
+Source cause:
+- Bulk Preview/Session instantiate raw `Button(this)`;
+- `UiChrome.addAdaptiveActionButtons(...)` currently supplies layout only.
+
+Expected shared fix:
+- primary/secondary/danger/disabled full-screen footer actions inherit the active skin;
+- row/stack reflow preserves tone and readability;
+- Bulk Preview + Bulk Session migrate to the shared styled action helper.
+
+Status:
+**OPEN / NON-BLOCKING FOR THE PRESERVED TEST 5 SESSION — fix through UX-033, not a one-off Bulk patch.**
