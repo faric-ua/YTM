@@ -5,6 +5,17 @@ Build/source:
 Device:
 Date:
 
+## Static gate before phone QA
+
+- [ ] Shared window/footer audit passes on the exact source
+- [ ] Release preflight passes on the exact source
+- [ ] Action-bearing modal uses fixed header/content/footer composition
+- [ ] Row/stack choice is width-first and accounts for complete button labels
+- [ ] No action-count-only fallback forces a horizontal row
+- [ ] Footer labels are not auto-shrunk merely to preserve a row
+- [ ] Shared-component violations are fixed at the shared layer before phone QA
+- [ ] If a shared defect is found on phone, feature QA stops until the shared gate is green again
+
 ## Route
 
 Parent screen:
