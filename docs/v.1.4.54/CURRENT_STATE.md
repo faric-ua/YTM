@@ -67,9 +67,9 @@ Do not:
 - create unrelated Bulk sessions or YTM writes;
 - keep testing individual windows on the currently installed candidate.
 
-## BUG-046 status — issue #38
+## BUG-046 status — issue #38 — CLOSED / PHONE PASS
 
-Phone finding on signed source `d34f37a46d115b288d64a609e2aead266345be53`:
+Original phone finding on signed source `d34f37a46d115b288d64a609e2aead266345be53`:
 - `Створити Bulk-сесію?` was open in portrait;
 - portrait → landscape recreated Bulk Preview but the confirmation disappeared;
 - the underlying Preview remained read-only;
@@ -89,9 +89,12 @@ Branch fix:
 - system recreation restores the same modal without executing an action;
 - `scripts/ui-window-contract-audit.sh` now requires this lifecycle contract.
 
-Acceptance before continuing the UX-038 matrix:
-portrait open → landscape → portrait must preserve the same confirmation, reflow only,
-execute nothing, then explicit `Скасувати` must return to the same Preview.
+Final phone retest on signed source `83d1cec92482841fd660df90a92137a77cbf8c29`
+(signed run `36450498230`) passed in one continuous video:
+portrait open → landscape → portrait preserved the same confirmation; only layout
+reflowed; no action executed; explicit `Скасувати` returned to the same Preview.
+
+Result: **BUG-046 PASS / CLOSED**.
 
 ## BUG-044 status — issue #34
 
@@ -249,7 +252,7 @@ pause/restart/resume semantics pass.
 - #35 — UX-037: Bulk Preview/Session lifecycle-safe Help
 - #36 — BUG-045: narrow dialog action row wrapped label
 - #37 — UX-038: project-wide window/footer contract consolidation
-- #38 — BUG-046: Bulk create-session confirmation disappears on rotation
+- #38 — BUG-046: Bulk create-session confirmation disappears on rotation — CLOSED / PASS
 
 ## Recovery order in a new chat
 
