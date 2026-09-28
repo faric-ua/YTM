@@ -1055,13 +1055,17 @@ class BulkSyncPreviewActivity : Activity() {
                             summary.count(
                                 BulkSyncPlanState.NEW
                             ) > 0
+                        val errorText =
+                            safeError(
+                                error
+                            )
                         statusText.text =
-                            "Preview готовий. Сесію не створено."
+                            "Preview готовий. Сесію не створено.\n" +
+                                "Причина: " +
+                                errorText
                         toast(
                             "Не вдалося створити Bulk-сесію: " +
-                                safeError(
-                                    error
-                                )
+                                errorText
                         )
                     }
                 }
