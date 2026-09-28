@@ -39,8 +39,11 @@ Portrait evidence:
 - no write/session action started.
 
 Current checkpoint:
-- Help remains open in portrait;
-- next action is rotation to landscape without closing Help.
+- Bulk Preview Help was rotated portrait → landscape without closing;
+- Help restored automatically over the same Bulk Preview;
+- fixed footer action `Зрозуміло` remains visible in landscape;
+- no write/session action started;
+- next action is rotate back to portrait, close Help, and verify return to the same Bulk Preview with no automatic work.
 
 Do NOT:
 - clear app data;
@@ -59,21 +62,15 @@ Finish the work that was interrupted before Test 5:
 
 ## Immediate next phone action
 
-With Bulk Preview Help still open:
+With Bulk Preview Help still open in landscape:
 
-`rotate phone to landscape → wait for recreation → stop`
+`rotate back to portrait → wait for Help restoration → tap Зрозуміло → stop on Bulk Preview`
 
 Checkpoint:
-- Help must restore automatically over the same Bulk Preview;
-- `Зрозуміло` must remain visible in the fixed footer;
-- content must remain scrollable independently;
-- no write/session action may start;
-- capture screenshot before continuing.
-
-After that:
-- rotate back to portrait;
-- close Help;
-- verify return to the same Bulk Preview with no automatic work.
+- Help must restore in portrait before closing;
+- closing Help returns to the same Bulk Preview;
+- no session/write operation may start;
+- capture the Bulk Preview screenshot before continuing to BUG-044 retest.
 
 Then:
 - press `Створити Bulk-сесію`;
