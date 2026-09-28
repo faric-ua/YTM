@@ -415,10 +415,32 @@ PASS:
 - explicit Resume is available;
 - after explicit Resume, execution continues safely.
 
+### Test 5 phone setup — finding before first insert
+
+The one-shot `DAILY_QUOTA` fault was armed successfully. The controlled cached `db ost` source was then saved as a fresh local workspace and Bulk preview correctly classified it as:
+- `NEW 1`;
+- 19 ready videoIds;
+- 0 unresolved;
+- planned create 1 + insert 19.
+
+No Test 5 insert was started, so the one-shot QA fault remains armed.
+
+When `Створити Bulk-сесію` was used, the app opened the previous completed-partial `db ost 18/19` session instead of creating a new session.
+
+Finding:
+- **BUG-044 / issue #34** — finished `PARTIAL_FAILED` sessions with only durable terminal track failures are not considered terminal by the session-creation guard and incorrectly block a new Bulk session.
+
+Corrective contract:
+- modern completed-partial sessions must not block a new session;
+- legacy partial sessions with retryable INSERT `FAILED` or uncertain `PREPARED` work must remain protected until recovery/normalization.
+
+Related UX finding:
+- **UX-037 / issue #35** — add lifecycle-safe `?` Help windows to Bulk preview/session explaining Bulk session, Checkpoint, Remote baseline, PREPARED, classifications and current Wave behavior.
+
 Release hygiene:
 - this temporary QA hook must be removed before final v1.4.54 release closeout.
 
-Result: `5+` / `5-`.
+Current result: **5- / blocked before first controlled insert by BUG-044.**
 
 ## Test 6 — Rollback newly created playlist
 
