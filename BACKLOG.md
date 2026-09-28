@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.54 — History Recovery / Safe Bulk Sync — DEVELOPMENT / WAVE 0
+v1.4.54 — History Recovery / Safe Bulk Sync — DEVELOPMENT / TEST 5 PAUSED — UX-038 UI CONSOLIDATION
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -41,6 +41,10 @@ v1.4.54 — History Recovery / Safe Bulk Sync — DEVELOPMENT / WAVE 0
 - BUG-030 Play Protect blocks/warns on the sideloaded updater-enabled APK — OPEN NON-BLOCKING DISTRIBUTION/REPUTATION FOLLOW-UP; exact final RC installed successfully after explicit user override; root cause/false-positive review remains separate from functional updater PASS.
 - UX-027 URL Snapshot duplicate-choice action layout — OPEN NON-BLOCKING; use one adaptive horizontal row only when width safely fits both labels, stacked fallback otherwise.
 - UX-028 Home last-action detail drill-down — OPEN NON-BLOCKING; History already has full URL-snapshot detail, but the truncated Home summary has no obvious direct navigation to it.
+- BUG-044 finished PARTIAL_FAILED Bulk session blocked a new session — FIX PATH REACHED ON PHONE; old 18/19 session no longer reopened, but fresh session preparation failed before READY; retest pending after UX-038 candidate.
+- UX-037 Bulk Preview/Session Help lifecycle/terminology — Preview Help phone PASS; Session Help pending and folded into consolidated UX-038 window matrix.
+- BUG-045 narrow modal action row wrapped `Створити сесію` — original portrait symptom corrected on signed source `552c387a5626ab0fd7e501aff946741610f41f6d`; systemic window acceptance continues under UX-038.
+- UX-038 project-wide window/footer contract consolidation — OPEN BLOCKING TEST 5; shared fixed-footer/runtime + static audit cleanup must validate and pass one representative phone matrix before Bulk writes resume.
 
 
 ## v1.4.49 — In-app Updater
@@ -91,6 +95,19 @@ v1.4.53 is final/OTA+ and v1.4.54 is active on `feat/v1.4.54-history-bulk-sync`,
 created from exact phone-tested v1.4.53 source
 `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
 
+### Current acceptance checkpoint — 2026-09-28
+- [x] Tests 1–2 History Recovery / linkage — PHONE PASS.
+- [x] Test 3 Bulk read-only preflight — PHONE PASS.
+- [x] Test 4 durable Bulk session / force-close / reconcile — PHONE PASS.
+- [x] BUG-045 original narrow portrait confirmation symptom — PHONE PASS on source `552c387a5626ab0fd7e501aff946741610f41f6d`.
+- [ ] UX-038 consolidated project-wide window/footer matrix — BLOCKING.
+- [ ] BUG-044 fresh 19-track READY session acceptance — blocked behind UX-038 candidate.
+- [ ] Test 5 quota pause — not executed; one-shot DAILY_QUOTA fault remains armed.
+- [ ] Tests 6–9 — not started.
+
+Static source of truth:
+`docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md`.
+
 ### Wave 0 — BUG-039 / write-limit safety
 - [x] create v1.4.54 branch from exact accepted v1.4.53 app source
 - [x] bump app identity to v1.4.54 / versionCode 97
@@ -103,28 +120,28 @@ created from exact phone-tested v1.4.53 source
 - [x] explain frequent playlist-creation/write limits: wait, do not spam retries, resume manually from Queue
 - [x] do not invent cooldown/reset time when Google does not provide one
 - [x] keep permanent `maxPlaylistExceeded` separate from temporary write-limit pause
-- [ ] Wave 0 static/JVM/full preflight
-- [ ] Wave 0 signed phone smoke
+- [x] Wave 0 static/JVM/full preflight
+- [x] Wave 0 signed phone smoke — W0+
 
 ### History → current workspace
-- [ ] Add `Відновити як поточний плейлист` from History detail/actions.
-- [ ] Restore exact track order, selected videoId/title/channel, manual-selection flag and track status where available.
-- [ ] If a History entry has a remote `playlistId`, preserve the linkage in `CurrentPlaylistStore.destinationPlaylistId`.
-- [ ] Local-import History must remain distinguishable from YTM-write History; never infer remote linkage from title alone.
-- [ ] Persist Search results back into a durable restorable snapshot so importing another playlist does not discard already-resolved videoId work.
-- [ ] Restoring a History playlist must not auto-run Search or YTM write; explicit user action only.
+- [x] Add `Відновити як поточний плейлист` from History detail/actions — Test 1/2 phone PASS.
+- [x] Restore exact track order, selected videoId/title/channel, manual-selection flag and track status where available.
+- [x] If a History entry has a remote `playlistId`, preserve the linkage in `CurrentPlaylistStore.destinationPlaylistId` — identity-preserving phone PASS.
+- [x] Local-import History remains distinguishable from YTM-write History; no title-only linkage.
+- [x] Persist Search results into durable restorable snapshots — Test 1 confirmed no repeated Search after restore.
+- [x] Restore does not auto-run Search or YTM write; explicit user action only.
 
 ### One-tap safe bulk sync
-- [ ] Add `Синхронізувати всі` for eligible local/restorable playlists.
-- [ ] Preflight must create a local Full Backup checkpoint before any remote write.
-- [ ] Preflight must create a read-only remote account checkpoint (playlist IDs, title/privacy, ordered playlistItem IDs/video IDs) before any remote write.
-- [ ] Build and show a dry-run plan: NEW / LINKED / ALREADY_SYNCED / NEEDS_SEARCH / PENDING / BLOCKED plus estimated API usage.
-- [ ] User confirmation required after preview; rotation/recreation must not auto-start the sync.
-- [ ] Execute as a durable session with per-playlist progress and explicit pause/resume across quota/auth/rate-limit stops.
-- [ ] Record a mutation ledger for every remote change made by the sync session.
-- [ ] Existing remote playlists must never be modified by title-only matching; use persisted playlistId or an explicit user mapping.
+- [x] Add `Синхронізувати всі` for eligible local/restorable playlists — Test 3 phone PASS.
+- [x] Session preparation creates a local Full Backup checkpoint before remote write.
+- [x] Session preparation creates a read-only remote account baseline before remote write.
+- [x] Dry-run plan shows NEW / LINKED / ALREADY_SYNCED / NEEDS_SEARCH / PENDING / BLOCKED and API estimates — Test 3 phone PASS.
+- [x] Explicit confirmation required; preview rotation/recreation does not auto-start sync.
+- [x] Durable Bulk session with persisted progress / explicit resume is implemented; restart/reconcile Test 4 phone PASS; Test 5 quota pause still pending.
+- [x] Durable PREPARED/APPLIED mutation ledger is implemented and survived force-close in Test 4.
+- [x] Existing remote identity uses persisted playlistId; no title-only matching.
 - [ ] Rollback must revert only mutations created by that sync session; never delete unrelated pre-existing YTM content.
-- [ ] To support exact rollback of additions into existing playlists, `playlistItems.insert` must return/store the created playlistItem id and YouTubeApi must support playlist-item delete.
+- [x] `playlistItems.insert` returns/stores created playlistItemId; exact delete support is present for rollback foundation.
 - [ ] Playlists created by the sync session may be rolled back via existing `deletePlaylist()` only when the session ledger proves ownership.
 - [ ] If rollback itself is interrupted by quota/auth/rate-limit, persist a durable ROLLBACK recovery job and resume explicitly later.
 - [ ] Local rollback and remote rollback are separate states and must be reported separately in UI/History.
