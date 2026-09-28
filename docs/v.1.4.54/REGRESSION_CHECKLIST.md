@@ -1,5 +1,18 @@
 # v1.4.54 — Regression Checklist
 
+## Current acceptance checkpoint — 2026-09-28
+- [x] Tests 1–2 History Recovery / linkage — phone PASS
+- [x] Test 3 Bulk read-only preflight — phone PASS
+- [x] Test 4 durable Bulk session / force-close / reconcile — phone PASS
+- [x] BUG-045 narrow portrait confirmation symptom — corrected on signed source `552c387a5626ab0fd7e501aff946741610f41f6d`
+- [ ] UX-038 project-wide window/footer static + representative phone matrix — BLOCKING
+- [ ] BUG-044 fresh session reaches new 19-track READY state
+- [ ] Test 5 quota pause — first controlled insert not attempted; one-shot fault still armed
+- [ ] Tests 6–9
+
+Do not resume feature QA until the UX-038 exact-HEAD static gate validates and the
+consolidated phone matrix passes.
+
 ## Release gating
 - [x] v1.4.53 is final before v1.4.54 app-code work begins
 - [x] versionName 1.4.54 / versionCode 97
