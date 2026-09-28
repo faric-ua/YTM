@@ -262,6 +262,31 @@ Next acceptance sequence:
 
 UX-037 Bulk Preview + Bulk Session Help phone acceptance is complete; issue #35 is closed.
 
+## Test 5 cold-reopen checkpoint — PASS
+
+Phone video confirms the YTM Importer task was removed from Samsung Recents, the app
+was relaunched from the launcher, and the preserved Bulk session was reopened from
+the app UI.
+
+Observed after relaunch:
+- session is still `Пауза — write quota`;
+- NEW `db ost` is still `0/19`;
+- `Продовжити` is available;
+- no automatic continuation occurred.
+
+This completes the cold-reopen / no-auto-resume requirement for Test 5.
+
+Samsung note:
+the fixed icon row shown at the bottom of Recents is Samsung's quick-launch/app
+shortcut area, not evidence that those apps are still present as task cards. The
+previous phone video was interpreted too conservatively; the new video makes the
+task-removal sequence unambiguous.
+
+Next Test 5 step:
+explicitly press `Продовжити` once and capture the resulting state. The one-shot
+DAILY_QUOTA hook has already auto-consumed, so execution should continue through
+the normal path without duplicating the interrupted insert.
+
 ## Test 5 after the UI gate
 
 Expected controlled flow once a fresh READY session exists:
