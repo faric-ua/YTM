@@ -1580,14 +1580,10 @@ class MainActivity : Activity() {
         forceAccountPicker: Boolean = false,
         after: (() -> Unit)? = null
     ) {
-        if (!forceAccountPicker && !accessToken.isNullOrBlank()) {
-            if (googleAccountInfo == null || youtubeChannelInfo == null) {
-                loadAccountIdentity(accessToken!!, after)
-            } else {
-                after?.invoke()
-            }
-            return
-        }
+        val preserveKnownIdentity =
+            !forceAccountPicker &&
+                googleAccountInfo != null &&
+                youtubeChannelInfo != null
 
         if (forceAccountPicker) {
             accessToken = null
@@ -1602,7 +1598,7 @@ class MainActivity : Activity() {
             if (forceAccountPicker) {
                 "Виберіть Google акаунт…"
             } else {
-                "Відкриваю доступ Google…"
+                "Перевіряю авторизацію Google/YTM…"
             }
         )
 
@@ -1626,39 +1622,94 @@ class MainActivity : Activity() {
                         )
                     } catch (e: Exception) {
                         pendingAfterAuth = null
-                        toast(ErrorMessages.userMessage(e, "Не вдалося відкрити Google"))
+                        toast(
+                            ErrorMessages.userMessage(
+                                e,
+                                "Не вдалося відкрити Google"
+                            )
+                        )
                     }
                 } else {
                     val token = result.accessToken
+
                     if (token.isNullOrBlank()) {
                         pendingAfterAuth = null
-                        toast("Google не повернув access token")
+                        clearAuthorizationForRefreshFailure(
+                            "Google не повернув актуальний access token."
+                        )
                     } else {
-                        handleAuthorizedToken(token)
+                        handleAuthorizedToken(
+                            token = token,
+                            preserveKnownIdentity =
+                                preserveKnownIdentity
+                        )
                     }
                 }
             }
             .addOnFailureListener { e ->
                 pendingAfterAuth = null
-                toast(ErrorMessages.userMessage(e, "Авторизація Google не вдалася"))
+                clearAuthorizationForRefreshFailure(
+                    ErrorMessages.userMessage(
+                        e,
+                        "Не вдалося оновити авторизацію Google/YTM"
+                    )
+                )
             }
     }
 
-    private fun handleAuthorizedToken(token: String) {
-        restoringPriorAuthorization = false
-        accessToken = token
+    private fun clearAuthorizationForRefreshFailure(
+        message: String
+    ) {
+        accessToken = null
         googleAccountInfo = null
         youtubeChannelInfo = null
+        restoringPriorAuthorization = false
+        AuthSessionStore.clear()
+        persistentAuthStateStore.clear()
+        updateAccountPanel()
+        status(
+            "$message Натисніть «2. Google / YTM» і підключіть акаунт знову."
+        )
+        toast("Авторизацію Google/YTM потрібно відновити")
+    }
+
+    private fun handleAuthorizedToken(
+        token: String,
+        preserveKnownIdentity: Boolean = false
+    ) {
+        restoringPriorAuthorization = false
+        accessToken = token
+
+        val identityReady =
+            preserveKnownIdentity &&
+                googleAccountInfo != null &&
+                youtubeChannelInfo != null
+
+        if (!identityReady) {
+            googleAccountInfo = null
+            youtubeChannelInfo = null
+        }
+
         persistentAuthStateStore
             .markSuccessfulAuthorization()
         syncAuthSessionToMemory()
         updateAccountPanel()
-        status("Google підключено. Завантажую дані акаунта і YouTube каналу…")
 
         val action = pendingAfterAuth
         pendingAfterAuth = null
 
-        loadAccountIdentity(token, action)
+        if (identityReady) {
+            status("Авторизацію Google/YTM оновлено.")
+            action?.invoke()
+        } else {
+            status(
+                "Google підключено. Завантажую дані акаунта і YouTube каналу…"
+            )
+            loadAccountIdentity(
+                token,
+                action
+            )
+        }
     }
 
     private fun loadAccountIdentity(
@@ -2729,6 +2780,20 @@ class MainActivity : Activity() {
 
                     is PlaylistWriteCoordinator.WriteOutcome.PausedForQuota -> {
                         showQuotaPausedDialog(outcome.job)
+                    }
+
+                    is PlaylistWriteCoordinator.WriteOutcome.AuthorizationInvalidated -> {
+                        if (
+                            invalidateAuthorizationIfNeeded(
+                                outcome.error
+                            )
+                        ) {
+                            updatePendingButton()
+                            status(
+                                "Авторизацію Google/YTM потрібно відновити. " +
+                                    "Незавершене завдання збережено в «Черзі»."
+                            )
+                        }
                     }
 
                     is PlaylistWriteCoordinator.WriteOutcome.Failed -> {

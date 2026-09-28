@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.43 — Auth Freshness — NEXT / NOT IMPLEMENTED
+v1.4.43 — Auth Freshness — IMPLEMENTED / PARTIAL PHONE QA; STALE-TOKEN RETEST DEFERRED
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -29,15 +29,25 @@ v1.4.43 — Auth Freshness — NEXT / NOT IMPLEMENTED
 - UX-022 Unified Window Title Emphasis — PLANNED; strengthen the first/title line inside dialogs, modal windows and full-screen utility panels with theme-aware title color/emphasis so titles such as `Підтвердити Restore`, `План пошуку`, and `Доступ до Download` visually separate from body text. Implement via shared UI styling across the app, not per-screen hardcoding.
 
 ## v1.4.43 — Auth Freshness
-- [ ] BUG-013: prevent stale green Step 2 from trusting an old in-memory token
-- [ ] centralize fresh/silent authorization before destination list/create/write remote calls
-- [ ] preserve current HTTP 401 invalidation as fallback
-- [ ] avoid unnecessary account-picker prompts when Google can refresh silently
-- [ ] static audit + release docs
-- [ ] signed APK
-- [ ] phone: stale-token destination flow refreshes or prompts before first YouTube API failure
-- [ ] phone: Step 2 state remains consistent with usable authorization
-- [ ] keep BUG-004 SearchCoordinator-specific real-401 retest separate
+- [x] versionCode 82 / versionName 1.4.43
+- [x] BUG-013: remove stale cached-token fast path from remote authorize()
+- [x] Google AuthorizationClient refresh/check runs before remote authorize() actions
+- [x] silent refresh preserves known account/channel identity
+- [x] refresh failure clears misleading green Step 2 state
+- [x] write-time HTTP 401 returns explicit AuthorizationInvalidated outcome
+- [x] write-time auth failure keeps remaining tracks pending/retryable
+- [x] unfinished write stays in Queue
+- [x] MainActivity propagates write auth invalidation to shared auth state
+- [x] dedicated v1.4.43 audit + release docs
+- [ ] full release preflight
+- [ ] signed GitHub Actions APK
+- [ ] phone: stale-green destination scenario no longer fails first live request
+- [ ] phone: silent refresh continues into existing-playlist list when possible
+- [ ] phone: interactive authorization appears before destination API failure when required
+- [ ] phone: Step 2 state matches usable authorization after refresh failure
+- [ ] phone: create/add write smoke
+- [ ] BUG-013 close only after phone PASS
+- [ ] keep BUG-004 SearchCoordinator-specific real-401 acceptance separate
 
 ## v1.4.42-R1 — Direct Download via All files access
 - [x] versionCode 81 / versionName 1.4.42-R1

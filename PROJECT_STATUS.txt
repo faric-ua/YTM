@@ -1,6 +1,6 @@
 YTM Importer
-Version: 1.4.42-R1
-Version code: 81
+Version: 1.4.43
+Version code: 82
 Current live resume snapshot: CURRENT_HANDOFF.md
 
 v1.4.12 NOT TESTED
@@ -659,3 +659,13 @@ v1.4.42-R1 merged:
 - merge commit 7376c326d55cde5df9b289bff2bf571a47f67ef0
 - tested APK code corresponds to the R1 app-code state; later closeout commits are docs/audit only
 - next functional target: BUG-013 auth freshness
+
+
+v1.4.43 NOT PHONE-TESTED YET — BUG-013 AUTH FRESHNESS
+- cached non-blank token is no longer accepted as fresh authorization by authorize()
+- Google AuthorizationClient refresh/check runs before remote authorize() actions
+- silent refresh can preserve known Google/YouTube identity
+- refresh failure clears misleading green Step 2 state
+- write-time HTTP 401 stops write and preserves retryable pending work in Queue
+- BUG-013 phone retest required
+- UX-021 and UX-022 remain separate planned UI work
