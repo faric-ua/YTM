@@ -529,6 +529,26 @@ Final BUG-046 retest on signed source `83d1cec92482841fd660df90a92137a77cbf8c29`
 
 Result: **BUG-046 PASS / CLOSED**.
 
+### Test 5 phone result — initial DAILY_QUOTA pause PASS
+
+Signed source: `83d1cec92482841fd660df90a92137a77cbf8c29`.
+
+Observed after one explicit `Почати синхронізацію`:
+- session state changed to `Пауза — write quota`;
+- quota explanation is visible;
+- NEW `db ost` remains `0/19`;
+- `Продовжити` is enabled;
+- no second action was taken.
+
+Interpretation:
+the one-shot QA hook was consumed at the first Bulk insert boundary and the real insert was not sent remotely.
+
+Next steps before Resume:
+- rotate portrait → landscape → portrait;
+- force-close and reopen;
+- verify no automatic continuation and durable pause state;
+- then explicit Resume may be tested.
+
 ## Test 6 — Rollback newly created playlist
 
 1. Let bulk sync create one controlled test playlist and add tracks.
