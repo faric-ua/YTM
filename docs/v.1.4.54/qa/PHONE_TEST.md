@@ -569,6 +569,28 @@ Required next proof:
 - open `Поточна Bulk-сесія`;
 - verify it is still `Пауза — write quota` at `0/19` and nothing resumed automatically.
 
+### Test 5 cold reopen — PASS
+
+Continuous phone video confirms:
+- the YTM Importer task is removed from Samsung Recents;
+- the app is relaunched from the launcher;
+- the user navigates back to the current Bulk session;
+- state remains `Пауза — write quota`;
+- NEW `db ost` remains `0/19`;
+- no work resumes automatically;
+- `Продовжити` remains available.
+
+Clarification:
+Samsung's fixed icon row at the bottom of Recents is a quick-launch shortcut area,
+not a list of still-running task cards. The earlier interpretation was overly
+conservative.
+
+Result:
+rotation persistence + cold-reopen durability + no-auto-resume are **PASS**.
+
+Next step:
+press `Продовжити` exactly once and capture the outcome before any other action.
+
 ## Test 6 — Rollback newly created playlist
 
 1. Let bulk sync create one controlled test playlist and add tracks.
