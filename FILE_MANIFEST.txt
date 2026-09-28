@@ -89,8 +89,8 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 0bfdea0eb1f02eb1  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 225ac193e694b7ec  app/src/main/AndroidManifest.xml
-06d03392bb1a5e4a  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
-801675031760a4bb  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
+91689ee6ef1d50fd  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
+13428b9f58e270fc  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 9e5252664b4ab395  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 3899b19733e58253  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
@@ -159,7 +159,7 @@ fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWri
 607b158a71f47d74  app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt
 8ab47c848ec9c8b3  app/src/main/java/com/saney/ytmimporter/ui/SafFileSaveFlow.kt
 9280056bf2b0b6b0  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-f46204fa3b82aaab  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+242c736081a3c853  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 78da56fe6d4f0417  app/src/main/java/com/saney/ytmimporter/ui/WorkflowRelayOverlay.kt
 97950a5f9f861111  app/src/main/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicy.kt
 8bc5cda5c2b4c663  app/src/main/java/com/saney/ytmimporter/updater/UpdaterManifestPolicy.kt
@@ -1712,7 +1712,7 @@ ab1026878a043c72  scripts/v1451-url-qa-corrective-r1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 f834e1746373fdba  scripts/v1452-ux-polish-audit.sh
 d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
-9076e41c502c88fe  scripts/v1454-bulk-preflight-audit.sh
+db6583a82b7e933a  scripts/v1454-bulk-preflight-audit.sh
 ed8375bb50567b62  scripts/v1454-wave0-write-limit-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
