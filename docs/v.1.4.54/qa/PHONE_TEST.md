@@ -442,6 +442,45 @@ Release hygiene:
 
 Current result: **5- / blocked before first controlled insert by BUG-044.**
 
+### Test 5 pause — project-wide UI gate (2026-09-28)
+
+Phone QA is intentionally paused **before the first controlled Test 5 insert**.
+
+Latest installed candidate:
+- source: `552c387a5626ab0fd7e501aff946741610f41f6d`;
+- Validate Android: `36372799066` — PASS;
+- signed APK: `36374659541` — PASS;
+- installed in-place, app data preserved.
+
+Latest phone evidence:
+- the controlled Bulk Preview remained read-only;
+- opening `Створити Bulk-сесію?` did not execute session creation;
+- BUG-045 portrait symptom is corrected: `Створити сесію` and `Скасувати`
+  render as full-width stacked buttons and the primary label stays on one line;
+- latest landscape screenshot returned to the same Bulk Preview;
+- no Bulk insert fired, so the one-shot DAILY_QUOTA fault remains armed.
+
+A broader static audit found shared runtime drift from the existing window/button
+contracts. Continuing Test 5 while the shared shell is being corrected would create
+another per-window patch/retest loop.
+
+Blocking gate before Test 5 resumes:
+1. finish project-wide static consolidation from
+   `docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md`;
+2. exact final HEAD passes release preflight / `ui-window-contract-audit.sh`;
+3. build/sign that exact HEAD;
+4. install in-place without clearing app data;
+5. run the consolidated representative window matrix;
+6. retry fresh Bulk session creation exactly once;
+7. stop on either:
+   - fresh `db ost` 19-track READY session, or
+   - persistent exact preparation error.
+
+Do **not** press `Почати синхронізацію` until this gate is complete.
+
+Current Test 5 result remains:
+**PAUSED / NOT EXECUTED — fault armed, first controlled insert not attempted.**
+
 ## Test 6 — Rollback newly created playlist
 
 1. Let bulk sync create one controlled test playlist and add tracks.
