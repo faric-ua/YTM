@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -421,6 +422,58 @@ object UiChrome {
         return screenWidthDp >= requiredWidthDp
     }
 
+    private fun useHorizontalDialogActionRow(
+        context: Context,
+        actions: List<DialogAction>,
+        minButtonWidthDp: Int = 180
+    ): Boolean {
+        if (actions.size <= 1) {
+            return false
+        }
+
+        val metrics =
+            context.resources.displayMetrics
+        val density =
+            metrics.density
+        val paint =
+            Paint().apply {
+                textSize =
+                    TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_SP,
+                        14f,
+                        metrics
+                    )
+            }
+
+        val actionWidthsDp =
+            actions.map { action ->
+                val labelWidthDp =
+                    paint.measureText(
+                        action.label
+                    ) / density
+
+                maxOf(
+                    minButtonWidthDp.toFloat(),
+                    labelWidthDp + 32f
+                )
+            }
+
+        val dialogChromeDp =
+            72f
+        val gapsDp =
+            (actions.size - 1) * 8f
+        val requiredWidthDp =
+            dialogChromeDp +
+                actionWidthsDp.sum() +
+                gapsDp
+
+        return context.resources
+            .configuration
+            .screenWidthDp
+            .toFloat() >=
+            requiredWidthDp
+    }
+
     fun addAdaptiveActionButtons(
         activity: Activity,
         container: LinearLayout,
@@ -689,9 +742,6 @@ object UiChrome {
         subtitle: String? = null,
         onNegative: (() -> Unit)? = null
     ): Dialog {
-        val palette =
-            AppThemeManager.palette(activity)
-
         val dialog = customDialog(activity)
         val card = dialogCard(activity)
 
@@ -702,8 +752,14 @@ object UiChrome {
             subtitle = subtitle
         )
 
+        val content =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+            }
+
         actions.forEachIndexed { index, action ->
-            card.addView(
+            content.addView(
                 menuButton(activity, action.label) {
                     dialog.dismiss()
                     action.onClick()
@@ -719,27 +775,22 @@ object UiChrome {
             )
         }
 
-        card.addView(
-            menuButton(
-                activity = activity,
-                label = negativeLabel,
-                accent = true
-            ) {
-                dialog.dismiss()
-                onNegative?.invoke()
-            },
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                topMargin = dp(activity, 14)
-            }
-        )
-
-        return showCustomDialog(
+        return showFixedFooterContentDialog(
             activity = activity,
             dialog = dialog,
-            card = card
+            card = card,
+            content = content,
+            actions =
+                listOf(
+                    DialogAction(
+                        label = negativeLabel,
+                        tone = ActionTone.ACCENT
+                    ) {
+                        onNegative?.invoke()
+                    }
+                ),
+            actionLayout =
+                DialogActionLayout.AUTO
         )
     }
 
@@ -761,8 +812,14 @@ object UiChrome {
             subtitle = subtitle
         )
 
+        val content =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+            }
+
         records.forEachIndexed { index, record ->
-            card.addView(
+            content.addView(
                 recordCard(
                     activity = activity,
                     record = record
@@ -779,26 +836,21 @@ object UiChrome {
         }
 
         if (records.isNotEmpty()) {
-            card.addView(
+            content.addView(
                 SpaceView(
                     activity,
-                    dp(activity, 14)
+                    dp(activity, 4)
                 )
             )
         }
 
-        addDialogActions(
+        return showFixedFooterContentDialog(
             activity = activity,
             dialog = dialog,
             card = card,
+            content = content,
             actions = actions,
             actionLayout = actionLayout
-        )
-
-        return showCustomDialog(
-            activity = activity,
-            dialog = dialog,
-            card = card
         )
     }
 
@@ -809,120 +861,15 @@ object UiChrome {
         actions: List<DialogAction>,
         subtitle: String? = null,
         actionLayout: DialogActionLayout = DialogActionLayout.AUTO
-    ): Dialog {
-        val palette =
-            AppThemeManager.palette(activity)
-
-        val dialog =
-            customDialog(activity)
-
-        val card =
-            dialogCard(activity)
-
-        addDialogHeader(
+    ): Dialog =
+        showMessageDialog(
             activity = activity,
-            card = card,
             title = title,
-            subtitle = subtitle
-        )
-
-        val contentScroll =
-            ScrollView(activity).apply {
-                isFillViewport = true
-                overScrollMode =
-                    View.OVER_SCROLL_IF_CONTENT_SCROLLS
-                isVerticalScrollBarEnabled = true
-            }
-
-        val content =
-            LinearLayout(activity).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-            }
-
-        content.addView(
-            TextView(activity).apply {
-                text = message
-                textSize = 15f
-                setTextColor(
-                    palette.text
-                )
-                setTextIsSelectable(true)
-                setLineSpacing(
-                    0f,
-                    1.08f
-                )
-                setPadding(
-                    0,
-                    dp(context, 6),
-                    0,
-                    dp(context, 12)
-                )
-            },
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams
-                    .MATCH_PARENT,
-                ViewGroup.LayoutParams
-                    .WRAP_CONTENT
-            )
-        )
-
-        contentScroll.addView(
-            content,
-            ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams
-                    .MATCH_PARENT,
-                ViewGroup.LayoutParams
-                    .WRAP_CONTENT
-            )
-        )
-
-        card.addView(
-            contentScroll,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams
-                    .MATCH_PARENT,
-                0,
-                1f
-            )
-        )
-
-        val footer =
-            LinearLayout(activity).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(
-                    0,
-                    dp(context, 10),
-                    0,
-                    0
-                )
-            }
-
-        addDialogActions(
-            activity = activity,
-            dialog = dialog,
-            card = footer,
+            message = message,
             actions = actions,
+            subtitle = subtitle,
             actionLayout = actionLayout
         )
-
-        card.addView(
-            footer,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams
-                    .MATCH_PARENT,
-                ViewGroup.LayoutParams
-                    .WRAP_CONTENT
-            )
-        )
-
-        return showFixedFooterDialog(
-            activity = activity,
-            dialog = dialog,
-            card = card
-        )
-    }
 
     fun showMessageDialog(
         activity: Activity,
@@ -945,7 +892,13 @@ object UiChrome {
             subtitle = subtitle
         )
 
-        card.addView(
+        val content =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+            }
+
+        content.addView(
             TextView(activity).apply {
                 text = message
                 textSize = 15f
@@ -956,23 +909,22 @@ object UiChrome {
                     0,
                     dp(context, 6),
                     0,
-                    dp(context, 16)
+                    dp(context, 12)
                 )
-            }
+            },
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
         )
 
-        addDialogActions(
+        return showFixedFooterContentDialog(
             activity = activity,
             dialog = dialog,
             card = card,
+            content = content,
             actions = actions,
             actionLayout = actionLayout
-        )
-
-        return showCustomDialog(
-            activity = activity,
-            dialog = dialog,
-            card = card
         )
     }
 
@@ -1025,41 +977,48 @@ object UiChrome {
             subtitle = subtitle
         )
 
+        val body =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+            }
+
         if (message.isNotBlank()) {
-            card.addView(
+            body.addView(
                 TextView(activity).apply {
                     text = message
                     textSize = 15f
                     setTextColor(palette.text)
                     setTextIsSelectable(true)
                     setLineSpacing(0f, 1.08f)
-                    setPadding(0, dp(context, 6), 0, dp(context, 12))
+                    setPadding(
+                        0,
+                        dp(context, 6),
+                        0,
+                        dp(context, 12)
+                    )
                 }
             )
         }
 
-        card.addView(
+        body.addView(
             content,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = dp(activity, 16)
+                bottomMargin =
+                    dp(activity, 4)
             }
         )
 
-        addDialogActions(
+        return showFixedFooterContentDialog(
             activity = activity,
             dialog = dialog,
             card = card,
+            content = body,
             actions = actions,
             actionLayout = actionLayout
-        )
-
-        return showCustomDialog(
-            activity = activity,
-            dialog = dialog,
-            card = card
         )
     }
 
@@ -1088,9 +1047,11 @@ object UiChrome {
             subtitle = subtitle
         )
 
-        val choices = LinearLayout(activity).apply {
-            orientation = LinearLayout.VERTICAL
-        }
+        val choices =
+            LinearLayout(activity).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+            }
 
         items.forEachIndexed { index, label ->
             choices.addView(
@@ -1104,16 +1065,24 @@ object UiChrome {
                         dp(context, 12),
                         dp(context, 9)
                     )
-                    background = roundedBackground(
-                        context = context,
-                        color = palette.surfaceAlt,
-                        radiusDp = 12,
-                        strokeColor = palette.border
-                    )
-                    isChecked = checked[index]
-                    setOnCheckedChangeListener { _, value ->
-                        checked[index] = value
-                        onCheckedChange(index, value)
+                    background =
+                        roundedBackground(
+                            context = context,
+                            color = palette.surfaceAlt,
+                            radiusDp = 12,
+                            strokeColor = palette.border
+                        )
+                    isChecked =
+                        checked[index]
+                    setOnCheckedChangeListener {
+                            _,
+                            value ->
+                        checked[index] =
+                            value
+                        onCheckedChange(
+                            index,
+                            value
+                        )
                     }
                 },
                 LinearLayout.LayoutParams(
@@ -1121,34 +1090,20 @@ object UiChrome {
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply {
                     if (index > 0) {
-                        topMargin = dp(activity, 8)
+                        topMargin =
+                            dp(activity, 8)
                     }
                 }
             )
         }
 
-        card.addView(
-            choices,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = dp(activity, 16)
-            }
-        )
-
-        addDialogActions(
+        return showFixedFooterContentDialog(
             activity = activity,
             dialog = dialog,
             card = card,
+            content = choices,
             actions = actions,
             actionLayout = actionLayout
-        )
-
-        return showCustomDialog(
-            activity = activity,
-            dialog = dialog,
-            card = card
         )
     }
 
@@ -1202,30 +1157,67 @@ object UiChrome {
         actions: List<DialogAction>,
         actionLayout: DialogActionLayout
     ) {
-        if (actions.isEmpty()) return
+        if (actions.isEmpty()) {
+            return
+        }
 
-        if (
-            useHorizontalActionRow(
-                context = activity,
-                actionCount = actions.size
-            )
+        fun actionView(
+            action: DialogAction
+        ): Button =
+            dialogActionButton(
+                activity = activity,
+                action = action
+            ) {
+                dialog.dismiss()
+                action.onClick()
+            }
+
+        fun addVertical(
+            items: List<DialogAction>,
+            initialTopMarginDp: Int = 0
+        ) {
+            items.forEachIndexed {
+                    index,
+                    action ->
+                card.addView(
+                    actionView(action),
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        topMargin =
+                            when {
+                                index == 0 ->
+                                    dp(
+                                        activity,
+                                        initialTopMarginDp
+                                    )
+                                else ->
+                                    dp(activity, 8)
+                            }
+                    }
+                )
+            }
+        }
+
+        fun addHorizontal(
+            items: List<DialogAction>,
+            initialTopMarginDp: Int = 0
         ) {
             val row =
                 LinearLayout(activity).apply {
                     orientation =
                         LinearLayout.HORIZONTAL
+                    isBaselineAligned =
+                        false
                 }
 
-            orderHorizontalActions(actions)
-                .forEachIndexed { index, action ->
+            orderHorizontalActions(items)
+                .forEachIndexed {
+                        index,
+                        action ->
                     row.addView(
-                        dialogActionButton(
-                            activity = activity,
-                            action = action
-                        ) {
-                            dialog.dismiss()
-                            action.onClick()
-                        },
+                        actionView(action),
                         LinearLayout.LayoutParams(
                             0,
                             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -1239,199 +1231,80 @@ object UiChrome {
                     )
                 }
 
-            card.addView(row)
-            return
-        }
-
-        if (
-            actionLayout == DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE &&
-            actions.isNotEmpty()
-        ) {
-            val boxed =
-                if (
-                    actions.last().tone == ActionTone.ACCENT &&
-                    actions.last().label in setOf(
-                        "Закрити",
-                        "Назад",
-                        "Не зараз"
-                    )
-                ) {
-                    actions.dropLast(1)
-                } else {
-                    actions
-                }
-
-            boxed.forEachIndexed { index, action ->
-                card.addView(
-                    dialogActionButton(
-                        activity = activity,
-                        action = action
-                    ) {
-                        dialog.dismiss()
-                        action.onClick()
-                    },
-                    LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        if (index > 0) {
-                            topMargin = dp(activity, 8)
-                        }
-                    }
-                )
-            }
-
-            if (boxed.size != actions.size) {
-                val closeAction = actions.last()
-                card.addView(
-                    dialogActionButton(
-                        activity = activity,
-                        action = closeAction
-                    ) {
-                        dialog.dismiss()
-                        closeAction.onClick()
-                    },
-                    LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        topMargin = dp(activity, 6)
-                    }
-                )
-            }
-
-            return
-        }
-
-        if (
-            actionLayout == DialogActionLayout.PRIMARY_TOP &&
-            actions.size == 3
-        ) {
-            val primary = actions.first()
-
-            card.addView(
-                dialogActionButton(
-                    activity = activity,
-                    action = primary
-                ) {
-                    dialog.dismiss()
-                    primary.onClick()
-                },
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-            )
-
-            val row = LinearLayout(activity).apply {
-                orientation = LinearLayout.HORIZONTAL
-            }
-
-            orderHorizontalActions(actions.drop(1)).forEachIndexed { index, action ->
-                row.addView(
-                    dialogActionButton(
-                        activity = activity,
-                        action = action
-                    ) {
-                        dialog.dismiss()
-                        action.onClick()
-                    },
-                    LinearLayout.LayoutParams(
-                        0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        1f
-                    ).apply {
-                        if (index > 0) marginStart = dp(activity, 8)
-                    }
-                )
-            }
-
             card.addView(
                 row,
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply { topMargin = dp(activity, 9) }
-            )
-            return
-        }
-
-        val trailingTextAction =
-            actions.size == 3 &&
-                actionLayout == DialogActionLayout.AUTO &&
-                actions.last().tone == ActionTone.ACCENT &&
-                actions.last().label in setOf(
-                    "Закрити",
-                    "Назад",
-                    "Не зараз"
-                )
-
-        if (trailingTextAction) {
-            val row = LinearLayout(activity).apply {
-                orientation = LinearLayout.HORIZONTAL
-            }
-
-            actions.take(2).forEachIndexed { index, action ->
-                row.addView(
-                    dialogActionButton(
-                        activity = activity,
-                        action = action
-                    ) {
-                        dialog.dismiss()
-                        action.onClick()
-                    },
-                    LinearLayout.LayoutParams(
-                        0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        1f
-                    ).apply {
-                        if (index > 0) {
-                            marginStart = dp(activity, 8)
-                        }
-                    }
-                )
-            }
-
-            card.addView(row)
-
-            val closeAction = actions.last()
-            card.addView(
-                dialogActionButton(
-                    activity = activity,
-                    action = closeAction
-                ) {
-                    dialog.dismiss()
-                    closeAction.onClick()
-                },
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    topMargin = dp(activity, 6)
-                }
-            )
-            return
-        }
-
-        actions.forEachIndexed { index, action ->
-            card.addView(
-                dialogActionButton(
-                    activity = activity,
-                    action = action
-                ) {
-                    dialog.dismiss()
-                    action.onClick()
-                },
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    if (index > 0) {
-                        topMargin = dp(activity, 9)
-                    }
+                    topMargin =
+                        dp(
+                            activity,
+                            initialTopMarginDp
+                        )
                 }
             )
         }
+
+        if (
+            actionLayout ==
+            DialogActionLayout.VERTICAL_WITH_TEXT_CLOSE
+        ) {
+            addVertical(actions)
+            return
+        }
+
+        if (
+            actionLayout ==
+                DialogActionLayout.PRIMARY_TOP &&
+            actions.size == 3
+        ) {
+            val primary =
+                actions.first()
+
+            card.addView(
+                actionView(primary),
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+
+            val secondary =
+                actions.drop(1)
+
+            if (
+                useHorizontalDialogActionRow(
+                    context = activity,
+                    actions = secondary
+                )
+            ) {
+                addHorizontal(
+                    items = secondary,
+                    initialTopMarginDp = 9
+                )
+            } else {
+                addVertical(
+                    items = secondary,
+                    initialTopMarginDp = 9
+                )
+            }
+            return
+        }
+
+        if (
+            actionLayout ==
+                DialogActionLayout.AUTO &&
+            useHorizontalDialogActionRow(
+                context = activity,
+                actions = actions
+            )
+        ) {
+            addHorizontal(actions)
+            return
+        }
+
+        addVertical(actions)
     }
 
     private fun orderHorizontalActions(
@@ -1573,6 +1446,76 @@ object UiChrome {
                 SpaceView(activity, dp(activity, 8))
             )
         }
+    }
+
+    private fun showFixedFooterContentDialog(
+        activity: Activity,
+        dialog: Dialog,
+        card: LinearLayout,
+        content: View,
+        actions: List<DialogAction>,
+        actionLayout: DialogActionLayout
+    ): Dialog {
+        val contentScroll =
+            ScrollView(activity).apply {
+                isFillViewport = true
+                overScrollMode =
+                    View.OVER_SCROLL_IF_CONTENT_SCROLLS
+                isVerticalScrollBarEnabled = true
+            }
+
+        contentScroll.addView(
+            content,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        card.addView(
+            contentScroll,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        if (actions.isNotEmpty()) {
+            val footer =
+                LinearLayout(activity).apply {
+                    orientation =
+                        LinearLayout.VERTICAL
+                    setPadding(
+                        0,
+                        dp(context, 10),
+                        0,
+                        0
+                    )
+                }
+
+            addDialogActions(
+                activity = activity,
+                dialog = dialog,
+                card = footer,
+                actions = actions,
+                actionLayout = actionLayout
+            )
+
+            card.addView(
+                footer,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }
+
+        return showFixedFooterDialog(
+            activity = activity,
+            dialog = dialog,
+            card = card
+        )
     }
 
     private fun showFixedFooterDialog(
@@ -2056,11 +1999,12 @@ object UiChrome {
             minimumHeight = dp(context, 54)
             minWidth = 0
             minimumWidth = 0
-            maxLines = 2
+            textSize = 14f
+            maxLines = 1
             setPadding(
-                dp(context, 10),
+                dp(context, 12),
                 dp(context, 9),
-                dp(context, 10),
+                dp(context, 12),
                 dp(context, 9)
             )
             setTextColor(
@@ -2076,7 +2020,6 @@ object UiChrome {
                 radiusDp = 12,
                 strokeColor = palette.border
             )
-            autoSizeButton(this, minSp = 10, maxSp = 14)
             setOnClickListener { onClick() }
         }
     }
