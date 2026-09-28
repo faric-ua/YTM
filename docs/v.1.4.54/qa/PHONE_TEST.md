@@ -591,6 +591,43 @@ rotation persistence + cold-reopen durability + no-auto-resume are **PASS**.
 Next step:
 press `Продовжити` exactly once and capture the outcome before any other action.
 
+### Test 5 final phone result — 5+
+
+After the paused-state rotation and cold-reopen checks passed, the user pressed
+`Продовжити` exactly once.
+
+Observed:
+- session entered RUNNING;
+- created playlists stayed at 1;
+- confirmed inserts advanced from 0;
+- one transient `PREPARED без підтвердження: 1` represented the current in-flight
+  request and disappeared by terminal completion;
+- final session state: `Частково завершено з помилкою`;
+- final NEW `db ost`: `18/19`;
+- `Не додано треків: 1`;
+- Resume became unavailable at terminal completion.
+
+This matches the already-known unavailable/deleted source item from Test 4.
+The quota interruption itself did not become a terminal failure and did not block
+the remaining independent inserts.
+
+PASS criteria satisfied:
+- durable `PAUSED_WRITE_QUOTA`;
+- created playlist identity survived;
+- paused insert remained retryable;
+- rotation persistence;
+- cold-reopen persistence;
+- no automatic resume;
+- explicit Resume;
+- safe continuation after the one-shot fault auto-consumed.
+
+Result: **5+ / PHONE PASS**.
+
+Implementation gate for the next tests:
+Tests 6–8 are not executable yet. Wave 4 rollback UI/engine is still absent even
+though the session model already contains rollback states and the mutation ledger
+stores the exact identifiers needed for rollback.
+
 ## Test 6 — Rollback newly created playlist
 
 1. Let bulk sync create one controlled test playlist and add tracks.
