@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -15,6 +16,7 @@ import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.bulk.BulkSyncBaselineItem
 import com.saney.ytmimporter.bulk.BulkSyncBaselinePlaylist
+import com.saney.ytmimporter.bulk.BulkSyncHelpContent
 import com.saney.ytmimporter.bulk.BulkSyncLocalPlaylist
 import com.saney.ytmimporter.bulk.BulkSyncPlanRow
 import com.saney.ytmimporter.bulk.BulkSyncPlanState
@@ -80,6 +82,12 @@ class BulkSyncPreviewActivity : Activity() {
     private var loading =
         false
 
+    private var helpDialogOpen =
+        false
+
+    private var helpDialog:
+        Dialog? = null
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -101,6 +109,14 @@ class BulkSyncPreviewActivity : Activity() {
                 quotaTracker =
                     quotaTracker
             )
+
+        helpDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_HELP_DIALOG_OPEN,
+                    false
+                )
+                ?: false
 
         buildUi()
 
@@ -126,6 +142,14 @@ class BulkSyncPreviewActivity : Activity() {
         } else {
             loadPreview()
         }
+
+        if (helpDialogOpen) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showHelp()
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(
@@ -143,12 +167,20 @@ class BulkSyncPreviewActivity : Activity() {
             remoteReadUnitsUsed
         )
 
+        outState.putBoolean(
+            STATE_HELP_DIALOG_OPEN,
+            helpDialogOpen
+        )
+
         super.onSaveInstanceState(
             outState
         )
     }
 
     override fun onDestroy() {
+        helpDialog
+            ?.setOnDismissListener(null)
+        helpDialog = null
         executor.shutdownNow()
         super.onDestroy()
     }
@@ -201,7 +233,7 @@ class BulkSyncPreviewActivity : Activity() {
                 setPadding(
                     dp(12),
                     0,
-                    0,
+                    dp(8),
                     0
                 )
             },
@@ -209,6 +241,43 @@ class BulkSyncPreviewActivity : Activity() {
                 0,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 1f
+            )
+        )
+
+        topBar.addView(
+            Button(this).apply {
+                text = "?"
+                isAllCaps = false
+                textSize = 20f
+                setTypeface(
+                    typeface,
+                    Typeface.BOLD
+                )
+                setTextColor(
+                    palette.text
+                )
+                minWidth = 0
+                minimumWidth = 0
+                minHeight = 0
+                minimumHeight = 0
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    0
+                )
+                background =
+                    AppThemeManager
+                        .neutralButtonDrawable(
+                            this@BulkSyncPreviewActivity
+                        )
+                setOnClickListener {
+                    showHelp()
+                }
+            },
+            LinearLayout.LayoutParams(
+                dp(48),
+                dp(48)
             )
         )
 
@@ -1093,6 +1162,42 @@ class BulkSyncPreviewActivity : Activity() {
         )
     }
 
+    private fun showHelp() {
+        if (
+            helpDialog?.isShowing == true
+        ) {
+            return
+        }
+
+        helpDialogOpen = true
+
+        helpDialog =
+            UiChrome.showMessageDialog(
+                activity = this,
+                title =
+                    BulkSyncHelpContent
+                        .PREVIEW_TITLE,
+                message =
+                    BulkSyncHelpContent
+                        .previewMessage,
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label = "Зрозуміло",
+                            tone =
+                                UiChrome.ActionTone
+                                    .ACCENT
+                        ) {}
+                    )
+            ).also {
+                dialog ->
+                dialog.setOnDismissListener {
+                    helpDialogOpen = false
+                    helpDialog = null
+                }
+            }
+    }
+
     private fun toast(
         message: String
     ) {
@@ -1152,5 +1257,8 @@ class BulkSyncPreviewActivity : Activity() {
 
         private const val STATE_REMOTE_READ_UNITS =
             "bulk_sync_preview_remote_read_units"
+
+        private const val STATE_HELP_DIALOG_OPEN =
+            "bulk_sync_preview_help_dialog_open"
     }
 }
