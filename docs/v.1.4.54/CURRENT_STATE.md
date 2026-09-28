@@ -96,7 +96,7 @@ reflowed; no action executed; explicit `Скасувати` returned to the same
 
 Result: **BUG-046 PASS / CLOSED**.
 
-## BUG-044 status — issue #34
+## BUG-044 status — issue #34 — CLOSED / PHONE PASS
 
 Original problem:
 a finished `PARTIAL_FAILED` `db ost 18/19` session blocked creation of a fresh
@@ -114,8 +114,9 @@ fresh-session retry will either:
 - open a new 19-track READY session, or
 - leave the exact preparation error visible on Preview.
 
-BUG-044 remains open until one of those states is captured and the fresh-session
-path is understood.
+Final phone retest reached a fresh Bulk Session in `Готово до запуску` with the NEW `db ost` row at `0/19`, checkpoint + remote baseline present, linked rows still deferred, and no auto-write. The old completed-partial 18/19 session did not reopen.
+
+Result: **BUG-044 PASS / CLOSED.**
 
 ## BUG-045 status — issue #36
 
@@ -132,6 +133,21 @@ Status:
 - portrait symptom passed on installed source `552c387...`;
 - project-wide shared-window acceptance is now owned by UX-038 rather than by
   another sequence of one-window retests.
+
+## UX-033 skin-aware footer finding — issue #26
+
+Phone evidence in the active Blue skin:
+- Bulk Session reached READY correctly, but `Почати синхронізацію` / `Закрити`
+  rendered as default gray Android buttons instead of Blue skin actions.
+- source inspection confirms Bulk Preview/Session build raw `Button(this)` controls;
+- `UiChrome.addAdaptiveActionButtons(...)` currently handles only row/stack sizing,
+  not skin/tone styling.
+
+Decision:
+do **not** patch this in the middle of the preserved Test 5 session. Track it under
+UX-033 as shared action styling work: canonical full-screen footer buttons must be
+skin-aware for primary/secondary/danger/disabled states while preserving adaptive
+layout.
 
 ## UX-037 status — issue #35
 
@@ -248,7 +264,7 @@ pause/restart/resume semantics pass.
 
 ## Open issues at this checkpoint
 
-- #34 — BUG-044: finished PARTIAL_FAILED session blocked new session
+- #34 — BUG-044: finished PARTIAL_FAILED session blocked new session — CLOSED / PASS
 - #35 — UX-037: Bulk Preview/Session lifecycle-safe Help
 - #36 — BUG-045: narrow dialog action row wrapped label
 - #37 — UX-038: project-wide window/footer contract consolidation
