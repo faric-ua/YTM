@@ -234,6 +234,108 @@ class BulkSyncSessionPolicyTest {
     }
 
     @Test
+    fun finishedPartialWithTerminalTrack_isTerminal() {
+        val base =
+            sessionWithNewRow()
+
+        val insertId =
+            BulkSyncExecutionPolicy
+                .insertOperationId(
+                    sessionId =
+                        base.sessionId,
+                    localPlaylistId =
+                        "new",
+                    trackIndex = 0,
+                    videoId =
+                        "AAAAAAAAAAA"
+                )
+
+        val session =
+            base.copy(
+                state =
+                    BulkSyncSessionState
+                        .PARTIAL_FAILED,
+                mutationLedger =
+                    listOf(
+                        BulkSyncMutation(
+                            operationId =
+                                insertId,
+                            type =
+                                BulkSyncMutationType
+                                    .INSERT_PLAYLIST_ITEM,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId =
+                                "AAAAAAAAAAA",
+                            trackIndex = 0,
+                            status =
+                                BulkSyncMutationStatus
+                                    .TERMINAL_FAILED,
+                            error =
+                                "HTTP 404 — Video not found.",
+                            updatedAt = 1L
+                        )
+                    )
+            )
+
+        assertTrue(
+            session.isTerminal
+        )
+    }
+
+    @Test
+    fun legacyPartialWithRetryableFailedInsert_isNotTerminal() {
+        val base =
+            sessionWithNewRow()
+
+        val insertId =
+            BulkSyncExecutionPolicy
+                .insertOperationId(
+                    sessionId =
+                        base.sessionId,
+                    localPlaylistId =
+                        "new",
+                    trackIndex = 0,
+                    videoId =
+                        "AAAAAAAAAAA"
+                )
+
+        val session =
+            base.copy(
+                state =
+                    BulkSyncSessionState
+                        .PARTIAL_FAILED,
+                mutationLedger =
+                    listOf(
+                        BulkSyncMutation(
+                            operationId =
+                                insertId,
+                            type =
+                                BulkSyncMutationType
+                                    .INSERT_PLAYLIST_ITEM,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId =
+                                "AAAAAAAAAAA",
+                            trackIndex = 0,
+                            status =
+                                BulkSyncMutationStatus
+                                    .FAILED,
+                            updatedAt = 1L
+                        )
+                    )
+            )
+
+        assertTrue(
+            !session.isTerminal
+        )
+    }
+
+    @Test
     fun terminalFailedTrack_isSkippedByScheduler() {
         val base =
             sessionWithNewRow()
