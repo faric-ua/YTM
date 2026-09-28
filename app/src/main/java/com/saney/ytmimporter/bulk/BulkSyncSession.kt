@@ -113,10 +113,40 @@ data class BulkSyncSession(
     val lastError: String? = null
 ) {
     val isTerminal: Boolean
-        get() =
-            state in
+        get() {
+            if (
+                state in
                 setOf(
                     BulkSyncSessionState.COMPLETED,
                     BulkSyncSessionState.ROLLED_BACK
                 )
+            ) {
+                return true
+            }
+
+            if (
+                state !=
+                BulkSyncSessionState.PARTIAL_FAILED
+            ) {
+                return false
+            }
+
+            val hasUncertainPrepared =
+                mutationLedger.any {
+                    it.status ==
+                        BulkSyncMutationStatus.PREPARED
+                }
+
+            val hasRecoverableLegacyInsertFailure =
+                mutationLedger.any {
+                    it.type ==
+                        BulkSyncMutationType
+                            .INSERT_PLAYLIST_ITEM &&
+                    it.status ==
+                        BulkSyncMutationStatus.FAILED
+                }
+
+            return !hasUncertainPrepared &&
+                !hasRecoverableLegacyInsertFailure
+        }
 }
