@@ -12,7 +12,7 @@ Last updated: 2026-09-28
 - Stable baseline: v1.4.53 exact accepted source
   `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`
 - Development phase:
-  **TEST 5 PAUSED — UX-038 PROJECT-WIDE UI WINDOW CONSOLIDATION**
+  **TEST 5 PHONE PASS — NEXT: WAVE 4 ROLLBACK IMPLEMENTATION**
 
 ## Accepted phone work
 
@@ -308,11 +308,44 @@ One known deleted source video may still produce terminal 404 later, so final
 completion may be 18/19; that does not invalidate Test 5 if quota
 pause/restart/resume semantics pass.
 
+## Test 5 final result — 5+ / PHONE PASS
+
+Phone evidence on signed source `83d1cec92482841fd660df90a92137a77cbf8c29`:
+
+1. one-shot DAILY_QUOTA fault intercepted the first Bulk insert and produced
+   `Пауза — write quota` at `db ost 0/19`;
+2. rotation preserved the paused state and never auto-resumed;
+3. task removal + cold relaunch preserved the same paused state and never
+   auto-resumed;
+4. one explicit `Продовжити` resumed the durable session;
+5. execution advanced normally after the consumed one-shot fault;
+6. transient RUNNING evidence showed 1 in-flight PREPARED mutation while confirmed
+   inserts advanced;
+7. final session state became `Частково завершено з помилкою` with:
+   - created playlists: 1;
+   - added tracks: 18;
+   - not added: 1;
+   - NEW `db ost`: `18/19`.
+
+The final 18/19 partial result is the known terminal unavailable/deleted source item
+already accepted in Test 4 and does not invalidate Test 5.
+
+Result: **5+ / PHONE PASS**.
+
+Important interpretation:
+the temporary QA fault path is proven durable and explicitly resumable; the fault
+was consumed and must not be re-armed for this session.
+
+Next implementation gate:
+Tests 6–8 require Wave 4 exact rollback. The current branch has rollback states and
+ledger identifiers, but no user-facing rollback engine/action yet. Do not attempt
+Test 6 on phone until Wave 4 is implemented and validated.
+
 ## Open issues at this checkpoint
 
 - #34 — BUG-044: finished PARTIAL_FAILED session blocked new session — CLOSED / PASS
-- #35 — UX-037: Bulk Preview/Session lifecycle-safe Help
-- #36 — BUG-045: narrow dialog action row wrapped label
+- #35 — UX-037: Bulk Preview/Session lifecycle-safe Help — CLOSED / PASS
+- #36 — BUG-045: narrow dialog action row wrapped label — CLOSED / PASS
 - #37 — UX-038: project-wide window/footer contract consolidation
 - #38 — BUG-046: Bulk create-session confirmation disappears on rotation — CLOSED / PASS
 
