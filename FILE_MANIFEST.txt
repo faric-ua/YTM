@@ -15,7 +15,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 6e5a0c4832d35dfb  ASSISTANT_CONTEXT_INDEX.md
 96ac72cc48a56178  BACKLOG.md
 702ad9ff87e4f1d8  CHANGELOG.md
-0af907da9ede44af  CURRENT_HANDOFF.md
+da64cf0a1c4d04aa  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -159,7 +159,7 @@ fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWri
 607b158a71f47d74  app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt
 8ab47c848ec9c8b3  app/src/main/java/com/saney/ytmimporter/ui/SafFileSaveFlow.kt
 9280056bf2b0b6b0  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-242c736081a3c853  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+8da0ecc45386eddb  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 78da56fe6d4f0417  app/src/main/java/com/saney/ytmimporter/ui/WorkflowRelayOverlay.kt
 97950a5f9f861111  app/src/main/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicy.kt
 8bc5cda5c2b4c663  app/src/main/java/com/saney/ytmimporter/updater/UpdaterManifestPolicy.kt
@@ -1459,6 +1459,7 @@ fdc76d59bea62f62  docs/v.1.4.53/qa/PHONE_TEST.md
 e8b4e254a09b344b  docs/v.1.4.53/qa/PHONE_TEST_REPORT_2026-09-26.md
 72c430dad863111e  docs/v.1.4.53/qa/STABILIZATION_CHECKPOINT.md
 1ca958c0f7b04ad2  docs/v.1.4.53/qa/TEST_RUN_2026-09-26.md
+c93d07fb3d69fb1d  docs/v.1.4.54/CURRENT_STATE.md
 e4fdc34f22a86ab7  docs/v.1.4.54/REGRESSION_CHECKLIST.md
 b703cddac78f8f4b  docs/v.1.4.54/RELEASE.md
 cc81c54f63997585  docs/v.1.4.54/RELEASE_META.json
