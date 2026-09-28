@@ -1,6 +1,6 @@
 # v1.4.54 — Evidence Manifest
 
-Status: development. Wave 0 source/JVM policy evidence exists; no signed v1.4.54 phone evidence exists yet.
+Status: development. Signed v1.4.54 phone evidence exists through Tests 1–4 and the current pre-Test-5 UI checkpoint. Test 5 remains paused before its first controlled insert.
 
 ## Planning evidence
 
@@ -25,3 +25,30 @@ Status: development. Wave 0 source/JVM policy evidence exists; no signed v1.4.54
 - before/after local backup/checkpoint evidence;
 - remote checkpoint + mutation-ledger evidence for controlled test playlists;
 - rollback proof showing unrelated pre-existing remote content unchanged.
+
+
+## Current late-stage evidence
+
+| Evidence | Source | Meaning |
+|---|---|---|
+| History Recovery Tests 1–2 | real-phone v1.4.54 QA | restore preserves resolved Search work and persisted YTM playlist identity without auto-run |
+| Bulk Test 3 | real-phone v1.4.54 QA | preflight classifications/read-only behavior/rotation/cancel passed |
+| Bulk Test 4 | real-phone v1.4.54 QA | durable session, force-close recovery, explicit resume, PREPARED reconciliation, terminal 404 continuation and 18/19 partial completion passed |
+| BUG-044 retest | real-phone checkpoint | old completed-partial 18/19 session no longer reopened; fresh preparation path was reached, then failed before a new session screen opened |
+| BUG-045 portrait retest | source `552c387a5626ab0fd7e501aff946741610f41f6d`, signed run `36374659541` | `Створити сесію` / `Скасувати` stacked full-width on narrow portrait; primary label remained one line |
+| Test 5 fault state | current phone state | one-shot DAILY_QUOTA hook remains armed because no controlled Bulk insert has fired |
+| UX-038 static audit | `docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md` | shared runtime/audit drift was identified and consolidated before further feature QA |
+| UI static gate | `scripts/ui-window-contract-audit.sh` | release preflight now rejects non-fixed action modals, forced compact rows, wrapped/auto-shrunk dialog footer labels, and non-adaptive canonical full-screen footers |
+
+## Evidence still required before resuming Test 5
+
+- exact validated HEAD after the project-wide UI consolidation;
+- signed APK from that exact HEAD;
+- in-place install preserving the armed Test 5 fault;
+- consolidated representative window matrix from
+  `docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md`;
+- fresh BUG-044 session-creation result:
+  - either a new 19-track READY session screen;
+  - or the now-persistent exact preparation error if creation still fails.
+
+Only after those gates pass should the first controlled Test 5 insert be allowed.
