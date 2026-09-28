@@ -29,8 +29,19 @@ or change semantic state.
 
 ## Fixed-footer rule
 
-A fixed bottom action footer should minimize vertical obstruction in wide layouts.
-If two footer actions have sufficient width, prefer a single horizontal equal-width row.
+For modal / Help / chooser / result / confirmation windows, the bottom action footer is
+**mandatory and fixed**.
+
+- footer actions never live inside the scrolling content container;
+- scrolling affects only the content area above the footer;
+- action buttons stay visible without scrolling;
+- the footer remains the final layout block in portrait and landscape;
+- if two or three footer actions have sufficient width, they may use one equal-width row;
+- if width is insufficient, the footer action group stacks vertically;
+- row ↔ stack reflow changes only layout, never action semantics;
+- footer height may change because of adaptive stacking, but footer visibility does not;
+- content gets the remaining viewport and scrolls as needed;
+- the final content item must remain fully reachable above the fixed footer.
 
 ## Canonical YTM implementation
 
