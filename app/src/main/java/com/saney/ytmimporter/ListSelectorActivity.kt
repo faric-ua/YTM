@@ -332,7 +332,6 @@ class ListSelectorActivity : Activity() {
     private fun footer(): LinearLayout {
         val root =
             LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
                 setPadding(
                     dp(12),
                     dp(10),
@@ -349,29 +348,23 @@ class ListSelectorActivity : Activity() {
                 finishWithSelection()
             }
 
-        root.addView(
-            confirmButton,
-            LinearLayout.LayoutParams(
-                0,
-                dp(54),
-                1f
-            )
-        )
-
-        root.addView(
+        val cancelButton =
             footerButton(
                 label = "Скасувати",
                 primary = false
             ) {
                 finish()
-            },
-            LinearLayout.LayoutParams(
-                0,
-                dp(54),
-                1f
-            ).apply {
-                marginStart = dp(8)
             }
+
+        UiChrome.addAdaptiveActionButtons(
+            activity = this,
+            container = root,
+            buttons =
+                listOf(
+                    confirmButton,
+                    cancelButton
+                ),
+            buttonHeightDp = 54
         )
 
         return root
