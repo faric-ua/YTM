@@ -55,10 +55,23 @@ Help window, chooser, overlay, progress/result state та іншого інте�
 
 ### Scroll + footer
 
-- довгий content scrollable;
-- fixed footer не перекриває останню card/row;
-- усі actions reachable в portrait і landscape;
+Це **обов'язкова структура**, а не рекомендація:
+
+- user-facing action buttons у modal / Help / chooser / result / confirmation window
+  розміщуються в **fixed bottom footer**;
+- footer з action-кнопками **не входить у scrollable content**;
+- action-кнопки мають залишатися видимими без прокручування незалежно від довжини тексту;
+- scrollable є тільки content-area між header/top area і fixed footer;
+- довгий текст, cards, lists, diagnostics та пояснення прокручуються всередині content-area;
+- footer не перекриває останній content item: scroll container має мати коректний bottom inset/padding;
+- primary / secondary / destructive action order не змінюється через scroll;
+- footer може адаптивно перебудовувати кнопки row ↔ stack за шириною, але сам footer залишається fixed;
+- footer не повинен рухатися разом із content при scroll;
+- усі actions мають бути одночасно reachable і видимі в portrait та landscape;
 - scroll position не повинен змінювати semantic state.
+
+Виняток допускається лише для **не-action tile/button**, який є частиною самого content
+(наприклад картка-навігація у списку). Такий елемент не вважається footer action.
 
 ---
 
@@ -125,10 +138,12 @@ User-facing button label:
 - чи не обрізаний title;
 - чи не ламається button text;
 - чи не перекритий content;
+- чи fixed footer весь час залишається видимим;
+- чи action buttons не поїхали в scrollable content;
 - чи footer не займає непропорційно багато місця;
 - чи cards/tiles не стають надто вузькими;
 - чи primary action залишається очевидним;
-- чи scroll дозволяє дістатися останнього елемента;
+- чи scroll дозволяє дістатися останнього content-елемента **без необхідності шукати кнопки**;
 - чи modal залишається в межах viewport;
 - чи rotation не виконує action автоматично.
 
@@ -265,7 +280,30 @@ Orientation-name не визначає layout напряму — рішення 
 
 ---
 
-## 10. Release rule
+## 10. Canonical window composition
+
+Для нового modal / Help / chooser / result / confirmation window базова композиція така:
+
+1. **Header / title area** — fixed у верхній частині, якщо вікно має окремий header.
+2. **Scrollable content area** — займає весь доступний простір між header і footer.
+3. **Fixed action footer** — завжди останній layout-блок і завжди видимий.
+4. Footer actions адаптуються за шириною через row/stack, але **ніколи не переносяться у scroll**.
+5. Якщо content не вміщується — зменшується viewport content-area, а не доступність footer.
+6. Якщо відкрито keyboard/IME і actions потрібні для завершення форми, footer має лишатися доступним
+   відповідно до конкретного screen contract; його не можна втрачати під клавіатурою без явної причини.
+7. Для Help window типова кнопка `Зрозуміло` / `Закрити` належить fixed footer.
+8. Для chooser primary/secondary actions належать fixed footer.
+9. Для result window `Готово` / `Закрити` / retry action належать fixed footer.
+10. Scrollbar, якщо є, відноситься лише до content-area і не охоплює footer.
+
+Антипатерни:
+- action button в кінці великого ScrollView;
+- необхідність прокручувати донизу, щоб знайти `Закрити` / `Зрозуміло` / `Продовжити`;
+- footer, який зникає при scroll;
+- дублювання однієї і тієї ж завершальної дії і в content, і у footer;
+- різна footer-архітектура portrait/landscape без функціональної причини.
+
+## 11. Release rule
 
 Нове або суттєво змінене user-facing вікно не вважається phone-accepted,
 поки не пройдено його window audit за цим контрактом.
