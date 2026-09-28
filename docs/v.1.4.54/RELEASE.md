@@ -12,6 +12,28 @@ Current identity:
 
 The v1.4.54 branch was created directly from that exact phone-tested source.
 
+## Current development checkpoint — 2026-09-28
+
+- Tests 1–2: PHONE PASS.
+- Test 3: PHONE PASS.
+- Test 4: PHONE PASS.
+- Test 5: paused before first controlled Bulk insert; the one-shot DAILY_QUOTA QA
+  fault remains armed.
+- BUG-044: old completed-partial session no longer reopened during retest, but a
+  fresh READY session has not yet been reached.
+- BUG-045: original narrow portrait action-wrap symptom corrected on signed source
+  `552c387a5626ab0fd7e501aff946741610f41f6d`.
+- UX-038 / issue #37 now blocks further Test 5 work while the shared window/footer
+  architecture and audits are consolidated.
+
+Project-wide UI audit:
+`docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md`.
+
+Release rule for this checkpoint:
+do not continue Bulk write QA on a candidate with a known shared window-contract
+violation. Static UI gate → exact-HEAD validation → signed in-place install →
+representative window matrix → then resume Test 5.
+
 ## Goal
 
 Turn local History from an event log into a safe recovery entry point and add a
