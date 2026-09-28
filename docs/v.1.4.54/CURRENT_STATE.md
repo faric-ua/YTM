@@ -241,6 +241,27 @@ For each sample verify:
 - Back/Cancel/Close returns to the correct owner;
 - rotation restores semantic state and never starts remote work.
 
+## Test 5 initial quota-pause checkpoint — PASS
+
+Phone evidence on signed source `83d1cec92482841fd660df90a92137a77cbf8c29`:
+- explicit `Почати синхронізацію` was tapped once;
+- session entered `Пауза — write quota`;
+- user-facing copy reports daily quota exhaustion and that unfinished add-track work was saved;
+- NEW `db ost` remains at `0/19`;
+- `Продовжити` is available;
+- no further action was taken after the pause screenshot.
+
+This is the expected first Test 5 checkpoint: the one-shot DAILY_QUOTA QA hook fired before the first real Bulk insert.
+
+Next acceptance sequence:
+1. rotate paused screen portrait → landscape → portrait;
+2. verify pause state persists and no auto-resume occurs;
+3. force-close/reopen app;
+4. reopen current Bulk session and verify the same paused state still exists with no auto-resume;
+5. only then explicitly press `Продовжити`.
+
+UX-037 Bulk Preview + Bulk Session Help phone acceptance is complete; issue #35 is closed.
+
 ## Test 5 after the UI gate
 
 Expected controlled flow once a fresh READY session exists:
