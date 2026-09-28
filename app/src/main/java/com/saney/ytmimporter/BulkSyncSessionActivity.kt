@@ -405,8 +405,6 @@ class BulkSyncSessionActivity : Activity() {
 
         val actions =
             LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
                 setPadding(
                     dp(12),
                     dp(8),
@@ -418,23 +416,17 @@ class BulkSyncSessionActivity : Activity() {
         primaryButton =
             Button(this).apply {
                 isAllCaps = false
+                textSize = 15f
                 setOnClickListener {
                     startOrResume()
                 }
             }
 
-        actions.addView(
-            primaryButton,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-        )
-
         closeButton =
             Button(this).apply {
                 text = "Закрити"
                 isAllCaps = false
+                textSize = 15f
                 setOnClickListener {
                     if (!running) {
                         finish()
@@ -442,15 +434,15 @@ class BulkSyncSessionActivity : Activity() {
                 }
             }
 
-        actions.addView(
-            closeButton,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                topMargin =
-                    dp(8)
-            }
+        UiChrome.addAdaptiveActionButtons(
+            activity = this,
+            container = actions,
+            buttons =
+                listOf(
+                    primaryButton,
+                    closeButton
+                ),
+            buttonHeightDp = 54
         )
 
         root.addView(actions)
