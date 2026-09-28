@@ -10,15 +10,19 @@ Last updated: **2026-09-28**
 > `docs/v.1.4.54/CURRENT_STATE.md`
 >
 > Current phone checkpoint:
-> - latest signed functional APK source: `ced8a23ac2b172c88246d0b269c1892d56b0037c`;
+> - installed signed functional APK is still source `ced8a23ac2b172c88246d0b269c1892d56b0037c`;
 > - Test 1–4 are phone PASS;
 > - Test 5 one-shot DAILY_QUOTA fault is still armed and has not fired;
 > - Bulk Preview Help fixed-footer behavior passed portrait + landscape + both rotations + close/no-op;
-> - phone is currently stopped on ready `Синхронізувати всі` preview with `NEW 1 · db ost`;
-> - immediate next action: tap `Створити Bulk-сесію`, wait for the session screen, then STOP before `Почати синхронізацію`;
-> - this is the BUG-044 phone retest. The new session must be fresh `db ost` 19-track READY, not the old completed-partial 18/19 session.
+> - BUG-044 retest advanced past the old completed-partial-session guard: the old 18/19 session did not reopen;
+> - session preparation then failed after entering `Створюю local checkpoint і свіжий read-only remote baseline…`, returning to Preview with `Сесію не створено`;
+> - no Bulk insert or remote write started; exact preparation exception was not captured because the old build exposed it only through a transient Toast;
+> - BUG-045 / issue #36 was found from the same phone run: narrow confirmation dialogs forced 2–3 actions into one row and wrapped `Створити сесію`;
+> - shared action-layout fix commit: `1553d25ea9ebfedb3b23226f818d60acd72cf82f`;
+> - follow-up diagnostic commit: `2ea18371f5fb6dd00742e5855374dc15a5770c3a` keeps Bulk session creation failure reason visible in Preview;
+> - immediate next action is **not** another retry on the old APK: validate/build/install the new in-place candidate, then retry `Створити Bulk-сесію` exactly once and stop on either the fresh session screen or the persistent failure reason.
 >
-> Do not clear app data, uninstall the app, cancel the Test 5 fault, or start unrelated Bulk writes.
+> Do not clear app data, uninstall the app, cancel the Test 5 fault, retry session creation repeatedly on the old APK, or start unrelated Bulk writes.
 
 
 ## 1. Resume point
