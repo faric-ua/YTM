@@ -379,6 +379,25 @@ Accepted behaviors:
 BUG-042 and BUG-043 are both closed.
 
 
+### Test 5 pre-start phone checkpoint — fresh READY session
+
+Phone evidence on signed source `83d1cec92482841fd660df90a92137a77cbf8c29`:
+- fresh Bulk Session opened successfully;
+- state: `Готово до запуску`;
+- NEW `db ost`: `0/19`;
+- checkpoint + remote baseline present;
+- LINKED row remains deferred to the later add-only wave;
+- no write started automatically;
+- BUG-044 acceptance is therefore PASS / CLOSED;
+- one-shot DAILY_QUOTA Test 5 fault remains unconsumed.
+
+Visual finding recorded separately under UX-033 / #26:
+Bulk full-screen footer buttons still use default gray Android styling in the Blue
+skin because the adaptive helper currently controls layout but not skin/tone.
+
+Before pressing `Почати синхронізацію`, finish the Bulk Session Help/footer
+representative UX-038 check.
+
 ## Test 5 — Quota pause
 
 Phone setup before Test 5:
