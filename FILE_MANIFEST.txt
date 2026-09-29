@@ -163,7 +163,7 @@ fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWri
 8ab47c848ec9c8b3  app/src/main/java/com/saney/ytmimporter/ui/SafFileSaveFlow.kt
 0c38b478d35c27f0  app/src/main/java/com/saney/ytmimporter/ui/ScrollPositionState.kt
 9280056bf2b0b6b0  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-23902c16f94d900b  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+0fedcabd592d15df  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 78da56fe6d4f0417  app/src/main/java/com/saney/ytmimporter/ui/WorkflowRelayOverlay.kt
 97950a5f9f861111  app/src/main/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicy.kt
 8bc5cda5c2b4c663  app/src/main/java/com/saney/ytmimporter/updater/UpdaterManifestPolicy.kt
@@ -1600,7 +1600,7 @@ d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
 c310a0f949ed619b  scripts/service-navigation-audit.sh
 dd05198419970d1c  scripts/ui-chrome-audit.sh
-29edf38d70e2eb81  scripts/ui-window-contract-audit.sh
+557c9b41a9732d7a  scripts/ui-window-contract-audit.sh
 972992f79e831a4b  scripts/v1417-auth-flow-audit.sh
 8809b63eb0115a67  scripts/v1418-account-library-import-audit.sh
 20e454770c223a1a  scripts/v1419-account-library-export-audit.sh
