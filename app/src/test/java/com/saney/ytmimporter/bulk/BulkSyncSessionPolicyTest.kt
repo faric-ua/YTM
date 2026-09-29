@@ -1305,6 +1305,108 @@ class BulkSyncSessionPolicyTest {
     }
 
     @Test
+    fun rollbackColdOpen_preservesAppliedAndRolledBackLedgerBoundary() {
+        val base =
+            sessionWithNewRow()
+
+        val alreadyReverted =
+            BulkSyncMutation(
+                operationId =
+                    "insert-2",
+                type =
+                    BulkSyncMutationType
+                        .INSERT_PLAYLIST_ITEM,
+                localPlaylistId =
+                    "new",
+                remotePlaylistId =
+                    "remote-new",
+                videoId =
+                    "BBBBBBBBBBB",
+                trackIndex = 1,
+                createdPlaylistItemId =
+                    "item-2",
+                status =
+                    BulkSyncMutationStatus
+                        .ROLLED_BACK,
+                updatedAt = 3L
+            )
+
+        val remaining =
+            BulkSyncMutation(
+                operationId =
+                    "insert-1",
+                type =
+                    BulkSyncMutationType
+                        .INSERT_PLAYLIST_ITEM,
+                localPlaylistId =
+                    "new",
+                remotePlaylistId =
+                    "remote-new",
+                videoId =
+                    "AAAAAAAAAAA",
+                trackIndex = 0,
+                createdPlaylistItemId =
+                    "item-1",
+                status =
+                    BulkSyncMutationStatus
+                        .APPLIED,
+                updatedAt = 2L
+            )
+
+        val interrupted =
+            base.copy(
+                state =
+                    BulkSyncSessionState
+                        .ROLLING_BACK,
+                mutationLedger =
+                    listOf(
+                        remaining,
+                        alreadyReverted
+                    )
+            )
+
+        val restored =
+            BulkSyncExecutionPolicy
+                .normalizeAfterColdOpen(
+                    interrupted
+                )
+
+        assertEquals(
+            BulkSyncSessionState
+                .ROLLBACK_PAUSED,
+            restored.state
+        )
+        assertEquals(
+            1,
+            BulkSyncRollbackPolicy
+                .rolledBackCount(
+                    restored
+                )
+        )
+        assertEquals(
+            1,
+            BulkSyncRollbackPolicy
+                .remainingAppliedCount(
+                    restored
+                )
+        )
+        assertEquals(
+            "insert-1",
+            BulkSyncRollbackPolicy
+                .nextAppliedMutation(
+                    restored
+                )
+                ?.operationId
+        )
+        assertTrue(
+            BulkSyncRollbackPolicy
+                .canResumeRollback(
+                    restored
+                )
+        )
+    }
+
+    @Test
     fun rollbackPaused_isExplicitlyResumable() {
         val base =
             sessionWithNewRow()
