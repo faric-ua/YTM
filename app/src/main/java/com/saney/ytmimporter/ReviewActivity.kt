@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -105,6 +106,19 @@ class ReviewActivity : Activity() {
     private var manualUrlHistoryIndex:
         Int? = null
 
+    private var reviewListView: ListView? = null
+    private var trackScrollView: ScrollView? = null
+    private var listFirstVisiblePosition = 0
+    private var listTopOffset = 0
+    private var reviewFilter =
+        ReviewFilter.ALL
+    private var trackScrollHistoryIndex: Int? = null
+
+    private val trackScrollPosition =
+        ScrollPositionState(
+            STATE_TRACK_SCROLL_POSITION
+        )
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -151,6 +165,44 @@ class ReviewActivity : Activity() {
                 ?.takeIf {
                     it != Int.MIN_VALUE
                 }
+
+        listFirstVisiblePosition =
+            savedInstanceState
+                ?.getInt(
+                    STATE_LIST_FIRST_POSITION,
+                    0
+                )
+                ?: 0
+        listTopOffset =
+            savedInstanceState
+                ?.getInt(
+                    STATE_LIST_TOP_OFFSET,
+                    0
+                )
+                ?: 0
+        reviewFilter =
+            savedInstanceState
+                ?.getString(
+                    STATE_REVIEW_FILTER
+                )
+                ?.let {
+                    runCatching {
+                        ReviewFilter.valueOf(it)
+                    }.getOrNull()
+                }
+                ?: ReviewFilter.ALL
+        trackScrollHistoryIndex =
+            savedInstanceState
+                ?.getInt(
+                    STATE_TRACK_SCROLL_HISTORY_INDEX,
+                    Int.MIN_VALUE
+                )
+                ?.takeIf {
+                    it != Int.MIN_VALUE
+                }
+        trackScrollPosition.restore(
+            savedInstanceState
+        )
 
         currentPlaylistStore =
             CurrentPlaylistStore(this)
@@ -353,6 +405,8 @@ class ReviewActivity : Activity() {
     override fun onSaveInstanceState(
         outState: Bundle
     ) {
+        captureReviewViewport()
+
         currentTrackHistoryIndex
             ?.let { value ->
                 outState.putInt(
@@ -397,8 +451,53 @@ class ReviewActivity : Activity() {
                 )
             }
 
+        outState.putInt(
+            STATE_LIST_FIRST_POSITION,
+            listFirstVisiblePosition
+        )
+        outState.putInt(
+            STATE_LIST_TOP_OFFSET,
+            listTopOffset
+        )
+        outState.putString(
+            STATE_REVIEW_FILTER,
+            reviewFilter.name
+        )
+        trackScrollHistoryIndex
+            ?.let { value ->
+                outState.putInt(
+                    STATE_TRACK_SCROLL_HISTORY_INDEX,
+                    value
+                )
+            }
+        trackScrollPosition.save(
+            outState,
+            trackScrollView
+        )
+
         super.onSaveInstanceState(
             outState
+        )
+    }
+
+    override fun onPause() {
+        captureReviewViewport()
+        super.onPause()
+    }
+
+    private fun captureReviewViewport() {
+        reviewListView?.let { list ->
+            listFirstVisiblePosition =
+                list.firstVisiblePosition
+                    .coerceAtLeast(0)
+            listTopOffset =
+                list.getChildAt(0)
+                    ?.top
+                    ?: 0
+        }
+
+        trackScrollPosition.capture(
+            trackScrollView
         )
     }
 
@@ -483,6 +582,15 @@ class ReviewActivity : Activity() {
     }
 
     private fun showListScreen() {
+        if (currentTrackHistoryIndex != null) {
+            trackScrollPosition.capture(
+                trackScrollView
+            )
+        }
+
+        trackScrollPosition.reset()
+        trackScrollHistoryIndex = null
+        trackScrollView = null
         currentTrackHistoryIndex = null
 
         reloadSnapshot()
@@ -599,6 +707,10 @@ class ReviewActivity : Activity() {
 
         val adapter = ReviewListAdapter(snapshot.playlist.tracks)
         list.adapter = adapter
+        adapter.setFilter(
+            reviewFilter
+        )
+        reviewListView = list
 
         val filters =
             listOf(
@@ -611,7 +723,16 @@ class ReviewActivity : Activity() {
         filters.forEachIndexed { index, pair ->
             filterRow.addView(
                 compactFilterButton(pair.first) {
-                    adapter.setFilter(pair.second)
+                    reviewFilter =
+                        pair.second
+                    listFirstVisiblePosition =
+                        0
+                    listTopOffset =
+                        0
+                    adapter.setFilter(
+                        pair.second
+                    )
+                    list.setSelection(0)
                 },
                 LinearLayout.LayoutParams(
                     0,
@@ -664,20 +785,44 @@ class ReviewActivity : Activity() {
                 position,
                 _ ->
 
+            captureReviewViewport()
             adapter
                 .getItem(position)
-                ?.let(
-                    ::showTrackScreen
-                )
+                ?.let { track ->
+                    trackScrollPosition.reset()
+                    trackScrollHistoryIndex = null
+                    showTrackScreen(
+                        track
+                    )
+                }
         }
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+
+        list.post {
+            list.setSelectionFromTop(
+                listFirstVisiblePosition,
+                listTopOffset
+            )
+        }
     }
 
     private fun showTrackScreen(
         track: Track
     ) {
+        captureReviewViewport()
+
+        if (
+            trackScrollHistoryIndex !=
+                track.historyIndex
+        ) {
+            trackScrollPosition.reset()
+            trackScrollHistoryIndex =
+                track.historyIndex
+        }
+
+        reviewListView = null
         currentTrackHistoryIndex =
             track.historyIndex
 
@@ -703,10 +848,15 @@ class ReviewActivity : Activity() {
             )
         )
 
-        val scroll =
+        trackScrollView =
             ScrollView(this).apply {
                 isFillViewport = true
             }
+
+        val scroll =
+            requireNotNull(
+                trackScrollView
+            )
 
         val content =
             LinearLayout(this).apply {
@@ -875,6 +1025,9 @@ class ReviewActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        trackScrollPosition.restoreInto(
+            scroll
+        )
     }
 
     private fun candidateCard(
@@ -2568,6 +2721,21 @@ class ReviewActivity : Activity() {
 
         private const val STATE_MANUAL_URL_HISTORY_INDEX =
             "review_manual_url_history_index"
+
+        private const val STATE_LIST_FIRST_POSITION =
+            "review_list_first_position"
+
+        private const val STATE_LIST_TOP_OFFSET =
+            "review_list_top_offset"
+
+        private const val STATE_REVIEW_FILTER =
+            "review_filter"
+
+        private const val STATE_TRACK_SCROLL_POSITION =
+            "review_track_scroll_position"
+
+        private const val STATE_TRACK_SCROLL_HISTORY_INDEX =
+            "review_track_scroll_history_index"
 
         private val BACKGROUND =
             Color.rgb(
