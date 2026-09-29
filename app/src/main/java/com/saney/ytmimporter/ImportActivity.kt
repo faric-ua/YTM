@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -139,6 +140,13 @@ class ImportActivity : Activity() {
 
     private lateinit var tracksInput:
         EditText
+    private lateinit var scrollView:
+        ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -170,6 +178,10 @@ class ImportActivity : Activity() {
                     false
                 )
                 ?: false
+
+        scrollPosition.restore(
+            savedInstanceState
+        )
 
         buildUi()
 
@@ -210,9 +222,27 @@ class ImportActivity : Activity() {
             clearWorkspaceDialogOpen
         )
 
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
+
         super.onSaveInstanceState(
             outState
         )
+    }
+
+    override fun onPause() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -385,10 +415,12 @@ class ImportActivity : Activity() {
 
         root.addView(topBar())
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport = true
             }
+
+        val scroll = scrollView
 
         val content =
             LinearLayout(this).apply {
@@ -772,6 +804,9 @@ class ImportActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        scrollPosition.restoreInto(
+            scrollView
+        )
     }
 
     private fun importFromYtmAccount() {
@@ -3758,6 +3793,9 @@ class ImportActivity : Activity() {
 
         private const val STATE_CLEAR_WORKSPACE_DIALOG_OPEN =
             "clear_workspace_dialog_open"
+
+        private const val STATE_SCROLL_POSITION =
+            "import_scroll_position"
 
         const val EXTRA_IMPORT_MESSAGE =
             "import_message"
