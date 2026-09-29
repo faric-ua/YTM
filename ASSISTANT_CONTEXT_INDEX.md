@@ -12,13 +12,18 @@ repository rather than depending on remembered chat context.
 Before any code-changing session, release work, architectural change,
 system/lifecycle change, or recovery after a lost chat:
 
-1. read `START_HERE_ASSISTANT.md`;
-2. read this file;
-3. read every non-comment path, in order, from
+1. read `ACTIVE_PLAN.md` and identify the first unchecked actionable item;
+2. read `START_HERE_ASSISTANT.md`;
+3. read `CURRENT_HANDOFF.md`;
+4. read this file;
+5. read every non-comment path, in order, from
    `docs/assistant-kit/CONTEXT_FILES.txt`;
-4. verify the live Git branch / HEAD against GitHub;
-5. inspect the exact source files and audits relevant to the requested task;
-6. only then design or apply changes.
+6. verify the live Git branch / HEAD against GitHub;
+7. inspect the exact source files and audits relevant to the requested task;
+8. only then design or apply changes.
+
+After every verified project-progress step, update `ACTIVE_PLAN.md` immediately so a
+new session can see exactly what finished and what remains.
 
 For a tiny factual question a full repository walk is not required. For actual
 project modification, the context walk is mandatory.
@@ -41,6 +46,7 @@ Chat memory must never silently override current repository truth.
 
 ### Current mutable state
 
+- `ACTIVE_PLAN.md` — mandatory live checklist / first resume point
 - `CURRENT_HANDOFF.md`
 - `PROJECT_STATUS.txt`
 - `BACKLOG.md`
