@@ -1,6 +1,6 @@
 # v1.4.54 — Evidence Manifest
 
-Status: development. Signed v1.4.54 phone evidence exists through Tests 1–4 and the current pre-Test-5 UI checkpoint. Test 5 remains paused before its first controlled insert.
+Status: phone-accepted functional release candidate. Main phone QA Tests 1–9 are complete; release closeout/publication remains separate.
 
 ## Planning evidence
 
@@ -52,3 +52,21 @@ Status: development. Signed v1.4.54 phone evidence exists through Tests 1–4 an
   - or the now-persistent exact preparation error if creation still fails.
 
 Only after those gates pass should the first controlled Test 5 insert be allowed.
+
+## Final accepted phone evidence — Tests 5–9
+
+| Evidence | Source | Meaning |
+|---|---|---|
+| Test 5 quota-pause/restart/resume | signed source `83d1cec92482841fd660df90a92137a77cbf8c29` | one-shot DAILY_QUOTA pause, rotation + cold-reopen durability, no auto-resume, one explicit Resume, final expected 18/19 terminal result |
+| Test 6 exact created-playlist rollback | signed source `2827ad9a7dd66cb552980b667d961d5986737bdf` | 18 inserted items + 1 session-created playlist rolled back by exact session ownership; unrelated same-title playlist survived |
+| Test 7 exact existing-playlist rollback | real-phone QA / issue #39 | two session-added playlist items removed by exact playlistItem identity while original 4-item baseline playlist remained |
+| Test 8 interrupted rollback recovery | signed source `e553c6dcb0f918a51f40bfa4d783cb11b3086472`, run `36579457780` | interruption after 1 persisted reverse mutation; cold reopen to paused 1/1 boundary; no auto-resume; explicit continuation to 2/0 and original remote baseline |
+| Test 9 Full Backup | real-phone QA / issue #39 | safety backup creation succeeded before legacy compatibility checks |
+| Test 9 legacy History restore | real-phone QA / issue #39 | 2026-09-23 legacy URL snapshot restored safely as local workspace; no Search/write auto-start; no title-only YTM linkage |
+| Test 9 legacy Queue readability | real-phone QA / issue #39 | preserved WRITE item `The Prodigy - Baby's Got A Temper (2002)`: Rate limit, remaining 3, added 0/3 |
+
+Final functional acceptance source:
+`e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+
+Result: **Tests 1–9 PHONE PASS.**
+
