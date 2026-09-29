@@ -2,6 +2,7 @@ package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.ui.RestorableModalController
+import com.saney.ytmimporter.ui.ScrollPositionState
 
 import android.app.Activity
 import android.app.Dialog
@@ -63,6 +64,12 @@ class DataActivity : Activity() {
     private lateinit var summaryText: TextView
     private lateinit var rollbackButton: Button
     private lateinit var snapshotDeleteButton: Button
+    private lateinit var scrollView: ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
 
     private var pendingExportContent: String? = null
     private var pendingExportSuccessMessage: String? = null
@@ -106,6 +113,9 @@ class DataActivity : Activity() {
         dataModalController.restore(
             savedInstanceState
         )
+        scrollPosition.restore(
+            savedInstanceState
+        )
 
         buildUi()
 
@@ -123,16 +133,34 @@ class DataActivity : Activity() {
         dataModalController.save(
             outState
         )
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
 
         super.onSaveInstanceState(
             outState
         )
     }
 
+    override fun onPause() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+        super.onPause()
+    }
+
     override fun onDestroy() {
         dataModalController.onDestroy()
         super.onDestroy()
     }
+
     override fun onResume() {
         super.onResume()
 
@@ -204,9 +232,11 @@ class DataActivity : Activity() {
             )
         )
 
-        val scroll = ScrollView(this).apply {
+        scrollView = ScrollView(this).apply {
             isFillViewport = true
         }
+
+        val scroll = scrollView
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -472,6 +502,9 @@ class DataActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        scrollPosition.restoreInto(
+            scrollView
+        )
         refreshSummary()
     }
 
@@ -2553,6 +2586,9 @@ class DataActivity : Activity() {
 
         private const val STATE_DATA_MODAL =
             "data_restorable_modal_state"
+
+        private const val STATE_SCROLL_POSITION =
+            "data_scroll_position"
 
         private const val ARG_HISTORY_ENTRIES =
             "history_entries"
