@@ -375,28 +375,16 @@ class BulkSyncPreviewActivity : Activity() {
         loadingPanel =
             LinearLayout(this).apply {
                 orientation =
-                    LinearLayout.HORIZONTAL
-                gravity =
-                    Gravity.CENTER_VERTICAL
+                    LinearLayout.VERTICAL
                 visibility =
                     View.GONE
                 setPadding(
                     dp(18),
                     0,
                     dp(18),
-                    dp(10)
+                    dp(12)
                 )
             }
-
-        loadingPanel.addView(
-            ProgressBar(this).apply {
-                isIndeterminate = true
-            },
-            LinearLayout.LayoutParams(
-                dp(24),
-                dp(24)
-            )
-        )
 
         loadingLabel =
             TextView(this).apply {
@@ -405,19 +393,32 @@ class BulkSyncPreviewActivity : Activity() {
                     palette.muted
                 )
                 setPadding(
-                    dp(10),
                     0,
                     0,
-                    0
+                    0,
+                    dp(6)
                 )
             }
 
         loadingPanel.addView(
             loadingLabel,
             LinearLayout.LayoutParams(
-                0,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                1f
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        loadingPanel.addView(
+            ProgressBar(
+                this,
+                null,
+                android.R.attr.progressBarStyleHorizontal
+            ).apply {
+                isIndeterminate = true
+            },
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(6)
             )
         )
 
