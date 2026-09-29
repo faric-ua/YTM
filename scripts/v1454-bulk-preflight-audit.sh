@@ -92,6 +92,8 @@ grep -Fq 'hasUncertainPreparedMutation' "$EXECUTION_POLICY"   || fail "Uncertain
 
 grep -Fq 'normalizeAfterColdOpen' "$SESSION_ACTIVITY"   || fail "Session cold-open pause normalization missing"
 
+[ "$(grep -Fc 'normalizeAfterColdOpen' "$SESSION_ACTIVITY")" -ge 2 ]   || fail "Session resume pause normalization missing"
+
 grep -Fq 'createBulkSyncCheckpointJson' "$PREVIEW"   || fail "Bulk local checkpoint creation missing"
 
 grep -Fq 'restorable_playlist_v1' "$BACKUP"   || fail "Full Backup does not include RestorablePlaylistStore"
