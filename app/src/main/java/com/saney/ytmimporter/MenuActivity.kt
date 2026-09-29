@@ -18,6 +18,7 @@ import com.saney.ytmimporter.storage.BulkSyncSessionStore
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.ReplacementLogDialog
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
 class MenuActivity : Activity() {
@@ -32,6 +33,13 @@ class MenuActivity : Activity() {
 
     private var replacementDialogOpen = false
     private var replacementDialog: Dialog? = null
+
+    private lateinit var scrollView: ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +69,10 @@ class MenuActivity : Activity() {
                     false
                 )
                 ?: false
+
+        scrollPosition.restore(
+            savedInstanceState
+        )
 
         render()
 
@@ -115,7 +127,24 @@ class MenuActivity : Activity() {
             STATE_REPLACEMENT_DIALOG_OPEN,
             replacementDialogOpen
         )
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onPause() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -168,10 +197,12 @@ class MenuActivity : Activity() {
             }
         )
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport = true
             }
+
+        val scroll = scrollView
 
         val content =
             LinearLayout(this).apply {
@@ -256,6 +287,9 @@ class MenuActivity : Activity() {
         UiChrome.applyScreenInsets(
             this,
             root
+        )
+        scrollPosition.restoreInto(
+            scrollView
         )
     }
 
@@ -891,6 +925,9 @@ class MenuActivity : Activity() {
 
         private const val STATE_REPLACEMENT_DIALOG_OPEN =
             "menu_replacement_dialog_open"
+
+        private const val STATE_SCROLL_POSITION =
+            "menu_scroll_position"
 
         const val EXTRA_ACTION =
             "menu_action"
