@@ -478,7 +478,8 @@ object UiChrome {
         activity: Activity,
         container: LinearLayout,
         buttons: List<Button>,
-        buttonHeightDp: Int = 54
+        buttonHeightDp: Int = 54,
+        tones: List<ActionTone> = emptyList()
     ) {
         if (buttons.isEmpty()) {
             return
@@ -498,6 +499,20 @@ object UiChrome {
             }
 
         buttons.forEachIndexed { index, button ->
+            styleAdaptiveActionButton(
+                activity = activity,
+                button = button,
+                tone =
+                    tones.getOrNull(
+                        index
+                    )
+                        ?: if (index == 0) {
+                            ActionTone.ACCENT
+                        } else {
+                            ActionTone.NORMAL
+                        }
+            )
+
             container.addView(
                 button,
                 if (horizontal) {
@@ -522,6 +537,74 @@ object UiChrome {
                 }
             )
         }
+    }
+
+    fun styleAdaptiveActionButton(
+        activity: Activity,
+        button: Button,
+        tone: ActionTone
+    ) {
+        val palette =
+            AppThemeManager.palette(
+                activity
+            )
+
+        val enabledColor =
+            when (tone) {
+                ActionTone.NORMAL ->
+                    palette.text
+
+                ActionTone.ACCENT ->
+                    palette.accent
+
+                ActionTone.DANGER ->
+                    palette.semantic.danger
+            }
+
+        button.isAllCaps =
+            false
+        button.gravity =
+            Gravity.CENTER
+        button.maxLines =
+            1
+        button.setPadding(
+            dp(activity, 12),
+            dp(activity, 8),
+            dp(activity, 12),
+            dp(activity, 8)
+        )
+        button.setTextColor(
+            android.content.res.ColorStateList(
+                arrayOf(
+                    intArrayOf(
+                        android.R.attr.state_enabled
+                    ),
+                    intArrayOf()
+                ),
+                intArrayOf(
+                    enabledColor,
+                    palette.muted
+                )
+            )
+        )
+        button.background =
+            roundedBackground(
+                context = activity,
+                color =
+                    palette.surfaceAlt,
+                radiusDp = 12,
+                strokeColor =
+                    when (tone) {
+                        ActionTone.NORMAL ->
+                            palette.border
+
+                        ActionTone.ACCENT ->
+                            palette.accent
+
+                        ActionTone.DANGER ->
+                            palette.semantic.danger
+                    }
+            )
     }
 
     private data class LegacyDialogAction(
