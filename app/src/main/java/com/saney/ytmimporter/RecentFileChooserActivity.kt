@@ -18,6 +18,7 @@ import com.saney.ytmimporter.storage.SafRecentFileQuery
 import com.saney.ytmimporter.storage.SafTreeAccess
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
+import com.saney.ytmimporter.ui.ScrollPositionState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -42,11 +43,23 @@ class RecentFileChooserActivity : Activity() {
     private var helpDialog: Dialog? =
         null
 
+    private lateinit var scrollView:
+        ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+
+        scrollPosition.restore(
+            savedInstanceState
+        )
 
         helpDialogOpen =
             savedInstanceState
@@ -104,7 +117,25 @@ class RecentFileChooserActivity : Activity() {
             STATE_HELP_DIALOG_OPEN,
             helpDialogOpen
         )
+
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onPause() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -129,6 +160,12 @@ class RecentFileChooserActivity : Activity() {
     }
 
     private fun render() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+
         val palette =
             AppThemeManager.palette(this)
 
@@ -214,11 +251,14 @@ class RecentFileChooserActivity : Activity() {
             }
         )
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport = true
                 clipToPadding = false
             }
+
+        val scroll =
+            scrollView
 
         val listContent =
             LinearLayout(this).apply {
@@ -303,6 +343,10 @@ class RecentFileChooserActivity : Activity() {
         UiChrome.applyScreenInsets(
             this,
             root
+        )
+
+        scrollPosition.restoreInto(
+            scrollView
         )
     }
 
@@ -880,6 +924,9 @@ class RecentFileChooserActivity : Activity() {
 
         private const val STATE_HELP_DIALOG_OPEN =
             "recent_file_chooser_help_dialog_open"
+
+        private const val STATE_SCROLL_POSITION =
+            "recent_file_chooser_scroll_position"
 
         private const val REQUEST_SYSTEM_TREE =
             8801
