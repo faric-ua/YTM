@@ -1023,9 +1023,9 @@ class BulkSyncSessionActivity : Activity() {
 
                 append("\n\n")
                 append(
-                    "Restart ніколи не продовжує сесію автоматично. " +
-                        "Wave 3 виконує тільки нові локальні плейлисти; " +
-                        "пов’язані LINKED лишаються відкладеними до append-safe wave."
+                    "Restart ніколи не продовжує сесію або відкат автоматично. " +
+                        "Wave 4 виконує NEW і підтверджені LINKED add-only рядки. " +
+                        "Rollback використовує тільки exact IDs цієї сесії."
                 )
             }
 
