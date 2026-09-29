@@ -32,6 +32,7 @@ import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.UiChrome
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.youtube.YouTubeApi
 import java.util.concurrent.Executors
 
@@ -60,6 +61,14 @@ class BulkSyncSessionActivity : Activity() {
 
     private lateinit var closeButton:
         Button
+
+    private lateinit var scrollView:
+        ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
 
     @Volatile
     private var running =
@@ -128,6 +137,10 @@ class BulkSyncSessionActivity : Activity() {
     ) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+
+        scrollPosition.restore(
+            savedInstanceState
+        )
 
         sessionStore =
             BulkSyncSessionStore(this)
@@ -220,6 +233,15 @@ class BulkSyncSessionActivity : Activity() {
             outState
         )
 
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
+
         super.onSaveInstanceState(
             outState
         )
@@ -227,6 +249,12 @@ class BulkSyncSessionActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
 
         if (!running) {
             val stored =
@@ -253,6 +281,15 @@ class BulkSyncSessionActivity : Activity() {
                 )
             }
         }
+    }
+
+    override fun onPause() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -397,10 +434,13 @@ class BulkSyncSessionActivity : Activity() {
 
         root.addView(statusText)
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport = true
             }
+
+        val scroll =
+            scrollView
 
         val content =
             LinearLayout(this).apply {
@@ -519,6 +559,10 @@ class BulkSyncSessionActivity : Activity() {
         UiChrome.applyScreenInsets(
             this,
             root
+        )
+
+        scrollPosition.restoreInto(
+            scrollView
         )
     }
 
@@ -1492,6 +1536,9 @@ class BulkSyncSessionActivity : Activity() {
 
         private const val STATE_SESSION_MODAL =
             "bulk_sync_session_modal"
+
+        private const val STATE_SCROLL_POSITION =
+            "bulk_sync_session_scroll_position"
 
         const val EXTRA_SESSION_ID =
             "bulk_sync_session_id"
