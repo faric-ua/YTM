@@ -56,9 +56,9 @@ grep -Fq 'STATE_INCLUDED_EXECUTABLE_IDS' "$PREVIEW"   || fail "Bulk preview sele
 
 grep -Fq 'Включено в Bulk-сесію' "$PREVIEW"   || fail "Bulk preview executable-row inclusion control missing"
 
-grep -Fq 'selectedSummary_excludesUncheckedExecutableRows' "$SELECTION_TEST"   || fail "Bulk row exclusion JVM coverage missing"
+grep -Fq 'selectedSummary_keepsOnlyIncludedExecutableRows' "$SELECTION_TEST"   || fail "Bulk scoped executable-only JVM coverage missing"
 
-grep -Fq 'ProgressBar' "$PREVIEW"   || fail "Bulk preview active loading indicator missing"
+grep -Fq 'progressBarStyleHorizontal' "$PREVIEW"   || fail "Bulk preview active horizontal loading indicator missing"
 
 grep -Fq 'BulkSyncSessionFactory' "$PREVIEW"   || fail "Bulk preview does not create a durable session after explicit confirmation"
 
@@ -101,6 +101,8 @@ grep -Fq 'BulkSyncSessionStore.PREFS_NAME' "$BACKUP"   || fail "Full Backup does
 grep -Fq 'BulkSyncCheckpointStore.PREFS_NAME' "$BACKUP"   || fail "Full Backup does not include Bulk checkpoints"
 
 grep -Fq 'appliedMutations_areNotScheduledAgain' "$SESSION_TEST"   || fail "Bulk idempotent-resume JVM coverage missing"
+
+grep -Fq 'coldOpen_readySession_dropsNonExecutableContextRows' "$SESSION_TEST"   || fail "Bulk ready-session scope normalization coverage missing"
 
 grep -Fq 'coldOpen_neverAutoResumesRunningSession' "$SESSION_TEST"   || fail "Bulk restart JVM coverage missing"
 
