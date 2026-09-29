@@ -83,7 +83,7 @@ If repository documents disagree, stop and reconcile them before implementation.
 - [x] UX hardening master plan exists.
 - [x] backlog/rule reconciliation exists.
 - [x] Create this crash-recovery `ACTIVE_PLAN.md`.
-- [ ] Wire `ACTIVE_PLAN.md` into every mandatory assistant first-read/context path.
+- [x] Wire `ACTIVE_PLAN.md` into every mandatory assistant first-read/context path. Evidence: `START_HERE_ASSISTANT.md`, `ASSISTANT_CONTEXT_INDEX.md`, `docs/assistant-kit/CONTEXT_FILES.txt`, `YTM_ASSISTANT_WORKFLOW.md`, `CURRENT_HANDOFF.md`.
 - [ ] Reconcile v1.4.54 Test 9 evidence into the historical QA/status files.
 - [ ] Complete v1.4.54 closeout records/gates without changing the accepted app behavior.
 
@@ -161,10 +161,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Wire this file into the mandatory assistant reading/context chain.**
+**Reconcile the final Test 9 phone evidence into v1.4.54 historical QA/status files.**
 
-After that, the next step is to reconcile the final Test 9 evidence and v1.4.54
-closeout state before adding further v1.4.55 behavior.
+Then complete v1.4.54 closeout records/gates without changing the accepted app behavior.
 
 ## Update rule
 
