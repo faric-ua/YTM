@@ -3,7 +3,7 @@
 Purpose: single source of truth for continuing this release after a chat reset,
 model handoff, app freeze, or context loss.
 
-Last updated: 2026-09-28
+Last updated: 2026-09-29
 
 ## Release / branch
 
@@ -12,7 +12,7 @@ Last updated: 2026-09-28
 - Stable baseline: v1.4.53 exact accepted source
   `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`
 - Development phase:
-  **TESTS 1–5 PHONE PASS — WAVE 4 ROLLBACK VALIDATED / SIGNED PHONE QA NEXT**
+  **TESTS 1–6 PHONE PASS — TEST 7 SCOPED LINKED ADD-ONLY CANDIDATE IN VALIDATION**
 
 ## Accepted phone work
 
@@ -402,3 +402,68 @@ raw Android gray buttons. Phone retest remains pending on the same signed Wave 4
 7. Continue from **Tomorrow's stop/resume contract** above.
 
 Do not restart Test 5 from scratch unless phone state is actually proven lost.
+
+
+## Test 6 final result — 6+ / PHONE PASS
+
+Signed phone candidate:
+- exact source: `2827ad9a7dd66cb552980b667d961d5986737bdf`;
+- signed build: `36503391119`.
+
+Accepted phone evidence:
+- rollback confirmation survived rotation and showed exactly 18 session-added items + 1 session-created playlist;
+- Cancel returned to the same terminal `db ost 18/19` session;
+- Blue-skin full-screen footer styling passed UX-033 acceptance;
+- one explicit destructive rollback completed as `Відкочено`;
+- final ledger result: 19 mutations rolled back, 0 remaining;
+- session row returned to 0/19;
+- no quota/auth/rate-limit/error pause occurred.
+
+Remote identity verification:
+- session-owned Test 5 destination ID: `PLUiwWr7GihSE`;
+- same-title playlist still visible in YTM after rollback: `PLTHMkNWGWp4k`;
+- IDs differ, therefore the surviving `db ost` is unrelated pre-existing content and correctly survived.
+
+Result: **Test 6 = 6+ / PHONE PASS**.
+
+## Test 7 current checkpoint
+
+Controlled existing destination:
+- `The Prodigy - What Evil Lurks (1991)`;
+- persisted YTM ID: `PLdZ1HeMkaDZw`;
+- remote baseline before Test 7: 4 tracks;
+- exactly two local tracks were manually replaced with different valid YouTube videoIds;
+- Bulk Preview correctly classifies the controlled row as LINKED add-only with `insert 2` / 100 units.
+
+Isolation blocker found before session creation:
+- aggregate Preview contains `NEW 1 • LINKED 3`;
+- unrelated executable rows include NEW `db ost`, LINKED `db ost`, and LINKED `The Prodigy - Lost Beats EP (2009)`;
+- deleting a local History record did not change the Bulk candidate set;
+- no Test 7 Bulk session has been created and no Test 7 remote write has started.
+
+UX-041 / issue #43:
+- per-row include/exclude for executable NEW/LINKED rows is implemented on branch;
+- selection defaults to all executable rows, can exclude individual rows, updates counts/write-unit estimate immediately, survives rotation, and filters the durable session input;
+- JVM policy coverage added in `BulkSyncSelectionPolicyTest`;
+- code/audit checkpoint before final manifest refresh: `d14e3f6a7e7eb988a88b10a149e1c173e72f0d63`;
+- exact final Validate Android is pending.
+
+UX-042 / issue #44:
+- Bulk Preview now shows an indeterminate progress indicator and active status copy while local/remote analysis or session checkpoint/baseline preparation is running;
+- phone acceptance remains pending on the same signed candidate.
+
+Additional findings:
+- UX-039 / issue #40 — Review manual URL editor + manual-choice visual hierarchy;
+- UX-040 / issue #41 — History semantic filters;
+- BUG-047 / issue #42 — History delete confirmation disappears on rotation; full destructive-window lifecycle audit required.
+
+### Next gate
+
+1. Refresh `FILE_MANIFEST.txt` last.
+2. Exact final branch HEAD must pass Validate Android.
+3. Build one signed APK from that exact code candidate and install in-place.
+4. Rebuild Bulk Preview.
+5. Exclude every executable row except controlled `What Evil Lurks`.
+6. Verify summary/confirmation: `NEW 0 • LINKED add-only 1`, controlled row `insert 2`.
+7. Create the durable session, stop on READY, verify only the controlled LINKED row is executable.
+8. Only then continue Test 7 remote add + exact rollback acceptance.
