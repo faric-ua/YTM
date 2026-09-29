@@ -85,7 +85,7 @@ If repository documents disagree, stop and reconcile them before implementation.
 - [x] Create this crash-recovery `ACTIVE_PLAN.md`.
 - [x] Wire `ACTIVE_PLAN.md` into every mandatory assistant first-read/context path. Evidence: `START_HERE_ASSISTANT.md`, `ASSISTANT_CONTEXT_INDEX.md`, `docs/assistant-kit/CONTEXT_FILES.txt`, `YTM_ASSISTANT_WORKFLOW.md`, `CURRENT_HANDOFF.md`.
 - [x] Reconcile v1.4.54 Test 9 evidence into the historical QA/status files. Evidence mirrored into `PHONE_TEST.md`, `CURRENT_STATE.md`, `RELEASE_META.json`, `EVIDENCE_MANIFEST.md` and `RELEASE_TEST_STATUS.md`; issue #39 remains the live phone-evidence trail.
-- [ ] Complete v1.4.54 closeout records/gates without changing the accepted app behavior.
+- [x] Complete v1.4.54 functional closeout records without changing the accepted app behavior. Tests 1–9 evidence, TEST_RUN, PHONE_TEST_REPORT, STABILIZATION_CHECKPOINT, RELEASE/CHANGELOG/BACKLOG/PROJECT_STATUS/HANDOFF are reconciled. Public stable publication is intentionally superseded by v1.4.55 because the immutable v1.4.54 accepted source contains deterministic QA fault controls; no fake stable tag was created.
 
 ## B. Audit existing v1.4.55 changes before adding more
 
@@ -161,9 +161,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Complete v1.4.54 closeout records/gates without changing the accepted app behavior.**
+**Audit every existing v1.4.55 app-code delta against immutable v1.4.54 source `e553c6d...`.**
 
-After closeout is coherent, audit every existing v1.4.55 app-code delta against the immutable v1.4.54 functional baseline before adding more source changes.
+Classify every changed area as PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY / FUNCTIONAL_FEATURE and stop/split any accidental business/API/storage semantic change before more implementation.
 
 ## Update rule
 
