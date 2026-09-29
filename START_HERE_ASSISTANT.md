@@ -27,6 +27,21 @@ The working method is unusual but intentional:
 
 ## 2. Current state
 
+> **ACTIVE OVERRIDE — v1.4.55 UX hardening**
+>
+> The historical detail below still documents the project evolution, but current
+> code-changing work is on `feat/v1.4.55-ux-hardening`.
+>
+> Before touching UI/UX code, read:
+> - `docs/v.1.4.55/CURRENT_STATE.md`;
+> - `docs/design/UX_CHANGE_SAFETY_CONTRACT.md`;
+> - `docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md`;
+> - `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`.
+>
+> The immutable functional reference is phone-accepted v1.4.54 source
+> `e553c6dcb0f918a51f40bfa4d783cb11b3086472`. Presentation/lifecycle work
+> must not silently change API, identity, Queue, History, backup or rollback semantics.
+
 Repository: `faric-ua/YTM`
 Primary branch: `main`
 
