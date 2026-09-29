@@ -907,6 +907,221 @@ class BulkSyncSessionPolicyTest {
         )
     }
 
+    @Test
+    fun rollback_requiresExactPersistedIds() {
+        val base =
+            sessionWithNewRow()
+
+        val broken =
+            base.copy(
+                state =
+                    BulkSyncSessionState
+                        .COMPLETED,
+                mutationLedger =
+                    listOf(
+                        BulkSyncMutation(
+                            operationId =
+                                "insert-broken",
+                            type =
+                                BulkSyncMutationType
+                                    .INSERT_PLAYLIST_ITEM,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId =
+                                "AAAAAAAAAAA",
+                            trackIndex = 0,
+                            createdPlaylistItemId =
+                                null,
+                            status =
+                                BulkSyncMutationStatus
+                                    .APPLIED,
+                            updatedAt = 2L
+                        )
+                    )
+            )
+
+        assertNotNull(
+            BulkSyncRollbackPolicy
+                .exactnessError(
+                    broken
+                )
+        )
+        assertTrue(
+            !BulkSyncRollbackPolicy
+                .canStartRollback(
+                    broken
+                )
+        )
+    }
+
+    @Test
+    fun rollback_revertsInsertBeforeSessionCreatedPlaylist() {
+        val base =
+            sessionWithNewRow()
+
+        val create =
+            BulkSyncMutation(
+                operationId =
+                    "create",
+                type =
+                    BulkSyncMutationType
+                        .CREATE_PLAYLIST,
+                localPlaylistId =
+                    "new",
+                remotePlaylistId =
+                    "remote-new",
+                videoId = null,
+                trackIndex = null,
+                status =
+                    BulkSyncMutationStatus
+                        .APPLIED,
+                updatedAt = 1L
+            )
+
+        val insert =
+            BulkSyncMutation(
+                operationId =
+                    "insert",
+                type =
+                    BulkSyncMutationType
+                        .INSERT_PLAYLIST_ITEM,
+                localPlaylistId =
+                    "new",
+                remotePlaylistId =
+                    "remote-new",
+                videoId =
+                    "AAAAAAAAAAA",
+                trackIndex = 0,
+                createdPlaylistItemId =
+                    "item-1",
+                status =
+                    BulkSyncMutationStatus
+                        .APPLIED,
+                updatedAt = 2L
+            )
+
+        val session =
+            base.copy(
+                state =
+                    BulkSyncSessionState
+                        .PARTIAL_FAILED,
+                mutationLedger =
+                    listOf(
+                        create,
+                        insert
+                    )
+            )
+
+        assertTrue(
+            BulkSyncRollbackPolicy
+                .canStartRollback(
+                    session
+                )
+        )
+
+        assertEquals(
+            "insert",
+            BulkSyncRollbackPolicy
+                .nextAppliedMutation(
+                    session
+                )
+                ?.operationId
+        )
+
+        val afterInsert =
+            session.copy(
+                mutationLedger =
+                    listOf(
+                        create,
+                        insert.copy(
+                            status =
+                                BulkSyncMutationStatus
+                                    .ROLLED_BACK
+                        )
+                    )
+            )
+
+        assertEquals(
+            "create",
+            BulkSyncRollbackPolicy
+                .nextAppliedMutation(
+                    afterInsert
+                )
+                ?.operationId
+        )
+    }
+
+    @Test
+    fun rollbackColdOpen_neverAutoResumes() {
+        val running =
+            sessionWithNewRow()
+                .copy(
+                    state =
+                        BulkSyncSessionState
+                            .ROLLING_BACK
+                )
+
+        val restored =
+            BulkSyncExecutionPolicy
+                .normalizeAfterColdOpen(
+                    running
+                )
+
+        assertEquals(
+            BulkSyncSessionState
+                .ROLLBACK_PAUSED,
+            restored.state
+        )
+        assertTrue(
+            restored.lastError
+                ?.contains(
+                    "Автоматичне продовження"
+                ) == true
+        )
+    }
+
+    @Test
+    fun rollbackPaused_isExplicitlyResumable() {
+        val base =
+            sessionWithNewRow()
+
+        val session =
+            base.copy(
+                state =
+                    BulkSyncSessionState
+                        .ROLLBACK_PAUSED,
+                mutationLedger =
+                    listOf(
+                        BulkSyncMutation(
+                            operationId =
+                                "create",
+                            type =
+                                BulkSyncMutationType
+                                    .CREATE_PLAYLIST,
+                            localPlaylistId =
+                                "new",
+                            remotePlaylistId =
+                                "remote-new",
+                            videoId = null,
+                            trackIndex = null,
+                            status =
+                                BulkSyncMutationStatus
+                                    .APPLIED,
+                            updatedAt = 1L
+                        )
+                    )
+            )
+
+        assertTrue(
+            BulkSyncRollbackPolicy
+                .canResumeRollback(
+                    session
+                )
+        )
+    }
+
     private fun sessionWithNewRow():
         BulkSyncSession {
         val summary =
