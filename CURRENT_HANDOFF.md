@@ -9,22 +9,22 @@ Last updated: **2026-09-28**
 > The detailed live state is maintained in:
 > `docs/v.1.4.54/CURRENT_STATE.md`
 >
-> Current phone checkpoint:
-> - installed signed APK source: `d34f37a46d115b288d64a609e2aead266345be53`;
-> - Validate Android `36377631268` — PASS; signed run `36447530331` — PASS;
-> - Test 1–4 are phone PASS;
-> - Test 5 one-shot DAILY_QUOTA fault is still **armed and has not fired**;
-> - no Test 5 Bulk insert has been attempted;
-> - controlled Bulk Preview still shows `db ost`: 19 tracks / ready videoId 19 / unresolved 0;
-> - BUG-045 portrait action layout is corrected;
-> - new UX-038 matrix finding: BUG-046 / issue #38 — `Створити Bulk-сесію?` disappeared on portrait→landscape rotation instead of restoring above the same Preview;
-> - no confirmation action executed and no session/write started during the failed rotation test;
-> - root cause: Bulk Preview confirmations bypassed the existing `RestorableModalController`;
-> - branch fix now persists/restores create-session and active-session confirmation state and extends `ui-window-contract-audit.sh`;
-> - phone QA is paused on the same Bulk Preview until an exact fixed candidate validates, signs and is installed in-place;
-> - next phone action after install: reopen `Створити Bulk-сесію?`, rotate portrait→landscape→portrait, verify the modal stays open and no action fires, then press `Скасувати`.
+> Current phone / repository checkpoint:
+> - phone installed signed source: `83d1cec92482841fd660df90a92137a77cbf8c29`;
+> - signed run for phone source: `36450498230` — PASS;
+> - Tests 1–5 are PHONE PASS; Test 5 final result is `5+`;
+> - current durable phone session: `db ost`, terminal partial `18/19`, exactly one known unavailable/deleted source item;
+> - Test 5 DAILY_QUOTA one-shot fault was consumed and must not be re-armed for this session;
+> - current phone session is intentionally preserved as the Test 6 rollback candidate;
+> - repository Wave 4 exact rollback implementation is complete on HEAD `11c4671f687d27b6ac0ea663861b92d26ed2c67a`;
+> - Validate Android `36501830491` on that exact HEAD — PASS (release preflight + Wave 4 audit + JVM tests + unsigned assemble);
+> - Wave 4 adds exact playlist-item delete, exact session-owned rollback, durable ROLLING_BACK/ROLLBACK_PAUSED/ROLLED_BACK, explicit rollback resume, LINKED add-only execution, and skin-aware adaptive footer buttons;
+> - issue #39 owns Wave 4 rollback acceptance;
+> - UX-033/#26 source fix is present through the shared skin-aware footer renderer; phone retest is pending on the Wave 4 signed candidate.
 >
-> Do not clear app data, uninstall, cancel/re-arm the Test 5 fault, confirm session creation, or start unrelated Bulk/YTM writes.
+> Next action: build/sign the exact validated Wave 4 HEAD, install **in-place** without clearing app data, open the preserved Test 5 Bulk session, and inspect the lifecycle-safe `Відкотити цю синхронізацію?` confirmation **without confirming it yet**.
+>
+> Do not clear app data, uninstall, create a different Bulk session, or manually remove the preserved `db ost` destination before Test 6.
 
 ## 1. Resume point
 
@@ -52,7 +52,7 @@ Current release state:
 - versionCode: **97**
 - feature: **History Recovery / Safe Bulk Sync**
 - branch: `feat/v1.4.54-history-bulk-sync`
-- phase: **development / Test 5 paused — UX-038 project-wide UI consolidation**
+- phase: **development / Tests 1–5 phone PASS — Wave 4 rollback candidate validated, signed build pending**
 - branch base is the exact v1.4.53 phone-tested app source `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
 - BUG-039 Wave 0 implementation: structured write-limit classification distinguishes confirmed daily quota, rate limit, resource limit and ambiguous HTTP 429.
 - generic `Resource has been exhausted (e.g. check quota)` is no longer enough to claim daily quota.
@@ -68,7 +68,7 @@ Current release state:
 - signed candidate run `36261268460` from exact source `9daa9027981551539d2fdfa76d08faa4620aeee6`: **SUCCESS**.
 - Wave 0 phone smoke: **W0+ / PASS** — install-over v1.4.53 preserved account/current workspace, Queue opened cleanly with no phantom jobs or auto-start, and controlled playlist `YTM v1.4.54 W0 test` completed 4/4 adds with 0 errors and no false pause.
 - natural 429/limit phone evidence remains opportunistic only; do not intentionally spam playlist creation to manufacture 429.
-- current acceptance: Tests 1–4 are phone PASS; Test 5 is paused before its first controlled insert behind the UX-038 window/footer gate.
+- current acceptance: Tests 1–5 are phone PASS; Wave 4 exact rollback is statically/JVM validated and awaits signed phone Test 6.
 - phone collaboration: ChatGPT updates GitHub; the user operates the phone through the repository-owned YTM Termux menu.
 - operational rule: when the YTM Termux menu has an equivalent action, use the menu; raw Git/gh commands are recovery-only.
 
