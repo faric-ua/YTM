@@ -25,6 +25,7 @@ import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.SafTreeFileWriter
+import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.updater.UpdaterRemoteOperations
 import com.saney.ytmimporter.ui.UiChrome
@@ -41,6 +42,7 @@ class ServiceActivity : Activity() {
     private lateinit var historyStore: HistoryStore
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var currentPlaylistStore: CurrentPlaylistStore
+    private lateinit var serviceModalController: RestorableModalController
 
     private val updaterListener: (UpdaterRemoteOperations.State) -> Unit = {
         if (page == Page.VERSION) {
@@ -77,6 +79,16 @@ class ServiceActivity : Activity() {
         pendingJobStore = PendingJobStore(this)
         currentPlaylistStore = CurrentPlaylistStore(this)
 
+        serviceModalController =
+            RestorableModalController(
+                activity = this,
+                stateKey = STATE_SERVICE_MODAL
+            ).also {
+                it.restore(
+                    savedInstanceState
+                )
+            }
+
         page =
             savedInstanceState
                 ?.getString(KEY_PAGE)
@@ -104,6 +116,7 @@ class ServiceActivity : Activity() {
                 }
 
         buildUi()
+        restoreServiceModalAfterContentReady()
     }
 
     override fun onStart() {
@@ -133,12 +146,23 @@ class ServiceActivity : Activity() {
             KEY_RENDERED_PAGE,
             renderedPage?.name
         )
+        serviceModalController.save(
+            outState
+        )
         super.onSaveInstanceState(outState)
     }
 
     override fun onPause() {
         captureScreenScroll()
         super.onPause()
+    }
+
+    override fun onDestroy() {
+        if (::serviceModalController.isInitialized) {
+            serviceModalController.onDestroy()
+        }
+
+        super.onDestroy()
     }
 
     private fun captureScreenScroll() {
@@ -1223,54 +1247,114 @@ class ServiceActivity : Activity() {
             return
         }
 
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Видалити прострочені записи?",
-            message =
-                "Буде видалено $expiredCount прострочених записів SearchCache.\n\n" +
-                    "History, Pending Queue та плейлисти YouTube/YTM не змінюються. " +
-                    "Якщо ці треки знадобляться знову, пошук повторно витрачатиме quota.",
-            confirmLabel =
-                "Так, видалити"
-        ) {
-            val removed =
-                searchCache.clearExpired()
-
-            toast(
-                "Видалено записів SearchCache: $removed"
-            )
-
-            buildUi()
-        }
+        serviceModalController.show(
+            modalId = MODAL_CLEAR_EXPIRED_CACHE,
+            args =
+                Bundle().apply {
+                    putInt(
+                        ARG_EXPIRED_COUNT,
+                        expiredCount
+                    )
+                },
+            renderer = ::renderServiceModal
+        )
     }
 
     private fun confirmClearSearchCache() {
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Очистити весь SearchCache?",
-            message =
-                "Усі кешовані результати пошуку буде видалено.\n\n" +
-                    "History і плейлисти не зміняться, але наступний пошук " +
-                    "цих треків знову звернеться до YouTube API.",
-            confirmLabel =
-                "Так, очистити"
-        ) {
-            val before =
-                searchCache
-                    .stats()
-                    .totalEntries
-
-            searchCache.clear()
-
-            toast(
-                "SearchCache очищено: $before записів"
-            )
-
-            buildUi()
-        }
+        serviceModalController.show(
+            modalId = MODAL_CLEAR_SEARCH_CACHE,
+            renderer = ::renderServiceModal
+        )
     }
+
+    private fun restoreServiceModalAfterContentReady() {
+        serviceModalController
+            .restoreAfterContentReady(
+                renderer = ::renderServiceModal
+            )
+    }
+
+    private fun renderServiceModal(
+        modalId: String,
+        args: Bundle
+    ): android.app.Dialog? =
+        when (modalId) {
+            MODAL_CLEAR_EXPIRED_CACHE -> {
+                val expiredCount =
+                    args.getInt(
+                        ARG_EXPIRED_COUNT,
+                        0
+                    )
+
+                if (expiredCount <= 0) {
+                    null
+                } else {
+                    UiChrome.showDangerConfirmDialog(
+                        activity = this,
+                        title =
+                            "Видалити прострочені записи?",
+                        message =
+                            "Буде видалено $expiredCount прострочених записів SearchCache.\n\n" +
+                                "History, Pending Queue та плейлисти YouTube/YTM не змінюються. " +
+                                "Якщо ці треки знадобляться знову, пошук повторно витрачатиме quota.",
+                        confirmLabel =
+                            "Так, видалити",
+                        onCancel = {
+                            serviceModalController
+                                .clearState()
+                        }
+                    ) {
+                        serviceModalController
+                            .clearState()
+
+                        val removed =
+                            searchCache.clearExpired()
+
+                        toast(
+                            "Видалено записів SearchCache: $removed"
+                        )
+
+                        buildUi()
+                    }
+                }
+            }
+
+            MODAL_CLEAR_SEARCH_CACHE ->
+                UiChrome.showDangerConfirmDialog(
+                    activity = this,
+                    title =
+                        "Очистити весь SearchCache?",
+                    message =
+                        "Усі кешовані результати пошуку буде видалено.\n\n" +
+                            "History і плейлисти не зміняться, але наступний пошук " +
+                            "цих треків знову звернеться до YouTube API.",
+                    confirmLabel =
+                        "Так, очистити",
+                    onCancel = {
+                        serviceModalController
+                            .clearState()
+                    }
+                ) {
+                    serviceModalController
+                        .clearState()
+
+                    val before =
+                        searchCache
+                            .stats()
+                            .totalEntries
+
+                    searchCache.clear()
+
+                    toast(
+                        "SearchCache очищено: $before записів"
+                    )
+
+                    buildUi()
+                }
+
+            else ->
+                null
+        }
 
     private fun saveDiagnostics() {
         val fileName =
@@ -1561,6 +1645,18 @@ class ServiceActivity : Activity() {
     }
 
     companion object {
+        private const val STATE_SERVICE_MODAL =
+            "service_modal_state"
+
+        private const val MODAL_CLEAR_EXPIRED_CACHE =
+            "clear_expired_cache"
+
+        private const val MODAL_CLEAR_SEARCH_CACHE =
+            "clear_search_cache"
+
+        private const val ARG_EXPIRED_COUNT =
+            "expired_count"
+
         private const val CHANGELOG_ASSET =
             "CHANGELOG.md"
 
