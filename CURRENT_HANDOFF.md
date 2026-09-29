@@ -2,15 +2,19 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
+> **FIRST:** read `ACTIVE_PLAN.md`. Its first unchecked actionable item is the live resume point.
+> Update that checklist after every verified step.
+
 Last updated: **2026-09-29**
 
-> **ACTIVE v1.4.55 OVERRIDE — READ THIS FIRST**
+> **ACTIVE v1.4.55 OVERRIDE — READ AFTER `ACTIVE_PLAN.md`**
 >
 > v1.4.54 phone QA Tests 1–9 are complete on the accepted functional baseline
 > `e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
 >
 > Active work has moved to:
 > - branch: `feat/v1.4.55-ux-hardening`;
+> - live checklist: `ACTIVE_PLAN.md`;
 > - umbrella: issue #56;
 > - current state: `docs/v.1.4.55/CURRENT_STATE.md`;
 > - safety contract: `docs/design/UX_CHANGE_SAFETY_CONTRACT.md`;
