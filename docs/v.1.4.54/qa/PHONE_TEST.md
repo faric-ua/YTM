@@ -738,3 +738,67 @@ Code-equivalent manifest-refresh candidate:
 - unsigned release assemble: PASS.
 
 A documentation-only handoff refresh follows; regenerate `FILE_MANIFEST.txt` and require one final exact-HEAD Validate before signed phone QA.
+
+## Final phone acceptance — Tests 7–9
+
+### Test 7 — 7+ / PHONE PASS
+
+Controlled existing destination:
+- `The Prodigy - What Evil Lurks (1991)`;
+- YTM ID `PLdZ1HeMkaDZw`;
+- original remote baseline: 4 tracks.
+
+Phone acceptance proved that after the scoped Bulk session inserted two controlled
+items, exact rollback removed only those two session-created playlistItem IDs.
+The destination playlist remained and returned to exactly the original four-track
+baseline. Pre-existing items were preserved.
+
+Result: **7+ / PHONE PASS**.
+
+### Test 8 — 8+ / PHONE PASS
+
+Accepted signed source:
+- `e553c6dcb0f918a51f40bfa4d783cb11b3086472`;
+- signed run `36579457780`.
+
+A deterministic one-shot interruption stopped rollback after exactly one persisted
+reverse mutation. Cold reopen restored the session as rollback-paused with:
+- reverted mutations: 1;
+- remaining mutations: 1;
+- no automatic continuation;
+- explicit `Продовжити відкат` available.
+
+After one explicit continuation, rollback completed as `ROLLED_BACK` with 2 reverted
+mutations and 0 remaining. Remote verification showed the controlled playlist back
+at the exact original four-track baseline; the already-reverted mutation was not
+repeated.
+
+Result: **8+ / PHONE PASS**.
+
+### Test 9 — 9+ / PHONE PASS
+
+Legacy compatibility was verified on the real in-place upgrade chain from v1.4.53 data.
+
+Accepted evidence:
+- Full Backup creation completed successfully before destructive compatibility checks;
+- legacy History entry `URL snapshot • PLIrF7GkQzd-E`, dated 2026-09-23 and predating
+  modern v1.4.54 durable History snapshots, restored safely as the current workspace;
+- confirmation explicitly warned that the current local workspace would be replaced
+  and that Search/YTM write would not auto-start;
+- restored Home state showed the 813-track workspace as `Лише локально`;
+- no title-only YTM linkage was invented;
+- preserved Queue data remained readable after all in-place updates;
+- durable WRITE pending job `The Prodigy - Baby's Got A Temper (2002)` remained visible
+  with pause reason `Rate limit`, remaining 3, added 0/3.
+
+Result: **9+ / PHONE PASS**.
+
+## v1.4.54 phone-suite result
+
+**Tests 1–9 = PHONE PASS.**
+
+The functional acceptance source is
+`e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+The main functional QA series is complete; further work belongs to release closeout
+or later UX/control hardening and must not reinterpret the accepted behavior.
+
