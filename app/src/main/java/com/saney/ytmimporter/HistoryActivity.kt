@@ -831,6 +831,18 @@ class HistoryActivity : Activity() {
             )
         }
 
+        if (entry.tracks.isNotEmpty()) {
+            quickActions.addView(
+                actionButton(
+                    "Відновити як поточний плейлист"
+                ) {
+                    requestRestoreAsCurrent(
+                        entry
+                    )
+                }
+            )
+        }
+
         quickActions.addView(
             actionButton(
                 "Зберегти YTM Project"
