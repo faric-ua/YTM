@@ -14,6 +14,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import com.saney.ytmimporter.storage.SafTreeAccess
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
 class StorageChooserActivity : Activity() {
@@ -25,6 +26,12 @@ class StorageChooserActivity : Activity() {
 
     private var helpDialogOpen = false
     private var helpDialog: Dialog? = null
+    private lateinit var scrollView: ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +44,9 @@ class StorageChooserActivity : Activity() {
                     false
                 )
                 ?: false
+        scrollPosition.restore(
+            savedInstanceState
+        )
 
         access =
             runCatching {
@@ -96,7 +106,24 @@ class StorageChooserActivity : Activity() {
             STATE_HELP_DIALOG_OPEN,
             helpDialogOpen
         )
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onPause() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -155,11 +182,13 @@ class StorageChooserActivity : Activity() {
             }
         )
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport = true
                 clipToPadding = false
             }
+
+        val scroll = scrollView
 
         val content =
             LinearLayout(this).apply {
@@ -257,6 +286,9 @@ class StorageChooserActivity : Activity() {
         UiChrome.applyScreenInsets(
             this,
             root
+        )
+        scrollPosition.restoreInto(
+            scrollView
         )
     }
 
@@ -681,6 +713,9 @@ class StorageChooserActivity : Activity() {
 
         private const val STATE_HELP_DIALOG_OPEN =
             "storage_chooser_help_dialog_open"
+
+        private const val STATE_SCROLL_POSITION =
+            "storage_chooser_scroll_position"
 
         private const val REQUEST_SYSTEM_TREE =
             8701
