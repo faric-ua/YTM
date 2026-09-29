@@ -18,6 +18,7 @@ enum class BulkSyncSessionState {
 
 enum class BulkSyncSessionRowState {
     READY,
+    READY_APPEND,
     CREATING,
     INSERTING,
     COMPLETED,
