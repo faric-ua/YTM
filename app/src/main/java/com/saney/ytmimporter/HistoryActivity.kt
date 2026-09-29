@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -70,6 +71,18 @@ class HistoryActivity : Activity() {
     private var deleteConfirmEntryId: String? = null
     private var deleteConfirmDialog: Dialog? = null
 
+    private var historyListView: ListView? = null
+    private var detailScrollView: ScrollView? = null
+    private var listFirstVisiblePosition = 0
+    private var listTopOffset = 0
+    private var historySearchQuery = ""
+    private var detailScrollEntryId: String? = null
+
+    private val detailScrollPosition =
+        ScrollPositionState(
+            KEY_DETAIL_SCROLL_POSITION
+        )
+
     private val saveExportRequestCode = 3201
     private val saveExportFolderRequestCode = 3202
 
@@ -83,6 +96,35 @@ class HistoryActivity : Activity() {
             CurrentPlaylistStore(this)
         restorablePlaylistStore =
             RestorablePlaylistStore(this)
+
+        listFirstVisiblePosition =
+            savedInstanceState
+                ?.getInt(
+                    KEY_LIST_FIRST_POSITION,
+                    0
+                )
+                ?: 0
+        listTopOffset =
+            savedInstanceState
+                ?.getInt(
+                    KEY_LIST_TOP_OFFSET,
+                    0
+                )
+                ?: 0
+        historySearchQuery =
+            savedInstanceState
+                ?.getString(
+                    KEY_SEARCH_QUERY
+                )
+                .orEmpty()
+        detailScrollEntryId =
+            savedInstanceState
+                ?.getString(
+                    KEY_DETAIL_SCROLL_ENTRY_ID
+                )
+        detailScrollPosition.restore(
+            savedInstanceState
+        )
 
         val restoredEntryId =
             savedInstanceState
@@ -201,6 +243,8 @@ class HistoryActivity : Activity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        captureHistoryViewport()
+
         outState.putString(
             KEY_CURRENT_ENTRY_ID,
             currentEntryId
@@ -221,7 +265,48 @@ class HistoryActivity : Activity() {
             KEY_DELETE_CONFIRM_ENTRY_ID,
             deleteConfirmEntryId
         )
+        outState.putInt(
+            KEY_LIST_FIRST_POSITION,
+            listFirstVisiblePosition
+        )
+        outState.putInt(
+            KEY_LIST_TOP_OFFSET,
+            listTopOffset
+        )
+        outState.putString(
+            KEY_SEARCH_QUERY,
+            historySearchQuery
+        )
+        outState.putString(
+            KEY_DETAIL_SCROLL_ENTRY_ID,
+            detailScrollEntryId
+        )
+        detailScrollPosition.save(
+            outState,
+            detailScrollView
+        )
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onPause() {
+        captureHistoryViewport()
+        super.onPause()
+    }
+
+    private fun captureHistoryViewport() {
+        historyListView?.let { list ->
+            listFirstVisiblePosition =
+                list.firstVisiblePosition
+                    .coerceAtLeast(0)
+            listTopOffset =
+                list.getChildAt(0)
+                    ?.top
+                    ?: 0
+        }
+
+        detailScrollPosition.capture(
+            detailScrollView
+        )
     }
 
     @Deprecated("Deprecated in Java")
@@ -300,6 +385,18 @@ class HistoryActivity : Activity() {
     }
 
     private fun showListScreen() {
+        val leavingDetail =
+            currentEntryId != null
+
+        if (leavingDetail) {
+            detailScrollPosition.capture(
+                detailScrollView
+            )
+            detailScrollPosition.reset()
+            detailScrollEntryId = null
+        }
+
+        detailScrollView = null
         currentEntryId = null
         actionsDialogOpen = false
         actionsDialog
@@ -362,6 +459,12 @@ class HistoryActivity : Activity() {
         val search = EditText(this).apply {
             hint = "Пошук історії"
             setSingleLine(true)
+            setText(
+                historySearchQuery
+            )
+            setSelection(
+                text.length
+            )
             textSize = 14f
             setTextColor(Color.WHITE)
             setHintTextColor(
@@ -470,13 +573,31 @@ class HistoryActivity : Activity() {
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
 
+        historyListView = list
+
         val adapter =
             HistoryListAdapter(entries)
 
         list.adapter = adapter
-        countText.text = "${entries.size} записів"
+        adapter.filter(
+            historySearchQuery
+        )
+        countText.text =
+            if (historySearchQuery.isBlank()) {
+                "${adapter.count} записів"
+            } else {
+                "Знайдено: ${adapter.count}"
+            }
+
+        list.post {
+            list.setSelectionFromTop(
+                listFirstVisiblePosition,
+                listTopOffset
+            )
+        }
 
         list.setOnItemClickListener { _, _, position, _ ->
+            captureHistoryViewport()
             adapter
                 .getItem(position)
                 ?.let(::showDetailScreen)
@@ -504,6 +625,15 @@ class HistoryActivity : Activity() {
                             .orEmpty()
                             .trim()
 
+                    if (query != historySearchQuery) {
+                        historySearchQuery =
+                            query
+                        listFirstVisiblePosition =
+                            0
+                        listTopOffset =
+                            0
+                    }
+
                     adapter.filter(query)
 
                     countText.text =
@@ -525,6 +655,18 @@ class HistoryActivity : Activity() {
     private fun showDetailScreen(
         entry: HistoryEntry
     ) {
+        captureHistoryViewport()
+
+        if (
+            detailScrollEntryId !=
+                entry.id
+        ) {
+            detailScrollPosition.reset()
+            detailScrollEntryId =
+                entry.id
+        }
+
+        historyListView = null
         currentEntryId = entry.id
 
         val root = baseRoot()
@@ -542,9 +684,15 @@ class HistoryActivity : Activity() {
             )
         )
 
-        val scroll = ScrollView(this).apply {
-            isFillViewport = true
-        }
+        detailScrollView =
+            ScrollView(this).apply {
+                isFillViewport = true
+            }
+
+        val scroll =
+            requireNotNull(
+                detailScrollView
+            )
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -927,6 +1075,9 @@ class HistoryActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        detailScrollPosition.restoreInto(
+            scroll
+        )
     }
 
     private fun showActions(
@@ -2620,6 +2771,21 @@ class HistoryActivity : Activity() {
 
         private const val KEY_CLEAR_HISTORY_DIALOG_OPEN =
             "history_clear_dialog_open"
+
+        private const val KEY_LIST_FIRST_POSITION =
+            "history_list_first_position"
+
+        private const val KEY_LIST_TOP_OFFSET =
+            "history_list_top_offset"
+
+        private const val KEY_SEARCH_QUERY =
+            "history_search_query"
+
+        private const val KEY_DETAIL_SCROLL_POSITION =
+            "history_detail_scroll_position"
+
+        private const val KEY_DETAIL_SCROLL_ENTRY_ID =
+            "history_detail_scroll_entry_id"
 
         private val BACKGROUND =
             Color.rgb(
