@@ -1,5 +1,15 @@
 # v1.4.54 — Regression Checklist
 
+## Final acceptance note
+
+The checklist below was created incrementally during development and contains
+historical unchecked planning boxes. Final execution evidence is authoritative:
+**Tests 1–9 PHONE PASS** on accepted functional source
+`e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+
+See `qa/TEST_RUN_2026-09-29.md` and `qa/PHONE_TEST_REPORT_2026-09-29.md`.
+Do not reinterpret an old unchecked planning box as a current functional failure.
+
 ## Current acceptance checkpoint — 2026-09-28
 - [x] Tests 1–2 History Recovery / linkage — phone PASS
 - [x] Test 3 Bulk read-only preflight — phone PASS
