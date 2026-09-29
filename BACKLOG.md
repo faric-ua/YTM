@@ -95,15 +95,18 @@ v1.4.53 is final/OTA+ and v1.4.54 is active on `feat/v1.4.54-history-bulk-sync`,
 created from exact phone-tested v1.4.53 source
 `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`.
 
-### Current acceptance checkpoint — 2026-09-28
+### Final functional acceptance checkpoint — 2026-09-29
 - [x] Tests 1–2 History Recovery / linkage — PHONE PASS.
 - [x] Test 3 Bulk read-only preflight — PHONE PASS.
 - [x] Test 4 durable Bulk session / force-close / reconcile — PHONE PASS.
-- [x] BUG-045 original narrow portrait confirmation symptom — PHONE PASS on source `552c387a5626ab0fd7e501aff946741610f41f6d`.
-- [~] UX-038 consolidated project-wide window/footer matrix — functional/lifecycle gate PASS; natural 3-action record/result sample deferred, UX-033 skin styling tracked separately.
-- [x] BUG-044 fresh 19-track READY session acceptance — PHONE PASS / CLOSED.
 - [x] Test 5 quota pause / rotation / cold reopen / explicit resume — 5+ PHONE PASS.
-- [ ] Tests 6–9 — Test 6–8 blocked on Wave 4 rollback implementation; Test 9 later.
+- [x] Test 6 exact rollback of session-created remote mutations — 6+ PHONE PASS.
+- [x] Test 7 exact rollback inside pre-existing playlist — 7+ PHONE PASS.
+- [x] Test 8 interrupted rollback / cold reopen / explicit continuation — 8+ PHONE PASS.
+- [x] Test 9 legacy compatibility — 9+ PHONE PASS.
+- [x] Main functional QA series Tests 1–9 complete on source `e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+- [x] Preserve this SHA as immutable functional reference for v1.4.55.
+- [x] Do not publish the QA-enabled v1.4.54 source as stable public binary; successor v1.4.55 compile-gates the fault controls.
 
 Static source of truth:
 `docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md`.
