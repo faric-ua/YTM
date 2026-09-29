@@ -50,21 +50,13 @@ object BulkSyncSelectionPolicy {
         val rows =
             summary.rows.filter {
                 row ->
-                !isExecutable(row) ||
+                isExecutable(row) &&
                     row.localPlaylistId in sanitized
             }
 
         return BulkSyncPlanSummary(
             rows = rows,
-            estimatedSearchCalls =
-                rows
-                    .filter {
-                        it.state ==
-                            BulkSyncPlanState.NEEDS_SEARCH
-                    }
-                    .sumOf {
-                        it.estimatedSearchCalls
-                    },
+            estimatedSearchCalls = 0,
             estimatedWriteUnits =
                 rows.sumOf {
                     it.estimatedWriteUnits
