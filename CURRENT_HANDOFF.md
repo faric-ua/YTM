@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-28**
+Last updated: **2026-09-29**
 
 > **ACTIVE v1.4.54 HANDOFF — READ FIRST**
 >
@@ -10,33 +10,33 @@ Last updated: **2026-09-28**
 > `docs/v.1.4.54/CURRENT_STATE.md`
 >
 > Current phone / repository checkpoint:
-> - phone installed signed source: `83d1cec92482841fd660df90a92137a77cbf8c29`;
-> - signed run for phone source: `36450498230` — PASS;
-> - Tests 1–5 are PHONE PASS; Test 5 final result is `5+`;
-> - current durable phone session: `db ost`, terminal partial `18/19`, exactly one known unavailable/deleted source item;
-> - Test 5 DAILY_QUOTA one-shot fault was consumed and must not be re-armed for this session;
-> - current phone session is intentionally preserved as the Test 6 rollback candidate;
-> - repository Wave 4 exact rollback implementation is complete on HEAD `11c4671f687d27b6ac0ea663861b92d26ed2c67a`;
-> - Validate Android `36501830491` on that exact HEAD — PASS (release preflight + Wave 4 audit + JVM tests + unsigned assemble);
-> - Wave 4 adds exact playlist-item delete, exact session-owned rollback, durable ROLLING_BACK/ROLLBACK_PAUSED/ROLLED_BACK, explicit rollback resume, LINKED add-only execution, and skin-aware adaptive footer buttons;
-> - issue #39 owns Wave 4 rollback acceptance;
-> - UX-033/#26 source fix is present through the shared skin-aware footer renderer; phone retest is pending on the Wave 4 signed candidate.
->
-> Current Test 6 checkpoint:
-> - signed Wave 4 candidate installed in-place from exact source `2827ad9a7dd66cb552980b667d961d5986737bdf`;
+> - phone has signed Wave 4 source `2827ad9a7dd66cb552980b667d961d5986737bdf`;
 > - signed build `36503391119` — PASS;
-> - preserved Test 5 terminal session still exists: `db ost 18/19`;
-> - rollback confirmation opens correctly;
-> - portrait + landscape screenshots show the same confirmation after rotation, so modal lifecycle restoration is PASS;
-> - displayed exact rollback plan: **18 added items + 1 playlist created by this session**;
-> - ownership copy says rollback uses exact IDs from this session ledger and does not delete pre-existing playlists/items by title;
-> - no rollback has executed yet.
+> - Tests 1–6 are PHONE PASS; Test 6 final result is `6+`;
+> - Test 6 exact rollback reverted 19 mutations: 18 session-added playlist items + 1 session-created playlist;
+> - remote identity check proved the remaining same-title `db ost` is unrelated: surviving ID `PLTHMkNWGWp4k`, rolled-back session-owned ID `PLUiwWr7GihSE`;
+> - unrelated pre-existing same-title content survived, so exact ownership behavior is accepted;
+> - UX-033 Bulk Session footer phone retest is PASS in Blue skin;
+> - Test 7 controlled destination is linked playlist `The Prodigy - What Evil Lurks (1991)`, YTM ID `PLdZ1HeMkaDZw`;
+> - remote baseline before Test 7 has 4 tracks;
+> - local Test 7 workspace has exactly two manual replacements and Bulk Preview correctly plans LINKED add-only `insert 2`;
+> - Test 7 has NOT started remote writes and no new Bulk session has been created.
 >
-> **NEXT ACTION IN A NEW CHAT:** press `Скасувати` first. Verify the underlying Bulk Session is still terminal `18/19`, and send one screenshot of the full-screen footer so UX-033 skin-aware footer styling can be phone-checked. If that state is unchanged and the footer is styled correctly, then proceed to destructive Test 6 by reopening `Відкотити цю синхронізацію?` and explicitly confirming rollback once.
+> Test 7 isolation finding:
+> - current Preview also contains unrelated executable work: `NEW 1` plus three total LINKED add-only rows;
+> - deleting a local History record does not remove its Restorable/Bulk candidate, so History cleanup is not a safe isolation mechanism;
+> - UX-041 / issue #43 adds per-row include/exclude for executable NEW/LINKED rows;
+> - UX-042 / issue #44 adds an active indeterminate progress indicator while Preview is being built;
+> - implementation is on branch through code/audit HEAD `d14e3f6a7e7eb988a88b10a149e1c173e72f0d63`; exact final manifest-refresh Validate is still pending.
 >
-> After Test 6 starts, expected result is exact removal of the 18 session-added playlist items and then deletion of the one session-created playlist; unrelated pre-existing content must remain untouched. Do not clear app data or create another Bulk session before Test 6 completes.
+> Additional phone findings recorded during Test 7:
+> - UX-039 / issue #40 — manual URL input should be multiline/clearable and manual override status must be visually distinct;
+> - UX-040 / issue #41 — History needs semantic filters;
+> - BUG-047 / issue #42 — History delete confirmation disappears on rotation; requires a project-wide audit of all delete/destructive confirmations.
 >
-> Do not clear app data, uninstall, create a different Bulk session, or manually remove the preserved `db ost` destination before Test 6.
+> **NEXT ACTION IN A NEW CHAT:** finish the UX-041/UX-042 candidate gate: refresh `FILE_MANIFEST.txt`, wait for exact-HEAD Validate Android PASS, build/install one signed candidate in-place, then reopen Bulk Preview. Uncheck every executable row except `The Prodigy - What Evil Lurks (1991)` and verify the summary/confirmation becomes exactly `NEW 0 • LINKED add-only 1` with `insert 2` before creating the Test 7 session.
+>
+> Do not run Test 7 remote writes on the currently installed old candidate because it cannot exclude unrelated executable rows.
 
 ## 1. Resume point
 
