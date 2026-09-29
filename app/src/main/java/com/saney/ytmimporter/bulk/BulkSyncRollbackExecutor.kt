@@ -13,7 +13,9 @@ class BulkSyncRollbackExecutor(
     private val sessionStore: BulkSyncSessionStore,
     private val restorableStore: RestorablePlaylistStore,
     private val currentPlaylistStore: CurrentPlaylistStore,
-    private val quotaTracker: QuotaTracker
+    private val quotaTracker: QuotaTracker,
+    private val qaInterruptAfterAppliedMutation:
+        () -> Boolean = { false }
 ) {
     fun rollback(
         accessToken: String,
@@ -122,6 +124,14 @@ class BulkSyncRollbackExecutor(
 
             if (!outcome.continueRollback) {
                 return session
+            }
+
+            if (
+                qaInterruptAfterAppliedMutation()
+            ) {
+                throw IllegalStateException(
+                    "QA Test 8: rollback interrupted after one persisted reverse mutation"
+                )
             }
         }
     }
