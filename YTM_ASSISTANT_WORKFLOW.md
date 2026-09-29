@@ -224,9 +224,11 @@ The long-term goal is that the project can teach both the author and other devel
 
 ## 16. New assistant handoff
 
-`START_HERE_ASSISTANT.md` is the canonical entry point for a new ChatGPT node/session.
+`ACTIVE_PLAN.md` is the mandatory first-read live execution checklist. A new or recovered assistant must read it before resuming work, continue from the first unchecked actionable item, and update it after every verified progress step.
 
-`CURRENT_HANDOFF.md` is the mutable crash-recovery snapshot for the exact active branch / PR stack / signed-build / phone-QA / next-step state. Read it immediately after START_HERE when resuming a hung or replaced chat.
+`START_HERE_ASSISTANT.md` is the canonical orientation entry point for a new ChatGPT node/session.
+
+`CURRENT_HANDOFF.md` is the mutable crash-recovery snapshot for the exact active branch / PR stack / signed-build / phone-QA / next-step state. Read it immediately after `ACTIVE_PLAN.md` and `START_HERE_ASSISTANT.md` when resuming a hung or replaced chat.
 
 A new assistant should not depend on hidden conversation history. It should recover context from the repository in the reading order defined by `START_HERE_ASSISTANT.md`, then verify live GitHub state before making merge/build assumptions.
 
@@ -310,8 +312,8 @@ Repository version, signed-build version, and phone-installed version are three 
 set.
 
 Before a code-changing session, release operation, architectural change,
-system/lifecycle change or crash recovery, a new assistant must read the index
-and every listed context file.
+system/lifecycle change or crash recovery, a new assistant must read `ACTIVE_PLAN.md`,
+the index and every listed context file.
 
 Do not rely on hidden chat memory for project contracts that belong in Git.
 
