@@ -1,5 +1,25 @@
 # YTM Importer v1.4.54 — History Recovery / Safe Bulk Sync
 
+## Final functional checkpoint — 2026-09-29
+
+- Tests 1–9: **PHONE PASS**.
+- Immutable accepted functional source: `e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+- Accepted signed run for final recovery/compatibility chain: `36579457780`.
+- History Recovery, linkage preservation, read-only/scoped Bulk planning, durable
+  sessions, explicit recovery, exact rollback and legacy compatibility are accepted.
+- v1.4.54 is retained as the functional phone-acceptance checkpoint.
+- It is **not promoted to a public stable binary** because the exact accepted source
+  still contains temporary Test 5/Test 8 fault-injection controls used for phone QA.
+- Public-release hardening continues in `v1.4.55`, where those controls are
+  compile-gated behind `BuildConfig.DEBUG` while v1.4.54 business behavior remains
+  the immutable reference.
+
+Evidence:
+- `qa/TEST_RUN_2026-09-29.md`;
+- `qa/PHONE_TEST_REPORT_2026-09-29.md`;
+- `qa/STABILIZATION_CHECKPOINT.md`;
+- `qa/PHONE_TEST.md`.
+
 ## Release gate
 
 v1.4.53 is final, published and OTA-equal-version accepted.
