@@ -197,6 +197,8 @@ class QuotaTracker(context: Context) {
 
         const val PLAYLIST_ITEM_INSERT_COST = 50
 
+        const val PLAYLIST_ITEM_DELETE_COST = 50
+
         const val SIMPLE_LIST_COST = 1
 
         private const val KEY_DAY =
