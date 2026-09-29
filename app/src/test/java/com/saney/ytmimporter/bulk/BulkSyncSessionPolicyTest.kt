@@ -12,7 +12,7 @@ import org.junit.Test
 
 class BulkSyncSessionPolicyTest {
     @Test
-    fun factory_executesOnlyNewRows() {
+    fun factory_executesNewAndLinkedAppendRows() {
         val summary =
             BulkSyncPlanSummary(
                 rows =
@@ -93,8 +93,12 @@ class BulkSyncSessionPolicyTest {
         )
         assertEquals(
             BulkSyncSessionRowState
-                .DEFERRED_LINKED,
+                .READY_APPEND,
             session.plan[1].state
+        )
+        assertEquals(
+            1,
+            session.plan[1].tracks.size
         )
         assertEquals(
             BulkSyncSessionRowState
