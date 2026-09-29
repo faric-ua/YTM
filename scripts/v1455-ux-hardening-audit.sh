@@ -18,6 +18,41 @@ for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$QUOTA" "$QA_STORE" "$SAFETY" "$READ
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
+SCROLL_SURFACES=(
+  "$SRC/BulkSyncPreviewActivity.kt"
+  "$SRC/BulkSyncSessionActivity.kt"
+  "$SRC/DataActivity.kt"
+  "$SRC/DestinationActivity.kt"
+  "$SRC/HistoryActivity.kt"
+  "$SRC/ImportActivity.kt"
+  "$SRC/ListSelectorActivity.kt"
+  "$SRC/MainActivity.kt"
+  "$SRC/MenuActivity.kt"
+  "$SRC/PendingActivity.kt"
+  "$SRC/PlaylistActivity.kt"
+  "$SRC/QuotaActivity.kt"
+  "$SRC/RecentFileChooserActivity.kt"
+  "$SRC/ReviewActivity.kt"
+  "$SRC/ServiceActivity.kt"
+  "$SRC/StorageChooserActivity.kt"
+  "$SRC/UrlSnapshotActivity.kt"
+)
+
+for f in "${SCROLL_SURFACES[@]}"; do
+  test -f "$f" || fail "missing audited scroll surface: $f"
+  grep -Fq 'ScrollPositionState' "$f" ||
+    fail "scroll lifecycle contract missing from $f"
+done
+
+grep -Fq 'history_list_first_position' "$SRC/HistoryActivity.kt" ||
+  fail "History list/detail scroll roots are not separated"
+grep -Fq 'pending_list_first_position' "$SRC/PendingActivity.kt" ||
+  fail "Queue list/detail scroll roots are not separated"
+grep -Fq 'review_track_scroll_history_index' "$SRC/ReviewActivity.kt" ||
+  fail "Review list/track scroll roots are not separated"
+grep -Fq 'destination_confirm_scroll_position' "$SRC/DestinationActivity.kt" ||
+  fail "Destination mode scroll roots are not separated"
+
 grep -Fq 'PRESENTATION_ONLY' "$SAFETY" ||
   fail "UX change classification contract missing"
 grep -Fq 'FUNCTIONAL_FEATURE' "$SAFETY" ||
@@ -68,5 +103,6 @@ echo "- v1.4.55 UX safety contract is locked"
 echo "- one label-aware action fit policy serves screen and dialog actions"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- changed selectable text fails closed instead of restoring a stale range"
+echo "- all audited ScrollView surfaces preserve state with logical-root separation"
 echo "- release builds cannot expose or consume v1.4.54 QA fault controls"
 echo "- readability audit + backlog reconciliation + management plan are present"
