@@ -81,6 +81,7 @@ object BulkSyncRollbackPolicy {
         }
 
         if (
+            !session.isTerminal ||
             exactnessError(session) != null
         ) {
             return false
