@@ -38,6 +38,7 @@ import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.RestorableModalController
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.youtube.YouTubeApi
@@ -88,6 +89,13 @@ class BulkSyncPreviewActivity : Activity() {
         LinearLayout
     private lateinit var loadingLabel:
         TextView
+    private lateinit var scrollView:
+        ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
 
     private var plan:
         BulkSyncPlanSummary? = null
@@ -167,6 +175,9 @@ class BulkSyncPreviewActivity : Activity() {
         previewModalController.restore(
             savedInstanceState
         )
+        scrollPosition.restore(
+            savedInstanceState
+        )
 
         buildUi()
 
@@ -243,10 +254,27 @@ class BulkSyncPreviewActivity : Activity() {
         previewModalController.save(
             outState
         )
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
 
         super.onSaveInstanceState(
             outState
         )
+    }
+
+    override fun onPause() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -424,10 +452,12 @@ class BulkSyncPreviewActivity : Activity() {
 
         root.addView(loadingPanel)
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport = true
             }
+
+        val scroll = scrollView
 
         val content =
             LinearLayout(this).apply {
@@ -544,6 +574,9 @@ class BulkSyncPreviewActivity : Activity() {
         UiChrome.applyScreenInsets(
             this,
             root
+        )
+        scrollPosition.restoreInto(
+            scrollView
         )
     }
 
@@ -1759,6 +1792,9 @@ class BulkSyncPreviewActivity : Activity() {
 
         private const val STATE_PREVIEW_MODAL =
             "bulk_sync_preview_modal"
+
+        private const val STATE_SCROLL_POSITION =
+            "bulk_sync_preview_scroll_position"
 
         private const val ARG_SESSION_ID =
             "session_id"
