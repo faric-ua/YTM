@@ -467,3 +467,11 @@ Additional findings:
 6. Verify summary/confirmation: `NEW 0 • LINKED add-only 1`, controlled row `insert 2`.
 7. Create the durable session, stop on READY, verify only the controlled LINKED row is executable.
 8. Only then continue Test 7 remote add + exact rollback acceptance.
+
+
+## Signed Test 7 candidate
+
+- exact final source: `d58691b6e63d28cdb39b2acdce6ec7ca03e54867`;
+- signed GitHub Actions run: `36512664669` — PASS;
+- artifact: `YTM-Importer-v1.4.54-Release`;
+- next phone action: Termux menu item 3 to download this exact APK, then install in-place with no app-data clear.
