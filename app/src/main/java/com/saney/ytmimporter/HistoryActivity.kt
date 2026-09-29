@@ -385,17 +385,14 @@ class HistoryActivity : Activity() {
     }
 
     private fun showListScreen() {
-        val leavingDetail =
-            currentEntryId != null
-
-        if (leavingDetail) {
+        if (currentEntryId != null) {
             detailScrollPosition.capture(
                 detailScrollView
             )
-            detailScrollPosition.reset()
-            detailScrollEntryId = null
         }
 
+        detailScrollPosition.reset()
+        detailScrollEntryId = null
         detailScrollView = null
         currentEntryId = null
         actionsDialogOpen = false
