@@ -67,6 +67,8 @@ class HistoryActivity : Activity() {
     private var clearHistoryDialog: Dialog? = null
     private var restoreConfirmEntryId: String? = null
     private var restoreConfirmDialog: Dialog? = null
+    private var deleteConfirmEntryId: String? = null
+    private var deleteConfirmDialog: Dialog? = null
 
     private val saveExportRequestCode = 3201
     private val saveExportFolderRequestCode = 3202
@@ -121,6 +123,12 @@ class HistoryActivity : Activity() {
                     KEY_RESTORE_CONFIRM_ENTRY_ID
                 )
 
+        deleteConfirmEntryId =
+            savedInstanceState
+                ?.getString(
+                    KEY_DELETE_CONFIRM_ENTRY_ID
+                )
+
         if (!restoredEntryId.isNullOrBlank()) {
             val entry = historyStore.get(restoredEntryId)
 
@@ -139,6 +147,22 @@ class HistoryActivity : Activity() {
                                 entry.id
                         ) {
                             confirmRestoreAsCurrent(
+                                entry
+                            )
+                        }
+                    }
+                } else if (
+                    deleteConfirmEntryId ==
+                        entry.id
+                ) {
+                    window.decorView.post {
+                        if (
+                            !isFinishing &&
+                            !isDestroyed &&
+                            currentEntryId ==
+                                entry.id
+                        ) {
+                            confirmDeleteHistoryEntry(
                                 entry
                             )
                         }
@@ -192,6 +216,10 @@ class HistoryActivity : Activity() {
         outState.putString(
             KEY_RESTORE_CONFIRM_ENTRY_ID,
             restoreConfirmEntryId
+        )
+        outState.putString(
+            KEY_DELETE_CONFIRM_ENTRY_ID,
+            deleteConfirmEntryId
         )
         super.onSaveInstanceState(outState)
     }
@@ -262,6 +290,12 @@ class HistoryActivity : Activity() {
             )
         restoreConfirmDialog = null
 
+        deleteConfirmDialog
+            ?.setOnDismissListener(
+                null
+            )
+        deleteConfirmDialog = null
+
         super.onDestroy()
     }
 
@@ -284,6 +318,15 @@ class HistoryActivity : Activity() {
         restoreConfirmDialog
             ?.dismiss()
         restoreConfirmDialog = null
+
+        deleteConfirmEntryId = null
+        deleteConfirmDialog
+            ?.setOnDismissListener(
+                null
+            )
+        deleteConfirmDialog
+            ?.dismiss()
+        deleteConfirmDialog = null
 
         val root = baseRoot()
 
@@ -1511,25 +1554,49 @@ class HistoryActivity : Activity() {
     private fun confirmDeleteHistoryEntry(
         entry: HistoryEntry
     ) {
-        UiChrome.showDangerConfirmDialog(
-            activity = this,
-            title =
-                "Видалити запис історії?",
-            message =
-                "Буде видалено тільки локальний History-запис " +
-                    "«${entry.playlistName}».\n\n" +
-                    "Плейлист у YouTube/YTM не зміниться.",
-            confirmLabel =
-                "Так, видалити"
-        ) {
-            historyStore.remove(
+        if (
+            deleteConfirmDialog
+                ?.isShowing == true &&
+            deleteConfirmEntryId ==
                 entry.id
-            )
-            toast(
-                "Запис історії видалено"
-            )
-            showListScreen()
+        ) {
+            return
         }
+
+        deleteConfirmEntryId =
+            entry.id
+
+        deleteConfirmDialog =
+            UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title =
+                    "Видалити запис історії?",
+                message =
+                    "Буде видалено тільки локальний History-запис " +
+                        "«${entry.playlistName}».\n\n" +
+                        "Плейлист у YouTube/YTM не зміниться.",
+                confirmLabel =
+                    "Так, видалити"
+            ) {
+                deleteConfirmEntryId =
+                    null
+                historyStore.remove(
+                    entry.id
+                )
+                toast(
+                    "Запис історії видалено"
+                )
+                showListScreen()
+            }.also { dialog ->
+                dialog.setOnDismissListener {
+                    if (!isChangingConfigurations) {
+                        deleteConfirmEntryId =
+                            null
+                    }
+                    deleteConfirmDialog =
+                        null
+                }
+            }
     }
 
     private fun confirmClearHistory() {
@@ -2547,6 +2614,9 @@ class HistoryActivity : Activity() {
 
         private const val KEY_RESTORE_CONFIRM_ENTRY_ID =
             "history_restore_confirm_entry_id"
+
+        private const val KEY_DELETE_CONFIRM_ENTRY_ID =
+            "history_delete_confirm_entry_id"
 
         private const val KEY_CLEAR_HISTORY_DIALOG_OPEN =
             "history_clear_dialog_open"
