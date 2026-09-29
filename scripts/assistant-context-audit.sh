@@ -50,6 +50,21 @@ grep -Fq 'CONTEXT_FILES.txt' ASSISTANT_CONTEXT_INDEX.md ||
 grep -Fq 'SYSTEM_BEHAVIOR_CONTRACT.md' ASSISTANT_CONTEXT_INDEX.md ||
   fail "system behavior contract missing from context index"
 
+grep -Fq 'UX_CHANGE_SAFETY_CONTRACT.md' ASSISTANT_CONTEXT_INDEX.md ||
+  fail "UX change safety contract missing from context index"
+
+grep -Fq 'docs/design/UX_CHANGE_SAFETY_CONTRACT.md' "$LIST" ||
+  fail "UX change safety contract missing from mandatory context manifest"
+
+if [ "$APP_VERSION" = "1.4.55" ]; then
+  grep -Fq 'docs/v.1.4.55/CURRENT_STATE.md' "$LIST" ||
+    fail "v1.4.55 current state missing from context manifest"
+  grep -Fq 'docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md' "$LIST" ||
+    fail "v1.4.55 master plan missing from context manifest"
+  grep -Fq 'docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md' "$LIST" ||
+    fail "v1.4.55 readability audit missing from context manifest"
+fi
+
 grep -Fq 'HISTORICAL_RELEASE_MATRIX.md' ASSISTANT_CONTEXT_INDEX.md ||
   fail "historical release matrix missing from context index"
 
