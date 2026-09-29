@@ -25,44 +25,30 @@ object BulkSyncSessionFactory {
                     ]
 
                 val tracks =
-                    if (
+                    when {
+                        snapshot == null ->
+                            emptyList()
+
                         planRow.state ==
-                        BulkSyncPlanState.NEW &&
-                        snapshot != null
-                    ) {
-                        snapshot.playlist.tracks
-                            .mapIndexedNotNull {
-                                    index,
-                                    track ->
-                                if (
-                                    track.status ==
-                                    TrackStatus.SKIPPED
-                                ) {
-                                    null
-                                } else {
-                                    track.selectedVideoId
-                                        ?.takeIf(
-                                            String::isNotBlank
-                                        )
-                                        ?.let {
-                                                videoId ->
-                                            BulkSyncSessionTrack(
-                                                trackIndex =
-                                                    index,
-                                                historyIndex =
-                                                    track.historyIndex,
-                                                videoId =
-                                                    videoId,
-                                                originalTitle =
-                                                    track.originalTitle,
-                                                originalArtist =
-                                                    track.originalArtist
-                                            )
-                                        }
-                                }
-                            }
-                    } else {
-                        emptyList()
+                            BulkSyncPlanState.NEW ->
+                            executableTracks(
+                                snapshot
+                            )
+
+                        planRow.state ==
+                            BulkSyncPlanState.LINKED ->
+                            linkedMissingTracks(
+                                snapshot =
+                                    snapshot,
+                                remotePlaylistId =
+                                    planRow
+                                        .destinationPlaylistId,
+                                baseline =
+                                    baseline
+                            )
+
+                        else ->
+                            emptyList()
                     }
 
                 BulkSyncSessionRow(
@@ -111,8 +97,11 @@ object BulkSyncSessionFactory {
                 rows,
             currentPlanIndex =
                 rows.indexOfFirst {
-                    it.state ==
-                        BulkSyncSessionRowState.READY
+                    it.state in
+                        setOf(
+                            BulkSyncSessionRowState.READY,
+                            BulkSyncSessionRowState.READY_APPEND
+                        )
                 }.takeIf {
                     it >= 0
                 } ?: rows.size,
@@ -121,6 +110,126 @@ object BulkSyncSessionFactory {
             lastError =
                 null
         )
+    }
+
+    private fun executableTracks(
+        snapshot: RestorablePlaylistSnapshot
+    ): List<BulkSyncSessionTrack> =
+        snapshot.playlist.tracks
+            .mapIndexedNotNull {
+                    index,
+                    track ->
+                if (
+                    track.status ==
+                    TrackStatus.SKIPPED
+                ) {
+                    null
+                } else {
+                    track.selectedVideoId
+                        ?.takeIf(
+                            String::isNotBlank
+                        )
+                        ?.let {
+                                videoId ->
+                            BulkSyncSessionTrack(
+                                trackIndex =
+                                    index,
+                                historyIndex =
+                                    track.historyIndex,
+                                videoId =
+                                    videoId,
+                                originalTitle =
+                                    track.originalTitle,
+                                originalArtist =
+                                    track.originalArtist
+                            )
+                        }
+                }
+            }
+
+    private fun linkedMissingTracks(
+        snapshot: RestorablePlaylistSnapshot,
+        remotePlaylistId: String?,
+        baseline: BulkSyncRemoteBaseline
+    ): List<BulkSyncSessionTrack> {
+        val remoteId =
+            remotePlaylistId
+                ?.takeIf(
+                    String::isNotBlank
+                )
+                ?: return emptyList()
+
+        val remoteCounts =
+            baseline.playlists
+                .firstOrNull {
+                    it.playlistId ==
+                        remoteId
+                }
+                ?.items
+                ?.mapNotNull {
+                    it.videoId
+                        ?.takeIf(
+                            String::isNotBlank
+                        )
+                }
+                ?.groupingBy {
+                    it
+                }
+                ?.eachCount()
+                ?.toMutableMap()
+                ?: mutableMapOf()
+
+        val result =
+            mutableListOf<
+                BulkSyncSessionTrack
+            >()
+
+        snapshot.playlist.tracks
+            .forEachIndexed {
+                    index,
+                    track ->
+                if (
+                    track.status ==
+                    TrackStatus.SKIPPED
+                ) {
+                    return@forEachIndexed
+                }
+
+                val videoId =
+                    track.selectedVideoId
+                        ?.takeIf(
+                            String::isNotBlank
+                        )
+                        ?: return@forEachIndexed
+
+                val remaining =
+                    remoteCounts[
+                        videoId
+                    ] ?: 0
+
+                if (remaining > 0) {
+                    remoteCounts[
+                        videoId
+                    ] =
+                        remaining - 1
+                } else {
+                    result +=
+                        BulkSyncSessionTrack(
+                            trackIndex =
+                                index,
+                            historyIndex =
+                                track.historyIndex,
+                            videoId =
+                                videoId,
+                            originalTitle =
+                                track.originalTitle,
+                            originalArtist =
+                                track.originalArtist
+                        )
+                }
+            }
+
+        return result
     }
 
     private fun rowState(
@@ -132,7 +241,7 @@ object BulkSyncSessionFactory {
 
             BulkSyncPlanState.LINKED ->
                 BulkSyncSessionRowState
-                    .DEFERRED_LINKED
+                    .READY_APPEND
 
             BulkSyncPlanState.ALREADY_SYNCED ->
                 BulkSyncSessionRowState
