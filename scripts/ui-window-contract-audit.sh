@@ -44,6 +44,13 @@ grep -Fq 'private fun useHorizontalDialogActionRow(' "$UI" ||
 grep -Fq 'paint.measureText(' "$UI" ||
   fail "dialog row decision ignores actual label width"
 
+grep -Fq 'fun styleAdaptiveActionButton(' "$UI" ||
+  fail "shared full-screen footer skin styling helper missing"
+grep -Fq 'styleAdaptiveActionButton(' "$UI" ||
+  fail "adaptive footer renderer does not apply skin-aware button styling"
+grep -Fq 'ColorStateList(' "$UI" ||
+  fail "adaptive footer disabled state is not skin-aware"
+
 for fn in showMenuDialog showRecordDialog showMessageDialog showContentDialog showMultiChoiceDialog; do
   block="$(
     awk -v fn="$fn" '
@@ -138,6 +145,7 @@ echo '- dialog action rows are label-aware, width-first and never forced by acti
 echo '- dialog footer labels are single-line and are not auto-shrunk'
 echo '- explicit action layouts keep precedence over AUTO layout'
 echo '- chooser/selector/Bulk/URL Snapshot full-screen footers use shared adaptive row/stack rendering'
+echo '- adaptive full-screen footer buttons inherit active skin tone and disabled-state colors'
 echo '- known Help owners persist open state across recreation'
 echo '- Bulk Preview confirmations persist semantic open state across recreation without executing actions'
 echo '- native AlertDialog.Builder remains absent'
