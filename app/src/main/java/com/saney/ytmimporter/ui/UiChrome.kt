@@ -400,43 +400,37 @@ object UiChrome {
         return root
     }
 
-    fun useHorizontalActionRow(
+    private fun fitsHorizontalActionGroup(
         context: Context,
         actionCount: Int,
-        minButtonWidthDp: Int = 180,
-        labels: List<CharSequence> = emptyList()
+        labels: List<CharSequence>,
+        minButtonWidthDp: Int,
+        textSizeSp: Float,
+        chromeWidthDp: Float
     ): Boolean {
         if (actionCount <= 1) {
             return false
         }
 
-        val screenWidthDp =
-            context.resources
-                .configuration
-                .screenWidthDp
+        val metrics =
+            context.resources.displayMetrics
+        val density =
+            metrics.density
+        val paint =
+            Paint().apply {
+                textSize =
+                    TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_SP,
+                        textSizeSp,
+                        metrics
+                    )
+            }
 
-        val labelWidthsDp =
+        val actionWidthsDp =
             if (
                 labels.size ==
                     actionCount
             ) {
-                val metrics =
-                    context.resources
-                        .displayMetrics
-                val density =
-                    metrics.density
-                val paint =
-                    Paint().apply {
-                        textSize =
-                            TypedValue
-                                .applyDimension(
-                                    TypedValue
-                                        .COMPLEX_UNIT_SP,
-                                    15f,
-                                    metrics
-                                )
-                    }
-
                 labels.map { label ->
                     maxOf(
                         minButtonWidthDp
@@ -457,59 +451,11 @@ object UiChrome {
                 }
             }
 
-        val requiredWidthDp =
-            48f +
-                labelWidthsDp.sum() +
-                (actionCount - 1) *
-                8f
-
-        return screenWidthDp
-            .toFloat() >=
-            requiredWidthDp
-    }
-
-    private fun useHorizontalDialogActionRow(
-        context: Context,
-        actions: List<DialogAction>,
-        minButtonWidthDp: Int = 180
-    ): Boolean {
-        if (actions.size <= 1) {
-            return false
-        }
-
-        val metrics =
-            context.resources.displayMetrics
-        val density =
-            metrics.density
-        val paint =
-            Paint().apply {
-                textSize =
-                    TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_SP,
-                        14f,
-                        metrics
-                    )
-            }
-
-        val actionWidthsDp =
-            actions.map { action ->
-                val labelWidthDp =
-                    paint.measureText(
-                        action.label
-                    ) / density
-
-                maxOf(
-                    minButtonWidthDp.toFloat(),
-                    labelWidthDp + 32f
-                )
-            }
-
-        val dialogChromeDp =
-            72f
         val gapsDp =
-            (actions.size - 1) * 8f
+            (actionCount - 1) *
+                8f
         val requiredWidthDp =
-            dialogChromeDp +
+            chromeWidthDp +
                 actionWidthsDp.sum() +
                 gapsDp
 
@@ -519,6 +465,38 @@ object UiChrome {
             .toFloat() >=
             requiredWidthDp
     }
+
+    fun useHorizontalActionRow(
+        context: Context,
+        actionCount: Int,
+        minButtonWidthDp: Int = 180,
+        labels: List<CharSequence> = emptyList()
+    ): Boolean =
+        fitsHorizontalActionGroup(
+            context = context,
+            actionCount = actionCount,
+            labels = labels,
+            minButtonWidthDp = minButtonWidthDp,
+            textSizeSp = 15f,
+            chromeWidthDp = 48f
+        )
+
+    private fun useHorizontalDialogActionRow(
+        context: Context,
+        actions: List<DialogAction>,
+        minButtonWidthDp: Int = 180
+    ): Boolean =
+        fitsHorizontalActionGroup(
+            context = context,
+            actionCount = actions.size,
+            labels =
+                actions.map {
+                    it.label
+                },
+            minButtonWidthDp = minButtonWidthDp,
+            textSizeSp = 14f,
+            chromeWidthDp = 72f
+        )
 
     fun addAdaptiveActionButtons(
         activity: Activity,
