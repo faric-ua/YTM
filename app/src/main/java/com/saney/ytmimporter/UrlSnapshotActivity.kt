@@ -16,6 +16,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotAvailability
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotDuplicateMode
@@ -41,6 +42,14 @@ class UrlSnapshotActivity : Activity() {
 
     private var duplicateChoiceOpen =
         false
+
+    private lateinit var scrollView:
+        ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
 
     private val remoteListener:
         (UrlSnapshotRemoteOperations.State) -> Unit = {
@@ -76,6 +85,10 @@ class UrlSnapshotActivity : Activity() {
                     false
                 )
                 ?: false
+
+        scrollPosition.restore(
+            savedInstanceState
+        )
 
         buildUi()
     }
@@ -113,9 +126,27 @@ class UrlSnapshotActivity : Activity() {
             duplicateChoiceOpen
         )
 
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
+
         super.onSaveInstanceState(
             outState
         )
+    }
+
+    override fun onPause() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+        super.onPause()
     }
 
     @Deprecated(
@@ -136,6 +167,12 @@ class UrlSnapshotActivity : Activity() {
     }
 
     private fun buildUi() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+
         val palette =
             AppThemeManager
                 .palette(
@@ -160,11 +197,14 @@ class UrlSnapshotActivity : Activity() {
             topBar()
         )
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport =
                     true
             }
+
+        val scroll =
+            scrollView
 
         val content =
             LinearLayout(this).apply {
@@ -512,6 +552,10 @@ class UrlSnapshotActivity : Activity() {
                 this,
                 root
             )
+
+        scrollPosition.restoreInto(
+            scrollView
+        )
     }
 
     private fun showResolvedPreview(
@@ -1428,6 +1472,9 @@ class UrlSnapshotActivity : Activity() {
 
         private const val STATE_DUPLICATE_CHOICE_OPEN =
             "url_snapshot_duplicate_choice_open"
+
+        private const val STATE_SCROLL_POSITION =
+            "url_snapshot_scroll_position"
 
         const val EXTRA_COMMIT_MESSAGE =
             "url_snapshot_commit_message"
