@@ -26,6 +26,9 @@ All work follows:
 
 The v1.4.54 tested source remains an immutable reference point.
 
+Full backlog/rule reconciliation:
+`docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md`.
+
 ## Workstreams
 
 ### A. Shared non-functional hardening — first
@@ -56,6 +59,7 @@ or durable rollback semantics.
    - tap opens exact recovery items.
 5. Type-aware file library and canonical folders (#54).
 6. Simplified Termux menu/status for non-developer operation (#52).
+7. Home last-action detail drill-down (BACKLOG UX-028) using the existing exact History detail.
 
 ### C. Local workflow convenience
 
@@ -64,6 +68,7 @@ or durable rollback semantics.
 3. Review manual URL + manual override hierarchy (#40).
 4. Bulk preparation presentation (#27).
 5. Clear stale Bulk preparation status (#28).
+6. URL Snapshot duplicate-choice action fit (BACKLOG UX-027) is accepted through the shared adaptive-action contract rather than another one-off layout.
 
 ## Completed v1.4.54 functionality that is not to be redesigned
 
