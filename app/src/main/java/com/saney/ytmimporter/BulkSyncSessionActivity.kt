@@ -229,11 +229,29 @@ class BulkSyncSessionActivity : Activity() {
         super.onResume()
 
         if (!running) {
-            sessionId
-                ?.let(
-                    sessionStore::get
+            val stored =
+                sessionId
+                    ?.let(
+                        sessionStore::get
+                    )
+
+            if (stored != null) {
+                val normalized =
+                    BulkSyncExecutionPolicy
+                        .normalizeAfterColdOpen(
+                            stored
+                        )
+
+                if (normalized != stored) {
+                    sessionStore.upsert(
+                        normalized
+                    )
+                }
+
+                render(
+                    normalized
                 )
-                ?.let(::render)
+            }
         }
     }
 
