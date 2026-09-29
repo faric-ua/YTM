@@ -996,6 +996,29 @@ class YouTubeApi(
         )
     }
 
+    fun deletePlaylistItem(
+        accessToken: String,
+        playlistItemId: String
+    ) {
+        val id =
+            URLEncoder.encode(
+                playlistItemId,
+                Charsets.UTF_8.name()
+            )
+
+        val response =
+            request(
+                "DELETE",
+                "https://www.googleapis.com/youtube/v3/playlistItems?id=$id",
+                accessToken
+            )
+
+        requireSuccess(
+            response,
+            "Видалення треку з плейлиста"
+        )
+    }
+
     fun addVideo(
         accessToken: String,
         playlistId: String,
