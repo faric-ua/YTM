@@ -16,6 +16,8 @@ import com.saney.ytmimporter.bulk.BulkSyncExecutionPolicy
 import com.saney.ytmimporter.bulk.BulkSyncExecutor
 import com.saney.ytmimporter.bulk.BulkSyncHelpContent
 import com.saney.ytmimporter.bulk.BulkSyncQaFaultPolicy
+import com.saney.ytmimporter.bulk.BulkSyncRollbackExecutor
+import com.saney.ytmimporter.bulk.BulkSyncRollbackPolicy
 import com.saney.ytmimporter.bulk.BulkSyncMutationStatus
 import com.saney.ytmimporter.bulk.BulkSyncMutationType
 import com.saney.ytmimporter.bulk.BulkSyncSession
@@ -28,11 +30,16 @@ import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.youtube.YouTubeApi
 import java.util.concurrent.Executors
 
 class BulkSyncSessionActivity : Activity() {
+    private enum class SessionModal {
+        ROLLBACK_CONFIRM
+    }
+
     private val worker =
         Executors.newSingleThreadExecutor()
 
@@ -64,6 +71,9 @@ class BulkSyncSessionActivity : Activity() {
     private var helpDialog:
         Dialog? = null
 
+    private lateinit var sessionModalController:
+        RestorableModalController
+
     private val api by lazy {
         YouTubeApi(
             accessTokenRecovery =
@@ -92,6 +102,20 @@ class BulkSyncSessionActivity : Activity() {
         )
     }
 
+    private val rollbackExecutor by lazy {
+        BulkSyncRollbackExecutor(
+            api = api,
+            sessionStore =
+                sessionStore,
+            restorableStore =
+                RestorablePlaylistStore(this),
+            currentPlaylistStore =
+                CurrentPlaylistStore(this),
+            quotaTracker =
+                QuotaTracker(this)
+        )
+    }
+
     private var sessionId:
         String? = null
 
@@ -103,6 +127,16 @@ class BulkSyncSessionActivity : Activity() {
 
         sessionStore =
             BulkSyncSessionStore(this)
+
+        sessionModalController =
+            RestorableModalController(
+                activity = this,
+                stateKey =
+                    STATE_SESSION_MODAL
+            )
+        sessionModalController.restore(
+            savedInstanceState
+        )
 
         helpDialogOpen =
             savedInstanceState
@@ -155,6 +189,12 @@ class BulkSyncSessionActivity : Activity() {
 
         render(normalized)
 
+        sessionModalController
+            .restoreAfterContentReady(
+                renderer =
+                    ::renderSessionModal
+            )
+
         if (helpDialogOpen) {
             window.decorView.post {
                 if (!isFinishing && !isDestroyed) {
@@ -170,6 +210,10 @@ class BulkSyncSessionActivity : Activity() {
         outState.putBoolean(
             STATE_HELP_DIALOG_OPEN,
             helpDialogOpen
+        )
+
+        sessionModalController.save(
+            outState
         )
 
         super.onSaveInstanceState(
@@ -193,6 +237,7 @@ class BulkSyncSessionActivity : Activity() {
         helpDialog
             ?.setOnDismissListener(null)
         helpDialog = null
+        sessionModalController.onDestroy()
         worker.shutdownNow()
         super.onDestroy()
     }
@@ -203,7 +248,7 @@ class BulkSyncSessionActivity : Activity() {
     override fun onBackPressed() {
         if (running) {
             toast(
-                "Дочекайтеся завершення поточної mutation або закрийте застосунок для Test 4."
+                "Дочекайтеся завершення поточної mutation/відкату або закрийте застосунок."
             )
             return
         }
@@ -418,7 +463,7 @@ class BulkSyncSessionActivity : Activity() {
                 isAllCaps = false
                 textSize = 15f
                 setOnClickListener {
-                    startOrResume()
+                    handlePrimaryAction()
                 }
             }
 
@@ -453,6 +498,243 @@ class BulkSyncSessionActivity : Activity() {
             this,
             root
         )
+    }
+
+    private fun handlePrimaryAction() {
+        if (running) {
+            return
+        }
+
+        val id =
+            sessionId
+                ?: return
+
+        val session =
+            sessionStore.get(id)
+                ?: return renderMissing()
+
+        when {
+            BulkSyncRollbackPolicy
+                .canStartRollback(
+                    session
+                ) -> showRollbackConfirmation(
+                    session
+                )
+
+            BulkSyncRollbackPolicy
+                .canResumeRollback(
+                    session
+                ) -> startRollback()
+
+            else ->
+                startOrResume()
+        }
+    }
+
+    private fun showRollbackConfirmation(
+        session: BulkSyncSession
+    ) {
+        sessionModalController.show(
+            modalId =
+                SessionModal
+                    .ROLLBACK_CONFIRM
+                    .name,
+            renderer =
+                ::renderSessionModal
+        )
+    }
+
+    private fun renderSessionModal(
+        modalId: String,
+        args: Bundle
+    ): Dialog? {
+        val modal =
+            SessionModal.values()
+                .firstOrNull {
+                    it.name == modalId
+                }
+                ?: return null
+
+        val session =
+            sessionId
+                ?.let(
+                    sessionStore::get
+                )
+                ?: return null
+
+        return when (modal) {
+            SessionModal.ROLLBACK_CONFIRM -> {
+                if (
+                    !BulkSyncRollbackPolicy
+                        .canStartRollback(
+                            session
+                        )
+                ) {
+                    return null
+                }
+
+                val creates =
+                    session.mutationLedger
+                        .count {
+                            it.type ==
+                                BulkSyncMutationType
+                                    .CREATE_PLAYLIST &&
+                                it.status ==
+                                    BulkSyncMutationStatus
+                                        .APPLIED
+                        }
+
+                val inserts =
+                    session.mutationLedger
+                        .count {
+                            it.type ==
+                                BulkSyncMutationType
+                                    .INSERT_PLAYLIST_ITEM &&
+                                it.status ==
+                                    BulkSyncMutationStatus
+                                        .APPLIED
+                        }
+
+                UiChrome.showFixedFooterMessageDialog(
+                    activity = this,
+                    title =
+                        "Відкотити цю синхронізацію?",
+                    message =
+                        "Відкат використовує тільки exact IDs з ledger цієї Bulk-сесії.\n\n" +
+                            "Буде відкочено: додані елементи — " +
+                            inserts +
+                            ", створені цією сесією плейлисти — " +
+                            creates +
+                            ".\n\n" +
+                            "Попередньо існуючі плейлисти/елементи не видаляються за назвою. " +
+                            "Після старту відкат не продовжується автоматично після restart.",
+                    actions =
+                        listOf(
+                            UiChrome.DialogAction(
+                                label =
+                                    "Відкотити",
+                                tone =
+                                    UiChrome.ActionTone
+                                        .DANGER
+                            ) {
+                                sessionModalController
+                                    .clearState()
+                                startRollback()
+                            },
+                            UiChrome.DialogAction(
+                                label =
+                                    "Скасувати"
+                            ) {
+                                sessionModalController
+                                    .clearState()
+                            }
+                        )
+                )
+            }
+        }
+    }
+
+    private fun startRollback() {
+        if (running) {
+            return
+        }
+
+        val id =
+            sessionId
+                ?: return
+
+        val session =
+            sessionStore.get(id)
+                ?: return renderMissing()
+
+        val exactnessError =
+            BulkSyncRollbackPolicy
+                .exactnessError(
+                    session
+                )
+
+        if (exactnessError != null) {
+            toast(
+                exactnessError
+            )
+            render(session)
+            return
+        }
+
+        val token =
+            AuthSessionStore.current()
+                .accessToken
+                ?.takeIf(
+                    String::isNotBlank
+                )
+
+        if (token == null) {
+            val paused =
+                session.copy(
+                    state =
+                        BulkSyncSessionState
+                            .ROLLBACK_PAUSED,
+                    updatedAt =
+                        System.currentTimeMillis(),
+                    lastError =
+                        "Для продовження відкату потрібна Google/YTM авторизація."
+                )
+
+            sessionStore.upsert(
+                paused
+            )
+            render(paused)
+            return
+        }
+
+        running = true
+        primaryButton.isEnabled =
+            false
+        closeButton.isEnabled =
+            false
+
+        worker.execute {
+            try {
+                rollbackExecutor.rollback(
+                    accessToken =
+                        token,
+                    sessionId =
+                        id,
+                    onProgress = {
+                            progress ->
+                        runOnUiThread {
+                            if (
+                                !isFinishing &&
+                                !isDestroyed
+                            ) {
+                                render(
+                                    progress
+                                )
+                            }
+                        }
+                    }
+                )
+            } catch (error: Throwable) {
+                runOnUiThread {
+                    toast(
+                        error.message
+                            ?: "Помилка відкату Bulk-сесії"
+                    )
+                }
+            } finally {
+                running = false
+
+                runOnUiThread {
+                    if (
+                        !isFinishing &&
+                        !isDestroyed
+                    ) {
+                        sessionStore.get(id)
+                            ?.let(::render)
+                    }
+                }
+            }
+        }
     }
 
     private fun startOrResume() {
@@ -690,6 +972,45 @@ class BulkSyncSessionActivity : Activity() {
                     )
                 }
 
+                val rolledBack =
+                    BulkSyncRollbackPolicy
+                        .rolledBackCount(
+                            session
+                        )
+
+                val rollbackRemaining =
+                    BulkSyncRollbackPolicy
+                        .remainingAppliedCount(
+                            session
+                        )
+
+                if (
+                    rolledBack > 0 ||
+                    session.state in
+                        setOf(
+                            BulkSyncSessionState
+                                .ROLLING_BACK,
+                            BulkSyncSessionState
+                                .ROLLBACK_PAUSED,
+                            BulkSyncSessionState
+                                .ROLLED_BACK
+                        )
+                ) {
+                    append("\n")
+                    append(
+                        "Відкочено mutations: "
+                    )
+                    append(
+                        rolledBack
+                    )
+                    append(
+                        " • залишилось: "
+                    )
+                    append(
+                        rollbackRemaining
+                    )
+                }
+
                 if (
                     !session.lastError
                         .isNullOrBlank()
@@ -738,18 +1059,44 @@ class BulkSyncSessionActivity : Activity() {
                     session
                 )
 
+        val rollbackStartable =
+            BulkSyncRollbackPolicy
+                .canStartRollback(
+                    session
+                )
+
+        val rollbackResumable =
+            BulkSyncRollbackPolicy
+                .canResumeRollback(
+                    session
+                )
+
         primaryButton.text =
-            if (
+            when {
+                rollbackStartable ->
+                    "Відкотити цю синхронізацію"
+
+                rollbackResumable ->
+                    "Продовжити відкат"
+
                 session.state ==
-                BulkSyncSessionState.READY
-            ) {
-                "Почати синхронізацію"
-            } else {
-                "Продовжити"
+                    BulkSyncSessionState.ROLLED_BACK ->
+                    "Відкочено"
+
+                session.state ==
+                    BulkSyncSessionState.READY ->
+                    "Почати синхронізацію"
+
+                else ->
+                    "Продовжити"
             }
 
         primaryButton.isEnabled =
-            resumable &&
+            (
+                resumable ||
+                    rollbackStartable ||
+                    rollbackResumable
+            ) &&
                 !running
 
         closeButton.isEnabled =
@@ -1099,6 +1446,9 @@ class BulkSyncSessionActivity : Activity() {
     companion object {
         private const val STATE_HELP_DIALOG_OPEN =
             "bulk_sync_session_help_dialog_open"
+
+        private const val STATE_SESSION_MODAL =
+            "bulk_sync_session_modal"
 
         const val EXTRA_SESSION_ID =
             "bulk_sync_session_id"
