@@ -40,6 +40,38 @@ Last updated: **2026-09-29**
 >
 > Do not run Test 7 remote writes on the currently installed old candidate because it cannot exclude unrelated executable rows.
 
+> **SLEEP CHECKPOINT — 2026-09-29**
+>
+> Stop here for the night. No Test 7 remote write has been executed.
+>
+> Exact phone candidate to use next:
+> - signed source: `d58691b6e63d28cdb39b2acdce6ec7ca03e54867`;
+> - signed run: `36512664669` — PASS;
+> - artifact: `YTM-Importer-v1.4.54-Release`.
+>
+> Important: branch HEAD has advanced after the signed build only through documentation / manifest maintenance. For phone Test 7, use the APK from run `36512664669`; do not rebuild "latest HEAD" just to continue the test.
+>
+> Test 7 preserved setup:
+> - controlled existing playlist: `The Prodigy - What Evil Lurks (1991)`;
+> - persisted YTM ID: `PLdZ1HeMkaDZw`;
+> - remote baseline before Test 7: 4 tracks;
+> - local workspace has exactly 2 manual replacement videoIds;
+> - old Preview correctly planned LINKED add-only `insert 2` / 100 units;
+> - unrelated executable rows were the isolation blocker;
+> - UX-041 row include/exclude and UX-042 loading indicator are implemented and validated;
+> - Validate Android on exact final code candidate: `36511262776` attempt 2 — PASS.
+>
+> **NEXT ACTION TOMORROW:**
+> 1. Termux menu item 3 — download exact signed APK from run `36512664669`.
+> 2. Install in-place; do not uninstall or clear app data.
+> 3. Open `Синхронізувати всі`.
+> 4. Confirm UX-042: active spinner/progress indicator appears during Preview analysis.
+> 5. In ready Preview, exclude every executable NEW/LINKED row except `The Prodigy - What Evil Lurks (1991)`.
+> 6. Verify selected summary is exactly `NEW 0 • LINKED add-only 1` and controlled row remains `insert 2` / 100 units.
+> 7. Send screenshot before creating the Bulk session.
+>
+> Do not create the Test 7 Bulk session or start remote writes until that scoped Preview is visually confirmed.
+
 ## 1. Resume point
 
 Repository: `faric-ua/YTM`
