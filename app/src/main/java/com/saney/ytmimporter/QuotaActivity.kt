@@ -17,12 +17,19 @@ import com.saney.ytmimporter.storage.BulkSyncQaFaultStore
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
 class QuotaActivity : Activity() {
     private lateinit var quotaTracker: QuotaTracker
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var root: LinearLayout
+    private lateinit var scrollView: ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +40,10 @@ class QuotaActivity : Activity() {
         pendingJobStore =
             PendingJobStore(this)
 
+        scrollPosition.restore(
+            savedInstanceState
+        )
+
         render()
     }
 
@@ -40,11 +51,43 @@ class QuotaActivity : Activity() {
         super.onResume()
 
         if (::root.isInitialized) {
+            captureScrollPosition()
             render()
         }
     }
 
+    override fun onPause() {
+        captureScrollPosition()
+        super.onPause()
+    }
+
+    override fun onSaveInstanceState(
+        outState: Bundle
+    ) {
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
+        super.onSaveInstanceState(
+            outState
+        )
+    }
+
+    private fun captureScrollPosition() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+    }
+
     private fun render() {
+        captureScrollPosition()
+
         val palette =
             AppThemeManager.palette(this)
 
@@ -61,7 +104,7 @@ class QuotaActivity : Activity() {
             topBar()
         )
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport = true
             }
@@ -312,10 +355,10 @@ class QuotaActivity : Activity() {
             }
         )
 
-        scroll.addView(content)
+        scrollView.addView(content)
 
         root.addView(
-            scroll,
+            scrollView,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 0,
@@ -331,6 +374,10 @@ class QuotaActivity : Activity() {
         UiChrome.applyScreenInsets(
             this,
             root
+        )
+
+        scrollPosition.restoreInto(
+            scrollView
         )
     }
 
@@ -622,6 +669,9 @@ class QuotaActivity : Activity() {
         ).toInt()
 
     companion object {
+        private const val STATE_SCROLL_POSITION =
+            "quota_scroll_position"
+
         const val EXTRA_ACTION =
             "quota_action"
         const val ACTION_OPEN_QUEUE =
