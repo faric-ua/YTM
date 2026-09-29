@@ -59,6 +59,7 @@ Chat memory must never silently override current repository truth.
 ### System behavior contracts
 
 - `docs/assistant-kit/portable/SYSTEM_BEHAVIOR_CONTRACT.md`
+- `docs/design/UX_CHANGE_SAFETY_CONTRACT.md`;
 - `docs/v.1.4.47/navigation/NAVIGATION_ORIGIN_CONTRACT_R7.md`
 - `docs/v.1.4.47/navigation/TEST_DIAGRAM_STANDARD.md`
 - `docs/design/TILE_UI_CONTRACT.md`
@@ -178,6 +179,27 @@ retrospective gaps rather than invented evidence.
 
 Wave 0 protects BUG-039 write-limit classification/recovery before History recovery
 and bulk-sync execution are implemented.
+
+### Active v1.4.55 UX hardening release
+
+- `docs/design/UX_CHANGE_SAFETY_CONTRACT.md`
+- `docs/design/UI_WINDOW_QA_CONTRACT.md`
+- `docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md`
+- `docs/design/TILE_UI_CONTRACT.md`
+- `docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md`
+- `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`
+- `docs/v.1.4.55/CURRENT_STATE.md`
+- `docs/v.1.4.55/RELEASE_META.json`
+- `docs/v.1.4.55/RELEASE.md`
+- `docs/v.1.4.55/REGRESSION_CHECKLIST.md`
+- `docs/v.1.4.55/qa/PHONE_TEST.md`
+- `docs/v.1.4.55/qa/BUG_REGISTER.md`
+- `docs/v.1.4.55/qa/EVIDENCE_MANIFEST.md`
+
+The immutable functional reference for this hardening wave is the phone-accepted
+v1.4.54 source `e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+Presentation/lifecycle hardening must not reinterpret its API, identity, Queue,
+History or rollback semantics.
 
 ## Audit rule
 
