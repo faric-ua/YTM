@@ -1646,7 +1646,7 @@ fd6656bf2294dbe1  scripts/v1432-dialog-first-frame-audit.sh
 4a7b5f73612ae703  scripts/v1438-r2-audit.sh
 c1aa2cfcfae28838  scripts/v1438-selectors-safety-copy-audit.sh
 60ca127d7452abf3  scripts/v1439-history-json-restore-audit.sh
-b9c0fd5d81955cf6  scripts/v1440-release-history-audit.sh
+1cfdf070e06094bd  scripts/v1440-release-history-audit.sh
 600e82ec182af01e  scripts/v1441-auth-ui-consistency-audit.sh
 adb7e62119792e0b  scripts/v1441-followup-audit.sh
 d2843069d173002c  scripts/v1441-r1-audit.sh
