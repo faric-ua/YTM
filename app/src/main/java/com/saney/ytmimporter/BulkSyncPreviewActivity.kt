@@ -724,16 +724,22 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 append("\n\n")
                 append(
-                    "Wave 3: після підтвердження створюється durable session. " +
+                    "Wave 4: після підтвердження створюється durable session. " +
                         "Remote writes стартують тільки окремою дією на екрані сесії. " +
-                        "У цій хвилі виконуються лише NEW; LINKED відкладено."
+                        "Виконуються NEW і підтверджені LINKED add-only доповнення; " +
+                        "NEEDS_SEARCH / PENDING / BLOCKED не виконуються."
                 )
             }
 
         confirmationButton.isEnabled =
             !loading &&
-                summary.count(
-                    BulkSyncPlanState.NEW
+                (
+                    summary.count(
+                        BulkSyncPlanState.NEW
+                    ) +
+                        summary.count(
+                            BulkSyncPlanState.LINKED
+                        )
                 ) > 0
 
         rowsContainer.removeAllViews()
@@ -943,9 +949,18 @@ class BulkSyncPreviewActivity : Activity() {
                 BulkSyncPlanState.NEW
             )
 
-        if (newCount <= 0) {
+        val linkedCount =
+            summary.count(
+                BulkSyncPlanState.LINKED
+            )
+
+        if (
+            newCount +
+                linkedCount <=
+            0
+        ) {
             toast(
-                "У Wave 3 немає NEW-плейлистів для виконання."
+                "Немає NEW або LINKED add-only рядків для виконання."
             )
             return
         }
@@ -1020,7 +1035,16 @@ class BulkSyncPreviewActivity : Activity() {
                         BulkSyncPlanState.NEW
                     )
 
-                if (newCount <= 0) {
+                val linkedCount =
+                    summary.count(
+                        BulkSyncPlanState.LINKED
+                    )
+
+                if (
+                    newCount +
+                        linkedCount <=
+                    0
+                ) {
                     return null
                 }
 
@@ -1031,12 +1055,14 @@ class BulkSyncPreviewActivity : Activity() {
                     .setMessage(
                         "Буде створено локальний Full Backup checkpoint і свіжий " +
                             "read-only remote baseline.\n\n" +
-                            "До сесії потрапить " +
+                            "NEW: " +
                             newCount +
-                            " NEW-плейлист(ів). Нові YTM-плейлисти створюються як приватні.\n\n" +
-                            "LINKED / NEEDS_SEARCH / PENDING / BLOCKED у Wave 3 " +
-                            "не виконуються. Після створення сесії remote writes " +
-                            "ще не стартують автоматично."
+                            " • LINKED add-only: " +
+                            linkedCount +
+                            ". Нові YTM-плейлисти створюються як приватні.\n\n" +
+                            "LINKED виконується тільки як підтверджене add-only доповнення " +
+                            "за persisted YTM ID. NEEDS_SEARCH / PENDING / BLOCKED не виконуються. " +
+                            "Після створення сесії remote writes ще не стартують автоматично."
                     )
                     .setNegativeButton(
                         "Скасувати"
@@ -1152,8 +1178,13 @@ class BulkSyncPreviewActivity : Activity() {
                     ) {
                         loading = false
                         confirmationButton.isEnabled =
-                            summary.count(
-                                BulkSyncPlanState.NEW
+                            (
+                                summary.count(
+                                    BulkSyncPlanState.NEW
+                                ) +
+                                    summary.count(
+                                        BulkSyncPlanState.LINKED
+                                    )
                             ) > 0
                         val errorText =
                             safeError(
