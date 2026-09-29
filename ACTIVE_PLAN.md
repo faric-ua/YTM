@@ -84,7 +84,7 @@ If repository documents disagree, stop and reconcile them before implementation.
 - [x] backlog/rule reconciliation exists.
 - [x] Create this crash-recovery `ACTIVE_PLAN.md`.
 - [x] Wire `ACTIVE_PLAN.md` into every mandatory assistant first-read/context path. Evidence: `START_HERE_ASSISTANT.md`, `ASSISTANT_CONTEXT_INDEX.md`, `docs/assistant-kit/CONTEXT_FILES.txt`, `YTM_ASSISTANT_WORKFLOW.md`, `CURRENT_HANDOFF.md`.
-- [ ] Reconcile v1.4.54 Test 9 evidence into the historical QA/status files.
+- [x] Reconcile v1.4.54 Test 9 evidence into the historical QA/status files. Evidence mirrored into `PHONE_TEST.md`, `CURRENT_STATE.md`, `RELEASE_META.json`, `EVIDENCE_MANIFEST.md` and `RELEASE_TEST_STATUS.md`; issue #39 remains the live phone-evidence trail.
 - [ ] Complete v1.4.54 closeout records/gates without changing the accepted app behavior.
 
 ## B. Audit existing v1.4.55 changes before adding more
@@ -161,9 +161,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Reconcile the final Test 9 phone evidence into v1.4.54 historical QA/status files.**
+**Complete v1.4.54 closeout records/gates without changing the accepted app behavior.**
 
-Then complete v1.4.54 closeout records/gates without changing the accepted app behavior.
+After closeout is coherent, audit every existing v1.4.55 app-code delta against the immutable v1.4.54 functional baseline before adding more source changes.
 
 ## Update rule
 
