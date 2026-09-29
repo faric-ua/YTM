@@ -23,6 +23,7 @@ docs/v.1.4.47/navigation/TEST_DIAGRAM_STANDARD.md
 docs/assistant-kit/README.md
 docs/assistant-kit/RELEASE_DOCUMENTATION_CONTRACT.md
 docs/assistant-kit/portable/SYSTEM_BEHAVIOR_CONTRACT.md
+docs/design/UX_CHANGE_SAFETY_CONTRACT.md
 docs/assistant-kit/AUDIT_CATALOG.md
 docs/documentation/DOCUMENTATION_GAP_AUDIT_2026-09-22.md
 docs/roadmap/UPDATER.md
@@ -103,3 +104,13 @@ docs/v.1.4.54/qa/BUG_REGISTER.md
 docs/v.1.4.54/qa/EVIDENCE_MANIFEST.md
 docs/v.1.4.54/diagrams/README.md
 docs/v.1.4.54/diagrams/HISTORY_BULK_SYNC_FLOW.md
+
+docs/v.1.4.55/CURRENT_STATE.md
+docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md
+docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md
+docs/v.1.4.55/RELEASE_META.json
+docs/v.1.4.55/RELEASE.md
+docs/v.1.4.55/REGRESSION_CHECKLIST.md
+docs/v.1.4.55/qa/PHONE_TEST.md
+docs/v.1.4.55/qa/BUG_REGISTER.md
+docs/v.1.4.55/qa/EVIDENCE_MANIFEST.md
