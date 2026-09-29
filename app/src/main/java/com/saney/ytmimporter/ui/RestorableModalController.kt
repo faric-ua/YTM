@@ -19,6 +19,7 @@ class RestorableModalController(
 ) {
     private var openModalId: String? = null
     private var openModalArgs: Bundle = Bundle()
+    private var openSelectableTextState: Bundle = Bundle()
     private var dialog: Dialog? = null
 
     fun restore(
@@ -37,6 +38,14 @@ class RestorableModalController(
                 ?.getBundle(KEY_MODAL_ARGS)
                 ?.let(::Bundle)
                 ?: Bundle()
+
+        openSelectableTextState =
+            snapshot
+                ?.getBundle(
+                    KEY_SELECTABLE_TEXT_STATE
+                )
+                ?.let(::Bundle)
+                ?: Bundle()
     }
 
     fun save(
@@ -45,6 +54,16 @@ class RestorableModalController(
         val modalId =
             openModalId
                 ?: return
+
+        dialog
+            ?.window
+            ?.decorView
+            ?.let {
+                openSelectableTextState =
+                    SelectableTextState.capture(
+                        it
+                    )
+            }
 
         outState.putBundle(
             stateKey,
@@ -57,6 +76,12 @@ class RestorableModalController(
                     KEY_MODAL_ARGS,
                     Bundle(
                         openModalArgs
+                    )
+                )
+                putBundle(
+                    KEY_SELECTABLE_TEXT_STATE,
+                    Bundle(
+                        openSelectableTextState
                     )
                 )
             }
@@ -87,6 +112,8 @@ class RestorableModalController(
             modalId
         openModalArgs =
             Bundle(args)
+        openSelectableTextState =
+            Bundle()
 
         attach(
             created =
@@ -148,6 +175,7 @@ class RestorableModalController(
     fun clearState() {
         openModalId = null
         openModalArgs = Bundle()
+        openSelectableTextState = Bundle()
     }
 
     fun onDestroy() {
@@ -203,6 +231,28 @@ class RestorableModalController(
             // Semantic state is cleared by an explicit button action or
             // OnCancel (Back / touch-outside), never by system recreation.
         }
+
+        val selectableSnapshot =
+            Bundle(
+                openSelectableTextState
+            )
+
+        created.window
+            ?.decorView
+            ?.post {
+                if (
+                    dialog === created &&
+                    created.isShowing
+                ) {
+                    SelectableTextState.restore(
+                        root =
+                            created.window
+                                ?.decorView,
+                        state =
+                            selectableSnapshot
+                    )
+                }
+            }
     }
 
     private fun detachCurrent(
@@ -232,5 +282,8 @@ class RestorableModalController(
 
         const val KEY_MODAL_ARGS =
             "modal_args"
+
+        const val KEY_SELECTABLE_TEXT_STATE =
+            "selectable_text_state"
     }
 }
