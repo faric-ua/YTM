@@ -168,6 +168,18 @@ grep -Fq 'qaInsertFault' "$EXECUTOR"   || fail "Bulk executor QA insert fault se
 
 grep -Fq 'BulkSyncQaFaultStore' "$QUOTA_ACTIVITY"   || fail "Quota screen Test 5 control missing"
 
+grep -Fq 'armRollbackInterruptAfterOne' "$QA_FAULT_STORE"   || fail "Bulk Test 8 rollback interrupt arm missing"
+
+grep -Fq 'consumeRollbackInterruptAfterOne' "$QA_FAULT_STORE"   || fail "Bulk Test 8 one-shot rollback interrupt missing"
+
+grep -Fq 'qaInterruptAfterAppliedMutation' "app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncRollbackExecutor.kt"   || fail "Bulk Test 8 rollback interrupt seam missing"
+
+grep -Fq 'consumeRollbackInterruptAfterOne' "$SESSION_ACTIVITY"   || fail "Bulk Test 8 rollback interrupt not wired into session"
+
+grep -Fq 'QA — Test 8' "$QUOTA_ACTIVITY"   || fail "Quota screen Test 8 control missing"
+
+grep -Fq 'rollbackColdOpen_preservesAppliedAndRolledBackLedgerBoundary' "$SESSION_TEST"   || fail "Interrupted rollback durability JVM coverage missing"
+
 grep -Fq 'dailyQuotaFault_isClassifiedAsDailyQuota' "$QA_FAULT_TEST"   || fail "Bulk Test 5 QA fault classification coverage missing"
 
-echo "PASS: v1.4.54 Bulk Sync Test 3 + Test 5 foundation"
+echo "PASS: v1.4.54 Bulk Sync Test 3 + Test 5 + Test 8 foundation"
