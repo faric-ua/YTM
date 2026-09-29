@@ -1344,6 +1344,9 @@ class BulkSyncSessionActivity : Activity() {
             BulkSyncSessionRowState.READY ->
                 "Готовий новий плейлист"
 
+            BulkSyncSessionRowState.READY_APPEND ->
+                "Готове add-only доповнення"
+
             BulkSyncSessionRowState.CREATING ->
                 "Створення плейлиста…"
 
