@@ -1106,6 +1106,7 @@ class BulkSyncExecutor(
                 row.state in
                 setOf(
                     BulkSyncSessionRowState.READY,
+                    BulkSyncSessionRowState.READY_APPEND,
                     BulkSyncSessionRowState.CREATING,
                     BulkSyncSessionRowState.INSERTING
                 ) &&
