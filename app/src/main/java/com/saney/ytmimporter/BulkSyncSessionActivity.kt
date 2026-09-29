@@ -112,7 +112,11 @@ class BulkSyncSessionActivity : Activity() {
             currentPlaylistStore =
                 CurrentPlaylistStore(this),
             quotaTracker =
-                QuotaTracker(this)
+                QuotaTracker(this),
+            qaInterruptAfterAppliedMutation = {
+                BulkSyncQaFaultStore(this)
+                    .consumeRollbackInterruptAfterOne()
+            }
         )
     }
 
