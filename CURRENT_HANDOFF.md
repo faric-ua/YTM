@@ -34,7 +34,9 @@ Last updated: **2026-09-29**
 > - UX-040 / issue #41 — History needs semantic filters;
 > - BUG-047 / issue #42 — History delete confirmation disappears on rotation; requires a project-wide audit of all delete/destructive confirmations.
 >
-> **NEXT ACTION IN A NEW CHAT:** finish the UX-041/UX-042 candidate gate: refresh `FILE_MANIFEST.txt`, wait for exact-HEAD Validate Android PASS, build/install one signed candidate in-place, then reopen Bulk Preview. Uncheck every executable row except `The Prodigy - What Evil Lurks (1991)` and verify the summary/confirmation becomes exactly `NEW 0 • LINKED add-only 1` with `insert 2` before creating the Test 7 session.
+> Signed Test 7 candidate is now built from exact final HEAD `d58691b6e63d28cdb39b2acdce6ec7ca03e54867`; signed run `36512664669` — PASS; artifact `YTM-Importer-v1.4.54-Release` is available.
+>
+> **NEXT ACTION IN A NEW CHAT:** use Termux menu item 3 to download this exact signed APK, install it in-place without clearing app data, reopen Bulk Preview, uncheck every executable row except `The Prodigy - What Evil Lurks (1991)`, and verify the summary/confirmation becomes exactly `NEW 0 • LINKED add-only 1` with controlled `insert 2` before creating the Test 7 session.
 >
 > Do not run Test 7 remote writes on the currently installed old candidate because it cannot exclude unrelated executable rows.
 
