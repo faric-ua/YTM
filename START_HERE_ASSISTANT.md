@@ -1,10 +1,13 @@
 # YTM Importer — START HERE FOR A NEW ASSISTANT
 
-This is the canonical entry point for a new ChatGPT node/session working on YTM Importer.
+This is the canonical orientation file for a new ChatGPT node/session working on YTM Importer.
 
-Do not begin by guessing from the code. Read this file, then `ASSISTANT_CONTEXT_INDEX.md`, then every path in `docs/assistant-kit/CONTEXT_FILES.txt` before code-changing work.
+> **STOP / FIRST READ:** before this file, code, or old chat context, open `ACTIVE_PLAN.md`.
+> Its first unchecked actionable item is the live resume point. After every verified project step, update its checkbox and `NEXT ACTION`.
 
-For a mid-release/chat-crash resume, read `CURRENT_HANDOFF.md` immediately after this file. It is the short mutable snapshot of the exact active branch/PR/QA/next-step state.
+Do not begin by guessing from the code. Read `ACTIVE_PLAN.md` first, then this file, then `CURRENT_HANDOFF.md`, `ASSISTANT_CONTEXT_INDEX.md`, and every path in `docs/assistant-kit/CONTEXT_FILES.txt` before code-changing work.
+
+For a mid-release/chat-crash resume, `ACTIVE_PLAN.md` is the mandatory crash-recovery checklist and `CURRENT_HANDOFF.md` is the short mutable snapshot of the exact active branch/PR/QA/next-step state.
 
 ## 1. Project mission
 
@@ -153,12 +156,14 @@ For the freshest exact resume point, read `CURRENT_HANDOFF.md` first, then verif
 
 Before changing the project:
 
-1. `START_HERE_ASSISTANT.md`
-2. `ASSISTANT_CONTEXT_INDEX.md`
-3. every non-comment path in `docs/assistant-kit/CONTEXT_FILES.txt`, in order
-4. live GitHub branch / HEAD
-5. exact source files for the task
-6. relevant audit scripts from `docs/assistant-kit/AUDIT_CATALOG.md`
+1. `ACTIVE_PLAN.md`
+2. `START_HERE_ASSISTANT.md`
+3. `CURRENT_HANDOFF.md`
+4. `ASSISTANT_CONTEXT_INDEX.md`
+5. every non-comment path in `docs/assistant-kit/CONTEXT_FILES.txt`, in order
+6. live GitHub branch / HEAD
+7. exact source files for the task
+8. relevant audit scripts from `docs/assistant-kit/AUDIT_CATALOG.md`
 
 Do not depend on hidden conversation history to reconstruct system behavior.
 
