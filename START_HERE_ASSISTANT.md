@@ -358,13 +358,13 @@ Do not infer the next version or feature solely from old conversation memory. Re
 
 When entering a fresh chat/node:
 
-1. read `CURRENT_HANDOFF.md` and identify the active release branch, stacked/open PRs, last signed build, phone-installed/tested state, and exact next QA action;
-2. inspect live GitHub state for `main`, the active branch and the PR stack; do not assume the handoff SHA is still the current PR head after documentation/status commits;
-3. read the remaining mandatory files above;
-4. summarize current version, open bugs, next task and safety constraints;
-5. continue from repository evidence rather than asking the user to reconstruct old context;
-6. verify the working tree is clean before asking the user to apply anything;
-7. if repository access is unavailable, say so and ask for the minimum missing evidence instead of guessing.
+1. read `ACTIVE_PLAN.md` and resume from its first unchecked actionable item;\n2. read `CURRENT_HANDOFF.md` and identify the active release branch, stacked/open PRs, last signed build, phone-installed/tested state, and exact next QA action;
+3. inspect live GitHub state for `main`, the active branch and the PR stack; do not assume the handoff SHA is still the current PR head after documentation/status commits;
+4. read the remaining mandatory files above;
+5. summarize current version, open bugs, next task and safety constraints;
+6. continue from repository evidence rather than asking the user to reconstruct old context;
+7. verify the working tree is clean before asking the user to apply anything;
+8. after every verified step, update `ACTIVE_PLAN.md`; if repository access is unavailable, say so and ask for the minimum missing evidence instead of guessing.
 
 The goal is that a new assistant can become productive from the repository itself, not from hidden conversation history.
 
