@@ -5,10 +5,10 @@
   "phase": "development",
   "feature": "History Recovery / Safe Bulk Sync",
   "branch": "feat/v1.4.54-history-bulk-sync",
-  "appSourceSha": "9daa9027981551539d2fdfa76d08faa4620aeee6",
-  "signedRun": 36261268460,
-  "qaStatus": "WAVE 0 PHONE PASS (W0+) — NORMAL CREATE/ADD 4/4, QUEUE CLEAN, NO AUTO-START; UX-030/HISTORY RECOVERY NEXT",
+  "appSourceSha": "e553c6dcb0f918a51f40bfa4d783cb11b3086472",
+  "signedRun": 36579457780,
+  "qaStatus": "PHONE QA PASS — TESTS 1-9 COMPLETE; HISTORY RECOVERY, SAFE BULK SYNC, DURABLE RESUME AND EXACT ROLLBACK ACCEPTED; CLOSEOUT PENDING",
   "tag": null,
   "checkpointTag": null,
-  "phoneTestDate": "2026-09-26"
+  "phoneTestDate": "2026-09-29"
 }
