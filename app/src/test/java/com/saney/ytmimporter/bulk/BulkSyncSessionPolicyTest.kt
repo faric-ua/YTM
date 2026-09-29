@@ -635,6 +635,108 @@ class BulkSyncSessionPolicyTest {
     }
 
     @Test
+    fun coldOpen_readySession_dropsNonExecutableContextRows() {
+        val summary =
+            BulkSyncPlanSummary(
+                rows =
+                    listOf(
+                        planRow(
+                            id = "linked",
+                            state =
+                                BulkSyncPlanState.LINKED,
+                            remoteId =
+                                "remote-linked",
+                            inserts = 1
+                        ),
+                        planRow(
+                            id = "noop",
+                            state =
+                                BulkSyncPlanState.ALREADY_SYNCED,
+                            remoteId =
+                                "remote-noop"
+                        ),
+                        planRow(
+                            id = "pending",
+                            state =
+                                BulkSyncPlanState.PENDING
+                        )
+                    ),
+                estimatedSearchCalls = 0,
+                estimatedWriteUnits = 50
+            )
+
+        val session =
+            BulkSyncSessionFactory.create(
+                summary = summary,
+                snapshots =
+                    listOf(
+                        snapshot(
+                            id = "linked",
+                            videos =
+                                listOf(
+                                    "AAAAAAAAAAA"
+                                ),
+                            remoteId =
+                                "remote-linked"
+                        ),
+                        snapshot(
+                            id = "noop",
+                            videos =
+                                listOf(
+                                    "BBBBBBBBBBB"
+                                ),
+                            remoteId =
+                                "remote-noop"
+                        ),
+                        snapshot(
+                            id = "pending",
+                            videos =
+                                listOf(
+                                    "CCCCCCCCCCC"
+                                )
+                        )
+                    ),
+                checkpointId =
+                    "checkpoint-scope",
+                baseline =
+                    BulkSyncRemoteBaseline(
+                        capturedAt = 1L,
+                        googleEmail =
+                            "test@example.com",
+                        youtubeChannelId =
+                            "channel",
+                        youtubeChannelTitle =
+                            "Channel",
+                        playlists =
+                            emptyList()
+                    )
+            )
+
+        val restored =
+            BulkSyncExecutionPolicy
+                .normalizeAfterColdOpen(
+                    session
+                )
+
+        assertEquals(
+            listOf(
+                "linked"
+            ),
+            restored.plan.map {
+                it.localPlaylistId
+            }
+        )
+        assertEquals(
+            BulkSyncSessionRowState.READY_APPEND,
+            restored.plan.single().state
+        )
+        assertEquals(
+            0,
+            restored.currentPlanIndex
+        )
+    }
+
+    @Test
     fun coldOpen_neverAutoResumesRunningSession() {
         val running =
             sessionWithNewRow()
