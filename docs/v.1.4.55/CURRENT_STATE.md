@@ -77,12 +77,19 @@ Current source work already on branch:
 - full-screen adaptive action row now accounts for label fit;
 - History delete confirmation is lifecycle-restorable.
 
+Phase A source progress after reconciliation:
+- one shared label-aware width-fit policy now drives both full-screen and dialog action rows;
+- History, Queue and Service destructive confirmations have recreation-safe semantic ownership;
+- scroll retention is implemented on Quota, Playlist Hub, Bulk Session, Recent File Chooser and Service;
+- app-wide backlog/rule reconciliation is recorded in
+  `BACKLOG_RECONCILIATION_2026-09-29.md`.
+
 Still open in Phase A:
-- project-wide scroll-retention completion / phone matrix (#48);
+- finish project-wide scroll-retention audit / phone matrix (#48);
 - selectable-text range preservation (#49);
-- destructive-confirmation project-wide audit beyond History (#42);
-- one canonical action layout policy across screen + dialog footers (#47/#26/#37);
-- Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50);
+- complete destructive-confirmation phone matrix (#42);
+- phone-verify one canonical action layout contract across screen + dialog footers (#47/#26/#37);
+- finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50);
 - critical information must not be Toast-only;
 - Neon + alternate-skin accessibility/readability sanity;
 - temporary QA controls must be removed or compile-gated before public candidate.
@@ -165,11 +172,10 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-1. finish assistant/bootstrap safety wiring so future sessions must read this release;
-2. finish Phase A source audit against open issues;
-3. implement remaining shared helpers at the shared layer, not per-screen patches;
-4. refresh manifest + run exact-HEAD validation;
-5. only then ask for one consolidated phone candidate.
+1. finish Phase A source audit for remaining scroll/selectable-text/transient-message gaps;
+2. implement remaining shared helpers at the shared layer, not per-screen patches;
+3. refresh manifest + run exact-HEAD validation;
+4. only then ask for one consolidated phone candidate.
 
 Do not start Phase B functional/discoverability work until Phase A shared contracts
 are coherent enough that later screens can reuse them.
