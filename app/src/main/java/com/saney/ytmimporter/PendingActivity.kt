@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.RestorableModalController
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -41,6 +42,17 @@ class PendingActivity : Activity() {
     private lateinit var pendingModalController: RestorableModalController
 
     private var currentJobId: String? = null
+    private var pendingListView: ListView? = null
+    private var detailScrollView: ScrollView? = null
+    private var listFirstVisiblePosition = 0
+    private var listTopOffset = 0
+    private var pendingSearchQuery = ""
+    private var detailScrollJobId: String? = null
+
+    private val detailScrollPosition =
+        ScrollPositionState(
+            KEY_DETAIL_SCROLL_POSITION
+        )
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -60,6 +72,35 @@ class PendingActivity : Activity() {
                     savedInstanceState
                 )
             }
+
+        listFirstVisiblePosition =
+            savedInstanceState
+                ?.getInt(
+                    KEY_LIST_FIRST_POSITION,
+                    0
+                )
+                ?: 0
+        listTopOffset =
+            savedInstanceState
+                ?.getInt(
+                    KEY_LIST_TOP_OFFSET,
+                    0
+                )
+                ?: 0
+        pendingSearchQuery =
+            savedInstanceState
+                ?.getString(
+                    KEY_SEARCH_QUERY
+                )
+                .orEmpty()
+        detailScrollJobId =
+            savedInstanceState
+                ?.getString(
+                    KEY_DETAIL_SCROLL_JOB_ID
+                )
+        detailScrollPosition.restore(
+            savedInstanceState
+        )
 
         val restoredId =
             savedInstanceState
@@ -87,9 +128,32 @@ class PendingActivity : Activity() {
     override fun onSaveInstanceState(
         outState: Bundle
     ) {
+        capturePendingViewport()
+
         outState.putString(
             KEY_CURRENT_JOB_ID,
             currentJobId
+        )
+
+        outState.putInt(
+            KEY_LIST_FIRST_POSITION,
+            listFirstVisiblePosition
+        )
+        outState.putInt(
+            KEY_LIST_TOP_OFFSET,
+            listTopOffset
+        )
+        outState.putString(
+            KEY_SEARCH_QUERY,
+            pendingSearchQuery
+        )
+        outState.putString(
+            KEY_DETAIL_SCROLL_JOB_ID,
+            detailScrollJobId
+        )
+        detailScrollPosition.save(
+            outState,
+            detailScrollView
         )
 
         pendingModalController.save(
@@ -98,6 +162,27 @@ class PendingActivity : Activity() {
 
         super.onSaveInstanceState(
             outState
+        )
+    }
+
+    override fun onPause() {
+        capturePendingViewport()
+        super.onPause()
+    }
+
+    private fun capturePendingViewport() {
+        pendingListView?.let { list ->
+            listFirstVisiblePosition =
+                list.firstVisiblePosition
+                    .coerceAtLeast(0)
+            listTopOffset =
+                list.getChildAt(0)
+                    ?.top
+                    ?: 0
+        }
+
+        detailScrollPosition.capture(
+            detailScrollView
         )
     }
 
@@ -119,6 +204,15 @@ class PendingActivity : Activity() {
     }
 
     private fun showListScreen() {
+        if (currentJobId != null) {
+            detailScrollPosition.capture(
+                detailScrollView
+            )
+        }
+
+        detailScrollPosition.reset()
+        detailScrollJobId = null
+        detailScrollView = null
         currentJobId = null
 
         val root = baseRoot()
@@ -153,6 +247,12 @@ class PendingActivity : Activity() {
                 hint =
                     "Пошук у черзі"
                 setSingleLine(true)
+                setText(
+                    pendingSearchQuery
+                )
+                setSelection(
+                    text.length
+                )
                 textSize = 14f
                 setTextColor(Color.WHITE)
                 setHintTextColor(
@@ -267,12 +367,28 @@ class PendingActivity : Activity() {
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
 
+        pendingListView = list
+
         val adapter =
             PendingListAdapter(jobs)
 
         list.adapter = adapter
+        adapter.filter(
+            pendingSearchQuery
+        )
         countText.text =
-            "${jobs.size} завдань"
+            if (pendingSearchQuery.isBlank()) {
+                "${adapter.count} завдань"
+            } else {
+                "Знайдено: ${adapter.count}"
+            }
+
+        list.post {
+            list.setSelectionFromTop(
+                listFirstVisiblePosition,
+                listTopOffset
+            )
+        }
 
         list.setOnItemClickListener {
                 _,
@@ -280,6 +396,7 @@ class PendingActivity : Activity() {
                 position,
                 _ ->
 
+            capturePendingViewport()
             adapter
                 .getItem(position)
                 ?.let(
@@ -309,6 +426,15 @@ class PendingActivity : Activity() {
                             .orEmpty()
                             .trim()
 
+                    if (query != pendingSearchQuery) {
+                        pendingSearchQuery =
+                            query
+                        listFirstVisiblePosition =
+                            0
+                        listTopOffset =
+                            0
+                    }
+
                     adapter.filter(query)
 
                     countText.text =
@@ -330,6 +456,19 @@ class PendingActivity : Activity() {
     private fun showDetailScreen(
         job: PendingJob
     ) {
+        capturePendingViewport()
+
+        if (
+            detailScrollJobId !=
+                job.id
+        ) {
+            detailScrollPosition.reset()
+            detailScrollJobId =
+                job.id
+        }
+
+        pendingListView = null
+
         if (
             job.operation ==
                 PendingOperation.SEARCH
@@ -353,10 +492,15 @@ class PendingActivity : Activity() {
             )
         )
 
-        val scroll =
+        detailScrollView =
             ScrollView(this).apply {
                 isFillViewport = true
             }
+
+        val scroll =
+            requireNotNull(
+                detailScrollView
+            )
 
         val content =
             LinearLayout(this).apply {
@@ -619,6 +763,9 @@ class PendingActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        detailScrollPosition.restoreInto(
+            scroll
+        )
     }
 
     private fun showSearchDetailScreen(
@@ -661,11 +808,16 @@ class PendingActivity : Activity() {
             )
         )
 
-        val scroll =
+        detailScrollView =
             ScrollView(this).apply {
                 isFillViewport =
                     true
             }
+
+        val scroll =
+            requireNotNull(
+                detailScrollView
+            )
 
         val content =
             LinearLayout(this).apply {
@@ -898,6 +1050,9 @@ class PendingActivity : Activity() {
         UiChrome.applyScreenInsets(
             this,
             root
+        )
+        detailScrollPosition.restoreInto(
+            scroll
         )
     }
 
@@ -1846,6 +2001,21 @@ class PendingActivity : Activity() {
 
         private const val KEY_CURRENT_JOB_ID =
             "current_pending_job_id"
+
+        private const val KEY_LIST_FIRST_POSITION =
+            "pending_list_first_position"
+
+        private const val KEY_LIST_TOP_OFFSET =
+            "pending_list_top_offset"
+
+        private const val KEY_SEARCH_QUERY =
+            "pending_search_query"
+
+        private const val KEY_DETAIL_SCROLL_POSITION =
+            "pending_detail_scroll_position"
+
+        private const val KEY_DETAIL_SCROLL_JOB_ID =
+            "pending_detail_scroll_job_id"
 
         private val BACKGROUND =
             Color.rgb(
