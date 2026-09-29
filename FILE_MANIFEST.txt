@@ -100,7 +100,7 @@ b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 07a57220433734c6  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 386c85ad84f92229  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 b5ebe5a06b46482f  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-82b4dbb9adf2e124  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
+eeb5a51a30689dc7  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 a1f449578ea55ef1  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 5dfc8b97de795257  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 33e709e797e5f645  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
@@ -161,6 +161,7 @@ fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWri
 7e65143a9419153e  app/src/main/java/com/saney/ytmimporter/ui/ReplacementLogDialog.kt
 607b158a71f47d74  app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt
 8ab47c848ec9c8b3  app/src/main/java/com/saney/ytmimporter/ui/SafFileSaveFlow.kt
+0c38b478d35c27f0  app/src/main/java/com/saney/ytmimporter/ui/ScrollPositionState.kt
 9280056bf2b0b6b0  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
 23902c16f94d900b  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 78da56fe6d4f0417  app/src/main/java/com/saney/ytmimporter/ui/WorkflowRelayOverlay.kt
