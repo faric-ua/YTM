@@ -484,18 +484,16 @@ object UiChrome {
     private fun useHorizontalDialogActionRow(
         context: Context,
         actions: List<DialogAction>,
-        minButtonWidthDp: Int = 180
+        minButtonWidthDp: Int = 132
     ): Boolean =
-        fitsHorizontalActionGroup(
+        useHorizontalActionRow(
             context = context,
             actionCount = actions.size,
+            minButtonWidthDp = minButtonWidthDp,
             labels =
                 actions.map {
                     it.label
-                },
-            minButtonWidthDp = minButtonWidthDp,
-            textSizeSp = 14f,
-            chromeWidthDp = 72f
+                }
         )
 
     fun addAdaptiveActionButtons(
