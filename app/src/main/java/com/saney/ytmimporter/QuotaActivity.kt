@@ -213,147 +213,151 @@ class QuotaActivity : Activity() {
             )
         }
 
-        val qaFaultStore =
-            BulkSyncQaFaultStore(this)
-        val armedFault =
-            qaFaultStore.peek()
-        val rollbackInterruptArmed =
-            qaFaultStore
-                .isRollbackInterruptAfterOneArmed()
-
-        content.addView(
-            sectionTitle(
-                "QA — Test 5"
-            )
-        )
-
-        content.addView(
-            card().apply {
-                addView(
-                    bodyText(
-                        if (armedFault == null) {
-                            "Одноразовий контрольований тест паузи. " +
-                                "Після ввімкнення наступний Bulk insert не буде " +
-                                "відправлено в YouTube: застосунок отримає " +
-                                "симульоване повідомлення про вичерпання добової квоти. " +
-                                "Після одного спрацювання QA fault автоматично вимикається."
-                        } else {
-                            "QA fault увімкнено: наступний Bulk insert симулює " +
-                                "вичерпання добової квоти без remote insert. " +
-                                "Після спрацювання режим вимкнеться автоматично."
-                        }
-                    )
+        if (BuildConfig.DEBUG) {
+            val qaFaultStore =
+                BulkSyncQaFaultStore(this)
+            val armedFault =
+                qaFaultStore.peek()
+            val rollbackInterruptArmed =
+                qaFaultStore
+                    .isRollbackInterruptAfterOneArmed()
+    
+            content.addView(
+                sectionTitle(
+                    "QA — Test 5"
                 )
-
-                addView(
-                    actionButton(
-                        label =
+            )
+    
+            content.addView(
+                card().apply {
+                    addView(
+                        bodyText(
                             if (armedFault == null) {
-                                "Увімкнути Test 5 quota pause"
+                                "Одноразовий контрольований тест паузи. " +
+                                    "Після ввімкнення наступний Bulk insert не буде " +
+                                    "відправлено в YouTube: застосунок отримає " +
+                                    "симульоване повідомлення про вичерпання добової квоти. " +
+                                    "Після одного спрацювання QA fault автоматично вимикається."
                             } else {
-                                "Скасувати Test 5 fault"
-                            },
-                        primary =
-                            armedFault == null
-                    ) {
-                        if (armedFault == null) {
-                            qaFaultStore.arm(
-                                BulkSyncQaFaultKind
-                                    .DAILY_QUOTA
-                            )
-                            Toast.makeText(
-                                this@QuotaActivity,
-                                "Test 5: наступний Bulk insert симулює daily quota.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        } else {
-                            qaFaultStore.clear()
-                            Toast.makeText(
-                                this@QuotaActivity,
-                                "Test 5 fault вимкнено.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        render()
-                    },
-                    LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        dp(54)
-                    ).apply {
-                        topMargin =
-                            dp(12)
-                    }
-                )
-            }
-        )
-
-        content.addView(
-            sectionTitle(
-                "QA — Test 8"
-            )
-        )
-
-        content.addView(
-            card().apply {
-                addView(
-                    bodyText(
-                        if (!rollbackInterruptArmed) {
-                            "Одноразовий контрольований тест interrupted rollback. " +
-                                "Після ввімкнення наступний Bulk rollback виконає " +
-                                "одну exact reverse mutation, збереже її як ROLLED_BACK " +
-                                "і навмисно обірве worker, залишивши сесію у ROLLING_BACK. " +
-                                "Після перезапуску застосунку сесія має перейти у " +
-                                "ROLLBACK_PAUSED без автоматичного продовження."
-                        } else {
-                            "Test 8 interrupt увімкнено: наступний Bulk rollback " +
-                                "зупиниться одразу після першої успішно збереженої " +
-                                "reverse mutation. Fault одноразовий."
+                                "QA fault увімкнено: наступний Bulk insert симулює " +
+                                    "вичерпання добової квоти без remote insert. " +
+                                    "Після спрацювання режим вимкнеться автоматично."
+                            }
+                        )
+                    )
+    
+                    addView(
+                        actionButton(
+                            label =
+                                if (armedFault == null) {
+                                    "Увімкнути Test 5 quota pause"
+                                } else {
+                                    "Скасувати Test 5 fault"
+                                },
+                            primary =
+                                armedFault == null
+                        ) {
+                            if (armedFault == null) {
+                                qaFaultStore.arm(
+                                    BulkSyncQaFaultKind
+                                        .DAILY_QUOTA
+                                )
+                                Toast.makeText(
+                                    this@QuotaActivity,
+                                    "Test 5: наступний Bulk insert симулює daily quota.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                qaFaultStore.clear()
+                                Toast.makeText(
+                                    this@QuotaActivity,
+                                    "Test 5 fault вимкнено.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+    
+                            render()
+                        },
+                        LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            dp(54)
+                        ).apply {
+                            topMargin =
+                                dp(12)
                         }
                     )
+                }
+            )
+    
+            content.addView(
+                sectionTitle(
+                    "QA — Test 8"
                 )
-
-                addView(
-                    actionButton(
-                        label =
+            )
+    
+            content.addView(
+                card().apply {
+                    addView(
+                        bodyText(
                             if (!rollbackInterruptArmed) {
-                                "Увімкнути Test 8"
+                                "Одноразовий контрольований тест interrupted rollback. " +
+                                    "Після ввімкнення наступний Bulk rollback виконає " +
+                                    "одну exact reverse mutation, збереже її як ROLLED_BACK " +
+                                    "і навмисно обірве worker, залишивши сесію у ROLLING_BACK. " +
+                                    "Після перезапуску застосунку сесія має перейти у " +
+                                    "ROLLBACK_PAUSED без автоматичного продовження."
                             } else {
-                                "Скасувати Test 8"
-                            },
-                        primary =
-                            !rollbackInterruptArmed
-                    ) {
-                        if (!rollbackInterruptArmed) {
-                            qaFaultStore
-                                .armRollbackInterruptAfterOne()
-                            Toast.makeText(
-                                this@QuotaActivity,
-                                "Test 8: rollback буде перервано після 1 mutation.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        } else {
-                            qaFaultStore
-                                .clearRollbackInterruptAfterOne()
-                            Toast.makeText(
-                                this@QuotaActivity,
-                                "Test 8 interrupt вимкнено.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                "Test 8 interrupt увімкнено: наступний Bulk rollback " +
+                                    "зупиниться одразу після першої успішно збереженої " +
+                                    "reverse mutation. Fault одноразовий."
+                            }
+                        )
+                    )
+    
+                    addView(
+                        actionButton(
+                            label =
+                                if (!rollbackInterruptArmed) {
+                                    "Увімкнути Test 8"
+                                } else {
+                                    "Скасувати Test 8"
+                                },
+                            primary =
+                                !rollbackInterruptArmed
+                        ) {
+                            if (!rollbackInterruptArmed) {
+                                qaFaultStore
+                                    .armRollbackInterruptAfterOne()
+                                Toast.makeText(
+                                    this@QuotaActivity,
+                                    "Test 8: rollback буде перервано після 1 mutation.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                qaFaultStore
+                                    .clearRollbackInterruptAfterOne()
+                                Toast.makeText(
+                                    this@QuotaActivity,
+                                    "Test 8 interrupt вимкнено.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+    
+                            render()
+                        },
+                        LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            dp(54)
+                        ).apply {
+                            topMargin =
+                                dp(12)
                         }
-
-                        render()
-                    },
-                    LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        dp(54)
-                    ).apply {
-                        topMargin =
-                            dp(12)
-                    }
-                )
-            }
-        )
+                    )
+                }
+            )
+    
+    
+        }
 
         scrollView.addView(content)
 
