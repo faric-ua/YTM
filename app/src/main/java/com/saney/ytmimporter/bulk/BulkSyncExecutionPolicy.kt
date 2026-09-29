@@ -31,21 +31,26 @@ object BulkSyncExecutionPolicy {
     fun normalizeAfterColdOpen(
         session: BulkSyncSession
     ): BulkSyncSession {
+        val scopedReady =
+            normalizeReadyScope(
+                session
+            )
+
         val rollbackNormalized =
             BulkSyncRollbackPolicy
                 .normalizeAfterColdOpen(
-                    session
+                    scopedReady
                 )
 
-        if (rollbackNormalized != session) {
+        if (rollbackNormalized != scopedReady) {
             return rollbackNormalized
         }
 
         if (
-            session.state ==
+            scopedReady.state ==
             BulkSyncSessionState.RUNNING
         ) {
-            return session.copy(
+            return scopedReady.copy(
                 state =
                     BulkSyncSessionState
                         .PAUSED_INTERRUPTED,
@@ -59,11 +64,11 @@ object BulkSyncExecutionPolicy {
         }
 
         if (
-            session.state ==
+            scopedReady.state ==
             BulkSyncSessionState.PARTIAL_FAILED
         ) {
             val legacyFailedInsert =
-                session.mutationLedger
+                scopedReady.mutationLedger
                     .lastOrNull {
                         it.type ==
                             BulkSyncMutationType
@@ -75,7 +80,7 @@ object BulkSyncExecutionPolicy {
 
             if (legacyFailedInsert != null) {
                 val rowIndex =
-                    session.plan.indexOfFirst {
+                    scopedReady.plan.indexOfFirst {
                         it.localPlaylistId ==
                             legacyFailedInsert
                                 .localPlaylistId
@@ -83,7 +88,7 @@ object BulkSyncExecutionPolicy {
 
                 if (rowIndex >= 0) {
                     val rows =
-                        session.plan
+                        scopedReady.plan
                             .toMutableList()
 
                     val row =
@@ -92,7 +97,7 @@ object BulkSyncExecutionPolicy {
                     val reason =
                         legacyFailedInsert.error
                             ?: row.lastError
-                            ?: session.lastError
+                            ?: scopedReady.lastError
                             ?: "Трек не вдалося додати"
 
                     rows[rowIndex] =
@@ -105,7 +110,7 @@ object BulkSyncExecutionPolicy {
                         )
 
                     val ledger =
-                        session.mutationLedger
+                        scopedReady.mutationLedger
                             .map {
                                 mutation ->
                                 if (
@@ -127,7 +132,7 @@ object BulkSyncExecutionPolicy {
                                 }
                             }
 
-                    return session.copy(
+                    return scopedReady.copy(
                         state =
                             BulkSyncSessionState
                                 .PAUSED_INTERRUPTED,
@@ -145,7 +150,59 @@ object BulkSyncExecutionPolicy {
             }
         }
 
-        return session
+        return scopedReady
+    }
+
+
+    private fun normalizeReadyScope(
+        session: BulkSyncSession
+    ): BulkSyncSession {
+        if (
+            session.state !=
+            BulkSyncSessionState.READY ||
+            session.mutationLedger
+                .isNotEmpty()
+        ) {
+            return session
+        }
+
+        val executableRows =
+            session.plan.filter {
+                row ->
+                row.state in
+                    setOf(
+                        BulkSyncSessionRowState.READY,
+                        BulkSyncSessionRowState.READY_APPEND
+                    )
+            }
+
+        if (
+            executableRows.size ==
+            session.plan.size
+        ) {
+            return session
+        }
+
+        val nextIndex =
+            executableRows
+                .indexOfFirst {
+                    it.state in
+                        setOf(
+                            BulkSyncSessionRowState.READY,
+                            BulkSyncSessionRowState.READY_APPEND
+                        )
+                }
+                .takeIf {
+                    it >= 0
+                }
+                ?: executableRows.size
+
+        return session.copy(
+            plan = executableRows,
+            currentPlanIndex = nextIndex,
+            updatedAt =
+                System.currentTimeMillis()
+        )
     }
 
     fun hasUncertainPreparedMutation(
