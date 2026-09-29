@@ -37,7 +37,7 @@ class BulkSyncSelectionPolicyTest {
     }
 
     @Test
-    fun selectedSummary_excludesUncheckedExecutableRows() {
+    fun selectedSummary_keepsOnlyIncludedExecutableRows() {
         val summary =
             summary(
                 row(
@@ -72,12 +72,15 @@ class BulkSyncSelectionPolicyTest {
 
         assertEquals(
             listOf(
-                "linked-keep",
-                "pending"
+                "linked-keep"
             ),
             selected.rows.map {
                 it.localPlaylistId
             }
+        )
+        assertEquals(
+            0,
+            selected.estimatedSearchCalls
         )
         assertEquals(
             100,
