@@ -1,7 +1,7 @@
 # YTM Importer — Roadmap
 
 ## Current
-v1.4.54 — History Recovery / Safe Bulk Sync — DEVELOPMENT / TEST 5 PAUSED — UX-038 UI CONSOLIDATION
+v1.4.55 — UX Hardening / Control — DEVELOPMENT / WAVE A
 
 ## Known
 - BUG-001/Q-001 OPEN
@@ -1230,3 +1230,48 @@ including:
 - [x] phone: rotation preserves changelog scroll position after follow-up fix
 
 - UX-020 Import File Recent-First Selector — R1 FIX IMPLEMENTED / PHONE QA NEEDED; v1.4.42 selector entry PASS but root `Download` SAF onboarding was blocked. v1.4.42-R1 uses explicit Android All files access to read Download directly, newest-first; SAF/system-picker fallbacks remain.
+
+
+## v1.4.55 — UX Hardening / Control
+
+Branch: `feat/v1.4.55-ux-hardening`.  
+Functional baseline: exact phone-accepted v1.4.54 source
+`e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+
+### Wave A — shared non-functional hardening
+- [x] lock UX change safety contract
+- [x] complete app-wide readability audit
+- [x] create master hardening/control plan
+- [x] simplify first-pass Menu wording
+- [x] expose History restore in Quick Actions using the existing safe restore path
+- [x] first-pass Bulk Preview user-facing wording
+- [x] first-pass Bulk Session user-facing wording
+- [ ] exact-HEAD release preflight / JVM / unsigned build
+- [ ] shared action layout hardening
+- [ ] destructive modal lifecycle audit
+- [ ] scroll retention
+- [ ] selectable-text retention
+- [ ] critical transient-message audit
+- [ ] consolidated real-phone matrix
+
+### Wave B — management/discoverability
+- [ ] History filters/findability
+- [ ] History logical grouping/provider affordances
+- [ ] Recovery Center + compact breathing attention icon
+- [ ] type-aware YTM file library / canonical folders
+- [ ] simplified Termux operator menu
+
+### Wave C — local convenience
+- [ ] local playlist Edit
+- [ ] blank URL inline validation
+- [ ] Review manual URL/manual-selection polish
+- [ ] Bulk preparation presentation/state cleanup
+
+Safety contract:
+`docs/design/UX_CHANGE_SAFETY_CONTRACT.md`.
+
+Readability audit:
+`docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`.
+
+Master plan:
+`docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md`.
