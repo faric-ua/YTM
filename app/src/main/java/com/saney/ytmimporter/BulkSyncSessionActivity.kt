@@ -1101,6 +1101,29 @@ class BulkSyncSessionActivity : Activity() {
 
         closeButton.isEnabled =
             !running
+
+        UiChrome.styleAdaptiveActionButton(
+            activity = this,
+            button =
+                primaryButton,
+            tone =
+                if (
+                    rollbackStartable ||
+                    rollbackResumable
+                ) {
+                    UiChrome.ActionTone.DANGER
+                } else {
+                    UiChrome.ActionTone.ACCENT
+                }
+        )
+
+        UiChrome.styleAdaptiveActionButton(
+            activity = this,
+            button =
+                closeButton,
+            tone =
+                UiChrome.ActionTone.NORMAL
+        )
     }
 
     private fun rowView(
