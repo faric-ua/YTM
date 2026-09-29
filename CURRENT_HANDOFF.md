@@ -27,7 +27,7 @@ Last updated: **2026-09-29**
 > - deleting a local History record does not remove its Restorable/Bulk candidate, so History cleanup is not a safe isolation mechanism;
 > - UX-041 / issue #43 adds per-row include/exclude for executable NEW/LINKED rows;
 > - UX-042 / issue #44 adds an active indeterminate progress indicator while Preview is being built;
-> - implementation is on branch through code/audit HEAD `d14e3f6a7e7eb988a88b10a149e1c173e72f0d63`; exact final manifest-refresh Validate is still pending.
+> - implementation is validated through manifest-refresh HEAD `6644f6874c0c1f4ea782b3bc3695ac9453920c72`; Validate Android run `36510863732` — PASS (release preflight + selection audit + JVM tests + unsigned assemble). This handoff refresh is docs-only; refresh manifest once more before the signed build.
 >
 > Additional phone findings recorded during Test 7:
 > - UX-039 / issue #40 — manual URL input should be multiline/clearable and manual override status must be visually distinct;
