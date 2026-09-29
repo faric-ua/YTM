@@ -446,7 +446,7 @@ UX-041 / issue #43:
 - selection defaults to all executable rows, can exclude individual rows, updates counts/write-unit estimate immediately, survives rotation, and filters the durable session input;
 - JVM policy coverage added in `BulkSyncSelectionPolicyTest`;
 - code/audit checkpoint before final manifest refresh: `d14e3f6a7e7eb988a88b10a149e1c173e72f0d63`;
-- exact final Validate Android is pending.
+- Validate Android `36510863732` on manifest-refresh HEAD `6644f6874c0c1f4ea782b3bc3695ac9453920c72` — PASS (release preflight, selection audit, JVM tests, unsigned assemble).
 
 UX-042 / issue #44:
 - Bulk Preview now shows an indeterminate progress indicator and active status copy while local/remote analysis or session checkpoint/baseline preparation is running;
@@ -459,8 +459,8 @@ Additional findings:
 
 ### Next gate
 
-1. Refresh `FILE_MANIFEST.txt` last.
-2. Exact final branch HEAD must pass Validate Android.
+1. Refresh `FILE_MANIFEST.txt` after this documentation-only checkpoint.
+2. Exact final branch HEAD must pass Validate Android; code-equivalent run `36510863732` on `6644f687...` is already PASS.
 3. Build one signed APK from that exact code candidate and install in-place.
 4. Rebuild Bulk Preview.
 5. Exclude every executable row except controlled `What Evil Lurks`.
