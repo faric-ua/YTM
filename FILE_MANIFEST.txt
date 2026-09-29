@@ -100,7 +100,7 @@ b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 07a57220433734c6  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 386c85ad84f92229  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 b5ebe5a06b46482f  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-f3ce86ee7aae9616  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
+82b4dbb9adf2e124  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 a1f449578ea55ef1  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 5dfc8b97de795257  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 33e709e797e5f645  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
