@@ -683,3 +683,46 @@ PASS:
 - no title-only YTM linkage is invented.
 
 Result: `9+` / `9-`.
+
+
+### Test 6 phone result — 2026-09-29: 6+
+
+Exact candidate:
+- source `2827ad9a7dd66cb552980b667d961d5986737bdf`;
+- signed build `36503391119`.
+
+Observed:
+- exact rollback plan: 18 inserted items + 1 session-created playlist;
+- confirmation survived portrait/landscape recreation without auto-action;
+- explicit rollback completed with 19 reverted mutations and 0 remaining;
+- no pause/error occurred;
+- session-created remote playlist ID `PLUiwWr7GihSE` disappeared;
+- a same-title `db ost` remained, but its exact ID is `PLTHMkNWGWp4k`, proving it is unrelated pre-existing content.
+
+Result: **6+ / PHONE PASS**.
+
+### Test 7 pre-write / isolation checkpoint
+
+Controlled destination:
+- `The Prodigy - What Evil Lurks (1991)`;
+- persisted YTM ID `PLdZ1HeMkaDZw`;
+- remote baseline: 4 tracks;
+- two local manual replacements prepared;
+- controlled Preview row: LINKED, `insert 2`, 100 units.
+
+The aggregate Preview also contained unrelated executable rows (`NEW 1 • LINKED 3` total), so session creation was stopped before any write.
+
+Deleting a History record did not change the Bulk candidate set. This confirms History deletion is not a safe plan-isolation mechanism.
+
+UX-041 / issue #43 implements explicit per-row include/exclude for NEW/LINKED executable rows. The selected plan must:
+- preserve selection through rotation;
+- update selected NEW/LINKED counts and write units immediately;
+- feed only selected executable rows into the durable session;
+- never trigger remote work merely by toggling selection.
+
+UX-042 / issue #44 adds an active indeterminate progress indicator while Preview analysis/checkpoint preparation is running.
+
+Test 7 remains **NOT EXECUTED remotely** until a signed candidate with UX-041 passes the isolation gate:
+- only controlled `What Evil Lurks` selected;
+- `NEW 0 • LINKED add-only 1`;
+- exactly `insert 2`.
