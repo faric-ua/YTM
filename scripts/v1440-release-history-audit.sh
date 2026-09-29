@@ -39,10 +39,16 @@ grep -Fq 'cleanReleaseMarkdown' "$SERVICE"   || fail "lightweight markdown clean
 
 grep -Fq 'Page.CHANGELOG -> {' "$SERVICE"   || fail "release-history Back parent missing"
 grep -Fq 'page = Page.ABOUT' "$SERVICE"   || fail "Back from release history does not return to About"
-grep -Fq 'KEY_CHANGELOG_SCROLL_Y' "$SERVICE"   || fail "release-history scroll state key missing"
-grep -Fq 'setOnScrollChangeListener' "$SERVICE"   || fail "release-history scroll tracking missing"
-grep -Fq 'outState.putInt(KEY_CHANGELOG_SCROLL_Y' "$SERVICE"   || fail "release-history scroll save missing"
-grep -Fq 'scroll.scrollTo(0, changelogScrollY)' "$SERVICE"   || fail "release-history scroll restore missing"
+if grep -Fq 'KEY_CHANGELOG_SCROLL_Y' "$SERVICE"; then
+  grep -Fq 'setOnScrollChangeListener' "$SERVICE"   || fail "legacy release-history scroll tracking missing"
+  grep -Fq 'outState.putInt(KEY_CHANGELOG_SCROLL_Y' "$SERVICE"   || fail "legacy release-history scroll save missing"
+  grep -Fq 'scroll.scrollTo(0, changelogScrollY)' "$SERVICE"   || fail "legacy release-history scroll restore missing"
+else
+  grep -Fq 'ScrollPositionState' "$SERVICE"   || fail "shared Service scroll state helper missing"
+  grep -Fq 'screenScrollPosition.save(' "$SERVICE"   || fail "shared Service scroll save missing"
+  grep -Fq 'screenScrollPosition.restoreInto(' "$SERVICE"   || fail "shared Service scroll restore missing"
+  grep -Fq 'renderedPage != page' "$SERVICE"   || fail "shared Service scroll state is not scoped to the logical page"
+fi
 
 grep -Fq '## v1.4.40' "$CHANGELOG"   || fail "v1.4.40 changelog entry missing"
 
