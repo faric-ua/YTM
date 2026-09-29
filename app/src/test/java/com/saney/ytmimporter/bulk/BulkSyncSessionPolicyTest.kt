@@ -912,6 +912,122 @@ class BulkSyncSessionPolicyTest {
     }
 
     @Test
+    fun linkedAppend_materializesOnlyMissingOccurrencesWithoutCreate() {
+        val summary =
+            BulkSyncPlanSummary(
+                rows =
+                    listOf(
+                        planRow(
+                            id = "linked",
+                            state =
+                                BulkSyncPlanState.LINKED,
+                            remoteId =
+                                "remote-1",
+                            inserts = 1
+                        )
+                    ),
+                estimatedSearchCalls = 0,
+                estimatedWriteUnits = 50
+            )
+
+        val session =
+            BulkSyncSessionFactory.create(
+                summary = summary,
+                snapshots =
+                    listOf(
+                        snapshot(
+                            id = "linked",
+                            videos =
+                                listOf(
+                                    "AAAAAAAAAAA",
+                                    "AAAAAAAAAAA",
+                                    "BBBBBBBBBBB"
+                                ),
+                            remoteId =
+                                "remote-1"
+                        )
+                    ),
+                checkpointId =
+                    "checkpoint-linked",
+                baseline =
+                    BulkSyncRemoteBaseline(
+                        capturedAt = 1L,
+                        googleEmail =
+                            "test@example.com",
+                        youtubeChannelId =
+                            "channel",
+                        youtubeChannelTitle =
+                            "Channel",
+                        playlists =
+                            listOf(
+                                BulkSyncBaselinePlaylist(
+                                    playlistId =
+                                        "remote-1",
+                                    title =
+                                        "linked",
+                                    privacyStatus =
+                                        "private",
+                                    items =
+                                        listOf(
+                                            BulkSyncBaselineItem(
+                                                playlistItemId =
+                                                    "item-a",
+                                                sourcePosition = 0,
+                                                videoId =
+                                                    "AAAAAAAAAAA"
+                                            ),
+                                            BulkSyncBaselineItem(
+                                                playlistItemId =
+                                                    "item-b",
+                                                sourcePosition = 1,
+                                                videoId =
+                                                    "BBBBBBBBBBB"
+                                            )
+                                        )
+                                )
+                            )
+                    )
+            )
+
+        assertEquals(
+            BulkSyncSessionRowState
+                .READY_APPEND,
+            session.plan.single().state
+        )
+        assertEquals(
+            1,
+            session.plan.single()
+                .tracks.size
+        )
+        assertEquals(
+            1,
+            session.plan.single()
+                .tracks.single()
+                .trackIndex
+        )
+
+        val next =
+            BulkSyncExecutionPolicy
+                .nextMutation(
+                    session
+                )
+
+        assertTrue(
+            next is
+                BulkSyncNextMutation
+                    .InsertPlaylistItem
+        )
+        assertEquals(
+            "remote-1",
+            (
+                next as
+                    BulkSyncNextMutation
+                        .InsertPlaylistItem
+            ).remotePlaylistId
+        )
+    }
+
+    @Test
     fun rollback_requiresExactPersistedIds() {
         val base =
             sessionWithNewRow()
