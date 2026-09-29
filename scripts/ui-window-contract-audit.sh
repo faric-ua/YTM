@@ -8,6 +8,8 @@ UI="$SRC/ui/UiChrome.kt"
 RESPONSIVE="docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md"
 WINDOW="docs/design/UI_WINDOW_QA_CONTRACT.md"
 BULK_PREVIEW="$SRC/BulkSyncPreviewActivity.kt"
+PENDING="$SRC/PendingActivity.kt"
+SERVICE="$SRC/ServiceActivity.kt"
 
 FULLSCREEN_FOOTERS=(
   "$SRC/StorageChooserActivity.kt"
@@ -26,7 +28,7 @@ HELP_OWNERS=(
   "$SRC/BulkSyncSessionActivity.kt"
 )
 
-for f in "$UI" "$RESPONSIVE" "$WINDOW" "${FULLSCREEN_FOOTERS[@]}" "${HELP_OWNERS[@]}"; do
+for f in "$UI" "$RESPONSIVE" "$WINDOW" "$PENDING" "$SERVICE" "${FULLSCREEN_FOOTERS[@]}" "${HELP_OWNERS[@]}"; do
   test -f "$f" || fail "missing UI contract file: $f"
 done
 
@@ -148,6 +150,17 @@ grep -Fq 'PreviewModal.CREATE_SESSION' "$BULK_PREVIEW" ||
 grep -Fq 'clearState()' "$BULK_PREVIEW" ||
   fail "Bulk Preview explicit modal actions do not clear semantic modal state"
 
+for f in "$PENDING" "$SERVICE"; do
+  grep -Fq 'RestorableModalController' "$f" ||
+    fail "$(basename "$f") destructive confirmation is not owned by restorable modal state"
+  grep -Fq 'restoreAfterContentReady' "$f" ||
+    fail "$(basename "$f") destructive confirmation is not restored after recreation"
+  grep -Fq '.save(' "$f" ||
+    fail "$(basename "$f") restorable modal state is not saved"
+  grep -Fq '.onDestroy()' "$f" ||
+    fail "$(basename "$f") does not detach restorable modal windows on destroy"
+done
+
 if grep -R --include='*.kt' -n 'AlertDialog.Builder' "$SRC"; then
   fail "native AlertDialog.Builder runtime path returned"
 fi
@@ -155,11 +168,13 @@ fi
 echo 'PASS:'
 echo '- every shared action-bearing modal uses one fixed-footer shell'
 echo '- Help / message / record / content / multi-choice / menu windows share the same footer architecture'
-echo '- dialog action rows are label-aware, width-first and never forced by action count'
+echo '- full-screen and dialog action rows share one label-aware width-fit policy'
+echo '- dialog action rows are width-first and never forced by action count'
 echo '- dialog footer labels are single-line and are not auto-shrunk'
 echo '- explicit action layouts keep precedence over AUTO layout'
 echo '- chooser/selector/Bulk/URL Snapshot full-screen footers use shared adaptive row/stack rendering'
 echo '- adaptive full-screen footer buttons inherit active skin tone and disabled-state colors'
 echo '- known Help owners persist open state across recreation'
 echo '- Bulk Preview confirmations persist semantic open state across recreation without executing actions'
+echo '- Queue and Service destructive confirmations restore semantically after recreation'
 echo '- native AlertDialog.Builder remains absent'
