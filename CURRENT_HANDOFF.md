@@ -22,7 +22,19 @@ Last updated: **2026-09-28**
 > - issue #39 owns Wave 4 rollback acceptance;
 > - UX-033/#26 source fix is present through the shared skin-aware footer renderer; phone retest is pending on the Wave 4 signed candidate.
 >
-> Next action: build/sign the exact validated Wave 4 HEAD, install **in-place** without clearing app data, open the preserved Test 5 Bulk session, and inspect the lifecycle-safe `Відкотити цю синхронізацію?` confirmation **without confirming it yet**.
+> Current Test 6 checkpoint:
+> - signed Wave 4 candidate installed in-place from exact source `2827ad9a7dd66cb552980b667d961d5986737bdf`;
+> - signed build `36503391119` — PASS;
+> - preserved Test 5 terminal session still exists: `db ost 18/19`;
+> - rollback confirmation opens correctly;
+> - portrait + landscape screenshots show the same confirmation after rotation, so modal lifecycle restoration is PASS;
+> - displayed exact rollback plan: **18 added items + 1 playlist created by this session**;
+> - ownership copy says rollback uses exact IDs from this session ledger and does not delete pre-existing playlists/items by title;
+> - no rollback has executed yet.
+>
+> **NEXT ACTION IN A NEW CHAT:** press `Скасувати` first. Verify the underlying Bulk Session is still terminal `18/19`, and send one screenshot of the full-screen footer so UX-033 skin-aware footer styling can be phone-checked. If that state is unchanged and the footer is styled correctly, then proceed to destructive Test 6 by reopening `Відкотити цю синхронізацію?` and explicitly confirming rollback once.
+>
+> After Test 6 starts, expected result is exact removal of the 18 session-added playlist items and then deletion of the one session-created playlist; unrelated pre-existing content must remain untouched. Do not clear app data or create another Bulk session before Test 6 completes.
 >
 > Do not clear app data, uninstall, create a different Bulk session, or manually remove the preserved `db ost` destination before Test 6.
 
