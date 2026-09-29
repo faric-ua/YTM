@@ -42,7 +42,21 @@ grep -Fq 'private fun showFixedFooterDialog(' "$UI" ||
 grep -Fq 'private fun useHorizontalDialogActionRow(' "$UI" ||
   fail "dialog label-aware row decision missing"
 grep -Fq 'paint.measureText(' "$UI" ||
-  fail "dialog row decision ignores actual label width"
+  fail "action row decision ignores actual label width"
+
+DIALOG_POLICY_BLOCK="$(
+  awk '
+    /private fun useHorizontalDialogActionRow\(/ { capture=1 }
+    capture {
+      if (seen && /fun addAdaptiveActionButtons\(/) exit
+      print
+      seen=1
+    }
+  ' "$UI"
+)"
+
+grep -Fq 'useHorizontalActionRow(' <<<"$DIALOG_POLICY_BLOCK" ||
+  fail "dialog and full-screen actions no longer share one fit policy"
 
 grep -Fq 'fun styleAdaptiveActionButton(' "$UI" ||
   fail "shared full-screen footer skin styling helper missing"
