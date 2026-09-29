@@ -174,6 +174,9 @@ class QuotaActivity : Activity() {
             BulkSyncQaFaultStore(this)
         val armedFault =
             qaFaultStore.peek()
+        val rollbackInterruptArmed =
+            qaFaultStore
+                .isRollbackInterruptAfterOneArmed()
 
         content.addView(
             sectionTitle(
@@ -225,6 +228,73 @@ class QuotaActivity : Activity() {
                             Toast.makeText(
                                 this@QuotaActivity,
                                 "Test 5 fault вимкнено.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        render()
+                    },
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        dp(54)
+                    ).apply {
+                        topMargin =
+                            dp(12)
+                    }
+                )
+            }
+        )
+
+        content.addView(
+            sectionTitle(
+                "QA — Test 8"
+            )
+        )
+
+        content.addView(
+            card().apply {
+                addView(
+                    bodyText(
+                        if (!rollbackInterruptArmed) {
+                            "Одноразовий контрольований тест interrupted rollback. " +
+                                "Після ввімкнення наступний Bulk rollback виконає " +
+                                "одну exact reverse mutation, збереже її як ROLLED_BACK " +
+                                "і навмисно обірве worker, залишивши сесію у ROLLING_BACK. " +
+                                "Після перезапуску застосунку сесія має перейти у " +
+                                "ROLLBACK_PAUSED без автоматичного продовження."
+                        } else {
+                            "Test 8 interrupt увімкнено: наступний Bulk rollback " +
+                                "зупиниться одразу після першої успішно збереженої " +
+                                "reverse mutation. Fault одноразовий."
+                        }
+                    )
+                )
+
+                addView(
+                    actionButton(
+                        label =
+                            if (!rollbackInterruptArmed) {
+                                "Увімкнути Test 8 rollback interrupt"
+                            } else {
+                                "Скасувати Test 8 interrupt"
+                            },
+                        primary =
+                            !rollbackInterruptArmed
+                    ) {
+                        if (!rollbackInterruptArmed) {
+                            qaFaultStore
+                                .armRollbackInterruptAfterOne()
+                            Toast.makeText(
+                                this@QuotaActivity,
+                                "Test 8: rollback буде перервано після 1 mutation.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            qaFaultStore
+                                .clearRollbackInterruptAfterOne()
+                            Toast.makeText(
+                                this@QuotaActivity,
+                                "Test 8 interrupt вимкнено.",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
