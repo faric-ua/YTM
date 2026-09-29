@@ -21,6 +21,10 @@ class ScrollPositionState(
                 ?: 0
     }
 
+    fun reset() {
+        scrollY = 0
+    }
+
     fun capture(
         scrollView: ScrollView?
     ) {
