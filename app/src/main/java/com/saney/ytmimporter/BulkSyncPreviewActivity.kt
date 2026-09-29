@@ -6,9 +6,12 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -24,6 +27,7 @@ import com.saney.ytmimporter.bulk.BulkSyncPlanSummary
 import com.saney.ytmimporter.bulk.BulkSyncPreflightPolicy
 import com.saney.ytmimporter.bulk.BulkSyncRemoteBaseline
 import com.saney.ytmimporter.bulk.BulkSyncRemoteSnapshot
+import com.saney.ytmimporter.bulk.BulkSyncSelectionPolicy
 import com.saney.ytmimporter.bulk.BulkSyncSessionFactory
 import com.saney.ytmimporter.search.SearchCoordinator
 import com.saney.ytmimporter.storage.BulkSyncCheckpointStore
@@ -80,12 +84,21 @@ class BulkSyncPreviewActivity : Activity() {
         LinearLayout
     private lateinit var confirmationButton:
         Button
+    private lateinit var loadingPanel:
+        LinearLayout
+    private lateinit var loadingLabel:
+        TextView
 
     private var plan:
         BulkSyncPlanSummary? = null
     private var remoteReadUnitsUsed =
         0
     private var loading =
+        false
+
+    private val includedExecutableIds =
+        linkedSetOf<String>()
+    private var selectionInitialized =
         false
 
     private var helpDialogOpen =
@@ -126,6 +139,24 @@ class BulkSyncPreviewActivity : Activity() {
                     false
                 )
                 ?: false
+
+        selectionInitialized =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_SELECTION_INITIALIZED,
+                    false
+                )
+                ?: false
+
+        if (selectionInitialized) {
+            includedExecutableIds.addAll(
+                savedInstanceState
+                    ?.getStringArrayList(
+                        STATE_INCLUDED_EXECUTABLE_IDS
+                    )
+                    .orEmpty()
+            )
+        }
 
         previewModalController =
             RestorableModalController(
@@ -195,6 +226,18 @@ class BulkSyncPreviewActivity : Activity() {
         outState.putBoolean(
             STATE_HELP_DIALOG_OPEN,
             helpDialogOpen
+        )
+
+        outState.putBoolean(
+            STATE_SELECTION_INITIALIZED,
+            selectionInitialized
+        )
+
+        outState.putStringArrayList(
+            STATE_INCLUDED_EXECUTABLE_IDS,
+            ArrayList(
+                includedExecutableIds
+            )
         )
 
         previewModalController.save(
@@ -328,6 +371,57 @@ class BulkSyncPreviewActivity : Activity() {
             }
 
         root.addView(statusText)
+
+        loadingPanel =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.HORIZONTAL
+                gravity =
+                    Gravity.CENTER_VERTICAL
+                visibility =
+                    View.GONE
+                setPadding(
+                    dp(18),
+                    0,
+                    dp(18),
+                    dp(10)
+                )
+            }
+
+        loadingPanel.addView(
+            ProgressBar(this).apply {
+                isIndeterminate = true
+            },
+            LinearLayout.LayoutParams(
+                dp(24),
+                dp(24)
+            )
+        )
+
+        loadingLabel =
+            TextView(this).apply {
+                textSize = 13f
+                setTextColor(
+                    palette.muted
+                )
+                setPadding(
+                    dp(10),
+                    0,
+                    0,
+                    0
+                )
+            }
+
+        loadingPanel.addView(
+            loadingLabel,
+            LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        )
+
+        root.addView(loadingPanel)
 
         val scroll =
             ScrollView(this).apply {
@@ -464,6 +558,9 @@ class BulkSyncPreviewActivity : Activity() {
             "Будую read-only preview. Віддалені зміни не виконуються."
         summaryText.text =
             "Аналіз локальних плейлистів і remote snapshot…"
+        showLoading(
+            "Аналізую локальні плейлисти та remote snapshot…"
+        )
         rowsContainer.removeAllViews()
 
         val snapshots =
@@ -667,8 +764,73 @@ class BulkSyncPreviewActivity : Activity() {
     private fun renderPlan(
         summary: BulkSyncPlanSummary
     ) {
+        ensureSelection(
+            summary
+        )
+        hideLoading()
+
         statusText.text =
             "Preview готовий. Жодних remote mutations не виконано."
+
+        renderSelectionSummary(
+            summary
+        )
+
+        rowsContainer.removeAllViews()
+
+        if (summary.rows.isEmpty()) {
+            rowsContainer.addView(
+                planText(
+                    "Немає локальних плейлистів для Bulk Sync."
+                )
+            )
+            return
+        }
+
+        summary.rows.forEach {
+                row ->
+            rowsContainer.addView(
+                planRow(
+                    summary = summary,
+                    row = row
+                ),
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    bottomMargin =
+                        dp(8)
+                }
+            )
+        }
+    }
+
+    private fun renderSelectionSummary(
+        summary: BulkSyncPlanSummary
+    ) {
+        val selected =
+            selectedPlanSummary(
+                summary
+            )
+
+        val totalExecutable =
+            BulkSyncSelectionPolicy
+                .defaultIncludedIds(
+                    summary
+                )
+                .size
+
+        val selectedExecutable =
+            BulkSyncSelectionPolicy
+                .selectedExecutableCount(
+                    summary = summary,
+                    includedIds =
+                        includedExecutableIds
+                )
+
+        val excludedExecutable =
+            totalExecutable -
+                selectedExecutable
 
         summaryText.text =
             buildString {
@@ -695,6 +857,29 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 append("\n\n")
                 append(
+                    "До Bulk-сесії: NEW "
+                )
+                append(
+                    selected.count(
+                        BulkSyncPlanState.NEW
+                    )
+                )
+                append(
+                    " • LINKED add-only "
+                )
+                append(
+                    selected.count(
+                        BulkSyncPlanState.LINKED
+                    )
+                )
+                append(
+                    " • виключено "
+                )
+                append(
+                    excludedExecutable
+                )
+                append("\n")
+                append(
                     "Search API: "
                 )
                 append(
@@ -706,10 +891,10 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 append("\n")
                 append(
-                    "Інші API units після явного підтвердження: "
+                    "Інші API units для вибраного: "
                 )
                 append(
-                    summary
+                    selected
                         .estimatedWriteUnits
                 )
                 append("\n")
@@ -724,197 +909,314 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 append("\n\n")
                 append(
-                    "Wave 4: після підтвердження створюється durable session. " +
+                    "Wave 4: NEW і підтверджені LINKED add-only рядки можна " +
+                        "включати або виключати до створення сесії. " +
                         "Remote writes стартують тільки окремою дією на екрані сесії. " +
-                        "Виконуються NEW і підтверджені LINKED add-only доповнення; " +
                         "NEEDS_SEARCH / PENDING / BLOCKED не виконуються."
                 )
             }
 
         confirmationButton.isEnabled =
             !loading &&
-                (
-                    summary.count(
-                        BulkSyncPlanState.NEW
-                    ) +
-                        summary.count(
-                            BulkSyncPlanState.LINKED
-                        )
-                ) > 0
+                selectedExecutable >
+                0
+    }
 
-        rowsContainer.removeAllViews()
-
-        if (summary.rows.isEmpty()) {
-            rowsContainer.addView(
-                planText(
-                    "Немає локальних плейлистів для Bulk Sync."
-                )
+    private fun ensureSelection(
+        summary: BulkSyncPlanSummary
+    ) {
+        if (!selectionInitialized) {
+            includedExecutableIds.clear()
+            includedExecutableIds.addAll(
+                BulkSyncSelectionPolicy
+                    .defaultIncludedIds(
+                        summary
+                    )
             )
+            selectionInitialized = true
             return
         }
 
-        summary.rows.forEach {
-                row ->
-            rowsContainer.addView(
-                planRow(row),
-                LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin =
-                        dp(8)
-                }
+        val sanitized =
+            BulkSyncSelectionPolicy
+                .sanitizeIncludedIds(
+                    summary = summary,
+                    includedIds =
+                        includedExecutableIds
+                )
+
+        includedExecutableIds.clear()
+        includedExecutableIds.addAll(
+            sanitized
+        )
+    }
+
+    private fun selectedPlanSummary(
+        summary: BulkSyncPlanSummary
+    ): BulkSyncPlanSummary =
+        BulkSyncSelectionPolicy
+            .selectedSummary(
+                summary = summary,
+                includedIds =
+                    includedExecutableIds
+            )
+
+    private fun setRowIncluded(
+        summary: BulkSyncPlanSummary,
+        row: BulkSyncPlanRow,
+        included: Boolean
+    ) {
+        if (
+            !BulkSyncSelectionPolicy
+                .isExecutable(
+                    row
+                )
+        ) {
+            return
+        }
+
+        if (included) {
+            includedExecutableIds.add(
+                row.localPlaylistId
+            )
+        } else {
+            includedExecutableIds.remove(
+                row.localPlaylistId
             )
         }
+
+        renderSelectionSummary(
+            summary
+        )
     }
 
     private fun planRow(
+        summary: BulkSyncPlanSummary,
         row: BulkSyncPlanRow
-    ): TextView {
+    ): View {
         val palette =
             AppThemeManager.palette(this)
 
-        return TextView(this).apply {
-            text =
-                buildString {
-                    append(
-                        row.state.name
-                    )
-                    append(
-                        " · "
-                    )
-                    append(
-                        row.playlistName
-                    )
-                    append("\n")
-                    append(
-                        "Треки: "
-                    )
-                    append(
-                        row.trackCount
-                    )
-                    append(
-                        " • ready videoId: "
-                    )
-                    append(
-                        row.selectedCount
-                    )
-                    append(
-                        " • unresolved: "
-                    )
-                    append(
-                        row.unresolvedCount
-                    )
+        val card =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(14),
+                    dp(10),
+                    dp(14),
+                    dp(12)
+                )
+                background =
+                    AppThemeManager
+                        .surfaceDrawable(
+                            context =
+                                this@BulkSyncPreviewActivity,
+                            fill =
+                                palette.surfaceAlt,
+                            radiusDp = 12,
+                            accentStroke = false
+                        )
+            }
 
-                    if (
-                        row.estimatedSearchCalls >
-                        0
-                    ) {
-                        append("\nSearch: ")
-                        append(
-                            row
-                                .estimatedSearchCalls
-                        )
-                        append(
-                            " • cache: "
-                        )
-                        append(
-                            row.cacheHits
+        if (
+            BulkSyncSelectionPolicy
+                .isExecutable(
+                    row
+                )
+        ) {
+            val included =
+                row.localPlaylistId in
+                    includedExecutableIds
+
+            val selector =
+                CheckBox(this).apply {
+                    isChecked =
+                        included
+                    text =
+                        if (included) {
+                            "Включено в Bulk-сесію"
+                        } else {
+                            "Виключено з Bulk-сесії"
+                        }
+                    textSize = 13f
+                    setTextColor(
+                        palette.text
+                    )
+                    setPadding(
+                        0,
+                        0,
+                        0,
+                        dp(6)
+                    )
+                    setOnCheckedChangeListener {
+                            button,
+                            checked ->
+                        button.text =
+                            if (checked) {
+                                "Включено в Bulk-сесію"
+                            } else {
+                                "Виключено з Bulk-сесії"
+                            }
+
+                        setRowIncluded(
+                            summary = summary,
+                            row = row,
+                            included = checked
                         )
                     }
+                }
 
-                    if (
-                        row.plannedCreate ||
-                        row.plannedInsertCount >
-                        0
-                    ) {
-                        append("\nПісля підтвердження: ")
+            card.addView(
+                selector,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }
+
+        val details =
+            TextView(this).apply {
+                text =
+                    buildString {
+                        append(
+                            row.state.name
+                        )
+                        append(
+                            " · "
+                        )
+                        append(
+                            row.playlistName
+                        )
+                        append("\n")
+                        append(
+                            "Треки: "
+                        )
+                        append(
+                            row.trackCount
+                        )
+                        append(
+                            " • ready videoId: "
+                        )
+                        append(
+                            row.selectedCount
+                        )
+                        append(
+                            " • unresolved: "
+                        )
+                        append(
+                            row.unresolvedCount
+                        )
 
                         if (
-                            row.plannedCreate
+                            row.estimatedSearchCalls >
+                            0
                         ) {
+                            append("\nSearch: ")
                             append(
-                                "create 1"
+                                row
+                                    .estimatedSearchCalls
                             )
+                            append(
+                                " • cache: "
+                            )
+                            append(
+                                row.cacheHits
+                            )
+                        }
+
+                        if (
+                            row.plannedCreate ||
+                            row.plannedInsertCount >
+                            0
+                        ) {
+                            append("\nПісля підтвердження: ")
+
+                            if (
+                                row.plannedCreate
+                            ) {
+                                append(
+                                    "create 1"
+                                )
+
+                                if (
+                                    row.plannedInsertCount >
+                                    0
+                                ) {
+                                    append(
+                                        " • "
+                                    )
+                                }
+                            }
 
                             if (
                                 row.plannedInsertCount >
                                 0
                             ) {
                                 append(
-                                    " • "
+                                    "insert "
+                                )
+                                append(
+                                    row
+                                        .plannedInsertCount
                                 )
                             }
-                        }
 
-                        if (
-                            row.plannedInsertCount >
-                            0
-                        ) {
                             append(
-                                "insert "
+                                " • "
                             )
                             append(
                                 row
-                                    .plannedInsertCount
+                                    .estimatedWriteUnits
+                            )
+                            append(
+                                " units"
                             )
                         }
 
+                        append("\n")
                         append(
-                            " • "
-                        )
-                        append(
-                            row
-                                .estimatedWriteUnits
-                        )
-                        append(
-                            " units"
+                            row.reason
                         )
                     }
 
-                    append("\n")
-                    append(
-                        row.reason
+                textSize = 13.5f
+                setTextColor(
+                    palette.text
+                )
+
+                if (
+                    row.state ==
+                    BulkSyncPlanState.BLOCKED
+                ) {
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
                     )
                 }
-
-            textSize = 13.5f
-            setTextColor(
-                palette.text
-            )
-            setPadding(
-                dp(14),
-                dp(12),
-                dp(14),
-                dp(12)
-            )
-            background =
-                AppThemeManager
-                    .surfaceDrawable(
-                        context =
-                            this@BulkSyncPreviewActivity,
-                        fill =
-                            palette.surfaceAlt,
-                        radiusDp = 12,
-                        accentStroke = false
-                    )
-
-            if (
-                row.state ==
-                BulkSyncPlanState.BLOCKED
-            ) {
-                setTypeface(
-                    typeface,
-                    Typeface.BOLD
-                )
             }
-        }
+
+        card.addView(
+            details,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        return card
     }
 
     private fun confirmPlan() {
-        val summary =
+        val rawSummary =
             plan
                 ?: return
+
+        val summary =
+            selectedPlanSummary(
+                rawSummary
+            )
 
         val sessionStore =
             BulkSyncSessionStore(this)
@@ -1026,9 +1328,14 @@ class BulkSyncPreviewActivity : Activity() {
             }
 
             PreviewModal.CREATE_SESSION -> {
-                val summary =
+                val rawSummary =
                     plan
                         ?: return null
+
+                val summary =
+                    selectedPlanSummary(
+                        rawSummary
+                    )
 
                 val newCount =
                     summary.count(
@@ -1108,6 +1415,9 @@ class BulkSyncPreviewActivity : Activity() {
             false
         statusText.text =
             "Створюю local checkpoint і свіжий read-only remote baseline…"
+        showLoading(
+            "Створюю checkpoint та remote baseline…"
+        )
 
         executor.execute {
             try {
@@ -1177,6 +1487,7 @@ class BulkSyncPreviewActivity : Activity() {
                         !isDestroyed
                     ) {
                         loading = false
+                        hideLoading()
                         confirmationButton.isEnabled =
                             (
                                 summary.count(
@@ -1333,6 +1644,20 @@ class BulkSyncPreviewActivity : Activity() {
             }
     }
 
+    private fun showLoading(
+        message: String
+    ) {
+        loadingLabel.text =
+            message
+        loadingPanel.visibility =
+            View.VISIBLE
+    }
+
+    private fun hideLoading() {
+        loadingPanel.visibility =
+            View.GONE
+    }
+
     private fun toast(
         message: String
     ) {
@@ -1395,6 +1720,12 @@ class BulkSyncPreviewActivity : Activity() {
 
         private const val STATE_HELP_DIALOG_OPEN =
             "bulk_sync_preview_help_dialog_open"
+
+        private const val STATE_SELECTION_INITIALIZED =
+            "bulk_sync_preview_selection_initialized"
+
+        private const val STATE_INCLUDED_EXECUTABLE_IDS =
+            "bulk_sync_preview_included_executable_ids"
 
         private const val STATE_PREVIEW_MODAL =
             "bulk_sync_preview_modal"
