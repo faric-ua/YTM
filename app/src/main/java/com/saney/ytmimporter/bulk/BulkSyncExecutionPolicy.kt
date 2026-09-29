@@ -31,6 +31,16 @@ object BulkSyncExecutionPolicy {
     fun normalizeAfterColdOpen(
         session: BulkSyncSession
     ): BulkSyncSession {
+        val rollbackNormalized =
+            BulkSyncRollbackPolicy
+                .normalizeAfterColdOpen(
+                    session
+                )
+
+        if (rollbackNormalized != session) {
+            return rollbackNormalized
+        }
+
         if (
             session.state ==
             BulkSyncSessionState.RUNNING
