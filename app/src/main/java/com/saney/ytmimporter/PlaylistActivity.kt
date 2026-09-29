@@ -24,11 +24,25 @@ import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
+import com.saney.ytmimporter.ui.ScrollPositionState
 import kotlin.math.roundToInt
 
 class PlaylistActivity : Activity() {
     private lateinit var currentPlaylistStore:
         CurrentPlaylistStore
+
+    private var scrollView:
+        ScrollView? =
+        null
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
+
+    private var renderedLocalPlaylistId:
+        String? =
+        null
 
     private val reviewRequestCode =
         4701
@@ -58,10 +72,20 @@ class PlaylistActivity : Activity() {
                     false
                 )
                 ?: false
+
+        scrollPosition.restore(
+            savedInstanceState
+        )
+        renderedLocalPlaylistId =
+            savedInstanceState
+                ?.getString(
+                    STATE_RENDERED_LOCAL_PLAYLIST_ID
+                )
     }
 
     override fun onResume() {
         super.onResume()
+        captureScrollPosition()
         render()
 
         if (
@@ -84,8 +108,28 @@ class PlaylistActivity : Activity() {
             STATE_REPLACEMENT_DIALOG_OPEN,
             replacementDialogOpen
         )
+
+        scrollPosition.save(
+            outState,
+            scrollView
+        )
+        outState.putString(
+            STATE_RENDERED_LOCAL_PLAYLIST_ID,
+            renderedLocalPlaylistId
+        )
         super.onSaveInstanceState(
             outState
+        )
+    }
+
+    override fun onPause() {
+        captureScrollPosition()
+        super.onPause()
+    }
+
+    private fun captureScrollPosition() {
+        scrollPosition.capture(
+            scrollView
         )
     }
 
@@ -159,12 +203,27 @@ class PlaylistActivity : Activity() {
     }
 
     private fun render() {
+        captureScrollPosition()
+
         val snapshot =
             currentPlaylistStore.load()
 
         if (snapshot == null) {
+            renderedLocalPlaylistId = null
+            scrollPosition.reset()
+            scrollView = null
             renderEmpty()
         } else {
+            if (
+                renderedLocalPlaylistId != null &&
+                renderedLocalPlaylistId !=
+                    snapshot.localPlaylistId
+            ) {
+                scrollPosition.reset()
+            }
+
+            renderedLocalPlaylistId =
+                snapshot.localPlaylistId
             renderPlaylist(snapshot)
         }
     }
@@ -237,10 +296,15 @@ class PlaylistActivity : Activity() {
             topBar()
         )
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport = true
             }
+
+        val scroll =
+            requireNotNull(
+                scrollView
+            )
 
         val content =
             LinearLayout(this).apply {
@@ -379,6 +443,9 @@ class PlaylistActivity : Activity() {
         UiChrome.applyScreenInsets(
             this,
             root
+        )
+        scrollPosition.restoreInto(
+            scroll
         )
     }
 
@@ -1208,5 +1275,11 @@ class PlaylistActivity : Activity() {
 
         private const val STATE_REPLACEMENT_DIALOG_OPEN =
             "playlist_replacement_dialog_open"
+
+        private const val STATE_SCROLL_POSITION =
+            "playlist_scroll_position"
+
+        private const val STATE_RENDERED_LOCAL_PLAYLIST_ID =
+            "playlist_rendered_local_playlist_id"
     }
 }
