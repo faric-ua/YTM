@@ -274,9 +274,9 @@ class QuotaActivity : Activity() {
                     actionButton(
                         label =
                             if (!rollbackInterruptArmed) {
-                                "Увімкнути Test 8 rollback interrupt"
+                                "Увімкнути Test 8"
                             } else {
-                                "Скасувати Test 8 interrupt"
+                                "Скасувати Test 8"
                             },
                         primary =
                             !rollbackInterruptArmed
