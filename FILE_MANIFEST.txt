@@ -90,7 +90,7 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 9efd52561bd57811  app/proguard-rules.pro
 225ac193e694b7ec  app/src/main/AndroidManifest.xml
 4c41b4109b6d00c8  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
-5d6e78c35bec7860  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
+a0f869579e60132f  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 9e5252664b4ab395  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 3899b19733e58253  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
@@ -100,7 +100,7 @@ b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 07a57220433734c6  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 386c85ad84f92229  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 b5ebe5a06b46482f  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-cbe2d4851dfd444c  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
+f3ce86ee7aae9616  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 a1f449578ea55ef1  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 5dfc8b97de795257  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 33e709e797e5f645  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
@@ -114,7 +114,7 @@ d0462a8fe6cdfb05  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutor.
 23970cb1d6f3c269  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncHelpContent.kt
 ff6ee274bacb9f4a  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicy.kt
 4947f9d0beb06f85  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncQaFault.kt
-9726d5bb340f545c  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncRollbackExecutor.kt
+3db02888be385cc4  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncRollbackExecutor.kt
 dc9c62fd21affffc  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncRollbackPolicy.kt
 f942aded2bded718  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicy.kt
 6e8c8a0e4c5124d1  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSession.kt
@@ -141,7 +141,7 @@ c606025da7de4466  app/src/main/java/com/saney/ytmimporter/storage/AccountLibrary
 8b1bd44762ebc099  app/src/main/java/com/saney/ytmimporter/storage/AccountLibraryManifestImporter.kt
 21f9907bf0ae81c8  app/src/main/java/com/saney/ytmimporter/storage/AllFilesAccess.kt
 2bf17651466d4795  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncCheckpointStore.kt
-5b3c39c9dde4c8de  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncQaFaultStore.kt
+b5f4cc7604842561  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncQaFaultStore.kt
 cd6cdf5286434a29  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncSessionStore.kt
 23c11dcbf00e9bd9  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
 52e409baf9a0ed79  app/src/main/java/com/saney/ytmimporter/storage/DirectDownloadFileQuery.kt
@@ -215,7 +215,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 351daabcfb9ec663  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicyTest.kt
 6ad846614cd4bb87  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncQaFaultPolicyTest.kt
 d4ffb945edd77802  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicyTest.kt
-fc94e3baece0b919  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt
+89af9e1339fccff5  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt
 ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecoveryPolicyTest.kt
 7c5b8d04a486fb9a  app/src/test/java/com/saney/ytmimporter/model/PlaylistLinkagePolicyTest.kt
 e2c34610a3853bc3  app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt
@@ -1719,7 +1719,7 @@ ab1026878a043c72  scripts/v1451-url-qa-corrective-r1-audit.sh
 e3e461227dabd6bd  scripts/v1451-url-title-metadata-audit.sh
 f834e1746373fdba  scripts/v1452-ux-polish-audit.sh
 d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
-93b316d0335f3673  scripts/v1454-bulk-preflight-audit.sh
+9593982b715950da  scripts/v1454-bulk-preflight-audit.sh
 ed8375bb50567b62  scripts/v1454-wave0-write-limit-audit.sh
 bada4ba11cc47390  scripts/v1454-wave4-rollback-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
