@@ -1,17 +1,20 @@
 # Журнал змін (Changelog)
 
-## v1.4.54 — development
+## v1.4.54 — phone-accepted functional checkpoint
 
-- Wave 0 starts BUG-039 hardening before History Recovery / Safe Bulk Sync.
-- YouTube write-limit errors are classified as confirmed daily quota, rate limit, resource limit, or ambiguous HTTP 429.
-- Generic HTTP 429 text containing `check quota` no longer proves daily quota exhaustion.
-- Structured Google error status/reasons are retained when available.
-- Retryable playlist-create and playlist-item write limits preserve unfinished work in Pending Queue with a durable pause reason.
-- No automatic retry is launched after rate/resource/ambiguous-429 pause.
-- User copy for frequent playlist creation/write throttling says to wait, avoid repeated rapid retries, and explicitly Resume from Queue later; no unsupported cooldown/reset time is invented.
-- Existing v1.4.53 PendingJob JSON remains readable.
+- Main targeted phone-QA series Tests 1–9: **PASS**.
+- Added identity-preserving History Recovery with no automatic Search/write after restore.
+- Added explicit local ↔ YTM linkage semantics; title equality never creates ownership/linkage.
+- Added read-only/scoped Bulk preflight and durable Bulk sessions.
+- Added durable quota/rate/auth/restart recovery with explicit continuation only.
+- Added exact mutation ledger and session-owned rollback by persisted playlist/playlistItem IDs.
+- Test 7 proved exact rollback preserves pre-existing playlist content.
+- Test 8 proved interrupted rollback survives cold reopen, never auto-resumes, and continues without repeating already reverted mutations.
+- Test 9 proved legacy Full Backup/History/Queue compatibility; preserved WRITE job `The Prodigy - Baby's Got A Temper (2002)` remained readable as Rate limit / remaining 3 / added 0/3.
+- Accepted functional source: `e553c6dcb0f918a51f40bfa4d783cb11b3086472`; accepted signed run: `36579457780`.
+- v1.4.54 is retained as an immutable phone-accepted functional checkpoint rather than a public stable binary because the exact accepted source contains temporary deterministic QA fault controls.
+- Public hardening/publication continues in v1.4.55, where QA controls are debug-only and v1.4.54 behavior is the locked functional reference.
 - versionCode 97 / versionName 1.4.54.
-- Wave 0 phone QA is pending.
 
 ## v1.4.53
 
