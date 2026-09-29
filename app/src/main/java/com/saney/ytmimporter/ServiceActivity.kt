@@ -28,6 +28,7 @@ import com.saney.ytmimporter.storage.SafTreeFileWriter
 import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.updater.UpdaterRemoteOperations
 import com.saney.ytmimporter.ui.UiChrome
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.youtube.SearchCache
 import java.io.File
 import java.text.SimpleDateFormat
@@ -50,7 +51,18 @@ class ServiceActivity : Activity() {
     private var page: Page = Page.HOME
     private var pendingExportContent: String? = null
     private var pendingExportFileName: String? = null
-    private var changelogScrollY: Int = 0
+    private var screenScrollView:
+        ScrollView? =
+        null
+
+    private val screenScrollPosition =
+        ScrollPositionState(
+            KEY_SCREEN_SCROLL_Y
+        )
+
+    private var renderedPage:
+        Page? =
+        null
 
     private val saveDiagnosticsRequestCode = 6101
     private val saveDiagnosticsFolderRequestCode = 6102
@@ -77,10 +89,19 @@ class ServiceActivity : Activity() {
                     }
                 ?: Page.HOME
 
-        changelogScrollY =
+        screenScrollPosition.restore(
             savedInstanceState
-                ?.getInt(KEY_CHANGELOG_SCROLL_Y, 0)
-                ?: 0
+        )
+        renderedPage =
+            savedInstanceState
+                ?.getString(
+                    KEY_RENDERED_PAGE
+                )
+                ?.let { raw ->
+                    runCatching {
+                        Page.valueOf(raw)
+                    }.getOrNull()
+                }
 
         buildUi()
     }
@@ -100,9 +121,30 @@ class ServiceActivity : Activity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(KEY_PAGE, page.name)
-        outState.putInt(KEY_CHANGELOG_SCROLL_Y, changelogScrollY)
+        outState.putString(
+            KEY_PAGE,
+            page.name
+        )
+        screenScrollPosition.save(
+            outState,
+            screenScrollView
+        )
+        outState.putString(
+            KEY_RENDERED_PAGE,
+            renderedPage?.name
+        )
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onPause() {
+        captureScreenScroll()
+        super.onPause()
+    }
+
+    private fun captureScreenScroll() {
+        screenScrollPosition.capture(
+            screenScrollView
+        )
     }
 
     override fun onResume() {
@@ -170,6 +212,15 @@ class ServiceActivity : Activity() {
     }
 
     private fun buildUi() {
+        captureScreenScroll()
+
+        if (
+            renderedPage != null &&
+            renderedPage != page
+        ) {
+            screenScrollPosition.reset()
+        }
+
         AppThemeManager.applyWindow(this)
 
         when (page) {
@@ -945,10 +996,6 @@ class ServiceActivity : Activity() {
 
 
     private fun open(value: Page) {
-        if (value == Page.CHANGELOG && page != Page.CHANGELOG) {
-            changelogScrollY = 0
-        }
-
         page = value
         buildUi()
     }
@@ -969,15 +1016,16 @@ class ServiceActivity : Activity() {
         root: LinearLayout,
         content: LinearLayout
     ) {
-        val scroll = ScrollView(this).apply {
-            isFillViewport = true
-
-            if (page == Page.CHANGELOG) {
-                setOnScrollChangeListener { _, _, scrollY, _, _ ->
-                    changelogScrollY = scrollY
-                }
+        screenScrollView =
+            ScrollView(this).apply {
+                isFillViewport = true
             }
-        }
+
+        val scroll =
+            requireNotNull(
+                screenScrollView
+            )
+
         scroll.addView(content)
         root.addView(
             scroll,
@@ -990,11 +1038,10 @@ class ServiceActivity : Activity() {
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
 
-        if (page == Page.CHANGELOG && changelogScrollY > 0) {
-            scroll.post {
-                scroll.scrollTo(0, changelogScrollY)
-            }
-        }
+        renderedPage = page
+        screenScrollPosition.restoreInto(
+            scroll
+        )
     }
 
     private fun topBar(title: String): LinearLayout =
@@ -1525,8 +1572,10 @@ class ServiceActivity : Activity() {
         const val START_PAGE_ABOUT = "ABOUT"
 
         private const val KEY_PAGE = "service_page"
-        private const val KEY_CHANGELOG_SCROLL_Y =
-            "service_changelog_scroll_y"
+        private const val KEY_SCREEN_SCROLL_Y =
+            "service_screen_scroll_y"
+        private const val KEY_RENDERED_PAGE =
+            "service_rendered_page"
 
         private val BACKGROUND = Color.rgb(15, 16, 19)
         private val SURFACE = Color.rgb(25, 27, 32)
