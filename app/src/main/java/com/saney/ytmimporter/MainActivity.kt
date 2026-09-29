@@ -42,6 +42,7 @@ import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.HomeDashboardChrome
 import com.saney.ytmimporter.ui.HomeHistoryDetailLink
 import com.saney.ytmimporter.ui.ReplacementLogDialog
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.ui.WorkflowRelayOverlay
 import com.saney.ytmimporter.ui.UiChrome
@@ -115,6 +116,13 @@ class MainActivity : Activity() {
     }
     private lateinit var adapter: TrackAdapter
     private val visibleTracks = mutableListOf<Track>()
+    private lateinit var homeScrollView: ScrollView
+
+    private val homeScrollPosition =
+        ScrollPositionState(
+            STATE_HOME_SCROLL_POSITION
+        )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
@@ -162,6 +170,9 @@ class MainActivity : Activity() {
             savedInstanceState?.getBoolean(STATE_RETURN_TO_PLAYLIST_HUB, false) ?: false
         returnToMenuAfterDelegatedAction =
             savedInstanceState?.getBoolean(STATE_RETURN_TO_MENU, false) ?: false
+        homeScrollPosition.restore(
+            savedInstanceState
+        )
         buildUi(savedInstanceState)
         workflowRelay = WorkflowRelayOverlay(this, savedInstanceState)
         updateAccountPanel()
@@ -206,8 +217,25 @@ class MainActivity : Activity() {
         outState.putBoolean(STATE_RETURN_TO_MENU, returnToMenuAfterDelegatedAction)
         homeHistoryDetailLink.save(outState)
         workflowRelay.save(outState)
+        homeScrollPosition.save(
+            outState,
+            if (::homeScrollView.isInitialized) {
+                homeScrollView
+            } else {
+                null
+            }
+        )
         super.onSaveInstanceState(outState)
     }
+    override fun onPause() {
+        if (::homeScrollView.isInitialized) {
+            homeScrollPosition.capture(
+                homeScrollView
+            )
+        }
+        super.onPause()
+    }
+
     override fun onResume() {
         super.onResume()
         if (AppThemeManager.recreateIfSkinChanged(this)) return
@@ -238,12 +266,15 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(palette.background)
         }
-        val scroll =
+        homeScrollView =
             ScrollView(this).apply {
                 isFillViewport = true
                 overScrollMode =
                     View.OVER_SCROLL_IF_CONTENT_SCROLLS
             }
+
+        val scroll =
+            homeScrollView
         val content =
             LinearLayout(this).apply {
                 orientation =
@@ -748,6 +779,9 @@ class MainActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        homeScrollPosition.restoreInto(
+            homeScrollView
+        )
 
         updateQuotaPanel()
         updatePendingButton()
@@ -4086,6 +4120,9 @@ class MainActivity : Activity() {
         private const val STATE_RETURN_TO_PLAYLIST_HUB =
             "state_return_to_playlist_hub"
         private const val STATE_RETURN_TO_MENU = "state_return_to_menu"
+
+        private const val STATE_HOME_SCROLL_POSITION =
+            "state_home_scroll_position"
 
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"
