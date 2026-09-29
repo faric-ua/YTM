@@ -343,6 +343,33 @@ Tests 6–8 require Wave 4 exact rollback. The current branch has rollback state
 ledger identifiers, but no user-facing rollback engine/action yet. Do not attempt
 Test 6 on phone until Wave 4 is implemented and validated.
 
+## Test 6 pre-destructive phone gate — PASS
+
+Signed phone candidate:
+- exact source: `2827ad9a7dd66cb552980b667d961d5986737bdf`;
+- signed build: `36503391119`.
+
+Phone screenshots confirm:
+- rollback confirmation opens on the preserved terminal `db ost 18/19` session;
+- portrait → landscape keeps the same confirmation open;
+- no action executes during rotation;
+- plan counts are exactly:
+  - added items to roll back: **18**;
+  - playlists created by this session: **1**;
+- copy explicitly states exact IDs from this session ledger are used;
+- pre-existing playlists/items are not deleted by title;
+- footer actions remain fixed/readable in both orientations.
+
+This matches Test 5 ledger expectations and passes the pre-destructive Test 6 review.
+
+No remote rollback has executed yet.
+
+Next:
+1. press `Скасувати`;
+2. verify terminal session remains `18/19`;
+3. capture the underlying full-screen footer for UX-033 phone acceptance;
+4. if state and styling are correct, reopen rollback confirmation and execute Test 6 once.
+
 ## Wave 4 exact rollback implementation — STATIC/JVM PASS
 
 Issue: #39.
