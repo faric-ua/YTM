@@ -1,6 +1,7 @@
 package com.saney.ytmimporter.storage
 
 import android.content.Context
+import com.saney.ytmimporter.BuildConfig
 import com.saney.ytmimporter.bulk.BulkSyncQaFaultKind
 
 /**
@@ -26,6 +27,10 @@ class BulkSyncQaFaultStore(
     fun arm(
         kind: BulkSyncQaFaultKind
     ) {
+        check(BuildConfig.DEBUG) {
+            "QA fault controls are debug-only"
+        }
+
         check(
             prefs.edit()
                 .putString(
@@ -40,8 +45,12 @@ class BulkSyncQaFaultStore(
 
     @Synchronized
     fun peek():
-        BulkSyncQaFaultKind? =
-        prefs.getString(
+        BulkSyncQaFaultKind? {
+        if (!BuildConfig.DEBUG) {
+            return null
+        }
+
+        return prefs.getString(
             KEY_NEXT_INSERT_FAULT,
             null
         )?.let {
@@ -51,6 +60,7 @@ class BulkSyncQaFaultStore(
                     .valueOf(raw)
             }.getOrNull()
         }
+    }
 
     @Synchronized
     fun consume():
@@ -87,6 +97,10 @@ class BulkSyncQaFaultStore(
 
     @Synchronized
     fun armRollbackInterruptAfterOne() {
+        check(BuildConfig.DEBUG) {
+            "QA rollback interrupt is debug-only"
+        }
+
         check(
             prefs.edit()
                 .putBoolean(
@@ -101,11 +115,16 @@ class BulkSyncQaFaultStore(
 
     @Synchronized
     fun isRollbackInterruptAfterOneArmed():
-        Boolean =
-        prefs.getBoolean(
+        Boolean {
+        if (!BuildConfig.DEBUG) {
+            return false
+        }
+
+        return prefs.getBoolean(
             KEY_ROLLBACK_INTERRUPT_AFTER_ONE,
             false
         )
+    }
 
     @Synchronized
     fun consumeRollbackInterruptAfterOne():
