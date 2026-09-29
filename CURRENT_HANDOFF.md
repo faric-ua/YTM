@@ -4,6 +4,25 @@ This is the **mutable crash-recovery snapshot** for the current development sess
 
 Last updated: **2026-09-29**
 
+> **ACTIVE v1.4.55 OVERRIDE — READ THIS FIRST**
+>
+> v1.4.54 phone QA Tests 1–9 are complete on the accepted functional baseline
+> `e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+>
+> Active work has moved to:
+> - branch: `feat/v1.4.55-ux-hardening`;
+> - umbrella: issue #56;
+> - current state: `docs/v.1.4.55/CURRENT_STATE.md`;
+> - safety contract: `docs/design/UX_CHANGE_SAFETY_CONTRACT.md`;
+> - readability audit: `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`;
+> - master plan: `docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md`.
+>
+> **Default rule:** preserve v1.4.54 business/API/storage/rollback behavior.
+> v1.4.55 starts with shared presentation/lifecycle hardening only.
+> Do not resume the old Test 7/Test 8 instructions below; they remain historical
+> evidence inside this mutable file until the next handoff compaction.
+>
+
 > **ACTIVE v1.4.54 HANDOFF — READ FIRST**
 >
 > The detailed live state is maintained in:
