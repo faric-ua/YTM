@@ -203,6 +203,7 @@ check_file "scripts/v1453-quota-recovery-audit.sh"
 check_file "scripts/v1454-wave0-write-limit-audit.sh"
 check_file "scripts/v1454-bulk-preflight-audit.sh"
 check_file "scripts/v1454-wave4-rollback-audit.sh"
+check_file "scripts/v1455-ux-hardening-audit.sh"
 check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotTitleBackfill.kt"
 check_file "docs/v.1.4.51/TITLE_METADATA_CONTRACT.md"
 check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotCache.kt"
@@ -328,6 +329,7 @@ bash scripts/v1453-quota-recovery-audit.sh
 bash scripts/v1454-wave0-write-limit-audit.sh
 bash scripts/v1454-bulk-preflight-audit.sh
 bash scripts/v1454-wave4-rollback-audit.sh
+bash scripts/v1455-ux-hardening-audit.sh
 bash scripts/documentation-system-audit.sh
 bash scripts/project-handoff-audit.sh
 bash scripts/auth-persistence-audit.sh
