@@ -1,7 +1,24 @@
 YTM Importer
-Version: 1.4.54
-Version code: 97
+Version: 1.4.55
+Version code: 98
+Current live execution checklist: ACTIVE_PLAN.md
 Current live resume snapshot: CURRENT_HANDOFF.md
+
+Active development release (v1.4.55 UX hardening / control):
+- branch: `feat/v1.4.55-ux-hardening`;
+- umbrella issue: #56;
+- immutable functional reference: v1.4.54 source e553c6dcb0f918a51f40bfa4d783cb11b3086472;
+- v1.4.54 Tests 1–9: PHONE PASS / functionally closed;
+- v1.4.54 public stable publication intentionally skipped because its accepted source contains temporary QA fault controls;
+- v1.4.55 compile-gates Test 5/Test 8 fault controls behind BuildConfig.DEBUG;
+- Phase A default: PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY;
+- no silent API, identity, Queue, History, backup, Bulk ledger or rollback semantic changes;
+- canonical plan: ACTIVE_PLAN.md;
+- current state: docs/v.1.4.55/CURRENT_STATE.md;
+- readability audit: docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md;
+- master plan: docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md.
+
+Historical status follows below.
 
 Active development release (v1.4.54 History Recovery / Safe Bulk Sync):
 - branch: `feat/v1.4.54-history-bulk-sync`;
