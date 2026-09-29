@@ -91,7 +91,7 @@ e6af758495c5bfa7  app/build.gradle.kts
 225ac193e694b7ec  app/src/main/AndroidManifest.xml
 c5deaede5b03bad9  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 dbd1da86b202b1b5  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
-9e5252664b4ab395  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
+42f9e3b70b80e871  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 b7d556f6ee10524b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 f08df09bb9163b98  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 9d66a85dfd788a10  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
