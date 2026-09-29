@@ -202,14 +202,14 @@ class MenuActivity : Activity() {
         addAction(
             content = content,
             title = "Синхронізувати всі",
-            subtitle = "Read-only Bulk preflight без віддалених змін",
+            subtitle = "Переглянути план без змін у YouTube Music",
             action = ACTION_BULK_SYNC
         )
 
         addAction(
             content = content,
             title = "Поточна Bulk-сесія",
-            subtitle = "Прогрес / pause / explicit resume після restart",
+            subtitle = "Переглянути прогрес і продовжити перервану сесію",
             action = ACTION_BULK_SESSION
         )
 
@@ -230,14 +230,14 @@ class MenuActivity : Activity() {
         addAction(
             content = content,
             title = "Дані",
-            subtitle = "Export / backup / restore",
+            subtitle = "Резервні копії, відновлення та експорт",
             action = ACTION_DATA
         )
 
         addAction(
             content = content,
             title = "Сервіс",
-            subtitle = "Допомога / diagnostics / cache",
+            subtitle = "Допомога, діагностика та кеш",
             action = ACTION_SERVICE
         )
 
