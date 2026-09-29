@@ -12,7 +12,7 @@ Last updated: 2026-09-28
 - Stable baseline: v1.4.53 exact accepted source
   `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`
 - Development phase:
-  **TEST 5 PHONE PASS — NEXT: WAVE 4 ROLLBACK IMPLEMENTATION**
+  **TESTS 1–5 PHONE PASS — WAVE 4 ROLLBACK VALIDATED / SIGNED PHONE QA NEXT**
 
 ## Accepted phone work
 
@@ -28,44 +28,46 @@ Last updated: 2026-09-28
 
 Do not rerun Tests 1–4 just because the branch has advanced.
 
-## Exact phone checkpoint
+## Exact phone / repository checkpoint
 
-Installed APK:
-- exact source: `d34f37a46d115b288d64a609e2aead266345be53`
-- Validate Android: run `36377631268` — PASS
-- signed build: run `36447530331` — PASS
-- installed **in-place**; app data was not cleared
+Phone:
+- installed signed source: `83d1cec92482841fd660df90a92137a77cbf8c29`;
+- signed run: `36450498230` — PASS;
+- Tests 1–5: PHONE PASS;
+- Test 5 result: `5+`;
+- preserved terminal session: `db ost` at `18/19`, with one known terminal unavailable/deleted source item;
+- one-shot DAILY_QUOTA QA fault is consumed; do not re-arm it for this session;
+- preserve this terminal session and its remote destination for Test 6.
 
-Test 5 controlled state:
-- local playlist: `db ost`
-- controlled plan before the latest UI-only retest: 19 tracks
-- ready videoIds: 19
-- unresolved: 0
-- one-shot Test 5 `DAILY_QUOTA` insert fault is still **ARMED**
-- the fault has **not fired**
-- no Test 5 `playlistItems.insert` has been attempted
-- do not cancel/re-arm it unless the stored state is actually proven lost
+Wave 4 repository candidate:
+- exact validated HEAD: `11c4671f687d27b6ac0ea663861b92d26ed2c67a`;
+- Validate Android: `36501830491` — PASS;
+- release preflight: PASS;
+- Wave 4 exact rollback audit: PASS through release preflight;
+- JVM tests: PASS;
+- unsigned release assemble: PASS.
 
-Latest phone evidence on the installed candidate:
-- portrait `Створити Bulk-сесію?` confirmation opened;
-- BUG-045 original symptom is corrected there:
-  `Створити сесію` and `Скасувати` are full-width stacked actions and the
-  primary label stays on one line;
-- the confirmation was **not accepted** during this retest;
-- the next screenshot was back on the same Bulk Preview in landscape;
-- no session creation or remote write was started by this retest.
+Wave 4 implemented scope:
+- exact `playlistItems.delete` by persisted `playlistItemId`;
+- exact session-created playlist delete by persisted `playlistId`;
+- rollback uses only APPLIED mutations from the same session;
+- insert mutations are reverted before session-created playlist deletes;
+- HTTP 404 on exact delete is idempotently accepted for interrupted rollback recovery;
+- durable `ROLLING_BACK / ROLLBACK_PAUSED / ROLLED_BACK`;
+- cold reopen never auto-resumes rollback;
+- explicit `Продовжити відкат`;
+- lifecycle-safe `Відкотити цю синхронізацію?` confirmation;
+- LINKED add-only rows are now executable from exact persisted remote identity and missing-occurrence diff;
+- shared adaptive full-screen footer buttons now inherit active Skin tones and disabled-state colors.
 
-Therefore tonight's phone checkpoint is:
+Next phone gate:
+1. signed build from the exact final validated Wave 4 HEAD;
+2. in-place install, no data clear;
+3. reopen the preserved Test 5 session;
+4. tap `Відкотити цю синхронізацію`;
+5. review the confirmation and rotate portrait → landscape → portrait;
+6. **cancel first**; do not execute remote rollback until confirmation counts/ownership copy are reviewed.
 
-**Bulk Preview / no active new session / no Test 5 write / DAILY_QUOTA fault armed.**
-
-Do not:
-- clear app data;
-- uninstall the app;
-- cancel or re-arm the Test 5 fault;
-- press `Почати синхронізацію`;
-- create unrelated Bulk sessions or YTM writes;
-- keep testing individual windows on the currently installed candidate.
 
 ## BUG-046 status — issue #38 — CLOSED / PHONE PASS
 
@@ -340,6 +342,19 @@ Next implementation gate:
 Tests 6–8 require Wave 4 exact rollback. The current branch has rollback states and
 ledger identifiers, but no user-facing rollback engine/action yet. Do not attempt
 Test 6 on phone until Wave 4 is implemented and validated.
+
+## Wave 4 exact rollback implementation — STATIC/JVM PASS
+
+Issue: #39.
+
+The current candidate implements the exact rollback contract required for Tests 6–8.
+The code is validated but not yet phone accepted. Do not infer rollback PASS from
+static/JVM evidence; first signed phone Test 6 must inspect the exact rollback plan
+and then prove remote ownership behavior.
+
+UX-033 / #26:
+the shared adaptive full-screen footer helper is now skin-aware rather than leaving
+raw Android gray buttons. Phone retest remains pending on the same signed Wave 4 candidate.
 
 ## Open issues at this checkpoint
 
