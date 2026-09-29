@@ -771,7 +771,7 @@ class BulkSyncPreviewActivity : Activity() {
         hideLoading()
 
         statusText.text =
-            "Preview готовий. Жодних remote mutations не виконано."
+            "План готовий. У YouTube Music нічого не змінено."
 
         renderSelectionSummary(
             summary
@@ -782,7 +782,7 @@ class BulkSyncPreviewActivity : Activity() {
         if (summary.rows.isEmpty()) {
             rowsContainer.addView(
                 planText(
-                    "Немає локальних плейлистів для Bulk Sync."
+                    "Немає локальних плейлистів для синхронізації."
                 )
             )
             return
@@ -849,7 +849,9 @@ class BulkSyncPreviewActivity : Activity() {
                             " • "
                         ) {
                             state ->
-                            state.name +
+                            planStateLabel(
+                                    state
+                                ) +
                                 " " +
                                 summary.count(
                                     state
@@ -858,7 +860,7 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 append("\n\n")
                 append(
-                    "До Bulk-сесії: NEW "
+                    "До сесії: нових "
                 )
                 append(
                     selected.count(
@@ -866,7 +868,7 @@ class BulkSyncPreviewActivity : Activity() {
                     )
                 )
                 append(
-                    " • LINKED add-only "
+                    " • пов’язаних для доповнення "
                 )
                 append(
                     selected.count(
@@ -881,7 +883,7 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 append("\n")
                 append(
-                    "Search API: "
+                    "Потрібно пошуків: "
                 )
                 append(
                     summary
@@ -892,7 +894,7 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 append("\n")
                 append(
-                    "Інші API units для вибраного: "
+                    "Орієнтовна вартість запису API: "
                 )
                 append(
                     selected
@@ -900,20 +902,20 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 append("\n")
                 append(
-                    "Read-only remote snapshot уже використав: "
+                    "Перевірка YouTube Music використала: "
                 )
                 append(
                     remoteReadUnitsUsed
                 )
                 append(
-                    " units"
+                    " од. API"
                 )
                 append("\n\n")
                 append(
-                    "Wave 4: NEW і підтверджені LINKED add-only рядки можна " +
-                        "включати або виключати до створення сесії. " +
-                        "Remote writes стартують тільки окремою дією на екрані сесії. " +
-                        "NEEDS_SEARCH / PENDING / BLOCKED не виконуються."
+                    "До сесії потраплять лише позначені нові або пов’язані плейлисти. " +
+                        "Пошук, черга та заблоковані рядки не виконуються. " +
+                        "Запис у YouTube Music почнеться тільки після окремого підтвердження " +
+                        "на екрані сесії."
                 )
             }
 
@@ -922,6 +924,29 @@ class BulkSyncPreviewActivity : Activity() {
                 selectedExecutable >
                 0
     }
+
+    private fun planStateLabel(
+        state: BulkSyncPlanState
+    ): String =
+        when (state) {
+            BulkSyncPlanState.NEW ->
+                "Новий"
+
+            BulkSyncPlanState.LINKED ->
+                "Пов’язано з YTM"
+
+            BulkSyncPlanState.ALREADY_SYNCED ->
+                "Уже синхронізовано"
+
+            BulkSyncPlanState.NEEDS_SEARCH ->
+                "Потрібен пошук"
+
+            BulkSyncPlanState.PENDING ->
+                "У черзі"
+
+            BulkSyncPlanState.BLOCKED ->
+                "Заблоковано"
+        }
 
     private fun ensureSelection(
         summary: BulkSyncPlanSummary
@@ -1036,9 +1061,9 @@ class BulkSyncPreviewActivity : Activity() {
                         included
                     text =
                         if (included) {
-                            "Включено в Bulk-сесію"
+                            "Буде синхронізовано"
                         } else {
-                            "Виключено з Bulk-сесії"
+                            "Не синхронізувати"
                         }
                     textSize = 13f
                     setTextColor(
@@ -1055,9 +1080,9 @@ class BulkSyncPreviewActivity : Activity() {
                             checked ->
                         button.text =
                             if (checked) {
-                                "Включено в Bulk-сесію"
+                                "Буде синхронізовано"
                             } else {
-                                "Виключено з Bulk-сесії"
+                                "Не синхронізувати"
                             }
 
                         setRowIncluded(
@@ -1082,7 +1107,9 @@ class BulkSyncPreviewActivity : Activity() {
                 text =
                     buildString {
                         append(
-                            row.state.name
+                            planStateLabel(
+                                row.state
+                            )
                         )
                         append(
                             " · "
@@ -1098,13 +1125,13 @@ class BulkSyncPreviewActivity : Activity() {
                             row.trackCount
                         )
                         append(
-                            " • ready videoId: "
+                            " • готово: "
                         )
                         append(
                             row.selectedCount
                         )
                         append(
-                            " • unresolved: "
+                            " • не готово: "
                         )
                         append(
                             row.unresolvedCount
@@ -1132,13 +1159,13 @@ class BulkSyncPreviewActivity : Activity() {
                             row.plannedInsertCount >
                             0
                         ) {
-                            append("\nПісля підтвердження: ")
+                            append("\nБуде виконано: ")
 
                             if (
                                 row.plannedCreate
                             ) {
                                 append(
-                                    "create 1"
+                                    "створити плейлист"
                                 )
 
                                 if (
@@ -1156,11 +1183,14 @@ class BulkSyncPreviewActivity : Activity() {
                                 0
                             ) {
                                 append(
-                                    "insert "
+                                    "додати "
                                 )
                                 append(
                                     row
                                         .plannedInsertCount
+                                )
+                                append(
+                                    " треків"
                                 )
                             }
 
@@ -1172,7 +1202,7 @@ class BulkSyncPreviewActivity : Activity() {
                                     .estimatedWriteUnits
                             )
                             append(
-                                " units"
+                                " од. API"
                             )
                         }
 
@@ -1263,7 +1293,7 @@ class BulkSyncPreviewActivity : Activity() {
             0
         ) {
             toast(
-                "Немає NEW або LINKED add-only рядків для виконання."
+                "Немає вибраних плейлистів, які можна синхронізувати."
             )
             return
         }
@@ -1304,7 +1334,7 @@ class BulkSyncPreviewActivity : Activity() {
 
                 UiChrome.alertBuilder(this)
                     .setTitle(
-                        "Є незавершена Bulk-сесія"
+                        "Є незавершена синхронізація"
                     )
                     .setMessage(
                         "Спочатку відкрийте вже створену сесію. " +
@@ -1361,16 +1391,15 @@ class BulkSyncPreviewActivity : Activity() {
                         "Створити Bulk-сесію?"
                     )
                     .setMessage(
-                        "Буде створено локальний Full Backup checkpoint і свіжий " +
-                            "read-only remote baseline.\n\n" +
-                            "NEW: " +
+                        "Перед початком буде створено локальну контрольну копію і перевірено " +
+                            "поточний стан плейлистів у YouTube Music.\n\n" +
+                            "Нові плейлисти: " +
                             newCount +
-                            " • LINKED add-only: " +
+                            " • пов’язані для доповнення: " +
                             linkedCount +
-                            ". Нові YTM-плейлисти створюються як приватні.\n\n" +
-                            "LINKED виконується тільки як підтверджене add-only доповнення " +
-                            "за persisted YTM ID. NEEDS_SEARCH / PENDING / BLOCKED не виконуються. " +
-                            "Після створення сесії remote writes ще не стартують автоматично."
+                            ". Нові плейлисти в YTM будуть приватними.\n\n" +
+                            "Пошук, черга та заблоковані рядки не виконуються. " +
+                            "Після створення сесії запис у YTM не почнеться автоматично."
                     )
                     .setNegativeButton(
                         "Скасувати"
