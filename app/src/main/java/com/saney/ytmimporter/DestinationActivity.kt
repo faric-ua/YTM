@@ -6,6 +6,7 @@ import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -39,6 +40,24 @@ class DestinationActivity : Activity() {
     private var currentMode: String = MODE_START
     private var newPlaylistName: String = ""
     private var existingPlaylistQuery: String = ""
+
+    private var activeScrollView: ScrollView? = null
+    private var existingListView: ListView? = null
+    private var existingListFirstVisiblePosition = 0
+    private var existingListTopOffset = 0
+
+    private val startScrollPosition =
+        ScrollPositionState(
+            STATE_START_SCROLL_POSITION
+        )
+    private val confirmScrollPosition =
+        ScrollPositionState(
+            STATE_CONFIRM_SCROLL_POSITION
+        )
+    private val scanFailedScrollPosition =
+        ScrollPositionState(
+            STATE_SCAN_FAILED_SCROLL_POSITION
+        )
 
     private var pendingPlaylistActions:
         ExistingItem? = null
@@ -100,6 +119,30 @@ class DestinationActivity : Activity() {
                     STATE_EXISTING_PLAYLIST_QUERY
                 )
                 .orEmpty()
+
+        existingListFirstVisiblePosition =
+            savedInstanceState
+                ?.getInt(
+                    STATE_EXISTING_LIST_FIRST_POSITION,
+                    0
+                )
+                ?: 0
+        existingListTopOffset =
+            savedInstanceState
+                ?.getInt(
+                    STATE_EXISTING_LIST_TOP_OFFSET,
+                    0
+                )
+                ?: 0
+        startScrollPosition.restore(
+            savedInstanceState
+        )
+        confirmScrollPosition.restore(
+            savedInstanceState
+        )
+        scanFailedScrollPosition.restore(
+            savedInstanceState
+        )
 
         pendingDeleteConfirmation =
             savedInstanceState
@@ -297,6 +340,8 @@ class DestinationActivity : Activity() {
     override fun onSaveInstanceState(
         outState: Bundle
     ) {
+        captureDestinationViewport()
+
         outState.putString(
             STATE_CURRENT_MODE,
             currentMode
@@ -308,6 +353,38 @@ class DestinationActivity : Activity() {
         outState.putString(
             STATE_EXISTING_PLAYLIST_QUERY,
             existingPlaylistQuery
+        )
+        outState.putInt(
+            STATE_EXISTING_LIST_FIRST_POSITION,
+            existingListFirstVisiblePosition
+        )
+        outState.putInt(
+            STATE_EXISTING_LIST_TOP_OFFSET,
+            existingListTopOffset
+        )
+        startScrollPosition.save(
+            outState,
+            if (currentMode == MODE_START) {
+                activeScrollView
+            } else {
+                null
+            }
+        )
+        confirmScrollPosition.save(
+            outState,
+            if (currentMode == MODE_EXISTING_CONFIRM) {
+                activeScrollView
+            } else {
+                null
+            }
+        )
+        scanFailedScrollPosition.save(
+            outState,
+            if (currentMode == MODE_EXISTING_SCAN_FAILED) {
+                activeScrollView
+            } else {
+                null
+            }
         )
 
         pendingPlaylistActions
@@ -361,6 +438,42 @@ class DestinationActivity : Activity() {
         )
     }
 
+    override fun onPause() {
+        captureDestinationViewport()
+        super.onPause()
+    }
+
+    private fun captureDestinationViewport() {
+        when (currentMode) {
+            MODE_START ->
+                startScrollPosition.capture(
+                    activeScrollView
+                )
+
+            MODE_EXISTING_CONFIRM ->
+                confirmScrollPosition.capture(
+                    activeScrollView
+                )
+
+            MODE_EXISTING_SCAN_FAILED ->
+                scanFailedScrollPosition.capture(
+                    activeScrollView
+                )
+
+            MODE_EXISTING_LIST ->
+                existingListView
+                    ?.let { list ->
+                        existingListFirstVisiblePosition =
+                            list.firstVisiblePosition
+                                .coerceAtLeast(0)
+                        existingListTopOffset =
+                            list.getChildAt(0)
+                                ?.top
+                                ?: 0
+                    }
+        }
+    }
+
     override fun onDestroy() {
         remoteProgressDialog
             ?.setOnDismissListener(null)
@@ -383,6 +496,8 @@ class DestinationActivity : Activity() {
     }
 
     private fun showStartScreen() {
+        existingListView = null
+
         val root = baseRoot()
         root.addView(
             topBar(
@@ -391,9 +506,15 @@ class DestinationActivity : Activity() {
             )
         )
 
-        val scroll = ScrollView(this).apply {
-            isFillViewport = true
-        }
+        activeScrollView =
+            ScrollView(this).apply {
+                isFillViewport = true
+            }
+
+        val scroll =
+            requireNotNull(
+                activeScrollView
+            )
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -582,9 +703,14 @@ class DestinationActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root, includeIme = true)
+        startScrollPosition.restoreInto(
+            scroll
+        )
     }
 
     private fun showExistingListScreen() {
+        activeScrollView = null
+
         val root = baseRoot()
         root.addView(
             topBar(
@@ -740,6 +866,8 @@ class DestinationActivity : Activity() {
 
         list.adapter =
             adapter
+        existingListView =
+            list
 
         countText.text =
             "${visible.size} плейлистів"
@@ -799,8 +927,21 @@ class DestinationActivity : Activity() {
                     before: Int,
                     count: Int
                 ) {
-                    existingPlaylistQuery =
+                    val newQuery =
                         s?.toString().orEmpty()
+
+                    if (
+                        newQuery !=
+                            existingPlaylistQuery
+                    ) {
+                        existingPlaylistQuery =
+                            newQuery
+                        existingListFirstVisiblePosition =
+                            0
+                        existingListTopOffset =
+                            0
+                        list.setSelection(0)
+                    }
 
                     applyFilter(
                         existingPlaylistQuery
@@ -819,6 +960,13 @@ class DestinationActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+
+        list.post {
+            list.setSelectionFromTop(
+                existingListFirstVisiblePosition,
+                existingListTopOffset
+            )
+        }
     }
 
 
@@ -1408,6 +1556,8 @@ class DestinationActivity : Activity() {
     }
 
     private fun showExistingConfirmScreen() {
+        existingListView = null
+
         val root = baseRoot()
         root.addView(
             topBar(
@@ -1416,9 +1566,15 @@ class DestinationActivity : Activity() {
             )
         )
 
-        val scroll = ScrollView(this).apply {
-            isFillViewport = true
-        }
+        activeScrollView =
+            ScrollView(this).apply {
+                isFillViewport = true
+            }
+
+        val scroll =
+            requireNotNull(
+                activeScrollView
+            )
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(12), 0, dp(12), dp(24))
@@ -1588,9 +1744,14 @@ class DestinationActivity : Activity() {
         )
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        confirmScrollPosition.restoreInto(
+            scroll
+        )
     }
 
     private fun showExistingScanFailedScreen() {
+        existingListView = null
+
         val root = baseRoot()
         root.addView(
             topBar(
@@ -1599,7 +1760,13 @@ class DestinationActivity : Activity() {
             )
         )
 
-        val scroll = ScrollView(this)
+        activeScrollView =
+            ScrollView(this)
+
+        val scroll =
+            requireNotNull(
+                activeScrollView
+            )
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(12), 0, dp(12), dp(24))
@@ -1680,6 +1847,9 @@ class DestinationActivity : Activity() {
         )
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        scanFailedScrollPosition.restoreInto(
+            scroll
+        )
     }
 
     @Deprecated("Deprecated in Java")
@@ -1967,6 +2137,7 @@ class DestinationActivity : Activity() {
                 storeScan(
                     state.scan
                 )
+                confirmScrollPosition.reset()
                 setMode(
                     MODE_EXISTING_CONFIRM
                 )
@@ -2011,6 +2182,7 @@ class DestinationActivity : Activity() {
                     storeTarget(
                         target
                     )
+                    scanFailedScrollPosition.reset()
                     intent.putExtra(
                         EXTRA_SCAN_ERROR,
                         state.errorMessage
@@ -2353,6 +2525,10 @@ class DestinationActivity : Activity() {
     private fun setMode(
         mode: String
     ) {
+        captureDestinationViewport()
+
+        activeScrollView = null
+        existingListView = null
         currentMode =
             mode
         intent.putExtra(
@@ -2864,6 +3040,16 @@ class DestinationActivity : Activity() {
             "destination_new_playlist_name"
         private const val STATE_EXISTING_PLAYLIST_QUERY =
             "destination_existing_playlist_query"
+        private const val STATE_EXISTING_LIST_FIRST_POSITION =
+            "destination_existing_list_first_position"
+        private const val STATE_EXISTING_LIST_TOP_OFFSET =
+            "destination_existing_list_top_offset"
+        private const val STATE_START_SCROLL_POSITION =
+            "destination_start_scroll_position"
+        private const val STATE_CONFIRM_SCROLL_POSITION =
+            "destination_confirm_scroll_position"
+        private const val STATE_SCAN_FAILED_SCROLL_POSITION =
+            "destination_scan_failed_scroll_position"
         private const val STATE_PLAYLIST_ACTIONS_ID =
             "destination_playlist_actions_id"
         private const val STATE_PLAYLIST_EDIT_ID =
