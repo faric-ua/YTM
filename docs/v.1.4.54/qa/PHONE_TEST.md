@@ -726,3 +726,15 @@ Test 7 remains **NOT EXECUTED remotely** until a signed candidate with UX-041 pa
 - only controlled `What Evil Lurks` selected;
 - `NEW 0 • LINKED add-only 1`;
 - exactly `insert 2`.
+
+
+### UX-041 / UX-042 static validation
+
+Code-equivalent manifest-refresh candidate:
+- HEAD `6644f6874c0c1f4ea782b3bc3695ac9453920c72`;
+- Validate Android `36510863732` — **PASS**;
+- release preflight including scoped Bulk selection audit: PASS;
+- JVM unit tests including `BulkSyncSelectionPolicyTest`: PASS;
+- unsigned release assemble: PASS.
+
+A documentation-only handoff refresh follows; regenerate `FILE_MANIFEST.txt` and require one final exact-HEAD Validate before signed phone QA.
