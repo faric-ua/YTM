@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "versionName": "1.4.55",
+  "versionCode": 98,
+  "phase": "development",
+  "feature": "UX Hardening / Control",
+  "branch": "feat/v1.4.55-ux-hardening",
+  "appSourceSha": null,
+  "signedRun": null,
+  "qaStatus": "DEVELOPMENT — UX HARDENING WAVE A IN PROGRESS / NOT PHONE TESTED",
+  "tag": null,
+  "checkpointTag": null,
+  "phoneTestDate": null
+}
