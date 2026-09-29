@@ -7,6 +7,8 @@ fail() {
 }
 
 POLICY="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicy.kt"
+SELECTION_POLICY="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicy.kt"
+SELECTION_TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicyTest.kt"
 PREVIEW="app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt"
 MENU="app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
 MANIFEST="app/src/main/AndroidManifest.xml"
@@ -26,7 +28,7 @@ QA_FAULT_TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncQaFaultPolic
 QUOTA_ACTIVITY="app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt"
 BACKUP="app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt"
 
-for file in "$POLICY" "$PREVIEW" "$MENU" "$MANIFEST" "$TEST"   "$SESSION_MODEL" "$SESSION_STORE" "$CHECKPOINT_STORE" "$SESSION_FACTORY"   "$EXECUTION_POLICY" "$EXECUTOR" "$SESSION_ACTIVITY" "$SESSION_TEST" "$BULK_HELP" "$QA_FAULT" "$QA_FAULT_STORE" "$QA_FAULT_TEST" "$QUOTA_ACTIVITY" "$BACKUP"; do
+for file in "$POLICY" "$SELECTION_POLICY" "$SELECTION_TEST" "$PREVIEW" "$MENU" "$MANIFEST" "$TEST"   "$SESSION_MODEL" "$SESSION_STORE" "$CHECKPOINT_STORE" "$SESSION_FACTORY"   "$EXECUTION_POLICY" "$EXECUTOR" "$SESSION_ACTIVITY" "$SESSION_TEST" "$BULK_HELP" "$QA_FAULT" "$QA_FAULT_STORE" "$QA_FAULT_TEST" "$QUOTA_ACTIVITY" "$BACKUP"; do
   [ -f "$file" ] || fail "Missing Bulk Sync foundation file: $file"
 done
 
@@ -47,6 +49,16 @@ grep -Fq 'putSerializable' "$PREVIEW"   || fail "Bulk preview plan is not saved 
 grep -Fq 'estimatedSearchCalls' "$PREVIEW"   || fail "Search estimate missing from Bulk preview"
 
 grep -Fq 'estimatedWriteUnits' "$PREVIEW"   || fail "Non-Search estimate missing from Bulk preview"
+
+grep -Fq 'BulkSyncSelectionPolicy' "$PREVIEW"   || fail "Bulk preview row-selection policy missing"
+
+grep -Fq 'STATE_INCLUDED_EXECUTABLE_IDS' "$PREVIEW"   || fail "Bulk preview selected rows do not survive recreation"
+
+grep -Fq 'Включено в Bulk-сесію' "$PREVIEW"   || fail "Bulk preview executable-row inclusion control missing"
+
+grep -Fq 'selectedSummary_excludesUncheckedExecutableRows' "$SELECTION_TEST"   || fail "Bulk row exclusion JVM coverage missing"
+
+grep -Fq 'ProgressBar' "$PREVIEW"   || fail "Bulk preview active loading indicator missing"
 
 grep -Fq 'BulkSyncSessionFactory' "$PREVIEW"   || fail "Bulk preview does not create a durable session after explicit confirmation"
 
