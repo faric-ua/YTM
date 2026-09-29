@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
 class ListSelectorActivity : Activity() {
@@ -24,6 +25,12 @@ class ListSelectorActivity : Activity() {
     private lateinit var content: LinearLayout
     private lateinit var selectionSummary: TextView
     private lateinit var confirmButton: Button
+    private lateinit var scrollView: ScrollView
+
+    private val scrollPosition =
+        ScrollPositionState(
+            STATE_SCROLL_POSITION
+        )
 
     private var helpDialogOpen = false
     private var helpDialog: Dialog? = null
@@ -124,6 +131,10 @@ class ListSelectorActivity : Activity() {
                 )
                 ?: false
 
+        scrollPosition.restore(
+            savedInstanceState
+        )
+
         render()
 
         if (
@@ -160,7 +171,25 @@ class ListSelectorActivity : Activity() {
             helpDialogOpen
         )
 
+        scrollPosition.save(
+            outState,
+            if (::scrollView.isInitialized) {
+                scrollView
+            } else {
+                null
+            }
+        )
+
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onPause() {
+        if (::scrollView.isInitialized) {
+            scrollPosition.capture(
+                scrollView
+            )
+        }
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -217,11 +246,13 @@ class ListSelectorActivity : Activity() {
 
         root.addView(selectionSummary)
 
-        val scroll =
+        scrollView =
             ScrollView(this).apply {
                 isFillViewport = true
                 clipToPadding = false
             }
+
+        val scroll = scrollView
 
         content =
             LinearLayout(this).apply {
@@ -249,6 +280,9 @@ class ListSelectorActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        scrollPosition.restoreInto(
+            scrollView
+        )
 
         renderItems()
         refreshSelectionState()
@@ -702,6 +736,9 @@ class ListSelectorActivity : Activity() {
 
         private const val STATE_HELP_DIALOG_OPEN =
             "selector_state_help_dialog_open"
+
+        private const val STATE_SCROLL_POSITION =
+            "selector_state_scroll_position"
 
         private const val EXTRA_TITLE =
             "selector_title"
