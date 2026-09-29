@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -37,6 +38,7 @@ import java.util.Locale
 
 class PendingActivity : Activity() {
     private lateinit var pendingJobStore: PendingJobStore
+    private lateinit var pendingModalController: RestorableModalController
 
     private var currentJobId: String? = null
 
@@ -48,6 +50,16 @@ class PendingActivity : Activity() {
 
         pendingJobStore =
             PendingJobStore(this)
+
+        pendingModalController =
+            RestorableModalController(
+                activity = this,
+                stateKey = STATE_PENDING_MODAL
+            ).also {
+                it.restore(
+                    savedInstanceState
+                )
+            }
 
         val restoredId =
             savedInstanceState
@@ -63,11 +75,13 @@ class PendingActivity : Activity() {
 
             if (job != null) {
                 showDetailScreen(job)
+                restorePendingModalAfterContentReady()
                 return
             }
         }
 
         showListScreen()
+        restorePendingModalAfterContentReady()
     }
 
     override fun onSaveInstanceState(
@@ -78,9 +92,21 @@ class PendingActivity : Activity() {
             currentJobId
         )
 
+        pendingModalController.save(
+            outState
+        )
+
         super.onSaveInstanceState(
             outState
         )
+    }
+
+    override fun onDestroy() {
+        if (::pendingModalController.isInitialized) {
+            pendingModalController.onDestroy()
+        }
+
+        super.onDestroy()
     }
 
     @Deprecated("Deprecated in Java")
@@ -946,7 +972,49 @@ class PendingActivity : Activity() {
     private fun confirmDelete(
         job: PendingJob
     ) {
-        UiChrome.showDangerConfirmDialog(
+        pendingModalController.show(
+            modalId = MODAL_DELETE_JOB,
+            args =
+                Bundle().apply {
+                    putString(
+                        ARG_PENDING_JOB_ID,
+                        job.id
+                    )
+                },
+            renderer = ::renderPendingModal
+        )
+    }
+
+    private fun restorePendingModalAfterContentReady() {
+        pendingModalController
+            .restoreAfterContentReady(
+                renderer = ::renderPendingModal
+            )
+    }
+
+    private fun renderPendingModal(
+        modalId: String,
+        args: Bundle
+    ): android.app.Dialog? {
+        if (
+            modalId !=
+                MODAL_DELETE_JOB
+        ) {
+            return null
+        }
+
+        val jobId =
+            args.getString(
+                ARG_PENDING_JOB_ID
+            )
+                ?: return null
+        val job =
+            pendingJobStore.get(
+                jobId
+            )
+                ?: return null
+
+        return UiChrome.showDangerConfirmDialog(
             activity = this,
             title =
                 "Видалити завдання з черги?",
@@ -964,8 +1032,15 @@ class PendingActivity : Activity() {
                         "Треки, які вже були додані в YouTube/YTM, не видаляються."
                 },
             confirmLabel =
-                "Так, видалити"
+                "Так, видалити",
+            onCancel = {
+                pendingModalController
+                    .clearState()
+            }
         ) {
+            pendingModalController
+                .clearState()
+
             pendingJobStore.remove(
                 job.id
             )
@@ -1757,6 +1832,15 @@ class PendingActivity : Activity() {
     }
 
     companion object {
+        private const val STATE_PENDING_MODAL =
+            "pending_modal_state"
+
+        private const val MODAL_DELETE_JOB =
+            "delete_job"
+
+        private const val ARG_PENDING_JOB_ID =
+            "pending_job_id"
+
         const val EXTRA_RESUME_JOB_ID =
             "pending_resume_job_id"
 
