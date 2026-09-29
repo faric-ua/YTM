@@ -270,7 +270,7 @@ class BulkSyncSessionActivity : Activity() {
     override fun onBackPressed() {
         if (running) {
             toast(
-                "Дочекайтеся завершення поточної mutation/відкату або закрийте застосунок."
+                "Дочекайтеся завершення поточної дії або закрийте застосунок."
             )
             return
         }
@@ -313,7 +313,7 @@ class BulkSyncSessionActivity : Activity() {
                     finish()
                 } else {
                     toast(
-                        "Bulk-сесія зараз виконує mutation."
+                        "Синхронізація зараз виконує дію."
                     )
                 }
             },
@@ -622,14 +622,14 @@ class BulkSyncSessionActivity : Activity() {
                     title =
                         "Відкотити цю синхронізацію?",
                     message =
-                        "Відкат використовує тільки exact IDs з ledger цієї Bulk-сесії.\n\n" +
-                            "Буде відкочено: додані елементи — " +
+                        "Програма відкочує тільки дії, точно записані в цій сесії.\n\n" +
+                            "Буде видалено доданих треків: " +
                             inserts +
-                            ", створені цією сесією плейлисти — " +
+                            ". Створених цією сесією плейлистів: " +
                             creates +
                             ".\n\n" +
-                            "Попередньо існуючі плейлисти/елементи не видаляються за назвою. " +
-                            "Після старту відкат не продовжується автоматично після restart.",
+                            "Існуючі раніше плейлисти та треки не визначаються за назвою і не видаляються. " +
+                            "Після перезапуску відкат не продовжиться автоматично.",
                     actions =
                         listOf(
                             UiChrome.DialogAction(
@@ -954,18 +954,14 @@ class BulkSyncSessionActivity : Activity() {
                 )
                 append("\n")
                 append(
-                    "Checkpoint: "
+                    "Контрольна точка: "
                 )
                 append(
-                    session.checkpointId
-                        .take(8)
-                )
-                append(
-                    "…"
+                    "збережена"
                 )
                 append("\n")
                 append(
-                    "Remote baseline: "
+                    "Знімок YTM: "
                 )
                 append(
                     session.remoteBaseline
@@ -973,13 +969,13 @@ class BulkSyncSessionActivity : Activity() {
                         .size
                 )
                 append(
-                    " linked playlist(s)"
+                    " плейлистів"
                 )
 
                 if (prepared > 0) {
                     append("\n")
                     append(
-                        "⚠ PREPARED без підтвердження: "
+                        "⚠ Потребує перевірки незавершених дій: "
                     )
                     append(prepared)
                 }
@@ -1020,7 +1016,7 @@ class BulkSyncSessionActivity : Activity() {
                 ) {
                     append("\n")
                     append(
-                        "Відкочено mutations: "
+                        "Відкочено дій: "
                     )
                     append(
                         rolledBack
@@ -1045,9 +1041,8 @@ class BulkSyncSessionActivity : Activity() {
 
                 append("\n\n")
                 append(
-                    "Restart ніколи не продовжує сесію або відкат автоматично. " +
-                        "Wave 4 виконує NEW і підтверджені LINKED add-only рядки. " +
-                        "Rollback використовує тільки exact IDs цієї сесії."
+                    "Після перезапуску нічого не продовжується автоматично. " +
+                        "Продовження синхронізації або відкат запускаються тільки явною дією користувача."
                 )
             }
 
@@ -1352,19 +1347,19 @@ class BulkSyncSessionActivity : Activity() {
                 "Виконується"
 
             BulkSyncSessionState.PAUSED_SEARCH_QUOTA ->
-                "Пауза — Search quota"
+                "Пауза — ліміт пошуку"
 
             BulkSyncSessionState.PAUSED_WRITE_QUOTA ->
-                "Пауза — write quota"
+                "Пауза — квота запису"
 
             BulkSyncSessionState.PAUSED_RATE_LIMIT ->
-                "Пауза — rate/resource limit"
+                "Пауза — тимчасовий ліміт API"
 
             BulkSyncSessionState.PAUSED_AUTH ->
                 "Пауза — потрібна авторизація"
 
             BulkSyncSessionState.PAUSED_INTERRUPTED ->
-                "Пауза — попередній запуск перервано"
+                "Пауза — попередню синхронізацію перервано"
 
             BulkSyncSessionState.COMPLETED ->
                 "Завершено"
@@ -1390,7 +1385,7 @@ class BulkSyncSessionActivity : Activity() {
                 "Готовий новий плейлист"
 
             BulkSyncSessionRowState.READY_APPEND ->
-                "Готове add-only доповнення"
+                "Готово до доповнення"
 
             BulkSyncSessionRowState.CREATING ->
                 "Створення плейлиста…"
@@ -1405,7 +1400,7 @@ class BulkSyncSessionActivity : Activity() {
                 "Уже синхронізовано — без змін"
 
             BulkSyncSessionRowState.DEFERRED_LINKED ->
-                "Пов’язано з YTM — add-only відкладено до наступної хвилі"
+                "Пов’язано з YTM — зараз не виконується"
 
             BulkSyncSessionRowState.NEEDS_SEARCH ->
                 "Потрібен пошук — пропущено"
@@ -1425,7 +1420,7 @@ class BulkSyncSessionActivity : Activity() {
 
     private fun renderMissing() {
         statusText.text =
-            "Bulk-сесію не знайдено."
+            "Сесію синхронізації не знайдено."
         summaryText.text =
             "Створіть її через Меню → Синхронізувати всі."
         rowsContainer.removeAllViews()
