@@ -475,3 +475,38 @@ Additional findings:
 - signed GitHub Actions run: `36512664669` — PASS;
 - artifact: `YTM-Importer-v1.4.54-Release`;
 - next phone action: Termux menu item 3 to download this exact APK, then install in-place with no app-data clear.
+
+## Final v1.4.54 phone acceptance — 2026-09-29
+
+The main functional QA suite is complete.
+
+- Test 1 — History Recovery: PASS
+- Test 2 — local ↔ remote linkage preservation: PASS
+- Test 3 — Bulk read-only preflight: PASS
+- Test 4 — durable Bulk session/recovery: PASS
+- Test 5 — durable write-quota pause/restart/explicit resume: PASS
+- Test 6 — exact rollback of session-created playlist/items: PASS
+- Test 7 — exact rollback of additions to an existing playlist: PASS
+- Test 8 — interrupted rollback / cold reopen / explicit continuation: PASS
+- Test 9 — legacy compatibility: PASS
+
+Final accepted functional source:
+`e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+
+Final Test 8 signed run used for the accepted source:
+`36579457780`.
+
+Test 9 compatibility evidence includes:
+- Full Backup creation;
+- safe restore of legacy History entry `URL snapshot • PLIrF7GkQzd-E`;
+- no auto-Search or auto-write after restore;
+- no title-only remote linkage invention;
+- preserved legacy Queue WRITE item `The Prodigy - Baby's Got A Temper (2002)`
+  readable with `Rate limit`, remaining 3, added 0/3.
+
+**Result: Tests 1–9 = PHONE PASS.**
+
+No new functional scenarios are required for this acceptance series. The next work
+is release closeout plus the separate v1.4.55 UX/control hardening wave, which must
+preserve this behavior as an immutable reference.
+
