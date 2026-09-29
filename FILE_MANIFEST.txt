@@ -158,7 +158,7 @@ d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 c046586be53a0584  artifacts/README.md
 6e5a0c4832d35dfb  ASSISTANT_CONTEXT_INDEX.md
-4af96ba52f14839a  BACKLOG.md
+94fcab2781763438  BACKLOG.md
 1ad29e43e790095c  build.gradle.kts
 702ad9ff87e4f1d8  CHANGELOG.md
 5ab9a97a8d8e164e  CURRENT_HANDOFF.md
@@ -223,7 +223,7 @@ bda0e19ca6c2e07d  docs/design/exclusive/skins/prototypes/polyglot-ku-japanese-me
 94f84a2ed75ff8de  docs/design/V1454_HISTORY_SAFE_BULK_SYNC_CONTRACT.md
 96bb07fec24f81fc  docs/design/V1454_HISTORY_SAFE_BULK_SYNC_FLOW.md
 4d76747d3ede3605  docs/documentation/DOCUMENTATION_GAP_AUDIT_2026-09-22.md
-49bd95354e733ec2  docs/documentation/HISTORICAL_RELEASE_MATRIX.md
+87f1bbc559666c99  docs/documentation/HISTORICAL_RELEASE_MATRIX.md
 3c8c6e273019f706  docs/HANDOFF_HARDENING_2026-09-17.md
 1c2281d82e35a871  docs/issues/BUG-002/evidence/BUG002-dialog-entrance-motion-v1.4.27-2026-09-17.mp4
 1187e545d7e7e395  docs/issues/BUG-002/README.md
@@ -1404,7 +1404,15 @@ aab9cbd3b8bdc522  docs/v.1.4.54/REGRESSION_CHECKLIST.md
 cc81c54f63997585  docs/v.1.4.54/RELEASE_META.json
 13d30b09aa2be609  docs/v.1.4.54/RELEASE.md
 0cb99b7ee4184125  docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md
+c704c86772b65f8c  docs/v.1.4.55/diagrams/README.md
+27a15b16ec816765  docs/v.1.4.55/diagrams/UX_HARDENING_FLOW.md
+fc65b287a8cf23e1  docs/v.1.4.55/qa/BUG_REGISTER.md
+e44f1e1cb562c962  docs/v.1.4.55/qa/EVIDENCE_MANIFEST.md
+78816942245cf88b  docs/v.1.4.55/qa/PHONE_TEST.md
 c0ca1dd903f31f86  docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md
+ad349ab098f5763e  docs/v.1.4.55/REGRESSION_CHECKLIST.md
+5e2de2eb27025c40  docs/v.1.4.55/RELEASE_META.json
+b67036413f2dc72a  docs/v.1.4.55/RELEASE.md
 d24f2a75b0b315cb  docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md
 34feef4923c89b09  docs/v.1.4.6/diagrams/ACTION_HIERARCHY.md
 f28a02002d244772  docs/v.1.4.6/diagrams/README.md
@@ -1447,7 +1455,7 @@ e73ddc7565ea4b94  qa/TEST_EVIDENCE_POLICY.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 a3aa1abb963a13e6  README.md
-6a8a0fb96ef5ae03  RELEASE_TEST_STATUS.md
+37f75de5b9619fe6  RELEASE_TEST_STATUS.md
 45acb5657d044225  release-signing.properties.example
 92f4070125b5330d  samples/sample_playlist.csv
 85ee2b48bd8ad374  samples/sample_playlist.txt
