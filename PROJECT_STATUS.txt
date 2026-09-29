@@ -3,27 +3,17 @@ Version: 1.4.54
 Version code: 97
 Current live resume snapshot: CURRENT_HANDOFF.md
 
-Active development release (v1.4.54 History Recovery / Safe Bulk Sync):
+v1.4.54 functional checkpoint — CLOSED / PHONE ACCEPTED:
 - branch: `feat/v1.4.54-history-bulk-sync`;
 - versionName / versionCode: 1.4.54 / 97;
-- exact stable baseline: v1.4.53 phone-tested source ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5;
-- Tests 1–2 History Recovery / linkage: PHONE PASS;
-- Test 3 Bulk read-only preflight: PHONE PASS;
-- Test 4 durable Bulk session / force-close / PREPARED reconcile: PHONE PASS;
-- Test 5: PAUSED before first controlled insert; one-shot DAILY_QUOTA QA fault remains armed;
-- installed phone source: 552c387a5626ab0fd7e501aff946741610f41f6d;
-- installed source Validate Android: 36372799066 PASS;
-- installed signed build: 36374659541 PASS;
-- BUG-044: old completed-partial 18/19 session no longer reopens, but fresh 19-track READY session acceptance remains pending;
-- BUG-045 original narrow portrait action-wrap symptom: PHONE PASS on installed 552c source;
-- UX-037 Bulk Preview Help: portrait/landscape/rotation/close PASS; Bulk Session Help pending;
-- UX-038 / issue #37: OPEN BLOCKER — project-wide window/footer/button contract consolidation;
-- shared action-bearing dialogs now converge on one fixed-footer shell;
-- modal row/stack decision is label-aware; action count alone cannot force a row;
-- ListSelector / Bulk Preview / Bulk Session now share the adaptive footer renderer;
-- `scripts/ui-window-contract-audit.sh` is part of release preflight and the portable audit inventory;
-- canonical audit: docs/v.1.4.54/UI_WINDOW_AUDIT_2026-09-28.md;
-- next gate: exact-HEAD static validation → signed build → in-place install → one consolidated representative window matrix → one fresh Bulk-session creation checkpoint; only then may Test 5 execute its first controlled insert.
+- Tests 1–9: PHONE PASS;
+- immutable accepted functional source: e553c6dcb0f918a51f40bfa4d783cb11b3086472;
+- accepted signed run for final recovery/compatibility chain: 36579457780;
+- exact History Recovery / Bulk / rollback / legacy compatibility contract is accepted;
+- public stable publication intentionally skipped because the exact accepted source contains temporary Test 5/Test 8 QA fault controls;
+- v1.4.55 is the successor public-hardening path and compile-gates QA controls behind BuildConfig.DEBUG;
+- do not modify the v1.4.54 accepted source merely to manufacture a stable tag;
+- evidence: docs/v.1.4.54/qa/TEST_RUN_2026-09-29.md and PHONE_TEST_REPORT_2026-09-29.md.
 Current accepted release (v1.4.53 Quota Recovery / Durable Resume — FINAL):
 - active branch: `feat/v1.4.53-quota-recovery`;
 - release documentation phase: final;
