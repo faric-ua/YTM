@@ -14,13 +14,13 @@ Last updated: **2026-09-30**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Current app/source HEAD: `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`
   (`fix: unify destructive confirmation lifecycle`)
-- Latest validated branch/tooling checkpoint:
-  `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`
-- Validate Android run **36758197893 — SUCCESS**
+- Latest validated source/audit checkpoint:
+  `317d72e5445ba88074820f9743474621c15f7208`
+- Validate Android run **36760309445 — SUCCESS**
   (preflight PASS / JVM PASS / unsigned assemble PASS)
-- Active task: **#47/#26/#37 — shared adaptive action layout**
-- Current source batch: Quota fixed footer + URL Snapshot duplicate chooser migrated
-  to the shared adaptive renderer; exact-HEAD CI validation is the next gate.
+- Active task: **#23/#45/#50 — Bulk semantic hierarchy and diagnostics**
+- #47/#26/#37 action-layout source/static/build work is complete; phone acceptance
+  remains in the consolidated Phase A matrix.
 - v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
 - Phase B is not active yet.
 
@@ -41,12 +41,13 @@ Destructive-confirmation lifecycle source/static/build work is **PASS**:
 
 ## NEXT ACTION — do this first
 
-1. Verify Validate Android on the live branch HEAD carrying the #47 source batch.
-2. Require Release preflight, JVM tests and unsigned release assemble to PASS.
-3. If green, record #47 source/static/build PASS.
-4. Keep phone acceptance pending for Quota, URL duplicate chooser, rollback,
-   ordinary/destructive dialogs, rotation and skins.
-5. Continue to the next Phase A item only after the exact-head gate is green.
+1. Open `docs/v.1.4.55/BULK_HIERARCHY_AUDIT_2026-09-30.md`.
+2. Design the smallest shared presentation-only hierarchy primitives needed by
+   Bulk Preview and Bulk Session.
+3. Keep existing plan construction, selection, execution, rollback, quota and
+   durable ledger semantics untouched.
+4. Patch Preview first, then Session, then durable/transient diagnostics.
+5. Update this file immediately when the real resume point moves.
 
 ## Mandatory recovery order
 

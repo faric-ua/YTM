@@ -86,33 +86,55 @@ Source/static/build result: **PASS**.
 
 Issue #42 remains open only for consolidated Phase A real-phone acceptance.
 
-## CURRENT TASK — shared adaptive action layout (#47/#26/#37) (2026-09-30)
+## COMPLETED TASK — shared adaptive action layout (#47/#26/#37) (2026-09-30)
 
-Goal: verify one width-first, label-aware row/stack policy for full-screen actions
-and dialog footers without changing callbacks, action ordering, remote execution,
-or storage behavior.
+Source/static/build result: **PASS**.
+
+- [x] Existing shared fit policy confirmed: screen + dialog AUTO actions converge on
+  `fitsHorizontalActionGroup()` / `useHorizontalActionRow()`.
+- [x] Full-screen/dialog footer inventory recorded in
+  `docs/v.1.4.55/ACTION_LAYOUT_AUDIT_2026-09-30.md`.
+- [x] Two verified fixed-footer GAPs patched: Quota footer and URL Snapshot duplicate
+  chooser.
+- [x] URL duplicate chooser no longer auto-shrinks text to preserve a forced row.
+- [x] Existing callbacks/action meaning preserved.
+- [x] Static enforcement expanded for Quota and URL duplicate chooser.
+- [x] Exact source/audit SHA
+  `317d72e5445ba88074820f9743474621c15f7208` passed Validate Android run
+  `36760309445`: release preflight PASS, JVM tests PASS, unsigned release assemble
+  PASS.
+- [x] Real-device layout acceptance remains intentionally deferred to the
+  consolidated Phase A phone matrix.
+
+Issues #47/#26/#37 stay open only where their broader phone/app-wide acceptance is
+still pending.
+
+## CURRENT TASK — Bulk semantic hierarchy and diagnostics (#23/#45/#50) (2026-09-30)
+
+Goal: make Bulk Preview and Bulk Session scannable in 1–2 seconds without changing
+plan construction, selection, execution, rollback, quota or durable ledger
+semantics.
 
 Current task checklist:
-- [x] Carry forward green checkpoint `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`,
-  Validate Android run `36758197893` = SUCCESS.
-- [x] Read issues #47/#26/#37 plus `RESPONSIVE_ACTION_LAYOUT_CONTRACT.md`,
-  `UI_WINDOW_QA_CONTRACT.md`, `UiChrome`, and current action-layout audits.
-- [x] Inventory full-screen and dialog/footer action groups. Evidence:
-  `docs/v.1.4.55/ACTION_LAYOUT_AUDIT_2026-09-30.md`.
-- [x] Verify label-fit, narrow-width stacking, danger emphasis, and callback/order
-  preservation. Existing shared fit commits `75f8d79` / `59fe9be` /
-  `ad92a55` already converge AUTO screen + dialog decisions.
-- [x] Patch only verified presentation/layout GAPs: Quota fixed footer and URL
-  Snapshot duplicate chooser now use the shared adaptive renderer; callbacks are
-  unchanged.
-- [x] Strengthen static enforcement against one-off layout regressions: Quota is
-  mandatory in FULLSCREEN_FOOTERS; URL duplicate chooser may not restore a forced
-  `choiceRow` or compact auto-shrink path.
-- [x] Record source result and representative phone targets in the action-layout
-  audit; phone PASS remains pending.
-- [x] Refresh generated artifacts for this source/audit batch.
-- [ ] Require exact-HEAD Validate Android PASS for the current action-layout batch.
-- [ ] Keep real-device layout acceptance in the consolidated Phase A phone matrix.
+- [x] Read issues #23/#45/#50 and the app-wide readability audit.
+- [x] Inspect current Bulk Preview/Session rendering. Existing user-facing plan and
+  session state labels are already Ukrainian.
+- [x] Identify the remaining presentation GAP: important state/counts/planned
+  mutation/safety result/diagnostics are still merged into dense same-weight text
+  blocks.
+- [x] Record the source inventory in
+  `docs/v.1.4.55/BULK_HIERARCHY_AUDIT_2026-09-30.md`.
+- [ ] Design the smallest shared presentation-only hierarchy primitives needed for
+  Bulk cards/status blocks using existing theme semantic tokens.
+- [ ] Patch Bulk Preview cards: title primary, state visible, inclusion state,
+  compact counts, planned mutation prominent, reason/diagnostics secondary.
+- [ ] Patch Bulk Session summary/rows: current state + primary counters first;
+  checkpoint/baseline/IDs/errors/policy text secondary and durable.
+- [ ] Separate long technical error detail from transient Toast-only messaging;
+  critical state must remain visible on the owning screen.
+- [ ] Add/strengthen static readability guards without coupling them to fragile copy.
+- [ ] Record representative phone targets; do not claim phone PASS.
+- [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS.
 
 Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
 first unchecked CURRENT TASK item above.
@@ -173,7 +195,7 @@ The checkpoint commit after this validated SHA is documentation-only. The valida
 - [x] Finish project-wide scroll-retention audit and remaining source gaps (#48). **SOURCE AUDIT PASS**; issue remains open until consolidated phone matrix.
 - [x] Finish selectable-text range retention (#49) at source/static/build level. **SOURCE AUDIT PASS** on `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`; real-phone acceptance remains in the consolidated Phase A matrix.
 - [x] Finish destructive-confirmation lifecycle matrix (#42) at source/static/build level. **PASS** on `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`, run `36758197893`; phone acceptance remains in the consolidated Phase A matrix.
-- [ ] Verify one shared action-row/stack policy for screen + dialog footers (#47/#26/#37).
+- [x] Verify one shared action-row/stack policy for screen + dialog footers (#47/#26/#37). **SOURCE/STATIC/BUILD PASS** on `317d72e5445ba88074820f9743474621c15f7208`, run `36760309445`; phone acceptance remains in the consolidated matrix.
 - [ ] Finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50).
 - [ ] Replace critical Toast/Snackbar-only information with durable owning-screen state.
 - [ ] Verify tile/card readability against `TILE_UI_CONTRACT.md`.
@@ -233,12 +255,11 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Validate the #47/#26/#37 action-layout source batch on the exact branch HEAD.**
+**Design the smallest presentation-only Bulk hierarchy patch for #23/#45/#50.**
 
-The two verified fixed-footer GAPs are patched and static enforcement is updated.
-Run/verify Validate Android. If preflight, JVM tests and unsigned assemble all pass,
-record #47 source/static/build PASS while keeping real-phone acceptance in the
-consolidated Phase A matrix.
+Use the recorded Bulk source audit. Preserve all plan/execution/rollback/quota
+semantics. The next source change should only restructure how existing state,
+counts, planned actions, safety results and diagnostics are rendered.
 
 ## Update rule
 

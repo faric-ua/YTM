@@ -111,3 +111,20 @@ Consolidated Phase A matrix must verify:
 - no action executes on relayout/recreation.
 
 Do not mark phone PASS from this source audit.
+
+
+## Exact validation
+
+Source/audit checkpoint:
+`317d72e5445ba88074820f9743474621c15f7208`.
+
+Validate Android run:
+`36760309445` — **SUCCESS**.
+
+- Release preflight: PASS.
+- JVM unit tests: PASS.
+- Unsigned release assemble: PASS.
+
+Conclusion: **#47/#26/#37 SOURCE/STATIC/BUILD PASS** for the audited shared action
+layout scope. Real-phone acceptance remains pending in the consolidated Phase A
+matrix.

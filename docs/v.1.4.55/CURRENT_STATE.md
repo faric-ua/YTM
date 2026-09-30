@@ -305,6 +305,22 @@ The QA-control compile/runtime gate is an intentional, explicitly classified
 `FUNCTIONAL_FEATURE / RELEASE_SAFETY` change and should remain documented as such
 rather than being hidden inside UX classification.
 
+## Shared adaptive action layout — #47/#26/#37 — 2026-09-30
+
+Source/static/build conclusion: **PASS**.
+
+- shared screen/dialog AUTO fit policy confirmed;
+- Quota fixed footer migrated from forced horizontal to shared adaptive actions;
+- URL Snapshot duplicate chooser migrated from forced horizontal + auto-shrunk text
+  to shared adaptive row/stack;
+- callbacks and business semantics unchanged;
+- static guards cover both gaps;
+- exact checkpoint:
+  `317d72e5445ba88074820f9743474621c15f7208`;
+- Validate Android run `36760309445`: **SUCCESS**.
+
+Phone layout acceptance remains pending in the consolidated Phase A matrix.
+
 ## QA strategy
 
 Do not build one APK per tiny visual change.
@@ -329,14 +345,14 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-1. audit #47/#26/#37 full-screen + dialog action groups against the shared adaptive
-   action-layout contract;
-2. patch only verified presentation/layout GAPs without changing callbacks or
-   business semantics;
-3. continue remaining Bulk/transient-message/readability/skin Phase A work;
+1. execute #23/#45/#50 Bulk Preview/Session semantic hierarchy using the recorded
+   presentation-only audit;
+2. keep critical error/state detail durable on the owning screen and shorten
+   transient technical messages;
+3. continue remaining readability/skin Phase A work without business changes;
 4. after the coherent Phase A batch, refresh artifacts and re-run exact-HEAD validation;
 5. build one consolidated phone candidate and run #42 destructive,
-   scroll/selectable-text and layout acceptance together.
+   scroll/selectable-text, action-layout and Bulk readability acceptance together.
 
 Do not start Phase B functional/discoverability work until Phase A shared contracts
 are coherent enough that later screens can reuse them.

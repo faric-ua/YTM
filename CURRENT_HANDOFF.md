@@ -40,8 +40,7 @@ The old green checkpoint above is historical and is not the resume point.
 `36758197893` (preflight/JVM/assemble all PASS). Real-phone #42 acceptance remains
 pending in the consolidated Phase A matrix.
 
-**Current blocker:** none. **Current task:** #47/#26/#37 shared adaptive action-layout
-audit. Do not restart v1.4.54 Tests 1–9.
+**Current blocker:** none. **Current task:** #23/#45/#50 Bulk semantic hierarchy and diagnostics. Do not restart v1.4.54 Tests 1–9.
 
 ## Immutable functional reference
 
@@ -115,14 +114,15 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-#47/#26/#37 inventory is complete. Two fixed-footer GAPs were found and patched:
-Quota fixed footer and URL Snapshot duplicate chooser. Both now use the shared
-adaptive renderer; existing callbacks are unchanged. Static enforcement was
-expanded and the source audit is recorded in
-`docs/v.1.4.55/ACTION_LAYOUT_AUDIT_2026-09-30.md`.
+#47/#26/#37 is SOURCE/STATIC/BUILD PASS on
+`317d72e5445ba88074820f9743474621c15f7208`, Validate Android run
+`36760309445` = SUCCESS. Phone layout acceptance stays in the consolidated Phase A
+matrix.
 
-**Next:** require exact-HEAD Validate Android PASS for this source batch. Phone
-acceptance remains deferred to the consolidated Phase A matrix.
+**Current task:** #23/#45/#50 Bulk semantic hierarchy and diagnostics. Current
+source audit is in `docs/v.1.4.55/BULK_HIERARCHY_AUDIT_2026-09-30.md`.
+Next source step is presentation-only: separate state, key counters, planned
+mutation/safety result and diagnostics without touching Bulk behavior.
 
 ## Working contract
 
