@@ -76,6 +76,7 @@ Current task checklist:
 - [x] Classify every inventoried path as COVERED / GAP / INTENTIONAL-NONMODAL. Four GAPs are verified: History delete, History clear-all, Import clear-workspace, Destination remote playlist delete; Data/Service/Pending/Bulk are controller-owned.
 - [x] Patch only verified GAPs through `RestorableModalController` / the canonical shared modal pipeline. History delete/clear-all, Import clear-workspace and Destination remote delete now use semantic modal ownership; existing destructive callbacks are preserved and Import binds/revalidates exact `localPlaylistId`.
 - [x] Strengthen static enforcement in `scripts/ui-window-contract-audit.sh`: migrated owners plus Data/Pending/Service/Bulk rollback must use restorable ownership; exact target args and legacy manual-state regressions are checked; native `AlertDialog.Builder` remains forbidden.
+- [ ] Reconcile the current Release preflight with the migrated Import clear-workspace lifecycle. Live HEAD `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`; run `36701906084` fails at Release preflight with `FAIL: Import clear-confirm rotation state missing`. Fix the static/preflight expectation, not the destructive callback semantics.
 - [ ] Re-run the inventory and prove no unexplained destructive-confirmation GAP remains.
 - [ ] Record #42 source result and representative phone matrix (History delete + destructive utility clear + Bulk rollback) in v1.4.55 state/QA docs; do not claim phone PASS before device evidence.
 - [ ] Refresh generated artifacts and run the relevant static/release gates on the exact source HEAD.
@@ -199,9 +200,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Re-run the #42 destructive-confirmation inventory against the patched source.**
+**Reconcile the #42 Import clear-workspace migration with Release preflight on the live HEAD.**
 
-Verify every inventoried path is COVERED / intentional nonmodal, no legacy manual destructive state remains, and the four migrations preserve their original callbacks. Then record the source result before exact-HEAD validation.
+Current HEAD `76fcff9b79001f9b37144c49ab2e144a3f77fe4f` failed Validate Android run `36701906084` at Release preflight with `FAIL: Import clear-confirm rotation state missing`. Inspect the legacy/static guard, update it to recognize the canonical `RestorableModalController` lifecycle without weakening the contract, then re-run the full #42 inventory and exact-HEAD validation.
 
 ## Update rule
 
