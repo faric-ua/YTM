@@ -1,6 +1,6 @@
 # v1.4.55 — Current Working State / Assistant Handoff
 
-Last updated: 2026-09-29
+Last updated: 2026-09-30
 
 ## Release / branch
 
@@ -147,6 +147,65 @@ Every implementation commit should be classifiable as one of:
 - `FUNCTIONAL_FEATURE`
 
 If a commit mixes categories in a risky way, split it.
+
+## Source-delta safety audit — 2026-09-30
+
+Baseline:
+`e553c6dcb0f918a51f40bfa4d783cb11b3086472`
+
+Audit comparison initially covered 23 changed `app/` paths across the v1.4.55 branch.
+Documentation-only commits made during the audit do not change that app-code delta.
+
+Classification:
+
+| Changed area | Classification | Audit result |
+| --- | --- | --- |
+| `app/build.gradle.kts` | `PRESENTATION_ONLY` / release metadata | versionCode 97→98 and versionName 1.4.54→1.4.55 only |
+| `BulkSyncPreviewActivity.kt` | `PRESENTATION_ONLY + LIFECYCLE_ONLY` | wording/state labels + scroll retention; no plan/execution semantics changed |
+| `BulkSyncSessionActivity.kt` | `PRESENTATION_ONLY + LIFECYCLE_ONLY` | wording + scroll retention; execution/rollback calls unchanged |
+| `DataActivity.kt` | `LIFECYCLE_ONLY` | scroll retention only |
+| `DestinationActivity.kt` | `LIFECYCLE_ONLY` | per-mode/list viewport retention only |
+| `HistoryActivity.kt` | `NAVIGATION_ONLY + LIFECYCLE_ONLY` | existing restore action surfaced in quick actions; search/list/detail viewport and delete-confirm recreation state preserved |
+| `ImportActivity.kt` | `LIFECYCLE_ONLY` | scroll retention only |
+| `ListSelectorActivity.kt` | `LIFECYCLE_ONLY` | scroll retention only |
+| `MainActivity.kt` | `LIFECYCLE_ONLY` | Home scroll retention only |
+| `MenuActivity.kt` | `PRESENTATION_ONLY + LIFECYCLE_ONLY` | copy cleanup + scroll retention |
+| `PendingActivity.kt` | `LIFECYCLE_ONLY` | query/list/detail viewport + delete-confirm recreation ownership; the same `pendingJobStore.remove(...)` action remains explicit |
+| `PlaylistActivity.kt` | `LIFECYCLE_ONLY` | scroll retention keyed to local playlist identity |
+| `QuotaActivity.kt` | `FUNCTIONAL_FEATURE / RELEASE_SAFETY` | QA Test 5/Test 8 controls render only in `BuildConfig.DEBUG`; normal quota UI/logic unchanged |
+| `RecentFileChooserActivity.kt` | `LIFECYCLE_ONLY` | scroll retention only |
+| `ReviewActivity.kt` | `LIFECYCLE_ONLY` | list/filter/detail viewport retention only |
+| `ServiceActivity.kt` | `LIFECYCLE_ONLY` | page scroll + destructive-modal restoration; existing `searchCache.clearExpired()` / `clear()` actions unchanged and still explicit |
+| `StorageChooserActivity.kt` | `LIFECYCLE_ONLY` | scroll retention only |
+| `UrlSnapshotActivity.kt` | `LIFECYCLE_ONLY` | scroll retention only |
+| `storage/BulkSyncQaFaultStore.kt` | `FUNCTIONAL_FEATURE / RELEASE_SAFETY` | release builds cannot arm/read/consume the temporary QA faults; debug behavior remains available |
+| `ui/RestorableModalController.kt` | `LIFECYCLE_ONLY` | selectable-text state is captured/restored with modal semantic state |
+| `ui/ScrollPositionState.kt` | `LIFECYCLE_ONLY` | adds local reset helper only |
+| `ui/SelectableTextState.kt` | `PRESENTATION_ONLY + LIFECYCLE_ONLY` | restores only matching selectable-text ranges; changed content fails closed |
+| `ui/UiChrome.kt` | `PRESENTATION_ONLY` | action layout uses measured label fit; action callbacks/meaning unchanged |
+
+Explicit functional-safety checks:
+- no changed source under `app/src/main/.../youtube/`;
+- no changed `BulkSyncExecutor`, `BulkSyncRollbackExecutor`, execution/rollback policy, History/Pending stores, current-playlist storage schema or quota/rate policy;
+- no changed API request order, retry or auto-start path was found in the 23-file delta;
+- no playlist identity/linkage mutation semantics changed;
+- no Queue/Pending ownership or History persistence semantics changed;
+- no backup/restore data meaning changed;
+- no Bulk durable ledger / exact rollback ownership changed;
+- no storage schema change is present in this delta.
+
+QA-fault release check:
+- `QuotaActivity` exposes Test 5/Test 8 controls only inside `if (BuildConfig.DEBUG)`;
+- `BulkSyncQaFaultStore.arm(...)` and rollback arming require `BuildConfig.DEBUG`;
+- release `peek()` returns `null`;
+- release `isRollbackInterruptAfterOneArmed()` returns `false`;
+- therefore the unchanged executor injection points in `BulkSyncSessionActivity` resolve to no fault in release builds.
+
+Conclusion:
+**no accidental business/API/storage semantic change was found.**
+The QA-control compile/runtime gate is an intentional, explicitly classified
+`FUNCTIONAL_FEATURE / RELEASE_SAFETY` change and should remain documented as such
+rather than being hidden inside UX classification.
 
 ## QA strategy
 
