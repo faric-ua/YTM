@@ -78,9 +78,11 @@ Current task checklist:
 - [x] Re-run the inventory and confirm no unexplained owning-screen gaps remain. `UiChrome` dialog-internal scroll is outside #48 owning-screen scope; underlying Activity viewport remains covered.
 - [x] Record the scroll-retention audit result in `docs/v.1.4.55/CURRENT_STATE.md`. Evidence: commit `3c8649205ee72bdda3e8c8cd2e5b2011b28bdf0b`.
 - [x] Mark persistent Phase A scroll-retention checkbox only if the source audit is actually complete. Source audit PASS; #48 remains phone-QA open.
-- [ ] Verify live branch/files and set the next exact Phase A action.
+- [x] Verify live branch/files and set the next exact Phase A action. Evidence: live HEAD `9697c0bd510cf8fe48a2f82a43dd0748f8984c8c`; next item is BUG-049 selectable-text retention.
 
-Crash rule: after context loss, resume from the first unchecked checkbox above after `AGENTS.md` → `ACTIVE_PLAN.md`.
+Task result: **CLOSED — #48 SOURCE AUDIT PASS; issue remains open for consolidated phone acceptance.**
+
+Crash rule: after context loss, resume from the first unchecked persistent checklist item after `AGENTS.md` → `ACTIVE_PLAN.md`.
 
 
 
@@ -181,9 +183,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Finish the project-wide scroll-retention audit and remaining gaps (#48).**
+**Finish selectable-text range retention source audit and remaining gaps (#49).**
 
-Inventory scrollable owning screens, distinguish transient system/dialog surfaces from screens that must preserve viewport, identify uncovered lifecycle gaps, then patch only shared/local UI state without changing business semantics.
+Verify shared modal restoration plus every Activity-owned selectable TextView. Preserve selection only for the same logical text, fail closed on content changes, and do not trigger any action during restore.
 
 ## Update rule
 
