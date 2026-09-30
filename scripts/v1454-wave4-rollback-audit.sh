@@ -72,8 +72,10 @@ grep -Fq 'ROLLBACK_CONFIRM' "$ACTIVITY" ||
 
 grep -Fq 'BulkSyncPlanState.LINKED' "$PREVIEW" ||
   fail "Bulk Preview does not account for linked add-only rows"
-grep -Fq 'LINKED add-only' "$PREVIEW" ||
-  fail "Bulk Preview copy does not describe Wave 4 add-only execution"
+grep -Fq 'лише доповнюються' "$PREVIEW" ||
+  fail "Bulk Preview copy does not describe add-only execution"
+grep -Fq 'не видаляються й не переставляються' "$PREVIEW" ||
+  fail "Bulk Preview copy does not protect existing remote items"
 
 grep -Fq 'rollback_requiresExactPersistedIds' "$TEST" ||
   fail "rollback exact-id JVM coverage missing"
