@@ -7,6 +7,7 @@ SRC="app/src/main/java/com/saney/ytmimporter"
 UI="$SRC/ui/UiChrome.kt"
 RESTORABLE="$SRC/ui/RestorableModalController.kt"
 SELECTABLE="$SRC/ui/SelectableTextState.kt"
+SELECTABLE_SURFACE="$SRC/ui/SelectableTextSurfaceState.kt"
 QUOTA="$SRC/QuotaActivity.kt"
 QA_STORE="$SRC/storage/BulkSyncQaFaultStore.kt"
 SAFETY="docs/design/UX_CHANGE_SAFETY_CONTRACT.md"
@@ -14,7 +15,7 @@ READABILITY="docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md"
 PLAN="docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md"
 RECONCILIATION="docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md"
 
-for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$QUOTA" "$QA_STORE" "$SAFETY" "$READABILITY" "$PLAN" "$RECONCILIATION"; do
+for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$QUOTA" "$QA_STORE" "$SAFETY" "$READABILITY" "$PLAN" "$RECONCILIATION"; do
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
@@ -80,6 +81,41 @@ grep -Fq 'SelectableTextState.restore(' "$RESTORABLE" ||
 grep -Fq 'KEY_SELECTABLE_TEXT_STATE' "$RESTORABLE" ||
   fail "restorable modal selectable-text state is not persisted"
 
+
+grep -Fq 'class SelectableTextSurfaceState' "$SELECTABLE_SURFACE" ||
+  fail "Activity selectable-text surface owner missing"
+grep -Fq 'newSurfaceId' "$SELECTABLE_SURFACE" ||
+  fail "Activity selectable-text state is not scoped by logical surface"
+grep -Fq 'SelectableTextState.capture(' "$SELECTABLE_SURFACE" ||
+  fail "Activity selectable-text surface does not capture ranges"
+grep -Fq 'SelectableTextState.restore(' "$SELECTABLE_SURFACE" ||
+  fail "Activity selectable-text surface does not restore ranges"
+grep -Fq 'textView.hasFocus()' "$SELECTABLE" ||
+  fail "selectable-text focus state is not captured"
+grep -Fq 'textView.requestFocus()' "$SELECTABLE" ||
+  fail "selectable-text focus state is not restored"
+
+SELECTABLE_ACTIVITY_SURFACES=(
+  "$SRC/DestinationActivity.kt"
+  "$SRC/HistoryActivity.kt"
+  "$SRC/PlaylistActivity.kt"
+  "$SRC/QuotaActivity.kt"
+  "$SRC/ReviewActivity.kt"
+  "$SRC/ServiceActivity.kt"
+)
+
+for f in "${SELECTABLE_ACTIVITY_SURFACES[@]}"; do
+  grep -Fq 'SelectableTextSurfaceState' "$f" ||
+    fail "Activity selectable-text owner missing from $f"
+  grep -Fq 'selectableTextSurfaceState.restore(' "$f" ||
+    fail "Activity selectable-text restore missing from $f"
+  grep -Fq 'selectableTextSurfaceState.save(' "$f" ||
+    fail "Activity selectable-text save missing from $f"
+  grep -Fq 'selectableTextSurfaceState.attach(' "$f" ||
+    grep -Fq 'attachSelectableTextState(' "$f" ||
+    fail "Activity selectable-text logical surface attach missing from $f"
+done
+
 grep -Fq 'if (BuildConfig.DEBUG)' "$QUOTA" ||
   fail "release Quota UI still exposes phone-QA controls"
 grep -Fq 'if (!BuildConfig.DEBUG)' "$QA_STORE" ||
@@ -102,6 +138,8 @@ echo "PASS:"
 echo "- v1.4.55 UX safety contract is locked"
 echo "- one label-aware action fit policy serves screen and dialog actions"
 echo "- restorable modals persist active selectable-text ranges"
+echo "- Activity-owned selectable text persists only on the same logical surface"
+echo "- selectable-text focus is restored without triggering actions"
 echo "- changed selectable text fails closed instead of restoring a stale range"
 echo "- all audited ScrollView surfaces preserve state with logical-root separation"
 echo "- release builds cannot expose or consume v1.4.54 QA fault controls"
