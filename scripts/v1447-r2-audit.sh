@@ -38,12 +38,20 @@ home = Path(sys.argv[3]).read_text(encoding="utf-8")
 
 required_main = [
     'eyebrow =\n                    "Поточний плейлист"',
-    'HomeDashboardChrome\n                .bottomNavigation(',
     'toast("Створіть / виберіть плейлист")',
 ]
 for needle in required_main:
     if needle not in main:
         raise SystemExit(f"FAIL: Main R2 contract missing: {needle}")
+
+if (
+    'HomeDashboardChrome\n                .bottomNavigation(' not in main
+    and 'HomeDashboardChrome.addBottomNavigation(' not in main
+):
+    raise SystemExit("FAIL: Main R2 bottom-navigation ownership missing")
+
+if 'fun bottomNavigation(' not in home:
+    raise SystemExit("FAIL: Home R2 bottom-navigation implementation missing")
 
 if 'title = "Швидкі дії файл/плейлист"' in main:
     quick_start = main.index('title = "Швидкі дії файл/плейлист"')
@@ -122,10 +130,19 @@ PY
 
 grep -Fq 'setPadding(dp(2), 0, 0, dp(5))' "$MAIN" ||
   fail "four-step heading spacing not tightened"
-grep -Fq 'setMargins(' "$MAIN" ||
-  fail "rounded nav visible margins missing"
-grep -Fq 'dp(8)' "$MAIN" ||
-  fail "rounded nav 8dp margin missing"
+if grep -Fq 'HomeDashboardChrome.addBottomNavigation(' "$MAIN"; then
+  grep -Fq 'fun addBottomNavigation(' "$HOME_UI" ||
+    fail "rounded nav owner helper missing"
+  grep -Fq 'setMargins(' "$HOME_UI" ||
+    fail "rounded nav visible margins missing"
+  grep -Fq 'dp(activity, 8)' "$HOME_UI" ||
+    fail "rounded nav 8dp margin missing"
+else
+  grep -Fq 'setMargins(' "$MAIN" ||
+    fail "rounded nav visible margins missing"
+  grep -Fq 'dp(8)' "$MAIN" ||
+    fail "rounded nav 8dp margin missing"
+fi
 
 grep -Fq 'v1.4.47-R2' "$R2" ||
   fail "R2 release doc identity missing"
