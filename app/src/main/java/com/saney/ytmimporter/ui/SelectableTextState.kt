@@ -22,6 +22,8 @@ object SelectableTextState {
         "selectable_start_"
     private const val KEY_END_PREFIX =
         "selectable_end_"
+    private const val KEY_FOCUSED_PREFIX =
+        "selectable_focused_"
 
     fun capture(
         root: View?
@@ -53,6 +55,10 @@ object SelectableTextState {
                 putInt(
                     KEY_END_PREFIX + index,
                     textView.selectionEnd
+                )
+                putBoolean(
+                    KEY_FOCUSED_PREFIX + index,
+                    textView.hasFocus()
                 )
             }
         }
@@ -117,6 +123,12 @@ object SelectableTextState {
                         index,
                     -1
                 )
+            val wasFocused =
+                state.getBoolean(
+                    KEY_FOCUSED_PREFIX +
+                        index,
+                    false
+                )
 
             if (
                 start < 0 ||
@@ -140,6 +152,9 @@ object SelectableTextState {
                     end <=
                         latestText.length
                 ) {
+                    if (wasFocused) {
+                        textView.requestFocus()
+                    }
                     textView.setSelection(
                         start,
                         end
