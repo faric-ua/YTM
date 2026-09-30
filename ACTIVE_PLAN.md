@@ -12,7 +12,7 @@
 > 3. update **NEXT ACTION** so the first unchecked item is the real resume point;
 > 4. update `CURRENT_HANDOFF.md` when the resume point materially changes.
 
-Last updated: 2026-09-29
+Last updated: 2026-09-30
 
 ## Active release
 
@@ -64,6 +64,24 @@ restore, save or another durable/remote action.
 8. live GitHub branch/HEAD/Actions state
 
 If repository documents disagree, stop and reconcile them before implementation.
+
+## CURRENT TASK — assistant crash-recovery hardening (2026-09-30)
+
+Goal: make context loss boring and deterministic instead of reconstructing work from chat memory.
+
+Before implementation on any multi-step task:
+- tell the user briefly what is currently uncertain, stale, risky, or blocking;
+- write the concrete ordered task plan here;
+- only then execute it.
+
+Current task checklist:
+- [x] Create this task-specific plan before changing the recovery workflow.
+- [ ] Strengthen `AGENTS.md`: require a user-visible friction/blocker note before substantial multi-step work and require a task-local checklist in `ACTIVE_PLAN.md`.
+- [ ] Reconcile stale `CURRENT_HANDOFF.md` sequence so completed v1.4.54 closeout is not presented as pending.
+- [ ] Verify the live branch/files after the edits.
+- [ ] Mark only verified steps complete, record evidence commits, then restore the normal v1.4.55 NEXT ACTION.
+
+Crash rule for this task: if the chat dies now, resume from the first unchecked checkbox above — not from conversation memory.
 
 ---
 
@@ -162,9 +180,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Audit every existing v1.4.55 app-code delta against immutable v1.4.54 source `e553c6d...`.**
+**Finish the current crash-recovery hardening task above.**
 
-Classify every changed area as PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY / FUNCTIONAL_FEATURE and stop/split any accidental business/API/storage semantic change before more implementation.
+The first unchecked task-local checkbox is the exact resume point. After this task is verified and closed, restore the normal v1.4.55 source-delta audit as NEXT ACTION.
 
 ## Update rule
 
