@@ -54,7 +54,10 @@ grep -Fq 'BulkSyncSelectionPolicy' "$PREVIEW"   || fail "Bulk preview row-select
 
 grep -Fq 'STATE_INCLUDED_EXECUTABLE_IDS' "$PREVIEW"   || fail "Bulk preview selected rows do not survive recreation"
 
-grep -Fq 'Включено в Bulk-сесію' "$PREVIEW"   || fail "Bulk preview executable-row inclusion control missing"
+grep -Fq 'CheckBox(this)' "$PREVIEW" ||
+  fail "Bulk preview executable-row checkbox missing"
+grep -Fq 'setRowIncluded(' "$PREVIEW" ||
+  fail "Bulk preview executable-row inclusion handler missing"
 
 grep -Fq 'selectedSummary_keepsOnlyIncludedExecutableRows' "$SELECTION_TEST"   || fail "Bulk scoped executable-only JVM coverage missing"
 
