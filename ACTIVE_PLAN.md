@@ -72,11 +72,11 @@ Goal: prove whether current v1.4.55 app-code changes remain non-functional relat
 Current task checklist:
 - [x] Create this task-specific audit plan before implementation/audit mutations.
 - [x] Enumerate every changed `app/` path between the immutable v1.4.54 baseline and current v1.4.55 HEAD. Evidence: compare `e553c6d...b445dc5`; 23 changed `app/` paths.
-- [ ] Inspect each changed app-code area and classify it as PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY / FUNCTIONAL_FEATURE.
-- [ ] Check explicitly for API/request-order, retry/auto-start, playlist identity, Queue/Pending, History, backup/restore, Bulk ledger/rollback, quota/rate, or storage-schema semantic changes.
-- [ ] Check that temporary QA hooks cannot leak into a release candidate.
-- [ ] Record a source-audit summary in `docs/v.1.4.55/CURRENT_STATE.md`.
-- [ ] Update the persistent Section B checkboxes only for claims actually verified by this audit.
+- [x] Inspect each changed app-code area and classify it as PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY / FUNCTIONAL_FEATURE. Evidence: `docs/v.1.4.55/CURRENT_STATE.md`, source-delta safety audit.
+- [x] Check explicitly for API/request-order, retry/auto-start, playlist identity, Queue/Pending, History, backup/restore, Bulk ledger/rollback, quota/rate, or storage-schema semantic changes. Result: no accidental production semantic delta found.
+- [x] Check that temporary QA hooks cannot leak into a release candidate. Evidence: `QuotaActivity` DEBUG-only UI plus `BulkSyncQaFaultStore` release `peek() = null` / rollback armed = false.
+- [x] Record a source-audit summary in `docs/v.1.4.55/CURRENT_STATE.md`. Evidence: commit `518956c2585287ed8eed04326da3dd0fdf4a8c45`.
+- [x] Update the persistent Section B checkboxes only for claims actually verified by this audit.
 - [ ] Verify the final live branch/files and set the exact next action.
 
 Crash rule: if context is lost, resume from the first unchecked checkbox above after re-reading `AGENTS.md` and this file.
@@ -107,12 +107,12 @@ Crash rule: if context is lost, resume from the first unchecked checkbox above a
 
 ## B. Audit existing v1.4.55 changes before adding more
 
-- [ ] Compare every current v1.4.55 app-code change against the immutable v1.4.54 baseline.
-- [ ] Classify each changed area as PRESENTATION_ONLY / NAVIGATION_ONLY /
-  LIFECYCLE_ONLY / FUNCTIONAL_FEATURE.
-- [ ] Stop and split out any accidental business/API/storage behavior change.
-- [ ] Verify no temporary QA hook can leak into a public candidate.
-- [ ] Refresh the v1.4.55 source audit summary in `docs/v.1.4.55/CURRENT_STATE.md`.
+- [x] Compare every current v1.4.55 app-code change against the immutable v1.4.54 baseline. Evidence: 23-path app delta audit recorded in `docs/v.1.4.55/CURRENT_STATE.md`.
+- [x] Classify each changed area as PRESENTATION_ONLY / NAVIGATION_ONLY /
+  LIFECYCLE_ONLY / FUNCTIONAL_FEATURE. QA release guards are explicitly classified `FUNCTIONAL_FEATURE / RELEASE_SAFETY`.
+- [x] Stop and split out any accidental business/API/storage behavior change. Audit result: none found; no split required.
+- [x] Verify no temporary QA hook can leak into a public candidate. Test 5/Test 8 controls are DEBUG-only at UI and store/runtime guard layers.
+- [x] Refresh the v1.4.55 source audit summary in `docs/v.1.4.55/CURRENT_STATE.md`. Evidence: `518956c2585287ed8eed04326da3dd0fdf4a8c45`.
 
 ## C. Phase A — shared non-functional hardening
 
