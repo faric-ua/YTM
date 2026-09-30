@@ -75,13 +75,15 @@ Before implementation on any multi-step task:
 - only then execute it.
 
 Current task checklist:
-- [x] Create this task-specific plan before changing the recovery workflow.
-- [ ] Strengthen `AGENTS.md`: require a user-visible friction/blocker note before substantial multi-step work and require a task-local checklist in `ACTIVE_PLAN.md`.
-- [ ] Reconcile stale `CURRENT_HANDOFF.md` sequence so completed v1.4.54 closeout is not presented as pending.
-- [ ] Verify the live branch/files after the edits.
-- [ ] Mark only verified steps complete, record evidence commits, then restore the normal v1.4.55 NEXT ACTION.
+- [x] Create this task-specific plan before changing the recovery workflow. Evidence: commit `64a7a0c283530f5b39a52132f54e21c5aa6f1fa5`.
+- [x] Strengthen `AGENTS.md`: require a user-visible friction/blocker note before substantial multi-step work and require a task-local checklist in `ACTIVE_PLAN.md`. Evidence: commit `5503799ff4342649ae878633cb6aa0cb53c6c039`.
+- [x] Reconcile stale `CURRENT_HANDOFF.md` sequence so completed v1.4.54 closeout is not presented as pending. Evidence: commit `b3e48c6774744cdc055c7ed4064d3db46cde457a`.
+- [x] Verify the live branch/files after the edits. Verified branch tip before closeout: `b3e48c6774744cdc055c7ed4064d3db46cde457a`; `AGENTS.md`, `ACTIVE_PLAN.md`, and `CURRENT_HANDOFF.md` re-read from GitHub.
+- [x] Mark only verified steps complete, record evidence commits, then restore the normal v1.4.55 NEXT ACTION.
 
-Crash rule for this task: if the chat dies now, resume from the first unchecked checkbox above — not from conversation memory.
+Task result: **CLOSED**. Future substantial tasks must replace this CURRENT TASK block with their own ordered checklist before implementation.
+
+Crash rule: after context loss, start from `AGENTS.md` → `ACTIVE_PLAN.md` and resume from the first unchecked actionable item — never from conversation memory.
 
 ---
 
@@ -180,9 +182,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Finish the current crash-recovery hardening task above.**
+**Audit every existing v1.4.55 app-code delta against immutable v1.4.54 source `e553c6d...`.**
 
-The first unchecked task-local checkbox is the exact resume point. After this task is verified and closed, restore the normal v1.4.55 source-delta audit as NEXT ACTION.
+Classify every changed area as PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY / FUNCTIONAL_FEATURE and stop/split any accidental business/API/storage semantic change before more implementation.
 
 ## Update rule
 
