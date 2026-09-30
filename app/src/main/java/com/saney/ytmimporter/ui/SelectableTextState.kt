@@ -1,6 +1,8 @@
 package com.saney.ytmimporter.ui
 
 import android.os.Bundle
+import android.text.Selection
+import android.text.Spannable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -152,13 +154,21 @@ object SelectableTextState {
                     end <=
                         latestText.length
                 ) {
-                    if (wasFocused) {
-                        textView.requestFocus()
+                    val selectableText =
+                        textView.text
+                    if (
+                        selectableText is
+                            Spannable
+                    ) {
+                        if (wasFocused) {
+                            textView.requestFocus()
+                        }
+                        Selection.setSelection(
+                            selectableText,
+                            start,
+                            end
+                        )
                     }
-                    textView.setSelection(
-                        start,
-                        end
-                    )
                 }
             }
         }
