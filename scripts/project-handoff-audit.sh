@@ -66,27 +66,59 @@ grep -Fq 'CURRENT_HANDOFF.md' README.md \
   || fail "README does not point crash recovery to CURRENT_HANDOFF"
 grep -Fq 'CURRENT_HANDOFF.md' START_HERE_ASSISTANT.md \
   || fail "START_HERE does not include CURRENT_HANDOFF"
-grep -Fq 'mutable crash-recovery snapshot' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF purpose missing"
-grep -Fq 'Historical status that remains true' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF historical status section missing"
-if grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md; then
-  :
-elif grep -Fq 'Current release state:' CURRENT_HANDOFF.md; then
-  :
+HANDOFF_MODE="legacy"
+
+if grep -Fq '## Active work' CURRENT_HANDOFF.md; then
+  HANDOFF_MODE="compact-active"
+
+  grep -Fq 'mutable crash-recovery snapshot' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF purpose missing"
+  grep -Fq "Release: **v$APP_VERSION / versionCode $APP_CODE**" CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF active release identity missing"
+  grep -Fq "$ACTIVE_BRANCH" CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF active branch missing"
+  grep -Fq '## Immutable functional reference' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF immutable reference section missing"
+  grep -Fq '## Exact next work' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF next-work section missing"
+  grep -Fq '## Working contract' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF working contract missing"
+elif grep -Fq "## v$APP_VERSION disposition" CURRENT_HANDOFF.md; then
+  HANDOFF_MODE="closed-disposition"
+
+  grep -Fq "Release: **v$APP_VERSION / versionCode $APP_CODE**" CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF disposition identity missing"
+  grep -Fq "$ACTIVE_BRANCH" CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF disposition branch missing"
+  grep -Fq '## Publication decision' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF publication decision missing"
+  grep -Fq '## Resume rule' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF resume rule missing"
 else
-  fail "CURRENT_HANDOFF current release candidate/state missing"
+  grep -Fq 'mutable crash-recovery snapshot' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF purpose missing"
+  grep -Fq 'Historical status that remains true' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF historical status section missing"
+
+  if grep -Fq 'Current release candidate:' CURRENT_HANDOFF.md; then
+    :
+  elif grep -Fq 'Current release state:' CURRENT_HANDOFF.md; then
+    :
+  else
+    fail "CURRENT_HANDOFF current release candidate/state missing"
+  fi
+
+  grep -Fq "$ACTIVE_BRANCH" CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF active branch missing"
+  grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF next-action section missing"
+  grep -Fq "$ACTIVE_FEATURE" CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF active release feature missing"
+  grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
+  grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
+    || fail "CURRENT_HANDOFF fresh-authorization strategy missing"
 fi
-grep -Fq "$ACTIVE_BRANCH" CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF active branch missing"
-grep -Fq 'Exact next execution step' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF next-action section missing"
-grep -Fq "$ACTIVE_FEATURE" CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF active release feature missing"
-grep -Fq 'AuthorizationInvalidated' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF write-time auth invalidation contract missing"
-grep -Fq 'Google AuthorizationClient' CURRENT_HANDOFF.md \
-  || fail "CURRENT_HANDOFF fresh-authorization strategy missing"
 if grep -Fq '# v1.4.20 phone-QA closeout' README.md; then
   fail "stale v1.4.20 closeout README returned"
 fi
@@ -155,10 +187,12 @@ grep -Fq "$ACTIVE_FEATURE" START_HERE_ASSISTANT.md \
   || fail "START_HERE active release feature missing"
 grep -Fq 'ASSISTANT_CONTEXT_INDEX.md' START_HERE_ASSISTANT.md \
   || fail "START_HERE assistant context index missing"
-grep -Fq 'UX-019' CURRENT_HANDOFF.md \
-  || fail "future Home layout decision missing from handoff"
-grep -Fq 'UX-009 Blue/Green workflow-state palettes remain open' CURRENT_HANDOFF.md \
-  || fail "theme-state follow-up missing from handoff"
+if [ "$HANDOFF_MODE" = "legacy" ]; then
+  grep -Fq 'UX-019' CURRENT_HANDOFF.md \
+    || fail "future Home layout decision missing from handoff"
+  grep -Fq 'UX-009 Blue/Green workflow-state palettes remain open' CURRENT_HANDOFF.md \
+    || fail "theme-state follow-up missing from handoff"
+fi
 
 test -f docs/documentation/HISTORICAL_RELEASE_MATRIX.md \
   || fail "historical release matrix missing"
