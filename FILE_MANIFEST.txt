@@ -1579,7 +1579,7 @@ bf316be6ac1503fb  scripts/generate-audit-catalog.py
 7d7193fd9798ed62  scripts/mainactivity-audit.sh
 8fe538a35721c634  scripts/mainactivity-cleanup-audit.sh
 dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
-e70d8ddc6e50124b  scripts/project-handoff-audit.sh
+097e43d20b2c4f48  scripts/project-handoff-audit.sh
 08211dc2fb7ed826  scripts/qa-plan-audit.sh
 7d5fb108913b3cac  scripts/rc-preflight.sh
 34a319998981b650  scripts/release-close-audit.sh
