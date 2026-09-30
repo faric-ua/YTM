@@ -116,12 +116,8 @@ class MainActivity : Activity() {
     }
     private lateinit var adapter: TrackAdapter
     private val visibleTracks = mutableListOf<Track>()
-    private lateinit var homeScrollView: ScrollView
-
-    private val homeScrollPosition =
-        ScrollPositionState(
-            STATE_HOME_SCROLL_POSITION
-        )
+    private var homeScrollView: ScrollView? = null
+    private val homeScrollPosition = ScrollPositionState(STATE_HOME_SCROLL_POSITION)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -170,9 +166,7 @@ class MainActivity : Activity() {
             savedInstanceState?.getBoolean(STATE_RETURN_TO_PLAYLIST_HUB, false) ?: false
         returnToMenuAfterDelegatedAction =
             savedInstanceState?.getBoolean(STATE_RETURN_TO_MENU, false) ?: false
-        homeScrollPosition.restore(
-            savedInstanceState
-        )
+        homeScrollPosition.restore(savedInstanceState)
         buildUi(savedInstanceState)
         workflowRelay = WorkflowRelayOverlay(this, savedInstanceState)
         updateAccountPanel()
@@ -217,22 +211,11 @@ class MainActivity : Activity() {
         outState.putBoolean(STATE_RETURN_TO_MENU, returnToMenuAfterDelegatedAction)
         homeHistoryDetailLink.save(outState)
         workflowRelay.save(outState)
-        homeScrollPosition.save(
-            outState,
-            if (::homeScrollView.isInitialized) {
-                homeScrollView
-            } else {
-                null
-            }
-        )
+        homeScrollPosition.save(outState, homeScrollView)
         super.onSaveInstanceState(outState)
     }
     override fun onPause() {
-        if (::homeScrollView.isInitialized) {
-            homeScrollPosition.capture(
-                homeScrollView
-            )
-        }
+        homeScrollPosition.capture(homeScrollView)
         super.onPause()
     }
 
@@ -266,15 +249,11 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(palette.background)
         }
-        homeScrollView =
-            ScrollView(this).apply {
-                isFillViewport = true
-                overScrollMode =
-                    View.OVER_SCROLL_IF_CONTENT_SCROLLS
-            }
-
-        val scroll =
-            homeScrollView
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+            overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
+        }
+        homeScrollView = scroll
         val content =
             LinearLayout(this).apply {
                 orientation =
@@ -750,38 +729,17 @@ class MainActivity : Activity() {
             )
         )
 
-        root.addView(
-            HomeDashboardChrome
-                .bottomNavigation(
-                    activity = this,
-                    onSearch = {
-                        openDirectSearchOrReview()
-                    },
-                    onPlaylist = {
-                        openDirectPlaylistHub()
-                    },
-                    onService = {
-                        showServiceTools()
-                    }
-                ),
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(
-                    dp(8),
-                    0,
-                    dp(8),
-                    dp(8)
-                )
-            }
+        HomeDashboardChrome.addBottomNavigation(
+            activity = this,
+            root = root,
+            onSearch = ::openDirectSearchOrReview,
+            onPlaylist = ::openDirectPlaylistHub,
+            onService = ::showServiceTools
         )
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
-        homeScrollPosition.restoreInto(
-            homeScrollView
-        )
+        homeScrollPosition.restoreInto(scroll)
 
         updateQuotaPanel()
         updatePendingButton()
@@ -4121,8 +4079,7 @@ class MainActivity : Activity() {
             "state_return_to_playlist_hub"
         private const val STATE_RETURN_TO_MENU = "state_return_to_menu"
 
-        private const val STATE_HOME_SCROLL_POSITION =
-            "state_home_scroll_position"
+        private const val STATE_HOME_SCROLL_POSITION = "state_home_scroll_position"
 
         private const val YOUTUBE_SCOPE =
             "https://www.googleapis.com/auth/youtube.force-ssl"
