@@ -94,6 +94,58 @@ Still open in Phase A:
 - Neon + alternate-skin accessibility/readability sanity;
 - temporary QA controls must be removed or compile-gated before public candidate.
 
+## Scroll-retention source audit — #48 — 2026-09-30
+
+Issue contract: preserve the owning screen viewport across background/foreground,
+child-screen return, recreation/rotation and in-place re-render; reset only when the
+logical page/content root changes.
+
+Current branch inventory covers all 17 Activity screens in `app/src/main` that
+own a real `ScrollView` / `ListView` viewport:
+
+| Screen | Classification | State / reset contract |
+| --- | --- | --- |
+| Bulk Sync Preview | COVERED | raw vertical position via `ScrollPositionState` |
+| Bulk Sync Session | COVERED | raw vertical position across resume/re-render/recreation |
+| Data | COVERED | raw vertical position |
+| Destination | COVERED | separate scroll keys per mode; existing-playlist list uses anchor item position + top offset |
+| History | COVERED | list anchor + offset; detail scroll keyed to History entry id; query change resets list viewport |
+| Import | COVERED | raw vertical position |
+| List Selector | COVERED | raw vertical position |
+| Home / Main | COVERED | Home root scroll retained; old Home `ListView` is no longer attached and exists only as an internal adapter compatibility comment/path |
+| Menu | COVERED | raw vertical position |
+| Pending Queue | COVERED | list anchor + offset; detail scroll keyed to pending job id; query change resets list viewport |
+| Playlist Hub | COVERED | scroll retained while local playlist identity is stable; reset when local playlist id changes |
+| Quota | COVERED | raw vertical position across unconditional `onResume() -> render()` |
+| Recent File Chooser | COVERED | raw vertical position across re-render after Settings return |
+| Review | COVERED | list anchor + offset; active filter persisted; track detail scroll keyed to history index; filter/object changes reset appropriately |
+| Service | COVERED | scroll retained for the same Service page; reset when the logical `Page` changes |
+| Storage Chooser | COVERED | raw vertical position |
+| URL Snapshot | COVERED | raw vertical position across in-place rebuilds |
+
+Additional audit findings:
+- no Activity screen on the current branch uses `RecyclerView`,
+  `NestedScrollView` or `HorizontalScrollView` as an uncovered owning viewport;
+- `UiChrome` internally creates scroll containers for long dialogs, but #48 is
+  explicitly an owning-screen viewport contract; dialog-internal scroll persistence
+  is not part of #48 acceptance;
+- opening/closing a modal does not require a new underlying-screen code path because
+  the owning Activity viewport is captured before pause/rebuild and restored on the
+  same logical screen;
+- `ScrollPositionState.restoreInto()` posts the restore after layout; Android
+  `ScrollView.scrollTo()` safely clamps when content is shorter than the previous
+  raw position;
+- dynamic lists that need stronger identity use list position + top offset instead
+  of raw pixel scroll.
+
+Source conclusion:
+**#48 source audit PASS — no unexplained owning-screen GAP remains and no additional
+code patch is required from this audit.**
+
+Issue #48 must remain open until the consolidated real-phone matrix verifies the
+required representative screens and confirms no remote Search/write/rollback/delete
+is triggered by lifecycle restoration.
+
 ## Phase B — management / discoverability
 
 After Phase A source is coherent:
