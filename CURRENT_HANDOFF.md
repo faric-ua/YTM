@@ -20,6 +20,21 @@ Last updated: **2026-09-30**
 - Readability audit: `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`
 - Backlog reconciliation: `docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md`
 
+## Sleep checkpoint — 2026-09-30
+
+Validated application-code point before the docs-only checkpoint:
+- exact source SHA: `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`;
+- Validate Android run: `36664955524` — **SUCCESS**;
+- Release preflight / JVM tests / unsigned release assemble: **PASS**;
+- MainActivity architectural cap: **PASS**, 4093 lines (<4100);
+- #49 selectable-text source/static/build audit: **PASS**;
+- compile correction: selection restore now uses `Selection.setSelection(...)` on matching `Spannable` text and remains fail-closed when content changes.
+
+No more application-source changes were made after `bc6e1c136130d899e9eae8a03c11ab5e88661b7f` before this sleep checkpoint.
+The checkpoint commit itself is documentation/manifest-only.
+
+**Resume tomorrow:** do not reopen #49 source work. Start Phase A destructive-confirmation lifecycle matrix **#42**, with a task-local checklist first. Phase B remains blocked until Phase A is coherent and later receives its consolidated phone matrix.
+
 ## Immutable functional reference
 
 v1.4.54 accepted source:
@@ -93,13 +108,12 @@ real-device acceptance.
 Follow `ACTIVE_PLAN.md`.
 
 Current sequence:
-1. audit **every existing v1.4.55 app-code delta** against the immutable v1.4.54 baseline;
-2. classify changes as presentation/navigation/lifecycle/functional;
-3. split or stop any accidental business/API/storage semantic change;
-4. finish Phase A shared hardening;
-5. exact-HEAD validation;
-6. one consolidated signed phone matrix, not one APK per tiny visual change;
-7. only after Phase A is coherent move to management/discoverability Phase B.
+1. start destructive-confirmation lifecycle matrix #42 with a task-local checklist;
+2. continue the remaining Phase A shared hardening items (#47/#26/#37, Bulk semantics/readability, transient-message durability, readability/skin checks);
+3. re-run exact-HEAD validation after the remaining Phase A source batch;
+4. build one consolidated signed phone candidate, not one APK per tiny visual fix;
+5. run the consolidated Phase A phone matrix, including scroll + selectable-text acceptance;
+6. only after Phase A is coherent move to management/discoverability Phase B.
 
 For every substantial multi-step task, `ACTIVE_PLAN.md` must first contain a
 task-local ordered checklist. After each verified step, tick that exact item and

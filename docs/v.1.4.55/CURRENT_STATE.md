@@ -86,7 +86,7 @@ Phase A source progress after reconciliation:
 
 Still open in Phase A:
 - finish project-wide scroll-retention audit / phone matrix (#48);
-- selectable-text range preservation (#49);
+- selectable-text real-phone acceptance (#49); source/static/build audit is PASS;
 - complete destructive-confirmation phone matrix (#42);
 - phone-verify one canonical action layout contract across screen + dialog footers (#47/#26/#37);
 - finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50);
@@ -145,6 +145,33 @@ code patch is required from this audit.**
 Issue #48 must remain open until the consolidated real-phone matrix verifies the
 required representative screens and confirms no remote Search/write/rollback/delete
 is triggered by lifecycle restoration.
+
+## Selectable-text source audit — #49 — 2026-09-30
+
+Issue contract: preserve an active selectable-text range across recreation only when the rebuilt surface still represents the same logical text. Changed content must fail closed, and restoring text selection/focus must never trigger Search, write, rollback, delete, restore, save or another durable action.
+
+Source coverage after the Phase A patch:
+- shared restorable modal bodies are covered through `RestorableModalController` + `SelectableTextState`;
+- Activity-owned selectable surfaces are covered on Destination, History, Playlist Hub, Quota, Review and Service through stable logical-surface ownership;
+- capture persists full text identity, selection start/end and focus state;
+- restore requires the same selectable-view count and exact text value;
+- invalid/empty/out-of-range selections are ignored;
+- changed text fails closed instead of applying a stale range;
+- selection restoration uses Android `Selection.setSelection(...)` only when the current `TextView.text` is `Spannable`;
+- focus restoration is presentation/lifecycle-only and does not invoke an action callback.
+
+Exact validation evidence:
+- application-code checkpoint: `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`;
+- Validate Android run: `36664955524` — **SUCCESS**;
+- release preflight: PASS, including the v1.4.55 selectable-text static contract;
+- JVM unit tests: PASS;
+- unsigned release assemble: PASS;
+- MainActivity cleanup ceiling preserved at 4093 lines (<4100).
+
+Source conclusion:
+**#49 SOURCE/STATIC/BUILD PASS — no unexplained selectable-text source GAP remains.**
+
+Issue #49 real-phone acceptance remains intentionally deferred to the one consolidated Phase A phone matrix. Static/build PASS is not phone PASS.
 
 ## Phase B — management / discoverability
 
@@ -283,10 +310,10 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-1. finish Phase A source audit for remaining scroll/selectable-text/transient-message gaps;
-2. implement remaining shared helpers at the shared layer, not per-screen patches;
-3. refresh manifest + run exact-HEAD validation;
-4. only then ask for one consolidated phone candidate.
+1. start destructive-confirmation lifecycle matrix #42 with a task-local checklist;
+2. continue remaining Phase A shared action/Bulk/transient-message/readability work without changing business semantics;
+3. after the coherent Phase A batch, refresh generated artifacts and re-run exact-HEAD validation;
+4. only then build one consolidated phone candidate and run scroll/selectable-text acceptance together with the rest of the matrix.
 
 Do not start Phase B functional/discoverability work until Phase A shared contracts
 are coherent enough that later screens can reuse them.

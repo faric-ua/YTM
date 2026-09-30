@@ -74,15 +74,34 @@ Current task checklist:
 - [x] Inventory every main Activity/shared dialog path that creates selectable TextViews. Activity-owned: Destination, History, Playlist, Quota, Review, Service; shared bodies: `UiChrome` standard/content dialogs.
 - [x] Classify each selectable surface as COVERED / GAP / INTENTIONAL_RESET. Controller-owned shared dialogs = COVERED; six Activity-owned surfaces = GAP; manual-restorable dialogs remain a #42 lifecycle-ownership dependency.
 - [x] Verify current shared modal implementation preserves start/end only when text identity matches and triggers no action. `SelectableTextState` matches count + full text and only calls selection restore; focus preservation will be strengthened in the Activity-gap patch.
-- [ ] Patch verified Activity-owned GAPs using reusable `SelectableTextState`, with stable owning root/state bundles.
-- [ ] Resolve the exact-HEAD validation blocker without weakening the MainActivity <4100 architectural cap: v1.4.55 Home scroll retention pushed MainActivity from the accepted baseline edge to 4136 lines.
-- [ ] Re-run inventory and confirm no unexplained selectable-text source gap remains.
-- [ ] Record #49 source audit/result in `docs/v.1.4.55/CURRENT_STATE.md`.
-- [ ] Mark persistent Phase A selectable-text checkbox only if source coverage is complete.
-- [ ] Verify live branch/files and set the next exact Phase A action.
+- [x] Patch verified Activity-owned GAPs using reusable `SelectableTextState`, with stable owning root/state bundles. Evidence: exact validated source `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`; shared and Activity-owned selectable-text contracts passed release preflight in run `36664955524`.
+- [x] Resolve the exact-HEAD validation blocker without weakening the MainActivity <4100 architectural cap. Exact validated source is 4093 lines; preflight reports the cap preserved in run `36664955524`.
+- [x] Re-run inventory and confirm no unexplained selectable-text source gap remains. Static audit reports shared restorable modals plus Activity-owned surfaces covered, same-logical-text restore only, and changed content fails closed.
+- [x] Record #49 source audit/result in `docs/v.1.4.55/CURRENT_STATE.md`.
+- [x] Mark persistent Phase A selectable-text checkbox after source coverage completion. Real-phone acceptance remains deferred to the consolidated Phase A phone matrix.
+- [x] Verify live branch/files and set the next exact Phase A action. Exact code checkpoint: `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`; Validate Android run `36664955524` = SUCCESS. Next source task: destructive-confirmation lifecycle matrix (#42).
 
 Crash rule: after context loss, resume from the first unchecked checkbox above after `AGENTS.md` → `ACTIVE_PLAN.md`.
 
+
+
+## SLEEP CHECKPOINT — 2026-09-30
+
+Stop here for the night. Do not resume #49 source work tomorrow; its source/static/build gate is complete.
+
+Validated app-code checkpoint:
+- branch: `feat/v1.4.55-ux-hardening`;
+- exact code/source SHA: `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`;
+- Validate Android run: `36664955524` — **SUCCESS**;
+- Release preflight: PASS;
+- JVM unit tests: PASS;
+- unsigned release assemble: PASS;
+- MainActivity: 4093 lines, still below the <4100 cleanup ceiling;
+- selectable-text compile correction uses Android `Selection.setSelection(...)` on `Spannable`, not `TextView.setSelection(...)`.
+
+The checkpoint commit after this validated SHA is documentation-only. The validated application-code reference remains `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`.
+
+**Tomorrow's first source task:** start the destructive-confirmation lifecycle matrix (#42). Create its task-local checklist before modifying source. Do not start Phase B yet.
 
 
 ---
@@ -120,7 +139,7 @@ Crash rule: after context loss, resume from the first unchecked checkbox above a
 ## C. Phase A — shared non-functional hardening
 
 - [x] Finish project-wide scroll-retention audit and remaining source gaps (#48). **SOURCE AUDIT PASS**; issue remains open until consolidated phone matrix.
-- [ ] Finish selectable-text range retention (#49).
+- [x] Finish selectable-text range retention (#49) at source/static/build level. **SOURCE AUDIT PASS** on `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`; real-phone acceptance remains in the consolidated Phase A matrix.
 - [ ] Finish destructive-confirmation lifecycle matrix (#42).
 - [ ] Verify one shared action-row/stack policy for screen + dialog footers (#47/#26/#37).
 - [ ] Finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50).
@@ -182,9 +201,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Finish selectable-text range retention source audit and remaining gaps (#49).**
+**Start destructive-confirmation lifecycle matrix (#42).**
 
-Verify shared modal restoration plus every Activity-owned selectable TextView. Preserve selection only for the same logical text, fail closed on content changes, and do not trigger any action during restore.
+First create a task-local checklist. Audit every destructive confirmation owner for rotation/recreation, Back/outside-cancel semantics, exact target identity, and explicit-action-only execution. Preserve the validated application-code checkpoint `bc6e1c136130d899e9eae8a03c11ab5e88661b7f` and do not start Phase B.
 
 ## Update rule
 

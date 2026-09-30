@@ -8,7 +8,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 841ac3888017a23d  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-8c9e7db9c69f3e48  ACTIVE_PLAN.md
+d3ca3702f2c5b170  ACTIVE_PLAN.md
 9c1c3ddf2eb9abcf  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -17,7 +17,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
 dead1c65e49b2ddb  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
-342b35c86f5b9735  CURRENT_HANDOFF.md
+ac4026f992a1f7e9  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -1483,7 +1483,7 @@ d891cae1b2fc2b4d  docs/v.1.4.54/RELEASE.md
 d667ebffcc0444f0  docs/v.1.4.54/qa/STABILIZATION_CHECKPOINT.md
 b2aa52a50f5f6549  docs/v.1.4.54/qa/TEST_RUN_2026-09-29.md
 e75fedf0e97b40a3  docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md
-9c7b7b962f54324a  docs/v.1.4.55/CURRENT_STATE.md
+792576699c2b1458  docs/v.1.4.55/CURRENT_STATE.md
 c0ca1dd903f31f86  docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md
 ad349ab098f5763e  docs/v.1.4.55/REGRESSION_CHECKLIST.md
 b67036413f2dc72a  docs/v.1.4.55/RELEASE.md
