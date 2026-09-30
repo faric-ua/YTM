@@ -65,23 +65,23 @@ restore, save or another durable/remote action.
 
 If repository documents disagree, stop and reconcile them before implementation.
 
-## CURRENT TASK — v1.4.55 app-delta safety audit (2026-09-30)
+## CURRENT TASK — project-wide scroll-retention audit (#48) (2026-09-30)
 
-Goal: prove whether current v1.4.55 app-code changes remain non-functional relative to immutable phone-accepted v1.4.54 source `e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
+Goal: identify every user-owned scrollable screen on the current v1.4.55 branch and close only real lifecycle viewport gaps without changing business behavior.
 
 Current task checklist:
-- [x] Create this task-specific audit plan before implementation/audit mutations.
-- [x] Enumerate every changed `app/` path between the immutable v1.4.54 baseline and current v1.4.55 HEAD. Evidence: compare `e553c6d...b445dc5`; 23 changed `app/` paths.
-- [x] Inspect each changed app-code area and classify it as PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY / FUNCTIONAL_FEATURE. Evidence: `docs/v.1.4.55/CURRENT_STATE.md`, source-delta safety audit.
-- [x] Check explicitly for API/request-order, retry/auto-start, playlist identity, Queue/Pending, History, backup/restore, Bulk ledger/rollback, quota/rate, or storage-schema semantic changes. Result: no accidental production semantic delta found.
-- [x] Check that temporary QA hooks cannot leak into a release candidate. Evidence: `QuotaActivity` DEBUG-only UI plus `BulkSyncQaFaultStore` release `peek() = null` / rollback armed = false.
-- [x] Record a source-audit summary in `docs/v.1.4.55/CURRENT_STATE.md`. Evidence: commit `518956c2585287ed8eed04326da3dd0fdf4a8c45`.
-- [x] Update the persistent Section B checkboxes only for claims actually verified by this audit.
-- [x] Verify the final live branch/files and set the exact next action. Evidence: live HEAD `4f520cf36a8b4c1b2d9ac760a218e9ead45645c2`; `ACTIVE_PLAN.md` + `CURRENT_STATE.md` re-read from GitHub.
+- [x] Create this task-specific plan before modifying scroll behavior.
+- [ ] Inventory every main-source Kotlin screen using `ScrollView`, `ListView`, or equivalent user viewport.
+- [ ] Classify each viewport as COVERED / INTENTIONAL_RESET / GAP with the owning screen/state key.
+- [ ] Inspect every GAP for dynamic-content identity so stale scroll is not restored onto a different object/page.
+- [ ] Patch only verified GAPs using shared/local lifecycle state; no API/storage/remote-action changes.
+- [ ] Re-run the inventory and confirm no unexplained owning-screen gaps remain.
+- [ ] Record the scroll-retention audit result in `docs/v.1.4.55/CURRENT_STATE.md`.
+- [ ] Mark persistent Phase A scroll-retention checkbox only if the source audit is actually complete.
+- [ ] Verify live branch/files and set the next exact Phase A action.
 
-Task result: **CLOSED — source-delta audit PASS with one explicit `FUNCTIONAL_FEATURE / RELEASE_SAFETY` classification for QA fault compile/runtime guards.**
+Crash rule: after context loss, resume from the first unchecked checkbox above after `AGENTS.md` → `ACTIVE_PLAN.md`.
 
-Crash rule: if context is lost, resume from the first unchecked persistent checklist item after re-reading `AGENTS.md` and this file.
 
 
 ---
