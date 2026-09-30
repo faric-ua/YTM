@@ -71,13 +71,13 @@ Goal: identify every user-owned scrollable screen on the current v1.4.55 branch 
 
 Current task checklist:
 - [x] Create this task-specific plan before modifying scroll behavior.
-- [ ] Inventory every main-source Kotlin screen using `ScrollView`, `ListView`, or equivalent user viewport.
-- [ ] Classify each viewport as COVERED / INTENTIONAL_RESET / GAP with the owning screen/state key.
-- [ ] Inspect every GAP for dynamic-content identity so stale scroll is not restored onto a different object/page.
-- [ ] Patch only verified GAPs using shared/local lifecycle state; no API/storage/remote-action changes.
-- [ ] Re-run the inventory and confirm no unexplained owning-screen gaps remain.
-- [ ] Record the scroll-retention audit result in `docs/v.1.4.55/CURRENT_STATE.md`.
-- [ ] Mark persistent Phase A scroll-retention checkbox only if the source audit is actually complete.
+- [x] Inventory every main-source Kotlin screen using `ScrollView`, `ListView`, or equivalent user viewport. Result: 17 Activity owning screens; no Recycler/Nested/Horizontal owning viewport gap.
+- [x] Classify each viewport as COVERED / INTENTIONAL_RESET / GAP with the owning screen/state key. Evidence: `docs/v.1.4.55/CURRENT_STATE.md` scroll-retention matrix.
+- [x] Inspect every GAP for dynamic-content identity so stale scroll is not restored onto a different object/page. Result: no owning-screen GAP; identity/reset contracts verified for Destination, History, Pending, Playlist, Review and Service.
+- [x] Patch only verified GAPs using shared/local lifecycle state; no API/storage/remote-action changes. Result: no code patch required; no verified owning-screen GAP remained.
+- [x] Re-run the inventory and confirm no unexplained owning-screen gaps remain. `UiChrome` dialog-internal scroll is outside #48 owning-screen scope; underlying Activity viewport remains covered.
+- [x] Record the scroll-retention audit result in `docs/v.1.4.55/CURRENT_STATE.md`. Evidence: commit `3c8649205ee72bdda3e8c8cd2e5b2011b28bdf0b`.
+- [x] Mark persistent Phase A scroll-retention checkbox only if the source audit is actually complete. Source audit PASS; #48 remains phone-QA open.
 - [ ] Verify live branch/files and set the next exact Phase A action.
 
 Crash rule: after context loss, resume from the first unchecked checkbox above after `AGENTS.md` → `ACTIVE_PLAN.md`.
@@ -118,7 +118,7 @@ Crash rule: after context loss, resume from the first unchecked checkbox above a
 
 ## C. Phase A — shared non-functional hardening
 
-- [ ] Finish project-wide scroll-retention audit and remaining gaps (#48).
+- [x] Finish project-wide scroll-retention audit and remaining source gaps (#48). **SOURCE AUDIT PASS**; issue remains open until consolidated phone matrix.
 - [ ] Finish selectable-text range retention (#49).
 - [ ] Finish destructive-confirmation lifecycle matrix (#42).
 - [ ] Verify one shared action-row/stack policy for screen + dialog footers (#47/#26/#37).
