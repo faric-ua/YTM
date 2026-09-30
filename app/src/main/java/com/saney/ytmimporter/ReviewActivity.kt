@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.ScrollPositionState
+import com.saney.ytmimporter.ui.SelectableTextSurfaceState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -119,6 +120,11 @@ class ReviewActivity : Activity() {
             STATE_TRACK_SCROLL_POSITION
         )
 
+    private val selectableTextSurfaceState =
+        SelectableTextSurfaceState(
+            STATE_SELECTABLE_TEXT
+        )
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -201,6 +207,9 @@ class ReviewActivity : Activity() {
                     it != Int.MIN_VALUE
                 }
         trackScrollPosition.restore(
+            savedInstanceState
+        )
+        selectableTextSurfaceState.restore(
             savedInstanceState
         )
 
@@ -474,6 +483,9 @@ class ReviewActivity : Activity() {
             outState,
             trackScrollView
         )
+        selectableTextSurfaceState.save(
+            outState
+        )
 
         super.onSaveInstanceState(
             outState
@@ -579,6 +591,10 @@ class ReviewActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId = SURFACE_EMPTY
+        )
     }
 
     private fun showListScreen() {
@@ -799,6 +815,10 @@ class ReviewActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId = SURFACE_LIST
+        )
 
         list.post {
             list.setSelectionFromTop(
@@ -1027,6 +1047,12 @@ class ReviewActivity : Activity() {
         UiChrome.applyScreenInsets(this, root)
         trackScrollPosition.restoreInto(
             scroll
+        )
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId =
+                SURFACE_TRACK_PREFIX +
+                    track.historyIndex
         )
     }
 
@@ -2736,6 +2762,18 @@ class ReviewActivity : Activity() {
 
         private const val STATE_TRACK_SCROLL_HISTORY_INDEX =
             "review_track_scroll_history_index"
+
+        private const val STATE_SELECTABLE_TEXT =
+            "review_selectable_text"
+
+        private const val SURFACE_EMPTY =
+            "review:empty"
+
+        private const val SURFACE_LIST =
+            "review:list"
+
+        private const val SURFACE_TRACK_PREFIX =
+            "review:track:"
 
         private val BACKGROUND =
             Color.rgb(
