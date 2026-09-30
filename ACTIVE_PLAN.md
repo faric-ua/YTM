@@ -71,7 +71,7 @@ Goal: preserve active text selection across recreation only on the same logical 
 
 Current task checklist:
 - [x] Create this task-specific plan before modifying selectable-text behavior.
-- [ ] Inventory every main Activity/shared dialog path that creates selectable TextViews.
+- [x] Inventory every main Activity/shared dialog path that creates selectable TextViews. Activity-owned: Destination, History, Playlist, Quota, Review, Service; shared bodies: `UiChrome` standard/content dialogs.
 - [ ] Classify each selectable surface as COVERED / GAP / INTENTIONAL_RESET.
 - [ ] Verify current shared modal implementation preserves start/end only when text identity matches and triggers no action.
 - [ ] Patch verified Activity-owned GAPs using reusable `SelectableTextState`, with stable owning root/state bundles.
