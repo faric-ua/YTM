@@ -4,10 +4,10 @@ This is the **mutable crash-recovery snapshot** for the current development sess
 
 Last updated: **2026-09-30**
 
-> **FIRST READ: `ACTIVE_PLAN.md`**
+> **FIRST READ: `RESUME_HERE.md`**
 >
-> Resume from its first unchecked actionable item.
-> After every verified step, update its checkbox and `NEXT ACTION`.
+> Verify live GitHub HEAD/Actions, then confirm `ACTIVE_PLAN.md` has the same next action.
+> After every verified step, update the canonical resume pointer and execution checklist.
 
 ## Active work
 
@@ -30,10 +30,11 @@ Validated application-code point before the docs-only checkpoint:
 - #49 selectable-text source/static/build audit: **PASS**;
 - compile correction: selection restore now uses `Selection.setSelection(...)` on matching `Spannable` text and remains fail-closed when content changes.
 
-No more application-source changes were made after `bc6e1c136130d899e9eae8a03c11ab5e88661b7f` before this sleep checkpoint.
-The checkpoint commit itself is documentation/manifest-only.
+The old green checkpoint above is no longer the live source HEAD.
 
-**Active now:** Phase A destructive-confirmation lifecycle matrix **#42**. The four verified lifecycle gaps have been migrated to `RestorableModalController` without changing their destructive callbacks; Import now binds clear-current to exact `localPlaylistId`. Static enforcement was expanded. Next action: re-run the full destructive inventory, then exact-HEAD gates. #49 remains closed at source/static/build level.
+**Live HEAD now:** `76fcff9b79001f9b37144c49ab2e144a3f77fe4f` (`fix: unify destructive confirmation lifecycle`). The four verified #42 lifecycle gaps have been migrated to `RestorableModalController` without changing their destructive callbacks; Import binds clear-current to exact `localPlaylistId`.
+
+**Current blocker:** Validate Android run `36701906084` failed in **Release preflight** with `FAIL: Import clear-confirm rotation state missing`. The next action is to reconcile the preflight/static expectation with the canonical migrated Import lifecycle, then re-run the full destructive inventory and exact-HEAD gate. Do not restart v1.4.54 Tests 1–9. #49 remains closed at source/static/build level.
 
 ## Immutable functional reference
 
@@ -105,15 +106,17 @@ real-device acceptance.
 
 ## Exact next work
 
-Follow `ACTIVE_PLAN.md`.
+Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
 Current sequence:
-1. start destructive-confirmation lifecycle matrix #42 with a task-local checklist;
-2. continue the remaining Phase A shared hardening items (#47/#26/#37, Bulk semantics/readability, transient-message durability, readability/skin checks);
-3. re-run exact-HEAD validation after the remaining Phase A source batch;
-4. build one consolidated signed phone candidate, not one APK per tiny visual fix;
-5. run the consolidated Phase A phone matrix, including scroll + selectable-text acceptance;
-6. only after Phase A is coherent move to management/discoverability Phase B.
+1. fix/reconcile the #42 Import clear-workspace Release-preflight guard on live HEAD `76fcff9b...`;
+2. re-run the full destructive-confirmation inventory and record the source result;
+3. require exact-HEAD Validate Android PASS for #42;
+4. continue the remaining Phase A shared hardening items (#47/#26/#37, Bulk semantics/readability, transient-message durability, readability/skin checks);
+5. re-run exact-HEAD validation after the remaining Phase A source batch;
+6. build one consolidated signed phone candidate, not one APK per tiny visual fix;
+7. run the consolidated Phase A phone matrix, including scroll + selectable-text acceptance;
+8. only after Phase A is coherent move to management/discoverability Phase B.
 
 For every substantial multi-step task, `ACTIVE_PLAN.md` must first contain a
 task-local ordered checklist. After each verified step, tick that exact item and
