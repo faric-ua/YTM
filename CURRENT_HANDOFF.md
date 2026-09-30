@@ -33,7 +33,7 @@ Validated application-code point before the docs-only checkpoint:
 No more application-source changes were made after `bc6e1c136130d899e9eae8a03c11ab5e88661b7f` before this sleep checkpoint.
 The checkpoint commit itself is documentation/manifest-only.
 
-**Active now:** Phase A destructive-confirmation lifecycle matrix **#42**. The task-local checklist is in `ACTIVE_PLAN.md`; first unchecked action is the full destructive runtime inventory. #49 remains closed at source/static/build level and is not being reopened.
+**Active now:** Phase A destructive-confirmation lifecycle matrix **#42**. Inventory/classification is complete in `docs/v.1.4.55/DESTRUCTIVE_CONFIRMATION_AUDIT_2026-09-30.md`: four controller gaps remain (History ×2, Import ×1, Destination ×1). Next action is the lifecycle-only controller migration; #49 remains closed at source/static/build level.
 
 ## Immutable functional reference
 
