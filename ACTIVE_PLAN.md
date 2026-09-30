@@ -72,8 +72,8 @@ Goal: preserve active text selection across recreation only on the same logical 
 Current task checklist:
 - [x] Create this task-specific plan before modifying selectable-text behavior.
 - [x] Inventory every main Activity/shared dialog path that creates selectable TextViews. Activity-owned: Destination, History, Playlist, Quota, Review, Service; shared bodies: `UiChrome` standard/content dialogs.
-- [ ] Classify each selectable surface as COVERED / GAP / INTENTIONAL_RESET.
-- [ ] Verify current shared modal implementation preserves start/end only when text identity matches and triggers no action.
+- [x] Classify each selectable surface as COVERED / GAP / INTENTIONAL_RESET. Controller-owned shared dialogs = COVERED; six Activity-owned surfaces = GAP; manual-restorable dialogs remain a #42 lifecycle-ownership dependency.
+- [x] Verify current shared modal implementation preserves start/end only when text identity matches and triggers no action. `SelectableTextState` matches count + full text and only calls selection restore; focus preservation will be strengthened in the Activity-gap patch.
 - [ ] Patch verified Activity-owned GAPs using reusable `SelectableTextState`, with stable owning root/state bundles.
 - [ ] Re-run inventory and confirm no unexplained selectable-text source gap remains.
 - [ ] Record #49 source audit/result in `docs/v.1.4.55/CURRENT_STATE.md`.
