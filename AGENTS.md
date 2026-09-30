@@ -14,17 +14,22 @@ chat memory.
    `ASSISTANT_CONTEXT_INDEX.md`, and the ordered context files referenced there.
 4. Verify the live GitHub branch/HEAD/Actions state before relying on old SHAs,
    build numbers, PR state, or chat recollection.
-5. Before a new multi-step task, make sure `ACTIVE_PLAN.md` contains the concrete
-   ordered plan. Add/rewrite unchecked items if the scope changed.
-6. After every **verified** progress step, immediately:
+5. Before substantial multi-step work, send the user a short **friction note**:
+   what is currently uncertain, stale, risky, conflicting, or blocking. If nothing
+   is blocked, say that plainly and name the main thing being verified. Do not hide
+   the point where work is getting stuck.
+6. Before implementing that task, make sure `ACTIVE_PLAN.md` has a **CURRENT TASK**
+   section with the concrete ordered checklist. The plan must exist in the repository
+   before the implementation it governs.
+7. After every **verified** progress step, immediately:
    - mark exactly that item `[x]`;
    - attach evidence/commit/run where useful;
    - keep the next real action as the first unchecked item;
    - update `NEXT ACTION`;
    - update `CURRENT_HANDOFF.md` when the resume point materially changes.
-7. Never mark phone behavior PASS from code inspection or a build. Phone behavior
+8. Never mark phone behavior PASS from code inspection or a build. Phone behavior
    requires phone evidence.
-8. If repository documents disagree, reconcile them before implementation.
+9. If repository documents disagree, reconcile them before implementation.
 
 ## Crash / context-loss rule
 
