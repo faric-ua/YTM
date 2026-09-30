@@ -28,7 +28,12 @@ fi
 
 grep -Fq 'HomeDashboardChrome' "$MAIN" || fail "Main does not use HomeDashboardChrome"
 grep -Fq 'ScrollView(this)' "$MAIN" || fail "Home scrollable dashboard body missing"
-grep -Fq 'bottomNavigation(' "$MAIN" || fail "Home bottom navigation missing"
+if ! grep -Fq 'bottomNavigation(' "$MAIN" &&
+   ! grep -Fq 'addBottomNavigation(' "$MAIN"; then
+  fail "Home bottom navigation missing"
+fi
+grep -Fq 'fun bottomNavigation(' "$HOME_UI" ||
+  fail "Home bottom navigation implementation missing"
 if grep -Fq '"Швидкі дії файл/плейлист"' "$MAIN"; then
   python - "$MAIN" <<'PY'
 from pathlib import Path
