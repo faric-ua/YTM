@@ -65,25 +65,22 @@ restore, save or another durable/remote action.
 
 If repository documents disagree, stop and reconcile them before implementation.
 
-## CURRENT TASK — assistant crash-recovery hardening (2026-09-30)
+## CURRENT TASK — v1.4.55 app-delta safety audit (2026-09-30)
 
-Goal: make context loss boring and deterministic instead of reconstructing work from chat memory.
-
-Before implementation on any multi-step task:
-- tell the user briefly what is currently uncertain, stale, risky, or blocking;
-- write the concrete ordered task plan here;
-- only then execute it.
+Goal: prove whether current v1.4.55 app-code changes remain non-functional relative to immutable phone-accepted v1.4.54 source `e553c6dcb0f918a51f40bfa4d783cb11b3086472`.
 
 Current task checklist:
-- [x] Create this task-specific plan before changing the recovery workflow. Evidence: commit `64a7a0c283530f5b39a52132f54e21c5aa6f1fa5`.
-- [x] Strengthen `AGENTS.md`: require a user-visible friction/blocker note before substantial multi-step work and require a task-local checklist in `ACTIVE_PLAN.md`. Evidence: commit `5503799ff4342649ae878633cb6aa0cb53c6c039`.
-- [x] Reconcile stale `CURRENT_HANDOFF.md` sequence so completed v1.4.54 closeout is not presented as pending. Evidence: commit `b3e48c6774744cdc055c7ed4064d3db46cde457a`.
-- [x] Verify the live branch/files after the edits. Verified branch tip before closeout: `b3e48c6774744cdc055c7ed4064d3db46cde457a`; `AGENTS.md`, `ACTIVE_PLAN.md`, and `CURRENT_HANDOFF.md` re-read from GitHub.
-- [x] Mark only verified steps complete, record evidence commits, then restore the normal v1.4.55 NEXT ACTION.
+- [x] Create this task-specific audit plan before implementation/audit mutations.
+- [ ] Enumerate every changed `app/` path between the immutable v1.4.54 baseline and current v1.4.55 HEAD.
+- [ ] Inspect each changed app-code area and classify it as PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY / FUNCTIONAL_FEATURE.
+- [ ] Check explicitly for API/request-order, retry/auto-start, playlist identity, Queue/Pending, History, backup/restore, Bulk ledger/rollback, quota/rate, or storage-schema semantic changes.
+- [ ] Check that temporary QA hooks cannot leak into a release candidate.
+- [ ] Record a source-audit summary in `docs/v.1.4.55/CURRENT_STATE.md`.
+- [ ] Update the persistent Section B checkboxes only for claims actually verified by this audit.
+- [ ] Verify the final live branch/files and set the exact next action.
 
-Task result: **CLOSED**. Future substantial tasks must replace this CURRENT TASK block with their own ordered checklist before implementation.
+Crash rule: if context is lost, resume from the first unchecked checkbox above after re-reading `AGENTS.md` and this file.
 
-Crash rule: after context loss, start from `AGENTS.md` → `ACTIVE_PLAN.md` and resume from the first unchecked actionable item — never from conversation memory.
 
 ---
 
