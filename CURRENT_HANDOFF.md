@@ -32,7 +32,7 @@ Validated application-code point before the docs-only checkpoint:
 
 The old green checkpoint above is no longer the live source HEAD.
 
-**Live HEAD now:** `76fcff9b79001f9b37144c49ab2e144a3f77fe4f` (`fix: unify destructive confirmation lifecycle`). The four verified #42 lifecycle gaps have been migrated to `RestorableModalController` without changing their destructive callbacks; Import binds clear-current to exact `localPlaylistId`.
+**Current app/source HEAD:** `76fcff9b79001f9b37144c49ab2e144a3f77fe4f` (`fix: unify destructive confirmation lifecycle`). The four verified #42 lifecycle gaps have been migrated to `RestorableModalController` without changing their destructive callbacks; Import binds clear-current to exact `localPlaylistId`.
 
 **Current blocker:** Validate Android run `36701906084` failed in **Release preflight** with `FAIL: Import clear-confirm rotation state missing`. The next action is to reconcile the preflight/static expectation with the canonical migrated Import lifecycle, then re-run the full destructive inventory and exact-HEAD gate. Do not restart v1.4.54 Tests 1–9. #49 remains closed at source/static/build level.
 
@@ -109,7 +109,7 @@ real-device acceptance.
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
 Current sequence:
-1. fix/reconcile the #42 Import clear-workspace Release-preflight guard on live HEAD `76fcff9b...`;
+1. fix/reconcile the #42 Import clear-workspace Release-preflight guard for app/source HEAD `76fcff9b...`;
 2. re-run the full destructive-confirmation inventory and record the source result;
 3. require exact-HEAD Validate Android PASS for #42;
 4. continue the remaining Phase A shared hardening items (#47/#26/#37, Bulk semantics/readability, transient-message durability, readability/skin checks);
