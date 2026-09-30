@@ -87,7 +87,7 @@ Phase A source progress after reconciliation:
 Still open in Phase A:
 - finish project-wide scroll-retention audit / phone matrix (#48);
 - selectable-text real-phone acceptance (#49); source/static/build audit is PASS;
-- complete destructive-confirmation phone matrix (#42);
+- destructive-confirmation #42 is **SOURCE/STATIC/BUILD PASS**; real-phone acceptance remains in the consolidated Phase A matrix;
 - phone-verify one canonical action layout contract across screen + dialog footers (#47/#26/#37);
 - finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50);
 - critical information must not be Toast-only;
@@ -172,6 +172,25 @@ Source conclusion:
 **#49 SOURCE/STATIC/BUILD PASS — no unexplained selectable-text source GAP remains.**
 
 Issue #49 real-phone acceptance remains intentionally deferred to the one consolidated Phase A phone matrix. Static/build PASS is not phone PASS.
+
+## Destructive-confirmation lifecycle audit — #42 — 2026-09-30
+
+Source conclusion: **#42 SOURCE/STATIC/BUILD PASS**.
+
+- all production destructive-confirmation runtime entry points were inventoried;
+- four verified GAPs were migrated to `RestorableModalController`;
+- exact History/Import/Destination target identity is preserved;
+- no unexplained destructive-confirmation source GAP remains;
+- historical audit guards now accept the stronger semantic controller contract
+  without weakening explicit-action/no-auto-action requirements;
+- app source: `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`;
+- validated branch/tooling checkpoint:
+  `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`;
+- Validate Android run `36758197893`: **SUCCESS**.
+
+Real-phone acceptance remains pending in the consolidated Phase A matrix:
+History delete, one destructive utility clear and Bulk rollback with both rotation
+directions, Cancel/Back/Close, and no automatic destructive action.
 
 ## Phase B — management / discoverability
 
@@ -310,10 +329,14 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-1. start destructive-confirmation lifecycle matrix #42 with a task-local checklist;
-2. continue remaining Phase A shared action/Bulk/transient-message/readability work without changing business semantics;
-3. after the coherent Phase A batch, refresh generated artifacts and re-run exact-HEAD validation;
-4. only then build one consolidated phone candidate and run scroll/selectable-text acceptance together with the rest of the matrix.
+1. audit #47/#26/#37 full-screen + dialog action groups against the shared adaptive
+   action-layout contract;
+2. patch only verified presentation/layout GAPs without changing callbacks or
+   business semantics;
+3. continue remaining Bulk/transient-message/readability/skin Phase A work;
+4. after the coherent Phase A batch, refresh artifacts and re-run exact-HEAD validation;
+5. build one consolidated phone candidate and run #42 destructive,
+   scroll/selectable-text and layout acceptance together.
 
 Do not start Phase B functional/discoverability work until Phase A shared contracts
 are coherent enough that later screens can reuse them.

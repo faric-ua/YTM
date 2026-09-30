@@ -20,7 +20,7 @@ Last updated: **2026-09-30**
 - Readability audit: `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`
 - Backlog reconciliation: `docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md`
 
-## Sleep checkpoint — 2026-09-30
+## Previous validated checkpoint (historical) — 2026-09-30
 
 Validated application-code point before the docs-only checkpoint:
 - exact source SHA: `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`;
@@ -30,11 +30,18 @@ Validated application-code point before the docs-only checkpoint:
 - #49 selectable-text source/static/build audit: **PASS**;
 - compile correction: selection restore now uses `Selection.setSelection(...)` on matching `Spannable` text and remains fail-closed when content changes.
 
-The old green checkpoint above is no longer the live source HEAD.
+The old green checkpoint above is historical and is not the resume point.
 
-**Current app/source HEAD:** `76fcff9b79001f9b37144c49ab2e144a3f77fe4f` (`fix: unify destructive confirmation lifecycle`). The four verified #42 lifecycle gaps have been migrated to `RestorableModalController` without changing their destructive callbacks; Import binds clear-current to exact `localPlaylistId`.
+**Current app/source HEAD:** `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`
+(`fix: unify destructive confirmation lifecycle`).
 
-**Current blocker:** Validate Android run `36701906084` failed in **Release preflight** with `FAIL: Import clear-confirm rotation state missing`. The next action is to reconcile the preflight/static expectation with the canonical migrated Import lifecycle, then re-run the full destructive inventory and exact-HEAD gate. Do not restart v1.4.54 Tests 1–9. #49 remains closed at source/static/build level.
+**#42 source/static/build: PASS.** Exact branch/tooling checkpoint
+`c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3` passed Validate Android run
+`36758197893` (preflight/JVM/assemble all PASS). Real-phone #42 acceptance remains
+pending in the consolidated Phase A matrix.
+
+**Current blocker:** none. **Current task:** #47/#26/#37 shared adaptive action-layout
+audit. Do not restart v1.4.54 Tests 1–9.
 
 ## Immutable functional reference
 
@@ -108,20 +115,17 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-Current sequence:
-1. fix/reconcile the #42 Import clear-workspace Release-preflight guard for app/source HEAD `76fcff9b...`;
-2. re-run the full destructive-confirmation inventory and record the source result;
-3. require exact-HEAD Validate Android PASS for #42;
-4. continue the remaining Phase A shared hardening items (#47/#26/#37, Bulk semantics/readability, transient-message durability, readability/skin checks);
-5. re-run exact-HEAD validation after the remaining Phase A source batch;
-6. build one consolidated signed phone candidate, not one APK per tiny visual fix;
-7. run the consolidated Phase A phone matrix, including scroll + selectable-text acceptance;
-8. only after Phase A is coherent move to management/discoverability Phase B.
+1. Read #47/#26/#37 and the responsive/window contracts.
+2. Inventory full-screen + dialog action groups against the shared adaptive policy.
+3. Patch only verified presentation/layout GAPs; preserve callbacks/semantics.
+4. Continue Bulk/transient-message/readability/skin Phase A work.
+5. Re-run exact-HEAD validation after the coherent Phase A source batch.
+6. Build one consolidated signed phone candidate and run #42 + scroll +
+   selectable-text + layout acceptance together.
+7. Start Phase B only after Phase A is coherent.
 
-For every substantial multi-step task, `ACTIVE_PLAN.md` must first contain a
-task-local ordered checklist. After each verified step, tick that exact item and
-move the resume point forward. A fresh session resumes from the first unchecked
-task-local item, not from chat memory.
+A fresh session resumes from `RESUME_HERE.md` and the first unchecked CURRENT TASK
+item, never from chat memory or a historical sleep checkpoint.
 
 ## Working contract
 

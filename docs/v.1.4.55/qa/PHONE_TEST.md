@@ -43,8 +43,11 @@ Result: `A3+` / `A3-`.
 Representative checks:
 - long Help window;
 - ordinary confirmation;
-- destructive confirmation;
-- Back/Cancel/Close;
+- #42 History delete confirmation + both rotation directions;
+- #42 one destructive utility clear (Import / Service / Data) + rotation;
+- #42 Bulk rollback confirmation + rotation;
+- Back/Cancel/Close for destructive confirmation;
+- verify no delete/clear/rollback fires on recreation;
 - scroll retention on a long utility screen;
 - selectable text if the surface supports it.
 
@@ -54,7 +57,7 @@ Expected:
 - footer remains visible/readable;
 - scroll/selection restoration follows the shared contract.
 
-Result: `A4+` / `A4-`.
+Result: `A4+` / `A4-`.\n\n#42 phone acceptance remains **PENDING** until this consolidated device test is run.
 
 ### Test A5 — themes
 

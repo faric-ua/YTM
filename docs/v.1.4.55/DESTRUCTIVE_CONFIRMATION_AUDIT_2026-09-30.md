@@ -80,4 +80,21 @@ No Search/write/rollback/delete/restore action is invoked by the restore path.
 
 Static enforcement was expanded in `scripts/ui-window-contract-audit.sh` to cover the migrated owners plus existing Data/Pending/Service/Bulk destructive ownership and to reject legacy manual destructive state on the migrated owners.
 
-Post-patch inventory and exact-HEAD build evidence are still pending.
+## Post-patch source/static/build result
+
+**PASS — no unexplained destructive-confirmation GAP remains.**
+
+Historical v1.4.47/v1.4.50 guards were reconciled with the stronger shared
+`RestorableModalController` contract rather than requiring removed legacy
+boolean/Dialog fields. The no-auto-action and explicit-confirm invariants remain
+enforced.
+
+Exact validation evidence:
+- app source: `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`;
+- validated branch/tooling checkpoint:
+  `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`;
+- Validate Android run `36758197893`: **SUCCESS**;
+- release preflight / JVM unit tests / unsigned release assemble: **PASS**.
+
+Phone acceptance remains **PENDING** in the consolidated Phase A matrix. Static,
+source and build PASS are not phone PASS.

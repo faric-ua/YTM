@@ -27,7 +27,7 @@ chat memory.
    - attach evidence/commit/run where useful;
    - keep the next real action as the first unchecked item;
    - update `NEXT ACTION`;
-   - update `CURRENT_HANDOFF.md` when the resume point materially changes.
+   - update `RESUME_HERE.md` whenever the real stop/resume point changes;\n   - update `CURRENT_HANDOFF.md` when the resume point materially changes.
 9. Never mark phone behavior PASS from code inspection or a build. Phone behavior
    requires phone evidence.
 10. If repository documents disagree, reconcile them before implementation.

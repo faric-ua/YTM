@@ -1,10 +1,10 @@
 # YTM Importer — ACTIVE PLAN
 
-> **MANDATORY FIRST READ**
+> **SECOND READ AFTER `RESUME_HERE.md`**
 >
-> This is the live execution checklist for the active YTM development session.
-> After a chat/model crash, context loss, or handoff, read this file **before resuming work**.
-> Do not continue from chat memory alone.
+> `RESUME_HERE.md` is the canonical crash-resume pointer. After a new chat,
+> context loss, or handoff, read it first, verify live GitHub, then use this file
+> as the detailed execution checklist. Do not continue from chat memory alone.
 >
 > After every verified step:
 > 1. check only the step that is actually complete;
@@ -54,39 +54,65 @@ restore, save or another durable/remote action.
 
 ## Recovery reading order
 
-1. **`ACTIVE_PLAN.md` — this file**
-2. `CURRENT_HANDOFF.md`
-3. `docs/v.1.4.55/CURRENT_STATE.md`
-4. `START_HERE_ASSISTANT.md`
-5. `ASSISTANT_CONTEXT_INDEX.md`
-6. every path in `docs/assistant-kit/CONTEXT_FILES.txt`
-7. relevant contract/audit/source files for the exact task
-8. live GitHub branch/HEAD/Actions state
+1. **`RESUME_HERE.md`**
+2. verify live branch HEAD + latest Actions state
+3. **`ACTIVE_PLAN.md` — this file**
+4. `CURRENT_HANDOFF.md`
+5. `docs/v.1.4.55/CURRENT_STATE.md`
+6. `START_HERE_ASSISTANT.md`
+7. `ASSISTANT_CONTEXT_INDEX.md`
+8. every path in `docs/assistant-kit/CONTEXT_FILES.txt`
+9. relevant contract/audit/source files for the exact task
 
 If repository documents disagree, stop and reconcile them before implementation.
 
-## CURRENT TASK — destructive-confirmation lifecycle matrix (#42) (2026-09-30)
+## COMPLETED TASK — destructive-confirmation lifecycle matrix (#42) (2026-09-30)
 
-Goal: audit every destructive/delete/clear/rollback confirmation and converge any gaps on the shared lifecycle-safe modal contract without changing the underlying destructive action, target identity, retry behavior, or remote/storage semantics.
+Source/static/build result: **PASS**.
+
+- [x] Full destructive runtime inventory recorded.
+- [x] Four verified GAPs migrated to `RestorableModalController`: History delete,
+  History clear-all, Import clear-workspace, Destination remote playlist delete.
+- [x] Exact destructive targets and existing callbacks preserved.
+- [x] Static enforcement strengthened.
+- [x] Historical v1.4.47/v1.4.50 guards reconciled with the stronger shared
+  semantic lifecycle contract instead of removed legacy implementation flags.
+- [x] Post-patch inventory has no unexplained destructive-confirmation GAP.
+- [x] Representative phone targets recorded; **phone PASS is not claimed yet**.
+- [x] `FILE_MANIFEST.txt` refreshed.
+- [x] Exact branch/tooling checkpoint
+  `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3` passed Validate Android run
+  `36758197893`: preflight PASS, JVM tests PASS, unsigned release assemble PASS.
+
+Issue #42 remains open only for consolidated Phase A real-phone acceptance.
+
+## CURRENT TASK — shared adaptive action layout (#47/#26/#37) (2026-09-30)
+
+Goal: verify one width-first, label-aware row/stack policy for full-screen actions
+and dialog footers without changing callbacks, action ordering, remote execution,
+or storage behavior.
 
 Current task checklist:
-- [x] Recover live branch/HEAD/Actions state and confirm the sleep checkpoint is green. Evidence: HEAD `fd1d851d95855bcc69baca3058701a0ce7429272`; run `36665775412` = SUCCESS.
-- [x] Read issue #42 plus the shared UI/window, responsive-action, UX-safety, current v1.4.55 plan/phone-test, `RestorableModalController`, `UiChrome`, and current static-audit contracts.
-- [x] Inventory every destructive confirmation runtime entry point. Evidence: `docs/v.1.4.55/DESTRUCTIVE_CONFIRMATION_AUDIT_2026-09-30.md` records History, Import/workspace, Destination remote delete, Pending, Service, Data/recovery, Bulk rollback, and negative chooser/file-delete inventory.
-- [x] Classify every inventoried path as COVERED / GAP / INTENTIONAL-NONMODAL. Four GAPs are verified: History delete, History clear-all, Import clear-workspace, Destination remote playlist delete; Data/Service/Pending/Bulk are controller-owned.
-- [x] Patch only verified GAPs through `RestorableModalController` / the canonical shared modal pipeline. History delete/clear-all, Import clear-workspace and Destination remote delete now use semantic modal ownership; existing destructive callbacks are preserved and Import binds/revalidates exact `localPlaylistId`.
-- [x] Strengthen static enforcement in `scripts/ui-window-contract-audit.sh`: migrated owners plus Data/Pending/Service/Bulk rollback must use restorable ownership; exact target args and legacy manual-state regressions are checked; native `AlertDialog.Builder` remains forbidden.
-- [ ] Reconcile the current Release preflight with the migrated Import clear-workspace lifecycle. Current app/source HEAD `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`; run `36701906084` fails at Release preflight with `FAIL: Import clear-confirm rotation state missing`. Fix the static/preflight expectation, not the destructive callback semantics.
-- [ ] Re-run the inventory and prove no unexplained destructive-confirmation GAP remains.
-- [ ] Record #42 source result and representative phone matrix (History delete + destructive utility clear + Bulk rollback) in v1.4.55 state/QA docs; do not claim phone PASS before device evidence.
-- [ ] Refresh generated artifacts and run the relevant static/release gates on the exact source HEAD.
-- [ ] Mark #42 source/static/build complete only after exact-HEAD Validate Android PASS; keep phone acceptance in the consolidated Phase A matrix.
+- [x] Carry forward green checkpoint `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`,
+  Validate Android run `36758197893` = SUCCESS.
+- [ ] Read issues #47/#26/#37 plus `RESPONSIVE_ACTION_LAYOUT_CONTRACT.md`,
+  `UI_WINDOW_QA_CONTRACT.md`, `UiChrome`, and current action-layout audits.
+- [ ] Inventory full-screen and dialog/footer action groups; classify each as
+  shared-policy COVERED / intentional exception / GAP.
+- [ ] Verify label-fit, narrow-width stacking, danger emphasis, and callback/order
+  preservation.
+- [ ] Patch only verified presentation/layout GAPs through the shared primitive.
+- [ ] Strengthen static enforcement against one-off layout regressions.
+- [ ] Record source result and representative phone targets.
+- [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS.
+- [ ] Keep real-device layout acceptance in the consolidated Phase A phone matrix.
 
-Crash rule: after context loss, resume from the first unchecked checkbox above after `AGENTS.md` → `ACTIVE_PLAN.md`.
+Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
+first unchecked CURRENT TASK item above.
 
-## SLEEP CHECKPOINT — 2026-09-30
+## HISTORICAL SLEEP CHECKPOINT — 2026-09-30 (superseded)
 
-Stop here for the night. Do not resume #49 source work tomorrow; its source/static/build gate is complete.
+Historical evidence only. **Do not resume from this section.** Use `RESUME_HERE.md` and the CURRENT TASK above.
 
 Validated app-code checkpoint:
 - branch: `feat/v1.4.55-ux-hardening`;
@@ -139,7 +165,7 @@ The checkpoint commit after this validated SHA is documentation-only. The valida
 
 - [x] Finish project-wide scroll-retention audit and remaining source gaps (#48). **SOURCE AUDIT PASS**; issue remains open until consolidated phone matrix.
 - [x] Finish selectable-text range retention (#49) at source/static/build level. **SOURCE AUDIT PASS** on `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`; real-phone acceptance remains in the consolidated Phase A matrix.
-- [ ] Finish destructive-confirmation lifecycle matrix (#42).
+- [x] Finish destructive-confirmation lifecycle matrix (#42) at source/static/build level. **PASS** on `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`, run `36758197893`; phone acceptance remains in the consolidated Phase A matrix.
 - [ ] Verify one shared action-row/stack policy for screen + dialog footers (#47/#26/#37).
 - [ ] Finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50).
 - [ ] Replace critical Toast/Snackbar-only information with durable owning-screen state.
@@ -200,9 +226,12 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Reconcile the #42 Import clear-workspace migration with Release preflight on the live HEAD.**
+**Start the #47/#26/#37 shared action-layout audit.**
 
-Current HEAD `76fcff9b79001f9b37144c49ab2e144a3f77fe4f` failed Validate Android run `36701906084` at Release preflight with `FAIL: Import clear-confirm rotation state missing`. Inspect the legacy/static guard, update it to recognize the canonical `RestorableModalController` lifecycle without weakening the contract, then re-run the full #42 inventory and exact-HEAD validation.
+Read the three issues and responsive/window contracts, then inventory current
+full-screen and dialog/footer action groups against the existing shared
+width-first/label-fit policy. Preserve callbacks and business semantics; patch only
+verified presentation/layout GAPs.
 
 ## Update rule
 

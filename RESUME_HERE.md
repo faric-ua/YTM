@@ -3,7 +3,7 @@
 > **FIRST FILE FOR EVERY NEW CHAT / SESSION**
 >
 > Do not reconstruct the project from chat memory. Read this file from the live
-> `feat/v1.4.55-ux-hardening` branch first, then verify the branch HEAD and latest Actions run.
+> `feat/v1.4.55-ux-hardening` branch first, then verify branch HEAD and latest Actions state.
 
 Last updated: **2026-09-30**
 
@@ -13,79 +13,56 @@ Last updated: **2026-09-30**
 - Release: **v1.4.55 / Phase A — UX hardening**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Current app/source HEAD: `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`
-- Source commit: `fix: unify destructive confirmation lifecycle`
-- Do not pin the mutable branch HEAD here: recovery/docs commits advance it. Always verify branch HEAD live.
-- Active task: **#42 — destructive-confirmation lifecycle matrix**
+  (`fix: unify destructive confirmation lifecycle`)
+- Latest validated branch/tooling checkpoint:
+  `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`
+- Validate Android run **36758197893 — SUCCESS**
+  (preflight PASS / JVM PASS / unsigned assemble PASS)
+- Active task: **#47/#26/#37 — shared adaptive action layout**
 - v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
 - Phase B is not active yet.
 
-## What is already done in #42
+## Just completed — #42
 
-- destructive-confirmation runtime entry points were inventoried;
-- four verified lifecycle gaps were identified:
-  - History delete;
-  - History clear-all;
-  - Import clear-workspace;
-  - Destination remote playlist delete;
-- those four paths were migrated to `RestorableModalController`;
-- existing destructive callbacks were preserved;
-- Import clear-current is bound/revalidated against exact `localPlaylistId`;
-- static enforcement was expanded.
+Destructive-confirmation lifecycle source/static/build work is **PASS**:
+- full runtime inventory completed;
+- History delete, History clear-all, Import clear-workspace and Destination remote
+  delete migrated to `RestorableModalController`;
+- exact targets/callbacks preserved;
+- Import revalidates exact `localPlaylistId`;
+- static enforcement covers the shared lifecycle contract;
+- stale historical guards were updated without weakening no-auto-action checks;
+- post-patch inventory has no unexplained GAP;
+- exact validation is green on the checkpoint above.
 
-## Current blocker / exact stop point
-
-Latest Validate Android run for the current app/source HEAD:
-
-- Run: **36701906084**
-- Result: **FAILURE**
-- Failed step: **Release preflight**
-- Exact failure:
-  `FAIL: Import clear-confirm rotation state missing`
-
-This means the current source migration and the release-preflight/static guard are
-not yet reconciled. Do **not** go back to old v1.4.54 phone tests or restart #42
-from scratch.
-
-Older green reference only:
-
-- app-code SHA: `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`
-- Validate Android run: `36664955524` — **SUCCESS**
-
-That SHA is a previous green checkpoint, not the current resume point.
+#42 real-phone acceptance is still **PENDING** in the consolidated Phase A matrix.
 
 ## NEXT ACTION — do this first
 
-1. Inspect the release-preflight/static guard that emits
-   `Import clear-confirm rotation state missing`.
-2. Reconcile that guard with the new `RestorableModalController` ownership for
-   Import clear-workspace **without changing the destructive callback or storage /
-   remote semantics**.
-3. Re-run the #42 destructive-confirmation inventory and prove there is no
-   unexplained lifecycle GAP.
-4. Update the #42 source/state docs.
-5. Run exact-HEAD Validate Android again.
-6. Only after that continue to the next Phase A item.
+1. Read issues **#47, #26, #37**.
+2. Read `docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md`,
+   `docs/design/UI_WINDOW_QA_CONTRACT.md`, current `UiChrome`, and action-layout audits.
+3. Inventory full-screen and dialog/footer action groups.
+4. Classify shared-policy COVERED / intentional exception / GAP.
+5. Patch only verified presentation/layout GAPs; do not change callbacks, request
+   ordering, storage, or remote semantics.
 
 ## Mandatory recovery order
 
-1. `RESUME_HERE.md` — this file.
+1. `RESUME_HERE.md`.
 2. Verify live branch HEAD + latest Actions.
-3. `ACTIVE_PLAN.md` — first unchecked actionable item must match this file.
+3. `ACTIVE_PLAN.md` — first unchecked CURRENT TASK item must match this file.
 4. `CURRENT_HANDOFF.md`.
-5. Relevant #42 audit/contract/source files.
+5. Relevant current-task contract/audit/source files.
 6. Continue work.
 
-If live GitHub state is newer than this file, **update this file before doing
-substantial project work**.
+**Do not use old sleep checkpoints as a resume point.**
 
 ## Update rule
 
-After every verified progress step that changes the real resume point:
-
-- update this file immediately;
+After every verified progress step that changes the resume point:
+- update `RESUME_HERE.md`;
 - update `ACTIVE_PLAN.md`;
-- update `CURRENT_HANDOFF.md` when the state materially changes;
-- never mark phone PASS from code, static checks, or CI alone.
-
-The purpose of this file is simple: after a chat crash, a fresh assistant should
-know in under one minute exactly where work stopped and what to do next.
+- update `CURRENT_HANDOFF.md` when materially changed;
+- keep generated artifacts synchronized;
+- never mark phone PASS from code/static/CI alone.
