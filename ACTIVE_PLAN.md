@@ -77,9 +77,11 @@ Current task checklist:
 - [x] Check that temporary QA hooks cannot leak into a release candidate. Evidence: `QuotaActivity` DEBUG-only UI plus `BulkSyncQaFaultStore` release `peek() = null` / rollback armed = false.
 - [x] Record a source-audit summary in `docs/v.1.4.55/CURRENT_STATE.md`. Evidence: commit `518956c2585287ed8eed04326da3dd0fdf4a8c45`.
 - [x] Update the persistent Section B checkboxes only for claims actually verified by this audit.
-- [ ] Verify the final live branch/files and set the exact next action.
+- [x] Verify the final live branch/files and set the exact next action. Evidence: live HEAD `4f520cf36a8b4c1b2d9ac760a218e9ead45645c2`; `ACTIVE_PLAN.md` + `CURRENT_STATE.md` re-read from GitHub.
 
-Crash rule: if context is lost, resume from the first unchecked checkbox above after re-reading `AGENTS.md` and this file.
+Task result: **CLOSED — source-delta audit PASS with one explicit `FUNCTIONAL_FEATURE / RELEASE_SAFETY` classification for QA fault compile/runtime guards.**
+
+Crash rule: if context is lost, resume from the first unchecked persistent checklist item after re-reading `AGENTS.md` and this file.
 
 
 ---
@@ -179,9 +181,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Audit every existing v1.4.55 app-code delta against immutable v1.4.54 source `e553c6d...`.**
+**Finish the project-wide scroll-retention audit and remaining gaps (#48).**
 
-Classify every changed area as PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY / FUNCTIONAL_FEATURE and stop/split any accidental business/API/storage semantic change before more implementation.
+Inventory scrollable owning screens, distinguish transient system/dialog surfaces from screens that must preserve viewport, identify uncovered lifecycle gaps, then patch only shared/local UI state without changing business semantics.
 
 ## Update rule
 
