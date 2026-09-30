@@ -7,6 +7,7 @@ import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.ScrollPositionState
+import com.saney.ytmimporter.ui.SelectableTextSurfaceState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -57,6 +58,11 @@ class DestinationActivity : Activity() {
     private val scanFailedScrollPosition =
         ScrollPositionState(
             STATE_SCAN_FAILED_SCROLL_POSITION
+        )
+
+    private val selectableTextSurfaceState =
+        SelectableTextSurfaceState(
+            STATE_SELECTABLE_TEXT
         )
 
     private var pendingPlaylistActions:
@@ -141,6 +147,9 @@ class DestinationActivity : Activity() {
             savedInstanceState
         )
         scanFailedScrollPosition.restore(
+            savedInstanceState
+        )
+        selectableTextSurfaceState.restore(
             savedInstanceState
         )
 
@@ -385,6 +394,9 @@ class DestinationActivity : Activity() {
             } else {
                 null
             }
+        )
+        selectableTextSurfaceState.save(
+            outState
         )
 
         pendingPlaylistActions
@@ -706,6 +718,9 @@ class DestinationActivity : Activity() {
         startScrollPosition.restoreInto(
             scroll
         )
+        attachSelectableTextState(
+            root
+        )
     }
 
     private fun showExistingListScreen() {
@@ -777,7 +792,13 @@ class DestinationActivity : Activity() {
                 )
             )
             setContentView(root)
-        UiChrome.applyScreenInsets(this, root)
+            UiChrome.applyScreenInsets(
+                this,
+                root
+            )
+            attachSelectableTextState(
+                root
+            )
             return
         }
 
@@ -960,6 +981,9 @@ class DestinationActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        attachSelectableTextState(
+            root
+        )
 
         list.post {
             list.setSelectionFromTop(
@@ -1747,6 +1771,9 @@ class DestinationActivity : Activity() {
         confirmScrollPosition.restoreInto(
             scroll
         )
+        attachSelectableTextState(
+            root
+        )
     }
 
     private fun showExistingScanFailedScreen() {
@@ -1849,6 +1876,20 @@ class DestinationActivity : Activity() {
         UiChrome.applyScreenInsets(this, root)
         scanFailedScrollPosition.restoreInto(
             scroll
+        )
+        attachSelectableTextState(
+            root
+        )
+    }
+
+    private fun attachSelectableTextState(
+        root: View
+    ) {
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId =
+                "destination:" +
+                    currentMode
         )
     }
 
@@ -3050,6 +3091,8 @@ class DestinationActivity : Activity() {
             "destination_confirm_scroll_position"
         private const val STATE_SCAN_FAILED_SCROLL_POSITION =
             "destination_scan_failed_scroll_position"
+        private const val STATE_SELECTABLE_TEXT =
+            "destination_selectable_text"
         private const val STATE_PLAYLIST_ACTIONS_ID =
             "destination_playlist_actions_id"
         private const val STATE_PLAYLIST_EDIT_ID =
