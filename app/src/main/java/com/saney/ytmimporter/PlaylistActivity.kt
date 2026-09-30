@@ -25,6 +25,7 @@ import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.ui.ScrollPositionState
+import com.saney.ytmimporter.ui.SelectableTextSurfaceState
 import kotlin.math.roundToInt
 
 class PlaylistActivity : Activity() {
@@ -38,6 +39,11 @@ class PlaylistActivity : Activity() {
     private val scrollPosition =
         ScrollPositionState(
             STATE_SCROLL_POSITION
+        )
+
+    private val selectableTextSurfaceState =
+        SelectableTextSurfaceState(
+            STATE_SELECTABLE_TEXT
         )
 
     private var renderedLocalPlaylistId:
@@ -76,6 +82,9 @@ class PlaylistActivity : Activity() {
         scrollPosition.restore(
             savedInstanceState
         )
+        selectableTextSurfaceState.restore(
+            savedInstanceState
+        )
         renderedLocalPlaylistId =
             savedInstanceState
                 ?.getString(
@@ -112,6 +121,9 @@ class PlaylistActivity : Activity() {
         scrollPosition.save(
             outState,
             scrollView
+        )
+        selectableTextSurfaceState.save(
+            outState
         )
         outState.putString(
             STATE_RENDERED_LOCAL_PLAYLIST_ID,
@@ -274,6 +286,10 @@ class PlaylistActivity : Activity() {
         UiChrome.applyScreenInsets(
             this,
             root
+        )
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId = SURFACE_EMPTY
         )
     }
 
@@ -446,6 +462,12 @@ class PlaylistActivity : Activity() {
         )
         scrollPosition.restoreInto(
             scroll
+        )
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId =
+                "playlist:" +
+                    snapshot.localPlaylistId
         )
     }
 
@@ -1278,6 +1300,12 @@ class PlaylistActivity : Activity() {
 
         private const val STATE_SCROLL_POSITION =
             "playlist_scroll_position"
+
+        private const val STATE_SELECTABLE_TEXT =
+            "playlist_selectable_text"
+
+        private const val SURFACE_EMPTY =
+            "playlist:empty"
 
         private const val STATE_RENDERED_LOCAL_PLAYLIST_ID =
             "playlist_rendered_local_playlist_id"
