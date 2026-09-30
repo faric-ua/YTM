@@ -116,10 +116,64 @@ grep -Fq 'searchPlanDialog.setOnDismissListener' "$MAIN" ||
 grep -Fq 'destinationScreenRequestCode' "$MAIN" ||
   fail "Destination return bridge missing"
 
-grep -Fq 'STATE_CLEAR_WORKSPACE_DIALOG_OPEN' "$IMPORT" ||
-  fail "Import clear-confirm rotation state missing"
-grep -Fq 'clearWorkspaceDialogOpen' "$IMPORT" ||
-  fail "Import clear-confirm lifecycle flag missing"
+# Historical R1 used a boolean/dialog flag pair. Newer releases may preserve
+# the same lifecycle invariant through RestorableModalController. Accept either
+# the immutable legacy shape or the stronger shared semantic controller.
+if \
+  grep -Fq 'STATE_CLEAR_WORKSPACE_DIALOG_OPEN' "$IMPORT" && \
+  grep -Fq 'clearWorkspaceDialogOpen' "$IMPORT"
+then
+  echo "PASS: Import legacy clear-workspace lifecycle state present"
+else
+  MODAL_CORE="app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt"
+  test -f "$MODAL_CORE" ||
+    fail "Import shared restorable modal controller missing"
+
+  python - "$IMPORT" "$MODAL_CORE" <<'PY_IMPORT_MODAL'
+from pathlib import Path
+import sys
+
+imp = Path(sys.argv[1]).read_text(encoding="utf-8")
+core = Path(sys.argv[2]).read_text(encoding="utf-8")
+
+required_import = (
+    "private lateinit var clearWorkspaceModalController:",
+    "RestorableModalController",
+    "STATE_CLEAR_WORKSPACE_MODAL",
+    "MODAL_CLEAR_WORKSPACE",
+    "ARG_CLEAR_WORKSPACE_ID",
+    "clearWorkspaceModalController",
+    ".restoreAfterContentReady(",
+    "clearWorkspaceModalController.save(",
+    "clearWorkspaceModalController.onDestroy()",
+    "current.localPlaylistId != targetId",
+    "latest?.localPlaylistId != targetId",
+    "currentPlaylistStore.clear()",
+)
+
+for needle in required_import:
+    if needle not in imp:
+        raise SystemExit(
+            "FAIL: Import shared clear-workspace lifecycle contract regressed: " + needle
+        )
+
+required_core = (
+    "class RestorableModalController(",
+    "fun restore(",
+    "fun save(",
+    "fun restoreAfterContentReady(",
+    "setOnDismissListener",
+)
+
+for needle in required_core:
+    if needle not in core:
+        raise SystemExit(
+            "FAIL: shared modal controller contract regressed: " + needle
+        )
+
+print("PASS: Import shared semantic clear-workspace lifecycle contract present")
+PY_IMPORT_MODAL
+fi
 
 grep -Fq 'layout / hierarchy reference only' "$R1" ||
   fail "prototype layout-only contract missing"
