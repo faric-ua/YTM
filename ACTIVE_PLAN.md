@@ -65,25 +65,23 @@ restore, save or another durable/remote action.
 
 If repository documents disagree, stop and reconcile them before implementation.
 
-## CURRENT TASK — selectable-text retention audit (#49) (2026-09-30)
+## CURRENT TASK — destructive-confirmation lifecycle matrix (#42) (2026-09-30)
 
-Goal: preserve active text selection across recreation only on the same logical content, covering both shared restorable dialogs and Activity-owned selectable text.
+Goal: audit every destructive/delete/clear/rollback confirmation and converge any gaps on the shared lifecycle-safe modal contract without changing the underlying destructive action, target identity, retry behavior, or remote/storage semantics.
 
 Current task checklist:
-- [x] Create this task-specific plan before modifying selectable-text behavior.
-- [x] Inventory every main Activity/shared dialog path that creates selectable TextViews. Activity-owned: Destination, History, Playlist, Quota, Review, Service; shared bodies: `UiChrome` standard/content dialogs.
-- [x] Classify each selectable surface as COVERED / GAP / INTENTIONAL_RESET. Controller-owned shared dialogs = COVERED; six Activity-owned surfaces = GAP; manual-restorable dialogs remain a #42 lifecycle-ownership dependency.
-- [x] Verify current shared modal implementation preserves start/end only when text identity matches and triggers no action. `SelectableTextState` matches count + full text and only calls selection restore; focus preservation will be strengthened in the Activity-gap patch.
-- [x] Patch verified Activity-owned GAPs using reusable `SelectableTextState`, with stable owning root/state bundles. Evidence: exact validated source `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`; shared and Activity-owned selectable-text contracts passed release preflight in run `36664955524`.
-- [x] Resolve the exact-HEAD validation blocker without weakening the MainActivity <4100 architectural cap. Exact validated source is 4093 lines; preflight reports the cap preserved in run `36664955524`.
-- [x] Re-run inventory and confirm no unexplained selectable-text source gap remains. Static audit reports shared restorable modals plus Activity-owned surfaces covered, same-logical-text restore only, and changed content fails closed.
-- [x] Record #49 source audit/result in `docs/v.1.4.55/CURRENT_STATE.md`.
-- [x] Mark persistent Phase A selectable-text checkbox after source coverage completion. Real-phone acceptance remains deferred to the consolidated Phase A phone matrix.
-- [x] Verify live branch/files and set the next exact Phase A action. Exact code checkpoint: `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`; Validate Android run `36664955524` = SUCCESS. Next source task: destructive-confirmation lifecycle matrix (#42).
+- [x] Recover live branch/HEAD/Actions state and confirm the sleep checkpoint is green. Evidence: HEAD `fd1d851d95855bcc69baca3058701a0ce7429272`; run `36665775412` = SUCCESS.
+- [x] Read issue #42 plus the shared UI/window, responsive-action, UX-safety, current v1.4.55 plan/phone-test, `RestorableModalController`, `UiChrome`, and current static-audit contracts.
+- [ ] Inventory every destructive confirmation runtime entry point: History record/delete-all, Playlist/local workspace, Queue/Pending, Data/backup/file utilities, Service/cache/reset flows, Bulk rollback/destructive actions, and any other danger-confirm/direct dialog path.
+- [ ] Classify every inventoried path as COVERED / GAP / INTENTIONAL-NONMODAL and record owner, exact target identity, restore behavior, Back/outside-cancel semantics, explicit-confirm execution, and danger visual semantics.
+- [ ] Patch only verified GAPs through `RestorableModalController` / the canonical shared modal pipeline; preserve exact existing action callbacks and ensure recreation never executes them.
+- [ ] Strengthen static enforcement so new destructive confirmations cannot bypass lifecycle-safe ownership or reintroduce native/direct non-restorable dialog paths.
+- [ ] Re-run the inventory and prove no unexplained destructive-confirmation GAP remains.
+- [ ] Record #42 source result and representative phone matrix (History delete + destructive utility clear + Bulk rollback) in v1.4.55 state/QA docs; do not claim phone PASS before device evidence.
+- [ ] Refresh generated artifacts and run the relevant static/release gates on the exact source HEAD.
+- [ ] Mark #42 source/static/build complete only after exact-HEAD Validate Android PASS; keep phone acceptance in the consolidated Phase A matrix.
 
 Crash rule: after context loss, resume from the first unchecked checkbox above after `AGENTS.md` → `ACTIVE_PLAN.md`.
-
-
 
 ## SLEEP CHECKPOINT — 2026-09-30
 
@@ -201,9 +199,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Start destructive-confirmation lifecycle matrix (#42).**
+**Inventory every destructive confirmation runtime entry point for #42.**
 
-First create a task-local checklist. Audit every destructive confirmation owner for rotation/recreation, Back/outside-cancel semantics, exact target identity, and explicit-action-only execution. Preserve the validated application-code checkpoint `bc6e1c136130d899e9eae8a03c11ab5e88661b7f` and do not start Phase B.
+Build the complete matrix before changing app code. For each path capture owner, destructive target identity, current modal mechanism, rotation/recreation behavior from source, Back/outside-cancel behavior, explicit-confirm callback, and danger semantics. Then patch only verified GAPs.
 
 ## Update rule
 

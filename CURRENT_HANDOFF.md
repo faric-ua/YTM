@@ -33,7 +33,7 @@ Validated application-code point before the docs-only checkpoint:
 No more application-source changes were made after `bc6e1c136130d899e9eae8a03c11ab5e88661b7f` before this sleep checkpoint.
 The checkpoint commit itself is documentation/manifest-only.
 
-**Resume tomorrow:** do not reopen #49 source work. Start Phase A destructive-confirmation lifecycle matrix **#42**, with a task-local checklist first. Phase B remains blocked until Phase A is coherent and later receives its consolidated phone matrix.
+**Active now:** Phase A destructive-confirmation lifecycle matrix **#42**. The task-local checklist is in `ACTIVE_PLAN.md`; first unchecked action is the full destructive runtime inventory. #49 remains closed at source/static/build level and is not being reopened.
 
 ## Immutable functional reference
 
