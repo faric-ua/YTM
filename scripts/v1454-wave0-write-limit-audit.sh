@@ -21,6 +21,7 @@ LIMIT_TEST="app/src/test/java/com/saney/ytmimporter/youtube/YouTubeLimitPolicyTe
 PAUSE_TEST="app/src/test/java/com/saney/ytmimporter/write/WritePausePolicyTest.kt"
 BUGS="docs/v.1.4.54/qa/BUG_REGISTER.md"
 PHONE="docs/v.1.4.54/qa/PHONE_TEST.md"
+META="docs/v.1.4.54/RELEASE_META.json"
 CURRENT_STORE="app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 PROJECT_CODEC="app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt"
 LINKAGE="app/src/main/java/com/saney/ytmimporter/model/PlaylistLinkagePolicy.kt"
@@ -36,14 +37,16 @@ RECOVERY_TEST="app/src/test/java/com/saney/ytmimporter/history/HistoryRecoveryPo
 for path in \
   "$BUILD" "$LIMIT" "$API" "$PAUSE" "$WRITE" "$PENDING" "$STORE" \
   "$QUEUE" "$MAIN" "$HISTORY" "$ERRORS" "$LIMIT_TEST" "$PAUSE_TEST" \
-  "$BUGS" "$PHONE" "$CURRENT_STORE" "$PROJECT_CODEC" "$LINKAGE" \
+  "$BUGS" "$PHONE" "$META" "$CURRENT_STORE" "$PROJECT_CODEC" "$LINKAGE" \
   "$LINKAGE_TEST" "$PLAYLIST_UI" "$HISTORY_UI" "$REVIEW" "$IMPORT"   "$RESTORABLE" "$RECOVERY" "$RECOVERY_TEST"
 do
   test -f "$path" || fail "missing v1.4.54 Wave 0 artifact: $path"
 done
 
-grep -Fq 'versionCode = 97' "$BUILD" || fail "versionCode 97 missing"
-grep -Fq 'versionName = "1.4.54"' "$BUILD" || fail "versionName 1.4.54 missing"
+grep -Fq '"versionCode": 97' "$META" ||
+  fail "historical v1.4.54 versionCode 97 evidence missing"
+grep -Fq '"versionName": "1.4.54"' "$META" ||
+  fail "historical v1.4.54 versionName evidence missing"
 
 for kind in DAILY_QUOTA RATE_LIMIT RESOURCE_LIMIT UNKNOWN_429; do
   grep -Fq "$kind" "$LIMIT" || fail "limit kind missing: $kind"
