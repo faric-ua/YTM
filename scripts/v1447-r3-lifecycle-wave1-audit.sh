@@ -194,7 +194,52 @@ PY_DATA_MODAL
 fi
 
 grep -Fq 'STATE_REPLACEMENT_DIALOG_OPEN' "$PLAYLIST" || fail "Playlist replacement lifecycle state regressed"
-grep -Fq 'STATE_CLEAR_WORKSPACE_DIALOG_OPEN' "$IMPORT" || fail "Import clear-workspace lifecycle state regressed"
+
+# Import originally used STATE_CLEAR_WORKSPACE_DIALOG_OPEN. Newer releases may
+# preserve the same invariant through the shared RestorableModalController.
+if grep -Fq 'STATE_CLEAR_WORKSPACE_DIALOG_OPEN' "$IMPORT"; then
+  echo "PASS: Import legacy clear-workspace lifecycle state present"
+else
+  MODAL_CORE="app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt"
+  test -f "$MODAL_CORE" ||
+    fail "Import shared restorable modal controller missing"
+
+  python - "$IMPORT" "$MODAL_CORE" <<'PY_IMPORT_MODAL'
+from pathlib import Path
+import sys
+
+imp = Path(sys.argv[1]).read_text(encoding="utf-8")
+core = Path(sys.argv[2]).read_text(encoding="utf-8")
+
+for needle in (
+    "private lateinit var clearWorkspaceModalController:",
+    "RestorableModalController",
+    "STATE_CLEAR_WORKSPACE_MODAL",
+    "MODAL_CLEAR_WORKSPACE",
+    "ARG_CLEAR_WORKSPACE_ID",
+    ".restoreAfterContentReady(",
+    "clearWorkspaceModalController.save(",
+    "clearWorkspaceModalController.onDestroy()",
+):
+    if needle not in imp:
+        raise SystemExit(
+            "FAIL: Import shared lifecycle contract regressed: " + needle
+        )
+
+for needle in (
+    "class RestorableModalController(",
+    "fun restore(",
+    "fun save(",
+    "fun restoreAfterContentReady(",
+):
+    if needle not in core:
+        raise SystemExit(
+            "FAIL: shared modal controller contract regressed: " + needle
+        )
+
+print("PASS: Import shared semantic clear-workspace lifecycle contract present")
+PY_IMPORT_MODAL
+fi
 
 echo "PASS:"
 echo "- UiChrome showMenuDialog returns the canonical fixed-footer Dialog"
