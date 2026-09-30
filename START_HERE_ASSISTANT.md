@@ -50,30 +50,26 @@ Primary branch: `main`
 
 Current development application:
 
-- versionName: **1.4.54**
-- versionCode: **97**
-- release focus: **History Recovery / Safe Bulk Sync**
-- release status: **development — Wave 0 BUG-039 W0+ / PHONE PASS; UX-030 + History Recovery next**
-- active branch: `feat/v1.4.54-history-bulk-sync`
-- release-start base / latest stable app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`
-- accepted stable release: **v1.4.53 — Quota Recovery / Durable Resume**
+- versionName: **1.4.55**
+- versionCode: **98**
+- release focus: **UX Hardening / Control**
+- release status: **development — Wave A in progress / not phone tested**
+- active branch: `feat/v1.4.55-ux-hardening`
+- immutable functional reference: `e553c6dcb0f918a51f40bfa4d783cb11b3086472` (phone-accepted v1.4.54 Tests 1–9)
+- public stable release remains: **v1.4.53 — Quota Recovery / Durable Resume**
 - stable app checkpoint: `checkpoint-v1.4.53-phone-pass`
 - accepted stable app source: `ce8a1d5d039873eaa1c382a6ed52c4a4e3d7cfa5`
 - accepted stable signed run: `36195438071`
 - stable publisher run: `36250364471` — **PASS**
 - stable OTA equal-version smoke: **PASS**
-- current architecture wave: **Wave 0 / BUG-039 write-limit safety**
-- BUG-036: **CLOSED / PHONE PASS** — durable SEARCH Queue resume.
-- BUG-037: **CLOSED / PHONE RETEST PASS** — Search quota separated from non-Search units.
-- BUG-038: **CLOSED / CONTROLLED RETEST PASS** — no History deletion reproduced.
-- BUG-039: structured write-limit classification implemented in Wave 0; generic HTTP 429 no longer proves daily quota.
-- UX-029: **CLOSED / PHONE PASS**.
-- UX-030: planned next for explicit local ↔ YTM linkage visibility.
-- retryable write limits preserve the WRITE job and require explicit manual Resume; no automatic retry loop.
-- Wave 0 final validation: **PASS**, run `36257890045`, source `9daa9027981551539d2fdfa76d08faa4620aeee6`
-- Wave 0 signed candidate: **PASS**, run `36261268460`, same source
-- Wave 0 phone smoke: **W0+** — state preserved; Queue clean; controlled create/add 4/4, errors 0
-- next release step: **UX-030 explicit linkage visibility → History Recovery foundation; Bulk Sync later**
+- current architecture wave: **Wave A / shared non-functional UX hardening**
+- v1.4.54 History Recovery + Safe Bulk Sync functional series: **Tests 1–9 PHONE PASS**
+- v1.4.54 is not published as stable because the accepted source contains deterministic phone-QA fault controls
+- v1.4.55 compile-gates those QA controls behind `BuildConfig.DEBUG` and preserves v1.4.54 functional semantics
+- Wave A focus: readability/control wording, shared action layout, destructive-modal lifecycle, scroll/selectable-text retention, and transient-message audit
+- safety contract: `docs/design/UX_CHANGE_SAFETY_CONTRACT.md`
+- master plan: `docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md`
+- next release step: **complete exact-HEAD preflight, then continue Wave A without changing API/identity/Queue/History/backup/rollback semantics**
 - UI vocabulary contract: `docs/design/TILE_UI_CONTRACT.md`
 - BUG-005 / Q-005 remains **CLOSED — PHONE RETEST PASS v1.4.27**
 
