@@ -66,9 +66,9 @@ python - "$HISTORY" <<'PY_HISTORY'
 from pathlib import Path
 import sys
 
-text = Path(sys.argv[1]).read_text()
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
 
-for needle in (
+legacy_needles = (
     "private var clearHistoryDialogOpen = false",
     "private var clearHistoryDialog: Dialog? = null",
     "KEY_CLEAR_HISTORY_DIALOG_OPEN",
@@ -77,11 +77,9 @@ for needle in (
     "clearHistoryDialogOpen = true",
     "clearHistoryDialog =\n            UiChrome.showDangerConfirmDialog(",
     "dialog.setOnDismissListener {",
-):
-    if needle not in text:
-        raise SystemExit(
-            "FAIL: History clear-confirm lifecycle contract missing: " + needle
-        )
+)
+
+legacy = all(needle in text for needle in legacy_needles)
 
 create_start = text.index("override fun onCreate(")
 create_end = text.index("override fun onSaveInstanceState", create_start)
@@ -92,21 +90,97 @@ if "historyStore.clear()" in create_block:
         "FAIL: History recreation path must never auto-clear history"
     )
 
-confirm_start = text.index("private fun confirmClearHistory()")
-confirm_end = text.index("private fun buildHistorySummary(", confirm_start)
-confirm_block = text[confirm_start:confirm_end]
+if legacy:
+    confirm_start = text.index("private fun confirmClearHistory()")
+    confirm_end = text.index("private fun buildHistorySummary(", confirm_start)
+    confirm_block = text[confirm_start:confirm_end]
 
-if confirm_block.count("historyStore.clear()") != 1:
-    raise SystemExit(
-        "FAIL: clear operation must remain explicit and unique"
+    if confirm_block.count("historyStore.clear()") != 1:
+        raise SystemExit(
+            "FAIL: legacy clear operation must remain explicit and unique"
+        )
+
+    if "clearHistoryDialog\n                ?.isShowing == true" not in confirm_block:
+        raise SystemExit(
+            "FAIL: legacy duplicate clear-confirm guard missing"
+        )
+
+    print("PASS: History legacy clear-confirm restores without automatic clear")
+else:
+    required = (
+        "RestorableModalController",
+        "private enum class DestructiveModal",
+        "DestructiveModal.CLEAR_ALL",
+        "historyDestructiveModalController",
+        "restoreHistoryDestructiveModalAfterContentReady()",
+        ".restoreAfterContentReady(",
+        "historyDestructiveModalController.save(",
+        "historyDestructiveModalController.onDestroy()",
+        "private fun renderHistoryDestructiveModal(",
     )
+    for needle in required:
+        if needle not in text:
+            raise SystemExit(
+                "FAIL: History shared clear-confirm lifecycle contract missing: "
+                + needle
+            )
 
-if "clearHistoryDialog\n                ?.isShowing == true" not in confirm_block:
-    raise SystemExit(
-        "FAIL: duplicate clear-confirm guard missing"
+    confirm_start = text.index("private fun confirmClearHistory()")
+    restore_start = text.index(
+        "private fun restoreHistoryDestructiveModalAfterContentReady()",
+        confirm_start,
     )
+    confirm_block = text[confirm_start:restore_start]
 
-print("PASS: History clear-confirm restores without automatic clear")
+    if "historyStore.clear()" in confirm_block:
+        raise SystemExit(
+            "FAIL: History confirm entry point performs clear before explicit modal action"
+        )
+
+    for needle in (
+        "historyDestructiveModalController.show(",
+        "DestructiveModal.CLEAR_ALL.name",
+    ):
+        if needle not in confirm_block:
+            raise SystemExit(
+                "FAIL: History clear entry point does not route through semantic modal: "
+                + needle
+            )
+
+    render_start = text.index("private fun renderHistoryDestructiveModal(")
+    render_end = text.index("private fun buildHistorySummary(", render_start)
+    render_block = text[render_start:render_end]
+
+    if render_block.count("historyStore.clear()") != 1:
+        raise SystemExit(
+            "FAIL: shared History clear operation must remain explicit and unique"
+        )
+
+    clear_case = render_block.index("DestructiveModal.CLEAR_ALL ->")
+    clear_block = render_block[clear_case:]
+    for needle in (
+        "if (currentEntryId != null)",
+        "historyStore.getAll()",
+        "UiChrome.showDangerConfirmDialog(",
+        "onCancel = {",
+        "historyDestructiveModalController",
+        ".clearState()",
+        "historyStore.clear()",
+    ):
+        if needle not in clear_block:
+            raise SystemExit(
+                "FAIL: shared History clear-confirm contract regressed: " + needle
+            )
+
+    clear_pos = clear_block.index("historyStore.clear()")
+    dialog_pos = clear_block.index("UiChrome.showDangerConfirmDialog(")
+    if clear_pos < dialog_pos:
+        raise SystemExit(
+            "FAIL: History clear executes before explicit danger-confirm callback"
+        )
+
+    print("PASS: History shared semantic clear-confirm restores without automatic clear")
+
 PY_HISTORY
 
 grep -Fq 'Initial signed Wave 1 phone result: `1- / 2+ / 3-`' "$PHONE" ||
