@@ -290,6 +290,34 @@ object HomeDashboardChrome {
         }
     }
 
+    fun addBottomNavigation(
+        activity: Activity,
+        root: LinearLayout,
+        onSearch: () -> Unit,
+        onPlaylist: () -> Unit,
+        onService: () -> Unit
+    ) {
+        root.addView(
+            bottomNavigation(
+                activity = activity,
+                onSearch = onSearch,
+                onPlaylist = onPlaylist,
+                onService = onService
+            ),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(
+                    dp(activity, 8),
+                    0,
+                    dp(activity, 8),
+                    dp(activity, 8)
+                )
+            }
+        )
+    }
+
     fun bottomNavigation(
         activity: Activity,
         onSearch: () -> Unit,
