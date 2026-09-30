@@ -12,8 +12,9 @@ Last updated: **2026-09-30**
 - Repository: `faric-ua/YTM`
 - Release: **v1.4.55 / Phase A — UX hardening**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Current live HEAD: `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`
-- HEAD commit: `fix: unify destructive confirmation lifecycle`
+- Current app/source HEAD: `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`
+- Source commit: `fix: unify destructive confirmation lifecycle`
+- Do not pin the mutable branch HEAD here: recovery/docs commits advance it. Always verify branch HEAD live.
 - Active task: **#42 — destructive-confirmation lifecycle matrix**
 - v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
 - Phase B is not active yet.
@@ -33,7 +34,7 @@ Last updated: **2026-09-30**
 
 ## Current blocker / exact stop point
 
-Latest Validate Android run for the live HEAD:
+Latest Validate Android run for the current app/source HEAD:
 
 - Run: **36701906084**
 - Result: **FAILURE**
