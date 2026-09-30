@@ -164,7 +164,7 @@ fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWri
 071bf2751d4693fa  app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt
 8ab47c848ec9c8b3  app/src/main/java/com/saney/ytmimporter/ui/SafFileSaveFlow.kt
 4259ded3e99f84ee  app/src/main/java/com/saney/ytmimporter/ui/ScrollPositionState.kt
-1d507472db3cbfa5  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextState.kt
+c930f8781965f59d  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextState.kt
 5020cb0274b7a831  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextSurfaceState.kt
 9280056bf2b0b6b0  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
 0fedcabd592d15df  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
