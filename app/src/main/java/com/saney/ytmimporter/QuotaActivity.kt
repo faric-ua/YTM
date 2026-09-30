@@ -18,6 +18,7 @@ import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.ScrollPositionState
+import com.saney.ytmimporter.ui.SelectableTextSurfaceState
 import com.saney.ytmimporter.ui.UiChrome
 
 class QuotaActivity : Activity() {
@@ -31,6 +32,11 @@ class QuotaActivity : Activity() {
             STATE_SCROLL_POSITION
         )
 
+    private val selectableTextSurfaceState =
+        SelectableTextSurfaceState(
+            STATE_SELECTABLE_TEXT
+        )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
@@ -41,6 +47,9 @@ class QuotaActivity : Activity() {
             PendingJobStore(this)
 
         scrollPosition.restore(
+            savedInstanceState
+        )
+        selectableTextSurfaceState.restore(
             savedInstanceState
         )
 
@@ -71,6 +80,9 @@ class QuotaActivity : Activity() {
             } else {
                 null
             }
+        )
+        selectableTextSurfaceState.save(
+            outState
         )
         super.onSaveInstanceState(
             outState
@@ -383,6 +395,10 @@ class QuotaActivity : Activity() {
         scrollPosition.restoreInto(
             scrollView
         )
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId = SURFACE_QUOTA
+        )
     }
 
     private fun topBar():
@@ -675,6 +691,12 @@ class QuotaActivity : Activity() {
     companion object {
         private const val STATE_SCROLL_POSITION =
             "quota_scroll_position"
+
+        private const val STATE_SELECTABLE_TEXT =
+            "quota_selectable_text"
+
+        private const val SURFACE_QUOTA =
+            "quota"
 
         const val EXTRA_ACTION =
             "quota_action"
