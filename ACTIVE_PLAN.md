@@ -65,24 +65,22 @@ restore, save or another durable/remote action.
 
 If repository documents disagree, stop and reconcile them before implementation.
 
-## CURRENT TASK — project-wide scroll-retention audit (#48) (2026-09-30)
+## CURRENT TASK — selectable-text retention audit (#49) (2026-09-30)
 
-Goal: identify every user-owned scrollable screen on the current v1.4.55 branch and close only real lifecycle viewport gaps without changing business behavior.
+Goal: preserve active text selection across recreation only on the same logical content, covering both shared restorable dialogs and Activity-owned selectable text.
 
 Current task checklist:
-- [x] Create this task-specific plan before modifying scroll behavior.
-- [x] Inventory every main-source Kotlin screen using `ScrollView`, `ListView`, or equivalent user viewport. Result: 17 Activity owning screens; no Recycler/Nested/Horizontal owning viewport gap.
-- [x] Classify each viewport as COVERED / INTENTIONAL_RESET / GAP with the owning screen/state key. Evidence: `docs/v.1.4.55/CURRENT_STATE.md` scroll-retention matrix.
-- [x] Inspect every GAP for dynamic-content identity so stale scroll is not restored onto a different object/page. Result: no owning-screen GAP; identity/reset contracts verified for Destination, History, Pending, Playlist, Review and Service.
-- [x] Patch only verified GAPs using shared/local lifecycle state; no API/storage/remote-action changes. Result: no code patch required; no verified owning-screen GAP remained.
-- [x] Re-run the inventory and confirm no unexplained owning-screen gaps remain. `UiChrome` dialog-internal scroll is outside #48 owning-screen scope; underlying Activity viewport remains covered.
-- [x] Record the scroll-retention audit result in `docs/v.1.4.55/CURRENT_STATE.md`. Evidence: commit `3c8649205ee72bdda3e8c8cd2e5b2011b28bdf0b`.
-- [x] Mark persistent Phase A scroll-retention checkbox only if the source audit is actually complete. Source audit PASS; #48 remains phone-QA open.
-- [x] Verify live branch/files and set the next exact Phase A action. Evidence: live HEAD `9697c0bd510cf8fe48a2f82a43dd0748f8984c8c`; next item is BUG-049 selectable-text retention.
+- [x] Create this task-specific plan before modifying selectable-text behavior.
+- [ ] Inventory every main Activity/shared dialog path that creates selectable TextViews.
+- [ ] Classify each selectable surface as COVERED / GAP / INTENTIONAL_RESET.
+- [ ] Verify current shared modal implementation preserves start/end only when text identity matches and triggers no action.
+- [ ] Patch verified Activity-owned GAPs using reusable `SelectableTextState`, with stable owning root/state bundles.
+- [ ] Re-run inventory and confirm no unexplained selectable-text source gap remains.
+- [ ] Record #49 source audit/result in `docs/v.1.4.55/CURRENT_STATE.md`.
+- [ ] Mark persistent Phase A selectable-text checkbox only if source coverage is complete.
+- [ ] Verify live branch/files and set the next exact Phase A action.
 
-Task result: **CLOSED — #48 SOURCE AUDIT PASS; issue remains open for consolidated phone acceptance.**
-
-Crash rule: after context loss, resume from the first unchecked persistent checklist item after `AGENTS.md` → `ACTIVE_PLAN.md`.
+Crash rule: after context loss, resume from the first unchecked checkbox above after `AGENTS.md` → `ACTIVE_PLAN.md`.
 
 
 
