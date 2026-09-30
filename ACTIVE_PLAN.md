@@ -75,6 +75,7 @@ Current task checklist:
 - [x] Classify each selectable surface as COVERED / GAP / INTENTIONAL_RESET. Controller-owned shared dialogs = COVERED; six Activity-owned surfaces = GAP; manual-restorable dialogs remain a #42 lifecycle-ownership dependency.
 - [x] Verify current shared modal implementation preserves start/end only when text identity matches and triggers no action. `SelectableTextState` matches count + full text and only calls selection restore; focus preservation will be strengthened in the Activity-gap patch.
 - [ ] Patch verified Activity-owned GAPs using reusable `SelectableTextState`, with stable owning root/state bundles.
+- [ ] Resolve the exact-HEAD validation blocker without weakening the MainActivity <4100 architectural cap: v1.4.55 Home scroll retention pushed MainActivity from the accepted baseline edge to 4136 lines.
 - [ ] Re-run inventory and confirm no unexplained selectable-text source gap remains.
 - [ ] Record #49 source audit/result in `docs/v.1.4.55/CURRENT_STATE.md`.
 - [ ] Mark persistent Phase A selectable-text checkbox only if source coverage is complete.
