@@ -95,16 +95,23 @@ or storage behavior.
 Current task checklist:
 - [x] Carry forward green checkpoint `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`,
   Validate Android run `36758197893` = SUCCESS.
-- [ ] Read issues #47/#26/#37 plus `RESPONSIVE_ACTION_LAYOUT_CONTRACT.md`,
+- [x] Read issues #47/#26/#37 plus `RESPONSIVE_ACTION_LAYOUT_CONTRACT.md`,
   `UI_WINDOW_QA_CONTRACT.md`, `UiChrome`, and current action-layout audits.
-- [ ] Inventory full-screen and dialog/footer action groups; classify each as
-  shared-policy COVERED / intentional exception / GAP.
-- [ ] Verify label-fit, narrow-width stacking, danger emphasis, and callback/order
-  preservation.
-- [ ] Patch only verified presentation/layout GAPs through the shared primitive.
-- [ ] Strengthen static enforcement against one-off layout regressions.
-- [ ] Record source result and representative phone targets.
-- [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS.
+- [x] Inventory full-screen and dialog/footer action groups. Evidence:
+  `docs/v.1.4.55/ACTION_LAYOUT_AUDIT_2026-09-30.md`.
+- [x] Verify label-fit, narrow-width stacking, danger emphasis, and callback/order
+  preservation. Existing shared fit commits `75f8d79` / `59fe9be` /
+  `ad92a55` already converge AUTO screen + dialog decisions.
+- [x] Patch only verified presentation/layout GAPs: Quota fixed footer and URL
+  Snapshot duplicate chooser now use the shared adaptive renderer; callbacks are
+  unchanged.
+- [x] Strengthen static enforcement against one-off layout regressions: Quota is
+  mandatory in FULLSCREEN_FOOTERS; URL duplicate chooser may not restore a forced
+  `choiceRow` or compact auto-shrink path.
+- [x] Record source result and representative phone targets in the action-layout
+  audit; phone PASS remains pending.
+- [x] Refresh generated artifacts for this source/audit batch.
+- [ ] Require exact-HEAD Validate Android PASS for the current action-layout batch.
 - [ ] Keep real-device layout acceptance in the consolidated Phase A phone matrix.
 
 Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
@@ -226,12 +233,12 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Start the #47/#26/#37 shared action-layout audit.**
+**Validate the #47/#26/#37 action-layout source batch on the exact branch HEAD.**
 
-Read the three issues and responsive/window contracts, then inventory current
-full-screen and dialog/footer action groups against the existing shared
-width-first/label-fit policy. Preserve callbacks and business semantics; patch only
-verified presentation/layout GAPs.
+The two verified fixed-footer GAPs are patched and static enforcement is updated.
+Run/verify Validate Android. If preflight, JVM tests and unsigned assemble all pass,
+record #47 source/static/build PASS while keeping real-phone acceptance in the
+consolidated Phase A matrix.
 
 ## Update rule
 

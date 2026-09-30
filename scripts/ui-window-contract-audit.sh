@@ -22,6 +22,7 @@ FULLSCREEN_FOOTERS=(
   "$SRC/ListSelectorActivity.kt"
   "$SRC/BulkSyncPreviewActivity.kt"
   "$SRC/BulkSyncSessionActivity.kt"
+  "$SRC/QuotaActivity.kt"
   "$SRC/UrlSnapshotActivity.kt"
 )
 
@@ -136,6 +137,27 @@ for f in "${FULLSCREEN_FOOTERS[@]}"; do
   grep -Fq 'addAdaptiveActionButtons(' "$f" ||
     fail "$(basename "$f") does not use the shared adaptive footer renderer"
 done
+
+URL_SNAPSHOT="$SRC/UrlSnapshotActivity.kt"
+URL_DUPLICATE_FOOTER="$(
+  awk '
+    /private fun resolvedActionFooter\(/ { capture=1 }
+    capture {
+      if (seen && /private fun footerShell\(/) exit
+      print
+      seen=1
+    }
+  ' "$URL_SNAPSHOT"
+)"
+
+[ "$(grep -Fc 'addAdaptiveActionButtons(' <<<"$URL_DUPLICATE_FOOTER")" -ge 2 ] ||
+  fail "URL Snapshot duplicate chooser bypasses the shared adaptive renderer"
+if grep -Fq 'val choiceRow' <<<"$URL_DUPLICATE_FOOTER"; then
+  fail "URL Snapshot duplicate chooser returned to a forced horizontal row"
+fi
+if grep -Fq 'compactChoiceButton(' <<<"$URL_DUPLICATE_FOOTER"; then
+  fail "URL Snapshot duplicate chooser shrinks labels instead of stacking"
+fi
 
 for f in "${HELP_OWNERS[@]}"; do
   grep -Fq 'STATE_HELP_DIALOG_OPEN' "$f" ||

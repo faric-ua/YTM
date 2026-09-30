@@ -115,17 +115,14 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-1. Read #47/#26/#37 and the responsive/window contracts.
-2. Inventory full-screen + dialog action groups against the shared adaptive policy.
-3. Patch only verified presentation/layout GAPs; preserve callbacks/semantics.
-4. Continue Bulk/transient-message/readability/skin Phase A work.
-5. Re-run exact-HEAD validation after the coherent Phase A source batch.
-6. Build one consolidated signed phone candidate and run #42 + scroll +
-   selectable-text + layout acceptance together.
-7. Start Phase B only after Phase A is coherent.
+#47/#26/#37 inventory is complete. Two fixed-footer GAPs were found and patched:
+Quota fixed footer and URL Snapshot duplicate chooser. Both now use the shared
+adaptive renderer; existing callbacks are unchanged. Static enforcement was
+expanded and the source audit is recorded in
+`docs/v.1.4.55/ACTION_LAYOUT_AUDIT_2026-09-30.md`.
 
-A fresh session resumes from `RESUME_HERE.md` and the first unchecked CURRENT TASK
-item, never from chat memory or a historical sleep checkpoint.
+**Next:** require exact-HEAD Validate Android PASS for this source batch. Phone
+acceptance remains deferred to the consolidated Phase A matrix.
 
 ## Working contract
 

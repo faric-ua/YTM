@@ -998,7 +998,7 @@ class UrlSnapshotActivity : Activity() {
                 )
 
                 val allButton =
-                    compactChoiceButton(
+                    actionButton(
                         label =
                             "Всі (${resolved.items.size})",
                         primary =
@@ -1014,7 +1014,7 @@ class UrlSnapshotActivity : Activity() {
                     }
 
                 val uniqueButton =
-                    compactChoiceButton(
+                    actionButton(
                         label =
                             "Унікальні (${resolved.items.size - analysis.duplicateOccurrences})",
                         primary =
@@ -1030,7 +1030,7 @@ class UrlSnapshotActivity : Activity() {
                     }
 
                 val cancelButton =
-                    compactChoiceButton(
+                    actionButton(
                         label =
                             "Скасувати",
                         primary =
@@ -1041,43 +1041,38 @@ class UrlSnapshotActivity : Activity() {
                         buildUi()
                     }
 
-                val choiceRow =
+                val choiceActions =
                     LinearLayout(
                         this@UrlSnapshotActivity
                     ).apply {
                         orientation =
-                            LinearLayout.HORIZONTAL
-                        isBaselineAligned =
-                            false
-                        gravity =
-                            Gravity.CENTER_VERTICAL
+                            LinearLayout.VERTICAL
                     }
 
-                listOf(
-                    allButton,
-                    uniqueButton,
-                    cancelButton
-                ).forEachIndexed {
-                        index,
-                        button ->
-
-                    choiceRow.addView(
-                        button,
-                        LinearLayout.LayoutParams(
-                            0,
-                            dp(58),
-                            1f
-                        ).apply {
-                            if (index > 0) {
-                                marginStart =
-                                    dp(5)
-                            }
-                        }
+                UiChrome
+                    .addAdaptiveActionButtons(
+                        activity =
+                            this@UrlSnapshotActivity,
+                        container =
+                            choiceActions,
+                        buttons =
+                            listOf(
+                                allButton,
+                                uniqueButton,
+                                cancelButton
+                            ),
+                        buttonHeightDp =
+                            58,
+                        tones =
+                            listOf(
+                                UiChrome.ActionTone.ACCENT,
+                                UiChrome.ActionTone.NORMAL,
+                                UiChrome.ActionTone.NORMAL
+                            )
                     )
-                }
 
                 addView(
-                    choiceRow,
+                    choiceActions,
                     LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams
                             .MATCH_PARENT,
@@ -1420,39 +1415,6 @@ class UrlSnapshotActivity : Activity() {
                             topMarginDp
                         )
                 }
-        }
-
-    private fun compactChoiceButton(
-        label: String,
-        primary: Boolean,
-        action: () -> Unit
-    ): Button =
-        actionButton(
-            label =
-                label,
-            primary =
-                primary,
-            action =
-                action
-        ).apply {
-            maxLines =
-                1
-
-            setPadding(
-                dp(5),
-                dp(8),
-                dp(5),
-                dp(8)
-            )
-
-            UiChrome
-                .autoSizeButton(
-                    this,
-                    minSp =
-                        8,
-                    maxSp =
-                        13
-                )
         }
 
     private fun dp(

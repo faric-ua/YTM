@@ -19,6 +19,8 @@ Last updated: **2026-09-30**
 - Validate Android run **36758197893 — SUCCESS**
   (preflight PASS / JVM PASS / unsigned assemble PASS)
 - Active task: **#47/#26/#37 — shared adaptive action layout**
+- Current source batch: Quota fixed footer + URL Snapshot duplicate chooser migrated
+  to the shared adaptive renderer; exact-HEAD CI validation is the next gate.
 - v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
 - Phase B is not active yet.
 
@@ -39,13 +41,12 @@ Destructive-confirmation lifecycle source/static/build work is **PASS**:
 
 ## NEXT ACTION — do this first
 
-1. Read issues **#47, #26, #37**.
-2. Read `docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md`,
-   `docs/design/UI_WINDOW_QA_CONTRACT.md`, current `UiChrome`, and action-layout audits.
-3. Inventory full-screen and dialog/footer action groups.
-4. Classify shared-policy COVERED / intentional exception / GAP.
-5. Patch only verified presentation/layout GAPs; do not change callbacks, request
-   ordering, storage, or remote semantics.
+1. Verify Validate Android on the live branch HEAD carrying the #47 source batch.
+2. Require Release preflight, JVM tests and unsigned release assemble to PASS.
+3. If green, record #47 source/static/build PASS.
+4. Keep phone acceptance pending for Quota, URL duplicate chooser, rollback,
+   ordinary/destructive dialogs, rotation and skins.
+5. Continue to the next Phase A item only after the exact-head gate is green.
 
 ## Mandatory recovery order
 

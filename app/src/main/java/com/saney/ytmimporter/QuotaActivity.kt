@@ -453,7 +453,7 @@ class QuotaActivity : Activity() {
         LinearLayout =
         LinearLayout(this).apply {
             orientation =
-                LinearLayout.HORIZONTAL
+                LinearLayout.VERTICAL
             setPadding(
                 dp(12),
                 dp(10),
@@ -461,21 +461,15 @@ class QuotaActivity : Activity() {
                 dp(10)
             )
 
-            addView(
+            val googleCloudButton =
                 actionButton(
                     label = "Google Cloud",
                     primary = false
                 ) {
                     openGoogleCloudQuota()
-                },
-                LinearLayout.LayoutParams(
-                    0,
-                    dp(54),
-                    1f
-                )
-            )
+                }
 
-            addView(
+            val queueButton =
                 actionButton(
                     label = "Черга",
                     primary = true
@@ -488,15 +482,22 @@ class QuotaActivity : Activity() {
                         )
                     )
                     finish()
-                },
-                LinearLayout.LayoutParams(
-                    0,
-                    dp(54),
-                    1f
-                ).apply {
-                    marginStart =
-                        dp(8)
                 }
+
+            UiChrome.addAdaptiveActionButtons(
+                activity = this@QuotaActivity,
+                container = this,
+                buttons =
+                    listOf(
+                        googleCloudButton,
+                        queueButton
+                    ),
+                buttonHeightDp = 54,
+                tones =
+                    listOf(
+                        UiChrome.ActionTone.NORMAL,
+                        UiChrome.ActionTone.ACCENT
+                    )
             )
         }
 
