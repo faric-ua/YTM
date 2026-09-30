@@ -30,6 +30,7 @@ import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.updater.UpdaterRemoteOperations
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.ui.ScrollPositionState
+import com.saney.ytmimporter.ui.SelectableTextSurfaceState
 import com.saney.ytmimporter.youtube.SearchCache
 import java.io.File
 import java.text.SimpleDateFormat
@@ -60,6 +61,11 @@ class ServiceActivity : Activity() {
     private val screenScrollPosition =
         ScrollPositionState(
             KEY_SCREEN_SCROLL_Y
+        )
+
+    private val selectableTextSurfaceState =
+        SelectableTextSurfaceState(
+            KEY_SELECTABLE_TEXT
         )
 
     private var renderedPage:
@@ -102,6 +108,9 @@ class ServiceActivity : Activity() {
                 ?: Page.HOME
 
         screenScrollPosition.restore(
+            savedInstanceState
+        )
+        selectableTextSurfaceState.restore(
             savedInstanceState
         )
         renderedPage =
@@ -147,6 +156,9 @@ class ServiceActivity : Activity() {
             renderedPage?.name
         )
         serviceModalController.save(
+            outState
+        )
+        selectableTextSurfaceState.save(
             outState
         )
         super.onSaveInstanceState(outState)
@@ -1066,6 +1078,12 @@ class ServiceActivity : Activity() {
         screenScrollPosition.restoreInto(
             scroll
         )
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId =
+                "service:" +
+                    page.name
+        )
     }
 
     private fun topBar(title: String): LinearLayout =
@@ -1672,6 +1690,8 @@ class ServiceActivity : Activity() {
             "service_screen_scroll_y"
         private const val KEY_RENDERED_PAGE =
             "service_rendered_page"
+        private const val KEY_SELECTABLE_TEXT =
+            "service_selectable_text"
 
         private val BACKGROUND = Color.rgb(15, 16, 19)
         private val SURFACE = Color.rgb(25, 27, 32)
