@@ -1,6 +1,7 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.ScrollPositionState
+import com.saney.ytmimporter.ui.SelectableTextSurfaceState
 import com.saney.ytmimporter.ui.UiChrome
 
 import android.app.Activity
@@ -83,6 +84,11 @@ class HistoryActivity : Activity() {
             KEY_DETAIL_SCROLL_POSITION
         )
 
+    private val selectableTextSurfaceState =
+        SelectableTextSurfaceState(
+            KEY_SELECTABLE_TEXT
+        )
+
     private val saveExportRequestCode = 3201
     private val saveExportFolderRequestCode = 3202
 
@@ -123,6 +129,9 @@ class HistoryActivity : Activity() {
                     KEY_DETAIL_SCROLL_ENTRY_ID
                 )
         detailScrollPosition.restore(
+            savedInstanceState
+        )
+        selectableTextSurfaceState.restore(
             savedInstanceState
         )
 
@@ -284,6 +293,9 @@ class HistoryActivity : Activity() {
         detailScrollPosition.save(
             outState,
             detailScrollView
+        )
+        selectableTextSurfaceState.save(
+            outState
         )
         super.onSaveInstanceState(outState)
     }
@@ -541,7 +553,14 @@ class HistoryActivity : Activity() {
             )
 
             setContentView(root)
-        UiChrome.applyScreenInsets(this, root)
+            UiChrome.applyScreenInsets(
+                this,
+                root
+            )
+            selectableTextSurfaceState.attach(
+                root = root,
+                newSurfaceId = SURFACE_LIST
+            )
             return
         }
 
@@ -569,6 +588,10 @@ class HistoryActivity : Activity() {
 
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId = SURFACE_LIST
+        )
 
         historyListView = list
 
@@ -1074,6 +1097,12 @@ class HistoryActivity : Activity() {
         UiChrome.applyScreenInsets(this, root)
         detailScrollPosition.restoreInto(
             scroll
+        )
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId =
+                SURFACE_DETAIL_PREFIX +
+                    entry.id
         )
     }
 
@@ -2783,6 +2812,15 @@ class HistoryActivity : Activity() {
 
         private const val KEY_DETAIL_SCROLL_ENTRY_ID =
             "history_detail_scroll_entry_id"
+
+        private const val KEY_SELECTABLE_TEXT =
+            "history_selectable_text"
+
+        private const val SURFACE_LIST =
+            "history:list"
+
+        private const val SURFACE_DETAIL_PREFIX =
+            "history:detail:"
 
         private val BACKGROUND =
             Color.rgb(
