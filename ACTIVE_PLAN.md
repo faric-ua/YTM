@@ -74,8 +74,8 @@ Current task checklist:
 - [x] Read issue #42 plus the shared UI/window, responsive-action, UX-safety, current v1.4.55 plan/phone-test, `RestorableModalController`, `UiChrome`, and current static-audit contracts.
 - [x] Inventory every destructive confirmation runtime entry point. Evidence: `docs/v.1.4.55/DESTRUCTIVE_CONFIRMATION_AUDIT_2026-09-30.md` records History, Import/workspace, Destination remote delete, Pending, Service, Data/recovery, Bulk rollback, and negative chooser/file-delete inventory.
 - [x] Classify every inventoried path as COVERED / GAP / INTENTIONAL-NONMODAL. Four GAPs are verified: History delete, History clear-all, Import clear-workspace, Destination remote playlist delete; Data/Service/Pending/Bulk are controller-owned.
-- [ ] Patch only verified GAPs through `RestorableModalController` / the canonical shared modal pipeline; preserve exact existing action callbacks and ensure recreation never executes them.
-- [ ] Strengthen static enforcement so new destructive confirmations cannot bypass lifecycle-safe ownership or reintroduce native/direct non-restorable dialog paths.
+- [x] Patch only verified GAPs through `RestorableModalController` / the canonical shared modal pipeline. History delete/clear-all, Import clear-workspace and Destination remote delete now use semantic modal ownership; existing destructive callbacks are preserved and Import binds/revalidates exact `localPlaylistId`.
+- [x] Strengthen static enforcement in `scripts/ui-window-contract-audit.sh`: migrated owners plus Data/Pending/Service/Bulk rollback must use restorable ownership; exact target args and legacy manual-state regressions are checked; native `AlertDialog.Builder` remains forbidden.
 - [ ] Re-run the inventory and prove no unexplained destructive-confirmation GAP remains.
 - [ ] Record #42 source result and representative phone matrix (History delete + destructive utility clear + Bulk rollback) in v1.4.55 state/QA docs; do not claim phone PASS before device evidence.
 - [ ] Refresh generated artifacts and run the relevant static/release gates on the exact source HEAD.
@@ -199,9 +199,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Patch the four verified #42 lifecycle GAPs only.**
+**Re-run the #42 destructive-confirmation inventory against the patched source.**
 
-Migrate History delete/clear-all, Import clear-workspace, and Destination remote playlist delete to `RestorableModalController`. Preserve the existing destructive callbacks and exact target identity; Import must bind the modal to the current `localPlaylistId` and fail closed if it changed.
+Verify every inventoried path is COVERED / intentional nonmodal, no legacy manual destructive state remains, and the four migrations preserve their original callbacks. Then record the source result before exact-HEAD validation.
 
 ## Update rule
 

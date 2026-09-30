@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
 
@@ -110,12 +111,8 @@ class ImportActivity : Activity() {
         List<YouTubePlaylistInfo> =
         emptyList()
 
-    private var clearWorkspaceDialogOpen =
-        false
-
-    private var clearWorkspaceDialog:
-        Dialog? =
-        null
+    private lateinit var clearWorkspaceModalController:
+        RestorableModalController
 
     private val executor =
         Executors.newSingleThreadExecutor()
@@ -163,6 +160,15 @@ class ImportActivity : Activity() {
         historyStore =
             HistoryStore(this)
 
+        clearWorkspaceModalController =
+            RestorableModalController(
+                activity = this,
+                stateKey =
+                    STATE_CLEAR_WORKSPACE_MODAL
+            ).also {
+                it.restore(savedInstanceState)
+            }
+
         pendingSelectiveExport =
             decodeSelectiveExportState(
                 savedInstanceState
@@ -171,40 +177,17 @@ class ImportActivity : Activity() {
                     )
             )
 
-        clearWorkspaceDialogOpen =
-            savedInstanceState
-                ?.getBoolean(
-                    STATE_CLEAR_WORKSPACE_DIALOG_OPEN,
-                    false
-                )
-                ?: false
-
         scrollPosition.restore(
             savedInstanceState
         )
 
         buildUi()
 
-        if (clearWorkspaceDialogOpen) {
-            window.decorView.post {
-                val current =
-                    currentPlaylistStore
-                        .load()
-
-                if (
-                    current != null &&
-                    !isFinishing &&
-                    !isDestroyed
-                ) {
-                    confirmClearWorkspace(
-                        current.playlist.name
-                    )
-                } else {
-                    clearWorkspaceDialogOpen =
-                        false
-                }
-            }
-        }
+        clearWorkspaceModalController
+            .restoreAfterContentReady(
+                renderer =
+                    ::renderClearWorkspaceModal
+            )
     }
 
     override fun onSaveInstanceState(
@@ -217,9 +200,8 @@ class ImportActivity : Activity() {
             )
         )
 
-        outState.putBoolean(
-            STATE_CLEAR_WORKSPACE_DIALOG_OPEN,
-            clearWorkspaceDialogOpen
+        clearWorkspaceModalController.save(
+            outState
         )
 
         scrollPosition.save(
@@ -246,12 +228,7 @@ class ImportActivity : Activity() {
     }
 
     override fun onDestroy() {
-        clearWorkspaceDialog
-            ?.setOnDismissListener(
-                null
-            )
-        clearWorkspaceDialog =
-            null
+        clearWorkspaceModalController.onDestroy()
 
         executor.shutdownNow()
         super.onDestroy()
@@ -478,7 +455,10 @@ class ImportActivity : Activity() {
                                 primary = false
                             ) {
                                 confirmClearWorkspace(
-                                    current.playlist.name
+                                    localPlaylistId =
+                                        current.localPlaylistId,
+                                    playlistName =
+                                        current.playlist.name
                                 )
                             }
                         )
@@ -3485,26 +3465,89 @@ class ImportActivity : Activity() {
     }
 
     private fun confirmClearWorkspace(
+        localPlaylistId: String,
         playlistName: String
     ) {
-        clearWorkspaceDialogOpen =
-            true
+        clearWorkspaceModalController.show(
+            modalId =
+                MODAL_CLEAR_WORKSPACE,
+            args =
+                Bundle().apply {
+                    putString(
+                        ARG_CLEAR_WORKSPACE_ID,
+                        localPlaylistId
+                    )
+                    putString(
+                        ARG_CLEAR_WORKSPACE_NAME,
+                        playlistName
+                    )
+                },
+            renderer =
+                ::renderClearWorkspaceModal
+        )
+    }
 
-        clearWorkspaceDialog =
-            UiChrome.showDangerConfirmDialog(
-                activity = this,
-                title =
-                    "Очистити поточний список?",
-                message =
-                    "Буде видалено тільки автозбережений локальний робочий список " +
-                        "«$playlistName».\n\n" +
-                        "YTM Project-файли та плейлисти в YouTube/YTM не змінюються.",
-                confirmLabel =
-                    "Так, очистити"
-            ) {
-                clearWorkspaceDialogOpen =
-                    false
+    private fun renderClearWorkspaceModal(
+        modalId: String,
+        args: Bundle
+    ): Dialog? {
+        if (modalId != MODAL_CLEAR_WORKSPACE) {
+            return null
+        }
 
+        val targetId =
+            args.getString(
+                ARG_CLEAR_WORKSPACE_ID
+            )
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+                ?: return null
+        val targetName =
+            args.getString(
+                ARG_CLEAR_WORKSPACE_NAME
+            )
+                .orEmpty()
+                .ifBlank {
+                    "Поточний список"
+                }
+
+        val current =
+            currentPlaylistStore.load()
+                ?: return null
+
+        if (current.localPlaylistId != targetId) {
+            return null
+        }
+
+        return UiChrome.showDangerConfirmDialog(
+            activity = this,
+            title =
+                "Очистити поточний список?",
+            message =
+                "Буде видалено тільки автозбережений локальний робочий список " +
+                    "«${targetName}».\n\n" +
+                    "YTM Project-файли та плейлисти в YouTube/YTM не змінюються.",
+            confirmLabel =
+                "Так, очистити",
+            onCancel = {
+                clearWorkspaceModalController
+                    .clearState()
+            }
+        ) {
+            val latest =
+                currentPlaylistStore.load()
+
+            if (latest?.localPlaylistId != targetId) {
+                clearWorkspaceModalController
+                    .clearState()
+                toast(
+                    "Поточний список уже змінився — очищення скасовано"
+                )
+                buildUi()
+            } else {
+                clearWorkspaceModalController
+                    .clearState()
                 currentPlaylistStore.clear()
 
                 setResult(
@@ -3515,16 +3558,9 @@ class ImportActivity : Activity() {
                             true
                         )
                 )
-
                 finish()
-            }.also { dialog ->
-                dialog.setOnDismissListener {
-                    clearWorkspaceDialogOpen =
-                        false
-                    clearWorkspaceDialog =
-                        null
-                }
             }
+        }
     }
 
     private fun queryFileName(
@@ -3791,8 +3827,17 @@ class ImportActivity : Activity() {
         private const val STATE_SELECTIVE_EXPORT =
             "selective_export_playlists"
 
-        private const val STATE_CLEAR_WORKSPACE_DIALOG_OPEN =
-            "clear_workspace_dialog_open"
+        private const val STATE_CLEAR_WORKSPACE_MODAL =
+            "clear_workspace_modal_state"
+
+        private const val MODAL_CLEAR_WORKSPACE =
+            "clear_workspace"
+
+        private const val ARG_CLEAR_WORKSPACE_ID =
+            "clear_workspace_local_playlist_id"
+
+        private const val ARG_CLEAR_WORKSPACE_NAME =
+            "clear_workspace_playlist_name"
 
         private const val STATE_SCROLL_POSITION =
             "import_scroll_position"

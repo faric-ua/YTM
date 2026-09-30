@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.SelectableTextSurfaceState
 import com.saney.ytmimporter.ui.UiChrome
@@ -53,6 +54,11 @@ import java.util.Locale
 import java.util.UUID
 
 class HistoryActivity : Activity() {
+    private enum class DestructiveModal {
+        DELETE_ENTRY,
+        CLEAR_ALL
+    }
+
     private lateinit var historyStore: HistoryStore
     private lateinit var pendingJobStore: PendingJobStore
     private lateinit var currentPlaylistStore: CurrentPlaylistStore
@@ -65,12 +71,10 @@ class HistoryActivity : Activity() {
     private var pendingExportMimeType: String? = null
     private var actionsDialogOpen = false
     private var actionsDialog: Dialog? = null
-    private var clearHistoryDialogOpen = false
-    private var clearHistoryDialog: Dialog? = null
     private var restoreConfirmEntryId: String? = null
     private var restoreConfirmDialog: Dialog? = null
-    private var deleteConfirmEntryId: String? = null
-    private var deleteConfirmDialog: Dialog? = null
+    private lateinit var historyDestructiveModalController:
+        RestorableModalController
 
     private var historyListView: ListView? = null
     private var detailScrollView: ScrollView? = null
@@ -102,6 +106,17 @@ class HistoryActivity : Activity() {
             CurrentPlaylistStore(this)
         restorablePlaylistStore =
             RestorablePlaylistStore(this)
+
+        historyDestructiveModalController =
+            RestorableModalController(
+                activity = this,
+                stateKey =
+                    STATE_HISTORY_DESTRUCTIVE_MODAL
+            ).also {
+                it.restore(
+                    savedInstanceState
+                )
+            }
 
         listFirstVisiblePosition =
             savedInstanceState
@@ -160,24 +175,10 @@ class HistoryActivity : Activity() {
                 )
                 ?: false
 
-        val restoreClearHistoryDialog =
-            savedInstanceState
-                ?.getBoolean(
-                    KEY_CLEAR_HISTORY_DIALOG_OPEN,
-                    false
-                )
-                ?: false
-
         restoreConfirmEntryId =
             savedInstanceState
                 ?.getString(
                     KEY_RESTORE_CONFIRM_ENTRY_ID
-                )
-
-        deleteConfirmEntryId =
-            savedInstanceState
-                ?.getString(
-                    KEY_DELETE_CONFIRM_ENTRY_ID
                 )
 
         if (!restoredEntryId.isNullOrBlank()) {
@@ -202,22 +203,6 @@ class HistoryActivity : Activity() {
                             )
                         }
                     }
-                } else if (
-                    deleteConfirmEntryId ==
-                        entry.id
-                ) {
-                    window.decorView.post {
-                        if (
-                            !isFinishing &&
-                            !isDestroyed &&
-                            currentEntryId ==
-                                entry.id
-                        ) {
-                            confirmDeleteHistoryEntry(
-                                entry
-                            )
-                        }
-                    }
                 } else if (actionsDialogOpen) {
                     window.decorView.post {
                         if (
@@ -231,24 +216,14 @@ class HistoryActivity : Activity() {
                     }
                 }
 
+                restoreHistoryDestructiveModalAfterContentReady()
                 return
             }
         }
 
         actionsDialogOpen = false
         showListScreen()
-
-        if (restoreClearHistoryDialog) {
-            window.decorView.post {
-                if (
-                    !isFinishing &&
-                    !isDestroyed &&
-                    currentEntryId == null
-                ) {
-                    confirmClearHistory()
-                }
-            }
-        }
+        restoreHistoryDestructiveModalAfterContentReady()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -262,17 +237,12 @@ class HistoryActivity : Activity() {
             KEY_ACTIONS_DIALOG_OPEN,
             actionsDialogOpen
         )
-        outState.putBoolean(
-            KEY_CLEAR_HISTORY_DIALOG_OPEN,
-            clearHistoryDialogOpen
-        )
         outState.putString(
             KEY_RESTORE_CONFIRM_ENTRY_ID,
             restoreConfirmEntryId
         )
-        outState.putString(
-            KEY_DELETE_CONFIRM_ENTRY_ID,
-            deleteConfirmEntryId
+        historyDestructiveModalController.save(
+            outState
         )
         outState.putInt(
             KEY_LIST_FIRST_POSITION,
@@ -375,23 +345,13 @@ class HistoryActivity : Activity() {
             )
         actionsDialog = null
 
-        clearHistoryDialog
-            ?.setOnDismissListener(
-                null
-            )
-        clearHistoryDialog = null
-
         restoreConfirmDialog
             ?.setOnDismissListener(
                 null
             )
         restoreConfirmDialog = null
 
-        deleteConfirmDialog
-            ?.setOnDismissListener(
-                null
-            )
-        deleteConfirmDialog = null
+        historyDestructiveModalController.onDestroy()
 
         super.onDestroy()
     }
@@ -424,15 +384,6 @@ class HistoryActivity : Activity() {
         restoreConfirmDialog
             ?.dismiss()
         restoreConfirmDialog = null
-
-        deleteConfirmEntryId = null
-        deleteConfirmDialog
-            ?.setOnDismissListener(
-                null
-            )
-        deleteConfirmDialog
-            ?.dismiss()
-        deleteConfirmDialog = null
 
         val root = baseRoot()
 
@@ -1731,97 +1682,132 @@ class HistoryActivity : Activity() {
     private fun confirmDeleteHistoryEntry(
         entry: HistoryEntry
     ) {
-        if (
-            deleteConfirmDialog
-                ?.isShowing == true &&
-            deleteConfirmEntryId ==
-                entry.id
-        ) {
-            return
-        }
-
-        deleteConfirmEntryId =
-            entry.id
-
-        deleteConfirmDialog =
-            UiChrome.showDangerConfirmDialog(
-                activity = this,
-                title =
-                    "Видалити запис історії?",
-                message =
-                    "Буде видалено тільки локальний History-запис " +
-                        "«${entry.playlistName}».\n\n" +
-                        "Плейлист у YouTube/YTM не зміниться.",
-                confirmLabel =
-                    "Так, видалити"
-            ) {
-                deleteConfirmEntryId =
-                    null
-                historyStore.remove(
-                    entry.id
-                )
-                toast(
-                    "Запис історії видалено"
-                )
-                showListScreen()
-            }.also { dialog ->
-                dialog.setOnDismissListener {
-                    if (!isChangingConfigurations) {
-                        deleteConfirmEntryId =
-                            null
-                    }
-                    deleteConfirmDialog =
-                        null
-                }
-            }
+        historyDestructiveModalController.show(
+            modalId =
+                DestructiveModal.DELETE_ENTRY.name,
+            args =
+                Bundle().apply {
+                    putString(
+                        ARG_HISTORY_ENTRY_ID,
+                        entry.id
+                    )
+                },
+            renderer =
+                ::renderHistoryDestructiveModal
+        )
     }
 
     private fun confirmClearHistory() {
-        if (
-            clearHistoryDialog
-                ?.isShowing == true
-        ) {
+        if (historyStore.getAll().isEmpty()) {
+            toast("Історія вже порожня")
             return
         }
 
-        val entries =
-            historyStore.getAll()
+        historyDestructiveModalController.show(
+            modalId =
+                DestructiveModal.CLEAR_ALL.name,
+            renderer =
+                ::renderHistoryDestructiveModal
+        )
+    }
 
-        if (entries.isEmpty()) {
-            clearHistoryDialogOpen = false
-            toast(
-                "Історія вже порожня"
+    private fun restoreHistoryDestructiveModalAfterContentReady() {
+        historyDestructiveModalController
+            .restoreAfterContentReady(
+                renderer =
+                    ::renderHistoryDestructiveModal
             )
-            return
-        }
+    }
 
-        clearHistoryDialogOpen = true
+    private fun renderHistoryDestructiveModal(
+        modalId: String,
+        args: Bundle
+    ): Dialog? {
+        val modal =
+            DestructiveModal.values()
+                .firstOrNull {
+                    it.name == modalId
+                }
+                ?: return null
 
-        clearHistoryDialog =
-            UiChrome.showDangerConfirmDialog(
-                activity = this,
-                title =
-                    "Очистити всю історію?",
-                message =
-                    "Буде видалено ${entries.size} локальних записів History.\n\n" +
-                        "Цю локальну історію можна повернути лише з повного backup, " +
-                        "якщо він був збережений раніше.\n\n" +
-                        "Плейлисти YouTube/YTM і Pending Queue не змінюються.",
-                confirmLabel =
-                    "Так, очистити"
-            ) {
-                clearHistoryDialogOpen = false
-                historyStore.clear()
-                toast(
-                    "Історію очищено"
-                )
-                showListScreen()
-            }.also { dialog ->
-                dialog.setOnDismissListener {
-                    clearHistoryDialogOpen = false
-                    clearHistoryDialog = null
+        return when (modal) {
+            DestructiveModal.DELETE_ENTRY -> {
+                val entryId =
+                    args.getString(
+                        ARG_HISTORY_ENTRY_ID
+                    )
+                        ?.takeIf {
+                            it.isNotBlank()
+                        }
+                        ?: return null
+
+                if (currentEntryId != entryId) {
+                    return null
+                }
+
+                val entry =
+                    historyStore.get(entryId)
+                        ?: return null
+
+                UiChrome.showDangerConfirmDialog(
+                    activity = this,
+                    title =
+                        "Видалити запис історії?",
+                    message =
+                        "Буде видалено тільки локальний History-запис " +
+                            "«${entry.playlistName}».\n\n" +
+                            "Плейлист у YouTube/YTM не зміниться.",
+                    confirmLabel =
+                        "Так, видалити",
+                    onCancel = {
+                        historyDestructiveModalController
+                            .clearState()
+                    }
+                ) {
+                    historyDestructiveModalController
+                        .clearState()
+                    historyStore.remove(entry.id)
+                    toast("Запис історії видалено")
+                    showListScreen()
                 }
             }
+
+            DestructiveModal.CLEAR_ALL -> {
+                if (currentEntryId != null) {
+                    return null
+                }
+
+                val entries =
+                    historyStore.getAll()
+
+                if (entries.isEmpty()) {
+                    return null
+                }
+
+                UiChrome.showDangerConfirmDialog(
+                    activity = this,
+                    title =
+                        "Очистити всю історію?",
+                    message =
+                        "Буде видалено ${entries.size} локальних записів History.\n\n" +
+                            "Цю локальну історію можна повернути лише з повного backup, " +
+                            "якщо він був збережений раніше.\n\n" +
+                            "Плейлисти YouTube/YTM і Pending Queue не змінюються.",
+                    confirmLabel =
+                        "Так, очистити",
+                    onCancel = {
+                        historyDestructiveModalController
+                            .clearState()
+                    }
+                ) {
+                    historyDestructiveModalController
+                        .clearState()
+                    historyStore.clear()
+                    toast("Історію очищено")
+                    showListScreen()
+                }
+            }
+        }
     }
 
     private fun buildHistorySummary(
@@ -2792,11 +2778,11 @@ class HistoryActivity : Activity() {
         private const val KEY_RESTORE_CONFIRM_ENTRY_ID =
             "history_restore_confirm_entry_id"
 
-        private const val KEY_DELETE_CONFIRM_ENTRY_ID =
-            "history_delete_confirm_entry_id"
+        private const val STATE_HISTORY_DESTRUCTIVE_MODAL =
+            "history_destructive_modal_state"
 
-        private const val KEY_CLEAR_HISTORY_DIALOG_OPEN =
-            "history_clear_dialog_open"
+        private const val ARG_HISTORY_ENTRY_ID =
+            "history_destructive_entry_id"
 
         private const val KEY_LIST_FIRST_POSITION =
             "history_list_first_position"

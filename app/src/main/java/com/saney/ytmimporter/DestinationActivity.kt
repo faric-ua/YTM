@@ -6,6 +6,7 @@ import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.SelectableTextSurfaceState
 import com.saney.ytmimporter.ui.UiChrome
@@ -83,11 +84,8 @@ class DestinationActivity : Activity() {
     private var playlistEditDraftPrivacy:
         String = "private"
 
-    private var pendingDeleteConfirmation:
-        ExistingItem? = null
-
-    private var deleteConfirmationDialog:
-        Dialog? = null
+    private lateinit var deleteModalController:
+        RestorableModalController
 
     private var remoteProgressDialog:
         Dialog? = null
@@ -104,6 +102,15 @@ class DestinationActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+
+        deleteModalController =
+            RestorableModalController(
+                activity = this,
+                stateKey =
+                    STATE_DELETE_MODAL
+            ).also {
+                it.restore(savedInstanceState)
+            }
 
         currentMode =
             savedInstanceState
@@ -152,43 +159,6 @@ class DestinationActivity : Activity() {
         selectableTextSurfaceState.restore(
             savedInstanceState
         )
-
-        pendingDeleteConfirmation =
-            savedInstanceState
-                ?.let { state ->
-                    state
-                        .getString(
-                            STATE_DELETE_CONFIRM_ID
-                        )
-                        ?.takeIf {
-                            it.isNotBlank()
-                        }
-                        ?.let { id ->
-                            ExistingItem(
-                                id = id,
-                                title =
-                                    state
-                                        .getString(
-                                            STATE_DELETE_CONFIRM_TITLE
-                                        )
-                                        .orEmpty()
-                                        .ifBlank {
-                                            "Плейлист"
-                                        },
-                                privacy =
-                                    state
-                                        .getString(
-                                            STATE_DELETE_CONFIRM_PRIVACY
-                                        )
-                                        ?: "private",
-                                itemCount =
-                                    state.getLong(
-                                        STATE_DELETE_CONFIRM_COUNT,
-                                        0L
-                                    )
-                            )
-                        }
-                }
 
         pendingPlaylistActions =
             savedInstanceState
@@ -288,26 +258,6 @@ class DestinationActivity : Activity() {
                 }
             }
 
-            pendingDeleteConfirmation != null -> {
-                val item =
-                    requireNotNull(
-                        pendingDeleteConfirmation
-                    )
-
-                window.decorView.post {
-                    if (
-                        !isFinishing &&
-                        !isDestroyed &&
-                        pendingDeleteConfirmation
-                            ?.id == item.id
-                    ) {
-                        showDeleteConfirmationDialog(
-                            item
-                        )
-                    }
-                }
-            }
-
             pendingPlaylistActions != null -> {
                 val item =
                     requireNotNull(
@@ -328,6 +278,12 @@ class DestinationActivity : Activity() {
                 }
             }
         }
+
+        deleteModalController
+            .restoreAfterContentReady(
+                renderer =
+                    ::renderDeleteModal
+            )
     }
 
     override fun onStart() {
@@ -425,25 +381,9 @@ class DestinationActivity : Activity() {
                 )
             }
 
-        pendingDeleteConfirmation
-            ?.let { item ->
-                outState.putString(
-                    STATE_DELETE_CONFIRM_ID,
-                    item.id
-                )
-                outState.putString(
-                    STATE_DELETE_CONFIRM_TITLE,
-                    item.title
-                )
-                outState.putString(
-                    STATE_DELETE_CONFIRM_PRIVACY,
-                    item.privacy
-                )
-                outState.putLong(
-                    STATE_DELETE_CONFIRM_COUNT,
-                    item.itemCount
-                )
-            }
+        deleteModalController.save(
+            outState
+        )
 
         super.onSaveInstanceState(
             outState
@@ -492,9 +432,7 @@ class DestinationActivity : Activity() {
         remoteProgressDialog = null
         remoteProgressText = null
 
-        deleteConfirmationDialog
-            ?.setOnDismissListener(null)
-        deleteConfirmationDialog = null
+        deleteModalController.onDestroy()
 
         playlistActionsDialog
             ?.setOnDismissListener(null)
@@ -1995,62 +1933,90 @@ class DestinationActivity : Activity() {
     private fun confirmDeletePlaylist(
         item: ExistingItem
     ) {
-        pendingDeleteConfirmation =
-            item
-
-        showDeleteConfirmationDialog(
-            item
+        deleteModalController.show(
+            modalId =
+                MODAL_DELETE_PLAYLIST,
+            args =
+                Bundle().apply {
+                    putString(
+                        ARG_DELETE_PLAYLIST_ID,
+                        item.id
+                    )
+                    putString(
+                        ARG_DELETE_PLAYLIST_TITLE,
+                        item.title
+                    )
+                    putString(
+                        ARG_DELETE_PLAYLIST_PRIVACY,
+                        item.privacy
+                    )
+                    putLong(
+                        ARG_DELETE_PLAYLIST_COUNT,
+                        item.itemCount
+                    )
+                },
+            renderer =
+                ::renderDeleteModal
         )
     }
 
-    private fun showDeleteConfirmationDialog(
-        item: ExistingItem
-    ) {
-        if (
-            deleteConfirmationDialog
-                ?.isShowing == true
-        ) {
-            return
+    private fun renderDeleteModal(
+        modalId: String,
+        args: Bundle
+    ): Dialog? {
+        if (modalId != MODAL_DELETE_PLAYLIST) {
+            return null
         }
 
-        val dialog =
-            UiChrome.showDangerConfirmDialog(
-                activity = this,
-                title = "Видалити плейлист?",
-                message =
-                    "«${item.title}» буде видалено з YouTube / YTM.\n\n" +
-                        "Цю дію неможливо скасувати.",
-                confirmLabel = "Видалити"
-            ) {
-                pendingDeleteConfirmation =
-                    null
-                deleteConfirmationDialog =
-                    null
+        val id =
+            args.getString(
+                ARG_DELETE_PLAYLIST_ID
+            )
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+                ?: return null
 
-                requestPlaylistDelete(
-                    item
-                )
+        val item =
+            ExistingItem(
+                id = id,
+                title =
+                    args.getString(
+                        ARG_DELETE_PLAYLIST_TITLE
+                    )
+                        .orEmpty()
+                        .ifBlank {
+                            "Плейлист"
+                        },
+                privacy =
+                    args.getString(
+                        ARG_DELETE_PLAYLIST_PRIVACY
+                    )
+                        ?: "private",
+                itemCount =
+                    args.getLong(
+                        ARG_DELETE_PLAYLIST_COUNT,
+                        0L
+                    )
+            )
+
+        return UiChrome.showDangerConfirmDialog(
+            activity = this,
+            title =
+                "Видалити плейлист?",
+            message =
+                "«${item.title}» буде видалено з YouTube / YTM.\n\n" +
+                    "Цю дію неможливо скасувати.",
+            confirmLabel =
+                "Видалити",
+            onCancel = {
+                deleteModalController
+                    .clearState()
             }
-
-        deleteConfirmationDialog =
-            dialog
-
-        dialog.setOnDismissListener {
-            if (
-                deleteConfirmationDialog ===
-                    dialog
-            ) {
-                deleteConfirmationDialog =
-                    null
-            }
-
-            if (
-                pendingDeleteConfirmation
-                    ?.id == item.id
-            ) {
-                pendingDeleteConfirmation =
-                    null
-            }
+        ) {
+            deleteModalController
+                .clearState()
+            requestPlaylistDelete(item)
         }
     }
 
@@ -3101,14 +3067,18 @@ class DestinationActivity : Activity() {
             "destination_playlist_edit_title"
         private const val STATE_PLAYLIST_EDIT_PRIVACY =
             "destination_playlist_edit_privacy"
-        private const val STATE_DELETE_CONFIRM_ID =
-            "destination_delete_confirm_id"
-        private const val STATE_DELETE_CONFIRM_TITLE =
-            "destination_delete_confirm_title"
-        private const val STATE_DELETE_CONFIRM_PRIVACY =
-            "destination_delete_confirm_privacy"
-        private const val STATE_DELETE_CONFIRM_COUNT =
-            "destination_delete_confirm_count"
+        private const val STATE_DELETE_MODAL =
+            "destination_delete_modal_state"
+        private const val MODAL_DELETE_PLAYLIST =
+            "delete_playlist"
+        private const val ARG_DELETE_PLAYLIST_ID =
+            "delete_playlist_id"
+        private const val ARG_DELETE_PLAYLIST_TITLE =
+            "delete_playlist_title"
+        private const val ARG_DELETE_PLAYLIST_PRIVACY =
+            "delete_playlist_privacy"
+        private const val ARG_DELETE_PLAYLIST_COUNT =
+            "delete_playlist_count"
 
         private val BACKGROUND = Color.rgb(15, 16, 19)
         private val SURFACE = Color.rgb(25, 27, 32)

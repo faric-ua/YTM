@@ -66,3 +66,18 @@ The consolidated Phase A phone matrix must still cover:
 - no automatic delete/clear/rollback on recreation.
 
 Static/source PASS is not phone PASS.
+
+## Patch applied
+
+The four verified GAPs are now migrated to `RestorableModalController`:
+
+- History delete-record: modal args carry the exact History entry id; renderer fails closed if the owner detail is no longer that entry.
+- History clear-all: semantic `CLEAR_ALL` modal state is controller-owned and only explicit confirm calls the existing `historyStore.clear()`.
+- Import clear-current: modal args carry exact `localPlaylistId` + display name; restore and explicit confirm both revalidate the same id before `CurrentPlaylistStore.clear()`.
+- Destination remote playlist delete: controller args preserve the existing `id/title/privacy/itemCount` tuple and explicit confirm still delegates to `requestPlaylistDelete(item)`.
+
+No Search/write/rollback/delete/restore action is invoked by the restore path.
+
+Static enforcement was expanded in `scripts/ui-window-contract-audit.sh` to cover the migrated owners plus existing Data/Pending/Service/Bulk destructive ownership and to reject legacy manual destructive state on the migrated owners.
+
+Post-patch inventory and exact-HEAD build evidence are still pending.

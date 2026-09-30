@@ -8,6 +8,11 @@ UI="$SRC/ui/UiChrome.kt"
 RESPONSIVE="docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md"
 WINDOW="docs/design/UI_WINDOW_QA_CONTRACT.md"
 BULK_PREVIEW="$SRC/BulkSyncPreviewActivity.kt"
+BULK_SESSION="$SRC/BulkSyncSessionActivity.kt"
+DATA="$SRC/DataActivity.kt"
+DESTINATION="$SRC/DestinationActivity.kt"
+HISTORY="$SRC/HistoryActivity.kt"
+IMPORT="$SRC/ImportActivity.kt"
 PENDING="$SRC/PendingActivity.kt"
 SERVICE="$SRC/ServiceActivity.kt"
 
@@ -28,7 +33,7 @@ HELP_OWNERS=(
   "$SRC/BulkSyncSessionActivity.kt"
 )
 
-for f in "$UI" "$RESPONSIVE" "$WINDOW" "$PENDING" "$SERVICE" "${FULLSCREEN_FOOTERS[@]}" "${HELP_OWNERS[@]}"; do
+for f in "$UI" "$RESPONSIVE" "$WINDOW" "$BULK_SESSION" "$DATA" "$DESTINATION" "$HISTORY" "$IMPORT" "$PENDING" "$SERVICE" "${FULLSCREEN_FOOTERS[@]}" "${HELP_OWNERS[@]}"; do
   test -f "$f" || fail "missing UI contract file: $f"
 done
 
@@ -150,7 +155,7 @@ grep -Fq 'PreviewModal.CREATE_SESSION' "$BULK_PREVIEW" ||
 grep -Fq 'clearState()' "$BULK_PREVIEW" ||
   fail "Bulk Preview explicit modal actions do not clear semantic modal state"
 
-for f in "$PENDING" "$SERVICE"; do
+for f in "$DESTINATION" "$HISTORY" "$IMPORT" "$PENDING" "$SERVICE" "$DATA" "$BULK_SESSION"; do
   grep -Fq 'RestorableModalController' "$f" ||
     fail "$(basename "$f") destructive confirmation is not owned by restorable modal state"
   grep -Fq 'restoreAfterContentReady' "$f" ||
@@ -160,6 +165,43 @@ for f in "$PENDING" "$SERVICE"; do
   grep -Fq '.onDestroy()' "$f" ||
     fail "$(basename "$f") does not detach restorable modal windows on destroy"
 done
+
+grep -Fq 'ARG_HISTORY_ENTRY_ID' "$HISTORY" ||
+  fail "History destructive modal is not bound to exact History entry id"
+grep -Fq 'DestructiveModal.CLEAR_ALL' "$HISTORY" ||
+  fail "History clear-all is not owned by the destructive modal controller"
+if grep -Eq 'clearHistoryDialogOpen|deleteConfirmEntryId|deleteConfirmDialog' "$HISTORY"; then
+  fail "History legacy manual destructive modal state returned"
+fi
+
+grep -Fq 'ARG_CLEAR_WORKSPACE_ID' "$IMPORT" ||
+  fail "Import clear-workspace modal is not bound to localPlaylistId"
+grep -Fq 'current.localPlaylistId !=' "$IMPORT" ||
+  fail "Import clear-workspace restore does not fail closed when workspace identity changes"
+grep -Fq 'latest?.localPlaylistId !=' "$IMPORT" ||
+  fail "Import clear-workspace confirm does not revalidate exact workspace identity"
+if grep -Eq 'clearWorkspaceDialogOpen|clearWorkspaceDialog' "$IMPORT"; then
+  fail "Import legacy manual clear-workspace modal state returned"
+fi
+
+for token in ARG_DELETE_PLAYLIST_ID ARG_DELETE_PLAYLIST_TITLE ARG_DELETE_PLAYLIST_PRIVACY ARG_DELETE_PLAYLIST_COUNT; do
+  grep -Fq "$token" "$DESTINATION" ||
+    fail "Destination delete modal lost primitive target argument: $token"
+done
+grep -Fq 'requestPlaylistDelete(' "$DESTINATION" ||
+  fail "Destination delete confirmation no longer delegates to the existing delete callback"
+if grep -Eq 'pendingDeleteConfirmation|deleteConfirmationDialog|STATE_DELETE_CONFIRM_' "$DESTINATION"; then
+  fail "Destination legacy manual delete-confirmation state returned"
+fi
+
+grep -Fq 'DataModal.DELETE_SNAPSHOT_CONFIRM' "$DATA" ||
+  fail "Data safety-snapshot delete is not controller-owned"
+grep -Fq 'DataModal.ROLLBACK_CONFIRM' "$DATA" ||
+  fail "Data rollback confirmation is not controller-owned"
+grep -Fq 'SessionModal.ROLLBACK_CONFIRM' "$BULK_SESSION" ||
+  fail "Bulk rollback confirmation is not controller-owned"
+grep -Fq '.DANGER' "$BULK_SESSION" ||
+  fail "Bulk rollback action is not visually destructive"
 
 if grep -R --include='*.kt' -n 'AlertDialog.Builder' "$SRC"; then
   fail "native AlertDialog.Builder runtime path returned"
@@ -176,5 +218,7 @@ echo '- chooser/selector/Bulk/URL Snapshot full-screen footers use shared adapti
 echo '- adaptive full-screen footer buttons inherit active skin tone and disabled-state colors'
 echo '- known Help owners persist open state across recreation'
 echo '- Bulk Preview confirmations persist semantic open state across recreation without executing actions'
-echo '- Queue and Service destructive confirmations restore semantically after recreation'
+echo '- History, Import, Destination, Queue, Service, Data and Bulk destructive confirmations use restorable semantic ownership'
+echo '- destructive target identity is preserved for History entry, local workspace and remote playlist delete'
+echo '- legacy manual destructive modal state is absent from the migrated owners'
 echo '- native AlertDialog.Builder remains absent'
