@@ -62,13 +62,17 @@ do
   test -f "$path" || fail "release documentation missing: $path"
 done
 
-STATUS_LINE="$(
-  grep -F "| v$VERSION |" RELEASE_TEST_STATUS.md || true
+META_PHASE="$(
+  python - "$ROOT/RELEASE_META.json" <<'PY_META'
+import json
+import sys
+from pathlib import Path
+print(json.loads(Path(sys.argv[1]).read_text())["phase"])
+PY_META
 )"
 
 FINAL="$FORCE_FINAL"
-if [ "$FORCE_PLANNED" = false ] &&
-   printf '%s' "$STATUS_LINE" | grep -Fq 'PHONE QA PASS'; then
+if [ "$FORCE_PLANNED" = false ] && [ "$META_PHASE" = "final" ]; then
   FINAL=true
 fi
 
