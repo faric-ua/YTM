@@ -71,7 +71,7 @@ Goal: prove whether current v1.4.55 app-code changes remain non-functional relat
 
 Current task checklist:
 - [x] Create this task-specific audit plan before implementation/audit mutations.
-- [ ] Enumerate every changed `app/` path between the immutable v1.4.54 baseline and current v1.4.55 HEAD.
+- [x] Enumerate every changed `app/` path between the immutable v1.4.54 baseline and current v1.4.55 HEAD. Evidence: compare `e553c6d...b445dc5`; 23 changed `app/` paths.
 - [ ] Inspect each changed app-code area and classify it as PRESENTATION_ONLY / NAVIGATION_ONLY / LIFECYCLE_ONLY / FUNCTIONAL_FEATURE.
 - [ ] Check explicitly for API/request-order, retry/auto-start, playlist identity, Queue/Pending, History, backup/restore, Bulk ledger/rollback, quota/rate, or storage-schema semantic changes.
 - [ ] Check that temporary QA hooks cannot leak into a release candidate.
