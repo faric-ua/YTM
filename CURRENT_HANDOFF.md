@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-29**
+Last updated: **2026-09-30**
 
 > **FIRST READ: `ACTIVE_PLAN.md`**
 >
@@ -93,14 +93,18 @@ real-device acceptance.
 Follow `ACTIVE_PLAN.md`.
 
 Current sequence:
-1. finish the v1.4.54 functional closeout record reconciliation;
-2. audit **every existing v1.4.55 app-code delta** against the immutable v1.4.54 baseline;
-3. classify changes as presentation/navigation/lifecycle/functional;
-4. split or stop any accidental business/API/storage semantic change;
-5. finish Phase A shared hardening;
-6. exact-HEAD validation;
-7. one consolidated signed phone matrix, not one APK per tiny visual change;
-8. only after Phase A is coherent move to management/discoverability Phase B.
+1. audit **every existing v1.4.55 app-code delta** against the immutable v1.4.54 baseline;
+2. classify changes as presentation/navigation/lifecycle/functional;
+3. split or stop any accidental business/API/storage semantic change;
+4. finish Phase A shared hardening;
+5. exact-HEAD validation;
+6. one consolidated signed phone matrix, not one APK per tiny visual change;
+7. only after Phase A is coherent move to management/discoverability Phase B.
+
+For every substantial multi-step task, `ACTIVE_PLAN.md` must first contain a
+task-local ordered checklist. After each verified step, tick that exact item and
+move the resume point forward. A fresh session resumes from the first unchecked
+task-local item, not from chat memory.
 
 ## Working contract
 
