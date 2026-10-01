@@ -102,13 +102,13 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 0a710924b285fc17  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 14c89c430aecbd75  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 c4a611cd8dc777c3  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
-24b2c686283fd70c  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
+eef19f2ca70f5e30  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
 e4ce64f02ab24936  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 a83cb482c4c7279f  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 d0d81759c1ef287c  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 5c565252917f725e  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 92653674eb435225  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
-5a89ab2610191a6e  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
+90d313b61d6f1697  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 99e25606f1e7db96  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
 5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
@@ -1750,7 +1750,7 @@ d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
 f78c820c675f6b9e  scripts/v1454-bulk-preflight-audit.sh
 998ac43872253938  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
-5e3ff8315859752e  scripts/v1455-ux-hardening-audit.sh
+fd6e7c7a5165a869  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh

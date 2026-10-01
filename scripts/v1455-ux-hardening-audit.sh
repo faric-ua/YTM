@@ -12,13 +12,17 @@ BULK_HIERARCHY="$SRC/ui/BulkHierarchyChrome.kt"
 BULK_PREVIEW="$SRC/BulkSyncPreviewActivity.kt"
 BULK_SESSION="$SRC/BulkSyncSessionActivity.kt"
 QUOTA="$SRC/QuotaActivity.kt"
+PLAYLIST="$SRC/PlaylistActivity.kt"
+URL_SNAPSHOT="$SRC/UrlSnapshotActivity.kt"
 QA_STORE="$SRC/storage/BulkSyncQaFaultStore.kt"
+TILE_CONTRACT="docs/design/TILE_UI_CONTRACT.md"
+TILE_READABILITY="docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md"
 SAFETY="docs/design/UX_CHANGE_SAFETY_CONTRACT.md"
 READABILITY="docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md"
 PLAN="docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md"
 RECONCILIATION="docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md"
 
-for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$QUOTA" "$QA_STORE" "$SAFETY" "$READABILITY" "$PLAN" "$RECONCILIATION"; do
+for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$QUOTA" "$PLAYLIST" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$PLAN" "$RECONCILIATION"; do
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
@@ -230,6 +234,59 @@ for fn_name, text in (
             )
 PY_CRITICAL_TRANSIENT
 
+grep -Fq 'fun playlistResultBlock(' "$PLAYLIST" ||
+  fail "Playlist summary named result hierarchy missing"
+grep -Fq 'snapshotStatLine(' "$URL_SNAPSHOT" ||
+  fail "URL Snapshot structured counter hierarchy missing"
+grep -Fq 'snapshotIdentityText(' "$URL_SNAPSHOT" ||
+  fail "URL Snapshot identity hierarchy missing"
+grep -Fq '**Tile / «плитка»**' "$TILE_CONTRACT" ||
+  fail "generic Tile contract missing"
+grep -Fq 'VERIFIED GAP 1 — Playlist Hub summary counters' "$TILE_READABILITY" ||
+  fail "tile/card readability audit missing Playlist finding"
+grep -Fq 'VERIFIED GAP 2 — URL Snapshot resolved summary' "$TILE_READABILITY" ||
+  fail "tile/card readability audit missing URL Snapshot finding"
+
+python - "$PLAYLIST" "$URL_SNAPSHOT" <<'PY_TILE_READABILITY'
+from pathlib import Path
+import re
+import sys
+
+playlist = Path(sys.argv[1]).read_text(encoding="utf-8")
+url_snapshot = Path(sys.argv[2]).read_text(encoding="utf-8")
+
+if re.search(
+    r'\$\{tracks\.size\}\s+треків\s+•\s+✓\s+\$ready',
+    playlist,
+):
+    raise SystemExit(
+        "FAIL: Playlist dense glyph-only counter strip returned"
+    )
+
+start = url_snapshot.find("private fun showResolvedPreview")
+end = url_snapshot.find(
+    "\n    private fun ",
+    start + 12,
+)
+block = url_snapshot[start: end if end >= 0 else len(url_snapshot)]
+
+if "buildString {" in block and "append(state.message)" in block:
+    raise SystemExit(
+        "FAIL: URL Snapshot resolved hierarchy regressed to one dense body"
+    )
+
+for required in (
+    "snapshotIdentityText(",
+    "snapshotStatLine(",
+    "duplicateAnalysis.uniqueExactIdCount",
+    "duplicateAnalysis.duplicateOccurrences",
+):
+    if required not in block:
+        raise SystemExit(
+            "FAIL: URL Snapshot structured summary missing " + required
+        )
+PY_TILE_READABILITY
+
 grep -Fq 'if (BuildConfig.DEBUG)' "$QUOTA" ||
   fail "release Quota UI still exposes phone-QA controls"
 grep -Fq 'if (!BuildConfig.DEBUG)' "$QA_STORE" ||
@@ -253,6 +310,7 @@ echo "- v1.4.55 UX safety contract is locked"
 echo "- one label-aware action fit policy serves screen and dialog actions"
 echo "- Bulk Preview/Session use shared semantic hierarchy with durable secondary diagnostics"
 echo "- Data recovery failures and Destination remote results use recreation-safe durable inline notices"
+echo "- Playlist Hub and URL Snapshot use named/structured card result hierarchy"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- Activity-owned selectable text persists only on the same logical surface"
 echo "- selectable-text focus is restored without triggering actions"

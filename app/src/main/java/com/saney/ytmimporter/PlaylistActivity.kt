@@ -676,23 +676,14 @@ class PlaylistActivity : Activity() {
             )
 
             addView(
-                TextView(
-                    this@PlaylistActivity
-                ).apply {
-                    text =
-                        "${tracks.size} треків • ✓ $ready  ! $review  " +
-                            "⧉ $duplicates  ⏳ $pending  × $problems"
-                    textSize = 13.5f
-                    setTextColor(
-                        palette.text
-                    )
-                    setPadding(
-                        0,
-                        dp(8),
-                        0,
-                        0
-                    )
-                }
+                playlistResultBlock(
+                    total = tracks.size,
+                    ready = ready,
+                    review = review,
+                    duplicates = duplicates,
+                    pending = pending,
+                    problems = problems
+                )
             )
 
             addView(
@@ -723,6 +714,74 @@ class PlaylistActivity : Activity() {
                     bottomMargin =
                         dp(12)
                 }
+        }
+    }
+
+    private fun playlistResultBlock(
+        total: Int,
+        ready: Int,
+        review: Int,
+        duplicates: Int,
+        pending: Int,
+        problems: Int
+    ): LinearLayout {
+        val palette =
+            AppThemeManager.palette(this)
+
+        return LinearLayout(this).apply {
+            orientation =
+                LinearLayout.VERTICAL
+            setPadding(
+                0,
+                dp(8),
+                0,
+                0
+            )
+
+            addView(
+                TextView(
+                    this@PlaylistActivity
+                ).apply {
+                    text =
+                        "Усього треків: $total • Готові: $ready"
+                    textSize =
+                        13.5f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        palette.text
+                    )
+                }
+            )
+
+            addView(
+                TextView(
+                    this@PlaylistActivity
+                ).apply {
+                    text =
+                        "Перевірити: $review • Дублікати: $duplicates\n" +
+                            "Очікує: $pending • Проблеми: $problems"
+                    textSize =
+                        13f
+                    setTextColor(
+                        if (
+                            problems > 0
+                        ) {
+                            palette.semantic.warning
+                        } else {
+                            palette.text
+                        }
+                    )
+                    setPadding(
+                        0,
+                        dp(4),
+                        0,
+                        0
+                    )
+                }
+            )
         }
     }
 

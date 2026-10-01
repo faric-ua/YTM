@@ -587,35 +587,99 @@ class UrlSnapshotActivity : Activity() {
                     } else {
                         "Snapshot прочитано"
                     },
-                body =
-                    buildString {
-                        append(state.message)
-                        resolved.playlistTitle?.takeIf { it.isNotBlank() }?.let { title ->
-                            append("\nПлейлист: $title")
-                        }
-                        append(
-                            "\nУнікальних exact videoId: " +
-                                "${duplicateAnalysis.uniqueExactIdCount}"
-                        )
-                        append(
-                            " • повторних входжень: " +
-                                "${duplicateAnalysis.duplicateOccurrences}"
-                        )
-
-                        state.cachedAt
-                            ?.let {
-                                append(
-                                    "\nЛокальний snapshot: " +
-                                        formatDateTime(it)
-                                )
-                            }
-
-                        append(
-                            "\nПоточний локальний список не змінено. " +
-                                "Жоден Review/Search/write flow автоматично не запускається."
-                        )
-                    }
+                body = ""
             )
+
+        resolved.playlistTitle
+            ?.takeIf {
+                it.isNotBlank()
+            }
+            ?.let {
+                title ->
+                summaryCard.addView(
+                    snapshotIdentityText(
+                        "Плейлист: $title"
+                    )
+                )
+            }
+
+        summaryCard.addView(
+            snapshotStatLine(
+                label = "Елементів",
+                value =
+                    resolved.items.size
+                        .toString()
+            )
+        )
+        summaryCard.addView(
+            snapshotStatLine(
+                label =
+                    "Унікальних exact videoId",
+                value =
+                    duplicateAnalysis
+                        .uniqueExactIdCount
+                        .toString()
+            )
+        )
+        summaryCard.addView(
+            snapshotStatLine(
+                label =
+                    "Повторних входжень",
+                value =
+                    duplicateAnalysis
+                        .duplicateOccurrences
+                        .toString()
+            )
+        )
+
+        if (
+            resolved.unavailableCount >
+                0
+        ) {
+            summaryCard.addView(
+                snapshotStatLine(
+                    label =
+                        "Недоступних",
+                    value =
+                        resolved
+                            .unavailableCount
+                            .toString(),
+                    valueColor =
+                        AppThemeManager
+                            .palette(
+                                this
+                            )
+                            .semantic
+                            .warning
+                )
+            )
+        }
+
+        summaryCard.addView(
+            infoText(
+                "Діагностика: ${state.message}"
+            )
+        )
+
+        state.cachedAt
+            ?.let {
+                cachedAt ->
+                summaryCard.addView(
+                    infoText(
+                        "Локальний snapshot: " +
+                            formatDateTime(
+                                cachedAt
+                            )
+                    )
+                )
+            }
+
+        summaryCard.addView(
+            infoText(
+                "Поточний локальний список не змінено. " +
+                    "Жоден Review/Search/write flow автоматично не запускається."
+            )
+        )
 
         if (state.fromCache && resolved.playlistTitle.isNullOrBlank()) {
             summaryCard.addView(
@@ -1307,10 +1371,96 @@ class UrlSnapshotActivity : Activity() {
                 }
             )
 
-            addView(
-                infoText(
-                    body
+            if (body.isNotBlank()) {
+                addView(
+                    infoText(
+                        body
+                    )
                 )
+            }
+        }
+
+    private fun snapshotIdentityText(
+        text: String
+    ): TextView =
+        TextView(this).apply {
+            this.text =
+                text
+            textSize =
+                14f
+            setTypeface(
+                typeface,
+                Typeface.BOLD
+            )
+            setTextColor(
+                Color.WHITE
+            )
+            setPadding(
+                0,
+                dp(8),
+                0,
+                dp(4)
+            )
+            maxLines =
+                3
+        }
+
+    private fun snapshotStatLine(
+        label: String,
+        value: String,
+        valueColor: Int =
+            Color.WHITE
+    ): LinearLayout =
+        LinearLayout(this).apply {
+            orientation =
+                LinearLayout.HORIZONTAL
+            gravity =
+                Gravity.CENTER_VERTICAL
+            setPadding(
+                0,
+                dp(4),
+                0,
+                dp(4)
+            )
+
+            addView(
+                TextView(
+                    this@UrlSnapshotActivity
+                ).apply {
+                    text =
+                        label
+                    textSize =
+                        12.5f
+                    setTextColor(
+                        MUTED
+                    )
+                },
+                LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams
+                        .WRAP_CONTENT,
+                    1f
+                )
+            )
+
+            addView(
+                TextView(
+                    this@UrlSnapshotActivity
+                ).apply {
+                    text =
+                        value
+                    textSize =
+                        13f
+                    setTypeface(
+                        typeface,
+                        Typeface.BOLD
+                    )
+                    setTextColor(
+                        valueColor
+                    )
+                    gravity =
+                        Gravity.END
+                }
             )
         }
 
