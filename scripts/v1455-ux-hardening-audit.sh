@@ -8,6 +8,9 @@ UI="$SRC/ui/UiChrome.kt"
 RESTORABLE="$SRC/ui/RestorableModalController.kt"
 SELECTABLE="$SRC/ui/SelectableTextState.kt"
 SELECTABLE_SURFACE="$SRC/ui/SelectableTextSurfaceState.kt"
+BULK_HIERARCHY="$SRC/ui/BulkHierarchyChrome.kt"
+BULK_PREVIEW="$SRC/BulkSyncPreviewActivity.kt"
+BULK_SESSION="$SRC/BulkSyncSessionActivity.kt"
 QUOTA="$SRC/QuotaActivity.kt"
 QA_STORE="$SRC/storage/BulkSyncQaFaultStore.kt"
 SAFETY="docs/design/UX_CHANGE_SAFETY_CONTRACT.md"
@@ -15,7 +18,7 @@ READABILITY="docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md"
 PLAN="docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md"
 RECONCILIATION="docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md"
 
-for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$QUOTA" "$QA_STORE" "$SAFETY" "$READABILITY" "$PLAN" "$RECONCILIATION"; do
+for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$QUOTA" "$QA_STORE" "$SAFETY" "$READABILITY" "$PLAN" "$RECONCILIATION"; do
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
@@ -67,6 +70,52 @@ grep -Fq 'useHorizontalActionRow(' "$UI" ||
   fail "full-screen adaptive action contract missing"
 grep -Fq 'useHorizontalDialogActionRow(' "$UI" ||
   fail "dialog adaptive action contract missing"
+
+grep -Fq 'object BulkHierarchyChrome' "$BULK_HIERARCHY" ||
+  fail "shared Bulk hierarchy presentation helper missing"
+grep -Fq 'enum class Tone' "$BULK_HIERARCHY" ||
+  fail "Bulk hierarchy semantic tone labels missing"
+
+for f in "$BULK_PREVIEW" "$BULK_SESSION"; do
+  grep -Fq 'BulkHierarchyChrome' "$f" ||
+    fail "Bulk hierarchy helper not used by $f"
+  grep -Fq 'summaryPanel.removeAllViews()' "$f" ||
+    fail "Bulk summary is still one dense same-weight text block in $f"
+  grep -Fq 'BulkHierarchyChrome.badge(' "$f" ||
+    fail "Bulk state badge hierarchy missing from $f"
+  grep -Fq 'BulkHierarchyChrome.secondary(' "$f" ||
+    fail "Bulk secondary diagnostics hierarchy missing from $f"
+done
+
+python - "$BULK_PREVIEW" "$BULK_SESSION" <<'PY_BULK_HIERARCHY'
+from pathlib import Path
+import re
+import sys
+
+preview = Path(sys.argv[1]).read_text(encoding="utf-8")
+session = Path(sys.argv[2]).read_text(encoding="utf-8")
+
+if "summaryText" in preview or "summaryText" in session:
+    raise SystemExit(
+        "FAIL: dense legacy Bulk summary TextView returned"
+    )
+
+if re.search(
+    r'toast\(\s*"Не вдалося створити Bulk-сесію: "\s*\+\s*errorText',
+    preview,
+):
+    raise SystemExit(
+        "FAIL: Preview duplicates durable technical detail into transient Toast"
+    )
+
+if re.search(
+    r'toast\(\s*(?:error\.message|exactnessError)',
+    session,
+):
+    raise SystemExit(
+        "FAIL: Session emits raw technical failure only through transient Toast"
+    )
+PY_BULK_HIERARCHY
 
 grep -Fq 'object SelectableTextState' "$SELECTABLE" ||
   fail "shared selectable-text state helper missing"
@@ -137,6 +186,7 @@ grep -Fq 'Recovery Center' "$PLAN" ||
 echo "PASS:"
 echo "- v1.4.55 UX safety contract is locked"
 echo "- one label-aware action fit policy serves screen and dialog actions"
+echo "- Bulk Preview/Session use shared semantic hierarchy with durable secondary diagnostics"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- Activity-owned selectable text persists only on the same logical surface"
 echo "- selectable-text focus is restored without triggering actions"

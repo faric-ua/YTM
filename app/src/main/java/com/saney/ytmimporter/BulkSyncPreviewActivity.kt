@@ -37,6 +37,7 @@ import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.BulkHierarchyChrome
 import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
@@ -79,8 +80,8 @@ class BulkSyncPreviewActivity : Activity() {
 
     private lateinit var statusText:
         TextView
-    private lateinit var summaryText:
-        TextView
+    private lateinit var summaryPanel:
+        LinearLayout
     private lateinit var rowsContainer:
         LinearLayout
     private lateinit var confirmationButton:
@@ -471,32 +472,19 @@ class BulkSyncPreviewActivity : Activity() {
                 )
             }
 
-        summaryText =
-            TextView(this).apply {
-                textSize = 14f
-                setTextColor(
-                    palette.text
-                )
-                setPadding(
-                    dp(14),
-                    dp(12),
-                    dp(14),
-                    dp(12)
-                )
-                background =
-                    AppThemeManager
-                        .surfaceDrawable(
-                            context =
-                                this@BulkSyncPreviewActivity,
-                            fill =
-                                palette.surface,
-                            radiusDp = 14,
-                            accentStroke = true
-                        )
-            }
+        summaryPanel =
+            BulkHierarchyChrome.card(
+                activity = this,
+                useAltSurface = false,
+                accentTone =
+                    BulkHierarchyChrome
+                        .Tone
+                        .ACCENT,
+                radiusDp = 14
+            )
 
         content.addView(
-            summaryText,
+            summaryPanel,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -590,8 +578,14 @@ class BulkSyncPreviewActivity : Activity() {
             false
         statusText.text =
             "Будую read-only preview. Віддалені зміни не виконуються."
-        summaryText.text =
-            "Аналіз локальних плейлистів і remote snapshot…"
+        summaryPanel.removeAllViews()
+        summaryPanel.addView(
+            BulkHierarchyChrome.secondary(
+                activity = this,
+                text =
+                    "Аналіз локальних плейлистів і remote snapshot…"
+            )
+        )
         showLoading(
             "Аналізую локальні плейлисти та remote snapshot…"
         )
@@ -866,97 +860,155 @@ class BulkSyncPreviewActivity : Activity() {
             totalExecutable -
                 selectedExecutable
 
-        summaryText.text =
-            buildString {
-                append(
-                    "Плейлистів: "
+        val stateCounts =
+            BulkSyncPlanState
+                .values()
+                .mapNotNull {
+                    state ->
+                    val count =
+                        summary.count(
+                            state
+                        )
+
+                    if (count > 0) {
+                        planStateLabel(
+                            state
+                        ) +
+                            " " +
+                            count
+                    } else {
+                        null
+                    }
+                }
+                .joinToString(
+                    " • "
                 )
-                append(
-                    summary.rows.size
+
+        summaryPanel.removeAllViews()
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.title(
+                activity = this,
+                text = "План синхронізації"
+            )
+        )
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.metrics(
+                activity = this,
+                text =
+                    "Плейлистів: " +
+                        summary.rows.size +
+                        " • до сесії: " +
+                        selectedExecutable +
+                        " • виключено: " +
+                        excludedExecutable
+            )
+        )
+
+        if (stateCounts.isNotBlank()) {
+            summaryPanel.addView(
+                BulkHierarchyChrome.secondary(
+                    activity = this,
+                    text =
+                        "Стани: " +
+                            stateCounts
                 )
-                append("\n")
-                append(
-                    BulkSyncPlanState
-                        .values()
-                        .joinToString(
-                            " • "
-                        ) {
-                            state ->
-                            planStateLabel(
-                                    state
-                                ) +
-                                " " +
-                                summary.count(
-                                    state
-                                )
-                        }
-                )
-                append("\n\n")
-                append(
-                    "До сесії: нових "
-                )
-                append(
-                    selected.count(
-                        BulkSyncPlanState.NEW
-                    )
-                )
-                append(
-                    " • пов’язаних для доповнення "
-                )
-                append(
-                    selected.count(
-                        BulkSyncPlanState.LINKED
-                    )
-                )
-                append(
-                    " • виключено "
-                )
-                append(
-                    excludedExecutable
-                )
-                append("\n")
-                append(
-                    "Потрібно пошуків: "
-                )
-                append(
-                    summary
-                        .estimatedSearchCalls
-                )
-                append(
-                    " викликів"
-                )
-                append("\n")
-                append(
-                    "Орієнтовна вартість запису API: "
-                )
-                append(
-                    selected
-                        .estimatedWriteUnits
-                )
-                append("\n")
-                append(
-                    "Перевірка YouTube Music використала: "
-                )
-                append(
-                    remoteReadUnitsUsed
-                )
-                append(
-                    " од. API"
-                )
-                append("\n\n")
-                append(
+            )
+        }
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.primary(
+                activity = this,
+                text =
+                    "Заплановано: нових " +
+                        selected.count(
+                            BulkSyncPlanState.NEW
+                        ) +
+                        " • доповнити " +
+                        selected.count(
+                            BulkSyncPlanState.LINKED
+                        ),
+                tone =
+                    if (selectedExecutable > 0) {
+                        BulkHierarchyChrome
+                            .Tone
+                            .ACCENT
+                    } else {
+                        BulkHierarchyChrome
+                            .Tone
+                            .NORMAL
+                    }
+            )
+        )
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.metrics(
+                activity = this,
+                text =
+                    "Орієнтовний запис API: " +
+                        selected
+                            .estimatedWriteUnits +
+                        " од."
+            )
+        )
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.secondary(
+                activity = this,
+                text =
+                    "Діагностика: Search " +
+                        summary
+                            .estimatedSearchCalls +
+                        " • перевірка YTM " +
+                        remoteReadUnitsUsed +
+                        " од. API"
+            )
+        )
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.secondary(
+                activity = this,
+                text =
                     "До сесії потраплять лише позначені нові або пов’язані плейлисти. " +
                         "Пошук, черга та заблоковані рядки не виконуються. " +
                         "Запис у YouTube Music почнеться тільки після окремого підтвердження " +
                         "на екрані сесії."
-                )
-            }
+            )
+        )
 
         confirmationButton.isEnabled =
             !loading &&
                 selectedExecutable >
                 0
     }
+
+    private fun previewTone(
+        state: BulkSyncPlanState
+    ): BulkHierarchyChrome.Tone =
+        when (state) {
+            BulkSyncPlanState.NEW,
+            BulkSyncPlanState.LINKED ->
+                BulkHierarchyChrome
+                    .Tone
+                    .ACCENT
+
+            BulkSyncPlanState.ALREADY_SYNCED ->
+                BulkHierarchyChrome
+                    .Tone
+                    .SUCCESS
+
+            BulkSyncPlanState.NEEDS_SEARCH,
+            BulkSyncPlanState.PENDING ->
+                BulkHierarchyChrome
+                    .Tone
+                    .WARNING
+
+            BulkSyncPlanState.BLOCKED ->
+                BulkHierarchyChrome
+                    .Tone
+                    .DANGER
+        }
 
     private fun planStateLabel(
         state: BulkSyncPlanState
@@ -1053,30 +1105,43 @@ class BulkSyncPreviewActivity : Activity() {
         summary: BulkSyncPlanSummary,
         row: BulkSyncPlanRow
     ): View {
-        val palette =
-            AppThemeManager.palette(this)
+        val tone =
+            previewTone(
+                row.state
+            )
 
         val card =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(
-                    dp(14),
-                    dp(10),
-                    dp(14),
-                    dp(12)
-                )
-                background =
-                    AppThemeManager
-                        .surfaceDrawable(
-                            context =
-                                this@BulkSyncPreviewActivity,
-                            fill =
-                                palette.surfaceAlt,
-                            radiusDp = 12,
-                            accentStroke = false
-                        )
+            BulkHierarchyChrome.card(
+                activity = this,
+                useAltSurface = true,
+                accentTone = tone,
+                radiusDp = 12
+            )
+
+        card.addView(
+            BulkHierarchyChrome.title(
+                activity = this,
+                text = row.playlistName
+            )
+        )
+
+        card.addView(
+            BulkHierarchyChrome.badge(
+                activity = this,
+                text =
+                    planStateLabel(
+                        row.state
+                    ),
+                tone = tone
+            ),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin =
+                    dp(7)
             }
+        )
 
         if (
             BulkSyncSelectionPolicy
@@ -1100,13 +1165,17 @@ class BulkSyncPreviewActivity : Activity() {
                         }
                     textSize = 13f
                     setTextColor(
-                        palette.text
+                        AppThemeManager
+                            .palette(
+                                this@BulkSyncPreviewActivity
+                            )
+                            .text
                     )
                     setPadding(
                         0,
+                        dp(5),
                         0,
-                        0,
-                        dp(6)
+                        0
                     )
                     setOnCheckedChangeListener {
                             button,
@@ -1135,139 +1204,120 @@ class BulkSyncPreviewActivity : Activity() {
             )
         }
 
-        val details =
-            TextView(this).apply {
+        card.addView(
+            BulkHierarchyChrome.metrics(
+                activity = this,
                 text =
-                    buildString {
-                        append(
-                            planStateLabel(
-                                row.state
-                            )
-                        )
-                        append(
-                            " · "
-                        )
-                        append(
-                            row.playlistName
-                        )
-                        append("\n")
-                        append(
-                            "Треки: "
-                        )
-                        append(
-                            row.trackCount
-                        )
-                        append(
-                            " • готово: "
-                        )
-                        append(
-                            row.selectedCount
-                        )
-                        append(
-                            " • не готово: "
-                        )
-                        append(
-                            row.unresolvedCount
-                        )
+                    "Треки: " +
+                        row.trackCount +
+                        " • готово: " +
+                        row.selectedCount +
+                        " • не готово: " +
+                        row.unresolvedCount
+            )
+        )
 
-                        if (
-                            row.estimatedSearchCalls >
-                            0
-                        ) {
-                            append("\nSearch: ")
-                            append(
-                                row
-                                    .estimatedSearchCalls
-                            )
-                            append(
-                                " • cache: "
-                            )
-                            append(
-                                row.cacheHits
-                            )
-                        }
-
-                        if (
-                            row.plannedCreate ||
-                            row.plannedInsertCount >
-                            0
-                        ) {
-                            append("\nБуде виконано: ")
-
-                            if (
-                                row.plannedCreate
-                            ) {
-                                append(
-                                    "створити плейлист"
-                                )
-
-                                if (
-                                    row.plannedInsertCount >
-                                    0
-                                ) {
-                                    append(
-                                        " • "
-                                    )
-                                }
-                            }
-
-                            if (
-                                row.plannedInsertCount >
-                                0
-                            ) {
-                                append(
-                                    "додати "
-                                )
-                                append(
-                                    row
-                                        .plannedInsertCount
-                                )
-                                append(
-                                    " треків"
-                                )
-                            }
-
-                            append(
-                                " • "
-                            )
-                            append(
-                                row
-                                    .estimatedWriteUnits
-                            )
-                            append(
-                                " од. API"
-                            )
-                        }
-
-                        append("\n")
+        if (
+            row.plannedCreate ||
+            row.plannedInsertCount >
+            0
+        ) {
+            val planned =
+                buildString {
+                    if (
+                        row.plannedCreate
+                    ) {
                         append(
-                            row.reason
+                            "створити плейлист"
                         )
                     }
 
-                textSize = 13.5f
-                setTextColor(
-                    palette.text
+                    if (
+                        row.plannedInsertCount >
+                        0
+                    ) {
+                        if (isNotEmpty()) {
+                            append(
+                                " • "
+                            )
+                        }
+
+                        append(
+                            "додати "
+                        )
+                        append(
+                            row
+                                .plannedInsertCount
+                        )
+                        append(
+                            " треків"
+                        )
+                    }
+                }
+
+            card.addView(
+                BulkHierarchyChrome.primary(
+                    activity = this,
+                    text =
+                        "Буде виконано: " +
+                            planned,
+                    tone =
+                        BulkHierarchyChrome
+                            .Tone
+                            .ACCENT
                 )
+            )
+        }
+
+        card.addView(
+            BulkHierarchyChrome.body(
+                activity = this,
+                text =
+                    "Причина: " +
+                        row.reason
+            )
+        )
+
+        val diagnostics =
+            buildList {
+                if (
+                    row.estimatedSearchCalls >
+                    0 ||
+                    row.cacheHits >
+                    0
+                ) {
+                    add(
+                        "Search " +
+                            row.estimatedSearchCalls +
+                            " • cache " +
+                            row.cacheHits
+                    )
+                }
 
                 if (
-                    row.state ==
-                    BulkSyncPlanState.BLOCKED
+                    row.estimatedWriteUnits >
+                    0
                 ) {
-                    setTypeface(
-                        typeface,
-                        Typeface.BOLD
+                    add(
+                        "запис API " +
+                            row.estimatedWriteUnits +
+                            " од."
                     )
                 }
             }
 
-        card.addView(
-            details,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+        if (diagnostics.isNotEmpty()) {
+            card.addView(
+                BulkHierarchyChrome.secondary(
+                    activity = this,
+                    text =
+                        "Діагностика: " +
+                            diagnostics.joinToString(
+                                " • "
+                            )
+                )
             )
-        )
+        }
 
         return card
     }
@@ -1571,8 +1621,7 @@ class BulkSyncPreviewActivity : Activity() {
                                 "Причина: " +
                                 errorText
                         toast(
-                            "Не вдалося створити Bulk-сесію: " +
-                                errorText
+                            "Не вдалося створити Bulk-сесію. Деталі залишилися на екрані."
                         )
                     }
                 }

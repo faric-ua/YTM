@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
@@ -30,6 +31,7 @@ import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.BulkHierarchyChrome
 import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.ui.ScrollPositionState
@@ -50,8 +52,8 @@ class BulkSyncSessionActivity : Activity() {
     private lateinit var statusText:
         TextView
 
-    private lateinit var summaryText:
-        TextView
+    private lateinit var summaryPanel:
+        LinearLayout
 
     private lateinit var rowsContainer:
         LinearLayout
@@ -454,32 +456,19 @@ class BulkSyncSessionActivity : Activity() {
                 )
             }
 
-        summaryText =
-            TextView(this).apply {
-                textSize = 14f
-                setTextColor(
-                    palette.text
-                )
-                setPadding(
-                    dp(14),
-                    dp(12),
-                    dp(14),
-                    dp(12)
-                )
-                background =
-                    AppThemeManager
-                        .surfaceDrawable(
-                            context =
-                                this@BulkSyncSessionActivity,
-                            fill =
-                                palette.surface,
-                            radiusDp = 14,
-                            accentStroke = true
-                        )
-            }
+        summaryPanel =
+            BulkHierarchyChrome.card(
+                activity = this,
+                useAltSurface = false,
+                accentTone =
+                    BulkHierarchyChrome
+                        .Tone
+                        .ACCENT,
+                radiusDp = 14
+            )
 
         content.addView(
-            summaryText,
+            summaryPanel,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -720,10 +709,13 @@ class BulkSyncSessionActivity : Activity() {
                 )
 
         if (exactnessError != null) {
-            toast(
-                exactnessError
-            )
             render(session)
+            statusText.text =
+                "Відкат не розпочато.\n" +
+                    exactnessError
+            toast(
+                "Відкат не розпочато. Деталі залишилися на екрані."
+            )
             return
         }
 
@@ -783,8 +775,7 @@ class BulkSyncSessionActivity : Activity() {
             } catch (error: Throwable) {
                 runOnUiThread {
                     toast(
-                        error.message
-                            ?: "Помилка відкату Bulk-сесії"
+                        "Відкат зупинено. Перевірте стан і деталі на екрані."
                     )
                 }
             } finally {
@@ -908,8 +899,7 @@ class BulkSyncSessionActivity : Activity() {
             } catch (error: Throwable) {
                 runOnUiThread {
                     toast(
-                        error.message
-                            ?: "Помилка Bulk-сесії"
+                        "Синхронізацію зупинено. Перевірте стан і деталі на екрані."
                     )
                 }
             } finally {
@@ -975,120 +965,201 @@ class BulkSyncSessionActivity : Activity() {
                     session.state
                 )
 
-        summaryText.text =
-            buildString {
-                append(
-                    "Плейлистів у плані: "
+        summaryPanel.removeAllViews()
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.title(
+                activity = this,
+                text = "Стан Bulk-сесії"
+            )
+        )
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.badge(
+                activity = this,
+                text =
+                    sessionStateLabel(
+                        session.state
+                    ),
+                tone =
+                    sessionTone(
+                        session.state
+                    )
+            ),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin =
+                    dp(7)
+            }
+        )
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.metrics(
+                activity = this,
+                text =
+                    "Плейлистів у плані: " +
+                        session.plan.size
+            )
+        )
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.primary(
+                activity = this,
+                text =
+                    "Створено: " +
+                        appliedCreates +
+                        " плейлистів • додано: " +
+                        appliedInserts +
+                        " треків",
+                tone =
+                    if (
+                        session.state ==
+                        BulkSyncSessionState.COMPLETED
+                    ) {
+                        BulkHierarchyChrome
+                            .Tone
+                            .SUCCESS
+                    } else {
+                        BulkHierarchyChrome
+                            .Tone
+                            .ACCENT
+                    }
+            )
+        )
+
+        if (prepared > 0) {
+            summaryPanel.addView(
+                BulkHierarchyChrome.primary(
+                    activity = this,
+                    text =
+                        "Потребує перевірки незавершених дій: " +
+                            prepared,
+                    tone =
+                        BulkHierarchyChrome
+                            .Tone
+                            .WARNING
                 )
-                append(
-                    session.plan.size
+            )
+        }
+
+        if (terminalFailed > 0) {
+            summaryPanel.addView(
+                BulkHierarchyChrome.primary(
+                    activity = this,
+                    text =
+                        "Не додано треків: " +
+                            terminalFailed,
+                    tone =
+                        BulkHierarchyChrome
+                            .Tone
+                            .DANGER
                 )
-                append("\n")
-                append(
-                    "Створено плейлистів: "
-                )
-                append(
-                    appliedCreates
-                )
-                append(
-                    " • додано треків: "
-                )
-                append(
-                    appliedInserts
-                )
-                append("\n")
-                append(
-                    "Контрольна точка: "
-                )
-                append(
-                    "збережена"
-                )
-                append("\n")
-                append(
-                    "Знімок YTM: "
-                )
-                append(
-                    session.remoteBaseline
-                        .playlists
-                        .size
-                )
-                append(
-                    " плейлистів"
+            )
+        }
+
+        val rolledBack =
+            BulkSyncRollbackPolicy
+                .rolledBackCount(
+                    session
                 )
 
-                if (prepared > 0) {
-                    append("\n")
-                    append(
-                        "⚠ Потребує перевірки незавершених дій: "
-                    )
-                    append(prepared)
+        val rollbackRemaining =
+            BulkSyncRollbackPolicy
+                .remainingAppliedCount(
+                    session
+                )
+
+        if (
+            rolledBack > 0 ||
+            session.state in
+                setOf(
+                    BulkSyncSessionState
+                        .ROLLING_BACK,
+                    BulkSyncSessionState
+                        .ROLLBACK_PAUSED,
+                    BulkSyncSessionState
+                        .ROLLED_BACK
+                )
+        ) {
+            summaryPanel.addView(
+                BulkHierarchyChrome.primary(
+                    activity = this,
+                    text =
+                        "Відкочено дій: " +
+                            rolledBack +
+                            " • залишилось: " +
+                            rollbackRemaining,
+                    tone =
+                        if (
+                            rollbackRemaining >
+                            0
+                        ) {
+                            BulkHierarchyChrome
+                                .Tone
+                                .WARNING
+                        } else {
+                            BulkHierarchyChrome
+                                .Tone
+                                .SUCCESS
+                        }
+                )
+            )
+        }
+
+        summaryPanel.addView(
+            BulkHierarchyChrome.secondary(
+                activity = this,
+                text =
+                    "Контрольна точка: збережена • Знімок YTM: " +
+                        session.remoteBaseline
+                            .playlists
+                            .size +
+                        " плейлистів"
+            )
+        )
+
+        if (
+            !session.lastError
+                .isNullOrBlank()
+        ) {
+            summaryPanel.addView(
+                BulkHierarchyChrome.badge(
+                    activity = this,
+                    text = "Потрібна увага",
+                    tone =
+                        BulkHierarchyChrome
+                            .Tone
+                            .DANGER
+                ),
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin =
+                        dp(7)
                 }
+            )
 
-                if (terminalFailed > 0) {
-                    append("\n")
-                    append(
-                        "Не додано треків: "
-                    )
-                    append(
-                        terminalFailed
-                    )
-                }
+            summaryPanel.addView(
+                BulkHierarchyChrome.secondary(
+                    activity = this,
+                    text =
+                        "Деталі: " +
+                            session.lastError
+                )
+            )
+        }
 
-                val rolledBack =
-                    BulkSyncRollbackPolicy
-                        .rolledBackCount(
-                            session
-                        )
-
-                val rollbackRemaining =
-                    BulkSyncRollbackPolicy
-                        .remainingAppliedCount(
-                            session
-                        )
-
-                if (
-                    rolledBack > 0 ||
-                    session.state in
-                        setOf(
-                            BulkSyncSessionState
-                                .ROLLING_BACK,
-                            BulkSyncSessionState
-                                .ROLLBACK_PAUSED,
-                            BulkSyncSessionState
-                                .ROLLED_BACK
-                        )
-                ) {
-                    append("\n")
-                    append(
-                        "Відкочено дій: "
-                    )
-                    append(
-                        rolledBack
-                    )
-                    append(
-                        " • залишилось: "
-                    )
-                    append(
-                        rollbackRemaining
-                    )
-                }
-
-                if (
-                    !session.lastError
-                        .isNullOrBlank()
-                ) {
-                    append("\n\n")
-                    append(
-                        session.lastError
-                    )
-                }
-
-                append("\n\n")
-                append(
+        summaryPanel.addView(
+            BulkHierarchyChrome.secondary(
+                activity = this,
+                text =
                     "Після перезапуску нічого не продовжується автоматично. " +
                         "Продовження синхронізації або відкат запускаються тільки явною дією користувача."
-                )
-            }
+            )
+        )
 
         rowsContainer.removeAllViews()
 
@@ -1191,10 +1262,7 @@ class BulkSyncSessionActivity : Activity() {
         session: BulkSyncSession,
         index: Int,
         row: BulkSyncSessionRow
-    ): TextView {
-        val palette =
-            AppThemeManager.palette(this)
-
+    ): View {
         val appliedInserts =
             row.tracks.count {
                 track ->
@@ -1250,132 +1318,239 @@ class BulkSyncSessionActivity : Activity() {
                 }
         }
 
-        return TextView(this).apply {
-            text =
-                buildString {
-                    append(
-                        index + 1
-                    )
-                    append(
-                        ". "
-                    )
-                    append(
+        val tone =
+            rowTone(
+                row.state
+            )
+
+        val card =
+            BulkHierarchyChrome.card(
+                activity = this,
+                useAltSurface = true,
+                accentTone = tone,
+                radiusDp = 12
+            )
+
+        card.addView(
+            BulkHierarchyChrome.title(
+                activity = this,
+                text =
+                    (index + 1)
+                        .toString() +
+                        ". " +
                         row.playlistName
-                    )
-                    append("\n")
-                    append(
-                        rowStateLabel(
-                            row.state
-                        )
-                    )
+            )
+        )
 
-                    if (
-                        row.originalPlanState.name ==
-                        "NEW"
-                    ) {
-                        append(
-                            " • "
-                        )
-                        append(
-                            appliedInserts
-                        )
-                        append(
-                            "/"
-                        )
-                        append(
-                            row.tracks.size
-                        )
-                    }
+        card.addView(
+            BulkHierarchyChrome.badge(
+                activity = this,
+                text =
+                    rowStateLabel(
+                        row.state
+                    ),
+                tone = tone
+            ),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin =
+                    dp(7)
+            }
+        )
 
-                    if (
-                        !row.remotePlaylistId
-                            .isNullOrBlank()
-                    ) {
-                        append("\nYTM ID: ")
-                        append(
-                            row.remotePlaylistId
-                        )
-                    }
+        if (
+            row.originalPlanState.name ==
+            "NEW"
+        ) {
+            card.addView(
+                BulkHierarchyChrome.metrics(
+                    activity = this,
+                    text =
+                        "Додано: " +
+                            appliedInserts +
+                            "/" +
+                            row.tracks.size +
+                            " треків"
+                )
+            )
+        }
 
-                    if (
-                        terminalFailures.isNotEmpty()
-                    ) {
-                        append("\nНе додано: ")
-                        append(
-                            terminalFailures.size
-                        )
+        if (
+            terminalFailures.isNotEmpty()
+        ) {
+            card.addView(
+                BulkHierarchyChrome.primary(
+                    activity = this,
+                    text =
+                        "Не додано: " +
+                            terminalFailures.size,
+                    tone =
+                        BulkHierarchyChrome
+                            .Tone
+                            .DANGER
+                )
+            )
 
-                        terminalFailures
-                            .take(5)
-                            .forEach {
-                                    (track, mutation) ->
-                                append("\n• ")
-                                append(
-                                    track.originalArtist
-                                        .takeIf {
-                                            it.isNotBlank()
-                                        }
-                                        ?.let {
-                                            it + " — "
-                                        }
-                                        .orEmpty()
-                                )
-                                append(
-                                    track.originalTitle
-                                )
+            val details =
+                buildString {
+                    terminalFailures
+                        .take(5)
+                        .forEachIndexed {
+                                failureIndex,
+                                (track, mutation) ->
+                            if (failureIndex > 0) {
+                                append("\n")
+                            }
 
-                                mutation.error
-                                    ?.takeIf {
+                            append("• ")
+                            append(
+                                track.originalArtist
+                                    .takeIf {
                                         it.isNotBlank()
                                     }
                                     ?.let {
-                                        reason ->
-                                        append(": ")
-                                        append(reason)
+                                        it + " — "
                                     }
-                            }
-
-                        if (
-                            terminalFailures.size > 5
-                        ) {
-                            append("\n… ще ")
-                            append(
-                                terminalFailures.size - 5
+                                    .orEmpty()
                             )
+                            append(
+                                track.originalTitle
+                            )
+
+                            mutation.error
+                                ?.takeIf {
+                                    it.isNotBlank()
+                                }
+                                ?.let {
+                                    reason ->
+                                    append(": ")
+                                    append(reason)
+                                }
                         }
-                    } else if (
-                        !row.lastError
-                            .isNullOrBlank()
+
+                    if (
+                        terminalFailures.size >
+                        5
                     ) {
-                        append("\n")
+                        append("\n… ще ")
                         append(
-                            row.lastError
+                            terminalFailures.size -
+                                5
                         )
                     }
                 }
 
-            textSize = 13.5f
-            setTextColor(
-                palette.text
+            card.addView(
+                BulkHierarchyChrome.secondary(
+                    activity = this,
+                    text =
+                        "Деталі помилок:\n" +
+                            details
+                )
             )
-            setPadding(
-                dp(14),
-                dp(12),
-                dp(14),
-                dp(12)
+        } else if (
+            !row.lastError
+                .isNullOrBlank()
+        ) {
+            card.addView(
+                BulkHierarchyChrome.secondary(
+                    activity = this,
+                    text =
+                        "Деталі: " +
+                            row.lastError
+                )
             )
-            background =
-                AppThemeManager
-                    .surfaceDrawable(
-                        context =
-                            this@BulkSyncSessionActivity,
-                        fill =
-                            palette.surfaceAlt,
-                        radiusDp = 12,
-                        accentStroke = false
-                    )
         }
+
+        if (
+            !row.remotePlaylistId
+                .isNullOrBlank()
+        ) {
+            card.addView(
+                BulkHierarchyChrome.secondary(
+                    activity = this,
+                    text =
+                        "YTM ID: " +
+                            row.remotePlaylistId
+                )
+            )
+        }
+
+        return card
     }
+
+    private fun sessionTone(
+        state: BulkSyncSessionState
+    ): BulkHierarchyChrome.Tone =
+        when (state) {
+            BulkSyncSessionState.PREVIEW ->
+                BulkHierarchyChrome
+                    .Tone
+                    .NORMAL
+
+            BulkSyncSessionState.READY,
+            BulkSyncSessionState.RUNNING ->
+                BulkHierarchyChrome
+                    .Tone
+                    .ACCENT
+
+            BulkSyncSessionState.PAUSED_SEARCH_QUOTA,
+            BulkSyncSessionState.PAUSED_WRITE_QUOTA,
+            BulkSyncSessionState.PAUSED_RATE_LIMIT,
+            BulkSyncSessionState.PAUSED_AUTH,
+            BulkSyncSessionState.PAUSED_INTERRUPTED,
+            BulkSyncSessionState.ROLLING_BACK,
+            BulkSyncSessionState.ROLLBACK_PAUSED ->
+                BulkHierarchyChrome
+                    .Tone
+                    .WARNING
+
+            BulkSyncSessionState.COMPLETED,
+            BulkSyncSessionState.ROLLED_BACK ->
+                BulkHierarchyChrome
+                    .Tone
+                    .SUCCESS
+
+            BulkSyncSessionState.PARTIAL_FAILED ->
+                BulkHierarchyChrome
+                    .Tone
+                    .DANGER
+        }
+
+    private fun rowTone(
+        state: BulkSyncSessionRowState
+    ): BulkHierarchyChrome.Tone =
+        when (state) {
+            BulkSyncSessionRowState.READY,
+            BulkSyncSessionRowState.READY_APPEND,
+            BulkSyncSessionRowState.CREATING,
+            BulkSyncSessionRowState.INSERTING ->
+                BulkHierarchyChrome
+                    .Tone
+                    .ACCENT
+
+            BulkSyncSessionRowState.COMPLETED,
+            BulkSyncSessionRowState.COMPLETED_NOOP ->
+                BulkHierarchyChrome
+                    .Tone
+                    .SUCCESS
+
+            BulkSyncSessionRowState.DEFERRED_LINKED,
+            BulkSyncSessionRowState.NEEDS_SEARCH,
+            BulkSyncSessionRowState.PENDING ->
+                BulkHierarchyChrome
+                    .Tone
+                    .WARNING
+
+            BulkSyncSessionRowState.BLOCKED,
+            BulkSyncSessionRowState.PARTIAL_FAILED,
+            BulkSyncSessionRowState.FAILED ->
+                BulkHierarchyChrome
+                    .Tone
+                    .DANGER
+        }
 
     private fun sessionStateLabel(
         state: BulkSyncSessionState
@@ -1465,8 +1640,22 @@ class BulkSyncSessionActivity : Activity() {
     private fun renderMissing() {
         statusText.text =
             "Сесію синхронізації не знайдено."
-        summaryText.text =
-            "Створіть її через Меню → Синхронізувати всі."
+
+        summaryPanel.removeAllViews()
+        summaryPanel.addView(
+            BulkHierarchyChrome.title(
+                activity = this,
+                text = "Bulk-сесія недоступна"
+            )
+        )
+        summaryPanel.addView(
+            BulkHierarchyChrome.secondary(
+                activity = this,
+                text =
+                    "Створіть її через Меню → Синхронізувати всі."
+            )
+        )
+
         rowsContainer.removeAllViews()
         primaryButton.isEnabled =
             false
