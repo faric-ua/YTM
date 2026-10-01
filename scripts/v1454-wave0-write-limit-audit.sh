@@ -149,7 +149,7 @@ grep -Fq 'TrackStatus.NEW' "$RECOVERY" ||
   fail "legacy unknown-video fallback must restore as NEW"
 grep -Fq 'Відновити як поточний плейлист' "$HISTORY_UI" ||
   fail "History restore action missing"
-grep -Fq 'Search і запис у YTM не запускатимуться автоматично' "$HISTORY_UI" ||
+grep -Fq 'Пошук і запис у YTM не запускатимуться автоматично' "$HISTORY_UI" ||
   fail "History restore no-auto-run copy missing"
 grep -Fq 'HistoryRecoveryPolicy.plan' "$HISTORY_UI" ||
   fail "History restore does not use recovery policy"
