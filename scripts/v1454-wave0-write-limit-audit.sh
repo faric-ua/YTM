@@ -73,8 +73,9 @@ fi
 
 grep -Fq 'Автоматичного повтору не буде' "$MAIN" || fail "no-auto-retry user copy missing"
 grep -Fq 'частоту write-запитів' "$MAIN" || fail "frequent write warning missing"
-grep -Fq 'забагато write-запитів' "$QUEUE" || fail "Queue rate-limit label missing"
-grep -Fq 'HTTP 429' "$QUEUE" || fail "Queue ambiguous-429 label missing"
+# Pause classification stays structural; successor UI uses plain-language labels.
+grep -Fq 'забагато запитів запису' "$QUEUE" || fail "Queue rate-limit label missing"
+grep -Fq 'Тимчасове обмеження' "$QUEUE" || fail "Queue ambiguous-429 label missing"
 grep -Fq 'PENDING_LIMIT' "$HISTORY" || fail "History limit-pause status missing"
 grep -Fq 'maxplaylistexceeded' "$ERRORS" || fail "permanent max-playlist error copy missing"
 
