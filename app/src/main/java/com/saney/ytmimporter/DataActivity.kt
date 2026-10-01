@@ -421,7 +421,7 @@ class DataActivity : Activity() {
 
         snapshotDeleteButton =
             actionButton(
-                label = "Видалити страховий знімок",
+                label = "Видалити знімок",
                 primary = false
             ) {
                 confirmDeleteSafetySnapshot()
