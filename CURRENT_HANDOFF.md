@@ -22,26 +22,30 @@ Last updated: **2026-10-01**
 
 ## Current validated checkpoint — 2026-10-01
 
-**Current validated source/tooling checkpoint:**
-`f8466794e91efbcaa53234181a6743d13242b0a8`
-(`chore: sort tile audit manifest entry`).
+**Sleep checkpoint active.**
 
-Validate Android run `36815527718` — **SUCCESS**:
+Validated functional/source base:
+`80406b79ae6599f8d3940adcc2b35d06139aa5b6`
+(`docs: close tile readability source gate`).
+
+Validate Android run `36815900233` — **SUCCESS**:
 - release preflight PASS;
 - JVM unit tests PASS;
 - unsigned release assemble PASS.
 
-**#50 tile/card readability SOURCE/STATIC/BUILD: PASS.**
-The inventory found two presentation-only gaps; Playlist Hub and URL Snapshot are
-now structured for faster scanning while canonical Destination Tile interactions
-remain unchanged. Real-phone acceptance remains pending in the consolidated
-Phase A matrix.
+Checkpoint instructions:
+`docs/v.1.4.55/SLEEP_CHECKPOINT_2026-10-01.md`.
+
+No source task from the current readability pass has been started after this base.
+The first unchecked item in `ACTIVE_PLAN.md` is the correct restart point.
 
 **Current blocker:** none.
 
 **Current task:** remaining Phase A surface readability audit:
-Menu/Home/History/Queue/Data/File/selector screens. Do not restart v1.4.54 Tests
-1–9 and do not start Phase B yet.
+Menu/Home/History/Queue/Data/File/selector screens.
+
+Do not repeat v1.4.54 Tests 1–9. Do not restart completed Bulk/Toast/Tile audits.
+Do not start Phase B yet.
 
 ## Immutable functional reference
 

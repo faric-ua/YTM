@@ -197,6 +197,11 @@ Evidence:
 
 ## CURRENT TASK — remaining Phase A surface readability (#50) (2026-10-01)
 
+
+> **SLEEP CHECKPOINT 2026-10-01:** no current-task item has been started yet.
+> Resume from the first unchecked item. Validated functional base:
+> `80406b79ae6599f8d3940adcc2b35d06139aa5b6`, run `36815900233`.
+
 Goal: finish the app-wide readability pass for the remaining high-use surfaces
 without altering workflow/domain semantics.
 

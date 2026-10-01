@@ -12,15 +12,16 @@ Last updated: **2026-10-01**
 - Repository: `faric-ua/YTM`
 - Release: **v1.4.55 / Phase A — UX hardening**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Current validated source/tooling checkpoint:
-  `f8466794e91efbcaa53234181a6743d13242b0a8`
-  (`chore: sort tile audit manifest entry`)
-- Validate Android run **36815527718 — SUCCESS**
+- **Sleep checkpoint active — 2026-10-01.**
+- Last validated functional/source base:
+  `80406b79ae6599f8d3940adcc2b35d06139aa5b6`
+  (`docs: close tile readability source gate`)
+- Validate Android run **36815900233 — SUCCESS**
   (release preflight PASS / JVM PASS / unsigned assemble PASS)
-- #50 tile/card readability verification is **SOURCE/STATIC/BUILD PASS**.
-  Real-phone acceptance remains pending in the consolidated Phase A matrix.
-- Active task: **remaining Phase A surface readability pass:
-  Menu / Home / History / Queue / Data / File surfaces**.
+- Sleep checkpoint file:
+  `docs/v.1.4.55/SLEEP_CHECKPOINT_2026-10-01.md`.
+- Active task remains: **remaining Phase A surface readability:
+  Menu / Home / History / Queue / Data / File/selector**.
 - v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
 - Phase B is not active yet.
 
@@ -44,17 +45,15 @@ Source/static/build work is **PASS**:
 
 ## NEXT ACTION — do this first
 
-1. Use `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`.
-2. Audit the remaining Phase A user-facing surfaces:
-   Menu, Home, History, Queue/Pending, Data and file/selector screens.
-3. Check whether state/result/warning/next safe action can be identified quickly
-   without reading dense paragraphs.
-4. Classify before editing: compliant / verified presentation GAP / intentionally
-   specialized.
-5. Patch only verified readability GAPs; preserve callbacks, navigation ownership,
-   storage, API and lifecycle/no-auto-action semantics.
-6. After that, do the Neon + Blue/Green semantic/accessibility pass.
-7. Do not start Phase B yet.
+**Sleep checkpoint. No more source work in this session.**
+
+On resume:
+1. verify live branch HEAD + latest Validate Android;
+2. read `docs/v.1.4.55/SLEEP_CHECKPOINT_2026-10-01.md`;
+3. continue CURRENT TASK in `ACTIVE_PLAN.md` from the first unchecked item;
+4. audit Menu/Home/History/Queue/Data/File/selector readability before editing;
+5. patch only verified presentation gaps;
+6. keep Phase B inactive.
 
 ## Mandatory recovery order
 
