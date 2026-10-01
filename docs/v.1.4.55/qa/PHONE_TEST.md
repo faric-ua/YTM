@@ -96,6 +96,24 @@ Representative checks:
 
 Result: `A6+` / `A6-`.
 
+### Test A7 — tile/card readability
+
+Representative checks:
+- Playlist Hub: open a playlist with a long title and mixed statuses; verify
+  `Усього треків`, `Готові`, `Перевірити`, `Дублікати`, `Очікує` and
+  `Проблеми` are readable without decoding glyphs;
+- rotate Playlist Hub both ways; layout remains readable and no action starts;
+- URL Snapshot: open a resolved snapshot and verify playlist identity, total,
+  unique exact-videoId and duplicate counts are immediately scannable;
+- cache time, resolver diagnostics and no-auto-flow policy remain readable but
+  visually secondary;
+- existing refresh/title-backfill actions still require an explicit tap;
+- Destination existing-playlist Tile still has visible Edit/Delete/⋮ and long press
+  opens the same menu as ⋮; Delete still requires confirmation;
+- verify Neon plus one alternate skin in portrait and landscape.
+
+Result: `A7+` / `A7-`.
+
 ## Wave B/C
 
 Add targeted tests only when those implementation waves land. Do not broaden Wave A

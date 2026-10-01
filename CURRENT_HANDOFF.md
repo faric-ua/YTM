@@ -22,25 +22,26 @@ Last updated: **2026-10-01**
 
 ## Current validated checkpoint — 2026-10-01
 
-**Current validated app/source checkpoint:**
-`5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`
-(`ui: keep critical recovery results durable`).
+**Current validated source/tooling checkpoint:**
+`f8466794e91efbcaa53234181a6743d13242b0a8`
+(`chore: sort tile audit manifest entry`).
 
-Validate Android run `36811129269` — **SUCCESS**:
+Validate Android run `36815527718` — **SUCCESS**:
 - release preflight PASS;
 - JVM unit tests PASS;
 - unsigned release assemble PASS.
 
-**#50 critical transient-message durability SOURCE/STATIC/BUILD: PASS.**
-The inventory found only two verified P0 gaps, both now patched with
-recreation-safe durable inline notices. Real-phone acceptance remains pending in
-the consolidated Phase A matrix.
+**#50 tile/card readability SOURCE/STATIC/BUILD: PASS.**
+The inventory found two presentation-only gaps; Playlist Hub and URL Snapshot are
+now structured for faster scanning while canonical Destination Tile interactions
+remain unchanged. Real-phone acceptance remains pending in the consolidated
+Phase A matrix.
 
 **Current blocker:** none.
 
-**Current task:** Phase A tile/card readability verification against
-`docs/design/TILE_UI_CONTRACT.md`. Do not restart v1.4.54 Tests 1–9 and do not
-start Phase B yet.
+**Current task:** remaining Phase A surface readability audit:
+Menu/Home/History/Queue/Data/File/selector screens. Do not restart v1.4.54 Tests
+1–9 and do not start Phase B yet.
 
 ## Immutable functional reference
 
@@ -114,17 +115,14 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-Tile/card inventory is complete in
-`docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md`.
+Tile/card readability is SOURCE/STATIC/BUILD PASS on
+`f8466794e91efbcaa53234181a6743d13242b0a8`, Validate Android run
+`36815527718` = SUCCESS.
 
-Two presentation-only GAPs are verified:
-1. Playlist Hub summary uses an unlabeled glyph-only five-counter strip.
-2. URL Snapshot resolved summary mixes state/identity/counters/cache/policy into one
-   same-weight paragraph.
-
-Next source step: patch only those two readability owners, then add guards and
-phone targets. Do not alter Destination Tile interactions or any domain/API/storage
-semantics.
+**Current task:** audit Menu/Home/History/Queue/Data/File/selector surfaces against
+the app-wide readability hierarchy. Inventory and classify before editing; patch
+only verified presentation gaps. Preserve action ownership, callbacks,
+remote/API/storage semantics and lifecycle/no-auto-action behavior.
 
 ## Working contract
 

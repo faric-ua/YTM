@@ -91,6 +91,8 @@ Still open in Phase A:
 - phone-verify one canonical action layout contract across screen + dialog footers (#47/#26/#37);
 - Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50) is **SOURCE/STATIC/BUILD PASS** on `490a1f0e218032aa46a723a455dac10e87136a9e`, run `36795036312`; real-phone acceptance remains pending;
 - critical transient-message durability is **SOURCE/STATIC/BUILD PASS** on `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`, run `36811129269`; real-phone acceptance remains pending;
+- tile/card readability is **SOURCE/STATIC/BUILD PASS** on `f8466794e91efbcaa53234181a6743d13242b0a8`, run `36815527718`; real-phone acceptance remains pending;
+- remaining Menu/Home/History/Queue/Data/File surface readability audit;
 - Neon + alternate-skin accessibility/readability sanity;
 - temporary QA controls must be removed or compile-gated before public candidate.
 
@@ -259,6 +261,39 @@ Evidence:
 Real-phone acceptance remains deferred to the consolidated Phase A matrix. Static
 and build evidence is not phone PASS.
 
+## Tile/card readability — #50 — 2026-10-01
+
+Source/static/build conclusion: **PASS**.
+
+Audit:
+- project-wide Tile semantics were checked against `TILE_UI_CONTRACT.md`;
+- Destination existing-playlist tiles remain the canonical full entity Tile and
+  were not behaviorally changed;
+- History/Pending/Review list rows are intentionally navigation-only;
+- Data/Import/Service explanatory/action cards are intentionally specialized and
+  do not receive artificial overflow menus.
+
+Verified/patched gaps:
+- Playlist Hub replaced the dense `✓ ! ⧉ ⏳ ×` counter strip with named,
+  wrapping result lines;
+- URL Snapshot resolved preview separates playlist identity, total/unique/
+  duplicate/unavailable counters and secondary diagnostics;
+- resolver/cache callbacks, track classification, action ownership and
+  no-auto-action lifecycle behavior are unchanged;
+- static guards reject the two dense legacy patterns.
+
+Evidence:
+- audit: `TILE_CARD_READABILITY_AUDIT_2026-10-01.md`;
+- validated checkpoint:
+  `f8466794e91efbcaa53234181a6743d13242b0a8`;
+- Validate Android run `36815527718`: **SUCCESS**;
+- release preflight PASS;
+- JVM tests PASS;
+- unsigned release assemble PASS.
+
+Real-phone acceptance remains deferred to the consolidated Phase A matrix. Static
+and build evidence is not phone PASS.
+
 ## Phase B — management / discoverability
 
 After Phase A source is coherent:
@@ -412,10 +447,9 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-1. verify Phase A tile/card surfaces against `TILE_UI_CONTRACT.md` and the
+1. audit Menu/Home/History/Queue/Data/File/selector surfaces against the app-wide
    readability hierarchy;
-2. continue Menu/Home/History/Queue/Data/File readability verification using only
-   presentation-safe changes;
+2. patch only verified presentation gaps;
 3. verify Neon + Blue/Green semantic/accessibility sanity;
 4. confirm temporary phone-QA controls remain impossible in the public release
    candidate;

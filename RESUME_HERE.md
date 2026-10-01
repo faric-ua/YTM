@@ -12,50 +12,49 @@ Last updated: **2026-10-01**
 - Repository: `faric-ua/YTM`
 - Release: **v1.4.55 / Phase A — UX hardening**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Current validated app/source checkpoint:
-  `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`
-  (`ui: keep critical recovery results durable`)
-- Validate Android run **36811129269 — SUCCESS**
+- Current validated source/tooling checkpoint:
+  `f8466794e91efbcaa53234181a6743d13242b0a8`
+  (`chore: sort tile audit manifest entry`)
+- Validate Android run **36815527718 — SUCCESS**
   (release preflight PASS / JVM PASS / unsigned assemble PASS)
-- #50 critical transient-message durability is **SOURCE/STATIC/BUILD PASS**.
+- #50 tile/card readability verification is **SOURCE/STATIC/BUILD PASS**.
   Real-phone acceptance remains pending in the consolidated Phase A matrix.
-- Active task: **Phase A tile/card readability verification against
-  `TILE_UI_CONTRACT.md`**.
+- Active task: **remaining Phase A surface readability pass:
+  Menu / Home / History / Queue / Data / File surfaces**.
 - v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
 - Phase B is not active yet.
 
-## Just completed — #50 critical transient-message durability
+## Just completed — #50 tile/card readability
 
 Source/static/build work is **PASS**:
 
-- app-wide runtime Toast/Snackbar inventory is recorded in
-  `docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`;
-- only two P0 durability GAPs were verified: Data recovery failures and Destination
-  remote update/delete/general result/error;
-- shared `UiChrome.inlineNotice()` provides themed text + semantic styling;
-- Data recovery failure detail is durable across Activity recreation and stale
-  failure is cleared on successful retry/result;
-- Destination remote result/error detail is durable on the owning start/list
-  surface and a new explicit remote action clears stale notice first;
-- notice restoration does not execute Restore/import/rollback/load/update/delete/scan;
-- existing Queue/History/Bulk/Service durable ownership was preserved rather than
-  duplicated;
-- exact source checkpoint is `5cfcd4a63...`, run `36811129269` = SUCCESS.
+- app-wide tile/card inventory is recorded in
+  `docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md`;
+- generic Destination playlist Tile remains canonical and unchanged:
+  primary body tap, Edit/Delete/⋮ rail, long press = same menu, delete confirmation;
+- Playlist Hub no longer uses an unlabeled glyph-only five-counter strip;
+- URL Snapshot resolved preview separates playlist identity, exact-videoId counters,
+  unavailable count and secondary cache/safety diagnostics;
+- History/Pending/Review navigation rows and Data/Import/Service informational cards
+  were intentionally not given artificial ⋮ menus;
+- static guards protect both corrected hierarchy patterns;
+- exact validated checkpoint is `f8466794...`, run `36815527718` = SUCCESS.
 
 **Phone PASS is not claimed.**
 
 ## NEXT ACTION — do this first
 
-1. Open `docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md`.
-2. Patch only its two verified readability GAPs:
-   - Playlist Hub glyph-only counter strip;
-   - URL Snapshot dense resolved-summary body.
-3. Keep Destination generic Tile behavior unchanged: body primary action,
-   Edit/Delete/⋮ rail, long press = ⋮ menu, destructive confirmation.
-4. Preserve track classification, URL resolver/cache callbacks, request order,
-   storage and lifecycle/no-auto-action behavior.
-5. Add static guards, phone targets, refresh generated artifacts and require
-   exact-HEAD Validate Android PASS.
+1. Use `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`.
+2. Audit the remaining Phase A user-facing surfaces:
+   Menu, Home, History, Queue/Pending, Data and file/selector screens.
+3. Check whether state/result/warning/next safe action can be identified quickly
+   without reading dense paragraphs.
+4. Classify before editing: compliant / verified presentation GAP / intentionally
+   specialized.
+5. Patch only verified readability GAPs; preserve callbacks, navigation ownership,
+   storage, API and lifecycle/no-auto-action semantics.
+6. After that, do the Neon + Blue/Green semantic/accessibility pass.
+7. Do not start Phase B yet.
 
 ## Mandatory recovery order
 

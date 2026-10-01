@@ -110,6 +110,40 @@ than improve readability.
 3. Strengthen v1.4.55 static checks around the two readability contracts.
 4. Record phone targets and require exact-HEAD Validate Android PASS.
 
+## Implementation / validation result — 2026-10-01
+
+Source/static/build conclusion: **PASS**.
+
+Implemented:
+- Playlist Hub uses `playlistResultBlock()`: primary total/ready results are named,
+  while review/duplicate/pending/problem counters wrap into readable labeled lines;
+- URL Snapshot resolved preview uses a dedicated identity line plus
+  `snapshotStatLine()` key/value rows for total, unique exact videoId, duplicate
+  occurrences and unavailable items;
+- resolver/cache message is retained as secondary diagnostics rather than the
+  primary summary body;
+- cache time and no-local-mutation/no-auto-flow policy remain available as
+  secondary text;
+- existing title-backfill / refresh buttons and callbacks are unchanged.
+
+Static enforcement:
+- v1.4.55 audit requires the named Playlist result block and URL Snapshot structured
+  identity/counter helpers;
+- the legacy Playlist glyph-only counter pattern is rejected;
+- a regression back to a single URL Snapshot `buildString + append(state.message)`
+  summary is rejected;
+- the canonical Tile contract and task audit remain required inputs.
+
+Evidence:
+- source/tooling checkpoint:
+  `f8466794e91efbcaa53234181a6743d13242b0a8`;
+- Validate Android run: `36815527718` — **SUCCESS**;
+- release preflight PASS;
+- JVM unit tests PASS;
+- unsigned release assemble PASS.
+
+No real-device PASS is claimed from this evidence.
+
 ## Phone acceptance later
 
 - Playlist Hub portrait + landscape: long playlist name plus named counters remain

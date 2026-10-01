@@ -172,26 +172,44 @@ Source/static/build result: **PASS**.
 Evidence:
 `docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`.
 
-## CURRENT TASK — tile/card readability verification (#50) (2026-10-01)
+## COMPLETED TASK — tile/card readability verification (#50) (2026-10-01)
 
-Goal: verify current tile/card surfaces against the project-wide
-`TILE_UI_CONTRACT.md` and the readability hierarchy without changing action or
-domain semantics.
+Source/static/build result: **PASS**.
 
-Current task checklist:
-- [x] Inventory Phase A tile/card implementations and owning surfaces. Evidence:
-  `docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md`.
+- [x] Inventory Phase A tile/card implementations and owning surfaces.
 - [x] Classify each surface as contract-compliant, verified presentation GAP, or
   intentionally specialized.
 - [x] Check title/state/primary-result/next-action/secondary-facts/diagnostics
-  hierarchy where those layers apply. Verified readability GAPs: Playlist Hub
-  glyph-only counters and dense URL Snapshot resolved summary.
+  hierarchy where those layers apply.
 - [x] Check visible action ownership and ensure essential actions are not hidden
   only behind long press; destructive actions remain confirmation-gated.
-  Destination remains the canonical full entity Tile; no interaction regression
-  was found.
-- [ ] Patch only verified presentation/readability GAPs using existing theme/shared
-  UI primitives.
+- [x] Patch only the two verified presentation/readability GAPs: Playlist Hub
+  glyph-only counter strip and URL Snapshot dense resolved summary.
+- [x] Add/strengthen static guards and representative phone targets.
+- [x] Refresh `FILE_MANIFEST.txt`.
+- [x] Exact source/static/build checkpoint
+  `f8466794e91efbcaa53234181a6743d13242b0a8` passed Validate Android run
+  `36815527718`: release preflight PASS, JVM tests PASS, unsigned release
+  assemble PASS.
+
+Evidence:
+`docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md`.
+
+## CURRENT TASK — remaining Phase A surface readability (#50) (2026-10-01)
+
+Goal: finish the app-wide readability pass for the remaining high-use surfaces
+without altering workflow/domain semantics.
+
+Current task checklist:
+- [ ] Inventory Menu/Home/History/Queue/Data/File/selector primary information
+  blocks and dense copy.
+- [ ] Classify each finding as compliant, verified presentation GAP or intentionally
+  specialized/help content.
+- [ ] Verify state/result/warning/next-safe-action hierarchy and remove raw technical
+  dominance where it blocks scanability.
+- [ ] Patch only verified presentation GAPs using existing shared theme/UI patterns.
+- [ ] Preserve callbacks, navigation ownership, remote/API/storage behavior and
+  lifecycle/no-auto-action rules.
 - [ ] Add/strengthen static guards and representative phone targets.
 - [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS.
 
@@ -257,7 +275,7 @@ The checkpoint commit after this validated SHA is documentation-only. The valida
 - [x] Verify one shared action-row/stack policy for screen + dialog footers (#47/#26/#37). **SOURCE/STATIC/BUILD PASS** on `317d72e5445ba88074820f9743474621c15f7208`, run `36760309445`; phone acceptance remains in the consolidated matrix.
 - [x] Finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50). **SOURCE/STATIC/BUILD PASS** on `490a1f0e218032aa46a723a455dac10e87136a9e`, run `36795036312`; phone acceptance remains in the consolidated matrix.
 - [x] Replace critical Toast/Snackbar-only information with durable owning-screen state. **SOURCE/STATIC/BUILD PASS** on `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`, run `36811129269`; phone acceptance remains in the consolidated matrix.
-- [ ] Verify tile/card readability against `TILE_UI_CONTRACT.md`.
+- [x] Verify tile/card readability against `TILE_UI_CONTRACT.md`. **SOURCE/STATIC/BUILD PASS** on `f8466794e91efbcaa53234181a6743d13242b0a8`, run `36815527718`; phone acceptance remains in the consolidated matrix.
 - [ ] Verify Menu/Home/History/Queue/Data/File surfaces against the readability audit.
 - [ ] Verify Neon + Blue/Green semantic/accessibility sanity.
 - [ ] Remove or compile-gate temporary phone-QA fault controls before public candidate.
@@ -314,14 +332,11 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Patch the two verified tile/card readability GAPs.**
+**Audit the remaining Phase A readability surfaces.**
 
-1. Playlist Hub: replace the dense glyph-only counter strip with named, wrapping
-   result lines.
-2. URL Snapshot resolved preview: separate identity, unique/duplicate counters and
-   secondary cache/no-mutation diagnostics.
-3. Preserve all callbacks, resolver/cache behavior, track classification and
-   lifecycle/no-auto-action semantics.
+Start with Menu/Home/History/Queue/Data/File/selector screens, classify first, then
+patch only verified presentation gaps. Do not invent new actions or navigation to
+satisfy a visual contract, and do not start Phase B.
 
 ## Update rule
 
