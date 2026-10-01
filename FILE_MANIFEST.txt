@@ -92,8 +92,8 @@ f922f8b2178c9b77  YTM_ASSISTANT_WORKFLOW.md
 e6af758495c5bfa7  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 225ac193e694b7ec  app/src/main/AndroidManifest.xml
-d10d1e1148b0cb2d  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
-4cbe90e7290cf023  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
+5ac0e8d23db98714  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
+ee81f8e91c617eed  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 42f9e3b70b80e871  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 3240bcd5f15019c5  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 c80eede08f65abe1  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
@@ -159,6 +159,7 @@ cdc3478ae48a57bb  app/src/main/java/com/saney/ytmimporter/storage/RestorablePlay
 f946829e8e807845  app/src/main/java/com/saney/ytmimporter/storage/SafTreeAccess.kt
 fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWriter.kt
 81e0ac38632c2fe3  app/src/main/java/com/saney/ytmimporter/ui/AppThemeManager.kt
+fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome.kt
 88174cd2da5b393b  app/src/main/java/com/saney/ytmimporter/ui/HomeDashboardChrome.kt
 8763d6337d2bee83  app/src/main/java/com/saney/ytmimporter/ui/HomeHistoryDetailLink.kt
 7e65143a9419153e  app/src/main/java/com/saney/ytmimporter/ui/ReplacementLogDialog.kt
@@ -1747,7 +1748,7 @@ d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
 f78c820c675f6b9e  scripts/v1454-bulk-preflight-audit.sh
 998ac43872253938  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
-16a48c4352a420f4  scripts/v1455-ux-hardening-audit.sh
+38e267b6a0a10332  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh
