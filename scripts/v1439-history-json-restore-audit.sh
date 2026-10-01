@@ -29,8 +29,10 @@ grep -Fq '"history_store_v1"' "$BACKUP"   || fail "History-only preference group
 grep -Fq 'Other local preference groups are intentionally omitted' "$BACKUP"   || fail "partial-restore boundary note missing"
 grep -Fq 'return restoreBackupJson(' "$BACKUP"   || fail "History restore does not reuse safety-snapshot engine"
 
-grep -Fq 'title = "History JSON"' "$DATA"   || fail "History JSON restore card missing"
-grep -Fq 'buttonLabel = "Імпорт History"' "$DATA"   || fail "History import action missing"
+# The History-only restore capability remains current, while successor
+# presentation-only releases may improve the visible task wording.
+grep -Fq 'title = "Відновити лише історію"' "$DATA"   || fail "History-only restore card missing"
+grep -Fq 'buttonLabel = "Вибрати файл історії"' "$DATA"   || fail "History import action missing"
 grep -Fq 'historyImportRequestCode = 4204' "$DATA"   || fail "History import request route missing"
 grep -Fq 'prepareHistoryImport(uri)' "$DATA"   || fail "History import result handler missing"
 grep -Fq 'PENDING_HISTORY_IMPORT_CACHE_FILE' "$DATA" \
