@@ -179,13 +179,17 @@ Goal: verify current tile/card surfaces against the project-wide
 domain semantics.
 
 Current task checklist:
-- [ ] Inventory Phase A tile/card implementations and owning surfaces.
-- [ ] Classify each surface as contract-compliant, verified presentation GAP, or
+- [x] Inventory Phase A tile/card implementations and owning surfaces. Evidence:
+  `docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md`.
+- [x] Classify each surface as contract-compliant, verified presentation GAP, or
   intentionally specialized.
-- [ ] Check title/state/primary-result/next-action/secondary-facts/diagnostics
-  hierarchy where those layers apply.
-- [ ] Check visible action ownership and ensure essential actions are not hidden
+- [x] Check title/state/primary-result/next-action/secondary-facts/diagnostics
+  hierarchy where those layers apply. Verified readability GAPs: Playlist Hub
+  glyph-only counters and dense URL Snapshot resolved summary.
+- [x] Check visible action ownership and ensure essential actions are not hidden
   only behind long press; destructive actions remain confirmation-gated.
+  Destination remains the canonical full entity Tile; no interaction regression
+  was found.
 - [ ] Patch only verified presentation/readability GAPs using existing theme/shared
   UI primitives.
 - [ ] Add/strengthen static guards and representative phone targets.
@@ -310,12 +314,14 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Verify tile/card readability against `TILE_UI_CONTRACT.md`.**
+**Patch the two verified tile/card readability GAPs.**
 
-Inventory first. Treat existing specialized cards as valid when they already satisfy
-the underlying title/state/action/readability contract. Patch only verified
-presentation gaps and do not change action callbacks, destructive confirmation,
-remote/API execution or storage semantics.
+1. Playlist Hub: replace the dense glyph-only counter strip with named, wrapping
+   result lines.
+2. URL Snapshot resolved preview: separate identity, unique/duplicate counters and
+   secondary cache/no-mutation diagnostics.
+3. Preserve all callbacks, resolver/cache behavior, track classification and
+   lifecycle/no-auto-action semantics.
 
 ## Update rule
 

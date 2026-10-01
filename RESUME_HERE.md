@@ -46,17 +46,16 @@ Source/static/build work is **PASS**:
 
 ## NEXT ACTION — do this first
 
-1. Open `docs/design/TILE_UI_CONTRACT.md` and
-   `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`.
-2. Inventory the current Phase A tile/card surfaces and their primary/secondary
-   information hierarchy.
-3. Classify each as compliant, verified presentation GAP, or intentionally
-   specialized.
-4. Patch only verified presentation/readability GAPs; preserve action ownership,
-   callbacks, long-press/menu semantics and all business/API/storage behavior.
-5. Add static guards and phone targets, refresh generated artifacts and require
+1. Open `docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md`.
+2. Patch only its two verified readability GAPs:
+   - Playlist Hub glyph-only counter strip;
+   - URL Snapshot dense resolved-summary body.
+3. Keep Destination generic Tile behavior unchanged: body primary action,
+   Edit/Delete/⋮ rail, long press = ⋮ menu, destructive confirmation.
+4. Preserve track classification, URL resolver/cache callbacks, request order,
+   storage and lifecycle/no-auto-action behavior.
+5. Add static guards, phone targets, refresh generated artifacts and require
    exact-HEAD Validate Android PASS.
-6. Do not start Phase B yet.
 
 ## Mandatory recovery order
 

@@ -114,15 +114,17 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-Critical transient-message durability is SOURCE/STATIC/BUILD PASS on
-`5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`, Validate Android run
-`36811129269` = SUCCESS.
+Tile/card inventory is complete in
+`docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md`.
 
-**Current task:** audit Phase A tile/card surfaces against
-`docs/design/TILE_UI_CONTRACT.md` plus the app-wide readability hierarchy.
-Inventory and classify before editing; patch only verified presentation gaps.
-Preserve visible action ownership, long-press/menu equivalence, destructive
-confirmation and all domain/API/storage semantics.
+Two presentation-only GAPs are verified:
+1. Playlist Hub summary uses an unlabeled glyph-only five-counter strip.
+2. URL Snapshot resolved summary mixes state/identity/counters/cache/policy into one
+   same-weight paragraph.
+
+Next source step: patch only those two readability owners, then add guards and
+phone targets. Do not alter Destination Tile interactions or any domain/API/storage
+semantics.
 
 ## Working contract
 
