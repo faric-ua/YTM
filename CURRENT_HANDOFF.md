@@ -117,16 +117,17 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-Bulk #23/#45/#50 is SOURCE/STATIC/BUILD PASS on
-`490a1f0e218032aa46a723a455dac10e87136a9e`, Validate Android run
-`36795036312` = SUCCESS. Phone readability/safety acceptance stays in the one
-consolidated Phase A matrix.
+The P0 transient-message inventory is complete in
+`docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`.
 
-**Current task:** enforce the P0 Critical-message rule. Inventory app runtime
-Toast/Snackbar/transient messages, identify only verified cases where actionable
-recovery/error detail would disappear with the transient, then move that detail to
-the owning screen/result/detail surface while keeping the transient summary concise.
-Do not alter business/API/storage semantics.
+Two verified source GAPs remain:
+1. Data recovery failure reasons can disappear with Toast.
+2. Destination update/delete/general remote result/error can disappear after the
+   screen rebuild.
+
+Next source step: add one shared themed inline-notice primitive, patch only those
+two owners, persist notice state across rotation, and keep all domain/API/storage
+semantics unchanged.
 
 ## Working contract
 

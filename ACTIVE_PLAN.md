@@ -154,10 +154,12 @@ Goal: enforce the readability audit's P0 rule that information the user must ret
 after a transient message disappears must not exist only in Toast/Snackbar copy.
 
 Current task checklist:
-- [ ] Inventory runtime Toast/Snackbar/transient user messages across Phase A
-  surfaces; exclude debug-only/non-user diagnostics.
-- [ ] Classify actionable/recovery/error messages as durable-covered, verified GAP,
-  or intentionally non-critical transient feedback.
+- [x] Inventory runtime Toast/Snackbar/transient user messages across Phase A
+  surfaces; exclude debug-only/non-user diagnostics. Evidence:
+  `docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`.
+- [x] Classify actionable/recovery/error messages as durable-covered, verified GAP,
+  or intentionally non-critical transient feedback. Verified GAPs are limited to
+  Data recovery failures and Destination remote action result/error durability.
 - [ ] Patch only verified GAPs so critical detail persists on the owning
   screen/result/detail surface while transient copy stays concise.
 - [ ] Preserve existing callbacks, request order, retry, auto-start, Queue/Pending,
@@ -285,12 +287,15 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Audit critical Toast/Snackbar-only information across the remaining Phase A surfaces.**
+**Patch the two verified transient-message durability GAPs.**
 
-Use the Critical-message rule in
-`docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`. Inventory first, patch only
-verified durability gaps, preserve all business/API/storage semantics, and keep
-technical detail on the owning screen rather than only in a transient channel.
+1. Add a small shared themed inline-notice primitive.
+2. Data: persist recovery failure detail across rotation and clear stale failure on
+   successful retry/result.
+3. Destination: persist update/delete/general remote result/error on the owning
+   start/list screen and clear stale notice when a new remote action starts.
+4. Preserve all existing callbacks, request order, IDs, restore/rollback semantics
+   and no-auto-action lifecycle behavior.
 
 ## Update rule
 

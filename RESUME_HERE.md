@@ -47,18 +47,16 @@ Bulk Preview / Session presentation hardening is complete at source/static/build
 
 ## NEXT ACTION — do this first
 
-1. Open `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md` and use its
-   **Critical-message rule**.
-2. Inventory runtime Toast/Snackbar/transient user messages across Phase A surfaces.
-3. Classify each actionable/recovery/error message as:
-   - already backed by durable owning-screen state;
-   - verified GAP;
-   - intentionally non-critical transient feedback.
-4. Patch only verified GAPs so critical state remains visible after the transient
-   message disappears; keep callbacks and business/API/storage behavior unchanged.
-5. Add static guards, record phone targets, refresh generated artifacts and require
+1. Open `docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`.
+2. Patch only its two verified GAPs:
+   - Data recovery failure detail;
+   - Destination remote update/delete/general result/error detail.
+3. Use one small shared themed inline-notice primitive.
+4. Persist notice state across Activity recreation without auto-running any action.
+5. Keep Bulk/Main/Pending/History/Service paths classified as already durable unless
+   new source evidence proves otherwise.
+6. Add static guards, phone targets, refresh generated artifacts and require
    exact-HEAD Validate Android PASS.
-6. Do not start Phase B until the remaining Phase A source/readability gates are coherent.
 
 ## Mandatory recovery order
 
