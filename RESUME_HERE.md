@@ -45,15 +45,15 @@ Source/static/build work is **PASS**:
 
 ## NEXT ACTION — do this first
 
-**Sleep checkpoint. No more source work in this session.**
-
-On resume:
-1. verify live branch HEAD + latest Validate Android;
-2. read `docs/v.1.4.55/SLEEP_CHECKPOINT_2026-10-01.md`;
-3. continue CURRENT TASK in `ACTIVE_PLAN.md` from the first unchecked item;
-4. audit Menu/Home/History/Queue/Data/File/selector readability before editing;
-5. patch only verified presentation gaps;
-6. keep Phase B inactive.
+1. Open `docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md`.
+2. Patch only its verified Phase A presentation gaps:
+   Home, Queue/Pending, Data, Recent File plus minor Menu/History wording.
+3. Do not add History filters, Recovery Center or typed file-library behavior;
+   those remain Phase B.
+4. Preserve callbacks, request order, Queue/History ownership, backup/restore
+   semantics, API/storage behavior and lifecycle/no-auto-action rules.
+5. Add static guards and phone targets, refresh `FILE_MANIFEST.txt`, then require
+   exact-HEAD Validate Android PASS.
 
 ## Mandatory recovery order
 

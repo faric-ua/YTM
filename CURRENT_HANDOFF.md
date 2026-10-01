@@ -119,14 +119,18 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-Tile/card readability is SOURCE/STATIC/BUILD PASS on
-`f8466794e91efbcaa53234181a6743d13242b0a8`, Validate Android run
-`36815527718` = SUCCESS.
+Remaining Phase A surface inventory/classification is complete in
+`docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md`.
 
-**Current task:** audit Menu/Home/History/Queue/Data/File/selector surfaces against
-the app-wide readability hierarchy. Inventory and classify before editing; patch
-only verified presentation gaps. Preserve action ownership, callbacks,
-remote/API/storage semantics and lifecycle/no-auto-action behavior.
+Verified presentation-only patch owners:
+- Home dynamic workspace summary;
+- Queue/Pending plain-language state labels;
+- Data/Backup primary task wording;
+- Recent File primary folder wording;
+- minor Menu/History terminology.
+
+Storage Chooser and ListSelector are already acceptable for Phase A. Do not pull
+History filters, Recovery Center or typed file-library work forward from Phase B.
 
 ## Working contract
 

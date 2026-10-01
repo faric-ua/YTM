@@ -206,12 +206,15 @@ Goal: finish the app-wide readability pass for the remaining high-use surfaces
 without altering workflow/domain semantics.
 
 Current task checklist:
-- [ ] Inventory Menu/Home/History/Queue/Data/File/selector primary information
-  blocks and dense copy.
-- [ ] Classify each finding as compliant, verified presentation GAP or intentionally
+- [x] Inventory Menu/Home/History/Queue/Data/File/selector primary information
+  blocks and dense copy. Evidence:
+  `docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md`.
+- [x] Classify each finding as compliant, verified presentation GAP or intentionally
   specialized/help content.
-- [ ] Verify state/result/warning/next-safe-action hierarchy and remove raw technical
-  dominance where it blocks scanability.
+- [x] Verify state/result/warning/next-safe-action hierarchy and remove raw technical
+  dominance where it blocks scanability. Verified patch owners: Home dynamic
+  workspace summary, Queue/Pending primary state wording, Data/Backup primary task
+  wording, Recent File primary folder wording, plus minor Menu/History terminology.
 - [ ] Patch only verified presentation GAPs using existing shared theme/UI patterns.
 - [ ] Preserve callbacks, navigation ownership, remote/API/storage behavior and
   lifecycle/no-auto-action rules.
