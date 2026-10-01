@@ -4009,14 +4009,10 @@ class MainActivity : Activity() {
         workspaceStatusText.text =
             buildString {
                 append(
-                    "${p.tracks.size} треків • " +
-                        "Готові: $matched • " +
-                        "Перевірити: $review"
+                    "${p.tracks.size} треків • Готові: $matched • Перевірити: $review"
                 )
                 append(
-                    "\nДублікати: $duplicates • " +
-                        "Очікує: $pending • " +
-                        "Проблеми: $missing"
+                    "\nДублікати: $duplicates • Очікує: $pending • Проблеми: $missing"
                 )
                 append("\n")
                 append(
