@@ -323,17 +323,17 @@ class DataActivity : Activity() {
         content.addView(summaryText)
 
         content.addView(
-            sectionTitle("Backup та Restore")
+            sectionTitle("Резервні копії та відновлення")
         )
 
         content.addView(
             actionCard(
-                title = "Повний backup",
+                title = "Повна резервна копія",
                 description =
-                    "History + Черга + робочий список + постійний SearchCache + URL snapshot cache. " +
-                        "Лічильники квоти входять лише для діагностики й не відновлюються. " +
-                        "Має SHA-256 integrity check.",
-                buttonLabel = "Зберегти backup",
+                    "Зберігає історію, чергу, робочий список, кеш пошуку та кеш URL-знімків. " +
+                        "Лічильники квоти додаються лише для діагностики й не відновлюються. " +
+                        "Файл має перевірку цілісності SHA-256.",
+                buttonLabel = "Зберегти копію",
                 primary = true,
                 action = ::createFullBackup
             )
@@ -341,12 +341,12 @@ class DataActivity : Activity() {
 
         content.addView(
             actionCard(
-                title = "Restore",
+                title = "Відновити з резервної копії",
                 description =
-                    "Відновлює локальні дані з YTM_Backup_*.json, але не відкочує " +
-                        "поточну локальну оцінку квоти. Перед Restore автоматично " +
-                        "створюється safety snapshot.",
-                buttonLabel = "Вибрати backup",
+                    "Відновлює локальні дані з YTM_Backup_*.json, але не змінює " +
+                        "поточну локальну оцінку квоти. Перед відновленням автоматично " +
+                        "створюється страховий знімок.",
+                buttonLabel = "Вибрати резервну копію",
                 primary = false,
                 action = ::chooseBackupForRestore
             )
@@ -354,12 +354,12 @@ class DataActivity : Activity() {
 
         content.addView(
             actionCard(
-                title = "History JSON",
+                title = "Відновити лише історію",
                 description =
-                    "Відновлює тільки History з YTM_History_*.json. " +
-                        "Черга, квота, SearchCache і поточний список не змінюються. " +
-                        "Перед імпортом створюється safety snapshot.",
-                buttonLabel = "Імпорт History",
+                    "Відновлює тільки історію з YTM_History_*.json. " +
+                        "Черга, квота, кеш пошуку й поточний список не змінюються. " +
+                        "Перед імпортом створюється страховий знімок.",
+                buttonLabel = "Вибрати файл історії",
                 primary = false,
                 action = ::chooseHistoryJsonForRestore
             )
@@ -384,7 +384,7 @@ class DataActivity : Activity() {
 
         rollbackCard.addView(
             TextView(this).apply {
-                text = "Відкат останнього Restore"
+                text = "Відкотити останнє відновлення"
                 textSize = 16f
                 setTextColor(Color.WHITE)
                 setTypeface(
@@ -397,7 +397,7 @@ class DataActivity : Activity() {
         rollbackCard.addView(
             TextView(this).apply {
                 text =
-                    "Повертає локальний стан, який був перед останнім Restore."
+                    "Повертає локальний стан, який був перед останнім відновленням."
                 textSize = 12.5f
                 setTextColor(MUTED)
                 setPadding(
@@ -411,7 +411,7 @@ class DataActivity : Activity() {
 
         rollbackButton =
             actionButton(
-                label = "Відкотити Restore",
+                label = "Відкотити відновлення",
                 primary = false
             ) {
                 confirmRestoreSafetySnapshot()
@@ -421,7 +421,7 @@ class DataActivity : Activity() {
 
         snapshotDeleteButton =
             actionButton(
-                label = "Видалити знімок",
+                label = "Видалити страховий знімок",
                 primary = false
             ) {
                 confirmDeleteSafetySnapshot()
@@ -463,17 +463,17 @@ class DataActivity : Activity() {
             twoActionCard(
                 title = "Історія",
                 description =
-                    "TXT — читабельний звіт. JSON — технічний експорт History.",
-                firstLabel = "History TXT",
+                    "TXT — читабельний звіт. JSON — технічний експорт історії.",
+                firstLabel = "Історія TXT",
                 firstAction = ::exportHistoryTxt,
-                secondLabel = "History JSON",
+                secondLabel = "Історія JSON",
                 secondAction = ::exportHistoryJson
             )
         )
 
         content.addView(
             actionCard(
-                title = "Pending Queue",
+                title = "Черга",
                 description =
                     "Технічний JSON поточної черги відкладених операцій.",
                 buttonLabel = "Черга → JSON",
@@ -488,12 +488,12 @@ class DataActivity : Activity() {
 
         content.addView(
             twoActionCard(
-                title = "Android Share",
+                title = "Поділитися файлами",
                 description =
                     "YTM Importer не завантажує ці файли на власний сервер.",
-                firstLabel = "History TXT",
+                firstLabel = "Історія TXT",
                 firstAction = ::shareHistoryTxt,
-                secondLabel = "Повний backup",
+                secondLabel = "Повна резервна копія",
                 secondAction = ::confirmShareFullBackup
             )
         )
@@ -505,12 +505,12 @@ class DataActivity : Activity() {
         content.addView(
             TextView(this).apply {
                 text =
-                    "OAuth access token, паролі та signing keys не входять " +
-                        "у Full Backup.\n\n" +
-                        "Але backup може містити Google email, YouTube Channel ID, " +
-                        "назви плейлистів, History, Queue, поточний робочий список, " +
-                        "постійний SearchCache та URL snapshot cache. " +
-                        "Не надсилайте backup туди, де не готові розкрити ці дані."
+                    "Токен входу Google, паролі та ключі підпису застосунку не входять " +
+                        "до повної резервної копії.\n\n" +
+                        "Але копія може містити email Google, ID YouTube-каналу, " +
+                        "назви плейлистів, історію, чергу, поточний робочий список, " +
+                        "кеш пошуку та кеш URL-знімків. " +
+                        "Не надсилайте резервну копію туди, де не готові розкрити ці дані."
                 textSize = 12.5f
                 setTextColor(MUTED)
                 setPadding(
@@ -651,10 +651,10 @@ class DataActivity : Activity() {
         summaryText.text =
             buildString {
                 append("Локальні дані\n\n")
-                append("History: $historyCount записів\n")
+                append("Історія: $historyCount записів\n")
                 append("Черга: $pendingCount завдань\n")
                 append(
-                    "SearchCache: ${cache.validEntries} постійних"
+                    "Кеш пошуку: ${cache.validEntries} записів"
                 )
 
                 if (cache.malformedEntries > 0) {
@@ -665,7 +665,7 @@ class DataActivity : Activity() {
 
                 append("\n")
                 append(
-                    "URL snapshots: ${urlCache.validEntries} кешованих"
+                    "Кеш URL: ${urlCache.validEntries} знімків"
                 )
 
                 if (urlCache.malformedEntries > 0) {
@@ -676,24 +676,24 @@ class DataActivity : Activity() {
 
                 append("\n")
                 append(
-                    "Search quota: ${quota.searchCalls}/" +
+                    "Пошуки сьогодні: ${quota.searchCalls}/" +
                         "${QuotaTracker.SEARCH_DAILY_LIMIT} • " +
-                        "cache hits ${quota.cacheHits}\n"
+                        "з кешу: ${quota.cacheHits}\n"
                 )
                 append(
-                    "General quota estimate: ${quota.generalUnits}/" +
+                    "Інша квота API: ${quota.generalUnits}/" +
                         "${QuotaTracker.GENERAL_DAILY_LIMIT}\n"
                 )
 
                 if (snapshotSummary != null) {
                     append(
-                        "Safety snapshot: доступний • " +
+                        "Знімок перед відновленням: доступний • " +
                             formatDate(
                                 snapshotSummary.exportedAt
                             )
                     )
                 } else {
-                    append("Safety snapshot: немає")
+                    append("Знімок перед відновленням: немає")
                 }
             }
 

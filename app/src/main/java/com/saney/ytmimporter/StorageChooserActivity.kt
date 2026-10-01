@@ -542,7 +542,7 @@ class StorageChooserActivity : Activity() {
                 title = "Що це за список?",
                 message =
                     "Це папки, до яких ви раніше надали YTM Importer доступ " +
-                        "через системний Android picker. Android зберігає ці SAF-дозволи, " +
+                        "через системний вибір папки Android. Android зберігає цей дозвіл, " +
                         "тому застосунок може повторно використовувати папку без нового " +
                         "переходу в системний файловий провідник.\n\n" +
                         accessDescription +

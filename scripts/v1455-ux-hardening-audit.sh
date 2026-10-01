@@ -19,10 +19,11 @@ TILE_CONTRACT="docs/design/TILE_UI_CONTRACT.md"
 TILE_READABILITY="docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md"
 SAFETY="docs/design/UX_CHANGE_SAFETY_CONTRACT.md"
 READABILITY="docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md"
+SURFACE_READABILITY="docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md"
 PLAN="docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md"
 RECONCILIATION="docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md"
 
-for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$QUOTA" "$PLAYLIST" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$PLAN" "$RECONCILIATION"; do
+for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$QUOTA" "$PLAYLIST" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
@@ -300,6 +301,68 @@ for pattern, label in (
         )
 PY_TILE_READABILITY
 
+MAIN="$SRC/MainActivity.kt"
+MENU="$SRC/MenuActivity.kt"
+HISTORY="$SRC/HistoryActivity.kt"
+PENDING="$SRC/PendingActivity.kt"
+RECENT_FILE="$SRC/RecentFileChooserActivity.kt"
+
+grep -Fq 'Готові:' "$MAIN" || fail "Home named ready counter missing"
+grep -Fq 'Перевірити:' "$MAIN" || fail "Home named review counter missing"
+grep -Fq 'Поточна синхронізація всіх' "$MENU" || fail "Menu plain-language bulk-session title missing"
+grep -Fq 'Пошук і запис у YTM не запускатимуться автоматично.' "$HISTORY" || fail "History restore safety copy regressed"
+grep -Fq 'Забагато запитів' "$PENDING" || fail "Pending rate-limit user label missing"
+grep -Fq 'Обмеження сервісу' "$PENDING" || fail "Pending resource-limit user label missing"
+grep -Fq 'Резервні копії та відновлення' "$DATA" || fail "Data task-oriented backup section missing"
+grep -Fq 'Повна резервна копія' "$DATA" || fail "Data user-facing full backup label missing"
+grep -Fq 'Відновити з резервної копії' "$DATA" || fail "Data user-facing restore label missing"
+grep -Fq 'Поділитися файлами' "$DATA" || fail "Data user-facing share label missing"
+grep -Fq 'Додати папку…' "$RECENT_FILE" || fail "Recent File user-facing add-folder label missing"
+grep -Fq 'Remaining Surface Readability Audit' "$SURFACE_READABILITY" || fail "remaining surface readability audit missing"
+
+python - "$MAIN" "$PENDING" "$DATA" "$RECENT_FILE" <<'PY_SURFACE_READABILITY'
+from pathlib import Path
+import sys
+
+main = Path(sys.argv[1]).read_text(encoding="utf-8")
+pending = Path(sys.argv[2]).read_text(encoding="utf-8")
+data = Path(sys.argv[3]).read_text(encoding="utf-8")
+recent = Path(sys.argv[4]).read_text(encoding="utf-8")
+
+if '"✓ $matched' in main:
+    raise SystemExit("FAIL: Home glyph-only dynamic summary returned")
+
+for legacy in (
+    '"Невиконані Search і YouTube/YTM write операції, "',
+    '"Завдання пошуку пошкоджене: snapshot відсутній"',
+    '"Тип: Пошук (Search)"',
+    '"Не очікує Search"',
+    '"Rate limit"',
+    '"Resource limit"',
+    '"HTTP 429"',
+    '"Треків у snapshot: "',
+):
+    if legacy in pending:
+        raise SystemExit("FAIL: Pending primary UI technical wording returned: " + legacy)
+
+start = data.find("private fun buildUi")
+end = data.find("\n    private fun ", start + 12)
+build_ui = data[start: end if end >= 0 else len(data)]
+for legacy in (
+    'sectionTitle("Backup та Restore")',
+    'title = "Повний backup"',
+    'title = "Restore"',
+    'title = "History JSON"',
+    'title = "Pending Queue"',
+    'title = "Android Share"',
+):
+    if legacy in build_ui:
+        raise SystemExit("FAIL: Data primary task wording regressed: " + legacy)
+
+if '"Додати SAF-папку…"' in recent:
+    raise SystemExit("FAIL: Recent File primary action exposes SAF jargon")
+PY_SURFACE_READABILITY
+
 grep -Fq 'if (BuildConfig.DEBUG)' "$QUOTA" ||
   fail "release Quota UI still exposes phone-QA controls"
 grep -Fq 'if (!BuildConfig.DEBUG)' "$QA_STORE" ||
@@ -324,6 +387,7 @@ echo "- one label-aware action fit policy serves screen and dialog actions"
 echo "- Bulk Preview/Session use shared semantic hierarchy with durable secondary diagnostics"
 echo "- Data recovery failures and Destination remote results use recreation-safe durable inline notices"
 echo "- Playlist Hub and URL Snapshot use named/structured card result hierarchy"
+echo "- Home/Queue/Data/File primary readability uses user-facing hierarchy and wording"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- Activity-owned selectable text persists only on the same logical surface"
 echo "- selectable-text focus is restored without triggering actions"
