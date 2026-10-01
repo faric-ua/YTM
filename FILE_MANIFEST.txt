@@ -94,8 +94,8 @@ e6af758495c5bfa7  app/build.gradle.kts
 225ac193e694b7ec  app/src/main/AndroidManifest.xml
 5ac0e8d23db98714  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 ee81f8e91c617eed  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
-42f9e3b70b80e871  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
-3240bcd5f15019c5  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
+d9f31051718cdd27  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
+4da09cca8fb23e0b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 c80eede08f65abe1  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 dc90537bd866bd32  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
@@ -169,7 +169,7 @@ fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome
 c930f8781965f59d  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextState.kt
 5020cb0274b7a831  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextSurfaceState.kt
 9280056bf2b0b6b0  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-0fedcabd592d15df  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+b9ac490942423d26  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 78da56fe6d4f0417  app/src/main/java/com/saney/ytmimporter/ui/WorkflowRelayOverlay.kt
 97950a5f9f861111  app/src/main/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicy.kt
 8bc5cda5c2b4c663  app/src/main/java/com/saney/ytmimporter/updater/UpdaterManifestPolicy.kt
@@ -1749,7 +1749,7 @@ d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
 f78c820c675f6b9e  scripts/v1454-bulk-preflight-audit.sh
 998ac43872253938  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
-38e267b6a0a10332  scripts/v1455-ux-hardening-audit.sh
+5e3ff8315859752e  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh

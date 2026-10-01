@@ -65,6 +65,15 @@ class DataActivity : Activity() {
     private lateinit var rollbackButton: Button
     private lateinit var snapshotDeleteButton: Button
     private lateinit var scrollView: ScrollView
+    private lateinit var recoveryNoticeHost:
+        LinearLayout
+
+    private var recoveryNoticeMessage:
+        String? =
+        null
+    private var recoveryNoticeTone:
+        UiChrome.NoticeTone =
+        UiChrome.NoticeTone.DANGER
 
     private val scrollPosition =
         ScrollPositionState(
@@ -117,6 +126,28 @@ class DataActivity : Activity() {
             savedInstanceState
         )
 
+        recoveryNoticeMessage =
+            savedInstanceState
+                ?.getString(
+                    STATE_RECOVERY_NOTICE
+                )
+        recoveryNoticeTone =
+            savedInstanceState
+                ?.getString(
+                    STATE_RECOVERY_NOTICE_TONE
+                )
+                ?.let {
+                    raw ->
+                    runCatching {
+                        UiChrome.NoticeTone
+                            .valueOf(
+                                raw
+                            )
+                    }.getOrNull()
+                }
+                ?: UiChrome.NoticeTone
+                    .DANGER
+
         buildUi()
 
         dataModalController
@@ -140,6 +171,14 @@ class DataActivity : Activity() {
             } else {
                 null
             }
+        )
+        outState.putString(
+            STATE_RECOVERY_NOTICE,
+            recoveryNoticeMessage
+        )
+        outState.putString(
+            STATE_RECOVERY_NOTICE_TONE,
+            recoveryNoticeTone.name
         )
 
         super.onSaveInstanceState(
@@ -231,6 +270,16 @@ class DataActivity : Activity() {
                 }
             )
         )
+
+        recoveryNoticeHost =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+            }
+        root.addView(
+            recoveryNoticeHost
+        )
+        renderRecoveryNotice()
 
         scrollView = ScrollView(this).apply {
             isFillViewport = true
@@ -506,6 +555,76 @@ class DataActivity : Activity() {
             scrollView
         )
         refreshSummary()
+    }
+
+    private fun renderRecoveryNotice() {
+        if (
+            !::recoveryNoticeHost.isInitialized
+        ) {
+            return
+        }
+
+        recoveryNoticeHost.removeAllViews()
+
+        val message =
+            recoveryNoticeMessage
+                ?.takeIf(
+                    String::isNotBlank
+                )
+                ?: return
+
+        recoveryNoticeHost.addView(
+            UiChrome.inlineNotice(
+                activity = this,
+                message = message,
+                tone = recoveryNoticeTone
+            ),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginStart =
+                    dp(12)
+                marginEnd =
+                    dp(12)
+                bottomMargin =
+                    dp(8)
+            }
+        )
+    }
+
+    private fun showRecoveryNotice(
+        message: String,
+        tone: UiChrome.NoticeTone
+    ) {
+        recoveryNoticeMessage =
+            message
+        recoveryNoticeTone =
+            tone
+        renderRecoveryNotice()
+    }
+
+    private fun showRecoveryFailure(
+        message: String
+    ) {
+        showRecoveryNotice(
+            message = message,
+            tone =
+                UiChrome.NoticeTone
+                    .DANGER
+        )
+        toast(
+            "Операцію не виконано. Деталі залишилися на екрані."
+        )
+    }
+
+    private fun clearRecoveryNotice() {
+        recoveryNoticeMessage =
+            null
+        recoveryNoticeTone =
+            UiChrome.NoticeTone
+                .DANGER
+        renderRecoveryNotice()
     }
 
     private fun refreshSummary() {
@@ -836,7 +955,7 @@ class DataActivity : Activity() {
                     )
             }.getOrElse { error ->
                 clearPendingHistoryImportConfirmation()
-                toast(
+                showRecoveryFailure(
                     error.message
                         ?: "History JSON потрібно вибрати ще раз"
                 )
@@ -851,7 +970,7 @@ class DataActivity : Activity() {
                     )
             }.getOrElse { error ->
                 clearPendingHistoryImportConfirmation()
-                toast(
+                showRecoveryFailure(
                     "History JSON більше не доступний: " +
                         (
                             error.message
@@ -860,6 +979,8 @@ class DataActivity : Activity() {
                 )
                 return null
             }
+
+        clearRecoveryNotice()
 
         val currentCount =
             historyStore
@@ -976,7 +1097,7 @@ class DataActivity : Activity() {
                     )
             }.getOrElse { error ->
                 clearPendingRestoreConfirmation()
-                toast(
+                showRecoveryFailure(
                     error.message
                         ?: "Restore потрібно вибрати ще раз"
                 )
@@ -991,7 +1112,7 @@ class DataActivity : Activity() {
                     )
             }.getOrElse { error ->
                 clearPendingRestoreConfirmation()
-                toast(
+                showRecoveryFailure(
                     "Backup більше не доступний: " +
                         (
                             error.message
@@ -1000,6 +1121,8 @@ class DataActivity : Activity() {
                 )
                 return null
             }
+
+        clearRecoveryNotice()
 
         return UiChrome
             .alertBuilder(this)
@@ -1107,7 +1230,7 @@ class DataActivity : Activity() {
                 localBackupManager
                     .inspectSafetySnapshot()
             }.getOrElse { error ->
-                toast(
+                showRecoveryFailure(
                     "Safety snapshot пошкоджено: " +
                         (
                             error.message
@@ -1126,6 +1249,8 @@ class DataActivity : Activity() {
             )
             return null
         }
+
+        clearRecoveryNotice()
 
         return UiChrome
             .alertBuilder(this)
@@ -1219,6 +1344,13 @@ class DataActivity : Activity() {
                     localBackupManager
                         .clearSafetySnapshot()
                     refreshSummary()
+                    showRecoveryNotice(
+                        message =
+                            "Резервний знімок видалено.",
+                        tone =
+                            UiChrome.NoticeTone
+                                .SUCCESS
+                    )
                     toast(
                         "Резервний знімок видалено"
                     )
@@ -1337,7 +1469,7 @@ class DataActivity : Activity() {
                     raw
                 )
         }.getOrElse { error ->
-            toast(
+            showRecoveryFailure(
                 "History JSON не підходить: " +
                     (
                         error.message
@@ -1354,7 +1486,7 @@ class DataActivity : Activity() {
                     Charsets.UTF_8
                 )
         }.getOrElse { error ->
-            toast(
+            showRecoveryFailure(
                 "Не вдалося підготувати History import: " +
                     (
                         error.message
@@ -1364,6 +1496,7 @@ class DataActivity : Activity() {
             return
         }
 
+        clearRecoveryNotice()
         showDataModal(
             DataModal.HISTORY_IMPORT_CONFIRM
         )
@@ -1391,7 +1524,7 @@ class DataActivity : Activity() {
                         raw
                     )
             }.getOrElse { error ->
-                toast(
+                showRecoveryFailure(
                     "History import не виконано: " +
                         (
                             error.message
@@ -1408,7 +1541,7 @@ class DataActivity : Activity() {
                         raw
                     )
             }.getOrElse { error ->
-                toast(
+                showRecoveryFailure(
                     "History import не виконано: " +
                         (
                             error.message
@@ -1418,6 +1551,7 @@ class DataActivity : Activity() {
                 return
             }
 
+        clearRecoveryNotice()
         refreshSummary()
 
         showDataModal(
@@ -1457,7 +1591,7 @@ class DataActivity : Activity() {
                     "Не вдалося прочитати $label"
                 )
         }.getOrElse { error ->
-            toast(
+            showRecoveryFailure(
                 "Помилка читання $label: " +
                     (
                         error.message
@@ -1482,7 +1616,7 @@ class DataActivity : Activity() {
                     raw
                 )
         }.getOrElse { error ->
-            toast(
+            showRecoveryFailure(
                 "Backup не підходить: " +
                     (
                         error.message
@@ -1499,7 +1633,7 @@ class DataActivity : Activity() {
                     Charsets.UTF_8
                 )
         }.getOrElse { error ->
-            toast(
+            showRecoveryFailure(
                 "Не вдалося підготувати Restore: " +
                     (
                         error.message
@@ -1509,6 +1643,7 @@ class DataActivity : Activity() {
             return
         }
 
+        clearRecoveryNotice()
         showDataModal(
             DataModal.RESTORE_CONFIRM
         )
@@ -1536,7 +1671,7 @@ class DataActivity : Activity() {
                         raw
                     )
             }.getOrElse { error ->
-                toast(
+                showRecoveryFailure(
                     "Restore не виконано: " +
                         (
                             error.message
@@ -1546,6 +1681,7 @@ class DataActivity : Activity() {
                 return
             }
 
+        clearRecoveryNotice()
         refreshSummary()
 
         showDataModal(
@@ -1574,7 +1710,7 @@ class DataActivity : Activity() {
                 localBackupManager
                     .inspectSafetySnapshot()
             }.getOrElse { error ->
-                toast(
+                showRecoveryFailure(
                     "Safety snapshot пошкоджено: " +
                         (
                             error.message
@@ -1592,6 +1728,7 @@ class DataActivity : Activity() {
             return
         }
 
+        clearRecoveryNotice()
         showDataModal(
             DataModal.ROLLBACK_CONFIRM
         )
@@ -1602,7 +1739,7 @@ class DataActivity : Activity() {
                 localBackupManager
                     .restoreSafetySnapshot()
             }.getOrElse { error ->
-                toast(
+                showRecoveryFailure(
                     "Відкат не виконано: " +
                         (
                             error.message
@@ -1612,6 +1749,7 @@ class DataActivity : Activity() {
                 return
             }
 
+        clearRecoveryNotice()
         refreshSummary()
 
         showDataModal(
@@ -2589,6 +2727,12 @@ class DataActivity : Activity() {
 
         private const val STATE_SCROLL_POSITION =
             "data_scroll_position"
+
+        private const val STATE_RECOVERY_NOTICE =
+            "data_recovery_notice"
+
+        private const val STATE_RECOVERY_NOTICE_TONE =
+            "data_recovery_notice_tone"
 
         private const val ARG_HISTORY_ENTRIES =
             "history_entries"

@@ -43,6 +43,13 @@ class DestinationActivity : Activity() {
     private var newPlaylistName: String = ""
     private var existingPlaylistQuery: String = ""
 
+    private var remoteNoticeMessage:
+        String? =
+        null
+    private var remoteNoticeTone:
+        UiChrome.NoticeTone =
+        UiChrome.NoticeTone.INFO
+
     private var activeScrollView: ScrollView? = null
     private var existingListView: ListView? = null
     private var existingListFirstVisiblePosition = 0
@@ -132,6 +139,27 @@ class DestinationActivity : Activity() {
                     STATE_EXISTING_PLAYLIST_QUERY
                 )
                 .orEmpty()
+
+        remoteNoticeMessage =
+            savedInstanceState
+                ?.getString(
+                    STATE_REMOTE_NOTICE
+                )
+        remoteNoticeTone =
+            savedInstanceState
+                ?.getString(
+                    STATE_REMOTE_NOTICE_TONE
+                )
+                ?.let {
+                    raw ->
+                    runCatching {
+                        UiChrome.NoticeTone
+                            .valueOf(
+                                raw
+                            )
+                    }.getOrNull()
+                }
+                ?: UiChrome.NoticeTone.INFO
 
         existingListFirstVisiblePosition =
             savedInstanceState
@@ -319,6 +347,14 @@ class DestinationActivity : Activity() {
             STATE_EXISTING_PLAYLIST_QUERY,
             existingPlaylistQuery
         )
+        outState.putString(
+            STATE_REMOTE_NOTICE,
+            remoteNoticeMessage
+        )
+        outState.putString(
+            STATE_REMOTE_NOTICE_TONE,
+            remoteNoticeTone.name
+        )
         outState.putInt(
             STATE_EXISTING_LIST_FIRST_POSITION,
             existingListFirstVisiblePosition
@@ -454,6 +490,9 @@ class DestinationActivity : Activity() {
                 title = "Створити / додати",
                 onBack = { finish() }
             )
+        )
+        addRemoteNotice(
+            root
         )
 
         activeScrollView =
@@ -670,6 +709,9 @@ class DestinationActivity : Activity() {
                 title = "Існуючий плейлист",
                 onBack = { backToStart() }
             )
+        )
+        addRemoteNotice(
+            root
         )
 
         root.addView(
@@ -1495,6 +1537,7 @@ class DestinationActivity : Activity() {
         title: String,
         privacy: String
     ) {
+        clearRemoteNotice()
         DestinationRemoteOperations
             .startUpdate(
                 context =
@@ -1923,7 +1966,55 @@ class DestinationActivity : Activity() {
         }
     }
 
+    private fun addRemoteNotice(
+        root: LinearLayout
+    ) {
+        val message =
+            remoteNoticeMessage
+                ?.takeIf(
+                    String::isNotBlank
+                )
+                ?: return
+
+        root.addView(
+            UiChrome.inlineNotice(
+                activity = this,
+                message = message,
+                tone = remoteNoticeTone
+            ),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginStart =
+                    dp(12)
+                marginEnd =
+                    dp(12)
+                bottomMargin =
+                    dp(8)
+            }
+        )
+    }
+
+    private fun setRemoteNotice(
+        message: String,
+        tone: UiChrome.NoticeTone
+    ) {
+        remoteNoticeMessage =
+            message
+        remoteNoticeTone =
+            tone
+    }
+
+    private fun clearRemoteNotice() {
+        remoteNoticeMessage =
+            null
+        remoteNoticeTone =
+            UiChrome.NoticeTone.INFO
+    }
+
     private fun requestExistingPlaylists() {
+        clearRemoteNotice()
         DestinationRemoteOperations
             .startLoad(
                 this
@@ -2023,6 +2114,7 @@ class DestinationActivity : Activity() {
     private fun requestPlaylistDelete(
         item: ExistingItem
     ) {
+        clearRemoteNotice()
         DestinationRemoteOperations.startDelete(
             context = this,
             target =
@@ -2038,6 +2130,7 @@ class DestinationActivity : Activity() {
     private fun requestDuplicateScan(
         item: ExistingItem
     ) {
+        clearRemoteNotice()
         DestinationRemoteOperations
             .startScan(
                 context = this,
@@ -2092,6 +2185,13 @@ class DestinationActivity : Activity() {
                 updateStoredPlaylist(
                     state.target
                 )
+                setRemoteNotice(
+                    message =
+                        state.successMessage,
+                    tone =
+                        UiChrome.NoticeTone
+                            .SUCCESS
+                )
                 toast(
                     state.successMessage
                 )
@@ -2107,6 +2207,13 @@ class DestinationActivity : Activity() {
                 state.successMessage != null -> {
                 removeStoredPlaylist(
                     state.target.id
+                )
+                setRemoteNotice(
+                    message =
+                        state.successMessage,
+                    tone =
+                        UiChrome.NoticeTone
+                            .SUCCESS
                 )
                 toast(
                     state.successMessage
@@ -2130,6 +2237,7 @@ class DestinationActivity : Activity() {
                     )
                     showStartScreen()
                 } else {
+                    clearRemoteNotice()
                     storeExistingPlaylists(
                         playlists
                     )
@@ -2141,6 +2249,7 @@ class DestinationActivity : Activity() {
             }
 
             state.scan != null -> {
+                clearRemoteNotice()
                 storeScan(
                     state.scan
                 )
@@ -2173,8 +2282,15 @@ class DestinationActivity : Activity() {
                         DestinationRemoteOperations
                             .Kind.UPDATE_PLAYLIST
                 ) {
+                    setRemoteNotice(
+                        message =
+                            state.errorMessage,
+                        tone =
+                            UiChrome.NoticeTone
+                                .DANGER
+                    )
                     toast(
-                        state.errorMessage
+                        "Дію не виконано. Деталі залишилися на екрані."
                     )
                     setMode(
                         MODE_EXISTING_LIST
@@ -2186,6 +2302,7 @@ class DestinationActivity : Activity() {
                             .Kind.SCAN_DUPLICATES &&
                     target != null
                 ) {
+                    clearRemoteNotice()
                     storeTarget(
                         target
                     )
@@ -2211,8 +2328,15 @@ class DestinationActivity : Activity() {
                     )
                     showExistingScanFailedScreen()
                 } else {
+                    setRemoteNotice(
+                        message =
+                            state.errorMessage,
+                        tone =
+                            UiChrome.NoticeTone
+                                .DANGER
+                    )
                     toast(
-                        state.errorMessage
+                        "Дію не виконано. Деталі залишилися на екрані."
                     )
                     setMode(
                         MODE_START
@@ -3047,6 +3171,10 @@ class DestinationActivity : Activity() {
             "destination_new_playlist_name"
         private const val STATE_EXISTING_PLAYLIST_QUERY =
             "destination_existing_playlist_query"
+        private const val STATE_REMOTE_NOTICE =
+            "destination_remote_notice"
+        private const val STATE_REMOTE_NOTICE_TONE =
+            "destination_remote_notice_tone"
         private const val STATE_EXISTING_LIST_FIRST_POSITION =
             "destination_existing_list_first_position"
         private const val STATE_EXISTING_LIST_TOP_OFFSET =

@@ -39,6 +39,85 @@ object UiChrome {
         DANGER
     }
 
+    enum class NoticeTone {
+        INFO,
+        SUCCESS,
+        WARNING,
+        DANGER
+    }
+
+    fun inlineNotice(
+        activity: Activity,
+        message: CharSequence,
+        tone: NoticeTone
+    ): TextView {
+        val palette =
+            AppThemeManager.palette(activity)
+
+        val textColor =
+            when (tone) {
+                NoticeTone.INFO ->
+                    palette.text
+                NoticeTone.SUCCESS ->
+                    palette.semantic.success
+                NoticeTone.WARNING ->
+                    palette.semantic.warning
+                NoticeTone.DANGER ->
+                    palette.semantic.danger
+            }
+
+        val fill =
+            when (tone) {
+                NoticeTone.INFO ->
+                    palette.surfaceAlt
+                NoticeTone.SUCCESS ->
+                    palette.semantic.successFill
+                NoticeTone.WARNING ->
+                    palette.semantic.warningFill
+                NoticeTone.DANGER ->
+                    palette.semantic.dangerFill
+            }
+
+        val accent =
+            when (tone) {
+                NoticeTone.INFO ->
+                    palette.accent
+                NoticeTone.SUCCESS ->
+                    palette.semantic.success
+                NoticeTone.WARNING ->
+                    palette.semantic.warning
+                NoticeTone.DANGER ->
+                    palette.semantic.danger
+            }
+
+        return TextView(activity).apply {
+            text = message
+            textSize = 13f
+            setTypeface(
+                typeface,
+                Typeface.BOLD
+            )
+            setTextColor(
+                textColor
+            )
+            setTextIsSelectable(true)
+            setPadding(
+                dp(activity, 14),
+                dp(activity, 10),
+                dp(activity, 14),
+                dp(activity, 10)
+            )
+            background =
+                AppThemeManager.surfaceDrawable(
+                    context = activity,
+                    fill = fill,
+                    radiusDp = 12,
+                    accentStroke = true,
+                    accentOverride = accent
+                )
+        }
+    }
+
     enum class DialogActionLayout {
         AUTO,
         PRIMARY_TOP,

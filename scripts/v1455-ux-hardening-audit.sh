@@ -70,6 +70,10 @@ grep -Fq 'useHorizontalActionRow(' "$UI" ||
   fail "full-screen adaptive action contract missing"
 grep -Fq 'useHorizontalDialogActionRow(' "$UI" ||
   fail "dialog adaptive action contract missing"
+grep -Fq 'enum class NoticeTone' "$UI" ||
+  fail "shared durable inline-notice semantic tones missing"
+grep -Fq 'fun inlineNotice(' "$UI" ||
+  fail "shared durable inline-notice primitive missing"
 
 grep -Fq 'object BulkHierarchyChrome' "$BULK_HIERARCHY" ||
   fail "shared Bulk hierarchy presentation helper missing"
@@ -165,6 +169,67 @@ for f in "${SELECTABLE_ACTIVITY_SURFACES[@]}"; do
     fail "Activity selectable-text logical surface attach missing from $f"
 done
 
+DATA="$SRC/DataActivity.kt"
+DESTINATION="$SRC/DestinationActivity.kt"
+
+for f in "$DATA" "$DESTINATION"; do
+  grep -Fq 'UiChrome.inlineNotice(' "$f" ||
+    fail "durable inline notice missing from $f"
+done
+
+grep -Fq 'STATE_RECOVERY_NOTICE' "$DATA" ||
+  fail "Data recovery notice is not recreation-safe"
+grep -Fq 'showRecoveryFailure(' "$DATA" ||
+  fail "Data recovery failure durable owner missing"
+grep -Fq 'STATE_REMOTE_NOTICE' "$DESTINATION" ||
+  fail "Destination remote notice is not recreation-safe"
+grep -Fq 'setRemoteNotice(' "$DESTINATION" ||
+  fail "Destination remote result durable owner missing"
+
+python - "$DATA" "$DESTINATION" <<'PY_CRITICAL_TRANSIENT'
+from pathlib import Path
+import re
+import sys
+
+data = Path(sys.argv[1]).read_text(encoding="utf-8")
+destination = Path(sys.argv[2]).read_text(encoding="utf-8")
+
+if re.search(
+    r'toast\(\s*state\.errorMessage',
+    destination,
+):
+    raise SystemExit(
+        "FAIL: Destination raw remote error regressed to Toast-only"
+    )
+
+for fn_name, text in (
+    ("renderRecoveryNotice", data),
+    ("addRemoteNotice", destination),
+):
+    start = text.find("private fun " + fn_name)
+    if start < 0:
+        raise SystemExit(
+            "FAIL: durable notice renderer missing: " + fn_name
+        )
+
+    next_fn = text.find("\n    private fun ", start + 12)
+    block = text[start: next_fn if next_fn >= 0 else len(text)]
+
+    for forbidden in (
+        "restoreBackupJson",
+        "restoreHistoryJson",
+        "restoreSafetySnapshot",
+        "startLoad",
+        "startUpdate",
+        "startDelete",
+        "startScan",
+    ):
+        if forbidden in block:
+            raise SystemExit(
+                "FAIL: notice restoration can run domain work: " + forbidden
+            )
+PY_CRITICAL_TRANSIENT
+
 grep -Fq 'if (BuildConfig.DEBUG)' "$QUOTA" ||
   fail "release Quota UI still exposes phone-QA controls"
 grep -Fq 'if (!BuildConfig.DEBUG)' "$QA_STORE" ||
@@ -187,6 +252,7 @@ echo "PASS:"
 echo "- v1.4.55 UX safety contract is locked"
 echo "- one label-aware action fit policy serves screen and dialog actions"
 echo "- Bulk Preview/Session use shared semantic hierarchy with durable secondary diagnostics"
+echo "- Data recovery failures and Destination remote results use recreation-safe durable inline notices"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- Activity-owned selectable text persists only on the same logical surface"
 echo "- selectable-text focus is restored without triggering actions"
