@@ -278,12 +278,25 @@ if "buildString {" in block and "append(state.message)" in block:
 for required in (
     "snapshotIdentityText(",
     "snapshotStatLine(",
-    "duplicateAnalysis.uniqueExactIdCount",
-    "duplicateAnalysis.duplicateOccurrences",
 ):
     if required not in block:
         raise SystemExit(
             "FAIL: URL Snapshot structured summary missing " + required
+        )
+
+for pattern, label in (
+    (
+        r"duplicateAnalysis\s*\.uniqueExactIdCount",
+        "unique exact-videoId counter",
+    ),
+    (
+        r"duplicateAnalysis\s*\.duplicateOccurrences",
+        "duplicate-occurrence counter",
+    ),
+):
+    if not re.search(pattern, block):
+        raise SystemExit(
+            "FAIL: URL Snapshot structured summary missing " + label
         )
 PY_TILE_READABILITY
 
