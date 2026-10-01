@@ -180,10 +180,12 @@ for needle in (
 if '"url_snapshot_cache_v1"' not in backup:
     raise SystemExit("FAIL: Full Backup does not include URL snapshot cache")
 
+# Cache ownership remains technical, while successor presentation uses
+# user-facing Ukrainian summary labels.
 for needle in (
     "UrlSnapshotCache",
-    "URL snapshots:",
-    "SearchCache: ${cache.validEntries} постійних",
+    "Кеш URL: ${urlCache.validEntries} знімків",
+    "Кеш пошуку: ${cache.validEntries} записів",
 ):
     if needle not in data:
         raise SystemExit("FAIL: Data summary/cache copy missing: " + needle)
