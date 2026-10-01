@@ -35,7 +35,9 @@ grep -Fq 'FileProvider' "$DIRECT"   || fail "direct Download FileProvider URI br
 grep -Fq 'Надати доступ до всіх файлів' "$CHOOSER"   || fail "all-files access action missing"
 grep -Fq 'explainAndRequestAllFilesAccess' "$CHOOSER"   || fail "all-files rationale path missing"
 grep -Fq 'DirectDownloadFileQuery.list' "$CHOOSER"   || fail "direct Download query not wired into selector"
-grep -Fq 'Додати SAF-папку…' "$CHOOSER"   || fail "SAF folder fallback missing"
+# Successor presentation may hide the SAF implementation term, but the
+# ACTION_OPEN_DOCUMENT_TREE + persistence path above remains the guarded fallback.
+grep -Fq 'Додати папку…' "$CHOOSER"   || fail "folder fallback action missing"
 grep -Fq 'Системний вибір файла…' "$CHOOSER"   || fail "system picker fallback missing"
 
 echo "PASS:"

@@ -1667,8 +1667,8 @@ e0f507c5f7987e48  scripts/v1439-history-json-restore-audit.sh
 adb7e62119792e0b  scripts/v1441-followup-audit.sh
 d2843069d173002c  scripts/v1441-r1-audit.sh
 893a5fdeecbd2ec2  scripts/v1441-r2-audit.sh
-64527aca551f508f  scripts/v1442-r1-all-files-audit.sh
-f75b8b36a7450697  scripts/v1442-recent-file-selector-audit.sh
+560a3ba2ab2a8c96  scripts/v1442-r1-all-files-audit.sh
+7726b5b8ee1b03a3  scripts/v1442-recent-file-selector-audit.sh
 79744505cd821724  scripts/v1443-auth-freshness-audit.sh
 14aafd742136eafb  scripts/v1444-adaptive-actions-audit.sh
 f8f20ba8b559b639  scripts/v1444-r1-audit.sh

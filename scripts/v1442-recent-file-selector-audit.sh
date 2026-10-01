@@ -40,7 +40,8 @@ grep -Fq 'Intent.ACTION_OPEN_DOCUMENT' "$CHOOSER"   || fail "system document fal
 grep -Fq 'Системний вибір файла…' "$CHOOSER"   || fail "system-picker fallback action missing"
 grep -Fq 'Скасувати' "$CHOOSER"   || fail "selector Cancel action missing"
 grep -Fq 'найсвіжіші зверху' "$CHOOSER"   || fail "newest-first UI copy missing"
-grep -Fq 'last modified' "$CHOOSER"   || fail "lastModified help explanation missing"
+# The current UI explains the same lastModified ordering in user-facing Ukrainian.
+grep -Fq 'часом останньої зміни' "$CHOOSER"   || fail "lastModified help explanation missing"
 
 grep -Fq 'No broad storage permission is added.' docs/v.1.4.42/RELEASE.md \
   || fail "historical v1.4.42 SAF-only boundary evidence missing"
