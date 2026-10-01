@@ -587,7 +587,7 @@ class MainActivity : Activity() {
             requireNotNull(
                 workspaceCard.subtitle
             ).apply {
-                maxLines = 3
+                maxLines = 4
             }
 
         content.addView(
@@ -3997,9 +3997,7 @@ class MainActivity : Activity() {
             }
 
         summaryText.text =
-            "${p.name} • ${p.tracks.size} треків • " +
-                "✓ $matched  ! $review  ⧉ $duplicates  " +
-                "⏳ $pending  × $missing"
+            p.name
 
         val linkageState =
             PlaylistLinkagePolicy.current(
@@ -4010,6 +4008,17 @@ class MainActivity : Activity() {
 
         workspaceStatusText.text =
             buildString {
+                append(
+                    "${p.tracks.size} треків • " +
+                        "Готові: $matched • " +
+                        "Перевірити: $review"
+                )
+                append(
+                    "\nДублікати: $duplicates • " +
+                        "Очікує: $pending • " +
+                        "Проблеми: $missing"
+                )
+                append("\n")
                 append(
                     PlaylistLinkagePolicy
                         .label(linkageState)

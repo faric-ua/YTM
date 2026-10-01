@@ -229,7 +229,7 @@ class PendingActivity : Activity() {
         root.addView(
             TextView(this).apply {
                 text =
-                    "Невиконані Search і YouTube/YTM write операції, " +
+                    "Невиконані пошуки та операції запису в YouTube/YTM, " +
                         "які можна явно продовжити."
                 textSize = 13f
                 setTextColor(MUTED)
@@ -316,7 +316,7 @@ class PendingActivity : Activity() {
                 TextView(this).apply {
                     text =
                         "Невиконаних завдань немає.\n\n" +
-                            "Якщо квота або тимчасовий API-ліміт зупинить Search " +
+                            "Якщо квота або тимчасове обмеження сервісу зупинить пошук " +
                             "чи запис у YouTube/YTM, відновлюване завдання " +
                             "з'явиться тут."
                     gravity = Gravity.CENTER
@@ -781,7 +781,7 @@ class PendingActivity : Activity() {
             snapshot == null
         ) {
             toast(
-                "Завдання пошуку пошкоджене: snapshot відсутній"
+                "Завдання пошуку пошкоджене: збережений стан відсутній"
             )
             showListScreen()
             return
@@ -860,7 +860,7 @@ class PendingActivity : Activity() {
                         "Оновлено: ${formatDate(job.updatedAt)}\n" +
                             "Створено: ${formatDate(job.createdAt)}\n" +
                             "Джерело: ${job.sourceLabel}\n" +
-                            "Тип: Пошук (Search)"
+                            "Тип: Пошук"
                     )
                 )
             }
@@ -892,7 +892,7 @@ class PendingActivity : Activity() {
 
                 addView(
                     statLine(
-                        "Не очікує Search",
+                        "Не очікує пошуку",
                         (
                             job.totalCount -
                                 waitingTracks.size
@@ -1331,13 +1331,13 @@ class PendingActivity : Activity() {
                 "⏳ Очікує відновлення квоти"
 
             PendingPauseReason.RATE_LIMIT ->
-                "⏸ Пауза: забагато write-запитів"
+                "⏸ Пауза: забагато запитів запису"
 
             PendingPauseReason.RESOURCE_LIMIT ->
-                "⏸ Пауза: ресурсний ліміт API"
+                "⏸ Пауза: тимчасове обмеження сервісу"
 
             PendingPauseReason.UNKNOWN_API_LIMIT ->
-                "⏸ Пауза: тимчасовий ліміт API"
+                "⏸ Пауза: тимчасове обмеження YouTube"
 
             PendingPauseReason.SEARCH_QUOTA,
             null ->
@@ -1352,13 +1352,13 @@ class PendingActivity : Activity() {
                 "Квота"
 
             PendingPauseReason.RATE_LIMIT ->
-                "Rate limit"
+                "Забагато запитів"
 
             PendingPauseReason.RESOURCE_LIMIT ->
-                "Resource limit"
+                "Обмеження сервісу"
 
             PendingPauseReason.UNKNOWN_API_LIMIT ->
-                "HTTP 429"
+                "Тимчасове обмеження"
 
             PendingPauseReason.SEARCH_QUOTA,
             null ->
@@ -1881,7 +1881,7 @@ class PendingActivity : Activity() {
                         )
                         append("\n")
                         append(
-                            "Треків у snapshot: " +
+                            "Усього треків: " +
                                 job.totalCount
                         )
                     }

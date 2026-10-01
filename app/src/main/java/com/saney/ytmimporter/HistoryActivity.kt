@@ -1229,7 +1229,7 @@ class HistoryActivity : Activity() {
                             entry.playlistName
                         )
                         append(
-                            "». Search і запис у YTM не запускатимуться автоматично."
+                            "». Пошук і запис у YTM не запускатимуться автоматично."
                         )
                     },
                 actions =

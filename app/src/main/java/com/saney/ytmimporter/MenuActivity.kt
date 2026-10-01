@@ -239,8 +239,8 @@ class MenuActivity : Activity() {
 
         addAction(
             content = content,
-            title = "Поточна Bulk-сесія",
-            subtitle = "Переглянути прогрес і продовжити перервану сесію",
+            title = "Поточна синхронізація всіх",
+            subtitle = "Переглянути прогрес і продовжити перервану синхронізацію",
             action = ACTION_BULK_SESSION
         )
 
