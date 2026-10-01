@@ -73,6 +73,29 @@ Expected:
 
 Result: `A5+` / `A5-`.
 
+### Test A6 — critical transient-message durability
+
+Use only safe/local failure inputs and naturally available remote outcomes. Do not
+manufacture a YouTube/YTM remote failure merely for this test.
+
+Representative checks:
+- Data: open an invalid/non-matching backup or History JSON when a safe local test
+  file is available; the full reason remains visible after the Toast disappears;
+- rotate Data portrait → landscape → portrait; the notice remains and no
+  Restore/History import/rollback starts automatically;
+- after a valid successful retry, the stale Data failure notice is cleared before
+  the result modal;
+- Destination: after an update/delete success, the result remains readable on the
+  list together with the resulting list state;
+- if an update/delete/general remote failure occurs naturally, its exact reason
+  remains readable on the owning screen after the Toast disappears;
+- rotate Destination both ways after a notice; no load/update/delete/scan repeats;
+- starting a new explicit remote action clears the stale Destination notice;
+- verify the notice in Neon plus one alternate skin and confirm text/shape conveys
+  state without relying on color alone.
+
+Result: `A6+` / `A6-`.
+
 ## Wave B/C
 
 Add targeted tests only when those implementation waves land. Do not broaden Wave A

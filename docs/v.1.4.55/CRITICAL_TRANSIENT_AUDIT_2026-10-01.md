@@ -129,6 +129,41 @@ This classification is about user consequence, not message length.
    regression on the patched paths.
 5. Add representative phone targets; static/build PASS must not be called phone PASS.
 
+## Implementation / validation result — 2026-10-01
+
+Source/static/build conclusion: **PASS**.
+
+Implemented:
+- shared `UiChrome.NoticeTone` + `inlineNotice()` themed durable notice;
+- Data recovery notice state is saved/restored with the Activity;
+- verified Data recovery failure branches now keep their full reason inline while
+  the Toast is only a short pointer back to the screen;
+- valid/successful History import, Restore and rollback paths clear stale recovery
+  failure before confirmation/result;
+- safety-snapshot deletion now also has an explicit durable success result;
+- Destination remote notice state is saved/restored with the Activity;
+- update/delete success and update/delete/general failure remain readable after the
+  list/start screen rebuild;
+- each new explicit Destination remote operation clears stale notice before starting;
+- duplicate-scan failure continues to use its existing dedicated durable screen;
+- authorization-invalidated navigation is unchanged.
+
+Static enforcement:
+- `scripts/v1455-ux-hardening-audit.sh` requires the shared notice primitive;
+- Data and Destination must own recreation-safe notice state;
+- Destination may not regress to raw `state.errorMessage` Toast-only handling;
+- notice renderers are checked to contain no Restore/import/rollback/load/update/
+  delete/scan domain execution.
+
+Evidence:
+- source commit: `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`;
+- Validate Android run: `36811129269` — **SUCCESS**;
+- release preflight PASS;
+- JVM unit tests PASS;
+- unsigned release assemble PASS.
+
+No real-device PASS is claimed from this evidence.
+
 ## Phone acceptance later
 
 Representative consolidated Phase A checks:

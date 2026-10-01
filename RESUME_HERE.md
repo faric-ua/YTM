@@ -13,50 +13,50 @@ Last updated: **2026-10-01**
 - Release: **v1.4.55 / Phase A — UX hardening**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Current validated app/source checkpoint:
-  `490a1f0e218032aa46a723a455dac10e87136a9e`
-  (`chore: refresh manifest for Bulk hierarchy`)
-- Bulk hierarchy source commit:
-  `6ad0b789bd6d0263d4ba65ce2fe92a703fe20e12`
-  (`feat: clarify Bulk semantic hierarchy`)
-- Validate Android run **36795036312 — SUCCESS**
-  (release preflight PASS / JVM PASS / unsigned release assemble PASS)
-- #23/#45/#50 Bulk semantic hierarchy + diagnostics is **SOURCE/STATIC/BUILD PASS**.
+  `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`
+  (`ui: keep critical recovery results durable`)
+- Validate Android run **36811129269 — SUCCESS**
+  (release preflight PASS / JVM PASS / unsigned assemble PASS)
+- #50 critical transient-message durability is **SOURCE/STATIC/BUILD PASS**.
   Real-phone acceptance remains pending in the consolidated Phase A matrix.
-- Active task: **Phase A P0 critical transient-message durability audit**.
+- Active task: **Phase A tile/card readability verification against
+  `TILE_UI_CONTRACT.md`**.
 - v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
 - Phase B is not active yet.
 
-## Just completed — #23/#45/#50
+## Just completed — #50 critical transient-message durability
 
-Bulk Preview / Session presentation hardening is complete at source/static/build level:
+Source/static/build work is **PASS**:
 
-- added shared presentation-only `BulkHierarchyChrome` primitives;
-- Preview now presents playlist title, semantic state, inclusion, compact counters,
-  planned mutation, reason and secondary diagnostics as separate hierarchy layers;
-- Session now presents state, primary result counters, attention/rollback state,
-  durable error detail and secondary checkpoint/baseline diagnostics separately;
-- long technical failure detail remains on the owning screen while transient Toast
-  copy is concise;
-- plan construction, selection, execution, rollback, quota, durable ledger and
-  remote playlist identity semantics were not intentionally changed;
-- `scripts/v1455-ux-hardening-audit.sh` now protects the shared Bulk hierarchy and
-  rejects a return to dense legacy `summaryText` / raw technical Toast patterns;
-- exact validated checkpoint is `490a1f0e...`, run `36795036312`.
+- app-wide runtime Toast/Snackbar inventory is recorded in
+  `docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`;
+- only two P0 durability GAPs were verified: Data recovery failures and Destination
+  remote update/delete/general result/error;
+- shared `UiChrome.inlineNotice()` provides themed text + semantic styling;
+- Data recovery failure detail is durable across Activity recreation and stale
+  failure is cleared on successful retry/result;
+- Destination remote result/error detail is durable on the owning start/list
+  surface and a new explicit remote action clears stale notice first;
+- notice restoration does not execute Restore/import/rollback/load/update/delete/scan;
+- existing Queue/History/Bulk/Service durable ownership was preserved rather than
+  duplicated;
+- exact source checkpoint is `5cfcd4a63...`, run `36811129269` = SUCCESS.
 
-**Do not mark phone PASS from this result.**
+**Phone PASS is not claimed.**
 
 ## NEXT ACTION — do this first
 
-1. Open `docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`.
-2. Patch only its two verified GAPs:
-   - Data recovery failure detail;
-   - Destination remote update/delete/general result/error detail.
-3. Use one small shared themed inline-notice primitive.
-4. Persist notice state across Activity recreation without auto-running any action.
-5. Keep Bulk/Main/Pending/History/Service paths classified as already durable unless
-   new source evidence proves otherwise.
-6. Add static guards, phone targets, refresh generated artifacts and require
+1. Open `docs/design/TILE_UI_CONTRACT.md` and
+   `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`.
+2. Inventory the current Phase A tile/card surfaces and their primary/secondary
+   information hierarchy.
+3. Classify each as compliant, verified presentation GAP, or intentionally
+   specialized.
+4. Patch only verified presentation/readability GAPs; preserve action ownership,
+   callbacks, long-press/menu semantics and all business/API/storage behavior.
+5. Add static guards and phone targets, refresh generated artifacts and require
    exact-HEAD Validate Android PASS.
+6. Do not start Phase B yet.
 
 ## Mandatory recovery order
 

@@ -148,24 +148,47 @@ Source implementation commit:
 Issues #23/#45/#50 remain open where consolidated real-phone acceptance is still
 required.
 
-## CURRENT TASK — critical transient-message durability (#50) (2026-10-01)
+## COMPLETED TASK — critical transient-message durability (#50) (2026-10-01)
 
-Goal: enforce the readability audit's P0 rule that information the user must retain
-after a transient message disappears must not exist only in Toast/Snackbar copy.
+Source/static/build result: **PASS**.
+
+- [x] Inventory runtime Toast/Snackbar/transient user messages across Phase A
+  surfaces; exclude debug-only/non-user diagnostics.
+- [x] Classify actionable/recovery/error messages as durable-covered, verified GAP,
+  or intentionally non-critical transient feedback.
+- [x] Patch only the two verified GAPs: Data recovery failure detail and Destination
+  remote update/delete/general result/error durability.
+- [x] Preserve callbacks, request order, retry/auto-start, Queue/Pending, History,
+  backup/restore meaning, Bulk ledger/rollback and quota semantics.
+- [x] Add static guards for shared notice ownership, recreation state and
+  no-domain-work restoration.
+- [x] Record representative phone targets; **phone PASS is not claimed**.
+- [x] Refresh `FILE_MANIFEST.txt`.
+- [x] Exact source/static/build checkpoint
+  `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939` passed Validate Android run
+  `36811129269`: release preflight PASS, JVM tests PASS, unsigned release
+  assemble PASS.
+
+Evidence:
+`docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`.
+
+## CURRENT TASK — tile/card readability verification (#50) (2026-10-01)
+
+Goal: verify current tile/card surfaces against the project-wide
+`TILE_UI_CONTRACT.md` and the readability hierarchy without changing action or
+domain semantics.
 
 Current task checklist:
-- [x] Inventory runtime Toast/Snackbar/transient user messages across Phase A
-  surfaces; exclude debug-only/non-user diagnostics. Evidence:
-  `docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`.
-- [x] Classify actionable/recovery/error messages as durable-covered, verified GAP,
-  or intentionally non-critical transient feedback. Verified GAPs are limited to
-  Data recovery failures and Destination remote action result/error durability.
-- [ ] Patch only verified GAPs so critical detail persists on the owning
-  screen/result/detail surface while transient copy stays concise.
-- [ ] Preserve existing callbacks, request order, retry, auto-start, Queue/Pending,
-  History, backup/restore, Bulk ledger/rollback and quota semantics.
-- [ ] Add/strengthen static guards without pinning fragile exact wording.
-- [ ] Record representative phone targets; do not claim phone PASS.
+- [ ] Inventory Phase A tile/card implementations and owning surfaces.
+- [ ] Classify each surface as contract-compliant, verified presentation GAP, or
+  intentionally specialized.
+- [ ] Check title/state/primary-result/next-action/secondary-facts/diagnostics
+  hierarchy where those layers apply.
+- [ ] Check visible action ownership and ensure essential actions are not hidden
+  only behind long press; destructive actions remain confirmation-gated.
+- [ ] Patch only verified presentation/readability GAPs using existing theme/shared
+  UI primitives.
+- [ ] Add/strengthen static guards and representative phone targets.
 - [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS.
 
 Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
@@ -229,7 +252,7 @@ The checkpoint commit after this validated SHA is documentation-only. The valida
 - [x] Finish destructive-confirmation lifecycle matrix (#42) at source/static/build level. **PASS** on `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`, run `36758197893`; phone acceptance remains in the consolidated Phase A matrix.
 - [x] Verify one shared action-row/stack policy for screen + dialog footers (#47/#26/#37). **SOURCE/STATIC/BUILD PASS** on `317d72e5445ba88074820f9743474621c15f7208`, run `36760309445`; phone acceptance remains in the consolidated matrix.
 - [x] Finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50). **SOURCE/STATIC/BUILD PASS** on `490a1f0e218032aa46a723a455dac10e87136a9e`, run `36795036312`; phone acceptance remains in the consolidated matrix.
-- [ ] Replace critical Toast/Snackbar-only information with durable owning-screen state.
+- [x] Replace critical Toast/Snackbar-only information with durable owning-screen state. **SOURCE/STATIC/BUILD PASS** on `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`, run `36811129269`; phone acceptance remains in the consolidated matrix.
 - [ ] Verify tile/card readability against `TILE_UI_CONTRACT.md`.
 - [ ] Verify Menu/Home/History/Queue/Data/File surfaces against the readability audit.
 - [ ] Verify Neon + Blue/Green semantic/accessibility sanity.
@@ -287,15 +310,12 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Patch the two verified transient-message durability GAPs.**
+**Verify tile/card readability against `TILE_UI_CONTRACT.md`.**
 
-1. Add a small shared themed inline-notice primitive.
-2. Data: persist recovery failure detail across rotation and clear stale failure on
-   successful retry/result.
-3. Destination: persist update/delete/general remote result/error on the owning
-   start/list screen and clear stale notice when a new remote action starts.
-4. Preserve all existing callbacks, request order, IDs, restore/rollback semantics
-   and no-auto-action lifecycle behavior.
+Inventory first. Treat existing specialized cards as valid when they already satisfy
+the underlying title/state/action/readability contract. Patch only verified
+presentation gaps and do not change action callbacks, destructive confirmation,
+remote/API execution or storage semantics.
 
 ## Update rule
 

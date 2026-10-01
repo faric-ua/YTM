@@ -90,7 +90,7 @@ Still open in Phase A:
 - destructive-confirmation #42 is **SOURCE/STATIC/BUILD PASS**; real-phone acceptance remains in the consolidated Phase A matrix;
 - phone-verify one canonical action layout contract across screen + dialog footers (#47/#26/#37);
 - Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50) is **SOURCE/STATIC/BUILD PASS** on `490a1f0e218032aa46a723a455dac10e87136a9e`, run `36795036312`; real-phone acceptance remains pending;
-- critical information must not be Toast-only;
+- critical transient-message durability is **SOURCE/STATIC/BUILD PASS** on `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`, run `36811129269`; real-phone acceptance remains pending;
 - Neon + alternate-skin accessibility/readability sanity;
 - temporary QA controls must be removed or compile-gated before public candidate.
 
@@ -223,6 +223,42 @@ Evidence:
 Real-phone acceptance remains intentionally deferred to the consolidated Phase A
 matrix. Static/build PASS is not phone PASS.
 
+## Critical transient-message durability — #50 — 2026-10-01
+
+Source/static/build conclusion: **PASS**.
+
+Inventory:
+- runtime Toast/Snackbar audit is recorded in
+  `CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`;
+- no Snackbar call site was found on the audited Phase A Activity surfaces;
+- Main/Queue/History/Bulk/Service already had durable ownership for critical
+  auth/pause/error/update state;
+- only Data recovery failures and Destination remote action result/error were
+  verified as P0 durability gaps.
+
+Implementation:
+- `UiChrome.inlineNotice()` provides text + semantic theme styling;
+- Data persists exact recovery failure detail across recreation and clears stale
+  failure when a recovery retry reaches a valid/success result;
+- Destination persists update/delete/general remote result/error across recreation,
+  renders it on start/list owners, and clears stale notice before a new remote
+  request;
+- Destination duplicate-scan failure remains owned by its existing dedicated
+  failure screen;
+- authorization-invalidated behavior remains unchanged;
+- static guards ensure notice restoration itself cannot call restore/import/
+  rollback/load/update/delete/scan domain work.
+
+Evidence:
+- source checkpoint: `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`;
+- Validate Android run `36811129269`: **SUCCESS**;
+- release preflight PASS;
+- JVM tests PASS;
+- unsigned release assemble PASS.
+
+Real-phone acceptance remains deferred to the consolidated Phase A matrix. Static
+and build evidence is not phone PASS.
+
 ## Phase B — management / discoverability
 
 After Phase A source is coherent:
@@ -292,8 +328,8 @@ Classification:
 | `app/build.gradle.kts` | `PRESENTATION_ONLY` / release metadata | versionCode 97→98 and versionName 1.4.54→1.4.55 only |
 | `BulkSyncPreviewActivity.kt` | `PRESENTATION_ONLY + LIFECYCLE_ONLY` | wording/state labels + scroll retention; no plan/execution semantics changed |
 | `BulkSyncSessionActivity.kt` | `PRESENTATION_ONLY + LIFECYCLE_ONLY` | wording + scroll retention; execution/rollback calls unchanged |
-| `DataActivity.kt` | `LIFECYCLE_ONLY` | scroll retention only |
-| `DestinationActivity.kt` | `LIFECYCLE_ONLY` | per-mode/list viewport retention only |
+| `DataActivity.kt` | `PRESENTATION_ONLY + LIFECYCLE_ONLY` | scroll retention + recreation-safe durable recovery failure notice; restore/import/rollback callbacks unchanged |
+| `DestinationActivity.kt` | `PRESENTATION_ONLY + LIFECYCLE_ONLY` | per-mode/list viewport retention + durable remote result/error notice; request order/IDs/callbacks unchanged |
 | `HistoryActivity.kt` | `NAVIGATION_ONLY + LIFECYCLE_ONLY` | existing restore action surfaced in quick actions; search/list/detail viewport and delete-confirm recreation state preserved |
 | `ImportActivity.kt` | `LIFECYCLE_ONLY` | scroll retention only |
 | `ListSelectorActivity.kt` | `LIFECYCLE_ONLY` | scroll retention only |
@@ -311,7 +347,7 @@ Classification:
 | `ui/RestorableModalController.kt` | `LIFECYCLE_ONLY` | selectable-text state is captured/restored with modal semantic state |
 | `ui/ScrollPositionState.kt` | `LIFECYCLE_ONLY` | adds local reset helper only |
 | `ui/SelectableTextState.kt` | `PRESENTATION_ONLY + LIFECYCLE_ONLY` | restores only matching selectable-text ranges; changed content fails closed |
-| `ui/UiChrome.kt` | `PRESENTATION_ONLY` | action layout uses measured label fit; action callbacks/meaning unchanged |
+| `ui/UiChrome.kt` | `PRESENTATION_ONLY` | measured action fit + shared themed inline notice primitive; action callbacks/meaning unchanged |
 
 Explicit functional-safety checks:
 - no changed source under `app/src/main/.../youtube/`;
@@ -376,15 +412,15 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-1. run the Phase A P0 critical transient-message durability audit across runtime
-   Toast/Snackbar/transient user messages;
-2. patch only verified cases where actionable recovery/error detail is transient-only;
-3. continue remaining tile/readability and Neon/Blue/Green Phase A sanity work
-   without business changes;
-4. after the coherent Phase A batch, refresh artifacts and re-run exact-HEAD validation;
-5. build one consolidated phone candidate and run #42 destructive,
-   scroll/selectable-text, action-layout, Bulk readability and critical-message
-   acceptance together.
+1. verify Phase A tile/card surfaces against `TILE_UI_CONTRACT.md` and the
+   readability hierarchy;
+2. continue Menu/Home/History/Queue/Data/File readability verification using only
+   presentation-safe changes;
+3. verify Neon + Blue/Green semantic/accessibility sanity;
+4. confirm temporary phone-QA controls remain impossible in the public release
+   candidate;
+5. after the coherent Phase A batch, refresh artifacts, require exact-HEAD
+   validation, build one signed candidate and run the consolidated phone matrix.
 
 Do not start Phase B functional/discoverability work until Phase A shared contracts
 are coherent enough that later screens can reuse them.

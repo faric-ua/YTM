@@ -23,27 +23,24 @@ Last updated: **2026-10-01**
 ## Current validated checkpoint — 2026-10-01
 
 **Current validated app/source checkpoint:**
-`490a1f0e218032aa46a723a455dac10e87136a9e`
-(`chore: refresh manifest for Bulk hierarchy`).
+`5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`
+(`ui: keep critical recovery results durable`).
 
-Bulk hierarchy source commit:
-`6ad0b789bd6d0263d4ba65ce2fe92a703fe20e12`
-(`feat: clarify Bulk semantic hierarchy`).
-
-Validate Android run `36795036312` — **SUCCESS**:
+Validate Android run `36811129269` — **SUCCESS**:
 - release preflight PASS;
 - JVM unit tests PASS;
 - unsigned release assemble PASS.
 
-**#23/#45/#50 SOURCE/STATIC/BUILD: PASS.**
-Bulk Preview/Session now use shared semantic hierarchy, durable secondary
-diagnostics and concise transient failure summaries. Real-phone acceptance remains
-pending in the consolidated Phase A matrix.
+**#50 critical transient-message durability SOURCE/STATIC/BUILD: PASS.**
+The inventory found only two verified P0 gaps, both now patched with
+recreation-safe durable inline notices. Real-phone acceptance remains pending in
+the consolidated Phase A matrix.
 
 **Current blocker:** none.
 
-**Current task:** Phase A P0 critical transient-message durability audit. Do not
-restart v1.4.54 Tests 1–9 and do not start Phase B yet.
+**Current task:** Phase A tile/card readability verification against
+`docs/design/TILE_UI_CONTRACT.md`. Do not restart v1.4.54 Tests 1–9 and do not
+start Phase B yet.
 
 ## Immutable functional reference
 
@@ -117,17 +114,15 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-The P0 transient-message inventory is complete in
-`docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md`.
+Critical transient-message durability is SOURCE/STATIC/BUILD PASS on
+`5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`, Validate Android run
+`36811129269` = SUCCESS.
 
-Two verified source GAPs remain:
-1. Data recovery failure reasons can disappear with Toast.
-2. Destination update/delete/general remote result/error can disappear after the
-   screen rebuild.
-
-Next source step: add one shared themed inline-notice primitive, patch only those
-two owners, persist notice state across rotation, and keep all domain/API/storage
-semantics unchanged.
+**Current task:** audit Phase A tile/card surfaces against
+`docs/design/TILE_UI_CONTRACT.md` plus the app-wide readability hierarchy.
+Inventory and classify before editing; patch only verified presentation gaps.
+Preserve visible action ownership, long-press/menu equivalence, destructive
+confirmation and all domain/API/storage semantics.
 
 ## Working contract
 
