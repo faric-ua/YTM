@@ -1750,7 +1750,7 @@ d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
 f78c820c675f6b9e  scripts/v1454-bulk-preflight-audit.sh
 998ac43872253938  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
-fd6e7c7a5165a869  scripts/v1455-ux-hardening-audit.sh
+2f1ada65b530616f  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh

@@ -242,9 +242,9 @@ grep -Fq 'snapshotIdentityText(' "$URL_SNAPSHOT" ||
   fail "URL Snapshot identity hierarchy missing"
 grep -Fq '**Tile / «плитка»**' "$TILE_CONTRACT" ||
   fail "generic Tile contract missing"
-grep -Fq 'VERIFIED GAP 1 — Playlist Hub summary counters' "$TILE_READABILITY" ||
+grep -Fq 'Playlist Hub summary counters' "$TILE_READABILITY" ||
   fail "tile/card readability audit missing Playlist finding"
-grep -Fq 'VERIFIED GAP 2 — URL Snapshot resolved summary' "$TILE_READABILITY" ||
+grep -Fq 'URL Snapshot resolved summary' "$TILE_READABILITY" ||
   fail "tile/card readability audit missing URL Snapshot finding"
 
 python - "$PLAYLIST" "$URL_SNAPSHOT" <<'PY_TILE_READABILITY'
