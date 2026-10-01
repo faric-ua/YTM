@@ -1,6 +1,6 @@
 # v1.4.55 — Current Working State / Assistant Handoff
 
-Last updated: 2026-09-30
+Last updated: 2026-10-01
 
 ## Release / branch
 
@@ -89,7 +89,7 @@ Still open in Phase A:
 - selectable-text real-phone acceptance (#49); source/static/build audit is PASS;
 - destructive-confirmation #42 is **SOURCE/STATIC/BUILD PASS**; real-phone acceptance remains in the consolidated Phase A matrix;
 - phone-verify one canonical action layout contract across screen + dialog footers (#47/#26/#37);
-- finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50);
+- Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50) is **SOURCE/STATIC/BUILD PASS** on `490a1f0e218032aa46a723a455dac10e87136a9e`, run `36795036312`; real-phone acceptance remains pending;
 - critical information must not be Toast-only;
 - Neon + alternate-skin accessibility/readability sanity;
 - temporary QA controls must be removed or compile-gated before public candidate.
@@ -191,6 +191,37 @@ Source conclusion: **#42 SOURCE/STATIC/BUILD PASS**.
 Real-phone acceptance remains pending in the consolidated Phase A matrix:
 History delete, one destructive utility clear and Bulk rollback with both rotation
 directions, Cancel/Back/Close, and no automatic destructive action.
+
+## Bulk semantic hierarchy and diagnostics — #23/#45/#50 — 2026-10-01
+
+Source/static/build conclusion: **PASS**.
+
+Presentation-only implementation:
+- shared `BulkHierarchyChrome` provides state badges, primary counters/actions and
+  secondary diagnostic text using existing semantic theme tokens;
+- Bulk Preview separates title/entity, state, inclusion, track readiness, planned
+  create/add work, reason and Search/cache/API diagnostics;
+- Bulk Session separates session state, primary result counters, attention/rollback
+  state, durable error detail and checkpoint/baseline/ID diagnostics;
+- raw technical failure detail is no longer duplicated into long transient Toasts
+  on the audited Bulk paths; durable owning-screen detail remains authoritative;
+- static guards reject the dense legacy `summaryText` pattern and raw technical
+  Toast regression;
+- no intentional change was made to plan construction, selection, session
+  creation/checkpoint semantics, write order/retry, mutation ledger, rollback
+  ownership/resume, quota/rate classification or remote playlist identity.
+
+Evidence:
+- source implementation: `6ad0b789bd6d0263d4ba65ce2fe92a703fe20e12`;
+- validated source/audit/manifest checkpoint:
+  `490a1f0e218032aa46a723a455dac10e87136a9e`;
+- Validate Android run `36795036312`: **SUCCESS**;
+- release preflight PASS;
+- JVM tests PASS;
+- unsigned release assemble PASS.
+
+Real-phone acceptance remains intentionally deferred to the consolidated Phase A
+matrix. Static/build PASS is not phone PASS.
 
 ## Phase B — management / discoverability
 
@@ -345,14 +376,15 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-1. execute #23/#45/#50 Bulk Preview/Session semantic hierarchy using the recorded
-   presentation-only audit;
-2. keep critical error/state detail durable on the owning screen and shorten
-   transient technical messages;
-3. continue remaining readability/skin Phase A work without business changes;
+1. run the Phase A P0 critical transient-message durability audit across runtime
+   Toast/Snackbar/transient user messages;
+2. patch only verified cases where actionable recovery/error detail is transient-only;
+3. continue remaining tile/readability and Neon/Blue/Green Phase A sanity work
+   without business changes;
 4. after the coherent Phase A batch, refresh artifacts and re-run exact-HEAD validation;
 5. build one consolidated phone candidate and run #42 destructive,
-   scroll/selectable-text, action-layout and Bulk readability acceptance together.
+   scroll/selectable-text, action-layout, Bulk readability and critical-message
+   acceptance together.
 
 Do not start Phase B functional/discoverability work until Phase A shared contracts
 are coherent enough that later screens can reuse them.

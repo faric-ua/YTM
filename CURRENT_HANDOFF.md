@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-09-30**
+Last updated: **2026-10-01**
 
 > **FIRST READ: `RESUME_HERE.md`**
 >
@@ -20,27 +20,30 @@ Last updated: **2026-09-30**
 - Readability audit: `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`
 - Backlog reconciliation: `docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md`
 
-## Previous validated checkpoint (historical) — 2026-09-30
+## Current validated checkpoint — 2026-10-01
 
-Validated application-code point before the docs-only checkpoint:
-- exact source SHA: `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`;
-- Validate Android run: `36664955524` — **SUCCESS**;
-- Release preflight / JVM tests / unsigned release assemble: **PASS**;
-- MainActivity architectural cap: **PASS**, 4093 lines (<4100);
-- #49 selectable-text source/static/build audit: **PASS**;
-- compile correction: selection restore now uses `Selection.setSelection(...)` on matching `Spannable` text and remains fail-closed when content changes.
+**Current validated app/source checkpoint:**
+`490a1f0e218032aa46a723a455dac10e87136a9e`
+(`chore: refresh manifest for Bulk hierarchy`).
 
-The old green checkpoint above is historical and is not the resume point.
+Bulk hierarchy source commit:
+`6ad0b789bd6d0263d4ba65ce2fe92a703fe20e12`
+(`feat: clarify Bulk semantic hierarchy`).
 
-**Current app/source HEAD:** `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`
-(`fix: unify destructive confirmation lifecycle`).
+Validate Android run `36795036312` — **SUCCESS**:
+- release preflight PASS;
+- JVM unit tests PASS;
+- unsigned release assemble PASS.
 
-**#42 source/static/build: PASS.** Exact branch/tooling checkpoint
-`c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3` passed Validate Android run
-`36758197893` (preflight/JVM/assemble all PASS). Real-phone #42 acceptance remains
+**#23/#45/#50 SOURCE/STATIC/BUILD: PASS.**
+Bulk Preview/Session now use shared semantic hierarchy, durable secondary
+diagnostics and concise transient failure summaries. Real-phone acceptance remains
 pending in the consolidated Phase A matrix.
 
-**Current blocker:** none. **Current task:** #23/#45/#50 Bulk semantic hierarchy and diagnostics. Do not restart v1.4.54 Tests 1–9.
+**Current blocker:** none.
+
+**Current task:** Phase A P0 critical transient-message durability audit. Do not
+restart v1.4.54 Tests 1–9 and do not start Phase B yet.
 
 ## Immutable functional reference
 
@@ -114,15 +117,16 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-#47/#26/#37 is SOURCE/STATIC/BUILD PASS on
-`317d72e5445ba88074820f9743474621c15f7208`, Validate Android run
-`36760309445` = SUCCESS. Phone layout acceptance stays in the consolidated Phase A
-matrix.
+Bulk #23/#45/#50 is SOURCE/STATIC/BUILD PASS on
+`490a1f0e218032aa46a723a455dac10e87136a9e`, Validate Android run
+`36795036312` = SUCCESS. Phone readability/safety acceptance stays in the one
+consolidated Phase A matrix.
 
-**Current task:** #23/#45/#50 Bulk semantic hierarchy and diagnostics. Current
-source audit is in `docs/v.1.4.55/BULK_HIERARCHY_AUDIT_2026-09-30.md`.
-Next source step is presentation-only: separate state, key counters, planned
-mutation/safety result and diagnostics without touching Bulk behavior.
+**Current task:** enforce the P0 Critical-message rule. Inventory app runtime
+Toast/Snackbar/transient messages, identify only verified cases where actionable
+recovery/error detail would disappear with the transient, then move that detail to
+the owning screen/result/detail surface while keeping the transient summary concise.
+Do not alter business/API/storage semantics.
 
 ## Working contract
 

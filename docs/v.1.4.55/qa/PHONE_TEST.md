@@ -21,20 +21,24 @@ Result: `A1+` / `A1-`.
 ### Test A2 — Bulk Preview readability
 
 Expected:
-- title/state/planned action are scannable;
+- playlist title, state badge, selection, compact counters and planned mutation are scannable in that order;
+- reason and Search/cache/API diagnostics are visibly secondary;
 - raw internal enum names do not dominate primary UI;
-- selecting/excluding rows does not start remote work;
-- portrait/landscape rotation preserves plan/selection.
+- selecting/excluding rows updates the plan summary but does not start remote work;
+- portrait/landscape rotation preserves plan/selection;
+- verify Neon plus at least one alternate skin.
 
 Result: `A2+` / `A2-`.
 
 ### Test A3 — Bulk Session readability + safety
 
 Expected:
-- current state, completed work, remaining work and next safe action are obvious;
-- diagnostics do not dominate the primary summary;
+- current state, primary result counters, attention/remaining work and next safe action are obvious;
+- checkpoint/baseline/YTM IDs and detailed errors remain secondary but readable;
+- if a failure Toast appears, the actionable/technical detail remains durable on the owning screen after the Toast disappears;
 - reopening/rotating does not auto-resume;
-- rollback remains explicit.
+- rollback remains explicit;
+- verify Neon plus at least one alternate skin.
 
 Result: `A3+` / `A3-`.
 

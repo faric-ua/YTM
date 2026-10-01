@@ -12,7 +12,7 @@
 > 3. update **NEXT ACTION** so the first unchecked item is the real resume point;
 > 4. update `CURRENT_HANDOFF.md` when the resume point materially changes.
 
-Last updated: 2026-09-30
+Last updated: 2026-10-01
 
 ## Active release
 
@@ -109,30 +109,60 @@ Source/static/build result: **PASS**.
 Issues #47/#26/#37 stay open only where their broader phone/app-wide acceptance is
 still pending.
 
-## CURRENT TASK — Bulk semantic hierarchy and diagnostics (#23/#45/#50) (2026-09-30)
+## COMPLETED TASK — Bulk semantic hierarchy and diagnostics (#23/#45/#50) (2026-10-01)
 
-Goal: make Bulk Preview and Bulk Session scannable in 1–2 seconds without changing
-plan construction, selection, execution, rollback, quota or durable ledger
-semantics.
+Source/static/build result: **PASS**.
 
-Current task checklist:
+Goal achieved at the presentation layer: Bulk Preview and Bulk Session are now
+scannable without changing plan construction, selection, execution, rollback,
+quota or durable ledger semantics.
+
+Completed checklist:
 - [x] Read issues #23/#45/#50 and the app-wide readability audit.
-- [x] Inspect current Bulk Preview/Session rendering. Existing user-facing plan and
-  session state labels are already Ukrainian.
-- [x] Identify the remaining presentation GAP: important state/counts/planned
-  mutation/safety result/diagnostics are still merged into dense same-weight text
-  blocks.
+- [x] Inspect current Bulk Preview/Session rendering and record the dense
+  same-weight presentation GAP.
 - [x] Record the source inventory in
   `docs/v.1.4.55/BULK_HIERARCHY_AUDIT_2026-09-30.md`.
-- [ ] Design the smallest shared presentation-only hierarchy primitives needed for
-  Bulk cards/status blocks using existing theme semantic tokens.
-- [ ] Patch Bulk Preview cards: title primary, state visible, inclusion state,
-  compact counts, planned mutation prominent, reason/diagnostics secondary.
-- [ ] Patch Bulk Session summary/rows: current state + primary counters first;
-  checkpoint/baseline/IDs/errors/policy text secondary and durable.
-- [ ] Separate long technical error detail from transient Toast-only messaging;
-  critical state must remain visible on the owning screen.
-- [ ] Add/strengthen static readability guards without coupling them to fragile copy.
+- [x] Add the shared presentation-only `BulkHierarchyChrome` primitives using
+  existing skin-aware semantic tokens.
+- [x] Patch Bulk Preview hierarchy: title, state badge, inclusion state, compact
+  counts, planned mutation, reason and secondary diagnostics.
+- [x] Patch Bulk Session hierarchy: current state/result counters first;
+  attention/rollback state next; checkpoint/baseline/IDs/errors/policy secondary
+  and durable.
+- [x] Keep long technical error detail on the owning screen and shorten transient
+  Toast summaries.
+- [x] Strengthen `scripts/v1455-ux-hardening-audit.sh` without coupling the guard
+  to fragile full-copy strings.
+- [x] Representative phone targets remain recorded in
+  `docs/v.1.4.55/qa/PHONE_TEST.md`; **phone PASS is not claimed**.
+- [x] `FILE_MANIFEST.txt` refreshed.
+- [x] Exact validated checkpoint
+  `490a1f0e218032aa46a723a455dac10e87136a9e` passed Validate Android run
+  `36795036312`: release preflight PASS, JVM tests PASS, unsigned release
+  assemble PASS.
+
+Source implementation commit:
+`6ad0b789bd6d0263d4ba65ce2fe92a703fe20e12`.
+
+Issues #23/#45/#50 remain open where consolidated real-phone acceptance is still
+required.
+
+## CURRENT TASK — critical transient-message durability (#50) (2026-10-01)
+
+Goal: enforce the readability audit's P0 rule that information the user must retain
+after a transient message disappears must not exist only in Toast/Snackbar copy.
+
+Current task checklist:
+- [ ] Inventory runtime Toast/Snackbar/transient user messages across Phase A
+  surfaces; exclude debug-only/non-user diagnostics.
+- [ ] Classify actionable/recovery/error messages as durable-covered, verified GAP,
+  or intentionally non-critical transient feedback.
+- [ ] Patch only verified GAPs so critical detail persists on the owning
+  screen/result/detail surface while transient copy stays concise.
+- [ ] Preserve existing callbacks, request order, retry, auto-start, Queue/Pending,
+  History, backup/restore, Bulk ledger/rollback and quota semantics.
+- [ ] Add/strengthen static guards without pinning fragile exact wording.
 - [ ] Record representative phone targets; do not claim phone PASS.
 - [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS.
 
@@ -196,7 +226,7 @@ The checkpoint commit after this validated SHA is documentation-only. The valida
 - [x] Finish selectable-text range retention (#49) at source/static/build level. **SOURCE AUDIT PASS** on `bc6e1c136130d899e9eae8a03c11ab5e88661b7f`; real-phone acceptance remains in the consolidated Phase A matrix.
 - [x] Finish destructive-confirmation lifecycle matrix (#42) at source/static/build level. **PASS** on `c7b8c6bfeeeebf0d7da4b361e8dc0704006afea3`, run `36758197893`; phone acceptance remains in the consolidated Phase A matrix.
 - [x] Verify one shared action-row/stack policy for screen + dialog footers (#47/#26/#37). **SOURCE/STATIC/BUILD PASS** on `317d72e5445ba88074820f9743474621c15f7208`, run `36760309445`; phone acceptance remains in the consolidated matrix.
-- [ ] Finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50).
+- [x] Finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50). **SOURCE/STATIC/BUILD PASS** on `490a1f0e218032aa46a723a455dac10e87136a9e`, run `36795036312`; phone acceptance remains in the consolidated matrix.
 - [ ] Replace critical Toast/Snackbar-only information with durable owning-screen state.
 - [ ] Verify tile/card readability against `TILE_UI_CONTRACT.md`.
 - [ ] Verify Menu/Home/History/Queue/Data/File surfaces against the readability audit.
@@ -255,11 +285,12 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Design the smallest presentation-only Bulk hierarchy patch for #23/#45/#50.**
+**Audit critical Toast/Snackbar-only information across the remaining Phase A surfaces.**
 
-Use the recorded Bulk source audit. Preserve all plan/execution/rollback/quota
-semantics. The next source change should only restructure how existing state,
-counts, planned actions, safety results and diagnostics are rendered.
+Use the Critical-message rule in
+`docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`. Inventory first, patch only
+verified durability gaps, preserve all business/API/storage semantics, and keep
+technical detail on the owning screen rather than only in a transient channel.
 
 ## Update rule
 

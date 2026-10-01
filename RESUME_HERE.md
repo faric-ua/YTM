@@ -5,49 +5,60 @@
 > Do not reconstruct the project from chat memory. Read this file from the live
 > `feat/v1.4.55-ux-hardening` branch first, then verify branch HEAD and latest Actions state.
 
-Last updated: **2026-09-30**
+Last updated: **2026-10-01**
 
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
 - Release: **v1.4.55 / Phase A — UX hardening**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Current app/source HEAD: `76fcff9b79001f9b37144c49ab2e144a3f77fe4f`
-  (`fix: unify destructive confirmation lifecycle`)
-- Latest validated source/audit checkpoint:
-  `317d72e5445ba88074820f9743474621c15f7208`
-- Validate Android run **36760309445 — SUCCESS**
-  (preflight PASS / JVM PASS / unsigned assemble PASS)
-- Active task: **#23/#45/#50 — Bulk semantic hierarchy and diagnostics**
-- #47/#26/#37 action-layout source/static/build work is complete; phone acceptance
-  remains in the consolidated Phase A matrix.
+- Current validated app/source checkpoint:
+  `490a1f0e218032aa46a723a455dac10e87136a9e`
+  (`chore: refresh manifest for Bulk hierarchy`)
+- Bulk hierarchy source commit:
+  `6ad0b789bd6d0263d4ba65ce2fe92a703fe20e12`
+  (`feat: clarify Bulk semantic hierarchy`)
+- Validate Android run **36795036312 — SUCCESS**
+  (release preflight PASS / JVM PASS / unsigned release assemble PASS)
+- #23/#45/#50 Bulk semantic hierarchy + diagnostics is **SOURCE/STATIC/BUILD PASS**.
+  Real-phone acceptance remains pending in the consolidated Phase A matrix.
+- Active task: **Phase A P0 critical transient-message durability audit**.
 - v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
 - Phase B is not active yet.
 
-## Just completed — #42
+## Just completed — #23/#45/#50
 
-Destructive-confirmation lifecycle source/static/build work is **PASS**:
-- full runtime inventory completed;
-- History delete, History clear-all, Import clear-workspace and Destination remote
-  delete migrated to `RestorableModalController`;
-- exact targets/callbacks preserved;
-- Import revalidates exact `localPlaylistId`;
-- static enforcement covers the shared lifecycle contract;
-- stale historical guards were updated without weakening no-auto-action checks;
-- post-patch inventory has no unexplained GAP;
-- exact validation is green on the checkpoint above.
+Bulk Preview / Session presentation hardening is complete at source/static/build level:
 
-#42 real-phone acceptance is still **PENDING** in the consolidated Phase A matrix.
+- added shared presentation-only `BulkHierarchyChrome` primitives;
+- Preview now presents playlist title, semantic state, inclusion, compact counters,
+  planned mutation, reason and secondary diagnostics as separate hierarchy layers;
+- Session now presents state, primary result counters, attention/rollback state,
+  durable error detail and secondary checkpoint/baseline diagnostics separately;
+- long technical failure detail remains on the owning screen while transient Toast
+  copy is concise;
+- plan construction, selection, execution, rollback, quota, durable ledger and
+  remote playlist identity semantics were not intentionally changed;
+- `scripts/v1455-ux-hardening-audit.sh` now protects the shared Bulk hierarchy and
+  rejects a return to dense legacy `summaryText` / raw technical Toast patterns;
+- exact validated checkpoint is `490a1f0e...`, run `36795036312`.
+
+**Do not mark phone PASS from this result.**
 
 ## NEXT ACTION — do this first
 
-1. Open `docs/v.1.4.55/BULK_HIERARCHY_AUDIT_2026-09-30.md`.
-2. Design the smallest shared presentation-only hierarchy primitives needed by
-   Bulk Preview and Bulk Session.
-3. Keep existing plan construction, selection, execution, rollback, quota and
-   durable ledger semantics untouched.
-4. Patch Preview first, then Session, then durable/transient diagnostics.
-5. Update this file immediately when the real resume point moves.
+1. Open `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md` and use its
+   **Critical-message rule**.
+2. Inventory runtime Toast/Snackbar/transient user messages across Phase A surfaces.
+3. Classify each actionable/recovery/error message as:
+   - already backed by durable owning-screen state;
+   - verified GAP;
+   - intentionally non-critical transient feedback.
+4. Patch only verified GAPs so critical state remains visible after the transient
+   message disappears; keep callbacks and business/API/storage behavior unchanged.
+5. Add static guards, record phone targets, refresh generated artifacts and require
+   exact-HEAD Validate Android PASS.
+6. Do not start Phase B until the remaining Phase A source/readability gates are coherent.
 
 ## Mandatory recovery order
 

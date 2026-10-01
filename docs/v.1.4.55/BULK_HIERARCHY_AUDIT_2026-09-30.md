@@ -129,24 +129,69 @@ truncate.
 
 Use text + shape/typography with color. Do not make color the only signal.
 
-## Next source step
+## Implementation / validation result — 2026-10-01
 
-Design the smallest reusable presentation helpers necessary for:
-- state label/badge;
-- compact key/value counters;
-- secondary diagnostics.
+Source/static/build conclusion: **PASS**.
 
-Then patch Preview and Session using existing model values only.
+Implemented the smallest shared presentation layer:
+- `BulkHierarchyChrome.card()` — shared themed container;
+- `badge()` — state label with semantic tone plus text;
+- `metrics()` / `primary()` — compact primary counts/planned work;
+- `body()` / `secondary()` — reason and technical diagnostics.
+
+Bulk Preview now renders:
+1. playlist title;
+2. semantic state badge;
+3. explicit included/excluded CheckBox for executable rows;
+4. track/ready/unresolved counters;
+5. planned create/add result;
+6. reason;
+7. Search/cache/write-unit diagnostics as secondary text.
+
+Bulk Session now renders:
+1. session/playlist title;
+2. semantic state badge;
+3. primary created/inserted or applied row counts;
+4. prepared/failure/rollback attention information;
+5. durable error/failure detail;
+6. checkpoint/baseline/YTM ID/lifecycle policy as secondary diagnostics.
+
+Transient-message correction:
+- Preview session-create failure keeps the exact error in `statusText` and uses a
+  concise Toast directing the user back to the screen;
+- Session exactness/sync/rollback failure Toasts no longer carry raw technical
+  detail as the only transient payload; durable session/row/status state remains
+  visible.
+
+Static enforcement:
+- `scripts/v1455-ux-hardening-audit.sh` requires the shared hierarchy in Preview
+  and Session;
+- it rejects the old dense `summaryText` summary path;
+- it rejects reintroduction of raw Preview `errorText` or Session
+  `error.message` / `exactnessError` Toast patterns.
+
+Evidence:
+- source commit: `6ad0b789bd6d0263d4ba65ce2fe92a703fe20e12`;
+- manifest checkpoint: `490a1f0e218032aa46a723a455dac10e87136a9e`;
+- Validate Android run: `36795036312` — **SUCCESS**;
+- release preflight PASS;
+- JVM unit tests PASS;
+- unsigned release assemble PASS.
+
+No phone PASS is claimed from this evidence.
 
 ## Phone acceptance later
 
 Consolidated Phase A phone matrix must include:
-- Preview with NEW, LINKED, no-op/blocked/needs-search where available;
-- included vs excluded rows;
+- Preview with NEW, LINKED and no-op/blocked/needs-search where available;
+- included vs excluded rows, with the selected plan summary updating visibly;
+- Preview title/state/counters/planned mutation/reason/diagnostics readable in that order;
 - Session READY/RUNNING/completed or pause state;
+- Session primary outcome counters visible before checkpoint/baseline diagnostics;
 - rollback state with completed + remaining counts;
-- failure/diagnostic row where available;
-- portrait + landscape;
+- failure/diagnostic row where available, with technical detail durable after Toast disappears;
+- portrait + landscape and both rotation directions;
+- rotation/reopen must not auto-start sync, Search or rollback;
 - Neon + at least one alternate skin.
 
 Static/source/build PASS is not phone PASS.
