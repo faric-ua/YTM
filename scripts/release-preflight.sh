@@ -610,7 +610,7 @@ grep -Fq 'title = "Повна резервна копія"' \
   app/src/main/java/com/saney/ytmimporter/DataActivity.kt \
   || fail "Dedicated DataActivity full-backup UI is missing"
 
-grep -Fq 'firstLabel = "Історія"' \
+grep -Fq 'title = "Історія"' \
   app/src/main/java/com/saney/ytmimporter/DataActivity.kt \
   || fail "Dedicated DataActivity History export action is missing"
 
