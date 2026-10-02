@@ -175,7 +175,13 @@ fi
 
 grep -Fq '"Вибрати файл"' "$DATA"   || fail "short Restore file label missing"
 grep -Fq '"Готово"' "$DATA"   || fail "Restore/rollback done label missing"
-grep -Fq 'label = "Відкотити Restore"' "$DATA"   || fail "short rollback label missing"
+if grep -Fq 'label = "Відкотити Restore"' "$DATA"; then
+  :
+elif grep -Fq 'label = "Відкотити відновлення"' "$DATA"; then
+  :
+else
+  fail "short rollback label missing"
+fi
 grep -Fq '"Додати папку…"' "$STORAGE"   || fail "short save-folder label missing"
 grep -Fq '"Зберегти як…"' "$STORAGE"   || fail "short system-save label missing"
 
