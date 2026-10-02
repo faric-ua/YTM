@@ -411,7 +411,7 @@ class DataActivity : Activity() {
 
         rollbackButton =
             actionButton(
-                label = "Відкотити Restore",
+                label = "Відкотити відновлення",
                 primary = false
             ) {
                 confirmRestoreSafetySnapshot()
