@@ -215,9 +215,9 @@ Current task checklist:
   dominance where it blocks scanability. Verified patch owners: Home dynamic
   workspace summary, Queue/Pending primary state wording, Data/Backup primary task
   wording, Recent File primary folder wording, plus minor Menu/History terminology.
-- [ ] Patch only verified presentation GAPs using existing shared theme/UI patterns.
-- [ ] Preserve callbacks, navigation ownership, remote/API/storage behavior and
-  lifecycle/no-auto-action rules.
+- [x] Patch only verified presentation GAPs using existing shared theme/UI patterns. Verified on live branch: Home named workspace summary, Queue/Pending plain-language state, Data/Backup task wording, Recent File folder wording, Menu bulk-sync wording and History restore wording are present; final remaining primary Data label `Відкотити Restore` was changed to `Відкотити відновлення` in commit `0c85d88e056a13d0ed55aef8e6162282ac75ada9`.
+- [x] Preserve callbacks, navigation ownership, remote/API/storage behavior and
+  lifecycle/no-auto-action rules. The finishing patch changes display text only; no callbacks, navigation, API/storage, queue/history semantics or lifecycle code changed.
 - [ ] Add/strengthen static guards and representative phone targets.
 - [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS.
 
