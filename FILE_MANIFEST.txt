@@ -8,7 +8,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 841ac3888017a23d  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-28110c31d6fbd4b6  ACTIVE_PLAN.md
+112ef5e0ea074d52  ACTIVE_PLAN.md
 5c3d83bf6a026352  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -94,7 +94,7 @@ e6af758495c5bfa7  app/build.gradle.kts
 225ac193e694b7ec  app/src/main/AndroidManifest.xml
 5ac0e8d23db98714  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 ee81f8e91c617eed  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
-a85572836125b716  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
+6d6415a9c83fdf03  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 4da09cca8fb23e0b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 9e393ad024e24602  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 dc90537bd866bd32  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
@@ -1611,7 +1611,7 @@ dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
 34a319998981b650  scripts/release-close-audit.sh
 9c01ad273ef823e6  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-90725e0b7ce16ecc  scripts/release-preflight.sh
+37cc515e5926353a  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1660,7 +1660,7 @@ fd6656bf2294dbe1  scripts/v1432-dialog-first-frame-audit.sh
 5419cffa3f083651  scripts/v1437-fullscreen-utility-ui-audit.sh
 9678d89665144b49  scripts/v1438-r1-audit.sh
 4a7b5f73612ae703  scripts/v1438-r2-audit.sh
-c1aa2cfcfae28838  scripts/v1438-selectors-safety-copy-audit.sh
+7dcb1c6700b2c5f5  scripts/v1438-selectors-safety-copy-audit.sh
 e0f507c5f7987e48  scripts/v1439-history-json-restore-audit.sh
 1cfdf070e06094bd  scripts/v1440-release-history-audit.sh
 600e82ec182af01e  scripts/v1441-auth-ui-consistency-audit.sh
@@ -1756,12 +1756,14 @@ ccec505821a5849d  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh
+8a50376515f6ef6d  tools/termux/ytm-actions-status.sh
 10df440715bab7b4  tools/termux/ytm-build-apk.sh
 39e46b599a074e7d  tools/termux/ytm-common.sh
 af0f000a18358af9  tools/termux/ytm-download-apk.sh
 83bdfb3538920765  tools/termux/ytm-finalize-release.sh
+d1e0d947f2e2a54a  tools/termux/ytm-help.sh
 8eda0cea3d5fad27  tools/termux/ytm-install-apk.sh
-1fe89862c41f665b  tools/termux/ytm-menu.sh
+5d4a1afaa30716bd  tools/termux/ytm-menu.sh
 d9bed80c74070c8c  tools/termux/ytm-release-status.sh
 f31bb7b227e8c548  tools/termux/ytm-status.sh
 42c09273cce76334  tools/termux/ytm-sync.sh
