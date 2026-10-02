@@ -1,8 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 
+SCRIPT_PATH="$0"
+case "$SCRIPT_PATH" in
+  /*) ;;
+  *) SCRIPT_PATH="$PWD/$SCRIPT_PATH" ;;
+esac
 cd "$HOME" || exit 1
-SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
+SELF_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 # shellcheck source=ytm-common.sh
 source "$SELF_DIR/ytm-common.sh"
 
