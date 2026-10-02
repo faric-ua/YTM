@@ -41,6 +41,8 @@ while true; do
   echo "6 — Validate + Build signed APK"
   echo "7 — Release status"
   echo "8 — Finalize stable release"
+  echo "9 — GitHub Actions status"
+  echo "H — Help / Команди"
   echo "0 — Вийти"
   echo
   printf "Вибір: "
@@ -75,6 +77,12 @@ while true; do
       ;;
     8)
       run_tool "ytm-finalize-release.sh"
+      ;;
+    9)
+      run_tool "ytm-actions-status.sh"
+      ;;
+    h|H)
+      run_tool "ytm-help.sh"
       ;;
     0)
       clear
