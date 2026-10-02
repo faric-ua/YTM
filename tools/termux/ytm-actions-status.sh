@@ -29,7 +29,7 @@ printf "    %-10s %-24s %-18s %-16s %-12s %s\n" "STATUS" "WORKFLOW" "EVENT" "SHA
 
 RUNS="$(gh run list --repo "$YTM_GH_REPO" --branch "$BRANCH" --limit 10 \
   --json databaseId,displayTitle,workflowName,status,conclusion,event,headSha \
-  --jq '.[] | [.conclusion,.status,.workflowName,.event,.headSha,(.databaseId|tostring),.displayTitle] | @tsv')"
+  --jq '.[] | [(.conclusion // "-"),.status,.workflowName,.event,.headSha,(.databaseId|tostring),.displayTitle] | @tsv')"
 
 if [ -z "$RUNS" ]; then
   echo "Немає GitHub Actions runs для цієї гілки."
@@ -43,7 +43,7 @@ while IFS=$'\t' read -r conclusion status workflow event sha run_id title; do
     *)                 symbol="*" ;;
   esac
   printf "%-3s %-10s %-24.24s %-18.18s %-16.16s %-12s %s\n" \
-    "$symbol" "${conclusion:-$status}" "$workflow" "$event" "$sha" "$run_id" "$title"
+    "$symbol" "${conclusion:--}" "$workflow" "$event" "$sha" "$run_id" "$title"
 done <<< "$RUNS"
 
 echo
@@ -57,6 +57,6 @@ LATEST_URL="$(gh run view "$latest_id" --repo "$YTM_GH_REPO" --json url --jq '.u
 echo "Останній run:"
 echo "ID: $latest_id"
 echo "Status: $latest_status"
-echo "Conclusion: ${latest_conclusion:-—}"
+echo "Conclusion: ${latest_conclusion:--}"
 echo "SHA: $latest_sha"
 echo "URL: $LATEST_URL"
