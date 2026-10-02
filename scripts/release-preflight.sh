@@ -606,13 +606,13 @@ grep -q 'Locate Android SDK' .github/workflows/build-apk.yml \
   || fail "Android SDK locator hotfix is missing"
 
 
-grep -q 'title = "Повний backup"' \
+grep -Fq 'label = "Повна резервна копія"' \
   app/src/main/java/com/saney/ytmimporter/DataActivity.kt \
   || fail "Dedicated DataActivity full-backup UI is missing"
 
-grep -q 'secondLabel = "History JSON"' \
+grep -Fq 'label = "Історія"' \
   app/src/main/java/com/saney/ytmimporter/DataActivity.kt \
-  || fail "Dedicated DataActivity History JSON action is missing"
+  || fail "Dedicated DataActivity History export action is missing"
 
 grep -q 'uses:[[:space:]]*actions/setup-java@v5' \
   .github/workflows/build-apk.yml \
