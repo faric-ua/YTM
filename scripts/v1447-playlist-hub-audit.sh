@@ -42,7 +42,7 @@ fi
 grep -Fq 'Track rows live behind PlaylistActivity' "$MAIN" ||
   fail "clean-Home track-list migration marker missing"
 
-for label in   'Треки / перевірка'   'Знайти / перевірити'   'Створити / додати в YTM'   'YTM Project / export'   'Заміни / проблемні треки'
+for label in   'Треки / перевірка'   'Знайти / перевірити'   'Створити / додати в YTM'   'Проєкт YTM / експорт'   'Заміни / проблемні треки'
 do
   grep -Fq "$label" "$PLAYLIST" ||
     fail "Playlist Hub action missing: $label"
