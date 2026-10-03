@@ -25,9 +25,9 @@ Last updated: **2026-10-03**
 Phase A readability source/static work is complete; real-device acceptance is still pending.
 
 Latest clean exact-HEAD Validate checkpoint:
-`fc931ebd086fde74dfafd89bd661a3311df921bf`.
+`f91ec7896112f6e094143670a9bb4c2eb5524dfa`.
 
-Validate Android run `37085618236` — **SUCCESS**:
+Validate Android run `37133840128` — **SUCCESS**:
 - release preflight PASS;
 - JVM unit tests PASS;
 - unsigned release assemble PASS.
@@ -39,9 +39,8 @@ current candidate-gate work.
 
 **Current blocker:** none requiring phone input.
 
-**Current task:** finish the Phase A candidate gate:
-generated manifest/docs coherence → clean exact-HEAD Validate → one signed candidate →
-one consolidated Phase A phone matrix.
+**Current task:** prepare one signed v1.4.55 candidate from validated exact HEAD
+`f91ec7896112f6e094143670a9bb4c2eb5524dfa`, then run one consolidated Phase A phone matrix.
 
 Do not repeat v1.4.54 Tests 1–9. Do not restart completed Bulk/Toast/Tile audits.
 Do not start Phase B yet.
