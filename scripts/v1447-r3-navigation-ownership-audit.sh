@@ -34,7 +34,7 @@ if 'openReview(' not in search_block or 'autoSearch = true' not in search_block:
 if 'finishWithAction(' in search_block:
     raise SystemExit("FAIL: Playlist Search still finishes Hub")
 
-create_end = playlist.index('title = "YTM Project / export"', create_start)
+create_end = playlist.index('title = "Проєкт YTM / експорт"', create_start)
 create_block = playlist[create_start:create_end]
 if 'openDestination()' not in create_block:
     raise SystemExit("FAIL: Playlist Create does not open Destination locally")
