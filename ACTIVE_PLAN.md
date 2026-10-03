@@ -12,7 +12,7 @@
 > 3. update **NEXT ACTION** so the first unchecked item is the real resume point;
 > 4. update `CURRENT_HANDOFF.md` when the resume point materially changes.
 
-Last updated: 2026-10-01
+Last updated: 2026-10-03
 
 ## Active release
 
@@ -218,7 +218,7 @@ Current task checklist:
 - [x] Patch only verified presentation GAPs using existing shared theme/UI patterns. Verified on live branch: Home named workspace summary, Queue/Pending plain-language state, Data/Backup task wording, Recent File folder wording, Menu bulk-sync wording and History restore wording are present; final remaining primary Data label `Відкотити Restore` was changed to `Відкотити відновлення` in commit `0c85d88e056a13d0ed55aef8e6162282ac75ada9`.
 - [x] Preserve callbacks, navigation ownership, remote/API/storage behavior and
   lifecycle/no-auto-action rules. The finishing patch changes display text only; no callbacks, navigation, API/storage, queue/history semantics or lifecycle code changed.
-- [ ] Add/strengthen static guards and representative phone targets.
+- [x] Add/strengthen static guards and representative phone targets. Evidence: `scripts/v1455-ux-hardening-audit.sh` passes the remaining Home/Queue/Data/File readability guards; representative targets remain in the consolidated Phase A phone matrix.
 - [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS.
 
 Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
@@ -284,16 +284,16 @@ The checkpoint commit after this validated SHA is documentation-only. The valida
 - [x] Finish Bulk Preview/Session semantic hierarchy and diagnostics separation (#23/#45/#50). **SOURCE/STATIC/BUILD PASS** on `490a1f0e218032aa46a723a455dac10e87136a9e`, run `36795036312`; phone acceptance remains in the consolidated matrix.
 - [x] Replace critical Toast/Snackbar-only information with durable owning-screen state. **SOURCE/STATIC/BUILD PASS** on `5cfcd4a63dcfe58d52e68f5fabf6fb27f6971939`, run `36811129269`; phone acceptance remains in the consolidated matrix.
 - [x] Verify tile/card readability against `TILE_UI_CONTRACT.md`. **SOURCE/STATIC/BUILD PASS** on `f8466794e91efbcaa53234181a6743d13242b0a8`, run `36815527718`; phone acceptance remains in the consolidated matrix.
-- [ ] Verify Menu/Home/History/Queue/Data/File surfaces against the readability audit.
-- [ ] Verify Neon + Blue/Green semantic/accessibility sanity.
-- [ ] Remove or compile-gate temporary phone-QA fault controls before public candidate.
+- [x] Verify Menu/Home/History/Queue/Data/File surfaces against the readability audit. **SOURCE/STATIC PASS**; final real-device acceptance remains in the consolidated phone matrix.
+- [ ] Verify Neon + Blue/Green semantic/accessibility sanity on the real device.
+- [x] Remove or compile-gate temporary phone-QA fault controls before public candidate. Release guards confirm Test 5/Test 8 controls are DEBUG-only and cannot be consumed by release builds.
 
 ## D. Phase A gates
 
 - [ ] Refresh generated `FILE_MANIFEST.txt`.
-- [ ] Run relevant static UI/window/context audits.
-- [ ] Run JVM/policy tests for touched state helpers.
-- [ ] Run release preflight.
+- [x] Run relevant static UI/window/context audits. v1.4.55 UX hardening audit PASS on the current Phase A source line.
+- [x] Run JVM/policy tests for touched state helpers. Validate run `37085618236` PASS on checkpoint `fc931ebd086fde74dfafd89bd661a3311df921bf`.
+- [x] Run release preflight. Validate run `37085618236` PASS; later `c68c390e7464658e778b3893bcf56dd35f16be3d` reached only the expected stale-manifest gate after all preceding audits passed.
 - [ ] Require exact-HEAD Validate Android PASS.
 - [ ] Build one signed candidate from that exact validated HEAD.
 - [ ] Run one consolidated phone matrix, not one APK per tiny visual fix.
@@ -340,11 +340,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Audit the remaining Phase A readability surfaces.**
+**Finish the Phase A candidate gate.**
 
-Start with Menu/Home/History/Queue/Data/File/selector screens, classify first, then
-patch only verified presentation gaps. Do not invent new actions or navigation to
-satisfy a visual contract, and do not start Phase B.
+Refresh generated manifest state after the current tooling/docs checkpoint, require a clean exact-HEAD Validate Android PASS, then build one signed candidate. After the signed candidate passes, run the single consolidated Phase A phone matrix. Do not repeat v1.4.54 Tests 1–9 and do not start Phase B.
 
 ## Update rule
 
