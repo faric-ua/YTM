@@ -1754,7 +1754,7 @@ class HistoryActivity : Activity() {
                     title =
                         "Видалити запис історії?",
                     message =
-                        "Буде видалено тільки локальний History-запис " +
+                         "Буде видалено тільки локальний запис історії " +
                             "«${entry.playlistName}».\n\n" +
                             "Плейлист у YouTube/YTM не зміниться.",
                     confirmLabel =
