@@ -853,7 +853,7 @@ class MenuActivity : Activity() {
 
                                 if (session == null) {
                                     toast(
-                                        "Bulk-сесій ще немає"
+                                        "Сесій синхронізації ще немає"
                                     )
                                 } else {
                                     startActivity(
