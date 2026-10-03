@@ -2018,7 +2018,7 @@ class MainActivity : Activity() {
                 plan.apiNeeded >
                 plan.quota.searchRemaining
             ) {
-                "\n\n⚠ Локальна оцінка показує, що search quota " +
+                "\n\n⚠ Локальна оцінка показує, що квота пошуку " +
                     "(квоти пошуку) може не вистачити."
             } else {
                 ""
@@ -2030,19 +2030,19 @@ class MainActivity : Activity() {
         val searchPlanDialog =
             UiChrome.alertBuilder(this)
             .setTitle(
-                "План пошуку (Search plan)"
+                "План пошуку"
             )
             .setMessage(
                 "Треків у списку: ${plan.totalTracks}\n" +
                     "Пошук потрібен для: ${plan.tracksToSearch}\n" +
                     "Вже є в кеші: ${plan.cachedCount}\n" +
-                    "Потрібно нових search.list: ${plan.apiNeeded}\n\n" +
-                    "Search запитів локально: " +
+                    "Потрібно нових пошукових запитів: ${plan.apiNeeded}\n\n" +
+                    "Пошукових запитів локально: " +
                     "${plan.quota.searchCalls}/" +
                     "${QuotaTracker.SEARCH_DAILY_LIMIT}\n" +
-                    "Оцінка доступних Search запитів: " +
+                    "Оцінка доступних пошукових запитів: " +
                     "${plan.quota.searchRemaining}\n" +
-                    "Інші API units (окремий bucket): " +
+                    "Інші одиниці API (окрема квота): " +
                     "${plan.quota.generalUnits}/" +
                     "${QuotaTracker.GENERAL_DAILY_LIMIT}" +
                     warning +
@@ -2821,7 +2821,7 @@ class MainActivity : Activity() {
             track.error =
                 "Дублікат: цей YouTube videoId уже є у вибраному " +
                     "плейлисті або повторюється в поточному імпорті. " +
-                    "Write-запит пропущено."
+                    "Запит на запис пропущено."
         }
 
         adapter.notifyDataSetChanged()
@@ -3252,12 +3252,12 @@ class MainActivity : Activity() {
             }
 
         return "Квота API (локальна оцінка):\n" +
-            "Потрібно для write приблизно: $required units\n" +
-            "Інші API units уже враховано: ${quota.generalUnits}/" +
-            "${QuotaTracker.GENERAL_DAILY_LIMIT} units\n" +
-            "Орієнтовно залишилось: ${quota.generalRemaining} units" +
+            "Потрібно для запису приблизно: $required одиниць\n" +
+            "Інші одиниці API вже враховано: ${quota.generalUnits}/" +
+            "${QuotaTracker.GENERAL_DAILY_LIMIT} одиниць\n" +
+            "Орієнтовно залишилось: ${quota.generalRemaining} одиниць" +
             warning +
-            "\n\nGoogle може окремо тимчасово обмежити частоту write-запитів " +
+            "\n\nGoogle може окремо тимчасово обмежити частоту запитів на запис " +
             "(наприклад, часте створення плейлистів). У такому разі операція " +
             "буде збережена в «Черзі» без автоматичних повторів."
     }
