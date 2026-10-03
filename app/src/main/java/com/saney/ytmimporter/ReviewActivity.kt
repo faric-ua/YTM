@@ -626,7 +626,7 @@ class ReviewActivity : Activity() {
                     finish()
                 },
                 actionLabel =
-                    "Проект",
+                    "Проєкт",
                 onAction = {
                     showProjectActions()
                 }
@@ -861,7 +861,7 @@ class ReviewActivity : Activity() {
                     showListScreen()
                 },
                 actionLabel =
-                    "Проект",
+                    "Проєкт",
                 onAction = {
                     showProjectActions()
                 }
@@ -1381,16 +1381,16 @@ class ReviewActivity : Activity() {
         projectDialog =
             UiChrome.showMenuDialog(
                 activity = this,
-                title = "Поточний YTM Project",
-                subtitle = "Збереження та обмін робочим проектом.",
+                title = "Поточний проєкт YTM",
+                subtitle = "Збереження та обмін робочим проєктом.",
                 actions = listOf(
                     UiChrome.MenuAction(
-                        "Зберегти YTM Project"
+                        "Зберегти проєкт YTM"
                     ) {
                         saveCurrentProject()
                     },
                     UiChrome.MenuAction(
-                        "Поділитися YTM Project"
+                        "Поділитися проєктом YTM"
                     ) {
                         shareCurrentProject()
                     }
@@ -1399,6 +1399,16 @@ class ReviewActivity : Activity() {
                 dialog.setOnDismissListener {
                     projectDialogOpen = false
                     projectDialog = null
+                    if (
+                        intent.getBooleanExtra(
+                            EXTRA_RETURN_TO_PLAYLIST,
+                            false
+                        ) &&
+                        !isChangingConfigurations &&
+                        !isFinishing
+                    ) {
+                        finish()
+                    }
                 }
             }
     }
@@ -1448,7 +1458,7 @@ class ReviewActivity : Activity() {
             SafFileSaveFlow.show(
                 activity = this,
                 title =
-                    "Куди зберегти YTM Project?",
+                    "Куди зберегти проєкт YTM?",
                 suggestedFileName =
                     suggestedFileName,
                 mimeType =
@@ -1522,7 +1532,7 @@ class ReviewActivity : Activity() {
             startActivity(
                 Intent.createChooser(
                     intent,
-                    "Поділитися YTM Project"
+                    "Поділитися проєктом YTM"
                 )
             )
         }.onFailure { error ->
