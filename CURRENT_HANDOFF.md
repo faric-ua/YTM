@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-10-01**
+Last updated: **2026-10-03**
 
 > **FIRST READ: `RESUME_HERE.md`**
 >
@@ -20,29 +20,28 @@ Last updated: **2026-10-01**
 - Readability audit: `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`
 - Backlog reconciliation: `docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md`
 
-## Current validated checkpoint — 2026-10-01
+## Current validated checkpoint — 2026-10-03
 
-**Sleep checkpoint active.**
+Phase A readability source/static work is complete; real-device acceptance is still pending.
 
-Validated functional/source base:
-`80406b79ae6599f8d3940adcc2b35d06139aa5b6`
-(`docs: close tile readability source gate`).
+Latest clean exact-HEAD Validate checkpoint:
+`fc931ebd086fde74dfafd89bd661a3311df921bf`.
 
-Validate Android run `36815900233` — **SUCCESS**:
+Validate Android run `37085618236` — **SUCCESS**:
 - release preflight PASS;
 - JVM unit tests PASS;
 - unsigned release assemble PASS.
 
-Checkpoint instructions:
-`docs/v.1.4.55/SLEEP_CHECKPOINT_2026-10-01.md`.
+A later tooling-only checkpoint `c68c390e7464658e778b3893bcf56dd35f16be3d`
+passed all v1.4.55 readability/static/documentation audits and stopped only at the
+generated `FILE_MANIFEST.txt` freshness gate. The manifest correction is part of the
+current candidate-gate work.
 
-No source task from the current readability pass has been started after this base.
-The first unchecked item in `ACTIVE_PLAN.md` is the correct restart point.
+**Current blocker:** none requiring phone input.
 
-**Current blocker:** none.
-
-**Current task:** remaining Phase A surface readability audit:
-Menu/Home/History/Queue/Data/File/selector screens.
+**Current task:** finish the Phase A candidate gate:
+generated manifest/docs coherence → clean exact-HEAD Validate → one signed candidate →
+one consolidated Phase A phone matrix.
 
 Do not repeat v1.4.54 Tests 1–9. Do not restart completed Bulk/Toast/Tile audits.
 Do not start Phase B yet.
@@ -119,18 +118,20 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-Remaining Phase A surface inventory/classification is complete in
-`docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md`.
+Remaining Menu/Home/History/Queue/Data/File readability work is source/static complete.
+The v1.4.55 audit confirms the user-facing hierarchy/wording guards, and release builds
+compile-gate the temporary v1.4.54 Test 5/Test 8 controls behind `BuildConfig.DEBUG`.
 
-Verified presentation-only patch owners:
-- Home dynamic workspace summary;
-- Queue/Pending plain-language state labels;
-- Data/Backup primary task wording;
-- Recent File primary folder wording;
-- minor Menu/History terminology.
+Next repository gate:
+1. keep `FILE_MANIFEST.txt`, `ACTIVE_PLAN.md` and this handoff coherent;
+2. require a clean exact-HEAD Validate Android PASS;
+3. build one signed candidate from that validated source;
+4. only then hand off to the user for the consolidated Phase A real-phone matrix.
 
-Storage Chooser and ListSelector are already acceptable for Phase A. Do not pull
-History filters, Recovery Center or typed file-library work forward from Phase B.
+Phone acceptance still covers Neon + Blue/Green, portrait/landscape/rotation,
+Home/Menu/Bulk/History/Queue/Data/file chooser, long Help/destructive confirmation,
+scroll/selectable-text retention, Back/Cancel/Close, and no automatic remote/durable
+actions.
 
 ## Working contract
 
