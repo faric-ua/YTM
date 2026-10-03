@@ -70,7 +70,7 @@ for needle in [
     'EXTRA_OPEN_PROJECT_ACTIONS',
     'projectDialog?.isShowing == true',
     'setOnDismissListener(null)',
-    'title = "Поточний YTM Project"',
+    'title = "Поточний проєкт YTM"',
 ]:
     if needle not in review:
         raise SystemExit(f"FAIL: Review Project modal lifecycle contract missing: {needle}")
