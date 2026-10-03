@@ -37,13 +37,11 @@ passed all v1.4.55 readability/static/documentation audits and stopped only at t
 generated `FILE_MANIFEST.txt` freshness gate. The manifest correction is part of the
 current candidate-gate work.
 
-**Current blocker:** none requiring phone input.
+**Current blocker:** BUG-040 source fix requires exact-HEAD validation and a focused phone retest.
 
-**Current task:** prepare one signed v1.4.55 candidate from validated exact HEAD
-`f91ec7896112f6e094143670a9bb4c2eb5524dfa`, then run one consolidated Phase A phone matrix.
+**Current task:** finish docs/manifest coherence for the BUG-040 navigation fix, require exact-HEAD Validate PASS, build one signed candidate, then retest only the affected Project-dialog return path plus any remaining Phase A closeout checks.
 
-Do not repeat v1.4.54 Tests 1–9. Do not restart completed Bulk/Toast/Tile audits.
-Do not start Phase B yet.
+Phone evidence already collected in this Phase A pass includes A7 Current Playlist portrait/landscape PASS. A8 reproduced the Project-dialog parent bug and confirmed remaining `YTM Project` wording; both are patched in source. Do not repeat v1.4.54 Tests 1–9. Do not restart completed Bulk/Toast/Tile audits. Do not start Phase B yet.
 
 ## Immutable functional reference
 
@@ -122,10 +120,11 @@ The v1.4.55 audit confirms the user-facing hierarchy/wording guards, and release
 compile-gate the temporary v1.4.54 Test 5/Test 8 controls behind `BuildConfig.DEBUG`.
 
 Next repository gate:
-1. keep `FILE_MANIFEST.txt`, `ACTIVE_PLAN.md` and this handoff coherent;
+1. synchronize docs and `FILE_MANIFEST.txt` with the BUG-040 source/audit changes;
 2. require a clean exact-HEAD Validate Android PASS;
-3. build one signed candidate from that validated source;
-4. only then hand off to the user for the consolidated Phase A real-phone matrix.
+3. build one signed candidate from that exact source;
+4. phone retest: `Поточний плейлист → Проєкт YTM / експорт → rotate → Закрити` must return to `Поточний плейлист` and must not start Search/write/save/share;
+5. record evidence and close the remaining Phase A gate.
 
 Phone acceptance still covers Neon + Blue/Green, portrait/landscape/rotation,
 Home/Menu/Bulk/History/Queue/Data/file chooser, long Help/destructive confirmation,
