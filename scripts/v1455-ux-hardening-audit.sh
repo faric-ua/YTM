@@ -13,6 +13,7 @@ BULK_PREVIEW="$SRC/BulkSyncPreviewActivity.kt"
 BULK_SESSION="$SRC/BulkSyncSessionActivity.kt"
 QUOTA="$SRC/QuotaActivity.kt"
 PLAYLIST="$SRC/PlaylistActivity.kt"
+REVIEW="$SRC/ReviewActivity.kt"
 URL_SNAPSHOT="$SRC/UrlSnapshotActivity.kt"
 QA_STORE="$SRC/storage/BulkSyncQaFaultStore.kt"
 TILE_CONTRACT="docs/design/TILE_UI_CONTRACT.md"
@@ -23,7 +24,7 @@ SURFACE_READABILITY="docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md"
 PLAN="docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md"
 RECONCILIATION="docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md"
 
-for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$QUOTA" "$PLAYLIST" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
+for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$QUOTA" "$PLAYLIST" "$REVIEW" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
@@ -318,6 +319,10 @@ grep -Fq 'Повна резервна копія' "$DATA" || fail "Data user-fac
 grep -Fq 'Відновити з резервної копії' "$DATA" || fail "Data user-facing restore label missing"
 grep -Fq 'Поділитися файлами' "$DATA" || fail "Data user-facing share label missing"
 grep -Fq 'Додати папку…' "$RECENT_FILE" || fail "Recent File user-facing add-folder label missing"
+grep -Fq 'title = "Поточний проєкт YTM"' "$REVIEW" || fail "Review project modal localized title missing"
+grep -Fq 'EXTRA_RETURN_TO_PLAYLIST' "$REVIEW" || fail "Review project return contract missing"
+grep -Fq '!isChangingConfigurations' "$REVIEW" || fail "Review project return must ignore configuration recreation"
+grep -Fq 'finish()' "$REVIEW" || fail "Review project return-to-playlist finish missing"
 grep -Fq 'Remaining Surface Readability Audit' "$SURFACE_READABILITY" || fail "remaining surface readability audit missing"
 
 python - "$MAIN" "$PENDING" "$DATA" "$RECENT_FILE" <<'PY_SURFACE_READABILITY'
