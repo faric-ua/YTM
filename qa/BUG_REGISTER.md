@@ -507,3 +507,28 @@ Real-phone startup silent recovery has been observed. The decisive aged/stale-to
 | UX-029 | CLOSED — PHONE PASS v1.4.53 | P2 | Search quota stop now creates a concrete durable Queue resume path and explicit user copy. | v1.4.53 phone QA 2026-09-26 |
 | BUG-039 | IMPLEMENTED v1.4.54 WAVE 0 — PHONE QA PENDING | P1 | Generic write HTTP 429 was previously classified too broadly as daily quota. v1.4.54 separates DAILY_QUOTA / RATE_LIMIT / RESOURCE_LIMIT / UNKNOWN_429, preserves CREATE/ADD work in Queue, disables automatic retry, and tells users to wait/manual-Resume when frequent playlist creation/write requests are temporarily limited. | v1.4.53 finding → v1.4.54 Wave 0 |
 | UX-030 | PLANNED v1.4.54 | P2 | Make local-only / linked-to-YTM / pending Search / pending Write state explicit using persisted playlistId/local lineage, never title equality. | v1.4.54 History Recovery / Safe Bulk Sync |
+
+## BUG-040 — Project dialog returns to Track Review instead of Current Playlist
+
+Status: **FIX IMPLEMENTED v1.4.55 — PHONE RETEST PENDING.**
+
+Real-phone reproduction during the consolidated v1.4.55 Phase A pass:
+- open `Поточний плейлист`;
+- tap `Проєкт YTM / експорт`;
+- the project-actions modal is shown over `Перевірка треків`;
+- dismissing the modal leaves the user on `Перевірка треків` instead of returning to `Поточний плейлист`.
+
+Cause:
+- `PlaylistActivity` launched `ReviewActivity` with `EXTRA_RETURN_TO_PLAYLIST=true` only to host the project-actions modal;
+- `ReviewActivity` did not consume that return contract when the modal was dismissed.
+
+Implemented fix:
+- when the project-actions modal was launched from `PlaylistActivity`, dismissing it now finishes the temporary `ReviewActivity` and reveals the existing `PlaylistActivity`;
+- ordinary project actions opened from inside Track Review keep their existing behavior;
+- configuration changes do not trigger the return path while the Activity is being recreated;
+- project-action copy is localized to `Проєкт YTM`.
+
+Acceptance:
+- opening the project modal must not run Search, write, save, share, or any remote operation;
+- rotation must preserve the modal without triggering the return path;
+- closing it from `Поточний плейлист` must return to that same playlist screen.
