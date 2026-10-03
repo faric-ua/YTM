@@ -525,7 +525,7 @@ class BulkSyncPreviewActivity : Activity() {
         confirmationButton =
             Button(this).apply {
                 text =
-                    "Створити Bulk-сесію"
+                    "Створити сесію синхронізації"
                 isAllCaps = false
                 textSize = 15f
                 isEnabled = false
@@ -957,7 +957,7 @@ class BulkSyncPreviewActivity : Activity() {
             BulkHierarchyChrome.secondary(
                 activity = this,
                 text =
-                    "Діагностика: Search " +
+                    "Діагностика: Пошук " +
                         summary
                             .estimatedSearchCalls +
                         " • перевірка YTM " +
@@ -1287,7 +1287,7 @@ class BulkSyncPreviewActivity : Activity() {
                     0
                 ) {
                     add(
-                        "Search " +
+                        "Пошук " +
                             row.estimatedSearchCalls +
                             " • cache " +
                             row.cacheHits
@@ -1471,7 +1471,7 @@ class BulkSyncPreviewActivity : Activity() {
 
                 UiChrome.alertBuilder(this)
                     .setTitle(
-                        "Створити Bulk-сесію?"
+                        "Створити сесію синхронізації?"
                     )
                     .setMessage(
                         "Перед початком буде створено локальну контрольну копію і перевірено " +
@@ -1522,7 +1522,7 @@ class BulkSyncPreviewActivity : Activity() {
                     String::isNotBlank
                 )
                 ?: return toast(
-                    "Підключіть Google / YTM перед створенням Bulk-сесії."
+                    "Підключіть Google / YTM перед створенням сесії синхронізації."
                 )
 
         loading = true
@@ -1621,7 +1621,7 @@ class BulkSyncPreviewActivity : Activity() {
                                 "Причина: " +
                                 errorText
                         toast(
-                            "Не вдалося створити Bulk-сесію. Деталі залишилися на екрані."
+                            "Не вдалося створити сесію синхронізації. Деталі залишилися на екрані."
                         )
                     }
                 }
