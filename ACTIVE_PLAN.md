@@ -219,7 +219,10 @@ Current task checklist:
 - [x] Preserve callbacks, navigation ownership, remote/API/storage behavior and
   lifecycle/no-auto-action rules. The finishing patch changes display text only; no callbacks, navigation, API/storage, queue/history semantics or lifecycle code changed.
 - [x] Add/strengthen static guards and representative phone targets. Evidence: `scripts/v1455-ux-hardening-audit.sh` passes the remaining Home/Queue/Data/File readability guards; representative targets remain in the consolidated Phase A phone matrix.
-- [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS.
+- [x] Consolidated Phase A phone pass reached A7 with Current Playlist portrait/landscape PASS and no automatic action.
+- [x] A8 reproduced BUG-040: Project actions opened through Track Review and Close returned to the wrong parent; source fix + Ukrainian Project/History copy are implemented and guarded.
+- [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS for the BUG-040 candidate.
+- [ ] Build signed candidate and phone-retest only the affected Project-dialog return path (including rotation/no-auto-action), then finish Phase A closeout.
 
 Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
 first unchecked CURRENT TASK item above.
