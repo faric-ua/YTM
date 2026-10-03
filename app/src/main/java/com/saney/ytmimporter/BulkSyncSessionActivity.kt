@@ -365,7 +365,7 @@ class BulkSyncSessionActivity : Activity() {
         topBar.addView(
             UiChrome.emphasizedTitle(
                 activity = this,
-                label = "Bulk-сесія"
+                label = "Сесія синхронізації"
             ).apply {
                 setPadding(
                     dp(12),
@@ -860,7 +860,7 @@ class BulkSyncSessionActivity : Activity() {
                 var executable =
                     sessionStore.get(id)
                         ?: throw IllegalStateException(
-                            "Bulk-сесію не знайдено"
+                            "Сесію синхронізації не знайдено"
                         )
 
                 if (
@@ -970,7 +970,7 @@ class BulkSyncSessionActivity : Activity() {
         summaryPanel.addView(
             BulkHierarchyChrome.title(
                 activity = this,
-                text = "Стан Bulk-сесії"
+                text = "Стан Сесії синхронізації"
             )
         )
 
@@ -1645,7 +1645,7 @@ class BulkSyncSessionActivity : Activity() {
         summaryPanel.addView(
             BulkHierarchyChrome.title(
                 activity = this,
-                text = "Bulk-сесія недоступна"
+                text = "Сесія синхронізації недоступна"
             )
         )
         summaryPanel.addView(
