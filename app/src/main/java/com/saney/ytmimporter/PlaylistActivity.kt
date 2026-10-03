@@ -372,7 +372,7 @@ class PlaylistActivity : Activity() {
 
         addAction(
             content = content,
-            title = "YTM Project / export",
+            title = "Проєкт YTM / експорт",
             subtitle =
                 "Зберегти або поділитися поточним робочим проєктом",
             primary = false
@@ -1041,7 +1041,7 @@ class PlaylistActivity : Activity() {
 
             track.status ==
                 TrackStatus.DUPLICATE ->
-                "[дублікат — write-запит пропущено]"
+                "[дублікат — запит на запис пропущено]"
 
             track.status ==
                 TrackStatus.MISSING ->
