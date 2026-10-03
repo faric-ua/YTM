@@ -148,7 +148,7 @@ class QuotaActivity : Activity() {
             card().apply {
                 addView(
                     statLine(
-                        "Search запити",
+                        "Пошукові запити",
                         "${quota.searchCalls}/${QuotaTracker.SEARCH_DAILY_LIMIT}"
                     )
                 )
@@ -160,13 +160,13 @@ class QuotaActivity : Activity() {
                 )
                 addView(
                     statLine(
-                        "Інші API units",
+                        "Інші одиниці API",
                         "${quota.generalUnits}/${QuotaTracker.GENERAL_DAILY_LIMIT}"
                     )
                 )
                 addView(
                     statLine(
-                        "Залишилось інших units",
+                        "Залишилось інших одиниць",
                         "≈ ${quota.generalRemaining}"
                     )
                 )
@@ -196,8 +196,8 @@ class QuotaActivity : Activity() {
                 addView(
                     bodyText(
                         "${quota.dayKey} (Pacific Time)\n\n" +
-                            "Search має окрему денну квоту. " +
-                            "10 000 units стосуються інших YouTube Data API endpoint-ів.\n\n" +
+                            "Пошук має окрему денну квоту. " +
+                            "10 000 одиниць стосуються інших запитів YouTube Data API.\n\n" +
                             "Це локальна оцінка лише тих операцій, " +
                             "які YTM Importer зафіксував на цьому телефоні. " +
                             "Точний стан квоти знаходиться в Google Cloud Console."
