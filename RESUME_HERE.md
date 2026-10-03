@@ -12,15 +12,17 @@ Last updated: **2026-10-03**
 - Repository: `faric-ua/YTM`
 - Release: **v1.4.55 / Phase A — candidate gate**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Latest clean exact-HEAD Validate checkpoint:
-  `fc931ebd086fde74dfafd89bd661a3311df921bf`
-- Validate Android run **37085618236 — SUCCESS**
-  (release preflight PASS / JVM PASS / unsigned assemble PASS).
-- Remaining Menu/Home/History/Queue/Data/File readability work is **SOURCE/STATIC PASS**.
+- Latest previously clean exact-HEAD Validate checkpoint:
+  `f91ec7896112f6e094143670a9bb4c2eb5524dfa`
+- Validate Android run **37133840128 — SUCCESS**.
+- Consolidated Phase A phone QA has now exercised the main readability surfaces through A8.
+- A7 Current Playlist portrait/landscape: PHONE PASS for layout/rotation/no-auto-action.
+- A8 exposed BUG-040: Project actions were hosted by Track Review and Close returned to the wrong parent.
+- BUG-040 fix is implemented: the temporary Review host now returns to the existing Current Playlist after modal dismissal, while rotation remains restoration-only.
+- Project/History user-facing copy found during this pass is localized to Ukrainian.
+- A focused signed-candidate phone retest is still required for BUG-040; do not mark it PHONE PASS yet.
 - Temporary v1.4.54 Test 5/Test 8 fault controls are compile-gated from release builds.
-- Current repository work is generated-manifest/docs coherence followed by a fresh
-  exact-HEAD Validate and one signed candidate.
-- Real-device Phase A acceptance is still pending; do not mark it PASS from CI.
+- Current repository work is final docs/manifest coherence followed by a fresh exact-HEAD Validate and signed candidate.
 - v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
 - Phase B is not active yet.
 
