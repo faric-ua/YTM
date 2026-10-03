@@ -493,7 +493,7 @@ class DataActivity : Activity() {
                     "YTM Importer не завантажує ці файли на власний сервер.",
                 firstLabel = "Історія TXT",
                 firstAction = ::shareHistoryTxt,
-                secondLabel = "Повна резервна копія",
+                secondLabel = "Повна копія",
                 secondAction = ::confirmShareFullBackup
             )
         )
