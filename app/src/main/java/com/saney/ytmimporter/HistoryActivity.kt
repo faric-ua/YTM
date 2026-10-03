@@ -404,7 +404,7 @@ class HistoryActivity : Activity() {
             TextView(this).apply {
                 text =
                     "Створені плейлисти, спроби імпорту та " +
-                        "відновлювані YTM Project."
+                        "відновлення проєктів YTM."
                 textSize = 13f
                 setTextColor(MUTED)
                 setPadding(
@@ -1007,7 +1007,7 @@ class HistoryActivity : Activity() {
 
         quickActions.addView(
             actionButton(
-                "Зберегти YTM Project"
+                "Зберегти проєкт YTM"
             ) {
                 confirmProjectScope(
                     entry = entry,
@@ -1020,7 +1020,7 @@ class HistoryActivity : Activity() {
 
         quickActions.addView(
             actionButton(
-                "Поділитися YTM Project"
+                "Поділитися проєктом YTM"
             ) {
                 confirmProjectScope(
                     entry = entry,
@@ -1382,7 +1382,7 @@ class HistoryActivity : Activity() {
 
         UiChrome.alertBuilder(this)
             .setTitle(
-                "$actionLabel YTM Project?"
+                "$actionLabel проєкт YTM?"
             )
             .setMessage(
                 "Цей History-запис стосується додавання до вже " +
@@ -1419,7 +1419,7 @@ class HistoryActivity : Activity() {
         pendingExportContent =
             content
         pendingExportSuccessMessage =
-            "YTM Project збережено"
+            "Проєкт YTM збережено"
         pendingExportFileName =
             fileName
         pendingExportMimeType =
@@ -1429,7 +1429,7 @@ class HistoryActivity : Activity() {
             SafFileSaveFlow.show(
                 activity = this,
                 title =
-                    "Куди зберегти YTM Project?",
+                    "Куди зберегти проєкт YTM?",
                 suggestedFileName =
                     fileName,
                 mimeType =
@@ -1463,7 +1463,7 @@ class HistoryActivity : Activity() {
             fileName = historyProjectFileName(entry),
             mimeType = "application/json",
             content = content,
-            chooserTitle = "Поділитися YTM Project"
+            chooserTitle = "Поділитися проєктом YTM"
         )
     }
 
