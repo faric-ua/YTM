@@ -29,7 +29,7 @@ printf "    %-10s %-24s %-18s %-16s %-12s %s\n" "STATUS" "WORKFLOW" "EVENT" "SHA
 
 RUNS="$(gh run list --repo "$YTM_GH_REPO" --branch "$BRANCH" --limit 10 \
   --json databaseId,displayTitle,workflowName,status,conclusion,event,headSha \
-  --jq '.[] | [(.conclusion // "-"),.status,.workflowName,.event,.headSha,(.databaseId|tostring),.displayTitle] | @tsv')"
+  --jq '.[] | [(.conclusion // "-"), (.status // "-"), (.workflowName // "-"), (.event // "-"), (.headSha // "-"), (.databaseId|tostring), (.displayTitle // "-")] | @tsv')"
 
 if [ -z "$RUNS" ]; then
   echo "Немає GitHub Actions runs для цієї гілки."
