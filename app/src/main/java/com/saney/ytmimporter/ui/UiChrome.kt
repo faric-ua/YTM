@@ -907,13 +907,14 @@ object UiChrome {
         ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
             val insetTypes =
                 WindowInsetsCompat.Type.systemBars() or
+                    WindowInsetsCompat.Type.displayCutout() or
                     (if (includeIme) WindowInsetsCompat.Type.ime() else 0)
             val bars = insets.getInsets(insetTypes)
 
             view.setPadding(
-                initialLeft,
+                initialLeft + bars.left,
                 initialTop + bars.top + dp(view.context, extraTopDp),
-                initialRight,
+                initialRight + bars.right,
                 initialBottom + bars.bottom + dp(view.context, extraBottomDp)
             )
 
@@ -1880,7 +1881,8 @@ object UiChrome {
                     )
 
                 view.setPadding(
-                    horizontalInset,
+                    horizontalInset +
+                        safeInsets.left,
                     maxOf(
                         minimumVerticalInset,
                         safeInsets.top +
@@ -1889,7 +1891,8 @@ object UiChrome {
                                 8
                             )
                     ),
-                    horizontalInset,
+                    horizontalInset +
+                        safeInsets.right,
                     maxOf(
                         minimumVerticalInset,
                         safeInsets.bottom +
@@ -2102,9 +2105,9 @@ object UiChrome {
             )
 
             view.setPadding(
-                horizontalInset,
+                horizontalInset + safeInsets.left,
                 maxOf(minimumVerticalInset, safeInsets.top + dp(activity, 8)),
-                horizontalInset,
+                horizontalInset + safeInsets.right,
                 maxOf(minimumVerticalInset, safeInsets.bottom + dp(activity, 8))
             )
 
