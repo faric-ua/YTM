@@ -329,9 +329,31 @@ Phone matrix must cover:
 
 ## E. Phase B — management / discoverability
 
-Start only after Phase A shared contracts are coherent.
+Phase A is CLOSED. Phase B started explicitly on 2026-10-04.
 
-- [ ] History search + semantic filters (#41).
+### CURRENT TASK — History semantic filters (#41)
+
+Goal: make the existing 100-entry History searchable by semantic state without changing or mutating History data.
+
+- [x] Read issue #41 and inspect current History list/search/linkage semantics.
+- [x] Add a pure History filter policy that combines text search with one semantic filter.
+- [x] Add filters: Усі / Лише локально / Пов’язано з YTM / Очікує Search / Очікує запис у YTM / Пауза або помилка.
+- [x] Make History linkage expose pending Search when unresolved History tracks prove that state, keeping list/detail/filter wording consistent.
+- [x] Persist the selected semantic filter through Activity recreation/rotation.
+- [x] Keep filtering read-only: no History mutation, navigation side effects, Search/write/API work or storage schema changes.
+- [x] Add JVM coverage for search+filter combination, clear-to-All completeness, pending Search and pending write/pause semantics.
+- [x] Add static guards for the History filter contract.
+- [ ] Refresh generated manifest and require exact-HEAD Validate Android PASS.
+- [ ] Build one signed candidate and run one focused phone test for #41: search+filter combination, rotate, clear to Усі, Neon + one alternate skin.
+- [ ] Record phone evidence and close issue #41 if PASS.
+
+Remaining Phase B backlog:
+- [ ] History logical playlist/provider grouping (#25).
+- [ ] History Quick Restore acceptance (#55).
+- [ ] Recovery Center + compact breathing attention icon (#53).
+- [ ] Type-aware file/backup library and scoped chooser (#54).
+- [ ] Simplified Termux operator menu/status (#52).
+- [ ] Home last-action detail drill-down to exact History detail.
 - [ ] History logical grouping/provider findability (#25).
 - [ ] History Quick Restore acceptance (#55).
 - [ ] Recovery Center + compact breathing attention icon (#53).
@@ -353,9 +375,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Phase A is closed.**
+**Finish Phase B #41 candidate gate.**
 
-Do not repeat v1.4.54 Tests 1–9 or the v1.4.55 Phase A phone matrix. The next implementation work must begin as a separate Phase B task after verifying the live branch and latest Actions state.
+Refresh docs/generated manifest, require exact-HEAD Validate Android PASS, then build one signed candidate. Phone QA is limited to History search + semantic filters and rotation/clear/theme sanity; do not repeat Phase A or v1.4.54 Tests 1–9.
 
 ## Update rule
 
