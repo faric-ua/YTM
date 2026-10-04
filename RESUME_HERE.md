@@ -23,7 +23,9 @@ Last updated: **2026-10-04**
   - JVM + static guards added.
 - No History mutation, API/write/search execution, navigation auto-action, or storage-schema change is part of #41.
 - Source/docs checkpoint `8d46e6e677ab50b20aa9b3f918cf3332fa9b04d5` passed Validate Android run `37234665308 — SUCCESS` (preflight/JVM/unsigned release).
-- Current gate: record validated checkpoint → refresh manifest → one final exact-HEAD Validate → signed APK → focused History filter phone test.
+- Signed #41 candidate `1f2d4f0839bd545414a74cc56de02899534a5dbc` passed real-phone QA on 2026-10-05.
+- Phone PASS: search+semantic filter combination, rotation persistence, All reset, Neon + alternate skin.
+- Current gate: close #41 in docs/GitHub, refresh manifest, require one final exact-HEAD Validate Android PASS.
 - v1.4.54 Tests 1–9 remain the accepted functional baseline and must not be repeated.
 
 ## NEXT ACTION — do this first
@@ -31,8 +33,8 @@ Last updated: **2026-10-04**
 1. Synchronize #41 docs and `FILE_MANIFEST.txt`.
 2. Require exact-HEAD Validate Android PASS.
 3. Build one signed APK from that exact HEAD.
-4. Phone-test only History search + semantic filter combination, rotation persistence, `Усі` reset, and Neon + one alternate skin.
-5. Record evidence; close #41 only after PHONE PASS.
+4. #41 phone acceptance is complete; do not repeat it.
+5. Finish #41 closeout docs/manifest and exact-HEAD Validate Android release-check.
 
 ## Consolidated phone matrix
 
