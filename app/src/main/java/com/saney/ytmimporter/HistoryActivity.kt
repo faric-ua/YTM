@@ -3032,26 +3032,26 @@ class HistoryActivity : Activity() {
                 resources.displayMetrics.density
         ).toInt()
 
-    private inner class HistoryListAdapter(
-        entries: List<HistoryEntry>
+    private inner class HistoryGroupAdapter(
+        groups: List<HistoryLogicalGroup>
     ) : BaseAdapter() {
-        private val allEntries =
-            entries.toList()
+        private val allGroups =
+            groups.toList()
 
-        private val visibleEntries =
-            entries.toMutableList()
+        private val visibleGroups =
+            groups.toMutableList()
 
         fun filter(
             query: String,
             semanticFilter:
                 HistorySemanticFilter
         ) {
-            visibleEntries.clear()
-            visibleEntries.addAll(
-                HistoryListFilterPolicy
+            visibleGroups.clear()
+            visibleGroups.addAll(
+                HistoryLogicalGroupPolicy
                     .apply(
-                        entries =
-                            allEntries,
+                        groups =
+                            allGroups,
                         query = query,
                         semanticFilter =
                             semanticFilter
@@ -3062,12 +3062,12 @@ class HistoryActivity : Activity() {
         }
 
         override fun getCount(): Int =
-            visibleEntries.size
+            visibleGroups.size
 
         override fun getItem(
             position: Int
-        ): HistoryEntry? =
-            visibleEntries.getOrNull(
+        ): HistoryLogicalGroup? =
+            visibleGroups.getOrNull(
                 position
             )
 
@@ -3081,18 +3081,31 @@ class HistoryActivity : Activity() {
             convertView: View?,
             parent: ViewGroup?
         ): View {
+            val group =
+                visibleGroups[position]
+
             val entry =
-                visibleEntries[position]
+                group.latest
 
             val row =
                 convertView as? LinearLayout
                     ?: createRow()
 
+            val header =
+                row.getChildAt(0)
+                    as LinearLayout
+
             val title =
-                row.getChildAt(0) as TextView
+                header.getChildAt(0)
+                    as TextView
+
+            val provider =
+                header.getChildAt(1)
+                    as TextView
 
             val meta =
-                row.getChildAt(1) as TextView
+                row.getChildAt(1)
+                    as TextView
 
             val status =
                 effectiveHistoryStatus(
@@ -3109,6 +3122,23 @@ class HistoryActivity : Activity() {
                 )
             )
 
+            val providerBadge =
+                group.providerBadge
+
+            provider.visibility =
+                if (
+                    providerBadge
+                        .isNullOrBlank()
+                ) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+
+            provider.text =
+                providerBadge
+                    .orEmpty()
+
             meta.text =
                 buildString {
                     append(
@@ -3124,22 +3154,34 @@ class HistoryActivity : Activity() {
                     )
                     append(" • ")
                     append(
-                        PlaylistLinkagePolicy.label(
-                            PlaylistLinkagePolicy
-                                .history(entry)
-                        )
+                        PlaylistLinkagePolicy
+                            .label(
+                                group.linkageState
+                            )
                     )
                     append("\n")
+
                     val primaryResult =
-                        HistoryResultSemantics.primary(
-                            entry
-                        )
+                        HistoryResultSemantics
+                            .primary(
+                                entry
+                            )
 
                     append(
                         primaryResult.label +
                             " " +
                             primaryResult.value
                     )
+
+                    if (
+                        group.operationCount >
+                            1
+                    ) {
+                        append(
+                            " • Операцій " +
+                                group.operationCount
+                        )
+                    }
 
                     if (
                         entry.pendingCount > 0
@@ -3172,7 +3214,8 @@ class HistoryActivity : Activity() {
             return row
         }
 
-        private fun createRow(): LinearLayout =
+        private fun createRow():
+            LinearLayout =
             LinearLayout(
                 this@HistoryActivity
             ).apply {
@@ -3193,20 +3236,78 @@ class HistoryActivity : Activity() {
 
                 layoutParams =
                     AbsListView.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
+                        ViewGroup.LayoutParams
+                            .MATCH_PARENT,
+                        ViewGroup.LayoutParams
+                            .WRAP_CONTENT
                     )
 
                 addView(
-                    TextView(
+                    LinearLayout(
                         this@HistoryActivity
                     ).apply {
-                        textSize = 15.5f
-                        setTypeface(
-                            typeface,
-                            Typeface.BOLD
+                        orientation =
+                            LinearLayout.HORIZONTAL
+                        gravity =
+                            Gravity.CENTER_VERTICAL
+
+                        addView(
+                            TextView(
+                                this@HistoryActivity
+                            ).apply {
+                                textSize =
+                                    15.5f
+                                setTypeface(
+                                    typeface,
+                                    Typeface.BOLD
+                                )
+                                maxLines = 2
+                            },
+                            LinearLayout.LayoutParams(
+                                0,
+                                ViewGroup.LayoutParams
+                                    .WRAP_CONTENT,
+                                1f
+                            )
                         )
-                        maxLines = 2
+
+                        addView(
+                            TextView(
+                                this@HistoryActivity
+                            ).apply {
+                                textSize = 12f
+                                setTypeface(
+                                    typeface,
+                                    Typeface.BOLD
+                                )
+                                setTextColor(
+                                    AppThemeManager
+                                        .palette(
+                                            this@HistoryActivity
+                                        )
+                                        .accent
+                                )
+                                setPadding(
+                                    dp(10),
+                                    dp(5),
+                                    dp(10),
+                                    dp(5)
+                                )
+                                background =
+                                    roundedBackground(
+                                        color =
+                                            Color.rgb(
+                                                31,
+                                                33,
+                                                39
+                                            ),
+                                        radiusDp = 9,
+                                        strokeColor =
+                                            BORDER
+                                    )
+                                maxLines = 1
+                            }
+                        )
                     }
                 )
 
