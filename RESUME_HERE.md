@@ -26,7 +26,8 @@ Last updated: **2026-10-04**
   - group screen/scroll state survives rotation;
   - JVM + static guards added.
 - No History record mutation, API/write/search execution, storage schema change or remote auto-action is part of #25.
-- Current gate: docs/manifest coherence → exact-HEAD Validate → signed APK → focused #25 phone QA.
+- Source/docs checkpoint `5d56cc7c237b7737638256babd89916ad40e6d4a` passed Validate Android run `37244156767 — SUCCESS` (preflight/JVM/unsigned release).
+- Current gate: record validated checkpoint → refresh manifest → final exact-HEAD Validate → signed APK → focused #25 phone QA.
 
 ## NEXT ACTION — do this first
 
