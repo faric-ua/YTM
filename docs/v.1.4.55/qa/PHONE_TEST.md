@@ -203,7 +203,21 @@ Run only after the exact #41 candidate passes Validate and signed build.
 7. Select `Усі`; with the text query cleared, the complete History list returns.
 8. Check the filter button/menu in Neon plus one alternate skin for readable state/selection and no clipping.
 
-Result: `B1+` / `B1-`.
+Result: **B1+ — PHONE PASS 2026-10-05.**
+
+Exact installed candidate:
+- source/head `1f2d4f0839bd545414a74cc56de02899534a5dbc`;
+- Validate Android run `37234962566 — SUCCESS`;
+- signed build run `37237512202 — SUCCESS`.
+
+Phone evidence:
+- query `prodigy` + semantic filter `Пов’язано з YTM` combined correctly and showed 32 matching entries;
+- portrait/landscape rotation preserved both search text and selected semantic filter;
+- no Search/write/restore or other action auto-started;
+- selecting `Усі` and clearing the query restored the complete History list (99 records);
+- Blue/alternate skin and Neon both kept the filter/search state readable, with semantic success/pause states still distinguishable.
+
+Issue #41 acceptance: **PASS**.
 
 Do not repeat Phase A or v1.4.54 Tests 1–9.
 
