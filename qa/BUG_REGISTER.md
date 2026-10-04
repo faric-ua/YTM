@@ -541,7 +541,7 @@ BUG-040 is closed.
 
 ## BUG-041 — Landscape safe area can clip right-side screen values
 
-Status: **FIX IMPLEMENTED v1.4.55 — PHONE RETEST PENDING.**
+Status: **CLOSED — PHONE RETEST PASS v1.4.55.**
 
 Phone evidence:
 - `Квота API` portrait was readable;
@@ -556,15 +556,18 @@ Implemented fix:
 - fixed-footer dialogs and custom dialogs add the same safe side insets;
 - no workflow, API, storage or navigation semantics changed.
 
-Acceptance:
-- Quota landscape counters must remain fully visible;
-- portrait must remain unchanged;
-- rotating must not start any action;
-- representative fixed-footer dialog must also stay inside the safe horizontal viewport.
+Phone result — 2026-10-04:
+- exact installed source: `14ea02cff4d541e7ec252a1c2475362e2260a87f`;
+- signed build: run `37231781928`;
+- Quota landscape screenshot shows all right-side values fully visible inside the card/safe area;
+- no right-edge/system-bar clipping remains;
+- rotation did not trigger an action.
+
+BUG-041 is closed.
 
 ## UX-031 — Bulk Help is too long and exposes mixed technical jargon
 
-Status: **FIX IMPLEMENTED v1.4.55 — PHONE RETEST PENDING.**
+Status: **CLOSED — PHONE RETEST PASS v1.4.55.**
 
 Phone evidence:
 - Bulk Session Help used mixed terms such as `Bulk-сесія`, `Checkpoint`, `Remote baseline`, `read-only`;
@@ -575,8 +578,12 @@ Implemented fix:
 - internal English state/jargon is removed from the user-facing explanation where it is not needed;
 - the message is shorter while preserving the safety meaning: preview/read-only behavior, explicit start, restart safety and exact-ID rollback ownership.
 
-Acceptance:
-- Help title/body are readable Ukrainian;
-- fixed `Зрозуміло` action remains visible;
-- body scrolls normally when needed and is not hidden under system bars/footer;
-- rotation restores the same Help window and starts no sync/rollback/write action.
+Phone result — 2026-10-04:
+- exact installed source: `14ea02cff4d541e7ec252a1c2475362e2260a87f`;
+- signed build: run `37231781928`;
+- landscape Help screenshot shows title `Що таке сесія синхронізації?`;
+- mixed terms `Bulk-сесія`, `Checkpoint`, `Remote baseline`, `read-only` are absent;
+- fixed `Зрозуміло` action remains visible inside the safe viewport;
+- rotation preserved the Help window and no sync/rollback/write action auto-started.
+
+UX-031 is closed.
