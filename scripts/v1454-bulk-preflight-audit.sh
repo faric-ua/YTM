@@ -149,9 +149,9 @@ grep -Fq 'legacyPartialWithRetryableFailedInsert_isNotTerminal' "$SESSION_TEST" 
 
 grep -Fq 'expectedRemoteVideoIdsThroughPrepared' "$EXECUTION_POLICY"   || fail "Terminal-aware restart prefix policy missing"
 
-grep -Fq 'Що означає Bulk Sync?' "$BULK_HELP"   || fail "Bulk preview Help content missing"
+grep -Fq 'Що означає «Синхронізувати всі»?' "$BULK_HELP"   || fail "Bulk preview Help content missing"
 
-grep -Fq 'Що таке Bulk-сесія?' "$BULK_HELP"   || fail "Bulk session Help content missing"
+grep -Fq 'Що таке сесія синхронізації?' "$BULK_HELP"   || fail "Bulk session Help content missing"
 
 grep -Fq 'STATE_HELP_DIALOG_OPEN' "$PREVIEW"   || fail "Bulk preview Help lifecycle state missing"
 
