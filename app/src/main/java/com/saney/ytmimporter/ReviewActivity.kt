@@ -1399,16 +1399,6 @@ class ReviewActivity : Activity() {
                 dialog.setOnDismissListener {
                     projectDialogOpen = false
                     projectDialog = null
-                    if (
-                        intent.getBooleanExtra(
-                            EXTRA_RETURN_TO_PLAYLIST,
-                            false
-                        ) &&
-                        !isChangingConfigurations &&
-                        !isFinishing
-                    ) {
-                        finish()
-                    }
                 }
             }
     }
