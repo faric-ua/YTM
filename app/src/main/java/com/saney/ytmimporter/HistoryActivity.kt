@@ -32,6 +32,8 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.saney.ytmimporter.history.HistoryRecoveryPolicy
 import com.saney.ytmimporter.model.HistoryEntry
+import com.saney.ytmimporter.model.HistoryListFilterPolicy
+import com.saney.ytmimporter.model.HistorySemanticFilter
 import com.saney.ytmimporter.model.HistoryResultKind
 import com.saney.ytmimporter.model.HistoryResultSemantics
 import com.saney.ytmimporter.model.HistoryStatus
@@ -81,6 +83,8 @@ class HistoryActivity : Activity() {
     private var listFirstVisiblePosition = 0
     private var listTopOffset = 0
     private var historySearchQuery = ""
+    private var historySemanticFilter =
+        HistorySemanticFilter.ALL
     private var detailScrollEntryId: String? = null
 
     private val detailScrollPosition =
@@ -138,6 +142,14 @@ class HistoryActivity : Activity() {
                     KEY_SEARCH_QUERY
                 )
                 .orEmpty()
+        historySemanticFilter =
+            HistorySemanticFilter
+                .fromStoredName(
+                    savedInstanceState
+                        ?.getString(
+                            KEY_SEMANTIC_FILTER
+                        )
+                )
         detailScrollEntryId =
             savedInstanceState
                 ?.getString(
@@ -255,6 +267,10 @@ class HistoryActivity : Activity() {
         outState.putString(
             KEY_SEARCH_QUERY,
             historySearchQuery
+        )
+        outState.putString(
+            KEY_SEMANTIC_FILTER,
+            historySemanticFilter.name
         )
         outState.putString(
             KEY_DETAIL_SCROLL_ENTRY_ID,
@@ -463,6 +479,50 @@ class HistoryActivity : Activity() {
             }
         )
 
+        val filterButton =
+            Button(this).apply {
+                text =
+                    historyFilterButtonLabel()
+                isAllCaps = false
+                textSize = 13f
+                gravity = Gravity.CENTER
+                maxLines = 2
+                setTextColor(
+                    AppThemeManager
+                        .palette(
+                            this@HistoryActivity
+                        )
+                        .text
+                )
+                setPadding(
+                    dp(14),
+                    dp(8),
+                    dp(14),
+                    dp(8)
+                )
+                background =
+                    roundedBackground(
+                        color = SURFACE,
+                        radiusDp = 12,
+                        strokeColor = BORDER
+                    )
+            }
+
+        root.addView(
+            filterButton,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(46)
+            ).apply {
+                setMargins(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(8)
+                )
+            }
+        )
+
         val countText = TextView(this).apply {
             textSize = 12f
             setTextColor(MUTED)
@@ -478,6 +538,7 @@ class HistoryActivity : Activity() {
         val entries = historyStore.getAll()
 
         if (entries.isEmpty()) {
+            filterButton.isEnabled = false
             countText.text = "Записів немає"
 
             root.addView(
@@ -551,14 +612,25 @@ class HistoryActivity : Activity() {
 
         list.adapter = adapter
         adapter.filter(
-            historySearchQuery
+            query =
+                historySearchQuery,
+            semanticFilter =
+                historySemanticFilter
         )
-        countText.text =
-            if (historySearchQuery.isBlank()) {
-                "${adapter.count} записів"
-            } else {
-                "Знайдено: ${adapter.count}"
-            }
+        updateHistoryCount(
+            countText = countText,
+            count = adapter.count
+        )
+
+        filterButton.setOnClickListener {
+            showHistoryFilterMenu(
+                filterButton =
+                    filterButton,
+                adapter = adapter,
+                countText =
+                    countText
+            )
+        }
 
         list.post {
             list.setSelectionFromTop(
@@ -605,14 +677,18 @@ class HistoryActivity : Activity() {
                             0
                     }
 
-                    adapter.filter(query)
+                    adapter.filter(
+                        query = query,
+                        semanticFilter =
+                            historySemanticFilter
+                    )
 
-                    countText.text =
-                        if (query.isBlank()) {
-                            "${adapter.count} записів"
-                        } else {
-                            "Знайдено: ${adapter.count}"
-                        }
+                    updateHistoryCount(
+                        countText =
+                            countText,
+                        count =
+                            adapter.count
+                    )
                 }
 
                 override fun afterTextChanged(
@@ -620,6 +696,86 @@ class HistoryActivity : Activity() {
                 ) {
                 }
             }
+        )
+    }
+
+    private fun historyFilterButtonLabel():
+        String =
+        "Фільтр: " +
+            historySemanticFilter.label
+
+    private fun updateHistoryCount(
+        countText: TextView,
+        count: Int
+    ) {
+        countText.text =
+            if (
+                historySearchQuery
+                    .isBlank() &&
+                historySemanticFilter ==
+                    HistorySemanticFilter.ALL
+            ) {
+                "$count записів"
+            } else {
+                "Показано: $count"
+            }
+    }
+
+    private fun showHistoryFilterMenu(
+        filterButton: Button,
+        adapter: HistoryListAdapter,
+        countText: TextView
+    ) {
+        UiChrome.showMenuDialog(
+            activity = this,
+            title = "Фільтр історії",
+            subtitle =
+                "Фільтр працює разом із текстовим пошуком.",
+            actions =
+                HistorySemanticFilter
+                    .values()
+                    .map { filter ->
+                        UiChrome.MenuAction(
+                            label =
+                                if (
+                                    filter ==
+                                    historySemanticFilter
+                                ) {
+                                    "✓ ${filter.label}"
+                                } else {
+                                    filter.label
+                                }
+                        ) {
+                            if (
+                                filter !=
+                                historySemanticFilter
+                            ) {
+                                historySemanticFilter =
+                                    filter
+                                listFirstVisiblePosition =
+                                    0
+                                listTopOffset =
+                                    0
+                            }
+
+                            filterButton.text =
+                                historyFilterButtonLabel()
+
+                            adapter.filter(
+                                query =
+                                    historySearchQuery,
+                                semanticFilter =
+                                    historySemanticFilter
+                            )
+
+                            updateHistoryCount(
+                                countText =
+                                    countText,
+                                count =
+                                    adapter.count
+                            )
+                        }
+                    }
         )
     }
 
@@ -2548,47 +2704,21 @@ class HistoryActivity : Activity() {
             entries.toMutableList()
 
         fun filter(
-            query: String
+            query: String,
+            semanticFilter:
+                HistorySemanticFilter
         ) {
             visibleEntries.clear()
-
-            if (query.isBlank()) {
-                visibleEntries.addAll(
-                    allEntries
-                )
-            } else {
-                val normalized =
-                    query.lowercase(
-                        Locale.getDefault()
+            visibleEntries.addAll(
+                HistoryListFilterPolicy
+                    .apply(
+                        entries =
+                            allEntries,
+                        query = query,
+                        semanticFilter =
+                            semanticFilter
                     )
-
-                visibleEntries.addAll(
-                    allEntries.filter { entry ->
-                        entry.playlistName
-                            .lowercase(
-                                Locale.getDefault()
-                            )
-                            .contains(
-                                normalized
-                            ) ||
-                            entry.sourceLabel
-                                .lowercase(
-                                    Locale.getDefault()
-                                )
-                                .contains(
-                                    normalized
-                                ) ||
-                            entry.youtubeChannelTitle
-                                .orEmpty()
-                                .lowercase(
-                                    Locale.getDefault()
-                                )
-                                .contains(
-                                    normalized
-                                )
-                    }
-                )
-            }
+            )
 
             notifyDataSetChanged()
         }
@@ -2792,6 +2922,9 @@ class HistoryActivity : Activity() {
 
         private const val KEY_SEARCH_QUERY =
             "history_search_query"
+
+        private const val KEY_SEMANTIC_FILTER =
+            "history_semantic_filter"
 
         private const val KEY_DETAIL_SCROLL_POSITION =
             "history_detail_scroll_position"
