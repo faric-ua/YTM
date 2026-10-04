@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
@@ -16,16 +17,21 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import com.saney.ytmimporter.model.PlaylistLinkagePolicy
 import com.saney.ytmimporter.model.PlaylistLinkageState
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.storage.PlaylistProjectCodec
+import com.saney.ytmimporter.storage.SafTreeFileWriter
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.ui.ScrollPositionState
+import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.ui.SelectableTextSurfaceState
+import java.io.File
 import kotlin.math.roundToInt
 
 class PlaylistActivity : Activity() {
@@ -56,6 +62,28 @@ class PlaylistActivity : Activity() {
     private val destinationRequestCode =
         4702
 
+    private val projectSaveRequestCode =
+        4703
+
+    private var projectDialogOpen =
+        false
+
+    private var projectDialog:
+        Dialog? =
+        null
+
+    private var pendingProjectExport:
+        String? =
+        null
+
+    private var pendingProjectDisplayName:
+        String? =
+        null
+
+    private var pendingProjectSuggestedFileName:
+        String? =
+        null
+
     private var replacementDialogOpen =
         false
 
@@ -70,6 +98,14 @@ class PlaylistActivity : Activity() {
         AppThemeManager.applyWindow(this)
         currentPlaylistStore =
             CurrentPlaylistStore(this)
+
+        projectDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_PROJECT_DIALOG_OPEN,
+                    false
+                )
+                ?: false
 
         replacementDialogOpen =
             savedInstanceState
@@ -98,6 +134,18 @@ class PlaylistActivity : Activity() {
         render()
 
         if (
+            projectDialogOpen &&
+            projectDialog
+                ?.isShowing != true
+        ) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showProjectActions()
+                }
+            }
+        }
+
+        if (
             replacementDialogOpen &&
             replacementDialog
                 ?.isShowing != true
@@ -113,6 +161,11 @@ class PlaylistActivity : Activity() {
     override fun onSaveInstanceState(
         outState: Bundle
     ) {
+        outState.putBoolean(
+            STATE_PROJECT_DIALOG_OPEN,
+            projectDialogOpen
+        )
+
         outState.putBoolean(
             STATE_REPLACEMENT_DIALOG_OPEN,
             replacementDialogOpen
@@ -146,6 +199,13 @@ class PlaylistActivity : Activity() {
     }
 
     override fun onDestroy() {
+        projectDialog
+            ?.setOnDismissListener(
+                null
+            )
+        projectDialog =
+            null
+
         replacementDialog
             ?.setOnDismissListener(
                 null
@@ -170,10 +230,33 @@ class PlaylistActivity : Activity() {
             resultCode != RESULT_OK ||
             data == null
         ) {
+            if (
+                requestCode ==
+                    projectSaveRequestCode
+            ) {
+                clearPendingProjectExport()
+            }
             return
         }
 
         when (requestCode) {
+            projectSaveRequestCode -> {
+                val uri =
+                    data.data
+                        ?: return clearPendingProjectExport()
+
+                if (
+                    data.getStringExtra(
+                        StorageChooserActivity.EXTRA_RESULT_KIND
+                    ) ==
+                        StorageChooserActivity.RESULT_DOCUMENT
+                ) {
+                    writePendingProject(uri)
+                } else {
+                    writePendingProjectToTree(uri)
+                }
+            }
+
             destinationRequestCode ->
                 forwardDestinationResult(
                     data
@@ -377,9 +460,7 @@ class PlaylistActivity : Activity() {
                 "Зберегти або поділитися поточним робочим проєктом",
             primary = false
         ) {
-            openReview(
-                openProjectActions = true
-            )
+            showProjectActions()
         }
 
         addAction(
@@ -1194,6 +1275,414 @@ class PlaylistActivity : Activity() {
         )
     }
 
+    private fun showProjectActions() {
+        if (
+            projectDialog
+                ?.isShowing == true
+        ) {
+            return
+        }
+
+        if (
+            currentPlaylistStore
+                .load() == null
+        ) {
+            projectDialogOpen =
+                false
+            return toast(
+                "Немає активного плейлиста"
+            )
+        }
+
+        projectDialogOpen =
+            true
+
+        projectDialog =
+            UiChrome.showMenuDialog(
+                activity = this,
+                title =
+                    "Поточний проєкт YTM",
+                subtitle =
+                    "Збереження та обмін робочим проєктом.",
+                actions =
+                    listOf(
+                        UiChrome.MenuAction(
+                            "Зберегти проєкт YTM"
+                        ) {
+                            saveCurrentProject()
+                        },
+                        UiChrome.MenuAction(
+                            "Поділитися проєктом YTM"
+                        ) {
+                            shareCurrentProject()
+                        }
+                    )
+            ).also { dialog ->
+                dialog.setOnDismissListener {
+                    projectDialogOpen =
+                        false
+                    projectDialog =
+                        null
+                }
+            }
+    }
+
+    private fun currentProjectJson():
+        String? {
+        val snapshot =
+            currentPlaylistStore
+                .load()
+                ?: return null
+
+        return PlaylistProjectCodec
+            .exportWorkingPlaylist(
+                playlist =
+                    snapshot.playlist,
+                sourceLabel =
+                    snapshot.sourceLabel,
+                appVersion =
+                    BuildConfig.VERSION_NAME,
+                sourcePlaylistId =
+                    snapshot.destinationPlaylistId,
+                sourcePlaylistTitle =
+                    snapshot.destinationPlaylistTitle,
+                sourceLocalPlaylistId =
+                    snapshot.localPlaylistId
+            )
+    }
+
+    private fun saveCurrentProject() {
+        val snapshot =
+            currentPlaylistStore
+                .load()
+                ?: return toast(
+                    "Немає активного плейлиста"
+                )
+
+        val content =
+            currentProjectJson()
+                ?: return toast(
+                    "Немає активного плейлиста"
+                )
+
+        val projectName =
+            snapshot.playlist.name
+                .trim()
+                .ifBlank {
+                    "Проєкт YTM"
+                }
+
+        val suggestedFileName =
+            projectFileName(
+                snapshot
+            )
+
+        pendingProjectExport =
+            content
+        pendingProjectDisplayName =
+            projectName
+        pendingProjectSuggestedFileName =
+            suggestedFileName
+
+        runCatching {
+            SafFileSaveFlow.show(
+                activity = this,
+                title =
+                    "Куди зберегти проєкт YTM?",
+                suggestedFileName =
+                    suggestedFileName,
+                mimeType =
+                    "application/json",
+                requestCode =
+                    projectSaveRequestCode
+            )
+        }.onFailure { error ->
+            clearPendingProjectExport()
+            toast(
+                "Не вдалося відкрити вибір збереження: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+    }
+
+    private fun shareCurrentProject() {
+        val snapshot =
+            currentPlaylistStore
+                .load()
+                ?: return toast(
+                    "Немає активного плейлиста"
+                )
+
+        val content =
+            currentProjectJson()
+                ?: return toast(
+                    "Немає активного плейлиста"
+                )
+
+        runCatching {
+            val directory =
+                File(
+                    cacheDir,
+                    "shared_exports"
+                ).apply {
+                    mkdirs()
+                }
+
+            val file =
+                File(
+                    directory,
+                    projectFileName(
+                        snapshot
+                    )
+                ).apply {
+                    writeText(
+                        content,
+                        Charsets.UTF_8
+                    )
+                }
+
+            val uri =
+                FileProvider.getUriForFile(
+                    this,
+                    "$packageName.fileprovider",
+                    file
+                )
+
+            val intent =
+                Intent(
+                    Intent.ACTION_SEND
+                ).apply {
+                    type =
+                        "application/json"
+                    putExtra(
+                        Intent.EXTRA_STREAM,
+                        uri
+                    )
+                    addFlags(
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                    clipData =
+                        ClipData.newRawUri(
+                            file.name,
+                            uri
+                        )
+                }
+
+            startActivity(
+                Intent.createChooser(
+                    intent,
+                    "Поділитися проєктом YTM"
+                )
+            )
+        }.onFailure { error ->
+            toast(
+                "Не вдалося поділитися проєктом: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+    }
+
+    private fun writePendingProjectToTree(
+        treeUri: Uri
+    ) {
+        val snapshot =
+            currentPlaylistStore
+                .load()
+                ?: return clearPendingProjectExport()
+
+        val content =
+            pendingProjectExport
+                ?: currentProjectJson()
+                ?: return clearPendingProjectExport()
+
+        val fileName =
+            pendingProjectSuggestedFileName
+                ?: projectFileName(
+                    snapshot
+                )
+
+        runCatching {
+            SafTreeFileWriter.writeText(
+                context = this,
+                treeUri = treeUri,
+                preferredFileName =
+                    fileName,
+                mimeType =
+                    "application/json",
+                content = content
+            )
+        }.onSuccess { result ->
+            showProjectSaved(
+                result.fileName
+            )
+        }.onFailure { error ->
+            toast(
+                "Не вдалося зберегти проєкт: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+
+        clearPendingProjectExport()
+    }
+
+    private fun writePendingProject(
+        uri: Uri
+    ) {
+        val content =
+            pendingProjectExport
+                ?: currentProjectJson()
+                ?: return clearPendingProjectExport()
+
+        runCatching {
+            contentResolver
+                .openOutputStream(
+                    uri,
+                    "w"
+                )
+                ?.bufferedWriter(
+                    Charsets.UTF_8
+                )
+                ?.use { writer ->
+                    writer.write(
+                        content
+                    )
+                }
+                ?: error(
+                    "Android не відкрив файл для запису"
+                )
+        }.onSuccess {
+            showProjectSaved(
+                queryDocumentName(
+                    uri
+                )
+                    ?: pendingProjectSuggestedFileName
+            )
+        }.onFailure { error ->
+            toast(
+                "Не вдалося зберегти проєкт: " +
+                    (
+                        error.message
+                            ?: "невідома помилка"
+                    )
+            )
+        }
+
+        clearPendingProjectExport()
+    }
+
+    private fun showProjectSaved(
+        savedFileName: String?
+    ) {
+        val projectName =
+            pendingProjectDisplayName
+                ?: currentPlaylistStore
+                    .load()
+                    ?.playlist
+                    ?.name
+                    ?.trim()
+                    ?.ifBlank {
+                        "Проєкт YTM"
+                    }
+                ?: "Проєкт YTM"
+
+        toast(
+            buildString {
+                append(
+                    "Проєкт «$projectName» збережено"
+                )
+
+                if (
+                    !savedFileName
+                        .isNullOrBlank()
+                ) {
+                    append("\n")
+                    append(
+                        savedFileName
+                    )
+                }
+            }
+        )
+    }
+
+    private fun queryDocumentName(
+        uri: Uri
+    ): String? =
+        runCatching {
+            contentResolver
+                .query(
+                    uri,
+                    arrayOf(
+                        OpenableColumns.DISPLAY_NAME
+                    ),
+                    null,
+                    null,
+                    null
+                )
+                ?.use { cursor ->
+                    val index =
+                        cursor.getColumnIndex(
+                            OpenableColumns.DISPLAY_NAME
+                        )
+
+                    if (
+                        index >= 0 &&
+                        cursor.moveToFirst()
+                    ) {
+                        cursor.getString(
+                            index
+                        )
+                    } else {
+                        null
+                    }
+                }
+        }.getOrNull()
+
+    private fun clearPendingProjectExport() {
+        pendingProjectExport =
+            null
+        pendingProjectDisplayName =
+            null
+        pendingProjectSuggestedFileName =
+            null
+    }
+
+    private fun projectFileName(
+        snapshot: CurrentPlaylistSnapshot
+    ): String {
+        val safeName =
+            snapshot.playlist.name
+                .trim()
+                .replace(
+                    Regex(
+                        "[\\/:*?\"<>|\\p{Cntrl}]"
+                    ),
+                    "_"
+                )
+                .replace(
+                    Regex("\\s+"),
+                    " "
+                )
+                .trim(
+                    ' ',
+                    '.'
+                )
+                .take(100)
+                .ifBlank {
+                    "YTM Project"
+                }
+
+        return "$safeName.ytm.json"
+    }
+
     private fun targetUrl(
         playlistId: String
     ): String =
@@ -1243,7 +1732,6 @@ class PlaylistActivity : Activity() {
     }
 
     private fun openReview(
-        openProjectActions: Boolean = false,
         autoSearch: Boolean = false
     ) {
         startActivityForResult(
@@ -1251,10 +1739,6 @@ class PlaylistActivity : Activity() {
                 this,
                 ReviewActivity::class.java
             ).apply {
-                putExtra(
-                    ReviewActivity.EXTRA_OPEN_PROJECT_ACTIONS,
-                    openProjectActions
-                )
                 putExtra(
                     ReviewActivity.EXTRA_RETURN_TO_PLAYLIST,
                     true
@@ -1353,6 +1837,9 @@ class PlaylistActivity : Activity() {
             "COPY_LINK"
         const val ACTION_MANUAL_VIDEO =
             "MANUAL_VIDEO"
+
+        private const val STATE_PROJECT_DIALOG_OPEN =
+            "playlist_project_dialog_open"
 
         private const val STATE_REPLACEMENT_DIALOG_OPEN =
             "playlist_replacement_dialog_open"
