@@ -510,41 +510,73 @@ Real-phone startup silent recovery has been observed. The decisive aged/stale-to
 
 ## BUG-040 — Project actions are hosted by the wrong parent screen
 
-Status: **R2 FIX IMPLEMENTED v1.4.55 — PHONE RETEST PENDING.**
+Status: **CLOSED — PHONE RETEST PASS v1.4.55 R2.**
 
-Initial real-phone reproduction:
-- open `Поточний плейлист`;
-- tap `Проєкт YTM / експорт`;
-- the project-actions modal is rendered over `Перевірка треків`;
-- closing the modal originally left the user on `Перевірка треків`.
-
-First corrective candidate:
-- temporary Review host was finished after modal dismissal;
-- phone retest confirmed Close now returned to `Поточний плейлист`;
-- however the video still showed `Перевірка треків` behind the modal, proving the wrong parent Activity was still being launched.
-
-Root cause:
-- `PlaylistActivity` delegated a local project/export action to `ReviewActivity` solely to reuse Review's modal/export implementation;
-- this created an unnecessary navigation layer and made Track Review the visible modal owner.
+Initial phone failure:
+- `Поточний плейлист → Проєкт YTM / експорт` launched a temporary `ReviewActivity`;
+- the modal therefore appeared over `Перевірка треків`;
+- the first corrective only fixed the final Close destination and did not remove the wrong parent.
 
 R2 implementation:
-- `PlaylistActivity` now owns the project-actions modal directly;
-- save/share project operations are executed from `PlaylistActivity` without launching `ReviewActivity`;
-- the modal open flag is saved/restored by `PlaylistActivity`, so rotation recreates the same modal over the same parent screen;
-- save chooser results remain handled by the owning `PlaylistActivity`;
-- the temporary Review `finish()`-on-project-dismiss workaround was removed, restoring normal Review-local project behavior;
-- static guard rejects any return of `openReview(...)` inside the `Проєкт YTM / експорт` action.
+- `PlaylistActivity` owns the project-actions modal directly;
+- Save/Share project flows are handled by `PlaylistActivity`;
+- `Проєкт YTM / експорт` no longer launches `ReviewActivity`;
+- modal-open state is restored by the same Playlist owner after rotation;
+- the temporary Review finish-on-dismiss workaround is removed;
+- static guards reject reintroduction of the Review route.
 
-Implementation commits:
-- direct Playlist owner: `03290dcbcf2f78744f3d1bf50ecb15dedaecec4e`;
-- remove temporary Review workaround: `442a85956515b1e7f15e9a74080e5c37c1d59db8`;
-- ownership guard: `fe624049b7bbed5bccddf9ec9bdef13caac79aba`.
+Exact tested candidate:
+- source/head: `846f50ed89d7d6888951b3808a231b555da166bf`;
+- signed build: GitHub Actions run `37201379978`;
+- real-phone video: 2026-10-04 focused R2 retest.
+
+Phone result:
+- modal opened directly over `Поточний плейлист`;
+- `Перевірка треків` never appeared behind it;
+- portrait → landscape → portrait preserved the modal;
+- `Закрити` returned to the same `Поточний плейлист`;
+- no Search/write/save/share started automatically.
+
+BUG-040 is closed.
+
+## BUG-041 — Landscape safe area can clip right-side screen values
+
+Status: **FIX IMPLEMENTED v1.4.55 — PHONE RETEST PENDING.**
+
+Phone evidence:
+- `Квота API` portrait was readable;
+- in landscape, right-side values such as the quota counters were visibly clipped by the screen edge/system-bar area.
+
+Cause:
+- shared `UiChrome.applyScreenInsets()` applied top/bottom system insets but ignored left/right insets;
+- fixed-footer and legacy custom dialog shells also used constant horizontal padding without adding side system/cutout insets.
+
+Implemented fix:
+- full-screen roots now add left/right system-bar/display-cutout insets;
+- fixed-footer dialogs and custom dialogs add the same safe side insets;
+- no workflow, API, storage or navigation semantics changed.
 
 Acceptance:
-- `Поточний плейлист → Проєкт YTM / експорт` opens the modal directly over `Поточний плейлист`;
-- `Перевірка треків` must never appear behind it, even briefly;
-- portrait ↔ landscape rotation keeps the modal over the same Current Playlist parent;
-- Close returns to the same Current Playlist screen;
-- opening/rotating/closing the modal performs no Search, write, save, share, restore or other remote/durable action;
-- explicit Save/Share actions continue to work only when the user presses them.
+- Quota landscape counters must remain fully visible;
+- portrait must remain unchanged;
+- rotating must not start any action;
+- representative fixed-footer dialog must also stay inside the safe horizontal viewport.
 
+## UX-031 — Bulk Help is too long and exposes mixed technical jargon
+
+Status: **FIX IMPLEMENTED v1.4.55 — PHONE RETEST PENDING.**
+
+Phone evidence:
+- Bulk Session Help used mixed terms such as `Bulk-сесія`, `Checkpoint`, `Remote baseline`, `read-only`;
+- the long copy was hard to scan in portrait and landscape.
+
+Implemented fix:
+- Help titles and body copy are rewritten in plain Ukrainian;
+- internal English state/jargon is removed from the user-facing explanation where it is not needed;
+- the message is shorter while preserving the safety meaning: preview/read-only behavior, explicit start, restart safety and exact-ID rollback ownership.
+
+Acceptance:
+- Help title/body are readable Ukrainian;
+- fixed `Зрозуміло` action remains visible;
+- body scrolls normally when needed and is not hidden under system bars/footer;
+- rotation restores the same Help window and starts no sync/rollback/write action.
