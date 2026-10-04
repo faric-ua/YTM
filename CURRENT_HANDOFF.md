@@ -20,25 +20,28 @@ Last updated: **2026-10-04**
 - Readability audit: `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`
 - Backlog reconciliation: `docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md`
 
-## Current validated checkpoint — 2026-10-04
+## Current work — 2026-10-04
 
-v1.4.55 Phase A is **PHONE PASS / CLOSED**.
+Phase A remains **PHONE PASS / CLOSED** at closeout HEAD `f7b786328ebecc6e3fa436e4ce3c07a1c368d670`, Validate `37233062679 — SUCCESS`.
 
-Final phone-tested app candidate:
-- source `14ea02cff4d541e7ec252a1c2475362e2260a87f`;
-- Validate Android run `37214907587 — SUCCESS`;
-- signed build run `37231781928 — SUCCESS`.
+Phase B has started explicitly with issue #41 — History semantic filters.
 
-Final targeted phone results:
-- BUG-040 R2 — PASS/CLOSED;
-- BUG-041 Quota landscape safe area — PASS/CLOSED;
-- UX-031 Bulk Session Help readability/localization — PASS/CLOSED.
+Implemented:
+- `HistoryListFilterPolicy` combines the existing text query with one semantic state filter;
+- filters: Усі, Лише локально, Пов’язано з YTM, Очікує Search, Очікує запис у YTM, Пауза або помилка;
+- selected filter survives Activity recreation/rotation;
+- unresolved History tracks can now produce the existing `PENDING_SEARCH` linkage state, so list/detail/filter semantics agree;
+- filter policy is read-only and has JVM/static coverage.
 
-Final evidence/manifest checkpoint `da6be620fcdabcb908ddfe0b2ac764d4deeacfbd` passed Validate Android run `37232652795 — SUCCESS`.
+Current source commits:
+- filter policy `fe80c7a24ebfde51be62d830bb40e6b46c9abf6e`;
+- filter JVM tests `42bf9203026e195581bd9aa33554c35ceb26f367`;
+- pending-Search History linkage `bff3cd2e9f71c8772f1686bbfe77a3442300d5f4`;
+- linkage tests `dd2ad5049eff029d2722d91151fa9d18070895b2`;
+- History UI `93ffd1e73c94b5ca2856387f90a3f1652aaf4eb6`;
+- static guard `eee2fd16af8d01b21299ca5269c6a4b481acd982`.
 
-No further Phase A phone action is required. v1.4.54 Tests 1–9 stay accepted and must not be repeated.
-
-**Next development stage:** Phase B only as a separate explicit task after checking live GitHub HEAD/Actions.
+**Current task:** refresh docs/manifest, require exact-HEAD Validate PASS, signed build, then focused #41 phone test. No Phase A retest.
 
 ## Immutable functional reference
 
@@ -110,13 +113,11 @@ real-device acceptance.
 
 ## Exact next work
 
-Phase A has no remaining work.
-
-Before any Phase B implementation:
-1. verify live HEAD and latest Actions;
-2. read `RESUME_HERE.md` and `ACTIVE_PLAN.md`;
-3. choose the first explicit Phase B target;
-4. keep v1.4.54 functional semantics and the v1.4.55 Phase A hardening contracts intact.
+1. refresh #41 documentation and generated manifest;
+2. require exact-HEAD Validate Android PASS;
+3. build signed candidate from that exact HEAD;
+4. phone test only History search + semantic filters, rotation persistence, All reset and one alternate theme;
+5. close issue #41 only after PHONE PASS.
 
 ## Working contract
 
