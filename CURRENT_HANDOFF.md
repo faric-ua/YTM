@@ -41,7 +41,14 @@ Current source commits:
 - History UI `93ffd1e73c94b5ca2856387f90a3f1652aaf4eb6`;
 - static guard `eee2fd16af8d01b21299ca5269c6a4b481acd982`.
 
-**Current task:** refresh docs/manifest, require exact-HEAD Validate PASS, signed build, then focused #41 phone test. No Phase A retest.
+Validation checkpoint:
+- HEAD `8d46e6e677ab50b20aa9b3f918cf3332fa9b04d5`;
+- Validate Android run `37234665308 — SUCCESS`;
+- release preflight PASS;
+- JVM tests PASS;
+- unsigned release assemble PASS.
+
+**Current task:** record this checkpoint in final docs/manifest, require one final exact-HEAD Validate PASS, then signed build and focused #41 phone test. No Phase A retest.
 
 ## Immutable functional reference
 
