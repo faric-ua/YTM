@@ -102,10 +102,10 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 79b6830e304ee113  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 5eca6b8595b334b8  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 678adda3b8a1e44d  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
-351e450e09037731  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
+96762cccc29fff58  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 c5151b92fad898d7  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
-6aa0627fbfa84813  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
+088d30cebc159efb  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 5c565252917f725e  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 562db04bb216f33f  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
 90d313b61d6f1697  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
@@ -1528,7 +1528,7 @@ d8d981601292bcf3  docs/v.1.4.8/diagrams/DIALOG_SAFE_VIEWPORT.md
 4b4c4a110300298e  docs/v.1.4.9/diagrams/DIALOG_FIRST_FRAME.md
 463352aea3df25d4  docs/v.1.4.9/diagrams/README.md
 d5f372c6d46ad7c8  gradle.properties
-9502538d05ea2fe7  qa/BUG_REGISTER.md
+411cde9dcdc6fea7  qa/BUG_REGISTER.md
 911bb50fbd02b1a4  qa/MASTER_TEST_PLAN.md
 084a4e801c888158  qa/TEST_DATA.md
 e73ddc7565ea4b94  qa/TEST_EVIDENCE_POLICY.md
@@ -1752,7 +1752,7 @@ d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
 f78c820c675f6b9e  scripts/v1454-bulk-preflight-audit.sh
 2e29e655a94f3422  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
-e6776feeeb0d91b2  scripts/v1455-ux-hardening-audit.sh
+7ef61136cabe03d9  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh
