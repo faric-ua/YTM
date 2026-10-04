@@ -345,8 +345,9 @@ Goal: make the existing 100-entry History searchable by semantic state without c
 - [x] Add static guards for the History filter contract.
 - [x] Generated manifest refreshed; exact source/docs checkpoint `8d46e6e677ab50b20aa9b3f918cf3332fa9b04d5` passed Validate Android run `37234665308 — SUCCESS` (preflight/JVM/unsigned release PASS).
 - [ ] Record this validated checkpoint in final handoff/manifest, require one final exact-HEAD Validate PASS, then build one signed candidate.
-- [ ] Run one focused phone test for #41: search+filter combination, rotate, clear to Усі, Neon + one alternate skin.
-- [ ] Record phone evidence and close issue #41 if PASS.
+- [x] Focused phone test PASS on exact signed candidate `1f2d4f0839bd545414a74cc56de02899534a5dbc` / signed run `37237512202`: search+filter combination, rotation persistence, `Усі` reset, Neon + alternate skin.
+- [x] Record phone evidence and close issue #41.
+- [ ] Final docs/manifest coherence and exact-HEAD Validate Android release-check for #41 closeout.
 
 Remaining Phase B backlog:
 - [ ] History logical playlist/provider grouping (#25).
