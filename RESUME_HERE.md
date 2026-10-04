@@ -22,7 +22,8 @@ Last updated: **2026-10-04**
   - History linkage now surfaces unresolved pending Search consistently;
   - JVM + static guards added.
 - No History mutation, API/write/search execution, navigation auto-action, or storage-schema change is part of #41.
-- Current gate: docs/manifest coherence → exact-HEAD Validate → signed APK → focused History filter phone test.
+- Source/docs checkpoint `8d46e6e677ab50b20aa9b3f918cf3332fa9b04d5` passed Validate Android run `37234665308 — SUCCESS` (preflight/JVM/unsigned release).
+- Current gate: record validated checkpoint → refresh manifest → one final exact-HEAD Validate → signed APK → focused History filter phone test.
 - v1.4.54 Tests 1–9 remain the accepted functional baseline and must not be repeated.
 
 ## NEXT ACTION — do this first
