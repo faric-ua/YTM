@@ -221,3 +221,20 @@ Issue #41 acceptance: **PASS**.
 
 Do not repeat Phase A or v1.4.54 Tests 1–9.
 
+## Phase B B2 — History logical grouping / provider presence (#25)
+
+Run only after the exact #25 candidate passes Validate and signed build.
+
+1. Open History on a dataset containing at least one logical playlist with multiple operations sharing the same local playlist identity.
+2. Confirm those operations appear as **one** History card, not duplicate Local/YTM rows.
+3. Confirm a linked logical playlist shows a compact right-side provider/result badge such as `YTM 4/4`.
+4. Tap a grouped card with more than one operation.
+5. Confirm the drill-down lists every operation separately with date/status/result; open one and verify the existing operation detail is unchanged.
+6. Back to the operation list, rotate portrait → landscape → portrait, then Back to grouped History.
+7. Confirm the same grouping/provider state remains and no Search/write/restore/delete action starts automatically.
+8. Sanity-check Neon plus the currently active alternate skin for badge/card readability.
+
+Result: `B2+` / `B2-`.
+
+Do not repeat #41, Phase A, or v1.4.54 Tests 1–9.
+
