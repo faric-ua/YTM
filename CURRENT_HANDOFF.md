@@ -53,7 +53,15 @@ Current source commits:
 - provider badges `770f351af262067780b3f662ca97a6027baabed6`;
 - static guard `5a47433486003da4fcc9e1da983549c4ffc51cc6`.
 
-**Current task:** refresh docs/manifest, require exact-HEAD Validate PASS, signed build, then focused #25 phone QA. No #41/Phase A retest.
+Validation checkpoint:
+- HEAD `5d56cc7c237b7737638256babd89916ad40e6d4a`;
+- Validate Android run `37244156767 — SUCCESS`;
+- release preflight PASS;
+- JVM tests PASS;
+- unsigned release assemble PASS;
+- the initial compile failure was fixed in `51bbf7e20a8a98822db994e89766dd3b855bc87a` and revalidated.
+
+**Current task:** record this checkpoint in final docs/manifest, require one final exact-HEAD Validate PASS, then signed build and focused #25 phone QA. No #41/Phase A retest.
 
 ## Immutable functional reference
 
