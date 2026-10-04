@@ -22,21 +22,23 @@ Last updated: **2026-10-04**
 
 ## Current validated checkpoint — 2026-10-04
 
-v1.4.55 Phase A consolidated hardening scope is **PHONE PASS / CLOSED**.
+v1.4.55 Phase A is **PHONE PASS / CLOSED**.
 
-Exact final phone-tested app candidate:
-- source/head `14ea02cff4d541e7ec252a1c2475362e2260a87f`;
+Final phone-tested app candidate:
+- source `14ea02cff4d541e7ec252a1c2475362e2260a87f`;
 - Validate Android run `37214907587 — SUCCESS`;
 - signed build run `37231781928 — SUCCESS`.
 
-Final phone results:
-- BUG-040 R2 — PASS/CLOSED: Project modal is owned directly by Current Playlist through rotation and Close;
-- BUG-041 — PASS/CLOSED: Quota landscape right-side values stay inside the horizontal safe area;
-- UX-031 — PASS/CLOSED: Bulk Session Help uses plain Ukrainian, remains readable in landscape, and keeps its fixed action visible.
+Final targeted phone results:
+- BUG-040 R2 — PASS/CLOSED;
+- BUG-041 Quota landscape safe area — PASS/CLOSED;
+- UX-031 Bulk Session Help readability/localization — PASS/CLOSED.
 
-No automatic Search/write/save/share/sync/rollback action was observed during the focused lifecycle checks.
+Final evidence/manifest checkpoint `da6be620fcdabcb908ddfe0b2ac764d4deeacfbd` passed Validate Android run `37232652795 — SUCCESS`.
 
-**Current task:** final closeout documentation + `FILE_MANIFEST.txt` coherence, then one exact-HEAD Validate Android release-check. No additional Phase A phone action is required if that docs-only validation passes. Do not repeat v1.4.54 Tests 1–9.
+No further Phase A phone action is required. v1.4.54 Tests 1–9 stay accepted and must not be repeated.
+
+**Next development stage:** Phase B only as a separate explicit task after checking live GitHub HEAD/Actions.
 
 ## Immutable functional reference
 
@@ -108,11 +110,13 @@ real-device acceptance.
 
 ## Exact next work
 
-1. synchronize the final Phase A PASS evidence/status docs and `FILE_MANIFEST.txt`;
-2. require one clean exact-HEAD Validate Android PASS;
-3. record the final validated closeout SHA/run;
-4. stop Phase A work;
-5. Phase B starts only as a separate task.
+Phase A has no remaining work.
+
+Before any Phase B implementation:
+1. verify live HEAD and latest Actions;
+2. read `RESUME_HERE.md` and `ACTIVE_PLAN.md`;
+3. choose the first explicit Phase B target;
+4. keep v1.4.54 functional semantics and the v1.4.55 Phase A hardening contracts intact.
 
 ## Working contract
 
