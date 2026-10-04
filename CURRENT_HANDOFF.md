@@ -48,7 +48,16 @@ Validation checkpoint:
 - JVM tests PASS;
 - unsigned release assemble PASS.
 
-**Current task:** record this checkpoint in final docs/manifest, require one final exact-HEAD Validate PASS, then signed build and focused #41 phone test. No Phase A retest.
+Phone acceptance:
+- exact installed source `1f2d4f0839bd545414a74cc56de02899534a5dbc`;
+- signed build run `37237512202 — SUCCESS`;
+- text query + `Пов’язано з YTM` filter combined correctly;
+- rotation preserved query + filter;
+- `Усі` + cleared query restored all 99 History records;
+- Neon + alternate skin readable;
+- no automatic Search/write/restore action.
+
+**Current task:** close #41 in docs/GitHub, refresh manifest and require one final exact-HEAD Validate Android PASS. No Phase A retest and no #41 phone retest.
 
 ## Immutable functional reference
 
