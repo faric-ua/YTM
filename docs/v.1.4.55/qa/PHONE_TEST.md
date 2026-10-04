@@ -118,3 +118,29 @@ Result: `A7+` / `A7-`.
 
 Add targeted tests only when those implementation waves land. Do not broaden Wave A
 into remote write regression unless a shared change touched execution policy.
+
+## Focused corrective retest — BUG-040 R2
+
+Prior phone evidence:
+- the first corrective candidate returned to `Поточний плейлист` after Close;
+- video still showed `Перевірка треків` behind the Project modal;
+- therefore BUG-040 was **not** accepted as PHONE PASS.
+
+R2 changed ownership rather than masking the back stack:
+- `Проєкт YTM / експорт` is now hosted directly by `PlaylistActivity`;
+- opening it must not create or reveal `ReviewActivity`.
+
+After the R2 signed APK is installed, perform only this focused retest:
+1. open `Поточний плейлист`;
+2. tap `Проєкт YTM / експорт`;
+3. confirm the modal is visibly over `Поточний плейлист` — `Перевірка треків` must not appear behind it;
+4. rotate portrait → landscape → portrait;
+5. the same modal must remain open over the same Current Playlist parent;
+6. press `Закрити`;
+7. remain on `Поточний плейлист`;
+8. no Search, write, save, share or other durable/remote action starts automatically.
+
+Result: `BUG-040 R2+` / `BUG-040 R2-`.
+
+Do not repeat v1.4.54 functional Tests 1–9 for this corrective.
+
