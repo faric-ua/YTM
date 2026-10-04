@@ -10,29 +10,28 @@ Last updated: **2026-10-04**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase A — BUG-040 corrective candidate gate**
+- Release: **v1.4.55 / Phase A — final corrective gate**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Latest clean source/static exact-HEAD checkpoint:
-  `e2988b7cd209c821670af77e76f049046da54474`
-- Validate Android run **37169513681 — SUCCESS**:
-  release preflight PASS / JVM PASS / unsigned release assemble PASS.
-- Consolidated Phase A phone QA reached A8.
-- A7 Current Playlist portrait/landscape remains PHONE PASS for layout/rotation/no-auto-action.
-- First BUG-040 corrective candidate fixed the final Close destination, but the real-phone video still showed `Перевірка треків` behind the Project modal.
-- Root cause is now removed: `PlaylistActivity` owns Project save/share directly and no longer launches `ReviewActivity` for `Проєкт YTM / експорт`.
-- The temporary Review `finish()` workaround was removed; Review-local Project actions remain owned by Review.
-- BUG-040 R2 is **SOURCE/STATIC/BUILD PASS, PHONE RETEST PENDING**.
-- Temporary v1.4.54 Test 5/Test 8 fault controls remain compile-gated from release builds.
-- v1.4.54 is closed. **Tests 1–9 = PHONE PASS. Do not repeat them.**
+- BUG-040 R2 is **CLOSED — PHONE PASS**.
+- Exact phone-tested BUG-040 source: `846f50ed89d7d6888951b3808a231b555da166bf`.
+- Exact Validate: run `37169933481 — SUCCESS`.
+- Exact signed build used for the phone video: run `37201379978 — SUCCESS`.
+- Phone video confirmed: Project modal is owned directly by Current Playlist, survives rotation, Close stays on Current Playlist, no automatic Search/write/save/share.
+- Phase A is **not closed yet** because earlier phone screenshots already exposed two remaining presentation findings:
+  - BUG-041: Quota landscape right-side values can sit under the side system-bar safe area;
+  - UX-031: Bulk Session Help is too long and exposes mixed English technical jargon.
+- Both final findings are now implemented in source: shared horizontal system/cutout insets + shorter plain-Ukrainian Bulk Help.
+- Current gate: docs/manifest coherence → exact-HEAD Validate → signed APK → one focused BUG-041/UX-031 phone retest.
+- v1.4.54 Tests 1–9 remain PHONE PASS and must not be repeated.
 - Phase B is not active yet.
 
 ## NEXT ACTION — do this first
 
-1. Finish final docs/manifest coherence for BUG-040 R2.
-2. Require a clean exact-HEAD Validate Android PASS after those documentation changes.
-3. Build one signed APK from that exact validated HEAD.
-4. Phone retest only the affected path: `Поточний плейлист → Проєкт YTM / експорт → rotate → Закрити`.
-5. The modal must stay directly over `Поточний плейлист`; `Перевірка треків` must never appear behind it.
+1. Synchronize final BUG-041/UX-031 docs and `FILE_MANIFEST.txt`.
+2. Require a clean exact-HEAD Validate Android PASS.
+3. Build one signed APK from that exact HEAD.
+4. Phone retest only: Quota portrait/landscape safe area + Bulk Session Help portrait/landscape/rotation.
+5. If both pass, record evidence and close Phase A.
 6. Do not repeat v1.4.54 Tests 1–9 and do not start Phase B.
 
 ## Consolidated phone matrix
