@@ -323,7 +323,18 @@ grep -Fq 'title = "Поточний проєкт YTM"' "$REVIEW" || fail "Review
 grep -Fq 'title =' "$PLAYLIST" || fail "Playlist project dialog owner missing"
 grep -Fq '"Поточний проєкт YTM"' "$PLAYLIST" || fail "Playlist direct project modal localized title missing"
 grep -Fq 'STATE_PROJECT_DIALOG_OPEN' "$PLAYLIST" || fail "Playlist project modal rotation state missing"
-grep -Fq 'projectDialog?.isShowing' "$PLAYLIST" || fail "Playlist project modal recreation guard missing"
+python - "$PLAYLIST" <<'PY_PROJECT_RECREATE'
+from pathlib import Path
+import re
+import sys
+
+playlist = Path(sys.argv[1]).read_text(encoding="utf-8")
+if not re.search(
+    r"projectDialogOpen\s*&&\s*projectDialog\s*\?\.isShowing\s*!=\s*true",
+    playlist,
+):
+    raise SystemExit("FAIL: Playlist project modal recreation guard missing")
+PY_PROJECT_RECREATE
 grep -Fq 'showProjectActions()' "$PLAYLIST" || fail "Playlist project action is not locally owned"
 
 python - "$PLAYLIST" "$REVIEW" <<'PY_PROJECT_OWNER'
