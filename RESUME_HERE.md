@@ -10,24 +10,24 @@ Last updated: **2026-10-04**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase A — PHONE PASS, final docs gate**
+- Release: **v1.4.55 / Phase A — CLOSED**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Final phone-tested app source: `14ea02cff4d541e7ec252a1c2475362e2260a87f`.
-- Validate Android run: `37214907587 — SUCCESS`.
-- Signed build run: `37231781928 — SUCCESS`.
-- BUG-040 R2: **CLOSED — PHONE PASS**.
-- BUG-041 Quota landscape safe area: **CLOSED — PHONE PASS**.
-- UX-031 Bulk Help readability/localization: **CLOSED — PHONE PASS**.
-- Consolidated Phase A hardening scope: **PHONE PASS / CLOSED**, subject only to final documentation/manifest exact-HEAD release-check.
-- v1.4.54 Tests 1–9 remain the accepted functional baseline and were not repeated.
-- Phase B is not active yet.
+- App-source Validate: run `37214907587 — SUCCESS`.
+- Signed phone-test build: run `37231781928 — SUCCESS`.
+- Final evidence/manifest closeout checkpoint: `da6be620fcdabcb908ddfe0b2ac764d4deeacfbd`.
+- Closeout Validate: run `37232652795 — SUCCESS`.
+- BUG-040 R2, BUG-041 and UX-031 are **CLOSED — PHONE PASS**.
+- Consolidated v1.4.55 Phase A presentation/navigation/lifecycle hardening scope: **PHONE PASS / CLOSED**.
+- v1.4.54 Tests 1–9 remain the accepted functional baseline and must not be repeated.
+- No further Phase A phone action is required.
+- Phase B has not started.
 
 ## NEXT ACTION — do this first
 
-1. Synchronize final phone-evidence/status docs and `FILE_MANIFEST.txt`.
-2. Require one clean exact-HEAD Validate Android PASS.
-3. If PASS, mark Phase A closeout complete and stop; no more phone action is required for Phase A.
-4. Start Phase B only as a separate next task.
+1. Verify live branch HEAD and latest Actions.
+2. Confirm Phase A remains CLOSED and the latest closeout validation is green.
+3. Start Phase B only as a new explicit task; do not reopen or repeat Phase A without a new regression finding.
 
 ## Consolidated phone matrix
 
