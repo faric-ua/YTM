@@ -140,7 +140,35 @@ After the R2 signed APK is installed, perform only this focused retest:
 7. remain on `Поточний плейлист`;
 8. no Search, write, save, share or other durable/remote action starts automatically.
 
-Result: `BUG-040 R2+` / `BUG-040 R2-`.
+Result: **BUG-040 R2+ — PHONE PASS 2026-10-04.**
+
+Evidence:
+- exact installed source `846f50ed89d7d6888951b3808a231b555da166bf`;
+- signed run `37201379978`;
+- user-provided focused phone video;
+- direct Current Playlist parent, rotation persistence, Close-to-same-parent and no-auto-action all passed.
 
 Do not repeat v1.4.54 functional Tests 1–9 for this corrective.
+
+## Final Phase A corrective retest — BUG-041 / UX-031
+
+After the next signed APK, test only these two previously observed presentation defects.
+
+### BUG-041 — Quota landscape safe area
+1. Home → `Квота`.
+2. Check portrait.
+3. Rotate to landscape.
+4. Confirm every right-side value is fully visible inside the card/safe screen area.
+5. Rotate back.
+6. No action must start automatically.
+
+### UX-031 — Bulk Session Help
+1. Menu → `Поточна синхронізація всіх` → open Help.
+2. Confirm title/body use plain Ukrainian and no longer expose `Bulk-сесія`, `Checkpoint`, `Remote baseline`, `read-only`.
+3. Check portrait and landscape.
+4. Scroll if needed; text must remain reachable above the fixed `Зрозуміло` button and inside safe screen edges.
+5. Rotate back and close Help.
+6. No sync/continue/rollback/write action may start automatically.
+
+Result: `BUG-041+` / `BUG-041-`; `UX-031+` / `UX-031-`.
 
