@@ -56,6 +56,29 @@ object PlaylistLinkagePolicy {
         entry: HistoryEntry
     ): PlaylistLinkageState {
         if (
+            entry.tracks.any { track ->
+                val status =
+                    runCatching {
+                        TrackStatus.valueOf(
+                            track.status
+                        )
+                    }.getOrNull()
+
+                track.videoId
+                    .isNullOrBlank() &&
+                    status in
+                        setOf(
+                            TrackStatus.NEW,
+                            TrackStatus.SEARCHING,
+                            TrackStatus.WAITING_QUOTA
+                        )
+            }
+        ) {
+            return PlaylistLinkageState
+                .PENDING_SEARCH
+        }
+
+        if (
             entry.pendingCount > 0 ||
             entry.status in
                 setOf(
