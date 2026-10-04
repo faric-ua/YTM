@@ -10,29 +10,24 @@ Last updated: **2026-10-04**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase A — final corrective gate**
+- Release: **v1.4.55 / Phase A — PHONE PASS, final docs gate**
 - Branch: `feat/v1.4.55-ux-hardening`
-- BUG-040 R2 is **CLOSED — PHONE PASS**.
-- Exact phone-tested BUG-040 source: `846f50ed89d7d6888951b3808a231b555da166bf`.
-- Exact Validate: run `37169933481 — SUCCESS`.
-- Exact signed build used for the phone video: run `37201379978 — SUCCESS`.
-- Phone video confirmed: Project modal is owned directly by Current Playlist, survives rotation, Close stays on Current Playlist, no automatic Search/write/save/share.
-- Phase A is **not closed yet** because earlier phone screenshots already exposed two remaining presentation findings:
-  - BUG-041: Quota landscape right-side values can sit under the side system-bar safe area;
-  - UX-031: Bulk Session Help is too long and exposes mixed English technical jargon.
-- Both final findings are now implemented in source: shared horizontal system/cutout insets + shorter plain-Ukrainian Bulk Help.
-- Current gate: docs/manifest coherence → exact-HEAD Validate → signed APK → one focused BUG-041/UX-031 phone retest.
-- v1.4.54 Tests 1–9 remain PHONE PASS and must not be repeated.
+- Final phone-tested app source: `14ea02cff4d541e7ec252a1c2475362e2260a87f`.
+- Validate Android run: `37214907587 — SUCCESS`.
+- Signed build run: `37231781928 — SUCCESS`.
+- BUG-040 R2: **CLOSED — PHONE PASS**.
+- BUG-041 Quota landscape safe area: **CLOSED — PHONE PASS**.
+- UX-031 Bulk Help readability/localization: **CLOSED — PHONE PASS**.
+- Consolidated Phase A hardening scope: **PHONE PASS / CLOSED**, subject only to final documentation/manifest exact-HEAD release-check.
+- v1.4.54 Tests 1–9 remain the accepted functional baseline and were not repeated.
 - Phase B is not active yet.
 
 ## NEXT ACTION — do this first
 
-1. Synchronize final BUG-041/UX-031 docs and `FILE_MANIFEST.txt`.
-2. Require a clean exact-HEAD Validate Android PASS.
-3. Build one signed APK from that exact HEAD.
-4. Phone retest only: Quota portrait/landscape safe area + Bulk Session Help portrait/landscape/rotation.
-5. If both pass, record evidence and close Phase A.
-6. Do not repeat v1.4.54 Tests 1–9 and do not start Phase B.
+1. Synchronize final phone-evidence/status docs and `FILE_MANIFEST.txt`.
+2. Require one clean exact-HEAD Validate Android PASS.
+3. If PASS, mark Phase A closeout complete and stop; no more phone action is required for Phase A.
+4. Start Phase B only as a separate next task.
 
 ## Consolidated phone matrix
 
