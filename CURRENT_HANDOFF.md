@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-10-03**
+Last updated: **2026-10-04**
 
 > **FIRST READ: `RESUME_HERE.md`**
 >
@@ -20,28 +20,31 @@ Last updated: **2026-10-03**
 - Readability audit: `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`
 - Backlog reconciliation: `docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md`
 
-## Current validated checkpoint — 2026-10-03
+## Current validated checkpoint — 2026-10-04
 
-Phase A readability source/static work is complete; real-device acceptance is still pending.
+BUG-040 R2 source/static/build checkpoint:
+`e2988b7cd209c821670af77e76f049046da54474`.
 
-Latest clean exact-HEAD Validate checkpoint:
-`f91ec7896112f6e094143670a9bb4c2eb5524dfa`.
-
-Validate Android run `37133840128` — **SUCCESS**:
+Validate Android run `37169513681` — **SUCCESS**:
 - release preflight PASS;
 - JVM unit tests PASS;
 - unsigned release assemble PASS.
 
-A later tooling-only checkpoint `c68c390e7464658e778b3893bcf56dd35f16be3d`
-passed all v1.4.55 readability/static/documentation audits and stopped only at the
-generated `FILE_MANIFEST.txt` freshness gate. The manifest correction is part of the
-current candidate-gate work.
+Real-phone evidence on the prior corrective candidate:
+- Close returned to `Поточний плейлист`, so the first return-path fix worked;
+- video still showed `Перевірка треків` behind the Project modal;
+- therefore BUG-040 remained open because the modal owner was still the wrong Activity.
 
-**Current blocker:** BUG-040 source fix requires exact-HEAD validation and a focused phone retest.
+R2 implementation now removes that navigation layer:
+- `PlaylistActivity` directly owns the Project modal plus Save/Share result handling;
+- `Проєкт YTM / експорт` no longer launches `ReviewActivity`;
+- Playlist modal-open state is saved/restored for rotation;
+- temporary Review finish-on-dismiss workaround is removed;
+- static guard rejects reintroduction of the Review route.
 
-**Current task:** finish docs/manifest coherence for the BUG-040 navigation fix, require exact-HEAD Validate PASS, build one signed candidate, then retest only the affected Project-dialog return path plus any remaining Phase A closeout checks.
+**Current blocker:** final docs/manifest exact-HEAD validation, then signed APK, then one focused real-phone BUG-040 retest.
 
-Phone evidence already collected in this Phase A pass includes A7 Current Playlist portrait/landscape PASS. A8 reproduced the Project-dialog parent bug and confirmed remaining `YTM Project` wording; both are patched in source. Do not repeat v1.4.54 Tests 1–9. Do not restart completed Bulk/Toast/Tile audits. Do not start Phase B yet.
+**Current task:** finalize docs/manifest → exact-HEAD Validate PASS → signed APK → focused phone retest. Do not repeat v1.4.54 Tests 1–9. Do not restart completed Bulk/Toast/Tile audits. Do not start Phase B yet.
 
 ## Immutable functional reference
 
@@ -115,21 +118,13 @@ real-device acceptance.
 
 Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
 
-Remaining Menu/Home/History/Queue/Data/File readability work is source/static complete.
-The v1.4.55 audit confirms the user-facing hierarchy/wording guards, and release builds
-compile-gate the temporary v1.4.54 Test 5/Test 8 controls behind `BuildConfig.DEBUG`.
-
-Next repository gate:
-1. synchronize docs and `FILE_MANIFEST.txt` with the BUG-040 source/audit changes;
+1. synchronize the final BUG-040 R2 documentation and `FILE_MANIFEST.txt`;
 2. require a clean exact-HEAD Validate Android PASS;
-3. build one signed candidate from that exact source;
-4. phone retest: `Поточний плейлист → Проєкт YTM / експорт → rotate → Закрити` must return to `Поточний плейлист` and must not start Search/write/save/share;
-5. record evidence and close the remaining Phase A gate.
-
-Phone acceptance still covers Neon + Blue/Green, portrait/landscape/rotation,
-Home/Menu/Bulk/History/Queue/Data/file chooser, long Help/destructive confirmation,
-scroll/selectable-text retention, Back/Cancel/Close, and no automatic remote/durable
-actions.
+3. build a signed APK from exactly that HEAD;
+4. phone retest: `Поточний плейлист → Проєкт YTM / експорт`;
+5. rotate portrait ↔ landscape and confirm the same modal remains directly above `Поточний плейлист`;
+6. press `Закрити`: remain on the same Current Playlist; no `Перевірка треків` flash/background and no automatic Search/write/save/share;
+7. after PHONE PASS, record evidence and finish Phase A closeout.
 
 ## Working contract
 
