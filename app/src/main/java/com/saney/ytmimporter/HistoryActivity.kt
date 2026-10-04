@@ -433,7 +433,10 @@ class HistoryActivity : Activity() {
             )
         }
 
+        groupScrollPosition.reset()
         detailScrollPosition.reset()
+        currentGroupKey = null
+        groupScrollView = null
         detailScrollEntryId = null
         detailScrollView = null
         currentEntryId = null
@@ -473,8 +476,8 @@ class HistoryActivity : Activity() {
         root.addView(
             TextView(this).apply {
                 text =
-                    "Створені плейлисти, спроби імпорту та " +
-                        "відновлення проєктів YTM."
+                    "Один логічний плейлист — одна картка. " +
+                        "Усі окремі операції залишаються доступними всередині."
                 textSize = 13f
                 setTextColor(MUTED)
                 setPadding(
@@ -589,11 +592,16 @@ class HistoryActivity : Activity() {
         }
         root.addView(countText)
 
-        val entries = historyStore.getAll()
+        val entries =
+            historyStore.getAll()
 
-        if (entries.isEmpty()) {
+        val groups =
+            HistoryLogicalGroupPolicy
+                .build(entries)
+
+        if (groups.isEmpty()) {
             filterButton.isEnabled = false
-            countText.text = "Записів немає"
+            countText.text = "Плейлистів немає"
 
             root.addView(
                 TextView(this).apply {
@@ -662,7 +670,7 @@ class HistoryActivity : Activity() {
         historyListView = list
 
         val adapter =
-            HistoryListAdapter(entries)
+            HistoryGroupAdapter(groups)
 
         list.adapter = adapter
         adapter.filter(
@@ -695,9 +703,23 @@ class HistoryActivity : Activity() {
 
         list.setOnItemClickListener { _, _, position, _ ->
             captureHistoryViewport()
+
             adapter
                 .getItem(position)
-                ?.let(::showDetailScreen)
+                ?.let { group ->
+                    if (
+                        group.operationCount >
+                            1
+                    ) {
+                        showGroupScreen(
+                            group.key
+                        )
+                    } else {
+                        showDetailScreen(
+                            group.latest
+                        )
+                    }
+                }
         }
 
         search.addTextChangedListener(
@@ -769,7 +791,7 @@ class HistoryActivity : Activity() {
                 historySemanticFilter ==
                     HistorySemanticFilter.ALL
             ) {
-                "$count записів"
+                "$count плейлистів"
             } else {
                 "Показано: $count"
             }
@@ -777,7 +799,7 @@ class HistoryActivity : Activity() {
 
     private fun showHistoryFilterMenu(
         filterButton: Button,
-        adapter: HistoryListAdapter,
+        adapter: HistoryGroupAdapter,
         countText: TextView
     ) {
         UiChrome.showMenuDialog(
@@ -856,7 +878,19 @@ class HistoryActivity : Activity() {
             topBar(
                 title = entry.playlistName,
                 onBack = {
-                    showListScreen()
+                    val groupKey =
+                        currentGroupKey
+
+                    if (
+                        groupKey
+                            .isNullOrBlank()
+                    ) {
+                        showListScreen()
+                    } else {
+                        showGroupScreen(
+                            groupKey
+                        )
+                    }
                 },
                 actionLabel = "Дії",
                 onAction = {
