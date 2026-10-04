@@ -231,7 +231,8 @@ Current task checklist:
 - [x] BUG-041 phone retest PASS: Quota landscape safe area no longer clips right-side values.
 - [x] UX-031 phone retest PASS: Bulk Session Help is plain Ukrainian, readable in landscape, fixed action visible, rotation-safe.
 - [x] **Phase A consolidated phone acceptance CLOSED / PASS** for the v1.4.55 hardening scope.
-- [ ] Final documentation/manifest coherence and exact-HEAD release-check after closeout docs.
+- [x] Final documentation/manifest coherence completed; closeout checkpoint `da6be620fcdabcb908ddfe0b2ac764d4deeacfbd` passed exact-HEAD Validate Android run `37232652795 — SUCCESS`.
+- [x] **Phase A CLOSED.** No further Phase A phone action or source work is required.
 
 Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
 first unchecked CURRENT TASK item above.
@@ -352,9 +353,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Finish Phase A closeout bookkeeping.**
+**Phase A is closed.**
 
-Refresh the generated manifest for the final phone-evidence/status commits and require one clean exact-HEAD Validate Android PASS. After that PASS, Phase A is fully closed. Do not repeat v1.4.54 Tests 1–9. Phase B may start only as a separate next task.
+Do not repeat v1.4.54 Tests 1–9 or the v1.4.55 Phase A phone matrix. The next implementation work must begin as a separate Phase B task after verifying the live branch and latest Actions state.
 
 ## Update rule
 
