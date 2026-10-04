@@ -226,8 +226,12 @@ Current task checklist:
 - [x] Final BUG-040 R2 candidate `846f50ed89d7d6888951b3808a231b555da166bf` passed Validate run `37169933481`, signed run `37201379978`, and focused PHONE PASS on 2026-10-04. BUG-040 CLOSED.
 - [x] Do not close Phase A prematurely: existing phone evidence still showed BUG-041 (Quota landscape right-edge clipping) and UX-031 (Bulk Help mixed jargon/scanability).
 - [x] Implement shared horizontal system/cutout insets and concise Ukrainian Bulk Help; strengthen static guards.
-- [ ] Refresh generated manifest and require exact-HEAD Validate Android PASS for the final BUG-041/UX-031 corrective.
-- [ ] Build one signed candidate and phone-retest only BUG-041 + UX-031, then close Phase A if both pass.
+- [x] Final BUG-041/UX-031 corrective source `14ea02cff4d541e7ec252a1c2475362e2260a87f` passed exact Validate run `37214907587`.
+- [x] Signed build run `37231781928` from that exact source passed.
+- [x] BUG-041 phone retest PASS: Quota landscape safe area no longer clips right-side values.
+- [x] UX-031 phone retest PASS: Bulk Session Help is plain Ukrainian, readable in landscape, fixed action visible, rotation-safe.
+- [x] **Phase A consolidated phone acceptance CLOSED / PASS** for the v1.4.55 hardening scope.
+- [ ] Final documentation/manifest coherence and exact-HEAD release-check after closeout docs.
 
 Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
 first unchecked CURRENT TASK item above.
@@ -348,9 +352,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Finish the Phase A candidate gate.**
+**Finish Phase A closeout bookkeeping.**
 
-Refresh generated manifest state after the current tooling/docs checkpoint, require a clean exact-HEAD Validate Android PASS, then build one signed candidate. After the signed candidate passes, run the single consolidated Phase A phone matrix. Do not repeat v1.4.54 Tests 1–9 and do not start Phase B.
+Refresh the generated manifest for the final phone-evidence/status commits and require one clean exact-HEAD Validate Android PASS. After that PASS, Phase A is fully closed. Do not repeat v1.4.54 Tests 1–9. Phase B may start only as a separate next task.
 
 ## Update rule
 
