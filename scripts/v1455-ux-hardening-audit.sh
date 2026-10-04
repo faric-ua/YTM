@@ -319,6 +319,8 @@ MENU="$SRC/MenuActivity.kt"
 HISTORY="$SRC/HistoryActivity.kt"
 HISTORY_FILTER="$SRC/model/HistoryListFilterPolicy.kt"
 HISTORY_FILTER_TEST="app/src/test/java/com/saney/ytmimporter/model/HistoryListFilterPolicyTest.kt"
+HISTORY_GROUP="$SRC/model/HistoryLogicalGroupPolicy.kt"
+HISTORY_GROUP_TEST="app/src/test/java/com/saney/ytmimporter/model/HistoryLogicalGroupPolicyTest.kt"
 PENDING="$SRC/PendingActivity.kt"
 RECENT_FILE="$SRC/RecentFileChooserActivity.kt"
 
@@ -328,9 +330,11 @@ grep -Fq 'Поточна синхронізація всіх' "$MENU" || fail "M
 grep -Fq 'Пошук і запис у YTM не запускатимуться автоматично.' "$HISTORY" || fail "History restore safety copy regressed"
 test -f "$HISTORY_FILTER" || fail "History semantic filter policy missing"
 test -f "$HISTORY_FILTER_TEST" || fail "History semantic filter JVM coverage missing"
+test -f "$HISTORY_GROUP" || fail "History logical grouping policy missing"
+test -f "$HISTORY_GROUP_TEST" || fail "History logical grouping JVM coverage missing"
 grep -Fq 'KEY_SEMANTIC_FILTER' "$HISTORY" || fail "History semantic filter state does not survive recreation"
 grep -Fq 'Фільтр історії' "$HISTORY" || fail "History filter control missing"
-grep -Fq 'HistoryListFilterPolicy' "$HISTORY" || fail "History list does not use shared filter policy"
+grep -Fq 'HistoryLogicalGroupPolicy' "$HISTORY" || fail "History list does not use logical grouping/filter policy"
 grep -Fq 'searchAndSemanticFilterCombine' "$HISTORY_FILTER_TEST" || fail "History search+filter combination coverage missing"
 grep -Fq 'allWithBlankQueryReturnsCompleteList' "$HISTORY_FILTER_TEST" || fail "History clear-filter completeness coverage missing"
 grep -Fq 'PENDING_SEARCH("Очікує Search")' "$HISTORY_FILTER" || fail "History pending-Search filter missing"
@@ -355,6 +359,52 @@ for forbidden in (
             "FAIL: History filter policy can mutate/navigate: " + forbidden
         )
 PY_HISTORY_FILTER
+grep -Fq 'KEY_CURRENT_GROUP_KEY' "$HISTORY" || fail "History group drill-down state does not survive recreation"
+grep -Fq 'KEY_GROUP_SCROLL_POSITION' "$HISTORY" || fail "History group drill-down scroll state missing"
+grep -Fq 'showGroupScreen(' "$HISTORY" || fail "History operation drill-down screen missing"
+grep -Fq 'providerBadge' "$HISTORY" || fail "History provider badge is not surfaced"
+grep -Fq 'Операцій' "$HISTORY" || fail "History grouped-card operation count missing"
+grep -Fq 'sameLocalIdentityBecomesOneLogicalPlaylist' "$HISTORY_GROUP_TEST" || fail "History same-local-id grouping test missing"
+grep -Fq 'sameTitleDifferentLocalIdentityNeverMerges' "$HISTORY_GROUP_TEST" || fail "History anti-title-grouping test missing"
+grep -Fq 'missingLocalIdentityStaysOperationScoped' "$HISTORY_GROUP_TEST" || fail "History no-local-id fail-closed grouping test missing"
+
+python - "$HISTORY_GROUP" <<'PY_HISTORY_GROUP'
+from pathlib import Path
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+
+for forbidden in (
+    "HistoryStore(",
+    ".upsert(",
+    ".remove(",
+    ".clear(",
+    "YouTubeApi",
+    "startActivity",
+):
+    if forbidden in text:
+        raise SystemExit(
+            "FAIL: History grouping policy can mutate/navigate: " + forbidden
+        )
+
+group_by = text.find(".groupBy { entry ->")
+if group_by < 0:
+    raise SystemExit("FAIL: History logical grouping key missing")
+
+group_key_block = text[group_by: group_by + 700]
+if "localPlaylistId" not in group_key_block:
+    raise SystemExit(
+        "FAIL: History logical grouping is not keyed by stable local identity"
+    )
+if "playlistName" in group_key_block:
+    raise SystemExit(
+        "FAIL: History logical grouping regressed to title matching"
+    )
+if '"operation:' not in group_key_block:
+    raise SystemExit(
+        "FAIL: History entries without local identity do not fail closed to operation scope"
+    )
+PY_HISTORY_GROUP
 grep -Fq 'Забагато запитів' "$PENDING" || fail "Pending rate-limit user label missing"
 grep -Fq 'Обмеження сервісу' "$PENDING" || fail "Pending resource-limit user label missing"
 grep -Fq 'Резервні копії та відновлення' "$DATA" || fail "Data task-oriented backup section missing"
