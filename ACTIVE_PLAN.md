@@ -347,8 +347,9 @@ Goal: collapse repeated History operation rows into one logical playlist card wh
 - [x] Preserve group screen and scroll state through recreation/rotation.
 - [x] Add JVM coverage for same-local-id grouping, anti-title matching, fail-closed no-ID behavior, provider persistence and filter/current-state semantics.
 - [x] Add static guards that grouping is read-only, local-ID keyed, provider-visible and drill-down capable.
-- [ ] Refresh docs/generated manifest and require exact-HEAD Validate Android PASS.
-- [ ] Build one signed candidate and run focused phone QA for #25: duplicate lifecycle collapses to one card, provider badge visible, operation drill-down preserves all records, rotation/back works, no action auto-starts.
+- [x] Source/docs checkpoint `5d56cc7c237b7737638256babd89916ad40e6d4a` passed exact-HEAD Validate Android run `37244156767 — SUCCESS` after one compile fix; preflight/JVM/unsigned release PASS.
+- [ ] Record this checkpoint in final handoff/manifest, require one final exact-HEAD Validate PASS, then build one signed candidate.
+- [ ] Run focused phone QA for #25: duplicate lifecycle collapses to one card, provider badge visible, operation drill-down preserves all records, rotation/back works, no action auto-starts.
 - [ ] Record phone evidence and close issue #25 if PASS.
 
 Remaining Phase B backlog:
