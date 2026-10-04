@@ -10,31 +10,31 @@ Last updated: **2026-10-04**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase B — History semantic filters (#41)**
+- Release: **v1.4.55 / Phase B — History logical grouping (#25)**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Phase A is **PHONE PASS / CLOSED**; do not repeat it.
-- Phase B #41 is now the active explicit task.
+- Phase A is PHONE PASS / CLOSED; do not repeat it.
+- Phase B #41 History filters is PHONE PASS / CLOSED; GitHub issue #41 is closed.
+- Final #41 closeout HEAD `ef4e175895e01fb8b67ddd9d7aafad566a785660` passed Validate Android run `37243312361 — SUCCESS`.
+- #25 is now active.
 - Implemented source:
-  - pure `HistoryListFilterPolicy`;
-  - one combined semantic filter over existing text search;
-  - filters: All/local/linked/pending Search/pending write/pause-or-error;
-  - selected filter saved/restored through rotation;
-  - History linkage now surfaces unresolved pending Search consistently;
+  - pure logical grouping policy keyed only by stable nonblank `localPlaylistId`;
+  - no title-based grouping;
+  - no-local-id entries remain operation-scoped;
+  - grouped cards expose YTM provider/result badge;
+  - multi-operation cards drill down to a full operation list;
+  - operation detail remains the existing audit record;
+  - group screen/scroll state survives rotation;
   - JVM + static guards added.
-- No History mutation, API/write/search execution, navigation auto-action, or storage-schema change is part of #41.
-- Source/docs checkpoint `8d46e6e677ab50b20aa9b3f918cf3332fa9b04d5` passed Validate Android run `37234665308 — SUCCESS` (preflight/JVM/unsigned release).
-- Signed #41 candidate `1f2d4f0839bd545414a74cc56de02899534a5dbc` passed real-phone QA on 2026-10-05.
-- Phone PASS: search+semantic filter combination, rotation persistence, All reset, Neon + alternate skin.
-- Current gate: close #41 in docs/GitHub, refresh manifest, require one final exact-HEAD Validate Android PASS.
-- v1.4.54 Tests 1–9 remain the accepted functional baseline and must not be repeated.
+- No History record mutation, API/write/search execution, storage schema change or remote auto-action is part of #25.
+- Current gate: docs/manifest coherence → exact-HEAD Validate → signed APK → focused #25 phone QA.
 
 ## NEXT ACTION — do this first
 
-1. Synchronize #41 docs and `FILE_MANIFEST.txt`.
+1. Synchronize #25 docs and `FILE_MANIFEST.txt`.
 2. Require exact-HEAD Validate Android PASS.
 3. Build one signed APK from that exact HEAD.
-4. #41 phone acceptance is complete; do not repeat it.
-5. Finish #41 closeout docs/manifest and exact-HEAD Validate Android release-check.
+4. Phone-test only grouped History cards: one logical playlist card, YTM badge/result, operation drill-down, rotation/back/no-auto-action.
+5. Record evidence; close #25 only after PHONE PASS.
 
 ## Consolidated phone matrix
 
