@@ -11,6 +11,7 @@ SELECTABLE_SURFACE="$SRC/ui/SelectableTextSurfaceState.kt"
 BULK_HIERARCHY="$SRC/ui/BulkHierarchyChrome.kt"
 BULK_PREVIEW="$SRC/BulkSyncPreviewActivity.kt"
 BULK_SESSION="$SRC/BulkSyncSessionActivity.kt"
+BULK_HELP="$SRC/bulk/BulkSyncHelpContent.kt"
 QUOTA="$SRC/QuotaActivity.kt"
 PLAYLIST="$SRC/PlaylistActivity.kt"
 REVIEW="$SRC/ReviewActivity.kt"
@@ -24,7 +25,7 @@ SURFACE_READABILITY="docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md"
 PLAN="docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md"
 RECONCILIATION="docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md"
 
-for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$QUOTA" "$PLAYLIST" "$REVIEW" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
+for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$BULK_HELP" "$QUOTA" "$PLAYLIST" "$REVIEW" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
@@ -76,6 +77,17 @@ grep -Fq 'useHorizontalActionRow(' "$UI" ||
   fail "full-screen adaptive action contract missing"
 grep -Fq 'useHorizontalDialogActionRow(' "$UI" ||
   fail "dialog adaptive action contract missing"
+grep -Fq 'initialLeft + bars.left' "$UI" ||
+  fail "screen safe-area contract ignores left system inset"
+grep -Fq 'initialRight + bars.right' "$UI" ||
+  fail "screen safe-area contract ignores right system inset"
+grep -Fq 'horizontalInset +' "$UI" ||
+  fail "dialog safe-area contract missing horizontal system insets"
+grep -Fq 'Що таке сесія синхронізації?' "$BULK_HELP" ||
+  fail "Bulk session Help plain-language title missing"
+if grep -Eq 'Bulk-сесія|Remote baseline|Checkpoint|read-only|remote writes|exact rollback' "$BULK_HELP"; then
+  fail "Bulk Help technical English/jargon returned"
+fi
 grep -Fq 'enum class NoticeTone' "$UI" ||
   fail "shared durable inline-notice semantic tones missing"
 grep -Fq 'fun inlineNotice(' "$UI" ||
