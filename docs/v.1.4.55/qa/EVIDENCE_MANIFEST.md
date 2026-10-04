@@ -7,4 +7,8 @@
 | app-wide readability audit | `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md` | screen-by-screen readability findings and priorities | yes |
 | hardening master plan | `docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md` | phased implementation order | yes |
 
-Phone evidence will be added only after an exact validated/signed candidate exists.
+| BUG-040 R2 exact candidate | source `846f50ed89d7d6888951b3808a231b555da166bf`, Validate `37169933481`, signed run `37201379978` | direct Project modal ownership candidate | GitHub |
+| BUG-040 R2 real-phone video | focused phone retest 2026-10-04 | modal stays over Current Playlist through rotation; Close returns to same parent; no automatic action | user-provided video / QA record |
+| Phase A final findings | Quota landscape screenshot + Bulk Session Help screenshots | BUG-041 safe-area clipping and UX-031 Help readability remain the only current corrective phone targets | QA record |
+
+BUG-040 is PHONE PASS/CLOSED. BUG-041 and UX-031 are implemented after that tested candidate and require one final targeted signed-build phone retest before Phase A closes.
