@@ -22,25 +22,21 @@ Last updated: **2026-10-04**
 
 ## Current validated checkpoint — 2026-10-04
 
-BUG-040 R2 is **CLOSED — PHONE PASS**.
+v1.4.55 Phase A consolidated hardening scope is **PHONE PASS / CLOSED**.
 
-Exact accepted phone-test candidate:
-- source/head `846f50ed89d7d6888951b3808a231b555da166bf`;
-- Validate Android run `37169933481 — SUCCESS`;
-- signed build run `37201379978 — SUCCESS`;
-- focused real-phone video PASS: direct Current Playlist modal owner, rotation persistence, Close-to-same-parent, no automatic Search/write/save/share.
+Exact final phone-tested app candidate:
+- source/head `14ea02cff4d541e7ec252a1c2475362e2260a87f`;
+- Validate Android run `37214907587 — SUCCESS`;
+- signed build run `37231781928 — SUCCESS`.
 
-Remaining Phase A blockers come from phone evidence collected before BUG-040 R2:
-- **BUG-041** — Quota landscape right-side values can be clipped by side system-bar safe area;
-- **UX-031** — Bulk Session Help is overlong and exposes mixed technical English/jargon.
+Final phone results:
+- BUG-040 R2 — PASS/CLOSED: Project modal is owned directly by Current Playlist through rotation and Close;
+- BUG-041 — PASS/CLOSED: Quota landscape right-side values stay inside the horizontal safe area;
+- UX-031 — PASS/CLOSED: Bulk Session Help uses plain Ukrainian, remains readable in landscape, and keeps its fixed action visible.
 
-Current corrective implementation:
-- shared screen roots now apply left/right system-bar/display-cutout insets;
-- fixed-footer and custom dialog shells also add horizontal safe insets;
-- Bulk Preview/Session Help copy is shorter and plain Ukrainian;
-- static audits guard both contracts.
+No automatic Search/write/save/share/sync/rollback action was observed during the focused lifecycle checks.
 
-**Current task:** final docs/manifest coherence → exact-HEAD Validate PASS → signed APK → focused BUG-041/UX-031 phone retest. Do not repeat v1.4.54 Tests 1–9. Do not start Phase B yet.
+**Current task:** final closeout documentation + `FILE_MANIFEST.txt` coherence, then one exact-HEAD Validate Android release-check. No additional Phase A phone action is required if that docs-only validation passes. Do not repeat v1.4.54 Tests 1–9.
 
 ## Immutable functional reference
 
@@ -112,15 +108,11 @@ real-device acceptance.
 
 ## Exact next work
 
-Follow `RESUME_HERE.md` first, then `ACTIVE_PLAN.md`.
-
-1. synchronize the final BUG-040 R2 documentation and `FILE_MANIFEST.txt`;
-2. require a clean exact-HEAD Validate Android PASS;
-3. build a signed APK from exactly that HEAD;
-4. phone retest: `Поточний плейлист → Проєкт YTM / експорт`;
-5. rotate portrait ↔ landscape and confirm the same modal remains directly above `Поточний плейлист`;
-6. press `Закрити`: remain on the same Current Playlist; no `Перевірка треків` flash/background and no automatic Search/write/save/share;
-7. after PHONE PASS, record evidence and finish Phase A closeout.
+1. synchronize the final Phase A PASS evidence/status docs and `FILE_MANIFEST.txt`;
+2. require one clean exact-HEAD Validate Android PASS;
+3. record the final validated closeout SHA/run;
+4. stop Phase A work;
+5. Phase B starts only as a separate task.
 
 ## Working contract
 
