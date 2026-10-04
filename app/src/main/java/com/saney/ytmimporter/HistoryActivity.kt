@@ -1027,7 +1027,7 @@ class HistoryActivity : Activity() {
 
         scroll.addView(
             content,
-            ScrollView.LayoutParams(
+            ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams
                     .MATCH_PARENT,
                 ViewGroup.LayoutParams
