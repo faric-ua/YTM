@@ -61,7 +61,7 @@ Expected:
 - footer remains visible/readable;
 - scroll/selection restoration follows the shared contract.
 
-Result: `A4+` / `A4-`.\n\n#42 phone acceptance remains **PENDING** until this consolidated device test is run.
+Result: `A4+` / `A4-`.\n\n#42 representative destructive-confirmation lifecycle acceptance is covered by the consolidated Phase A phone pass.
 
 ### Test A5 — themes
 
@@ -170,5 +170,23 @@ After the next signed APK, test only these two previously observed presentation 
 5. Rotate back and close Help.
 6. No sync/continue/rollback/write action may start automatically.
 
-Result: `BUG-041+` / `BUG-041-`; `UX-031+` / `UX-031-`.
+Result:
+- **BUG-041+ — PHONE PASS 2026-10-04**
+- **UX-031+ — PHONE PASS 2026-10-04**
+
+Exact installed corrective:
+- source/head `14ea02cff4d541e7ec252a1c2475362e2260a87f`;
+- Validate Android run `37214907587 — SUCCESS`;
+- signed build run `37231781928 — SUCCESS`.
+
+Evidence:
+- Quota landscape screenshot: right-side values fully visible, no safe-area clipping;
+- Bulk Session Help landscape screenshot: plain Ukrainian title/body, fixed `Зрозуміло` action visible, no mixed technical English terms;
+- rotation preserved the tested surfaces and did not auto-start work.
+
+### Phase A closeout result
+
+**PHASE A PHONE ACCEPTANCE — PASS for the consolidated hardening scope.**
+
+This acceptance is intentionally scoped to the v1.4.55 presentation/navigation/lifecycle hardening matrix and the already accepted v1.4.54 functional baseline. It is not a claim of a brand-new exhaustive remote/API regression run.
 
