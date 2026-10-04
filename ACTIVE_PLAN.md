@@ -223,8 +223,11 @@ Current task checklist:
 - [x] A8 reproduced BUG-040: Project actions were hosted by Track Review. First corrective phone retest proved Close returned to Current Playlist but video still showed Track Review behind the modal.
 - [x] BUG-040 R2 removes the wrong owner entirely: PlaylistActivity now owns Project modal/Save/Share directly; Review temporary return workaround removed; ownership guard added.
 - [x] R2 source/static/build checkpoint `e2988b7cd209c821670af77e76f049046da54474` passed Validate Android run `37169513681`.
-- [ ] Refresh final docs/generated manifest and require one more exact-HEAD Validate Android PASS.
-- [ ] Build signed candidate and phone-retest only BUG-040 R2 (direct parent + rotation + Close + no-auto-action), then finish Phase A closeout.
+- [x] Final BUG-040 R2 candidate `846f50ed89d7d6888951b3808a231b555da166bf` passed Validate run `37169933481`, signed run `37201379978`, and focused PHONE PASS on 2026-10-04. BUG-040 CLOSED.
+- [x] Do not close Phase A prematurely: existing phone evidence still showed BUG-041 (Quota landscape right-edge clipping) and UX-031 (Bulk Help mixed jargon/scanability).
+- [x] Implement shared horizontal system/cutout insets and concise Ukrainian Bulk Help; strengthen static guards.
+- [ ] Refresh generated manifest and require exact-HEAD Validate Android PASS for the final BUG-041/UX-031 corrective.
+- [ ] Build one signed candidate and phone-retest only BUG-041 + UX-031, then close Phase A if both pass.
 
 Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
 first unchecked CURRENT TASK item above.
