@@ -343,8 +343,9 @@ Goal: make the existing 100-entry History searchable by semantic state without c
 - [x] Keep filtering read-only: no History mutation, navigation side effects, Search/write/API work or storage schema changes.
 - [x] Add JVM coverage for search+filter combination, clear-to-All completeness, pending Search and pending write/pause semantics.
 - [x] Add static guards for the History filter contract.
-- [ ] Refresh generated manifest and require exact-HEAD Validate Android PASS.
-- [ ] Build one signed candidate and run one focused phone test for #41: search+filter combination, rotate, clear to Усі, Neon + one alternate skin.
+- [x] Generated manifest refreshed; exact source/docs checkpoint `8d46e6e677ab50b20aa9b3f918cf3332fa9b04d5` passed Validate Android run `37234665308 — SUCCESS` (preflight/JVM/unsigned release PASS).
+- [ ] Record this validated checkpoint in final handoff/manifest, require one final exact-HEAD Validate PASS, then build one signed candidate.
+- [ ] Run one focused phone test for #41: search+filter combination, rotate, clear to Усі, Neon + one alternate skin.
 - [ ] Record phone evidence and close issue #41 if PASS.
 
 Remaining Phase B backlog:
