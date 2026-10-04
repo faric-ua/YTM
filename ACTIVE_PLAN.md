@@ -331,32 +331,32 @@ Phone matrix must cover:
 
 Phase A is CLOSED. Phase B started explicitly on 2026-10-04.
 
-### CURRENT TASK — History semantic filters (#41)
+### CURRENT TASK — History logical playlist/provider grouping (#25)
 
-Goal: make the existing 100-entry History searchable by semantic state without changing or mutating History data.
+Goal: collapse repeated History operation rows into one logical playlist card when a stable local playlist identity proves they belong to the same lifecycle, while keeping every operation auditable.
 
-- [x] Read issue #41 and inspect current History list/search/linkage semantics.
-- [x] Add a pure History filter policy that combines text search with one semantic filter.
-- [x] Add filters: Усі / Лише локально / Пов’язано з YTM / Очікує Search / Очікує запис у YTM / Пауза або помилка.
-- [x] Make History linkage expose pending Search when unresolved History tracks prove that state, keeping list/detail/filter wording consistent.
-- [x] Persist the selected semantic filter through Activity recreation/rotation.
-- [x] Keep filtering read-only: no History mutation, navigation side effects, Search/write/API work or storage schema changes.
-- [x] Add JVM coverage for search+filter combination, clear-to-All completeness, pending Search and pending write/pause semantics.
-- [x] Add static guards for the History filter contract.
-- [x] Generated manifest refreshed; exact source/docs checkpoint `8d46e6e677ab50b20aa9b3f918cf3332fa9b04d5` passed Validate Android run `37234665308 — SUCCESS` (preflight/JVM/unsigned release PASS).
-- [ ] Record this validated checkpoint in final handoff/manifest, require one final exact-HEAD Validate PASS, then build one signed candidate.
-- [x] Focused phone test PASS on exact signed candidate `1f2d4f0839bd545414a74cc56de02899534a5dbc` / signed run `37237512202`: search+filter combination, rotation persistence, `Усі` reset, Neon + alternate skin.
-- [x] Record phone evidence and close issue #41.
-- [ ] Final docs/manifest coherence and exact-HEAD Validate Android release-check for #41 closeout.
+- [x] Read issue #25 and inspect current History model/list/detail flow.
+- [x] Add a pure `HistoryLogicalGroupPolicy`.
+- [x] Group only by nonblank `localPlaylistId`; never group by title.
+- [x] Entries without local identity fail closed to one operation per card.
+- [x] Preserve YTM provider presence across the logical lifecycle and expose a compact provider badge/result such as `YTM 4/4`.
+- [x] Preserve current pending Search/write state precedence over linked/provider presence.
+- [x] Make search match any operation in the logical group while semantic filters describe the current logical state.
+- [x] Replace History list rows with grouped logical cards.
+- [x] Add full-screen operation drill-down for multi-operation groups; individual operation details remain unchanged.
+- [x] Preserve group screen and scroll state through recreation/rotation.
+- [x] Add JVM coverage for same-local-id grouping, anti-title matching, fail-closed no-ID behavior, provider persistence and filter/current-state semantics.
+- [x] Add static guards that grouping is read-only, local-ID keyed, provider-visible and drill-down capable.
+- [ ] Refresh docs/generated manifest and require exact-HEAD Validate Android PASS.
+- [ ] Build one signed candidate and run focused phone QA for #25: duplicate lifecycle collapses to one card, provider badge visible, operation drill-down preserves all records, rotation/back works, no action auto-starts.
+- [ ] Record phone evidence and close issue #25 if PASS.
 
 Remaining Phase B backlog:
-- [ ] History logical playlist/provider grouping (#25).
 - [ ] History Quick Restore acceptance (#55).
 - [ ] Recovery Center + compact breathing attention icon (#53).
 - [ ] Type-aware file/backup library and scoped chooser (#54).
 - [ ] Simplified Termux operator menu/status (#52).
 - [ ] Home last-action detail drill-down to exact History detail.
-- [ ] History logical grouping/provider findability (#25).
 - [ ] History Quick Restore acceptance (#55).
 - [ ] Recovery Center + compact breathing attention icon (#53).
 - [ ] Type-aware file/backup library and scoped chooser (#54).
@@ -377,9 +377,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Finish Phase B #41 candidate gate.**
+**Finish Phase B #25 candidate gate.**
 
-Refresh docs/generated manifest, require exact-HEAD Validate Android PASS, then build one signed candidate. Phone QA is limited to History search + semantic filters and rotation/clear/theme sanity; do not repeat Phase A or v1.4.54 Tests 1–9.
+Refresh docs/generated manifest, require exact-HEAD Validate Android PASS, then build one signed candidate. Phone QA is limited to logical grouping/provider badge/operation drill-down lifecycle. Do not repeat #41, Phase A, or v1.4.54 Tests 1–9.
 
 ## Update rule
 
