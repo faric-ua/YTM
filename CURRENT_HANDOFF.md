@@ -22,29 +22,25 @@ Last updated: **2026-10-04**
 
 ## Current validated checkpoint — 2026-10-04
 
-BUG-040 R2 source/static/build checkpoint:
-`e2988b7cd209c821670af77e76f049046da54474`.
+BUG-040 R2 is **CLOSED — PHONE PASS**.
 
-Validate Android run `37169513681` — **SUCCESS**:
-- release preflight PASS;
-- JVM unit tests PASS;
-- unsigned release assemble PASS.
+Exact accepted phone-test candidate:
+- source/head `846f50ed89d7d6888951b3808a231b555da166bf`;
+- Validate Android run `37169933481 — SUCCESS`;
+- signed build run `37201379978 — SUCCESS`;
+- focused real-phone video PASS: direct Current Playlist modal owner, rotation persistence, Close-to-same-parent, no automatic Search/write/save/share.
 
-Real-phone evidence on the prior corrective candidate:
-- Close returned to `Поточний плейлист`, so the first return-path fix worked;
-- video still showed `Перевірка треків` behind the Project modal;
-- therefore BUG-040 remained open because the modal owner was still the wrong Activity.
+Remaining Phase A blockers come from phone evidence collected before BUG-040 R2:
+- **BUG-041** — Quota landscape right-side values can be clipped by side system-bar safe area;
+- **UX-031** — Bulk Session Help is overlong and exposes mixed technical English/jargon.
 
-R2 implementation now removes that navigation layer:
-- `PlaylistActivity` directly owns the Project modal plus Save/Share result handling;
-- `Проєкт YTM / експорт` no longer launches `ReviewActivity`;
-- Playlist modal-open state is saved/restored for rotation;
-- temporary Review finish-on-dismiss workaround is removed;
-- static guard rejects reintroduction of the Review route.
+Current corrective implementation:
+- shared screen roots now apply left/right system-bar/display-cutout insets;
+- fixed-footer and custom dialog shells also add horizontal safe insets;
+- Bulk Preview/Session Help copy is shorter and plain Ukrainian;
+- static audits guard both contracts.
 
-**Current blocker:** final docs/manifest exact-HEAD validation, then signed APK, then one focused real-phone BUG-040 retest.
-
-**Current task:** finalize docs/manifest → exact-HEAD Validate PASS → signed APK → focused phone retest. Do not repeat v1.4.54 Tests 1–9. Do not restart completed Bulk/Toast/Tile audits. Do not start Phase B yet.
+**Current task:** final docs/manifest coherence → exact-HEAD Validate PASS → signed APK → focused BUG-041/UX-031 phone retest. Do not repeat v1.4.54 Tests 1–9. Do not start Phase B yet.
 
 ## Immutable functional reference
 
