@@ -320,9 +320,35 @@ grep -Fq 'Відновити з резервної копії' "$DATA" || fail "
 grep -Fq 'Поділитися файлами' "$DATA" || fail "Data user-facing share label missing"
 grep -Fq 'Додати папку…' "$RECENT_FILE" || fail "Recent File user-facing add-folder label missing"
 grep -Fq 'title = "Поточний проєкт YTM"' "$REVIEW" || fail "Review project modal localized title missing"
-grep -Fq 'EXTRA_RETURN_TO_PLAYLIST' "$REVIEW" || fail "Review project return contract missing"
-grep -Fq '!isChangingConfigurations' "$REVIEW" || fail "Review project return must ignore configuration recreation"
-grep -Fq 'finish()' "$REVIEW" || fail "Review project return-to-playlist finish missing"
+grep -Fq 'title =' "$PLAYLIST" || fail "Playlist project dialog owner missing"
+grep -Fq '"Поточний проєкт YTM"' "$PLAYLIST" || fail "Playlist direct project modal localized title missing"
+grep -Fq 'STATE_PROJECT_DIALOG_OPEN' "$PLAYLIST" || fail "Playlist project modal rotation state missing"
+grep -Fq 'projectDialog?.isShowing' "$PLAYLIST" || fail "Playlist project modal recreation guard missing"
+grep -Fq 'showProjectActions()' "$PLAYLIST" || fail "Playlist project action is not locally owned"
+
+python - "$PLAYLIST" "$REVIEW" <<'PY_PROJECT_OWNER'
+from pathlib import Path
+import sys
+
+playlist = Path(sys.argv[1]).read_text(encoding="utf-8")
+review = Path(sys.argv[2]).read_text(encoding="utf-8")
+
+project_action = playlist.find('title = "Проєкт YTM / експорт"')
+if project_action < 0:
+    raise SystemExit("FAIL: Playlist project action missing")
+project_tail = playlist[project_action: project_action + 700]
+if "showProjectActions()" not in project_tail:
+    raise SystemExit("FAIL: Playlist project action does not open its local dialog")
+if "openReview(" in project_tail:
+    raise SystemExit("FAIL: Playlist project action still routes through ReviewActivity")
+
+show_review = review.find("private fun showProjectActions()")
+if show_review < 0:
+    raise SystemExit("FAIL: Review project action owner missing")
+review_block = review[show_review: show_review + 2600]
+if "EXTRA_RETURN_TO_PLAYLIST" in review_block or "!isChangingConfigurations" in review_block:
+    raise SystemExit("FAIL: Review project modal still contains temporary Playlist return workaround")
+PY_PROJECT_OWNER
 grep -Fq 'Remaining Surface Readability Audit' "$SURFACE_READABILITY" || fail "remaining surface readability audit missing"
 
 python - "$MAIN" "$PENDING" "$DATA" "$RECENT_FILE" <<'PY_SURFACE_READABILITY'
