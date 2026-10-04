@@ -20,44 +20,40 @@ Last updated: **2026-10-04**
 - Readability audit: `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`
 - Backlog reconciliation: `docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md`
 
-## Current work — 2026-10-04
+## Current work — 2026-10-05
 
-Phase A remains **PHONE PASS / CLOSED** at closeout HEAD `f7b786328ebecc6e3fa436e4ce3c07a1c368d670`, Validate `37233062679 — SUCCESS`.
+Phase A remains PHONE PASS / CLOSED.
 
-Phase B has started explicitly with issue #41 — History semantic filters.
+Phase B #41 History semantic filters is PHONE PASS / CLOSED:
+- phone-tested source `1f2d4f0839bd545414a74cc56de02899534a5dbc`;
+- signed run `37237512202 — SUCCESS`;
+- final docs/manifest closeout HEAD `ef4e175895e01fb8b67ddd9d7aafad566a785660`;
+- exact closeout Validate `37243312361 — SUCCESS`;
+- GitHub issue #41 closed.
+
+Active task: issue #25 — logical History playlist/provider grouping.
 
 Implemented:
-- `HistoryListFilterPolicy` combines the existing text query with one semantic state filter;
-- filters: Усі, Лише локально, Пов’язано з YTM, Очікує Search, Очікує запис у YTM, Пауза або помилка;
-- selected filter survives Activity recreation/rotation;
-- unresolved History tracks can now produce the existing `PENDING_SEARCH` linkage state, so list/detail/filter semantics agree;
-- filter policy is read-only and has JVM/static coverage.
+- `HistoryLogicalGroupPolicy` groups only records sharing the same stable `localPlaylistId`;
+- title matching is explicitly forbidden;
+- missing local identity fails closed to one card per operation;
+- logical state keeps YTM provider presence while current pending Search/write takes precedence;
+- grouped History cards show provider/result badge;
+- multi-operation groups open a dedicated operation drill-down screen;
+- existing individual operation detail remains the audit source of truth;
+- group screen + scroll state survive recreation;
+- JVM + static guards cover identity, provider and no-mutation contracts.
 
 Current source commits:
-- filter policy `fe80c7a24ebfde51be62d830bb40e6b46c9abf6e`;
-- filter JVM tests `42bf9203026e195581bd9aa33554c35ceb26f367`;
-- pending-Search History linkage `bff3cd2e9f71c8772f1686bbfe77a3442300d5f4`;
-- linkage tests `dd2ad5049eff029d2722d91151fa9d18070895b2`;
-- History UI `93ffd1e73c94b5ca2856387f90a3f1652aaf4eb6`;
-- static guard `eee2fd16af8d01b21299ca5269c6a4b481acd982`.
+- grouping policy `65175a351258b0ab2bde5c6e92e103934090924d`;
+- grouping JVM tests `b5d39088d7d96b842c13a8426d612fc84770f084`;
+- group lifecycle state `ed01dec06beb9f83329afd16ac6294d0c6b7e86b`;
+- grouped list `231eb083f2f89a0ddd4b7193e7059d8fee1335c6`;
+- operation drill-down `32c66f439424321179eda0ef44f54a39a8ec7516`;
+- provider badges `770f351af262067780b3f662ca97a6027baabed6`;
+- static guard `5a47433486003da4fcc9e1da983549c4ffc51cc6`.
 
-Validation checkpoint:
-- HEAD `8d46e6e677ab50b20aa9b3f918cf3332fa9b04d5`;
-- Validate Android run `37234665308 — SUCCESS`;
-- release preflight PASS;
-- JVM tests PASS;
-- unsigned release assemble PASS.
-
-Phone acceptance:
-- exact installed source `1f2d4f0839bd545414a74cc56de02899534a5dbc`;
-- signed build run `37237512202 — SUCCESS`;
-- text query + `Пов’язано з YTM` filter combined correctly;
-- rotation preserved query + filter;
-- `Усі` + cleared query restored all 99 History records;
-- Neon + alternate skin readable;
-- no automatic Search/write/restore action.
-
-**Current task:** close #41 in docs/GitHub, refresh manifest and require one final exact-HEAD Validate Android PASS. No Phase A retest and no #41 phone retest.
+**Current task:** refresh docs/manifest, require exact-HEAD Validate PASS, signed build, then focused #25 phone QA. No #41/Phase A retest.
 
 ## Immutable functional reference
 
@@ -129,11 +125,11 @@ real-device acceptance.
 
 ## Exact next work
 
-1. refresh #41 documentation and generated manifest;
+1. refresh #25 docs and generated manifest;
 2. require exact-HEAD Validate Android PASS;
 3. build signed candidate from that exact HEAD;
-4. phone test only History search + semantic filters, rotation persistence, All reset and one alternate theme;
-5. close issue #41 only after PHONE PASS.
+4. phone test grouped History card/provider badge/operation drill-down/rotation/back;
+5. close issue #25 only after PHONE PASS.
 
 ## Working contract
 
