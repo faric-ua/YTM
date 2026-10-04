@@ -190,3 +190,20 @@ Evidence:
 
 This acceptance is intentionally scoped to the v1.4.55 presentation/navigation/lifecycle hardening matrix and the already accepted v1.4.54 functional baseline. It is not a claim of a brand-new exhaustive remote/API regression run.
 
+## Phase B B1 — History semantic filters (#41)
+
+Run only after the exact #41 candidate passes Validate and signed build.
+
+1. Open History with existing records.
+2. Enter a text query that matches at least one known playlist.
+3. Open `Фільтр історії` and choose a semantic state that has a known matching record.
+4. Confirm search + filter are combined, not replacing each other.
+5. Rotate portrait → landscape → portrait.
+6. Confirm the selected filter and search query remain active; no History data changes and no Search/write/restore starts.
+7. Select `Усі`; with the text query cleared, the complete History list returns.
+8. Check the filter button/menu in Neon plus one alternate skin for readable state/selection and no clipping.
+
+Result: `B1+` / `B1-`.
+
+Do not repeat Phase A or v1.4.54 Tests 1–9.
+
