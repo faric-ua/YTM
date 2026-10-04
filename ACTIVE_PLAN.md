@@ -12,7 +12,7 @@
 > 3. update **NEXT ACTION** so the first unchecked item is the real resume point;
 > 4. update `CURRENT_HANDOFF.md` when the resume point materially changes.
 
-Last updated: 2026-10-03
+Last updated: 2026-10-04
 
 ## Active release
 
@@ -220,9 +220,11 @@ Current task checklist:
   lifecycle/no-auto-action rules. The finishing patch changes display text only; no callbacks, navigation, API/storage, queue/history semantics or lifecycle code changed.
 - [x] Add/strengthen static guards and representative phone targets. Evidence: `scripts/v1455-ux-hardening-audit.sh` passes the remaining Home/Queue/Data/File readability guards; representative targets remain in the consolidated Phase A phone matrix.
 - [x] Consolidated Phase A phone pass reached A7 with Current Playlist portrait/landscape PASS and no automatic action.
-- [x] A8 reproduced BUG-040: Project actions opened through Track Review and Close returned to the wrong parent; source fix + Ukrainian Project/History copy are implemented and guarded.
-- [ ] Refresh generated artifacts and require exact-HEAD Validate Android PASS for the BUG-040 candidate.
-- [ ] Build signed candidate and phone-retest only the affected Project-dialog return path (including rotation/no-auto-action), then finish Phase A closeout.
+- [x] A8 reproduced BUG-040: Project actions were hosted by Track Review. First corrective phone retest proved Close returned to Current Playlist but video still showed Track Review behind the modal.
+- [x] BUG-040 R2 removes the wrong owner entirely: PlaylistActivity now owns Project modal/Save/Share directly; Review temporary return workaround removed; ownership guard added.
+- [x] R2 source/static/build checkpoint `e2988b7cd209c821670af77e76f049046da54474` passed Validate Android run `37169513681`.
+- [ ] Refresh final docs/generated manifest and require one more exact-HEAD Validate Android PASS.
+- [ ] Build signed candidate and phone-retest only BUG-040 R2 (direct parent + rotation + Close + no-auto-action), then finish Phase A closeout.
 
 Crash rule: start at `RESUME_HERE.md`, verify live GitHub, then resume from the
 first unchecked CURRENT TASK item above.
