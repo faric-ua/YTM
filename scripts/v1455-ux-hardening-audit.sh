@@ -317,6 +317,8 @@ PY_TILE_READABILITY
 MAIN="$SRC/MainActivity.kt"
 MENU="$SRC/MenuActivity.kt"
 HISTORY="$SRC/HistoryActivity.kt"
+HISTORY_FILTER="$SRC/model/HistoryListFilterPolicy.kt"
+HISTORY_FILTER_TEST="app/src/test/java/com/saney/ytmimporter/model/HistoryListFilterPolicyTest.kt"
 PENDING="$SRC/PendingActivity.kt"
 RECENT_FILE="$SRC/RecentFileChooserActivity.kt"
 
@@ -324,6 +326,35 @@ grep -Fq 'Готові:' "$MAIN" || fail "Home named ready counter missing"
 grep -Fq 'Перевірити:' "$MAIN" || fail "Home named review counter missing"
 grep -Fq 'Поточна синхронізація всіх' "$MENU" || fail "Menu plain-language bulk-session title missing"
 grep -Fq 'Пошук і запис у YTM не запускатимуться автоматично.' "$HISTORY" || fail "History restore safety copy regressed"
+test -f "$HISTORY_FILTER" || fail "History semantic filter policy missing"
+test -f "$HISTORY_FILTER_TEST" || fail "History semantic filter JVM coverage missing"
+grep -Fq 'KEY_SEMANTIC_FILTER' "$HISTORY" || fail "History semantic filter state does not survive recreation"
+grep -Fq 'Фільтр історії' "$HISTORY" || fail "History filter control missing"
+grep -Fq 'HistoryListFilterPolicy' "$HISTORY" || fail "History list does not use shared filter policy"
+grep -Fq 'searchAndSemanticFilterCombine' "$HISTORY_FILTER_TEST" || fail "History search+filter combination coverage missing"
+grep -Fq 'allWithBlankQueryReturnsCompleteList' "$HISTORY_FILTER_TEST" || fail "History clear-filter completeness coverage missing"
+grep -Fq 'PENDING_SEARCH("Очікує Search")' "$HISTORY_FILTER" || fail "History pending-Search filter missing"
+grep -Fq 'PENDING_WRITE("Очікує запис у YTM")' "$HISTORY_FILTER" || fail "History pending-write filter missing"
+
+python - "$HISTORY_FILTER" <<'PY_HISTORY_FILTER'
+from pathlib import Path
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+
+for forbidden in (
+    "HistoryStore(",
+    ".upsert(",
+    ".remove(",
+    ".clear(",
+    "YouTubeApi",
+    "startActivity",
+):
+    if forbidden in text:
+        raise SystemExit(
+            "FAIL: History filter policy can mutate/navigate: " + forbidden
+        )
+PY_HISTORY_FILTER
 grep -Fq 'Забагато запитів' "$PENDING" || fail "Pending rate-limit user label missing"
 grep -Fq 'Обмеження сервісу' "$PENDING" || fail "Pending resource-limit user label missing"
 grep -Fq 'Резервні копії та відновлення' "$DATA" || fail "Data task-oriented backup section missing"
