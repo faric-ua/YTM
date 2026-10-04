@@ -855,6 +855,256 @@ class HistoryActivity : Activity() {
         )
     }
 
+    private fun showGroupScreen(
+        groupKey: String
+    ): Boolean {
+        captureHistoryViewport()
+
+        val group =
+            HistoryLogicalGroupPolicy
+                .build(
+                    historyStore.getAll()
+                )
+                .firstOrNull {
+                    it.key == groupKey
+                }
+                ?: return false
+
+        if (
+            currentGroupKey !=
+                groupKey
+        ) {
+            groupScrollPosition.reset()
+        }
+
+        historyListView = null
+        detailScrollView = null
+        currentEntryId = null
+        currentGroupKey = groupKey
+        actionsDialogOpen = false
+        actionsDialog
+            ?.setOnDismissListener(
+                null
+            )
+        actionsDialog
+            ?.dismiss()
+        actionsDialog = null
+
+        restoreConfirmEntryId = null
+        restoreConfirmDialog
+            ?.setOnDismissListener(
+                null
+            )
+        restoreConfirmDialog
+            ?.dismiss()
+        restoreConfirmDialog = null
+
+        val root =
+            baseRoot()
+
+        root.addView(
+            topBar(
+                title =
+                    group.latest
+                        .playlistName,
+                onBack = {
+                    showListScreen()
+                }
+            )
+        )
+
+        val scroll =
+            ScrollView(this).apply {
+                isFillViewport = true
+            }
+
+        groupScrollView = scroll
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+                setPadding(
+                    dp(12),
+                    0,
+                    dp(12),
+                    dp(20)
+                )
+            }
+
+        val status =
+            effectiveHistoryStatus(
+                group.latest
+            )
+
+        content.addView(
+            card().apply {
+                addView(
+                    TextView(
+                        this@HistoryActivity
+                    ).apply {
+                        text =
+                            "${historyStatusIcon(status)} " +
+                                PlaylistLinkagePolicy
+                                    .label(
+                                        group.linkageState
+                                    )
+                        textSize = 18f
+                        setTypeface(
+                            typeface,
+                            Typeface.BOLD
+                        )
+                        setTextColor(
+                            historyStatusColor(
+                                status
+                            )
+                        )
+                    }
+                )
+
+                group.providerBadge
+                    ?.let { provider ->
+                        addView(
+                            TextView(
+                                this@HistoryActivity
+                            ).apply {
+                                text = provider
+                                textSize = 14f
+                                setTypeface(
+                                    typeface,
+                                    Typeface.BOLD
+                                )
+                                setTextColor(
+                                    AppThemeManager
+                                        .palette(
+                                            this@HistoryActivity
+                                        )
+                                        .accent
+                                )
+                                setPadding(
+                                    0,
+                                    dp(8),
+                                    0,
+                                    0
+                                )
+                            }
+                        )
+                    }
+
+                addView(
+                    metaText(
+                        "Операцій: ${group.operationCount}\n" +
+                            "Остання зміна: " +
+                            formatHistoryDate(
+                                group.latest
+                                    .updatedAt
+                            )
+                    )
+                )
+            }
+        )
+
+        content.addView(
+            sectionTitle(
+                "Операції"
+            )
+        )
+
+        group.entries.forEach { entry ->
+            content.addView(
+                actionButton(
+                    label =
+                        historyOperationButtonLabel(
+                            entry
+                        )
+                ) {
+                    showDetailScreen(
+                        entry
+                    )
+                }
+            )
+        }
+
+        scroll.addView(
+            content,
+            ScrollView.LayoutParams(
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT,
+                ViewGroup.LayoutParams
+                    .WRAP_CONTENT
+            )
+        )
+
+        root.addView(
+            scroll,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams
+                    .MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        setContentView(root)
+        UiChrome.applyScreenInsets(
+            this,
+            root
+        )
+        selectableTextSurfaceState.attach(
+            root = root,
+            newSurfaceId =
+                SURFACE_GROUP_PREFIX +
+                    group.key
+        )
+        groupScrollPosition
+            .restoreInto(scroll)
+
+        return true
+    }
+
+    private fun historyOperationButtonLabel(
+        entry: HistoryEntry
+    ): String {
+        val status =
+            effectiveHistoryStatus(
+                entry
+            )
+
+        val result =
+            HistoryResultSemantics
+                .primary(entry)
+
+        return buildString {
+            append(
+                formatHistoryDate(
+                    entry.updatedAt
+                )
+            )
+            append(" • ")
+            append(
+                historyStatusLabel(
+                    status
+                )
+            )
+            append("\n")
+            append(
+                result.label
+            )
+            append(" ")
+            append(
+                result.value
+            )
+            append(" • ")
+            append(
+                PlaylistLinkagePolicy
+                    .label(
+                        PlaylistLinkagePolicy
+                            .history(entry)
+                    )
+            )
+        }
+    }
+
     private fun showDetailScreen(
         entry: HistoryEntry
     ) {
