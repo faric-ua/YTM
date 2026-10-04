@@ -32,7 +32,8 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.saney.ytmimporter.history.HistoryRecoveryPolicy
 import com.saney.ytmimporter.model.HistoryEntry
-import com.saney.ytmimporter.model.HistoryListFilterPolicy
+import com.saney.ytmimporter.model.HistoryLogicalGroup
+import com.saney.ytmimporter.model.HistoryLogicalGroupPolicy
 import com.saney.ytmimporter.model.HistorySemanticFilter
 import com.saney.ytmimporter.model.HistoryResultKind
 import com.saney.ytmimporter.model.HistoryResultSemantics
@@ -67,6 +68,7 @@ class HistoryActivity : Activity() {
     private lateinit var restorablePlaylistStore: RestorablePlaylistStore
 
     private var currentEntryId: String? = null
+    private var currentGroupKey: String? = null
     private var pendingExportContent: String? = null
     private var pendingExportSuccessMessage: String? = null
     private var pendingExportFileName: String? = null
@@ -79,6 +81,7 @@ class HistoryActivity : Activity() {
         RestorableModalController
 
     private var historyListView: ListView? = null
+    private var groupScrollView: ScrollView? = null
     private var detailScrollView: ScrollView? = null
     private var listFirstVisiblePosition = 0
     private var listTopOffset = 0
@@ -86,6 +89,11 @@ class HistoryActivity : Activity() {
     private var historySemanticFilter =
         HistorySemanticFilter.ALL
     private var detailScrollEntryId: String? = null
+
+    private val groupScrollPosition =
+        ScrollPositionState(
+            KEY_GROUP_SCROLL_POSITION
+        )
 
     private val detailScrollPosition =
         ScrollPositionState(
@@ -150,11 +158,19 @@ class HistoryActivity : Activity() {
                             KEY_SEMANTIC_FILTER
                         )
                 )
+        currentGroupKey =
+            savedInstanceState
+                ?.getString(
+                    KEY_CURRENT_GROUP_KEY
+                )
         detailScrollEntryId =
             savedInstanceState
                 ?.getString(
                     KEY_DETAIL_SCROLL_ENTRY_ID
                 )
+        groupScrollPosition.restore(
+            savedInstanceState
+        )
         detailScrollPosition.restore(
             savedInstanceState
         )
@@ -233,6 +249,18 @@ class HistoryActivity : Activity() {
             }
         }
 
+        if (!currentGroupKey.isNullOrBlank()) {
+            val key =
+                requireNotNull(
+                    currentGroupKey
+                )
+
+            if (showGroupScreen(key)) {
+                restoreHistoryDestructiveModalAfterContentReady()
+                return
+            }
+        }
+
         actionsDialogOpen = false
         showListScreen()
         restoreHistoryDestructiveModalAfterContentReady()
@@ -244,6 +272,10 @@ class HistoryActivity : Activity() {
         outState.putString(
             KEY_CURRENT_ENTRY_ID,
             currentEntryId
+        )
+        outState.putString(
+            KEY_CURRENT_GROUP_KEY,
+            currentGroupKey
         )
         outState.putBoolean(
             KEY_ACTIONS_DIALOG_OPEN,
@@ -276,6 +308,10 @@ class HistoryActivity : Activity() {
             KEY_DETAIL_SCROLL_ENTRY_ID,
             detailScrollEntryId
         )
+        groupScrollPosition.save(
+            outState,
+            groupScrollView
+        )
         detailScrollPosition.save(
             outState,
             detailScrollView
@@ -302,6 +338,9 @@ class HistoryActivity : Activity() {
                     ?: 0
         }
 
+        groupScrollPosition.capture(
+            groupScrollView
+        )
         detailScrollPosition.capture(
             detailScrollView
         )
@@ -309,10 +348,25 @@ class HistoryActivity : Activity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (currentEntryId != null) {
-            showListScreen()
-        } else {
-            super.onBackPressed()
+        when {
+            currentEntryId != null &&
+                !currentGroupKey
+                    .isNullOrBlank() ->
+                showGroupScreen(
+                    requireNotNull(
+                        currentGroupKey
+                    )
+                )
+
+            currentEntryId != null ->
+                showListScreen()
+
+            !currentGroupKey
+                .isNullOrBlank() ->
+                showListScreen()
+
+            else ->
+                super.onBackPressed()
         }
     }
 
@@ -2902,6 +2956,9 @@ class HistoryActivity : Activity() {
         private const val KEY_CURRENT_ENTRY_ID =
             "current_history_entry_id"
 
+        private const val KEY_CURRENT_GROUP_KEY =
+            "current_history_group_key"
+
         private const val KEY_ACTIONS_DIALOG_OPEN =
             "history_actions_dialog_open"
 
@@ -2926,6 +2983,9 @@ class HistoryActivity : Activity() {
         private const val KEY_SEMANTIC_FILTER =
             "history_semantic_filter"
 
+        private const val KEY_GROUP_SCROLL_POSITION =
+            "history_group_scroll_position"
+
         private const val KEY_DETAIL_SCROLL_POSITION =
             "history_detail_scroll_position"
 
@@ -2937,6 +2997,9 @@ class HistoryActivity : Activity() {
 
         private const val SURFACE_LIST =
             "history:list"
+
+        private const val SURFACE_GROUP_PREFIX =
+            "history:group:"
 
         private const val SURFACE_DETAIL_PREFIX =
             "history:detail:"
