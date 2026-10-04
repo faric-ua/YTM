@@ -99,6 +99,83 @@ class PlaylistLinkagePolicyTest {
     }
 
     @Test
+    fun unresolvedHistoryTrackIsPendingSearch() {
+        val entry =
+            historyEntry(
+                status =
+                    HistoryStatus.COMPLETED,
+                playlistId = null,
+                pendingCount = 0,
+                tracks =
+                    listOf(
+                        HistoryTrack(
+                            index = 0,
+                            originalTitle =
+                                "Track",
+                            originalArtist =
+                                "Artist",
+                            videoId = null,
+                            selectedTitle =
+                                null,
+                            selectedChannel =
+                                null,
+                            status =
+                                TrackStatus
+                                    .WAITING_QUOTA
+                                    .name,
+                            manuallySelected =
+                                false,
+                            error = null
+                        )
+                    )
+            )
+
+        assertEquals(
+            PlaylistLinkageState
+                .PENDING_SEARCH,
+            PlaylistLinkagePolicy
+                .history(entry)
+        )
+    }
+
+    @Test
+    fun exactNewHistoryTrackDoesNotPretendSearchIsPending() {
+        val entry =
+            historyEntry(
+                status =
+                    HistoryStatus.COMPLETED,
+                playlistId = null,
+                pendingCount = 0,
+                tracks =
+                    listOf(
+                        HistoryTrack(
+                            index = 0,
+                            originalTitle =
+                                "Track",
+                            originalArtist =
+                                "Artist",
+                            videoId = "video",
+                            selectedTitle =
+                                "Resolved",
+                            selectedChannel =
+                                "Channel",
+                            status =
+                                TrackStatus.NEW.name,
+                            manuallySelected =
+                                false,
+                            error = null
+                        )
+                    )
+            )
+
+        assertEquals(
+            PlaylistLinkageState.LOCAL_ONLY,
+            PlaylistLinkagePolicy
+                .history(entry)
+        )
+    }
+
+    @Test
     fun pausedHistoryWriteOverridesRemoteLink() {
         val entry =
             historyEntry(
@@ -147,7 +224,9 @@ class PlaylistLinkagePolicyTest {
     private fun historyEntry(
         status: HistoryStatus,
         playlistId: String?,
-        pendingCount: Int
+        pendingCount: Int,
+        tracks: List<HistoryTrack> =
+            emptyList()
     ): HistoryEntry =
         HistoryEntry(
             id = "history",
@@ -172,6 +251,6 @@ class PlaylistLinkagePolicyTest {
             duplicateCount = 0,
             missingCount = 0,
             lastError = null,
-            tracks = emptyList()
+            tracks = tracks
         )
 }
