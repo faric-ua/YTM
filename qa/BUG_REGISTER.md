@@ -508,27 +508,43 @@ Real-phone startup silent recovery has been observed. The decisive aged/stale-to
 | BUG-039 | IMPLEMENTED v1.4.54 WAVE 0 — PHONE QA PENDING | P1 | Generic write HTTP 429 was previously classified too broadly as daily quota. v1.4.54 separates DAILY_QUOTA / RATE_LIMIT / RESOURCE_LIMIT / UNKNOWN_429, preserves CREATE/ADD work in Queue, disables automatic retry, and tells users to wait/manual-Resume when frequent playlist creation/write requests are temporarily limited. | v1.4.53 finding → v1.4.54 Wave 0 |
 | UX-030 | PLANNED v1.4.54 | P2 | Make local-only / linked-to-YTM / pending Search / pending Write state explicit using persisted playlistId/local lineage, never title equality. | v1.4.54 History Recovery / Safe Bulk Sync |
 
-## BUG-040 — Project dialog returns to Track Review instead of Current Playlist
+## BUG-040 — Project actions are hosted by the wrong parent screen
 
-Status: **FIX IMPLEMENTED v1.4.55 — PHONE RETEST PENDING.**
+Status: **R2 FIX IMPLEMENTED v1.4.55 — PHONE RETEST PENDING.**
 
-Real-phone reproduction during the consolidated v1.4.55 Phase A pass:
+Initial real-phone reproduction:
 - open `Поточний плейлист`;
 - tap `Проєкт YTM / експорт`;
-- the project-actions modal is shown over `Перевірка треків`;
-- dismissing the modal leaves the user on `Перевірка треків` instead of returning to `Поточний плейлист`.
+- the project-actions modal is rendered over `Перевірка треків`;
+- closing the modal originally left the user on `Перевірка треків`.
 
-Cause:
-- `PlaylistActivity` launched `ReviewActivity` with `EXTRA_RETURN_TO_PLAYLIST=true` only to host the project-actions modal;
-- `ReviewActivity` did not consume that return contract when the modal was dismissed.
+First corrective candidate:
+- temporary Review host was finished after modal dismissal;
+- phone retest confirmed Close now returned to `Поточний плейлист`;
+- however the video still showed `Перевірка треків` behind the modal, proving the wrong parent Activity was still being launched.
 
-Implemented fix:
-- when the project-actions modal was launched from `PlaylistActivity`, dismissing it now finishes the temporary `ReviewActivity` and reveals the existing `PlaylistActivity`;
-- ordinary project actions opened from inside Track Review keep their existing behavior;
-- configuration changes do not trigger the return path while the Activity is being recreated;
-- project-action copy is localized to `Проєкт YTM`.
+Root cause:
+- `PlaylistActivity` delegated a local project/export action to `ReviewActivity` solely to reuse Review's modal/export implementation;
+- this created an unnecessary navigation layer and made Track Review the visible modal owner.
+
+R2 implementation:
+- `PlaylistActivity` now owns the project-actions modal directly;
+- save/share project operations are executed from `PlaylistActivity` without launching `ReviewActivity`;
+- the modal open flag is saved/restored by `PlaylistActivity`, so rotation recreates the same modal over the same parent screen;
+- save chooser results remain handled by the owning `PlaylistActivity`;
+- the temporary Review `finish()`-on-project-dismiss workaround was removed, restoring normal Review-local project behavior;
+- static guard rejects any return of `openReview(...)` inside the `Проєкт YTM / експорт` action.
+
+Implementation commits:
+- direct Playlist owner: `03290dcbcf2f78744f3d1bf50ecb15dedaecec4e`;
+- remove temporary Review workaround: `442a85956515b1e7f15e9a74080e5c37c1d59db8`;
+- ownership guard: `fe624049b7bbed5bccddf9ec9bdef13caac79aba`.
 
 Acceptance:
-- opening the project modal must not run Search, write, save, share, or any remote operation;
-- rotation must preserve the modal without triggering the return path;
-- closing it from `Поточний плейлист` must return to that same playlist screen.
+- `Поточний плейлист → Проєкт YTM / експорт` opens the modal directly over `Поточний плейлист`;
+- `Перевірка треків` must never appear behind it, even briefly;
+- portrait ↔ landscape rotation keeps the modal over the same Current Playlist parent;
+- Close returns to the same Current Playlist screen;
+- opening/rotating/closing the modal performs no Search, write, save, share, restore or other remote/durable action;
+- explicit Save/Share actions continue to work only when the user presses them.
+
