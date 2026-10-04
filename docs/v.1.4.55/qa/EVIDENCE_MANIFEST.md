@@ -14,3 +14,9 @@
 | UX-031 phone screenshot | Bulk Session Help landscape 2026-10-04 | plain Ukrainian Help, visible fixed action, rotation-safe window | user-provided screenshot / QA record |
 
 Phase A status: **PHONE PASS / CLOSED** for the v1.4.55 hardening scope. BUG-040, BUG-041 and UX-031 are closed. v1.4.54 Tests 1–9 remain the accepted functional baseline and were not repeated.
+
+| Phase B #41 candidate | source `1f2d4f0839bd545414a74cc56de02899534a5dbc`, Validate `37234962566`, signed run `37237512202` | History text search + semantic filters candidate | GitHub |
+| Phase B #41 phone evidence | 2026-10-05 History screenshots | `prodigy` + `Пов’язано з YTM` survived rotation; `Усі` + cleared query restored all 99 records; Neon + alternate skin readable | user-provided screenshots / QA record |
+
+Phase B #41 status: **PHONE PASS / READY TO CLOSE**.
+
