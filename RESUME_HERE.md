@@ -10,24 +10,28 @@ Last updated: **2026-10-04**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase A — CLOSED**
+- Release: **v1.4.55 / Phase B — History semantic filters (#41)**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Final phone-tested app source: `14ea02cff4d541e7ec252a1c2475362e2260a87f`.
-- App-source Validate: run `37214907587 — SUCCESS`.
-- Signed phone-test build: run `37231781928 — SUCCESS`.
-- Final evidence/manifest closeout checkpoint: `da6be620fcdabcb908ddfe0b2ac764d4deeacfbd`.
-- Closeout Validate: run `37232652795 — SUCCESS`.
-- BUG-040 R2, BUG-041 and UX-031 are **CLOSED — PHONE PASS**.
-- Consolidated v1.4.55 Phase A presentation/navigation/lifecycle hardening scope: **PHONE PASS / CLOSED**.
+- Phase A is **PHONE PASS / CLOSED**; do not repeat it.
+- Phase B #41 is now the active explicit task.
+- Implemented source:
+  - pure `HistoryListFilterPolicy`;
+  - one combined semantic filter over existing text search;
+  - filters: All/local/linked/pending Search/pending write/pause-or-error;
+  - selected filter saved/restored through rotation;
+  - History linkage now surfaces unresolved pending Search consistently;
+  - JVM + static guards added.
+- No History mutation, API/write/search execution, navigation auto-action, or storage-schema change is part of #41.
+- Current gate: docs/manifest coherence → exact-HEAD Validate → signed APK → focused History filter phone test.
 - v1.4.54 Tests 1–9 remain the accepted functional baseline and must not be repeated.
-- No further Phase A phone action is required.
-- Phase B has not started.
 
 ## NEXT ACTION — do this first
 
-1. Verify live branch HEAD and latest Actions.
-2. Confirm Phase A remains CLOSED and the latest closeout validation is green.
-3. Start Phase B only as a new explicit task; do not reopen or repeat Phase A without a new regression finding.
+1. Synchronize #41 docs and `FILE_MANIFEST.txt`.
+2. Require exact-HEAD Validate Android PASS.
+3. Build one signed APK from that exact HEAD.
+4. Phone-test only History search + semantic filter combination, rotation persistence, `Усі` reset, and Neon + one alternate skin.
+5. Record evidence; close #41 only after PHONE PASS.
 
 ## Consolidated phone matrix
 
