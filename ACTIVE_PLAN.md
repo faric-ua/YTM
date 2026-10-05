@@ -381,7 +381,9 @@ Goal: aggregate durable unfinished/recoverable work into one read-only Recovery 
 - [x] Recovery Center candidate gate completed: implementation checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f` passed Validate `37257583900 — SUCCESS`; final docs/manifest HEAD `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` passed exact-HEAD Validate `37257995437 — SUCCESS`; signed run `37338681198 — SUCCESS` was built from that exact HEAD.
 - [x] Focused phone QA initial-open/list checkpoint: Home shows `⚠ 2`; Recovery Center opens read-only with two actionable items and a separate completed-with-warning section; opening it did not visibly auto-start Search/write/rollback/restore/delete work.
 - [x] Recovery Center portrait → landscape → portrait rotation/scroll continuity PHONE PASS while scrolled mid-list; the same logical item area remained visible and no recovery work visibly auto-started.
-- [ ] Finish focused phone QA: Back, Menu count, exact Pending/History/Bulk routes, breathing acknowledgement and no-auto-start; close #53 only after the full focused matrix passes.
+- [x] Back → Home PHONE PASS: Home remains normal with the same `⚠ 2` actionable count and no visible recovery auto-start.
+- [x] Menu PHONE PASS: `Центр відновлення` shows the same `Потребує уваги: 2` count.
+- [ ] Finish focused phone QA: exact Pending/History/Bulk routes plus direct breathing/acknowledgement observation; close #53 only after the full focused matrix passes.
 - [ ] Close #53 only after PHONE PASS.
 
 Remaining Phase B backlog:
@@ -405,7 +407,7 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 **Continue #53 focused phone acceptance.**
 
-Candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` is validated and signed as run `37338681198`. Initial Home/Recovery Center and both rotation directions are PHONE PASS. Next verify Back, Home acknowledgement/breathing, Menu count and exact Pending/History/Bulk routes without triggering recovery work.
+Candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` is validated and signed as run `37338681198`. Home/Recovery Center, both rotation directions, Back and Menu count are PHONE PASS. Next verify exact Pending/History/Bulk routes without triggering recovery work, then directly observe whether the acknowledged same-count Home badge has stopped breathing.
 
 ## Update rule
 
