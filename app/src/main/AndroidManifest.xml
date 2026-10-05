@@ -91,6 +91,11 @@
             android:screenOrientation="unspecified" />
 
         <activity
+            android:name=".RecoveryCenterActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".PendingActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />
