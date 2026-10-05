@@ -322,6 +322,8 @@ HISTORY_FILTER="$SRC/model/HistoryListFilterPolicy.kt"
 HISTORY_FILTER_TEST="app/src/test/java/com/saney/ytmimporter/model/HistoryListFilterPolicyTest.kt"
 HISTORY_GROUP="$SRC/model/HistoryLogicalGroupPolicy.kt"
 HISTORY_GROUP_TEST="app/src/test/java/com/saney/ytmimporter/model/HistoryLogicalGroupPolicyTest.kt"
+RECOVERY_POLICY="$SRC/recovery/RecoveryCenterPolicy.kt"
+RECOVERY_POLICY_TEST="app/src/test/java/com/saney/ytmimporter/recovery/RecoveryCenterPolicyTest.kt"
 PENDING="$SRC/PendingActivity.kt"
 RECENT_FILE="$SRC/RecentFileChooserActivity.kt"
 
@@ -451,6 +453,57 @@ grep -Fq 'providerBadge' "$HISTORY" || fail "History provider badge is not surfa
 grep -Fq 'Операцій' "$HISTORY" || fail "History grouped-card operation count missing"
 grep -Fq 'sameLocalIdentityBecomesOneLogicalPlaylist' "$HISTORY_GROUP_TEST" || fail "History same-local-id grouping test missing"
 grep -Fq 'sameTitleDifferentLocalIdentityNeverMerges' "$HISTORY_GROUP_TEST" || fail "History anti-title-grouping test missing"
+
+test -f "$RECOVERY_POLICY" || fail "Recovery Center aggregation policy missing"
+test -f "$RECOVERY_POLICY_TEST" || fail "Recovery Center JVM coverage missing"
+grep -Fq 'enum class RecoveryClassification' "$RECOVERY_POLICY" ||
+  fail "Recovery Center classification model missing"
+grep -Fq 'ACTION_REQUIRED' "$RECOVERY_POLICY" ||
+  fail "Recovery Center actionable classification missing"
+grep -Fq 'WARNING' "$RECOVERY_POLICY" ||
+  fail "Recovery Center warning classification missing"
+grep -Fq 'sameTitleWithoutStableIdentityNeverDeduplicates' "$RECOVERY_POLICY_TEST" ||
+  fail "Recovery Center anti-title-deduplication coverage missing"
+grep -Fq 'rollbackPausedShowsExactAppliedRemainingCount' "$RECOVERY_POLICY_TEST" ||
+  fail "Recovery Center rollback remaining-count coverage missing"
+grep -Fq 'completedBulkSessionDoesNotNeedAttention' "$RECOVERY_POLICY_TEST" ||
+  fail "Recovery Center completed-work exclusion coverage missing"
+
+python - "$RECOVERY_POLICY" <<'PY_RECOVERY_CENTER'
+from pathlib import Path
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+
+for forbidden in (
+    "BulkSyncSessionStore(",
+    "PendingJobStore(",
+    "HistoryStore(",
+    ".upsert(",
+    ".remove(",
+    ".clear(",
+    "YouTubeApi",
+    "startActivity",
+    "startActivityForResult",
+):
+    if forbidden in text:
+        raise SystemExit(
+            "FAIL: Recovery Center policy is not read-only/pure: " + forbidden
+        )
+
+for required in (
+    "bulkSessions: List<BulkSyncSession>",
+    "pendingJobs: List<PendingJob>",
+    "historyEntries: List<HistoryEntry>",
+    "RecoveryRoute.BULK_SESSION",
+    "RecoveryRoute.PENDING_QUEUE",
+    "RecoveryRoute.HISTORY_DETAIL",
+):
+    if required not in text:
+        raise SystemExit(
+            "FAIL: Recovery Center aggregation source/route missing: " + required
+        )
+PY_RECOVERY_CENTER
 grep -Fq 'missingLocalIdentityStaysOperationScoped' "$HISTORY_GROUP_TEST" || fail "History no-local-id fail-closed grouping test missing"
 
 python - "$HISTORY_GROUP" <<'PY_HISTORY_GROUP'
@@ -609,6 +662,7 @@ echo "- Data recovery failures and Destination remote results use recreation-saf
 echo "- Playlist Hub and URL Snapshot use named/structured card result hierarchy"
 echo "- Home/Queue/Data/File primary readability uses user-facing hierarchy and wording"
 echo "- committed Skin refreshes hidden Home before it can become visible; onResume remains a fail-safe"
+echo "- Recovery Center aggregation foundation is pure/read-only and covered across Bulk/Pending/History"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- Activity-owned selectable text persists only on the same logical surface"
 echo "- selectable-text focus is restored without triggering actions"
