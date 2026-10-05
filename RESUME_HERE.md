@@ -55,13 +55,20 @@ Just closed:
 Active task:
 - #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
 
+#54 source checkpoint:
+- inventory complete;
+- contract complete;
+- pure `YtmArtifactClassifier` + `YtmArtifactScopePolicy` added;
+- JVM/static guards added;
+- chooser behavior is intentionally unchanged until exact-HEAD Validate passes.
+
 ## NEXT ACTION — do this first
 
-1. Read `docs/v.1.4.55/FILE_LIBRARY_AUDIT_2026-10-05.md`; initial Full Backup / History / Pending / Playlist Project / account-manifest findings are already recorded there.
-2. Complete the remaining inventory: StorageChooser default-root behavior, account full/incremental/delta entry points, remaining diagnostics and existing chooser/import guards.
-3. Define a read-only artifact classifier and canonical-folder/scoped-chooser contract, including legacy-file discovery and explicit `Інший файл…` fallback.
-4. Do **not** change restore/import payload semantics or move legacy user files silently.
-5. Update the #54 checklist before implementation.
+1. Verify live HEAD and wait for exact-HEAD Validate Android on the new pure #54 classifier foundation.
+2. Read `docs/v.1.4.55/FILE_LIBRARY_CONTRACT.md` and `FILE_LIBRARY_AUDIT_2026-10-05.md`; inventory/contract are complete.
+3. After Validate PASS, wire **Full Restore and History Import only** to read-only scoped recent-file candidates using `YtmArtifactScopePolicy`.
+4. Preserve explicit system/legacy fallback and always run existing owner validation after file selection.
+5. Do not change backup/History/Project payload schemas and do not silently move user files.
 
 ## Consolidated phone matrix
 
