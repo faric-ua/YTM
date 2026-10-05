@@ -42,6 +42,7 @@ import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.HomeDashboardChrome
 import com.saney.ytmimporter.ui.HomeHistoryDetailLink
 import com.saney.ytmimporter.ui.ReplacementLogDialog
+import com.saney.ytmimporter.ui.RecoveryAttentionChrome
 import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.TrackAdapter
 import com.saney.ytmimporter.ui.WorkflowRelayOverlay
@@ -218,7 +219,6 @@ class MainActivity : Activity() {
         homeScrollPosition.capture(homeScrollView)
         super.onPause()
     }
-
     override fun onResume() {
         super.onResume()
         if (AppThemeManager.recreateIfSkinChanged(this)) return
@@ -332,6 +332,7 @@ class MainActivity : Activity() {
                 1f
             )
         )
+        RecoveryAttentionChrome.attach(this, header, pendingQueueRequestCode)
         header.addView(
             TextView(this).apply {
                 text = "v${BuildConfig.VERSION_NAME}"
@@ -388,7 +389,6 @@ class MainActivity : Activity() {
                 ) {
                     showAccountDialog()
                 }
-
         searchButton =
             HomeDashboardChrome
                 .workflowButton(
@@ -401,7 +401,6 @@ class MainActivity : Activity() {
                 isEnabled = false
                 alpha = 0.55f
             }
-
         createButton =
             HomeDashboardChrome
                 .workflowButton(
@@ -414,7 +413,6 @@ class MainActivity : Activity() {
                 isEnabled = false
                 alpha = 0.55f
             }
-
         flowCard.addView(
             HomeDashboardChrome
                 .equalButtonsRow(
@@ -423,7 +421,6 @@ class MainActivity : Activity() {
                     second = accountButton
                 )
         )
-
         flowCard.addView(
             HomeDashboardChrome
                 .equalButtonsRow(
@@ -434,7 +431,6 @@ class MainActivity : Activity() {
                 setPadding(0, dp(8), 0, 0)
             }
         )
-
         content.addView(
             flowCard,
             LinearLayout.LayoutParams(
@@ -444,14 +440,12 @@ class MainActivity : Activity() {
                 setMargins(dp(12), 0, dp(12), dp(8))
             }
         )
-
         val utilityRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             isBaselineAligned = false
             gravity = android.view.Gravity.CENTER_VERTICAL
             setPadding(dp(10), 0, dp(10), dp(8))
         }
-
         val historyButton =
             HomeDashboardChrome
                 .compactButton(
@@ -460,7 +454,6 @@ class MainActivity : Activity() {
                 ) {
                     showHistory()
                 }
-
         pendingButton =
             HomeDashboardChrome
                 .compactButton(
@@ -469,7 +462,6 @@ class MainActivity : Activity() {
                 ) {
                     showPendingJobs()
                 }
-
         quotaButton =
             HomeDashboardChrome
                 .compactButton(
@@ -1492,6 +1484,9 @@ class MainActivity : Activity() {
 
             MenuActivity.ACTION_OPEN_YTM ->
                 openInYtm()
+
+            MenuActivity.ACTION_RECOVERY_CENTER ->
+                RecoveryAttentionChrome.open(this, pendingQueueRequestCode)
 
             MenuActivity.ACTION_DATA ->
                 startActivity(
@@ -3278,14 +3273,9 @@ class MainActivity : Activity() {
 
     private fun updatePendingButton() {
         if (!::pendingButton.isInitialized) return
-
         val count = pendingJobStore.getAll().size
-        pendingButton.text =
-            if (count > 0) {
-                "Черга ($count)"
-            } else {
-                "Черга"
-            }
+        pendingButton.text = if (count > 0) "Черга ($count)" else "Черга"
+        RecoveryAttentionChrome.refresh(this)
     }
 
 
