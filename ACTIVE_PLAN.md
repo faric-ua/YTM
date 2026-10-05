@@ -385,7 +385,8 @@ Goal: aggregate durable unfinished/recoverable work into one read-only Recovery 
 - [x] Menu PHONE PASS: `Центр відновлення` shows the same `Потребує уваги: 2` count.
 - [x] Exact Pending route PHONE PASS: Recovery Center opened `The Prodigy - Baby's Got A Temper (2002)` Queue detail with write-rate-limit state, `0/3` added and `3` waiting; no automatic Continue.
 - [x] Exact History route PHONE PASS: Recovery Center opened the intended `The Prodigy - Baby's Got A Temper (2002)` History detail with API-limit pause, `0/3` added, `3` waiting and expected queued tracks; no automatic Restore/Retry.
-- [ ] Finish focused phone QA: exact Bulk route plus direct breathing/acknowledgement observation; close #53 only after the full focused matrix passes.
+- [x] Exact Bulk route PHONE PASS: Recovery Center opened the intended `Синхронізація всіх` Bulk session in terminal partial/error state (15 planned playlists, 1 created, 18 tracks added, 1 not added); no automatic Continue/Rollback.
+- [ ] Finish focused phone QA with direct breathing/acknowledgement observation; close #53 only after that final check passes.
 - [ ] Close #53 only after PHONE PASS.
 
 Remaining Phase B backlog:
@@ -409,7 +410,7 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 **Continue #53 focused phone acceptance.**
 
-Candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` is validated and signed as run `37338681198`. Home/Recovery Center, both rotation directions, Back and Menu count are PHONE PASS. Pending and History exact-route acceptance are now PASS. Next verify the available Bulk route without triggering recovery work; finally directly observe whether the acknowledged same-count Home badge has stopped breathing.
+Candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` is validated and signed as run `37338681198`. Home/Recovery Center, both rotation directions, Back and Menu count are PHONE PASS. Pending, History and Bulk exact-route acceptance are now PASS. The only remaining #53 phone check is direct observation that the acknowledged same-count Home `⚠ 2` badge has stopped breathing.
 
 ## Update rule
 
