@@ -447,23 +447,19 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
+Phase A and Phase B #41/#25/BUG-051/#55/#53 are PHONE PASS / CLOSED.
 
-Active Phase B item: #53 / Unified Recovery Center.
+#53 final accepted candidate:
+- app source `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
+- exact-HEAD Validate `37257995437 — SUCCESS`;
+- signed run `37338681198 — SUCCESS`;
+- Recovery Center Home/Menu counts, actionable/warning separation, both rotations, Back, exact Pending/History/Bulk routes, no-auto-start and breathing acknowledgement all passed on phone.
 
-Validated source checkpoint:
-- `7c21b0e50ef6e380c408302d3b493ea94895969f`;
-- Validate `37257583900 — SUCCESS`;
-- preflight/JVM/unsigned release PASS;
-- MainActivity cleanup budget 4089 lines.
+Active Phase B item: #54 / Type-aware YTM file library and scoped import/restore chooser.
 
-Implemented:
-- pure read-only Bulk/Pending/History aggregation;
-- ACTION_REQUIRED vs WARNING classification and completed-work exclusion;
-- stable-identity dedupe only, no title matching;
-- exact owner routes for Bulk session, Pending job and History detail;
-- compact Home `⚠ N` badge and Menu `Потребує уваги: N`;
-- low-amplitude breathing with system-animation opt-out and acknowledgement stop;
-- no recovery executor on Recovery Center open/render/recreate/back.
+Next:
+- inventory current save/export/import/restore entry points and file contracts;
+- identify durable content/schema markers for each artifact type;
+- define canonical folders, content-based classification, scoped choosers and legacy fallback before source changes.
 
-Next: refresh docs/manifest, final exact-HEAD Validate, signed candidate, focused phone acceptance. Do not manufacture remote failures for QA and do not repeat closed Phase B/Phase A matrices.
+Do not repeat closed #53/Phase A matrices and do not change restore/import payload semantics as part of the #54 UX foundation.
