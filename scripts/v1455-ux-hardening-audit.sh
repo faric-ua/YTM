@@ -382,6 +382,44 @@ test -f "$HISTORY_GROUP_TEST" || fail "History logical grouping JVM coverage mis
 grep -Fq 'KEY_SEMANTIC_FILTER' "$HISTORY" || fail "History semantic filter state does not survive recreation"
 grep -Fq 'Фільтр історії' "$HISTORY" || fail "History filter control missing"
 grep -Fq 'HistoryLogicalGroupPolicy' "$HISTORY" || fail "History list does not use logical grouping/filter policy"
+grep -Fq '"Відновити як поточний плейлист"' "$HISTORY" ||
+  fail "History Quick Restore discoverability action missing"
+python - "$HISTORY" <<'PY_HISTORY_QUICK_RESTORE'
+from pathlib import Path
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+
+quick = text.find('sectionTitle("Швидкі дії")')
+action = text.find('"Відновити як поточний плейлист"', quick)
+request = text.find("requestRestoreAsCurrent(", action)
+if not (0 <= quick < action < request):
+    raise SystemExit(
+        "FAIL: History Quick Restore does not reuse the existing restore request path"
+    )
+
+if "KEY_RESTORE_CONFIRM_ENTRY_ID" not in text:
+    raise SystemExit(
+        "FAIL: History restore confirmation recreation state missing"
+    )
+
+confirm = text.find("private fun confirmRestoreAsCurrent")
+restore = text.find("private fun restoreAsCurrent")
+if not (0 <= confirm < restore):
+    raise SystemExit(
+        "FAIL: History safe restore confirmation/implementation missing"
+    )
+
+confirm_block = text[confirm:restore]
+for required in (
+    "Пошук і запис у YTM не запускатимуться автоматично.",
+    'label =\n                                "Відновити"',
+):
+    if required not in confirm_block:
+        raise SystemExit(
+            "FAIL: History Quick Restore safety contract regressed: " + required
+        )
+PY_HISTORY_QUICK_RESTORE
 grep -Fq 'searchAndSemanticFilterCombine' "$HISTORY_FILTER_TEST" || fail "History search+filter combination coverage missing"
 grep -Fq 'allWithBlankQueryReturnsCompleteList' "$HISTORY_FILTER_TEST" || fail "History clear-filter completeness coverage missing"
 grep -Fq 'PENDING_SEARCH("Очікує Search")' "$HISTORY_FILTER" || fail "History pending-Search filter missing"
