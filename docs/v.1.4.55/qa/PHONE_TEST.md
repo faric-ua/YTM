@@ -284,3 +284,24 @@ Issue #57 acceptance: **PASS / CLOSED**.
 
 Do not repeat #25, #41, Phase A, or v1.4.54 Tests 1–9.
 
+## Phase B #55 — History Quick Restore
+
+Result: **#55+ — PHONE PASS 2026-10-05.**
+
+Acceptance evidence:
+- History detail shows `Відновити як поточний плейлист` directly in `Швидкі дії`;
+- confirmation survived portrait ↔ landscape without firing restore;
+- `Скасувати` was a no-op;
+- explicit restore returned to Home with **01 2001 Future Trance Vol.15 DISC**, **41 tracks**, **local-only**;
+- no new YTM linkage was invented;
+- Search and YTM write did not auto-start.
+
+Guard-only exact source:
+- `c5da0755cc59fe7eb5f16ab483ae233bd8861d19`;
+- Validate Android `37255431011 — SUCCESS`.
+
+Issue #55: **PASS / CLOSED**.
+
+## Phase B #53 — Recovery Center
+
+Phone matrix will be added only after source/static/JVM and exact-HEAD build gates pass. Do not manufacture remote failures merely to populate Recovery Center.
