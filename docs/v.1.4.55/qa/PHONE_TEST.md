@@ -304,4 +304,27 @@ Issue #55: **PASS / CLOSED**.
 
 ## Phase B #53 — Recovery Center
 
-Phone matrix will be added only after source/static/JVM and exact-HEAD build gates pass. Do not manufacture remote failures merely to populate Recovery Center.
+Candidate:
+- final candidate HEAD: `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
+- exact-HEAD Validate Android: `37257995437 — SUCCESS`;
+- signed run: `37338681198 — SUCCESS`.
+
+Focused phone matrix — 2026-10-05:
+- [x] Home exposes actionable Recovery count as compact `⚠ 2`.
+- [x] Tapping the badge opens Recovery Center.
+- [x] Recovery Center shows `Потребує уваги • 2` and both actionable durable records.
+- [x] Pending and History owners are presented as distinct exact routes; no title-only dedupe is applied.
+- [x] Completed/partial terminal records are separated under `Завершено з попередженням`.
+- [x] Opening Recovery Center caused no visible automatic Search/write/rollback/restore/delete execution.
+- [ ] Rotate portrait → landscape while scrolled mid-list; retain logical viewport and do not auto-run work.
+- [ ] Rotate landscape → portrait; retain logical viewport and do not auto-run work.
+- [ ] Back returns to Home without starting recovery work.
+- [ ] Same actionable count remains visible on Home; opening/acknowledging the current count stops breathing until the count changes.
+- [ ] Menu shows the same `Потребує уваги: 2` count.
+- [ ] Exact Pending route opens the intended Queue job; return without Continue.
+- [ ] Exact History route opens the intended History entry; return without Restore/Retry.
+- [ ] Exact available Bulk route opens the intended Bulk session; return without Continue/Rollback.
+
+Status: **PARTIAL PHONE PASS — rotation/navigation/acknowledgement checks pending**.
+
+Do not manufacture remote failures merely to populate Recovery Center.
