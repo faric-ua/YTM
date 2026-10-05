@@ -366,7 +366,7 @@ Phase A is CLOSED. Phase B started explicitly on 2026-10-04.
 - [x] Phone acceptance `#55+`: portrait/landscape confirmation survives, Cancel is no-op, explicit restore returns **01 2001 Future Trance Vol.15 DISC / 41 tracks / local-only**, no Search/YTM write auto-start.
 - [x] GitHub issue #55 CLOSED.
 
-### CURRENT TASK — Recovery Center / needs-attention discoverability (#53)
+### COMPLETED TASK — Recovery Center / needs-attention discoverability (#53)
 
 Goal: aggregate durable unfinished/recoverable work into one read-only Recovery Center and expose a compact Home/Menu attention affordance without auto-starting remote work.
 
@@ -386,11 +386,22 @@ Goal: aggregate durable unfinished/recoverable work into one read-only Recovery 
 - [x] Exact Pending route PHONE PASS: Recovery Center opened `The Prodigy - Baby's Got A Temper (2002)` Queue detail with write-rate-limit state, `0/3` added and `3` waiting; no automatic Continue.
 - [x] Exact History route PHONE PASS: Recovery Center opened the intended `The Prodigy - Baby's Got A Temper (2002)` History detail with API-limit pause, `0/3` added, `3` waiting and expected queued tracks; no automatic Restore/Retry.
 - [x] Exact Bulk route PHONE PASS: Recovery Center opened the intended `Синхронізація всіх` Bulk session in terminal partial/error state (15 planned playlists, 1 created, 18 tracks added, 1 not added); no automatic Continue/Rollback.
-- [ ] Finish focused phone QA with direct breathing/acknowledgement observation; close #53 only after that final check passes.
-- [ ] Close #53 only after PHONE PASS.
+- [x] Breathing/acknowledgement PHONE PASS: after opening Recovery Center and returning to Home with the same `⚠ 2` count, direct observation confirmed the badge stayed still.
+- [x] #53 focused phone matrix complete — **PHONE PASS / CLOSED**.
+
+### CURRENT TASK — Type-aware file/backup library and scoped chooser (#54)
+
+Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make each save/import/restore entry point show the correct artifact type first, while preserving legacy-file fallback and existing restore/import semantics.
+
+- [ ] Inventory every current save/export/import/restore entry point and its present folder/MIME/extension chooser contract.
+- [ ] Inventory durable content/schema markers for Full Backup, History backup, Playlist Project and diagnostic/export JSON.
+- [ ] Define one read-only artifact classifier; filename/folder may hint, but content signature is the safety gate.
+- [ ] Define canonical YTM data folders and legacy discovery/fallback without moving user files silently.
+- [ ] Scope Full Restore, History Import and Playlist Project import to their expected artifact types with explicit `Інший файл…` fallback.
+- [ ] Add readable typed file cards and wrong-type validation messages without changing restore/import payload semantics.
+- [ ] Add JVM/static guards and focused phone matrix before closing #54.
 
 Remaining Phase B backlog:
-- [ ] Type-aware file/backup library and scoped chooser (#54).
 - [ ] Simplified Termux operator menu/status (#52).
 - [ ] Home last-action detail drill-down to exact History detail.
 
@@ -408,9 +419,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Continue #53 focused phone acceptance.**
+**Start #54 foundation inventory.**
 
-Candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` is validated and signed as run `37338681198`. Home/Recovery Center, both rotation directions, Back and Menu count are PHONE PASS. Pending, History and Bulk exact-route acceptance are now PASS. The only remaining #53 phone check is direct observation that the acknowledged same-count Home `⚠ 2` badge has stopped breathing.
+#53 is PHONE PASS / CLOSED on signed candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` / run `37338681198`. Do not repeat its matrix. Next inspect the actual Full Backup, History, Playlist Project and diagnostic file save/import paths, then define the type-classification and scoped-chooser contract before changing source.
 
 ## Update rule
 
