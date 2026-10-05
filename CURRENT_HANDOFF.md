@@ -22,33 +22,34 @@ Last updated: **2026-10-05**
 
 ## Current work — 2026-10-05
 
-Phase A remains PHONE PASS / CLOSED.
-
-Phase B #41 History filters, #25 logical History grouping, BUG-051/#57 and #55 History Quick Restore are PHONE PASS / CLOSED.
-
-#55 final evidence:
-- existing Quick Actions route was already present in the accepted v1.4.55 app code;
-- guard-only exact HEAD `c5da0755cc59fe7eb5f16ab483ae233bd8861d19`;
-- Validate `37255431011 — SUCCESS`;
-- phone result `#55+`;
-- confirmation survives portrait/landscape without auto-restore;
-- Cancel is no-op;
-- explicit restore returns **01 2001 Future Trance Vol.15 DISC / 41 tracks / local-only**;
-- no Search or YTM write auto-started;
-- issue #55 closed.
+Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
 Active task: #53 / UX-048 Unified Recovery Center.
 
-Locked #53 safety boundary:
-- use existing durable stores as source of truth; do not invent a second recovery ledger;
-- aggregation/list rendering is read-only;
-- completed normal work must not appear as unfinished;
-- all actionable durable work must be discoverable, not only active/latest;
-- opening/recreating/navigating Recovery Center cannot auto-start Search/write/rollback/restore/delete;
-- next actions route to existing owners; they do not execute the operation from list rendering;
-- preserve exact Bulk mutation ledger and Pending/History identity semantics.
+Validated source checkpoint:
+- source `7c21b0e50ef6e380c408302d3b493ea94895969f`;
+- Validate Android `37257583900 — SUCCESS`;
+- release preflight PASS;
+- JVM tests PASS;
+- unsigned release assemble PASS;
+- MainActivity cleanup budget PASS at 4089 lines.
 
-**Current gate:** inspect existing stores/routes, implement a pure aggregation policy with JVM coverage, then wire presentation.
+Implemented Recovery Center:
+- `RecoveryCenterPolicy` is pure/read-only and aggregates all durable Bulk/Pending/relevant History state;
+- ACTION_REQUIRED and WARNING are separate; ordinary completed work is excluded;
+- Pending/History dedupe uses stable local/remote identity only, never title matching;
+- rollback pause exposes exact remaining APPLIED mutation count;
+- `RecoveryCenterActivity` lists all items with plain-language state, update time, happened/remaining/error text;
+- exact navigation goes to Bulk session, exact Pending job detail, or exact History detail;
+- opening/rendering/rotation/back does not execute recovery work;
+- Pending only resumes through its existing explicit Continue result path back to Main;
+- Home has compact `⚠ N` attention badge only for actionable items;
+- low-amplitude breathing respects disabled system animators and stops after opening/acknowledging the same current count;
+- Menu shows the same actionable count.
+
+No Search/write/rollback/restore/delete API semantics, durable mutation ledger ownership, Pending ownership or History meaning changed.
+
+**Current gate:** final docs/manifest exact-HEAD Validate → signed APK → focused #53 phone acceptance.
 
 ## Immutable functional reference
 
@@ -120,11 +121,11 @@ real-device acceptance.
 
 ## Exact next work
 
-1. inspect #53 durable recovery sources and current owner screens;
-2. implement a pure read-only Recovery Center aggregation policy;
-3. add JVM coverage for actionable/completed/warning classification and multi-source identity;
-4. only then wire Home/Menu attention + Recovery Center navigation;
-5. require exact-HEAD validation and focused phone recovery acceptance before closing #53.
+1. refresh final #53 docs/generated manifest from validated checkpoint `7c21b0e…`;
+2. require one final exact-HEAD Validate Android PASS;
+3. build one signed candidate from that exact HEAD;
+4. run focused Recovery Center phone matrix without manufacturing remote failures;
+5. close #53 only after PHONE PASS.
 
 ## Working contract
 
