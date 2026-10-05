@@ -323,9 +323,9 @@ Focused phone matrix — 2026-10-05:
 - [ ] Opening/acknowledging the current count stops breathing until the count changes; motion still needs direct observation because a screenshot cannot prove animation state.
 - [x] Menu shows the same `Потребує уваги: 2` count.
 - [x] Exact Pending route opens the intended Queue job: `The Prodigy - Baby's Got A Temper (2002)`, write-rate-limit pause, `0/3` added and `3` waiting; opening the detail did not continue the job.
-- [ ] Exact History route opens the intended History entry; return without Restore/Retry.
+- [x] Exact History route opens the intended `The Prodigy - Baby's Got A Temper (2002)` History detail: API-limit pause, `0/3` added, `3` waiting and the expected three queued tracks; opening the detail did not Restore/Retry.
 - [ ] Exact available Bulk route opens the intended Bulk session; return without Continue/Rollback.
 
-Status: **PARTIAL PHONE PASS — PENDING ROUTE PASS; History/Bulk routes + breathing acknowledgement pending**.
+Status: **PARTIAL PHONE PASS — PENDING + HISTORY ROUTES PASS; Bulk route + breathing acknowledgement pending**.
 
 Do not manufacture remote failures merely to populate Recovery Center.
