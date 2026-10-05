@@ -447,14 +447,18 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-1. audit Menu/Home/History/Queue/Data/File/selector surfaces against the app-wide
-   readability hierarchy;
-2. patch only verified presentation gaps;
-3. verify Neon + Blue/Green semantic/accessibility sanity;
-4. confirm temporary phone-QA controls remain impossible in the public release
-   candidate;
-5. after the coherent Phase A batch, refresh artifacts, require exact-HEAD
-   validation, build one signed candidate and run the consolidated phone matrix.
+Phase A is PHONE PASS / CLOSED. Phase B #41 and #25 are PHONE PASS / CLOSED.
 
-Do not start Phase B functional/discoverability work until Phase A shared contracts
-are coherent enough that later screens can reuse them.
+Active corrective work is BUG-051: a previously rendered Home Skin can be visible for
+about 0.30 s when Menu returns after applying another Skin. The prior v1.4.50
+`onResume() → recreateIfSkinChanged()` guard remains necessary but is too late for
+the first visible frame.
+
+The corrective contract is:
+- explicit Skin Apply remains the only theme mutation;
+- hidden Home observes the committed Skin preference and recreates while Menu still covers it;
+- `onResume()` remains a defensive mismatch fallback;
+- no business/API/storage/History semantics change;
+- exact-HEAD Validate and signed real-phone transition retest are required before #57 closes.
+
+Do not repeat #25/#41/Phase A phone matrices.
