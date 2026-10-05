@@ -334,7 +334,42 @@ grep -Fq 'AppThemeManager.registerImmediateSkinRefresh(' "$MAIN" ||
   fail "Home does not pre-refresh underneath Menu after Skin commit"
 grep -Fq 'AppThemeManager.unregisterImmediateSkinRefresh(' "$MAIN" ||
   fail "Home Skin listener lifecycle teardown missing"
-python - "$MAIN" <<'PY_THEME_FIRST_FRAME
+python - "$MAIN" <<'PY_THEME_FIRST_FRAME'
+from pathlib import Path
+import sys
+
+main = Path(sys.argv[1]).read_text(encoding="utf-8")
+on_create = main.find("override fun onCreate")
+register = main.find(
+    "AppThemeManager.registerImmediateSkinRefresh(this)",
+    on_create,
+)
+search_cache = main.find("val searchCache", on_create)
+if not (0 <= on_create < register < search_cache):
+    raise SystemExit(
+        "FAIL: Home immediate Skin refresh is not registered before normal onCreate work"
+    )
+
+on_destroy = main.find("override fun onDestroy()")
+if (
+    on_destroy < 0
+    or "AppThemeManager.unregisterImmediateSkinRefresh(this)"
+       not in main[on_destroy:on_destroy + 500]
+):
+    raise SystemExit(
+        "FAIL: Home immediate Skin refresh teardown missing"
+    )
+
+resume = main.find("override fun onResume()")
+if (
+    resume < 0
+    or "AppThemeManager.recreateIfSkinChanged(this)"
+       not in main[resume:resume + 500]
+):
+    raise SystemExit(
+        "FAIL: Home onResume Skin mismatch fail-safe removed"
+    )
+PY_THEME_FIRST_FRAME
 
 grep -Fq 'Готові:' "$MAIN" || fail "Home named ready counter missing"
 grep -Fq 'Перевірити:' "$MAIN" || fail "Home named review counter missing"
