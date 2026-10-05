@@ -393,10 +393,11 @@ Goal: aggregate durable unfinished/recoverable work into one read-only Recovery 
 
 Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make each save/import/restore entry point show the correct artifact type first, while preserving legacy-file fallback and existing restore/import semantics.
 
-- [ ] Inventory every current save/export/import/restore entry point and its present folder/MIME/extension chooser contract.
-- [ ] Inventory durable content/schema markers for Full Backup, History backup, Playlist Project and diagnostic/export JSON.
-- [ ] Define one read-only artifact classifier; filename/folder may hint, but content signature is the safety gate.
-- [ ] Define canonical YTM data folders and legacy discovery/fallback without moving user files silently.
+- [x] Inventory every current save/export/import/restore entry point and its present folder/MIME/extension chooser contract; recorded in `FILE_LIBRARY_AUDIT_2026-10-05.md`.
+- [x] Inventory durable content/schema markers for Full Backup, History backup, Playlist Project, Pending diagnostics and account manifest flows.
+- [x] Define the content-first read-only classifier/scoped-candidate contract in `FILE_LIBRARY_CONTRACT.md`.
+- [x] Define canonical logical YTM data folders + SAF/legacy fallback without silent migration.
+- [x] Add pure `YtmArtifactClassifier` + `YtmArtifactScopePolicy` foundation with fail-closed UNKNOWN behavior and JVM matrix; no Activity is wired to it yet.
 - [ ] Scope Full Restore, History Import and Playlist Project import to their expected artifact types with explicit `Інший файл…` fallback.
 - [ ] Add readable typed file cards and wrong-type validation messages without changing restore/import payload semantics.
 - [ ] Add JVM/static guards and focused phone matrix before closing #54.
@@ -419,9 +420,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Start #54 foundation inventory.**
+**Validate #54 classifier foundation, then wire scoped candidates.**
 
-#53 is PHONE PASS / CLOSED on signed candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` / run `37338681198`. Do not repeat its matrix. Next inspect the actual Full Backup, History, Playlist Project and diagnostic file save/import paths, then define the type-classification and scoped-chooser contract before changing source.
+#53 remains PHONE PASS / CLOSED and must not be repeated. #54 inventory + contract are complete; pure classifier/scope policy and JVM/static guards are now in source. Require exact-HEAD Validate PASS before changing chooser rendering. After PASS, wire Full Restore and History Import to read-only scoped candidates first; preserve explicit system/legacy fallback and owner validation.
 
 ## Update rule
 
