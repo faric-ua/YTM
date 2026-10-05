@@ -40,5 +40,7 @@ Phase B #53 status: **ACTIVE / FOUNDATION INSPECTION**.
 
 | Phase B #53 source checkpoint | source `7c21b0e50ef6e380c408302d3b493ea94895969f`, Validate `37257583900` | Recovery Center pure aggregation + JVM/static guards + read-only screen + exact routes + Home/Menu attention | GitHub |
 | Phase B #53 source gate | 2026-10-05 | preflight PASS, MainActivity 4089 lines, JVM PASS, unsigned release PASS | GitHub Actions |
+| Phase B #53 final candidate gate | source `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`, Validate `37257995437`, signed run `37338681198` | exact-HEAD Validate PASS; signed APK build PASS from the same HEAD | GitHub Actions |
+| Phase B #53 phone checkpoint A | 2026-10-05 Home + Recovery Center | Home `⚠ 2`; two actionable items; separate completed-with-warning section; opening Recovery Center caused no visible auto-start | user phone screenshots |
 
-Phase B #53 status: **SOURCE VALIDATED / SIGNED + PHONE ACCEPTANCE PENDING**.
+Phase B #53 status: **SIGNED CANDIDATE READY / PHONE QA PARTIAL PASS — ROTATION + ROUTES PENDING**.
