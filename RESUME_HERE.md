@@ -48,19 +48,18 @@ Already PHONE PASS:
 - portrait → landscape → portrait while scrolled mid-list preserves the logical viewport;
 - Back returns to Home with the same `⚠ 2` count and no visible auto-start;
 - Menu shows `Центр відновлення` / `Потребує уваги: 2`;
-- exact Pending route opens `The Prodigy - Baby's Got A Temper (2002)` Queue detail with rate-limit pause, `0/3` added and `3` waiting, without auto-Continue.
+- exact Pending route opens `The Prodigy - Baby's Got A Temper (2002)` Queue detail with rate-limit pause, `0/3` added and `3` waiting, without auto-Continue;
+- exact History route opens the intended `The Prodigy - Baby's Got A Temper (2002)` History detail with API-limit pause, `0/3` added, `3` waiting and the expected three queued tracks, without auto-Restore/Retry.
 
 Still NOT verified:
-- exact History route;
 - exact available Bulk route;
 - direct visual confirmation that the acknowledged same-count `⚠ 2` badge stopped breathing. A still screenshot is insufficient for the animation check.
 
 ## NEXT ACTION — do this first
 
-1. Return from Queue without pressing `Продовжити`, reopen Recovery Center and tap `Переглянути History` on the actionable `The Prodigy - Baby's Got A Temper (2002)` History item; confirm the intended exact History detail opens, then return without Restore/Retry.
-2. Open the available Bulk warning/action route; confirm the intended Bulk session opens, then return without Continue/Rollback.
-3. On Home, directly observe `⚠ 2` for a few seconds and confirm whether it stays still after acknowledgement.
-4. Record the focused matrix and close #53 only after full PHONE PASS.
+1. Return from History, reopen Recovery Center and tap `Відкрити синхронізацію` on the available `Синхронізація всіх` warning card; confirm the intended Bulk session opens, then return without Continue/Rollback.
+2. On Home, directly observe `⚠ 2` for a few seconds and confirm whether it stays still after acknowledgement.
+3. Record the focused matrix and close #53 only after full PHONE PASS.
 
 ## Consolidated phone matrix
 
