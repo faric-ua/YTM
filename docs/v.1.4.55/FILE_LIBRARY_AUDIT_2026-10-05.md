@@ -127,14 +127,69 @@ foundation inspected so far does not establish a canonical type-specific
 7. Recent-file rendering/classification itself must remain read-only and must not
    trigger restore/import/search/write work.
 
-## Next inspection before source changes
+## Remaining inventory completed
 
-Complete the inventory for:
-- all save destinations and StorageChooser default-root behavior;
-- account full/incremental/delta manifest entry points;
-- any other JSON diagnostics/export artifacts;
-- existing tests/guards around RecentFileChooser, Data restore/import and Project
-  import.
+### StorageChooser / save roots
 
-Only after that inventory is complete should the shared artifact model/classifier
-and scoped chooser contract be implemented.
+`StorageChooserActivity` currently renders all persisted SAF roots allowed for the
+requested access level. In SAVE mode it also offers:
+- `Додати папку…` → `ACTION_OPEN_DOCUMENT_TREE`;
+- `Зберегти як…` → `ACTION_CREATE_DOCUMENT`.
+
+There is no artifact-type canonical default root in this layer today.
+
+### Account full/selective/incremental/consolidated backups
+
+These are folder workflows, not single-file local backups.
+
+Full/selective account export:
+- user chooses a READ_WRITE SAF parent tree;
+- app creates a timestamped `*-YTM-Export` child session;
+- session contains YTM Project files + `manifest.json`.
+
+Incremental:
+- user chooses a READ baseline session/folder;
+- after explicit scan/preview, user chooses a READ_WRITE parent tree;
+- app creates a timestamped `*-YTM-Sync` delta session;
+- manifest keeps `format = "ytm-importer-account-library-export"` and
+  `backupMode = "INCREMENTAL_DELTA"`.
+
+Delta-chain materialization:
+- user chooses a READ common parent containing the chain;
+- after explicit preview, user chooses a READ_WRITE target;
+- app creates a timestamped `*-YTM-Full` consolidated session.
+
+These flows must remain folder-scoped and must not be flattened into the single-file
+JSON chooser.
+
+### Other current JSON exports
+
+Data currently exposes:
+- Full Backup JSON;
+- History JSON;
+- Pending Queue JSON.
+
+History TXT is non-JSON. No additional standalone JSON diagnostic owner was found in
+the current app-source inventory that should be a normal restore candidate.
+
+### Existing guards
+
+Existing historical/static guards already protect:
+- History JSON structural inspection + normalization;
+- Full Backup validation through `LocalBackupManager`;
+- recent-file selector + permissive system fallback;
+- account manifest import;
+- incremental backup and delta-chain contracts.
+
+There was no JVM unit test for a shared artifact-type classifier because that
+classifier did not exist yet.
+
+## Inventory conclusion
+
+The inventory is complete enough to start the shared read-only classifier.
+
+The authoritative implementation contract is:
+`docs/v.1.4.55/FILE_LIBRARY_CONTRACT.md`.
+
+First source slice must be pure classification + JVM/static guards only. It must not
+change chooser rendering or any restore/import payload behavior yet.
