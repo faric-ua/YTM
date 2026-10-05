@@ -30,15 +30,14 @@ Last updated: **2026-10-05**
   - subtle breathing respects disabled system animators and stops after the current count is opened/acknowledged;
   - Menu shows the same `Потребує уваги: N` count.
 - No Search/write/rollback/restore/delete execution semantics were moved into Recovery Center.
-- Phone QA partial PASS: Home displays `⚠ 2`; Recovery Center opens with two actionable items and a separate warning section; opening the center did not visibly auto-start recovery work.
+- Phone QA partial PASS: Home displays `⚠ 2`; Recovery Center opens with two actionable items and a separate warning section; opening the center did not visibly auto-start recovery work; portrait → landscape → portrait while scrolled mid-list preserved the same logical Recovery Center area without visible auto-start.
 
 ## NEXT ACTION — do this first
 
-1. Rotate Recovery Center while scrolled mid-list; verify the same screen/state, retained viewport and no automatic recovery work.
-2. Return with Back; verify Home still shows `⚠ 2` and the acknowledged same-count badge no longer breathes.
-3. Open Menu; verify `Центр відновлення` shows `Потребує уваги: 2`.
-4. Reopen Recovery Center and verify exact routes into Pending, History and the available Bulk session, returning without pressing Continue/Retry/Rollback.
-5. Record the focused matrix and close #53 only after full PHONE PASS.
+1. Return with Back; verify Home still shows `⚠ 2` and the acknowledged same-count badge no longer breathes.
+2. Open Menu; verify `Центр відновлення` shows `Потребує уваги: 2`.
+3. Reopen Recovery Center and verify exact routes into Pending, History and the available Bulk session, returning without pressing Continue/Retry/Rollback.
+4. Record the focused matrix and close #53 only after full PHONE PASS.
 
 ## Consolidated phone matrix
 
