@@ -76,24 +76,8 @@ object RecoveryAttentionChrome {
                 visibility = View.GONE
 
                 setOnClickListener {
-                    val count =
-                        RecoveryCenterSource(
-                            activity
-                        ).snapshot()
-                            .actionableCount
-
-                    acknowledgedCounts[
-                        this
-                    ] = count
-
-                    stopAnimation(this)
-
-                    activity.startActivityForResult(
-                        Intent(
-                            activity,
-                            RecoveryCenterActivity
-                                ::class.java
-                        ),
+                    open(
+                        activity,
                         requestCode
                     )
                 }
@@ -140,6 +124,37 @@ object RecoveryAttentionChrome {
         update(
             activity = activity,
             view = view
+        )
+    }
+
+    fun open(
+        activity: Activity,
+        requestCode: Int
+    ) {
+        activity.window
+            .decorView
+            .findViewWithTag<TextView>(
+                TAG
+            )
+            ?.let { view ->
+                acknowledgedCounts[
+                    view
+                ] =
+                    RecoveryCenterSource(
+                        activity
+                    ).snapshot()
+                        .actionableCount
+
+                stopAnimation(view)
+            }
+
+        activity.startActivityForResult(
+            Intent(
+                activity,
+                RecoveryCenterActivity
+                    ::class.java
+            ),
+            requestCode
         )
     }
 
