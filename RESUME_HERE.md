@@ -5,33 +5,34 @@
 > Do not reconstruct the project from chat memory. Read this file from the live
 > `feat/v1.4.55-ux-hardening` branch first, then verify branch HEAD and latest Actions state.
 
-Last updated: **2026-10-04**
+Last updated: **2026-10-05**
 
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / corrective BUG-051 — previous-Skin Home flash**
+- Release: **v1.4.55 / Phase B — History Quick Restore (#55)**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Phase A is PHONE PASS / CLOSED; do not repeat it.
 - Phase B #41 History filters is PHONE PASS / CLOSED.
-- Phase B #25 History logical grouping is **B2+ / PHONE PASS / CLOSED**:
-  - tested source `51604b813f98224399d5ce430a23f4b6c058860c`;
-  - Validate `37244442842 — SUCCESS`;
-  - signed build `37248457140 — SUCCESS`;
-  - grouped cards, YTM provider/result badges, operation drill-down, rotation/back and Green/Blue readability passed;
-  - issue #25 is closed.
-- BUG-051 is active: after committed Skin Apply, Menu return could expose the previous Home Skin before `MainActivity.onResume()` recreation.
-- Frame evidence: Green → Neon via toolbar Back exposed old Green Home for about 9 frames / ~0.30 s.
-- Corrective source now makes MainActivity observe the committed Skin preference and recreate while Menu still covers Home. Existing `onResume() → recreateIfSkinChanged()` remains as a fail-safe.
-- No Search/write/restore/delete/API/storage/History semantics are changed.
+- Phase B #25 History logical grouping is B2+ / PHONE PASS / CLOSED.
+- BUG-051/#57 previous-Skin Home flash is **C1+ / PHONE PASS / CLOSED**:
+  - exact accepted source `81642d6ea8f0335853d25295e6dcfdd32150801d`;
+  - Validate `37252745101 — SUCCESS`;
+  - signed build `37253621772 — SUCCESS`;
+  - APK SHA-256 `c6e8c06ff9cc15f4caa562db1f2a1b30081734adf72c343127864ba8175b7869`;
+  - toolbar Back, alternate/system Back and no-change control passed;
+  - no domain action auto-started;
+  - issue #57 is closed.
+- Next Phase B item is #55: make the existing safe History restore action directly discoverable in Quick Actions.
+- #55 must reuse existing restore semantics and confirmation; no Search/YTM write auto-start and no title-based linkage inference.
 
 ## NEXT ACTION — do this first
 
-1. Require exact-HEAD Validate Android PASS for BUG-051 corrective source.
-2. Build one signed APK from that exact validated HEAD.
-3. Focused phone retest only: Green → Neon and one reverse/alternate transition, toolbar Back + system Back, no previous-Skin frame.
-4. Control: return from Menu without changing Skin; no flash and no domain action auto-start.
-5. Record evidence and close #57 only after PHONE PASS.
+1. Finish BUG-051 documentation/manifest closeout and require one final exact-HEAD Validate PASS.
+2. Then read issue #55 plus current History detail/restore implementation.
+3. Surface `Відновити як поточний плейлист` in History Quick Actions by reusing the existing restore route.
+4. Preserve confirmation rotation safety and explicit-action-only semantics.
+5. Build/phone-test #55 only after source/static gates pass.
 
 ## Consolidated phone matrix
 
