@@ -331,26 +331,31 @@ Phone matrix must cover:
 
 Phase A is CLOSED. Phase B started explicitly on 2026-10-04.
 
-### CURRENT TASK — History logical playlist/provider grouping (#25)
+### COMPLETED TASK — History logical playlist/provider grouping (#25)
 
-Goal: collapse repeated History operation rows into one logical playlist card when a stable local playlist identity proves they belong to the same lifecycle, while keeping every operation auditable.
+- [x] Pure grouping keyed only by nonblank stable `localPlaylistId`; no title matching.
+- [x] Missing local identity fails closed to one operation per card.
+- [x] YTM provider/result badge and full operation drill-down preserve auditability.
+- [x] Group/list state survives recreation and no action auto-starts.
+- [x] Exact candidate `51604b813f98224399d5ce430a23f4b6c058860c` passed Validate `37244442842` and signed build `37248457140`.
+- [x] B2 phone QA PASS on 2026-10-05: logical cards, provider badges, drill-down, rotation/back, Green/Blue readability and no auto-action.
+- [x] GitHub issue #25 CLOSED.
 
-- [x] Read issue #25 and inspect current History model/list/detail flow.
-- [x] Add a pure `HistoryLogicalGroupPolicy`.
-- [x] Group only by nonblank `localPlaylistId`; never group by title.
-- [x] Entries without local identity fail closed to one operation per card.
-- [x] Preserve YTM provider presence across the logical lifecycle and expose a compact provider badge/result such as `YTM 4/4`.
-- [x] Preserve current pending Search/write state precedence over linked/provider presence.
-- [x] Make search match any operation in the logical group while semantic filters describe the current logical state.
-- [x] Replace History list rows with grouped logical cards.
-- [x] Add full-screen operation drill-down for multi-operation groups; individual operation details remain unchanged.
-- [x] Preserve group screen and scroll state through recreation/rotation.
-- [x] Add JVM coverage for same-local-id grouping, anti-title matching, fail-closed no-ID behavior, provider persistence and filter/current-state semantics.
-- [x] Add static guards that grouping is read-only, local-ID keyed, provider-visible and drill-down capable.
-- [x] Source/docs checkpoint `5d56cc7c237b7737638256babd89916ad40e6d4a` passed exact-HEAD Validate Android run `37244156767 — SUCCESS` after one compile fix; preflight/JVM/unsigned release PASS.
-- [ ] Record this checkpoint in final handoff/manifest, require one final exact-HEAD Validate PASS, then build one signed candidate.
-- [ ] Run focused phone QA for #25: duplicate lifecycle collapses to one card, provider badge visible, operation drill-down preserves all records, rotation/back works, no action auto-starts.
-- [ ] Record phone evidence and close issue #25 if PASS.
+### CURRENT TASK — BUG-051 previous-Skin Home flash
+
+Goal: after explicit Skin Apply in Menu, Home must already be rebuilt in the committed Skin before Menu can reveal it.
+
+- [x] Capture real-phone video and isolate the stale first-visible-frame failure.
+- [x] Confirm toolbar Back Green → Neon exposes old Green Home for ~9 frames / ~0.30 s.
+- [x] Confirm root cause: Home waits until `onResume()` to detect persisted Skin mismatch.
+- [x] Add Skin preference listener registration/teardown API without changing Skin persistence identity.
+- [x] Register MainActivity so hidden Home recreates immediately when Menu commits a different Skin.
+- [x] Preserve existing `onResume() → recreateIfSkinChanged()` path as a fail-safe.
+- [x] Add static guard for early refresh ownership and listener teardown.
+- [ ] Require exact-HEAD Validate Android PASS.
+- [ ] Build one exact-source signed candidate.
+- [ ] Phone retest toolbar Back + system Back with Green/Neon and one alternate pair; previous Skin must never be visible.
+- [ ] Record phone evidence and close #57 only after PASS.
 
 Remaining Phase B backlog:
 - [ ] History Quick Restore acceptance (#55).
@@ -378,9 +383,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Finish Phase B #25 candidate gate.**
+**Validate and phone-retest BUG-051.**
 
-Refresh docs/generated manifest, require exact-HEAD Validate Android PASS, then build one signed candidate. Phone QA is limited to logical grouping/provider badge/operation drill-down lifecycle. Do not repeat #41, Phase A, or v1.4.54 Tests 1–9.
+Require exact-HEAD Validate Android PASS for the first-visible-frame Skin correction, build one signed candidate, then retest only Menu → Home Skin transitions. Do not repeat #25, #41, Phase A, or v1.4.54 Tests 1–9.
 
 ## Update rule
 
