@@ -51,7 +51,7 @@ Implemented Recovery Center:
 
 No Search/write/rollback/restore/delete API semantics, durable mutation ledger ownership, Pending ownership or History meaning changed.
 
-**Current gate:** focused #53 phone acceptance is in progress. Home `⚠ 2`, Recovery Center list/read-only-open, portrait → landscape → portrait mid-list rotation/scroll continuity, Back → Home and Menu `Потребує уваги: 2` are PHONE PASS. Exact Pending route is PHONE PASS. Exact History/Bulk routes and direct breathing/acknowledgement observation remain.
+**Current gate:** focused #53 phone acceptance is in progress. Home `⚠ 2`, Recovery Center list/read-only-open, portrait → landscape → portrait mid-list rotation/scroll continuity, Back → Home and Menu `Потребує уваги: 2` are PHONE PASS. Exact Pending and History routes are PHONE PASS. Exact Bulk route and direct breathing/acknowledgement observation remain.
 
 ## Immutable functional reference
 
@@ -123,10 +123,9 @@ real-device acceptance.
 
 ## Exact next work
 
-1. open the exact History route; return without Restore/Retry;
-2. open the available Bulk route; return without Continue/Rollback;
-3. directly observe Home `⚠ 2` after acknowledgement and confirm the same-count badge is no longer breathing;
-4. close #53 only after the focused matrix is PHONE PASS.
+1. open the available Bulk route; return without Continue/Rollback;
+2. directly observe Home `⚠ 2` after acknowledgement and confirm the same-count badge is no longer breathing;
+3. close #53 only after the focused matrix is PHONE PASS.
 
 ## Working contract
 
