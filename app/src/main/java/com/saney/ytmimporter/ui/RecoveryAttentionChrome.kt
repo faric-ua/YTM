@@ -297,8 +297,7 @@ object RecoveryAttentionChrome {
             Build.VERSION.SDK_INT >=
             Build.VERSION_CODES.O
         ) {
-            ValueAnimator
-                .areAnimatorsEnabled()
+            ValueAnimator.areAnimatorsEnabled()
         } else {
             true
         }
