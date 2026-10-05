@@ -30,3 +30,10 @@ Phase B #25 status: **PHONE PASS / CLOSED**.
 | BUG-051 C1 phone evidence | 2026-10-05 focused Skin transition retest | toolbar Back PASS, system/alternate Back PASS, no-change control PASS, no domain auto-action | user phone acceptance |
 
 BUG-051 status: **C1+ / PHONE PASS / CLOSED**.
+
+| Phase B #55 guard | source `c5da0755cc59fe7eb5f16ab483ae233bd8861d19`, Validate `37255431011` | Quick Restore discoverability/shared restore path/rotation-safe confirmation guard | GitHub |
+| Phase B #55 phone evidence | 2026-10-05 History detail + focused restore acceptance | visible Quick Restore, rotation-safe confirmation, Cancel no-op, explicit 41-track local-only restore, no Search/YTM-write auto-start | user phone acceptance |
+
+Phase B #55 status: **#55+ / PHONE PASS / CLOSED**.
+
+Phase B #53 status: **ACTIVE / FOUNDATION INSPECTION**.
