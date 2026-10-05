@@ -20,3 +20,10 @@ Phase A status: **PHONE PASS / CLOSED** for the v1.4.55 hardening scope. BUG-040
 
 Phase B #41 status: **PHONE PASS / READY TO CLOSE**.
 
+| Phase B #25 candidate | source `51604b813f98224399d5ce430a23f4b6c058860c`, Validate `37244442842`, signed run `37248457140` | logical History grouping/provider badge candidate | GitHub |
+| Phase B #25 phone evidence | 2026-10-05 History screenshots | one logical card, `YTM 5/5` provider badge, two-operation drill-down, rotation/back and Green/Blue readability | user-provided screenshots / QA record |
+| BUG-051 phone video | 2026-10-05 Menu → Home Skin transition | Green → Neon toolbar Back exposes previous Green Home for ~9 frames / ~0.30 s before Neon Home | user-provided recording / frame analysis |
+
+Phase B #25 status: **PHONE PASS / CLOSED**.
+
+BUG-051 status: **REPRODUCED / CORRECTIVE SOURCE IMPLEMENTED / VALIDATION PENDING**.
