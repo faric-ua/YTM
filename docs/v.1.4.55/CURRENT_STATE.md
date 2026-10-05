@@ -457,9 +457,14 @@ Phase A and Phase B #41/#25/BUG-051/#55/#53 are PHONE PASS / CLOSED.
 
 Active Phase B item: #54 / Type-aware YTM file library and scoped import/restore chooser.
 
+#54 foundation:
+- file-flow/schema inventory complete;
+- `FILE_LIBRARY_CONTRACT.md` defines content-first classification, canonical logical folders, legacy fallback and owner-validation boundary;
+- pure `YtmArtifactClassifier` + `YtmArtifactScopePolicy` added with JVM/static guards;
+- no Activity/chooser behavior is wired yet, so restore/import semantics remain unchanged.
+
 Next:
-- inventory current save/export/import/restore entry points and file contracts;
-- identify durable content/schema markers for each artifact type;
-- define canonical folders, content-based classification, scoped choosers and legacy fallback before source changes.
+- exact-HEAD Validate the pure classifier foundation;
+- after PASS, wire Full Restore + History Import scoped candidates first, retaining explicit system fallback and existing owner validators.
 
 Do not repeat closed #53/Phase A matrices and do not change restore/import payload semantics as part of the #54 UX foundation.
