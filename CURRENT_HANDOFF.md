@@ -26,6 +26,14 @@ Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
 Active task: #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
 
+#54 foundation now established:
+- completed source inventory: single-file Data/Project flows vs account folder+manifest flows;
+- canonical contract: `docs/v.1.4.55/FILE_LIBRARY_CONTRACT.md`;
+- inventory evidence: `docs/v.1.4.55/FILE_LIBRARY_AUDIT_2026-10-05.md`;
+- pure `YtmArtifactClassifier` recognizes Full Local Backup, History Backup, Playlist Project, Pending Diagnostics, Account Library Manifest or UNKNOWN;
+- pure `YtmArtifactScopePolicy` accepts only the canonical artifact type for Full Restore / History Restore / Playlist Project;
+- JVM + static audit added; no chooser or mutation owner is wired to the classifier yet.
+
 Validated/signed candidate:
 - implementation checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f` passed Validate Android `37257583900 — SUCCESS`;
 - final candidate HEAD `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
@@ -123,10 +131,10 @@ real-device acceptance.
 
 ## Exact next work
 
-1. inspect all current Full Backup, History, Playlist Project and diagnostic save/import/restore entry points;
-2. record their current MIME/extension/folder/chooser behavior and durable schema markers;
-3. define the #54 type-classification + canonical-folder + legacy-fallback contract before source changes;
-4. only then implement scoped choosers without changing restore/import semantics.
+1. require exact-HEAD Validate Android PASS for the pure #54 classifier foundation;
+2. after PASS, wire Full Restore and History Import recent-file lists to the scope policy as a read-only presentation filter;
+3. keep `Інший файл…` / system picker fallback and run the existing owner validator after selection;
+4. only then extend scoped JSON presentation to YTM Project import and typed metadata cards.
 
 ## Working contract
 
