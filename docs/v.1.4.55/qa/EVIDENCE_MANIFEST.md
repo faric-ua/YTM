@@ -42,5 +42,6 @@ Phase B #53 status: **ACTIVE / FOUNDATION INSPECTION**.
 | Phase B #53 source gate | 2026-10-05 | preflight PASS, MainActivity 4089 lines, JVM PASS, unsigned release PASS | GitHub Actions |
 | Phase B #53 final candidate gate | source `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`, Validate `37257995437`, signed run `37338681198` | exact-HEAD Validate PASS; signed APK build PASS from the same HEAD | GitHub Actions |
 | Phase B #53 phone checkpoint A | 2026-10-05 Home + Recovery Center | Home `⚠ 2`; two actionable items; separate completed-with-warning section; opening Recovery Center caused no visible auto-start | user phone screenshots |
+| Phase B #53 phone checkpoint B | 2026-10-05 Recovery Center rotation | mid-list portrait → landscape → portrait preserved the same logical second-actionable/warning area; no visible recovery auto-start | user phone screenshots |
 
-Phase B #53 status: **SIGNED CANDIDATE READY / PHONE QA PARTIAL PASS — ROTATION + ROUTES PENDING**.
+Phase B #53 status: **SIGNED CANDIDATE READY / PHONE QA PARTIAL PASS — ROTATION PASS; BACK/MENU/ROUTES PENDING**.
