@@ -320,12 +320,12 @@ Focused phone matrix — 2026-10-05:
 - [x] Rotate landscape → portrait: returned to the same logical mid-list area near `Відкрити чергу` / `Завершено з попередженням`; no visible auto-run.
 - [x] Back returns to Home without visible recovery auto-start.
 - [x] The same actionable count remains visible on Home as `⚠ 2` after Back.
-- [ ] Opening/acknowledging the current count stops breathing until the count changes; motion still needs direct observation because a screenshot cannot prove animation state.
+- [x] Opening/acknowledging the current count stops breathing until the count changes: after returning to Home with the same `⚠ 2` count, direct observation for several seconds confirmed the badge stayed still.
 - [x] Menu shows the same `Потребує уваги: 2` count.
 - [x] Exact Pending route opens the intended Queue job: `The Prodigy - Baby's Got A Temper (2002)`, write-rate-limit pause, `0/3` added and `3` waiting; opening the detail did not continue the job.
 - [x] Exact History route opens the intended `The Prodigy - Baby's Got A Temper (2002)` History detail: API-limit pause, `0/3` added, `3` waiting and the expected three queued tracks; opening the detail did not Restore/Retry.
 - [x] Exact Bulk route opens the intended `Синхронізація всіх` session: `Частково завершено з помилкою`, 15 playlists in plan, 1 playlist created, 18 tracks added, 1 track not added; opening the session did not Continue/Rollback.
 
-Status: **PARTIAL PHONE PASS — PENDING + HISTORY + BULK ROUTES PASS; breathing acknowledgement pending**.
+Status: **PHONE PASS / CLOSED — Home/list/rotation/Back/Menu, Pending/History/Bulk exact routes, no-auto-start and breathing acknowledgement all passed.**
 
 Do not manufacture remote failures merely to populate Recovery Center.
