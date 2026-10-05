@@ -2,6 +2,7 @@ package com.saney.ytmimporter.ui
 
 import android.app.Activity
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorFilter
@@ -187,6 +188,39 @@ object AppThemeManager {
                 style.storageKey
             )
             .apply()
+    }
+
+    fun isSkinStylePreference(
+        key: String?
+    ): Boolean =
+        key == KEY_STYLE
+
+    fun registerSkinChangeListener(
+        context: Context,
+        listener: SharedPreferences.OnSharedPreferenceChangeListener
+    ) {
+        context
+            .getSharedPreferences(
+                PREFS,
+                Context.MODE_PRIVATE
+            )
+            .registerOnSharedPreferenceChangeListener(
+                listener
+            )
+    }
+
+    fun unregisterSkinChangeListener(
+        context: Context,
+        listener: SharedPreferences.OnSharedPreferenceChangeListener
+    ) {
+        context
+            .getSharedPreferences(
+                PREFS,
+                Context.MODE_PRIVATE
+            )
+            .unregisterOnSharedPreferenceChangeListener(
+                listener
+            )
     }
 
     fun skin(
