@@ -12,26 +12,30 @@ Last updated: **2026-10-05**
 - Repository: `faric-ua/YTM`
 - Release: **v1.4.55 / Phase B — Recovery Center (#53)**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Phase A is PHONE PASS / CLOSED; do not repeat it.
-- Phase B #41, #25, BUG-051/#57 and #55 are PHONE PASS / CLOSED.
-- #55 final acceptance:
-  - guard-only HEAD `c5da0755cc59fe7eb5f16ab483ae233bd8861d19`;
-  - Validate `37255431011 — SUCCESS`;
-  - phone result `#55+`;
-  - restore confirmation survived rotation; Cancel was no-op;
-  - explicit restore produced **01 2001 Future Trance Vol.15 DISC / 41 tracks / local-only**;
-  - no Search/YTM write auto-started;
-  - issue #55 closed.
-- Active Phase B task: #53 Unified Recovery Center / `Потребує уваги`.
-- #53 must aggregate existing durable state read-only first; opening the surface must never mutate remote or local operation state.
+- Phase A and Phase B #41/#25/#57/#55 are PHONE PASS / CLOSED.
+- #53 source checkpoint is implemented and validated:
+  - source `7c21b0e50ef6e380c408302d3b493ea94895969f`;
+  - Validate Android `37257583900 — SUCCESS`;
+  - release preflight/JVM/unsigned release PASS;
+  - MainActivity remains under cleanup budget at 4089 lines.
+- Implemented #53 contract:
+  - pure read-only aggregation over BulkSyncSessionStore, PendingJobStore and relevant History;
+  - ACTION_REQUIRED vs WARNING classification; normal completed work excluded;
+  - stable identity dedupe only, never title matching;
+  - exact routes to Bulk Session, Pending job detail and History detail;
+  - Recovery Center is read-only on open/recreate/back;
+  - compact Home `⚠ N` badge only when actionable work exists;
+  - subtle breathing respects disabled system animators and stops after the current count is opened/acknowledged;
+  - Menu shows the same `Потребує уваги: N` count.
+- No Search/write/rollback/restore/delete execution semantics were moved into Recovery Center.
 
 ## NEXT ACTION — do this first
 
-1. Inspect `BulkSyncSessionStore`, `PendingJobStore`, relevant History recovery states, and existing recovery routes.
-2. Define a pure Recovery Center aggregation model/policy with stable item identity and explicit classification.
-3. Keep completed normal work out of actionable results; distinguish completed-with-warning.
-4. Add Home/Menu attention affordance only after the read-only model is covered by tests.
-5. No automatic Search/write/rollback/restore/delete on open/recreate/navigation.
+1. Record this source checkpoint in final docs/generated manifest.
+2. Require one final exact-HEAD Validate Android PASS after docs/manifest.
+3. Build one signed APK from that exact HEAD.
+4. Focused phone QA #53 only: Home badge/count/breathing, Menu count, Recovery Center list/rotation/back, exact route into existing Queue/Bulk/History owners, no auto-start.
+5. Close #53 only after PHONE PASS.
 
 ## Consolidated phone matrix
 
