@@ -167,8 +167,8 @@ c9be4e8b88578bdb  app/src/main/java/com/saney/ytmimporter/ui/AppThemeManager.kt
 fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome.kt
 88174cd2da5b393b  app/src/main/java/com/saney/ytmimporter/ui/HomeDashboardChrome.kt
 8763d6337d2bee83  app/src/main/java/com/saney/ytmimporter/ui/HomeHistoryDetailLink.kt
-7e65143a9419153e  app/src/main/java/com/saney/ytmimporter/ui/ReplacementLogDialog.kt
 84c2c819d25be316  app/src/main/java/com/saney/ytmimporter/ui/RecoveryAttentionChrome.kt
+7e65143a9419153e  app/src/main/java/com/saney/ytmimporter/ui/ReplacementLogDialog.kt
 071bf2751d4693fa  app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt
 8ab47c848ec9c8b3  app/src/main/java/com/saney/ytmimporter/ui/SafFileSaveFlow.kt
 4259ded3e99f84ee  app/src/main/java/com/saney/ytmimporter/ui/ScrollPositionState.kt
