@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-10-04**
+Last updated: **2026-10-05**
 
 > **FIRST READ: `RESUME_HERE.md`**
 >
@@ -24,38 +24,37 @@ Last updated: **2026-10-04**
 
 Phase A remains PHONE PASS / CLOSED.
 
-Phase B #41 History semantic filters is PHONE PASS / CLOSED.
+Phase B #41 History filters and #25 logical History grouping are PHONE PASS / CLOSED.
 
-Phase B #25 History logical playlist/provider grouping is now B2+ / PHONE PASS / CLOSED:
-- exact tested source `51604b813f98224399d5ce430a23f4b6c058860c`;
-- exact Validate run `37244442842 — SUCCESS`;
-- signed run `37248457140 — SUCCESS`;
-- one logical playlist card per stable local identity, YTM badge/result, all-operation drill-down and rotation/back passed on phone;
-- Green + Blue readability passed;
-- issue #25 closed.
+BUG-051/#57 previous-Skin Home flash is now C1+ / PHONE PASS / CLOSED:
+- accepted source `81642d6ea8f0335853d25295e6dcfdd32150801d`;
+- exact Validate `37252745101 — SUCCESS`;
+- signed run `37253621772 — SUCCESS`;
+- APK SHA-256 `c6e8c06ff9cc15f4caa562db1f2a1b30081734adf72c343127864ba8175b7869`;
+- toolbar Back PASS;
+- alternate/system Back PASS;
+- no-change return control PASS;
+- no Search/write/restore/delete or other domain action auto-started;
+- issue #57 closed.
 
-Active corrective task: #57 / BUG-051 — Home briefly exposes the previous Skin after applying a new theme in Menu.
+Accepted BUG-051 implementation contract:
+- MainActivity remains below the 4100-line cleanup ceiling (4099);
+- AppThemeManager owns immediate hidden-Home Skin refresh when the persisted Skin changes;
+- MainActivity registers/unregisters that lifecycle hook;
+- existing `onResume() → recreateIfSkinChanged()` remains a fallback;
+- no theme identity, API, storage, History, Search or write semantics changed.
 
-Phone evidence:
-- Green → Neon via toolbar Back showed old Green Home for about 9 frames / ~0.30 s;
-- system transitions can partially mask the same stale-underlay condition;
-- no-theme-change return is the control path.
+Active Phase B task: #55 / History Quick Restore discoverability.
 
-Confirmed lifecycle cause:
-- MainActivity stays alive underneath MenuActivity with the old rendered palette;
-- Skin Apply persists the new style and recreates Menu;
-- Home previously waited until `onResume()` to call `recreateIfSkinChanged()`;
-- therefore the old Home surface could become visible before its recreation completed.
+#55 intent:
+- expose `Відновити як поточний плейлист` directly in History detail Quick Actions;
+- reuse the existing top-right `Дії` restore implementation and confirmation;
+- current local workspace replacement remains explicit;
+- preserve persisted linkage only when truly present; never infer by title;
+- confirmation must survive rotation without firing;
+- no Search or YTM write may auto-start.
 
-Corrective implementation:
-- AppThemeManager exposes registration/teardown for the existing Skin SharedPreferences change event;
-- MainActivity listens while alive and recreates immediately when a committed Skin differs from its applied Skin, while Menu is still covering Home;
-- listener is removed in `onDestroy()`;
-- existing `onResume()` mismatch recreation remains as defensive fallback;
-- static audit enforces both the early listener path and fallback;
-- no Search/write/restore/delete/API/storage/History semantics changed.
-
-**Current gate:** exact-HEAD Validate → signed APK → focused BUG-051 phone retest. Do not rerun #25/#41/Phase A.
+**Current gate:** final BUG-051 docs/manifest exact-HEAD Validate closeout, then inspect #55 source and implement the smallest navigation/presentation-only reuse of the existing restore action.
 
 ## Immutable functional reference
 
@@ -127,11 +126,11 @@ real-device acceptance.
 
 ## Exact next work
 
-1. refresh #25 docs and generated manifest;
-2. require exact-HEAD Validate Android PASS;
-3. build signed candidate from that exact HEAD;
-4. phone test grouped History card/provider badge/operation drill-down/rotation/back;
-5. close issue #25 only after PHONE PASS.
+1. finish BUG-051 phone-evidence/docs/manifest closeout;
+2. require one final exact-HEAD Validate Android PASS;
+3. inspect issue #55 and the existing History detail restore route;
+4. expose the same restore action in Quick Actions without changing restore semantics;
+5. run focused source/phone acceptance and close #55 only after PASS.
 
 ## Working contract
 
