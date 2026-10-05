@@ -30,14 +30,38 @@ Last updated: **2026-10-05**
   - subtle breathing respects disabled system animators and stops after the current count is opened/acknowledged;
   - Menu shows the same `Потребує уваги: N` count.
 - No Search/write/rollback/restore/delete execution semantics were moved into Recovery Center.
-- Phone QA partial PASS: Home displays `⚠ 2`; Recovery Center opens with two actionable items and a separate warning section; opening the center did not visibly auto-start recovery work; portrait → landscape → portrait while scrolled mid-list preserved the same logical Recovery Center area without visible auto-start.
+- Phone QA partial PASS: Home displays `⚠ 2`; Recovery Center opens with two actionable items and a separate warning section; opening the center did not visibly auto-start recovery work; portrait → landscape → portrait while scrolled mid-list preserved the same logical Recovery Center area without visible auto-start; Back returned to normal Home with `⚠ 2`; Menu shows `Центр відновлення — Потребує уваги: 2`.
+
+## CRASH CHECKPOINT — 2026-10-05
+
+If the chat/session is lost, resume **here**, not from older checkpoints.
+
+Tested APK:
+- functional/candidate source: `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
+- exact-HEAD Validate: `37257995437 — SUCCESS`;
+- signed run: `37338681198 — SUCCESS`;
+- later branch commits are QA/docs-only and do not require another APK for this focused test.
+
+Already PHONE PASS:
+- Home actionable badge `⚠ 2`;
+- Recovery Center opens read-only and shows 2 actionable items plus a separate warning section;
+- portrait → landscape → portrait while scrolled mid-list preserves the logical viewport;
+- Back returns to Home with the same `⚠ 2` count and no visible auto-start;
+- Menu shows `Центр відновлення` / `Потребує уваги: 2`.
+
+Still NOT verified:
+- exact Pending route;
+- exact History route;
+- exact available Bulk route;
+- direct visual confirmation that the acknowledged same-count `⚠ 2` badge stopped breathing. A still screenshot is insufficient for the animation check.
 
 ## NEXT ACTION — do this first
 
-1. Return with Back; verify Home still shows `⚠ 2` and the acknowledged same-count badge no longer breathes.
-2. Open Menu; verify `Центр відновлення` shows `Потребує уваги: 2`.
-3. Reopen Recovery Center and verify exact routes into Pending, History and the available Bulk session, returning without pressing Continue/Retry/Rollback.
-4. Record the focused matrix and close #53 only after full PHONE PASS.
+1. Reopen Recovery Center and tap `Відкрити чергу` on the actionable Pending item; confirm the intended Queue job opens, then return **without** pressing `Продовжити`.
+2. Open the actionable History item via `Переглянути History`; confirm the intended exact History detail opens, then return without Restore/Retry.
+3. Open the available Bulk warning/action route; confirm the intended Bulk session opens, then return without Continue/Rollback.
+4. On Home, directly observe `⚠ 2` for a few seconds and confirm whether it stays still after acknowledgement.
+5. Record the focused matrix and close #53 only after full PHONE PASS.
 
 ## Consolidated phone matrix
 
