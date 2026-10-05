@@ -355,23 +355,33 @@ Phase A is CLOSED. Phase B started explicitly on 2026-10-04.
 - [x] C1 phone retest PASS: toolbar Back, alternate/system Back, no-change control, no domain auto-action.
 - [x] GitHub issue #57 CLOSED.
 
-### CURRENT TASK — History Quick Restore discoverability (#55)
+### COMPLETED TASK — History Quick Restore discoverability (#55)
 
-Goal: expose the existing safe restore action directly in History detail Quick Actions without changing restore semantics.
+- [x] Existing accepted phone build exposes `Відновити як поточний плейлист` directly in History detail Quick Actions.
+- [x] Quick Actions and top-right `Дії` reuse the same `requestRestoreAsCurrent(entry)` path.
+- [x] Existing `HistoryRecoveryPolicy` preserves exact persisted linkage and does not promote local-only History to YTM linkage.
+- [x] Confirmation recreation state uses `KEY_RESTORE_CONFIRM_ENTRY_ID` and does not auto-run restore.
+- [x] Added static guard for discoverability/shared path/rotation-safe confirmation.
+- [x] Guard-only exact HEAD `c5da0755cc59fe7eb5f16ab483ae233bd8861d19` passed Validate `37255431011 — SUCCESS`.
+- [x] Phone acceptance `#55+`: portrait/landscape confirmation survives, Cancel is no-op, explicit restore returns **01 2001 Future Trance Vol.15 DISC / 41 tracks / local-only**, no Search/YTM write auto-start.
+- [x] GitHub issue #55 CLOSED.
 
-- [x] Read issue #55 and inspect current History detail Quick Actions + existing top-right `Дії` restore route.
-- [x] Existing accepted phone build already exposes `Відновити як поточний плейлист` in Quick Actions only for entries with tracks; phone screenshot confirms discoverability.
-- [x] Quick Actions and top-right `Дії` both reuse `requestRestoreAsCurrent(entry)`; no duplicate restore implementation.
-- [x] Existing `HistoryRecoveryPolicy` remains the single restore planner; JVM coverage preserves exact linkage and rejects promotion of local-only History to remote linkage.
-- [x] Source inspection confirms `KEY_RESTORE_CONFIRM_ENTRY_ID` recreation state restores the confirmation without calling `restoreAsCurrent()` automatically.
-- [ ] Portrait + landscape layout stays usable.
-- [ ] No Search or YTM write auto-starts after restore.
-- [x] Added static guard for Quick Actions discoverability, shared restore request path and rotation-safe confirmation contract; existing HistoryRecoveryPolicy JVM tests remain authoritative.
-- [ ] Exact-HEAD Validate → signed candidate → focused phone acceptance.
-- [ ] Close #55 only after phone PASS.
+### CURRENT TASK — Recovery Center / needs-attention discoverability (#53)
+
+Goal: aggregate durable unfinished/recoverable work into one read-only Recovery Center and expose a compact Home/Menu attention affordance without auto-starting remote work.
+
+- [ ] Inspect all current durable recovery sources: BulkSyncSessionStore, PendingJobStore and relevant History states.
+- [ ] Define one pure read-only aggregation policy with explicit item identity/classification and no mutation.
+- [ ] Exclude completed normal work; keep completed-with-warning distinct from actionable unfinished work.
+- [ ] Surface compact `Потребує уваги: N` affordance on Home and Menu only when actionable items exist.
+- [ ] Recovery Center lists all actionable durable items, not only active/latest.
+- [ ] Each item shows plain-language state, what happened, what remains, reason/error and one safe next route.
+- [ ] Opening/rotating/backing out of Recovery Center must never start Search/write/rollback/restore/delete.
+- [ ] Add JVM/static guards for aggregation and no-auto-action boundaries.
+- [ ] Exact-HEAD Validate → signed candidate → focused phone recovery matrix.
+- [ ] Close #53 only after PHONE PASS.
 
 Remaining Phase B backlog:
-- [ ] Recovery Center + compact breathing attention icon (#53).
 - [ ] Type-aware file/backup library and scoped chooser (#54).
 - [ ] Simplified Termux operator menu/status (#52).
 - [ ] Home last-action detail drill-down to exact History detail.
@@ -390,9 +400,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Close out BUG-051 docs, then begin #55 History Quick Restore.**
+**Begin #53 Recovery Center foundation.**
 
-Require one final exact-HEAD Validate PASS after the phone-evidence/docs/manifest closeout. After that, inspect the existing History restore route and implement #55 by surfacing the same safe restore action in Quick Actions. Do not change restore semantics and do not repeat #57/#25/#41/Phase A phone matrices.
+First inspect the live durable recovery stores and current recovery entry points. Build the aggregation as a pure read-only policy before touching Home/Menu presentation. Opening the Recovery Center must remain side-effect free; no Search/write/rollback/restore/delete may auto-start.
 
 ## Update rule
 
