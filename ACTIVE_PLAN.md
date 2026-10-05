@@ -359,14 +359,14 @@ Phase A is CLOSED. Phase B started explicitly on 2026-10-04.
 
 Goal: expose the existing safe restore action directly in History detail Quick Actions without changing restore semantics.
 
-- [ ] Read issue #55 and inspect current History detail Quick Actions + existing top-right `Дії` restore route.
-- [ ] Add visible `Відновити як поточний плейлист` action only when restore is genuinely available.
-- [ ] Reuse the existing confirmation and restore implementation; do not duplicate restore logic.
-- [ ] Preserve exact persisted linkage only when it truly exists; never infer linkage by title.
-- [ ] Confirmation survives rotation without auto-running restore.
+- [x] Read issue #55 and inspect current History detail Quick Actions + existing top-right `Дії` restore route.
+- [x] Existing accepted phone build already exposes `Відновити як поточний плейлист` in Quick Actions only for entries with tracks; phone screenshot confirms discoverability.
+- [x] Quick Actions and top-right `Дії` both reuse `requestRestoreAsCurrent(entry)`; no duplicate restore implementation.
+- [x] Existing `HistoryRecoveryPolicy` remains the single restore planner; JVM coverage preserves exact linkage and rejects promotion of local-only History to remote linkage.
+- [x] Source inspection confirms `KEY_RESTORE_CONFIRM_ENTRY_ID` recreation state restores the confirmation without calling `restoreAsCurrent()` automatically.
 - [ ] Portrait + landscape layout stays usable.
 - [ ] No Search or YTM write auto-starts after restore.
-- [ ] Add static/JVM guards as appropriate.
+- [x] Added static guard for Quick Actions discoverability, shared restore request path and rotation-safe confirmation contract; existing HistoryRecoveryPolicy JVM tests remain authoritative.
 - [ ] Exact-HEAD Validate → signed candidate → focused phone acceptance.
 - [ ] Close #55 only after phone PASS.
 
