@@ -26,4 +26,7 @@ Phase B #41 status: **PHONE PASS / READY TO CLOSE**.
 
 Phase B #25 status: **PHONE PASS / CLOSED**.
 
-BUG-051 status: **REPRODUCED / CORRECTIVE SOURCE IMPLEMENTED / VALIDATION PENDING**.
+| BUG-051 corrective candidate | source `81642d6ea8f0335853d25295e6dcfdd32150801d`, Validate `37252745101`, signed run `37253621772`, APK SHA-256 `c6e8c06ff9cc15f4caa562db1f2a1b30081734adf72c343127864ba8175b7869` | immediate hidden-Home Skin refresh with onResume fail-safe | GitHub |
+| BUG-051 C1 phone evidence | 2026-10-05 focused Skin transition retest | toolbar Back PASS, system/alternate Back PASS, no-change control PASS, no domain auto-action | user phone acceptance |
+
+BUG-051 status: **C1+ / PHONE PASS / CLOSED**.
