@@ -12,7 +12,7 @@
 > 3. update **NEXT ACTION** so the first unchecked item is the real resume point;
 > 4. update `CURRENT_HANDOFF.md` when the resume point materially changes.
 
-Last updated: 2026-10-04
+Last updated: 2026-10-05
 
 ## Active release
 
@@ -378,7 +378,9 @@ Goal: aggregate durable unfinished/recoverable work into one read-only Recovery 
 - [x] Each item shows state, update time, happened/remaining summary, reason/error and one exact owner route.
 - [x] Source/static ownership is navigation-only: opening/rendering/recreation contains no Search/write/rollback/restore/delete executor; phone acceptance still required.
 - [x] Added JVM matrix + static guards for all three durable sources, stable-identity dedupe, completed exclusion, rollback remaining count, exact routes, reduced-motion and no-auto-action boundaries.
-- [ ] Source checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f` passed Validate `37257583900 — SUCCESS`; record final docs/manifest, require one final exact-HEAD Validate, then signed candidate + focused phone recovery matrix.
+- [x] Recovery Center candidate gate completed: implementation checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f` passed Validate `37257583900 — SUCCESS`; final docs/manifest HEAD `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` passed exact-HEAD Validate `37257995437 — SUCCESS`; signed run `37338681198 — SUCCESS` was built from that exact HEAD.
+- [x] Focused phone QA initial-open/list checkpoint: Home shows `⚠ 2`; Recovery Center opens read-only with two actionable items and a separate completed-with-warning section; opening it did not visibly auto-start Search/write/rollback/restore/delete work.
+- [ ] Finish focused phone QA: rotation/scroll continuity, Back, Menu count, exact Pending/History/Bulk routes, breathing acknowledgement and no-auto-start; close #53 only after the full focused matrix passes.
 - [ ] Close #53 only after PHONE PASS.
 
 Remaining Phase B backlog:
@@ -400,9 +402,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Finalize #53 candidate gate.**
+**Continue #53 focused phone acceptance.**
 
-Record the validated Recovery Center source checkpoint in canonical docs/manifest, require one final exact-HEAD Validate PASS, then build one signed candidate. Phone QA is focused on actionable-count visibility, breathing/acknowledgement, exact durable routes, rotation/back and no automatic recovery execution.
+Candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` is validated and signed as run `37338681198`. Initial Home/Recovery Center phone evidence is PASS. Next verify rotation/scroll continuity, Back, Menu count, badge acknowledgement/breathing and exact Pending/History/Bulk routes without triggering recovery work.
 
 ## Update rule
 
