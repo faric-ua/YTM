@@ -11,6 +11,8 @@ import android.graphics.PixelFormat
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.core.view.WindowCompat
+import java.lang.ref.WeakReference
+import java.util.WeakHashMap
 import kotlin.math.max
 
 object AppThemeManager {
@@ -190,16 +192,43 @@ object AppThemeManager {
             .apply()
     }
 
-    fun isSkinStylePreference(
-        key: String?
-    ): Boolean =
-        key == KEY_STYLE
+    private val immediateSkinRefreshListeners =
+        WeakHashMap<Activity, SharedPreferences.OnSharedPreferenceChangeListener>()
 
-    fun registerSkinChangeListener(
-        context: Context,
-        listener: SharedPreferences.OnSharedPreferenceChangeListener
+    fun registerImmediateSkinRefresh(
+        activity: Activity
     ) {
-        context
+        if (
+            immediateSkinRefreshListeners
+                .containsKey(activity)
+        ) {
+            return
+        }
+
+        val activityRef =
+            WeakReference(activity)
+        val listener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                val target =
+                    activityRef.get()
+
+                if (
+                    key == KEY_STYLE &&
+                    target != null &&
+                    !target.isFinishing &&
+                    !target.isDestroyed
+                ) {
+                    recreateIfSkinChanged(
+                        target
+                    )
+                }
+            }
+
+        immediateSkinRefreshListeners[
+            activity
+        ] = listener
+
+        activity
             .getSharedPreferences(
                 PREFS,
                 Context.MODE_PRIVATE
@@ -209,11 +238,15 @@ object AppThemeManager {
             )
     }
 
-    fun unregisterSkinChangeListener(
-        context: Context,
-        listener: SharedPreferences.OnSharedPreferenceChangeListener
+    fun unregisterImmediateSkinRefresh(
+        activity: Activity
     ) {
-        context
+        val listener =
+            immediateSkinRefreshListeners
+                .remove(activity)
+                ?: return
+
+        activity
             .getSharedPreferences(
                 PREFS,
                 Context.MODE_PRIVATE
