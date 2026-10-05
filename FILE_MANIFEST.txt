@@ -135,6 +135,7 @@ eed8894e069f7add  app/src/main/java/com/saney/ytmimporter/model/HistoryLogicalGr
 090a1fc16de719f8  app/src/main/java/com/saney/ytmimporter/model/PlaylistLinkagePolicy.kt
 57248079f1bbb6ad  app/src/main/java/com/saney/ytmimporter/model/Track.kt
 3b490140eb947377  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
+5386fcfb32f2cd76  app/src/main/java/com/saney/ytmimporter/recovery/RecoveryCenterPolicy.kt
 a2c5e210bdc20489  app/src/main/java/com/saney/ytmimporter/review/ReviewRemoteOperations.kt
 4d8c41475537ec61  app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
 f94cbe33bfd389c4  app/src/main/java/com/saney/ytmimporter/search/SearchRecoveryCoordinator.kt
@@ -229,6 +230,7 @@ ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecover
 9cc5a3fa406839b4  app/src/test/java/com/saney/ytmimporter/model/HistoryListFilterPolicyTest.kt
 55401bf27c73fe85  app/src/test/java/com/saney/ytmimporter/model/HistoryLogicalGroupPolicyTest.kt
 06275431c3a23596  app/src/test/java/com/saney/ytmimporter/model/PlaylistLinkagePolicyTest.kt
+28f601a5358ea777  app/src/test/java/com/saney/ytmimporter/recovery/RecoveryCenterPolicyTest.kt
 e2c34610a3853bc3  app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt
 a5cfdda45ea01b81  app/src/test/java/com/saney/ytmimporter/storage/QuotaMathTest.kt
 88f7699b54a2e28b  app/src/test/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicyTest.kt
@@ -1756,7 +1758,7 @@ d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
 d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 2e29e655a94f3422  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
-92bf85d9e70a2365  scripts/v1455-ux-hardening-audit.sh
+bec88cc53448957e  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh
