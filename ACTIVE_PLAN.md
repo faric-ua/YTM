@@ -341,29 +341,36 @@ Phase A is CLOSED. Phase B started explicitly on 2026-10-04.
 - [x] B2 phone QA PASS on 2026-10-05: logical cards, provider badges, drill-down, rotation/back, Green/Blue readability and no auto-action.
 - [x] GitHub issue #25 CLOSED.
 
-### CURRENT TASK — BUG-051 previous-Skin Home flash
+### COMPLETED TASK — BUG-051 previous-Skin Home flash (#57)
 
-Goal: after explicit Skin Apply in Menu, Home must already be rebuilt in the committed Skin before Menu can reveal it.
+- [x] Captured real-phone video and isolated the stale first-visible-frame failure.
+- [x] Confirmed toolbar Back Green → Neon exposed old Green Home for ~9 frames / ~0.30 s.
+- [x] Confirmed root cause: Home waited until `onResume()` to detect the persisted Skin mismatch.
+- [x] Added immediate hidden-Home Skin refresh ownership in `AppThemeManager`.
+- [x] Preserved existing `onResume() → recreateIfSkinChanged()` as a fail-safe.
+- [x] Preserved MainActivity cleanup budget at 4099 lines.
+- [x] Added static guard for early refresh ownership + teardown.
+- [x] Exact source `81642d6ea8f0335853d25295e6dcfdd32150801d` passed Validate `37252745101 — SUCCESS`.
+- [x] Exact-source signed candidate `37253621772 — SUCCESS`.
+- [x] C1 phone retest PASS: toolbar Back, alternate/system Back, no-change control, no domain auto-action.
+- [x] GitHub issue #57 CLOSED.
 
-- [x] Capture real-phone video and isolate the stale first-visible-frame failure.
-- [x] Confirm toolbar Back Green → Neon exposes old Green Home for ~9 frames / ~0.30 s.
-- [x] Confirm root cause: Home waits until `onResume()` to detect persisted Skin mismatch.
-- [x] Add Skin preference listener registration/teardown API without changing Skin persistence identity.
-- [x] Register MainActivity so hidden Home recreates immediately when Menu commits a different Skin.
-- [x] Preserve existing `onResume() → recreateIfSkinChanged()` path as a fail-safe.
-- [x] Add static guard for early refresh ownership and listener teardown.
-- [ ] Require exact-HEAD Validate Android PASS.
-- [ ] Build one exact-source signed candidate.
-- [ ] Phone retest toolbar Back + system Back with Green/Neon and one alternate pair; previous Skin must never be visible.
-- [ ] Record phone evidence and close #57 only after PASS.
+### CURRENT TASK — History Quick Restore discoverability (#55)
+
+Goal: expose the existing safe restore action directly in History detail Quick Actions without changing restore semantics.
+
+- [ ] Read issue #55 and inspect current History detail Quick Actions + existing top-right `Дії` restore route.
+- [ ] Add visible `Відновити як поточний плейлист` action only when restore is genuinely available.
+- [ ] Reuse the existing confirmation and restore implementation; do not duplicate restore logic.
+- [ ] Preserve exact persisted linkage only when it truly exists; never infer linkage by title.
+- [ ] Confirmation survives rotation without auto-running restore.
+- [ ] Portrait + landscape layout stays usable.
+- [ ] No Search or YTM write auto-starts after restore.
+- [ ] Add static/JVM guards as appropriate.
+- [ ] Exact-HEAD Validate → signed candidate → focused phone acceptance.
+- [ ] Close #55 only after phone PASS.
 
 Remaining Phase B backlog:
-- [ ] History Quick Restore acceptance (#55).
-- [ ] Recovery Center + compact breathing attention icon (#53).
-- [ ] Type-aware file/backup library and scoped chooser (#54).
-- [ ] Simplified Termux operator menu/status (#52).
-- [ ] Home last-action detail drill-down to exact History detail.
-- [ ] History Quick Restore acceptance (#55).
 - [ ] Recovery Center + compact breathing attention icon (#53).
 - [ ] Type-aware file/backup library and scoped chooser (#54).
 - [ ] Simplified Termux operator menu/status (#52).
@@ -383,9 +390,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Validate and phone-retest BUG-051.**
+**Close out BUG-051 docs, then begin #55 History Quick Restore.**
 
-Require exact-HEAD Validate Android PASS for the first-visible-frame Skin correction, build one signed candidate, then retest only Menu → Home Skin transitions. Do not repeat #25, #41, Phase A, or v1.4.54 Tests 1–9.
+Require one final exact-HEAD Validate PASS after the phone-evidence/docs/manifest closeout. After that, inspect the existing History restore route and implement #55 by surfacing the same safe restore action in Quick Actions. Do not change restore semantics and do not repeat #57/#25/#41/Phase A phone matrices.
 
 ## Update rule
 
