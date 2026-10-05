@@ -24,7 +24,7 @@ Last updated: **2026-10-05**
 
 Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
-Active task: #53 / UX-048 Unified Recovery Center.
+Active task: #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
 
 Validated/signed candidate:
 - implementation checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f` passed Validate Android `37257583900 — SUCCESS`;
@@ -51,7 +51,7 @@ Implemented Recovery Center:
 
 No Search/write/rollback/restore/delete API semantics, durable mutation ledger ownership, Pending ownership or History meaning changed.
 
-**Current gate:** focused #53 phone acceptance is in progress. Home `⚠ 2`, Recovery Center list/read-only-open, portrait → landscape → portrait mid-list rotation/scroll continuity, Back → Home and Menu `Потребує уваги: 2` are PHONE PASS. Exact Pending, History and Bulk routes are PHONE PASS. Only direct breathing/acknowledgement observation remains.
+**#53 final:** PHONE PASS / CLOSED. Home `⚠ 2`, Recovery Center list/read-only-open, both rotations, Back, Menu count, exact Pending/History/Bulk routes, no-auto-start and acknowledgement stop all passed on signed run `37338681198` from app source `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`.
 
 ## Immutable functional reference
 
@@ -123,9 +123,10 @@ real-device acceptance.
 
 ## Exact next work
 
-1. return to Home and directly observe `⚠ 2` for several seconds;
-2. confirm the already-acknowledged same-count badge stays visually still (no scale/opacity breathing);
-3. if PASS, record final #53 PHONE PASS and close issue #53.
+1. inspect all current Full Backup, History, Playlist Project and diagnostic save/import/restore entry points;
+2. record their current MIME/extension/folder/chooser behavior and durable schema markers;
+3. define the #54 type-classification + canonical-folder + legacy-fallback contract before source changes;
+4. only then implement scoped choosers without changing restore/import semantics.
 
 ## Working contract
 
