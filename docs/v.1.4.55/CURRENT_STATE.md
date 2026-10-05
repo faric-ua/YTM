@@ -447,23 +447,23 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-Phase A is PHONE PASS / CLOSED. Phase B #41, #25, BUG-051/#57 and #55 are PHONE PASS / CLOSED.
-
-#55 final acceptance:
-- guard-only source `c5da0755cc59fe7eb5f16ab483ae233bd8861d19`;
-- Validate `37255431011 — SUCCESS`;
-- phone result `#55+`;
-- confirmation survived rotation and Cancel remained no-op;
-- explicit restore produced **01 2001 Future Trance Vol.15 DISC / 41 tracks / local-only**;
-- no Search or YTM write auto-started.
+Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
 Active Phase B item: #53 / Unified Recovery Center.
 
-The #53 implementation order is intentionally safety-first:
-- inspect existing durable Bulk/Pending/History sources;
-- build a pure read-only aggregation policy first;
-- distinguish actionable unfinished work from completed-with-warning and completed;
-- only then add Home/Menu `Потребує уваги: N` presentation and one-tap navigation;
-- list rendering/recreation/navigation must never mutate or auto-start recovery work.
+Validated source checkpoint:
+- `7c21b0e50ef6e380c408302d3b493ea94895969f`;
+- Validate `37257583900 — SUCCESS`;
+- preflight/JVM/unsigned release PASS;
+- MainActivity cleanup budget 4089 lines.
 
-Do not repeat #55/#57/#25/#41/Phase A phone matrices.
+Implemented:
+- pure read-only Bulk/Pending/History aggregation;
+- ACTION_REQUIRED vs WARNING classification and completed-work exclusion;
+- stable-identity dedupe only, no title matching;
+- exact owner routes for Bulk session, Pending job and History detail;
+- compact Home `⚠ N` badge and Menu `Потребує уваги: N`;
+- low-amplitude breathing with system-animation opt-out and acknowledgement stop;
+- no recovery executor on Recovery Center open/render/recreate/back.
+
+Next: refresh docs/manifest, final exact-HEAD Validate, signed candidate, focused phone acceptance. Do not manufacture remote failures for QA and do not repeat closed Phase B/Phase A matrices.
