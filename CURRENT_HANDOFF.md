@@ -26,12 +26,14 @@ Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
 Active task: #53 / UX-048 Unified Recovery Center.
 
-Validated source checkpoint:
-- source `7c21b0e50ef6e380c408302d3b493ea94895969f`;
-- Validate Android `37257583900 — SUCCESS`;
+Validated/signed candidate:
+- implementation checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f` passed Validate Android `37257583900 — SUCCESS`;
+- final candidate HEAD `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
+- exact-HEAD Validate Android `37257995437 — SUCCESS`;
+- signed build `37338681198 — SUCCESS` from the exact candidate HEAD;
 - release preflight PASS;
 - JVM tests PASS;
-- unsigned release assemble PASS;
+- unsigned and signed release gates PASS;
 - MainActivity cleanup budget PASS at 4089 lines.
 
 Implemented Recovery Center:
@@ -49,7 +51,7 @@ Implemented Recovery Center:
 
 No Search/write/rollback/restore/delete API semantics, durable mutation ledger ownership, Pending ownership or History meaning changed.
 
-**Current gate:** final docs/manifest exact-HEAD Validate → signed APK → focused #53 phone acceptance.
+**Current gate:** focused #53 phone acceptance is in progress. Initial Home `⚠ 2` and Recovery Center list/read-only-open evidence is PHONE PASS; rotation/scroll, Back, Menu count, badge acknowledgement/breathing and exact Pending/History/Bulk routes remain.
 
 ## Immutable functional reference
 
@@ -121,11 +123,11 @@ real-device acceptance.
 
 ## Exact next work
 
-1. refresh final #53 docs/generated manifest from validated checkpoint `7c21b0e…`;
-2. require one final exact-HEAD Validate Android PASS;
-3. build one signed candidate from that exact HEAD;
-4. run focused Recovery Center phone matrix without manufacturing remote failures;
-5. close #53 only after PHONE PASS.
+1. rotate Recovery Center while scrolled mid-list and verify viewport continuity/no auto-start;
+2. Back to Home and verify the same actionable count plus acknowledgement/breathing behavior;
+3. verify Menu shows the same actionable count;
+4. open exact Pending, History and available Bulk owner routes without continuing recovery work;
+5. close #53 only after the focused matrix is PHONE PASS.
 
 ## Working contract
 
