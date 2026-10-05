@@ -234,7 +234,39 @@ Run only after the exact #25 candidate passes Validate and signed build.
 7. Confirm the same grouping/provider state remains and no Search/write/restore/delete action starts automatically.
 8. Sanity-check Neon plus the currently active alternate skin for badge/card readability.
 
-Result: `B2+` / `B2-`.
+Result: **B2+ — PHONE PASS 2026-10-05.**
 
-Do not repeat #41, Phase A, or v1.4.54 Tests 1–9.
+Exact installed candidate:
+- source/head `51604b813f98224399d5ce430a23f4b6c058860c`;
+- Validate Android run `37244442842 — SUCCESS`;
+- signed build run `37248457140 — SUCCESS`.
+
+Phone evidence:
+- repeated operations sharing a stable logical playlist identity collapse into one History card;
+- linked cards expose compact provider/result badges such as `YTM 5/5` and `YTM 4/4`;
+- grouped-card drill-down lists the local import and YTM operation separately and preserves existing operation detail;
+- portrait/landscape/portrait rotation and Back preserve grouped state;
+- Green + Blue card/badge readability passed;
+- no Search/write/restore/delete action auto-started.
+
+Issue #25 acceptance: **PASS / CLOSED**.
+
+## Corrective C1 — BUG-051 previous-Skin Home flash (#57)
+
+Observed on the same signed candidate:
+- after explicit Skin Apply in Menu, returning to Home can briefly expose the previous Home Skin;
+- Green → Neon via toolbar Back exposed old Green Home for about 9 frames / ~0.30 s before Neon Home appeared;
+- system Back can visually mask the stale underlay with its transition;
+- returning without changing Skin is the control case.
+
+Corrective acceptance:
+1. Start Green → Menu → Skin Neon → Apply; wait for Neon Menu; toolbar Back.
+2. The first visible Home frame must already be Neon — no Green frame.
+3. Repeat Neon/Blue or Blue/Green with system Back.
+4. Return from Menu once without changing Skin; no extra recreation/flash.
+5. Confirm no Search/write/restore/delete or other domain action starts automatically.
+
+Result: `C1+` / `C1-`.
+
+Do not repeat #25, #41, Phase A, or v1.4.54 Tests 1–9.
 
