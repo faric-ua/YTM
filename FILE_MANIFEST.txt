@@ -91,7 +91,7 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 f922f8b2178c9b77  YTM_ASSISTANT_WORKFLOW.md
 e6af758495c5bfa7  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
-225ac193e694b7ec  app/src/main/AndroidManifest.xml
+2d378e3d5b8e7a74  app/src/main/AndroidManifest.xml
 bb141a21da2e23bb  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 e8f9b88b6124d64b  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 de60abde27584328  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
@@ -99,12 +99,13 @@ de60abde27584328  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 a25d17ce55fe6774  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 dc90537bd866bd32  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
-b2aad662a7142184  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
-5eca6b8595b334b8  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
-678adda3b8a1e44d  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
+738efa22c9b04a55  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
+01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 96762cccc29fff58  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 c5151b92fad898d7  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
+710711c621dd9faa  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
 088d30cebc159efb  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 5c565252917f725e  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 562db04bb216f33f  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
@@ -136,6 +137,7 @@ eed8894e069f7add  app/src/main/java/com/saney/ytmimporter/model/HistoryLogicalGr
 57248079f1bbb6ad  app/src/main/java/com/saney/ytmimporter/model/Track.kt
 3b490140eb947377  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
 5386fcfb32f2cd76  app/src/main/java/com/saney/ytmimporter/recovery/RecoveryCenterPolicy.kt
+4774a721f5982e6d  app/src/main/java/com/saney/ytmimporter/recovery/RecoveryCenterSource.kt
 a2c5e210bdc20489  app/src/main/java/com/saney/ytmimporter/review/ReviewRemoteOperations.kt
 4d8c41475537ec61  app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
 f94cbe33bfd389c4  app/src/main/java/com/saney/ytmimporter/search/SearchRecoveryCoordinator.kt
@@ -166,6 +168,7 @@ fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome
 88174cd2da5b393b  app/src/main/java/com/saney/ytmimporter/ui/HomeDashboardChrome.kt
 8763d6337d2bee83  app/src/main/java/com/saney/ytmimporter/ui/HomeHistoryDetailLink.kt
 7e65143a9419153e  app/src/main/java/com/saney/ytmimporter/ui/ReplacementLogDialog.kt
+638bd2aaa1abd3a4  app/src/main/java/com/saney/ytmimporter/ui/RecoveryAttentionChrome.kt
 071bf2751d4693fa  app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt
 8ab47c848ec9c8b3  app/src/main/java/com/saney/ytmimporter/ui/SafFileSaveFlow.kt
 4259ded3e99f84ee  app/src/main/java/com/saney/ytmimporter/ui/ScrollPositionState.kt
@@ -1758,7 +1761,7 @@ d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
 d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 2e29e655a94f3422  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
-bec88cc53448957e  scripts/v1455-ux-hardening-audit.sh
+2efa65e3243abd6b  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh
