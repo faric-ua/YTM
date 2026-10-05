@@ -57,8 +57,8 @@ Active task:
 
 ## NEXT ACTION — do this first
 
-1. Inspect the actual save/export/import/restore paths for Full Backup, History, Playlist Project and diagnostic/Pending/account artifacts.
-2. Record each path's current default folder, MIME, extension filter, chooser and durable content/schema marker.
+1. Read `docs/v.1.4.55/FILE_LIBRARY_AUDIT_2026-10-05.md`; initial Full Backup / History / Pending / Playlist Project / account-manifest findings are already recorded there.
+2. Complete the remaining inventory: StorageChooser default-root behavior, account full/incremental/delta entry points, remaining diagnostics and existing chooser/import guards.
 3. Define a read-only artifact classifier and canonical-folder/scoped-chooser contract, including legacy-file discovery and explicit `Інший файл…` fallback.
 4. Do **not** change restore/import payload semantics or move legacy user files silently.
 5. Update the #54 checklist before implementation.
