@@ -370,15 +370,15 @@ Phase A is CLOSED. Phase B started explicitly on 2026-10-04.
 
 Goal: aggregate durable unfinished/recoverable work into one read-only Recovery Center and expose a compact Home/Menu attention affordance without auto-starting remote work.
 
-- [ ] Inspect all current durable recovery sources: BulkSyncSessionStore, PendingJobStore and relevant History states.
-- [ ] Define one pure read-only aggregation policy with explicit item identity/classification and no mutation.
-- [ ] Exclude completed normal work; keep completed-with-warning distinct from actionable unfinished work.
-- [ ] Surface compact `Потребує уваги: N` affordance on Home and Menu only when actionable items exist.
-- [ ] Recovery Center lists all actionable durable items, not only active/latest.
-- [ ] Each item shows plain-language state, what happened, what remains, reason/error and one safe next route.
-- [ ] Opening/rotating/backing out of Recovery Center must never start Search/write/rollback/restore/delete.
-- [ ] Add JVM/static guards for aggregation and no-auto-action boundaries.
-- [ ] Exact-HEAD Validate → signed candidate → focused phone recovery matrix.
+- [x] Inspected current durable recovery sources: BulkSyncSessionStore, PendingJobStore and relevant History states.
+- [x] Added pure `RecoveryCenterPolicy` with stable source-prefixed identity, ACTION_REQUIRED/WARNING classification and no store/API/navigation ownership.
+- [x] Normal completed Bulk/History work is excluded; terminal partial/completed-with-error is WARNING; unfinished durable work is ACTION_REQUIRED.
+- [x] Home has compact `⚠ N` badge only for actionable items; Menu exposes the same `Потребує уваги: N` count.
+- [x] Recovery Center renders the full aggregated actionable set plus a separate completed-with-warning section.
+- [x] Each item shows state, update time, happened/remaining summary, reason/error and one exact owner route.
+- [x] Source/static ownership is navigation-only: opening/rendering/recreation contains no Search/write/rollback/restore/delete executor; phone acceptance still required.
+- [x] Added JVM matrix + static guards for all three durable sources, stable-identity dedupe, completed exclusion, rollback remaining count, exact routes, reduced-motion and no-auto-action boundaries.
+- [ ] Source checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f` passed Validate `37257583900 — SUCCESS`; record final docs/manifest, require one final exact-HEAD Validate, then signed candidate + focused phone recovery matrix.
 - [ ] Close #53 only after PHONE PASS.
 
 Remaining Phase B backlog:
@@ -400,9 +400,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Begin #53 Recovery Center foundation.**
+**Finalize #53 candidate gate.**
 
-First inspect the live durable recovery stores and current recovery entry points. Build the aggregation as a pure read-only policy before touching Home/Menu presentation. Opening the Recovery Center must remain side-effect free; no Search/write/rollback/restore/delete may auto-start.
+Record the validated Recovery Center source checkpoint in canonical docs/manifest, require one final exact-HEAD Validate PASS, then build one signed candidate. Phone QA is focused on actionable-count visibility, breathing/acknowledgement, exact durable routes, rotation/back and no automatic recovery execution.
 
 ## Update rule
 
