@@ -10,7 +10,7 @@ Last updated: **2026-10-05**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase B — Recovery Center (#53)**
+- Release: **v1.4.55 / Phase B — Type-aware file library (#54)**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Phase A and Phase B #41/#25/#57/#55 are PHONE PASS / CLOSED.
 - #53 candidate is implemented, validated and signed:
@@ -30,37 +30,38 @@ Last updated: **2026-10-05**
   - subtle breathing respects disabled system animators and stops after the current count is opened/acknowledged;
   - Menu shows the same `Потребує уваги: N` count.
 - No Search/write/rollback/restore/delete execution semantics were moved into Recovery Center.
+- #53 final phone result: **PHONE PASS / CLOSED**. Home/list/rotation/Back/Menu, exact Pending/History/Bulk routes, no-auto-start and acknowledgement stop all passed.
 - Phone QA partial PASS: Home displays `⚠ 2`; Recovery Center opens with two actionable items and a separate warning section; opening the center did not visibly auto-start recovery work; portrait → landscape → portrait while scrolled mid-list preserved the same logical Recovery Center area without visible auto-start; Back returned to normal Home with `⚠ 2`; Menu shows `Центр відновлення — Потребує уваги: 2`.
 
 ## CRASH CHECKPOINT — 2026-10-05
 
 If the chat/session is lost, resume **here**, not from older checkpoints.
 
-Tested APK:
-- functional/candidate source: `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
-- exact-HEAD Validate: `37257995437 — SUCCESS`;
-- signed run: `37338681198 — SUCCESS`;
-- later branch commits are QA/docs-only and do not require another APK for this focused test.
+Just closed:
+- #53 / Unified Recovery Center — **PHONE PASS / CLOSED**;
+- tested app source `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
+- exact-HEAD Validate `37257995437 — SUCCESS`;
+- signed run `37338681198 — SUCCESS`;
+- later branch commits are QA/docs-only.
 
-Already PHONE PASS:
-- Home actionable badge `⚠ 2`;
-- Recovery Center opens read-only and shows 2 actionable items plus a separate warning section;
-- portrait → landscape → portrait while scrolled mid-list preserves the logical viewport;
-- Back returns to Home with the same `⚠ 2` count and no visible auto-start;
-- Menu shows `Центр відновлення` / `Потребує уваги: 2`;
-- exact Pending route opens `The Prodigy - Baby's Got A Temper (2002)` Queue detail with rate-limit pause, `0/3` added and `3` waiting, without auto-Continue;
-- exact History route opens the intended `The Prodigy - Baby's Got A Temper (2002)` History detail with API-limit pause, `0/3` added, `3` waiting and the expected three queued tracks, without auto-Restore/Retry;
-- exact Bulk route opens `Синхронізація всіх` in `Частково завершено з помилкою` state with 15 planned playlists, 1 created, 18 tracks added and 1 not added, without auto-Continue/Rollback;
-- supplementary warning History route also opened `The Prodigy - Music for the Jilted Generation (1994)` with `12/13` added and 1 error.
+#53 accepted phone evidence:
+- Home `⚠ 2` and Menu `Потребує уваги: 2`;
+- Recovery Center actionable/warning separation;
+- portrait ↔ landscape scroll continuity;
+- Back without auto-start;
+- exact Pending, History and Bulk owner routes without automatic Continue/Retry/Restore/Rollback;
+- after acknowledgement, the unchanged `⚠ 2` badge stayed still and no longer breathed.
 
-Still NOT verified:
-- direct visual confirmation that the acknowledged same-count `⚠ 2` badge stopped breathing. A still screenshot is insufficient for the animation check.
+Active task:
+- #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
 
 ## NEXT ACTION — do this first
 
-1. Return to Home.
-2. Directly observe `⚠ 2` for about 3–5 seconds. Confirm whether it stays visually still after acknowledgement; it must not keep scaling/fading/breathing while the actionable count remains `2`.
-3. If it stays still, record final #53 PHONE PASS and close issue #53. If it still breathes, record FAIL and fix only the acknowledgement animation lifecycle.
+1. Inspect the actual save/export/import/restore paths for Full Backup, History, Playlist Project and diagnostic/Pending/account artifacts.
+2. Record each path's current default folder, MIME, extension filter, chooser and durable content/schema marker.
+3. Define a read-only artifact classifier and canonical-folder/scoped-chooser contract, including legacy-file discovery and explicit `Інший файл…` fallback.
+4. Do **not** change restore/import payload semantics or move legacy user files silently.
+5. Update the #54 checklist before implementation.
 
 ## Consolidated phone matrix
 
