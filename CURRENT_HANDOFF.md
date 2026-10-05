@@ -24,44 +24,38 @@ Last updated: **2026-10-04**
 
 Phase A remains PHONE PASS / CLOSED.
 
-Phase B #41 History semantic filters is PHONE PASS / CLOSED:
-- phone-tested source `1f2d4f0839bd545414a74cc56de02899534a5dbc`;
-- signed run `37237512202 — SUCCESS`;
-- final docs/manifest closeout HEAD `ef4e175895e01fb8b67ddd9d7aafad566a785660`;
-- exact closeout Validate `37243312361 — SUCCESS`;
-- GitHub issue #41 closed.
+Phase B #41 History semantic filters is PHONE PASS / CLOSED.
 
-Active task: issue #25 — logical History playlist/provider grouping.
+Phase B #25 History logical playlist/provider grouping is now B2+ / PHONE PASS / CLOSED:
+- exact tested source `51604b813f98224399d5ce430a23f4b6c058860c`;
+- exact Validate run `37244442842 — SUCCESS`;
+- signed run `37248457140 — SUCCESS`;
+- one logical playlist card per stable local identity, YTM badge/result, all-operation drill-down and rotation/back passed on phone;
+- Green + Blue readability passed;
+- issue #25 closed.
 
-Implemented:
-- `HistoryLogicalGroupPolicy` groups only records sharing the same stable `localPlaylistId`;
-- title matching is explicitly forbidden;
-- missing local identity fails closed to one card per operation;
-- logical state keeps YTM provider presence while current pending Search/write takes precedence;
-- grouped History cards show provider/result badge;
-- multi-operation groups open a dedicated operation drill-down screen;
-- existing individual operation detail remains the audit source of truth;
-- group screen + scroll state survive recreation;
-- JVM + static guards cover identity, provider and no-mutation contracts.
+Active corrective task: #57 / BUG-051 — Home briefly exposes the previous Skin after applying a new theme in Menu.
 
-Current source commits:
-- grouping policy `65175a351258b0ab2bde5c6e92e103934090924d`;
-- grouping JVM tests `b5d39088d7d96b842c13a8426d612fc84770f084`;
-- group lifecycle state `ed01dec06beb9f83329afd16ac6294d0c6b7e86b`;
-- grouped list `231eb083f2f89a0ddd4b7193e7059d8fee1335c6`;
-- operation drill-down `32c66f439424321179eda0ef44f54a39a8ec7516`;
-- provider badges `770f351af262067780b3f662ca97a6027baabed6`;
-- static guard `5a47433486003da4fcc9e1da983549c4ffc51cc6`.
+Phone evidence:
+- Green → Neon via toolbar Back showed old Green Home for about 9 frames / ~0.30 s;
+- system transitions can partially mask the same stale-underlay condition;
+- no-theme-change return is the control path.
 
-Validation checkpoint:
-- HEAD `5d56cc7c237b7737638256babd89916ad40e6d4a`;
-- Validate Android run `37244156767 — SUCCESS`;
-- release preflight PASS;
-- JVM tests PASS;
-- unsigned release assemble PASS;
-- the initial compile failure was fixed in `51bbf7e20a8a98822db994e89766dd3b855bc87a` and revalidated.
+Confirmed lifecycle cause:
+- MainActivity stays alive underneath MenuActivity with the old rendered palette;
+- Skin Apply persists the new style and recreates Menu;
+- Home previously waited until `onResume()` to call `recreateIfSkinChanged()`;
+- therefore the old Home surface could become visible before its recreation completed.
 
-**Current task:** record this checkpoint in final docs/manifest, require one final exact-HEAD Validate PASS, then signed build and focused #25 phone QA. No #41/Phase A retest.
+Corrective implementation:
+- AppThemeManager exposes registration/teardown for the existing Skin SharedPreferences change event;
+- MainActivity listens while alive and recreates immediately when a committed Skin differs from its applied Skin, while Menu is still covering Home;
+- listener is removed in `onDestroy()`;
+- existing `onResume()` mismatch recreation remains as defensive fallback;
+- static audit enforces both the early listener path and fallback;
+- no Search/write/restore/delete/API/storage/History semantics changed.
+
+**Current gate:** exact-HEAD Validate → signed APK → focused BUG-051 phone retest. Do not rerun #25/#41/Phase A.
 
 ## Immutable functional reference
 
