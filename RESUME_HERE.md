@@ -10,32 +10,28 @@ Last updated: **2026-10-04**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase B — History logical grouping (#25)**
+- Release: **v1.4.55 / corrective BUG-051 — previous-Skin Home flash**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Phase A is PHONE PASS / CLOSED; do not repeat it.
-- Phase B #41 History filters is PHONE PASS / CLOSED; GitHub issue #41 is closed.
-- Final #41 closeout HEAD `ef4e175895e01fb8b67ddd9d7aafad566a785660` passed Validate Android run `37243312361 — SUCCESS`.
-- #25 is now active.
-- Implemented source:
-  - pure logical grouping policy keyed only by stable nonblank `localPlaylistId`;
-  - no title-based grouping;
-  - no-local-id entries remain operation-scoped;
-  - grouped cards expose YTM provider/result badge;
-  - multi-operation cards drill down to a full operation list;
-  - operation detail remains the existing audit record;
-  - group screen/scroll state survives rotation;
-  - JVM + static guards added.
-- No History record mutation, API/write/search execution, storage schema change or remote auto-action is part of #25.
-- Source/docs checkpoint `5d56cc7c237b7737638256babd89916ad40e6d4a` passed Validate Android run `37244156767 — SUCCESS` (preflight/JVM/unsigned release).
-- Current gate: record validated checkpoint → refresh manifest → final exact-HEAD Validate → signed APK → focused #25 phone QA.
+- Phase B #41 History filters is PHONE PASS / CLOSED.
+- Phase B #25 History logical grouping is **B2+ / PHONE PASS / CLOSED**:
+  - tested source `51604b813f98224399d5ce430a23f4b6c058860c`;
+  - Validate `37244442842 — SUCCESS`;
+  - signed build `37248457140 — SUCCESS`;
+  - grouped cards, YTM provider/result badges, operation drill-down, rotation/back and Green/Blue readability passed;
+  - issue #25 is closed.
+- BUG-051 is active: after committed Skin Apply, Menu return could expose the previous Home Skin before `MainActivity.onResume()` recreation.
+- Frame evidence: Green → Neon via toolbar Back exposed old Green Home for about 9 frames / ~0.30 s.
+- Corrective source now makes MainActivity observe the committed Skin preference and recreate while Menu still covers Home. Existing `onResume() → recreateIfSkinChanged()` remains as a fail-safe.
+- No Search/write/restore/delete/API/storage/History semantics are changed.
 
 ## NEXT ACTION — do this first
 
-1. Synchronize #25 docs and `FILE_MANIFEST.txt`.
-2. Require exact-HEAD Validate Android PASS.
-3. Build one signed APK from that exact HEAD.
-4. Phone-test only grouped History cards: one logical playlist card, YTM badge/result, operation drill-down, rotation/back/no-auto-action.
-5. Record evidence; close #25 only after PHONE PASS.
+1. Require exact-HEAD Validate Android PASS for BUG-051 corrective source.
+2. Build one signed APK from that exact validated HEAD.
+3. Focused phone retest only: Green → Neon and one reverse/alternate transition, toolbar Back + system Back, no previous-Skin frame.
+4. Control: return from Menu without changing Skin; no flash and no domain action auto-start.
+5. Record evidence and close #57 only after PHONE PASS.
 
 ## Consolidated phone matrix
 
