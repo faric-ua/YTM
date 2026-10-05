@@ -383,7 +383,8 @@ Goal: aggregate durable unfinished/recoverable work into one read-only Recovery 
 - [x] Recovery Center portrait → landscape → portrait rotation/scroll continuity PHONE PASS while scrolled mid-list; the same logical item area remained visible and no recovery work visibly auto-started.
 - [x] Back → Home PHONE PASS: Home remains normal with the same `⚠ 2` actionable count and no visible recovery auto-start.
 - [x] Menu PHONE PASS: `Центр відновлення` shows the same `Потребує уваги: 2` count.
-- [ ] Finish focused phone QA: exact Pending/History/Bulk routes plus direct breathing/acknowledgement observation; close #53 only after the full focused matrix passes.
+- [x] Exact Pending route PHONE PASS: Recovery Center opened `The Prodigy - Baby's Got A Temper (2002)` Queue detail with write-rate-limit state, `0/3` added and `3` waiting; no automatic Continue.
+- [ ] Finish focused phone QA: exact History/Bulk routes plus direct breathing/acknowledgement observation; close #53 only after the full focused matrix passes.
 - [ ] Close #53 only after PHONE PASS.
 
 Remaining Phase B backlog:
@@ -407,7 +408,7 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 **Continue #53 focused phone acceptance.**
 
-Candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` is validated and signed as run `37338681198`. Home/Recovery Center, both rotation directions, Back and Menu count are PHONE PASS. Next verify exact Pending/History/Bulk routes without triggering recovery work, then directly observe whether the acknowledged same-count Home badge has stopped breathing.
+Candidate `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f` is validated and signed as run `37338681198`. Home/Recovery Center, both rotation directions, Back and Menu count are PHONE PASS. Pending exact-route acceptance is now PASS. Next verify the exact History route, then the available Bulk route, without triggering recovery work; finally directly observe whether the acknowledged same-count Home badge has stopped breathing.
 
 ## Update rule
 
