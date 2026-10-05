@@ -318,13 +318,14 @@ Focused phone matrix — 2026-10-05:
 - [x] Opening Recovery Center caused no visible automatic Search/write/rollback/restore/delete execution.
 - [x] Rotate portrait → landscape while scrolled mid-list: remained inside the same second actionable card; no visible auto-run.
 - [x] Rotate landscape → portrait: returned to the same logical mid-list area near `Відкрити чергу` / `Завершено з попередженням`; no visible auto-run.
-- [ ] Back returns to Home without starting recovery work.
-- [ ] Same actionable count remains visible on Home; opening/acknowledging the current count stops breathing until the count changes.
-- [ ] Menu shows the same `Потребує уваги: 2` count.
+- [x] Back returns to Home without visible recovery auto-start.
+- [x] The same actionable count remains visible on Home as `⚠ 2` after Back.
+- [ ] Opening/acknowledging the current count stops breathing until the count changes; motion still needs direct observation because a screenshot cannot prove animation state.
+- [x] Menu shows the same `Потребує уваги: 2` count.
 - [ ] Exact Pending route opens the intended Queue job; return without Continue.
 - [ ] Exact History route opens the intended History entry; return without Restore/Retry.
 - [ ] Exact available Bulk route opens the intended Bulk session; return without Continue/Rollback.
 
-Status: **PARTIAL PHONE PASS — ROTATION PASS; Back/Menu/routes/acknowledgement checks pending**.
+Status: **PARTIAL PHONE PASS — ROTATION + BACK + MENU COUNT PASS; routes/breathing acknowledgement pending**.
 
 Do not manufacture remote failures merely to populate Recovery Center.
