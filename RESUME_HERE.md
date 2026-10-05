@@ -13,10 +13,12 @@ Last updated: **2026-10-05**
 - Release: **v1.4.55 / Phase B — Recovery Center (#53)**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Phase A and Phase B #41/#25/#57/#55 are PHONE PASS / CLOSED.
-- #53 source checkpoint is implemented and validated:
-  - source `7c21b0e50ef6e380c408302d3b493ea94895969f`;
-  - Validate Android `37257583900 — SUCCESS`;
-  - release preflight/JVM/unsigned release PASS;
+- #53 candidate is implemented, validated and signed:
+  - implementation checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f`, Validate `37257583900 — SUCCESS`;
+  - final candidate HEAD `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
+  - exact-HEAD Validate Android `37257995437 — SUCCESS`;
+  - signed build `37338681198 — SUCCESS` from that exact HEAD;
+  - release preflight/JVM/build gates PASS;
   - MainActivity remains under cleanup budget at 4089 lines.
 - Implemented #53 contract:
   - pure read-only aggregation over BulkSyncSessionStore, PendingJobStore and relevant History;
@@ -28,14 +30,15 @@ Last updated: **2026-10-05**
   - subtle breathing respects disabled system animators and stops after the current count is opened/acknowledged;
   - Menu shows the same `Потребує уваги: N` count.
 - No Search/write/rollback/restore/delete execution semantics were moved into Recovery Center.
+- Phone QA partial PASS: Home displays `⚠ 2`; Recovery Center opens with two actionable items and a separate warning section; opening the center did not visibly auto-start recovery work.
 
 ## NEXT ACTION — do this first
 
-1. Record this source checkpoint in final docs/generated manifest.
-2. Require one final exact-HEAD Validate Android PASS after docs/manifest.
-3. Build one signed APK from that exact HEAD.
-4. Focused phone QA #53 only: Home badge/count/breathing, Menu count, Recovery Center list/rotation/back, exact route into existing Queue/Bulk/History owners, no auto-start.
-5. Close #53 only after PHONE PASS.
+1. Rotate Recovery Center while scrolled mid-list; verify the same screen/state, retained viewport and no automatic recovery work.
+2. Return with Back; verify Home still shows `⚠ 2` and the acknowledged same-count badge no longer breathes.
+3. Open Menu; verify `Центр відновлення` shows `Потребує уваги: 2`.
+4. Reopen Recovery Center and verify exact routes into Pending, History and the available Bulk session, returning without pressing Continue/Retry/Rollback.
+5. Record the focused matrix and close #53 only after full PHONE PASS.
 
 ## Consolidated phone matrix
 
