@@ -43,6 +43,7 @@ SCROLL_SURFACES=(
   "$SRC/PlaylistActivity.kt"
   "$SRC/QuotaActivity.kt"
   "$SRC/RecentFileChooserActivity.kt"
+  "$SRC/RecoveryCenterActivity.kt"
   "$SRC/ReviewActivity.kt"
   "$SRC/ServiceActivity.kt"
   "$SRC/StorageChooserActivity.kt"
@@ -324,6 +325,9 @@ HISTORY_GROUP="$SRC/model/HistoryLogicalGroupPolicy.kt"
 HISTORY_GROUP_TEST="app/src/test/java/com/saney/ytmimporter/model/HistoryLogicalGroupPolicyTest.kt"
 RECOVERY_POLICY="$SRC/recovery/RecoveryCenterPolicy.kt"
 RECOVERY_POLICY_TEST="app/src/test/java/com/saney/ytmimporter/recovery/RecoveryCenterPolicyTest.kt"
+RECOVERY_SOURCE="$SRC/recovery/RecoveryCenterSource.kt"
+RECOVERY_ACTIVITY="$SRC/RecoveryCenterActivity.kt"
+RECOVERY_ATTENTION="$SRC/ui/RecoveryAttentionChrome.kt"
 PENDING="$SRC/PendingActivity.kt"
 RECENT_FILE="$SRC/RecentFileChooserActivity.kt"
 
@@ -504,6 +508,73 @@ for required in (
             "FAIL: Recovery Center aggregation source/route missing: " + required
         )
 PY_RECOVERY_CENTER
+
+test -f "$RECOVERY_SOURCE" || fail "Recovery Center durable-source reader missing"
+test -f "$RECOVERY_ACTIVITY" || fail "Recovery Center screen missing"
+test -f "$RECOVERY_ATTENTION" || fail "Recovery Center Home attention chrome missing"
+grep -Fq 'android:name=".RecoveryCenterActivity"' app/src/main/AndroidManifest.xml ||
+  fail "Recovery Center activity missing from manifest"
+grep -Fq 'RecoveryAttentionChrome.attach(' "$MAIN" ||
+  fail "Home Recovery attention badge missing"
+grep -Fq 'RecoveryAttentionChrome.refresh(' "$MAIN" ||
+  fail "Home Recovery attention count does not refresh"
+grep -Fq 'ACTION_RECOVERY_CENTER' "$MENU" ||
+  fail "Menu Recovery Center route/count missing"
+grep -Fq 'EXTRA_OPEN_JOB_ID' "$PENDING" ||
+  fail "Recovery Center cannot deep-link to exact Pending job"
+grep -Fq 'RecoveryCenterSource(this)' "$RECOVERY_ACTIVITY" ||
+  fail "Recovery Center does not read the shared durable snapshot"
+grep -Fq 'RecoveryRoute.BULK_SESSION' "$RECOVERY_ACTIVITY" ||
+  fail "Recovery Center Bulk exact route missing"
+grep -Fq 'RecoveryRoute.PENDING_QUEUE' "$RECOVERY_ACTIVITY" ||
+  fail "Recovery Center Pending exact route missing"
+grep -Fq 'RecoveryRoute.HISTORY_DETAIL' "$RECOVERY_ACTIVITY" ||
+  fail "Recovery Center History exact route missing"
+grep -Fq 'ValueAnimator.areAnimatorsEnabled()' "$RECOVERY_ATTENTION" ||
+  fail "Recovery attention animation does not respect disabled system animators"
+grep -Fq 'acknowledgedCounts' "$RECOVERY_ATTENTION" ||
+  fail "Recovery attention breathing does not stop after opening Recovery Center"
+
+python - "$RECOVERY_SOURCE" "$RECOVERY_ACTIVITY" <<'PY_RECOVERY_UI'
+from pathlib import Path
+import sys
+
+source = Path(sys.argv[1]).read_text(encoding="utf-8")
+screen = Path(sys.argv[2]).read_text(encoding="utf-8")
+
+for text, label in (
+    (source, "source"),
+    (screen, "screen"),
+):
+    for forbidden in (
+        ".upsert(",
+        ".remove(",
+        ".clear(",
+        "YouTubeApi",
+        "BulkSyncExecutor",
+        "BulkSyncRollbackExecutor",
+        "restoreAsCurrent(",
+    ):
+        if forbidden in text:
+            raise SystemExit(
+                "FAIL: Recovery Center " + label +
+                " can mutate/execute work: " + forbidden
+            )
+
+for required in (
+    "source.snapshot()",
+    "snapshot.actionableItems",
+    "snapshot.warningItems",
+    "startActivityForResult(",
+    "EXTRA_OPEN_JOB_ID",
+):
+    if required not in screen:
+        raise SystemExit(
+            "FAIL: Recovery Center read-only routing contract missing: " +
+            required
+        )
+PY_RECOVERY_UI
+
 grep -Fq 'missingLocalIdentityStaysOperationScoped' "$HISTORY_GROUP_TEST" || fail "History no-local-id fail-closed grouping test missing"
 
 python - "$HISTORY_GROUP" <<'PY_HISTORY_GROUP'
@@ -663,6 +734,7 @@ echo "- Playlist Hub and URL Snapshot use named/structured card result hierarchy
 echo "- Home/Queue/Data/File primary readability uses user-facing hierarchy and wording"
 echo "- committed Skin refreshes hidden Home before it can become visible; onResume remains a fail-safe"
 echo "- Recovery Center aggregation foundation is pure/read-only and covered across Bulk/Pending/History"
+echo "- Recovery Center screen routes to exact owners; Home/Menu attention remains read-only and explicit-action only"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- Activity-owned selectable text persists only on the same logical surface"
 echo "- selectable-text focus is restored without triggering actions"
