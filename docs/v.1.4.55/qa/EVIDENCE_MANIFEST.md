@@ -44,5 +44,6 @@ Phase B #53 status: **ACTIVE / FOUNDATION INSPECTION**.
 | Phase B #53 phone checkpoint A | 2026-10-05 Home + Recovery Center | Home `⚠ 2`; two actionable items; separate completed-with-warning section; opening Recovery Center caused no visible auto-start | user phone screenshots |
 | Phase B #53 phone checkpoint B | 2026-10-05 Recovery Center rotation | mid-list portrait → landscape → portrait preserved the same logical second-actionable/warning area; no visible recovery auto-start | user phone screenshots |
 | Phase B #53 phone checkpoint C | 2026-10-05 Back/Home + Menu | Back returned to normal Home with `⚠ 2`; Menu `Центр відновлення` shows `Потребує уваги: 2`; no visible recovery auto-start | user phone screenshots |
+| Phase B #53 phone checkpoint D | 2026-10-05 exact Pending route | `Відкрити чергу` opened `The Prodigy - Baby's Got A Temper (2002)` Queue detail with write-rate-limit state, `0/3` added, `3` waiting; no automatic continuation | user phone screenshot |
 
-Phase B #53 status: **SIGNED CANDIDATE READY / PHONE QA PARTIAL PASS — HOME/LIST/ROTATION/BACK/MENU PASS; ROUTES + BREATHING PENDING**.
+Phase B #53 status: **SIGNED CANDIDATE READY / PHONE QA PARTIAL PASS — PENDING ROUTE PASS; HISTORY/BULK + BREATHING PENDING**.
