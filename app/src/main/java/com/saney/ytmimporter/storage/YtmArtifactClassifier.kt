@@ -240,19 +240,20 @@ object YtmArtifactClassifier {
         }
 
         val objects =
-            buildList {
-                for (
-                    index in
-                    0 until array.length()
-                ) {
-                    val item =
-                        array.optJSONObject(
-                            index
-                        ) ?: return unknown()
+            mutableListOf<JSONObject>()
 
-                    add(item)
-                }
-            }
+        for (
+            index in
+            0 until array.length()
+        ) {
+            val item =
+                array.optJSONObject(
+                    index
+                ) ?: return unknown()
+
+            objects +=
+                item
+        }
 
         val allHistory =
             objects.all(
