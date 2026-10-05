@@ -107,6 +107,20 @@ class PendingActivity : Activity() {
                 ?.getString(
                     KEY_CURRENT_JOB_ID
                 )
+                ?: if (
+                    savedInstanceState ==
+                    null
+                ) {
+                    intent
+                        ?.getStringExtra(
+                            EXTRA_OPEN_JOB_ID
+                        )
+                        ?.takeIf(
+                            String::isNotBlank
+                        )
+                } else {
+                    null
+                }
 
         if (!restoredId.isNullOrBlank()) {
             val job =
@@ -1998,6 +2012,9 @@ class PendingActivity : Activity() {
 
         const val EXTRA_RESUME_JOB_ID =
             "pending_resume_job_id"
+
+        const val EXTRA_OPEN_JOB_ID =
+            "pending_open_job_id"
 
         private const val KEY_CURRENT_JOB_ID =
             "current_pending_job_id"
