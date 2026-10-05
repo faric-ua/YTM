@@ -483,8 +483,7 @@ class RecoveryCenterActivity : Activity() {
                 ).apply {
                     text =
                         item.stateLabel +
-                            "
-" +
+                            "\n" +
                             "Оновлено: " +
                             formatDate(
                                 item.updatedAt
