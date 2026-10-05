@@ -46,5 +46,7 @@ Phase B #53 status: **ACTIVE / FOUNDATION INSPECTION**.
 | Phase B #53 phone checkpoint C | 2026-10-05 Back/Home + Menu | Back returned to normal Home with `⚠ 2`; Menu `Центр відновлення` shows `Потребує уваги: 2`; no visible recovery auto-start | user phone screenshots |
 | Phase B #53 phone checkpoint D | 2026-10-05 exact Pending route | `Відкрити чергу` opened `The Prodigy - Baby's Got A Temper (2002)` Queue detail with write-rate-limit state, `0/3` added, `3` waiting; no automatic continuation | user phone screenshot |
 | Phase B #53 phone checkpoint E | 2026-10-05 exact History route | `Переглянути History` opened the intended `The Prodigy - Baby's Got A Temper (2002)` History detail with API-limit pause, `0/3` added, `3` waiting and expected queued tracks; no automatic Restore/Retry | user phone screenshot |
+| Phase B #53 phone checkpoint F | 2026-10-05 exact Bulk route | `Відкрити синхронізацію` opened `Синхронізація всіх` in terminal partial/error state: 15 planned playlists, 1 created, 18 tracks added, 1 not added; no automatic Continue/Rollback | user phone screenshots |
+| Phase B #53 supplementary warning route | 2026-10-05 warning History detail | `The Prodigy - Music for the Jilted Generation (1994)` opened with `12/13` added and 1 error | user phone screenshot |
 
-Phase B #53 status: **SIGNED CANDIDATE READY / PHONE QA PARTIAL PASS — PENDING + HISTORY ROUTES PASS; BULK + BREATHING PENDING**.
+Phase B #53 status: **SIGNED CANDIDATE READY / PHONE QA PARTIAL PASS — ALL EXACT ROUTES PASS; BREATHING ACKNOWLEDGEMENT ONLY PENDING**.
