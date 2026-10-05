@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.res.ColorStateList
 import android.content.ClipboardManager
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -119,24 +118,11 @@ class MainActivity : Activity() {
     private val visibleTracks = mutableListOf<Track>()
     private var homeScrollView: ScrollView? = null
     private val homeScrollPosition = ScrollPositionState(STATE_HOME_SCROLL_POSITION)
-    private val skinChangeListener =
-        SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (
-                AppThemeManager.isSkinStylePreference(key) &&
-                !isFinishing &&
-                !isDestroyed
-            ) {
-                AppThemeManager.recreateIfSkinChanged(this)
-            }
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
-        AppThemeManager.registerSkinChangeListener(
-            this,
-            skinChangeListener
-        )
+        AppThemeManager.registerImmediateSkinRefresh(this)
         val searchCache =
             SearchCache(this)
         quotaTracker =
@@ -254,10 +240,7 @@ class MainActivity : Activity() {
         updatePrimaryActions()
     }
     override fun onDestroy() {
-        AppThemeManager.unregisterSkinChangeListener(
-            this,
-            skinChangeListener
-        )
+        AppThemeManager.unregisterImmediateSkinRefresh(this)
         if (::workflowRelay.isInitialized) workflowRelay.detach()
         executor.shutdownNow()
         super.onDestroy()
