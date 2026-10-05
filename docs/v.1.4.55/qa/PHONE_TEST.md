@@ -316,8 +316,8 @@ Focused phone matrix — 2026-10-05:
 - [x] Pending and History owners are presented as distinct exact routes; no title-only dedupe is applied.
 - [x] Completed/partial terminal records are separated under `Завершено з попередженням`.
 - [x] Opening Recovery Center caused no visible automatic Search/write/rollback/restore/delete execution.
-- [ ] Rotate portrait → landscape while scrolled mid-list; retain logical viewport and do not auto-run work.
-- [ ] Rotate landscape → portrait; retain logical viewport and do not auto-run work.
+- [x] Rotate portrait → landscape while scrolled mid-list: remained inside the same second actionable card; no visible auto-run.
+- [x] Rotate landscape → portrait: returned to the same logical mid-list area near `Відкрити чергу` / `Завершено з попередженням`; no visible auto-run.
 - [ ] Back returns to Home without starting recovery work.
 - [ ] Same actionable count remains visible on Home; opening/acknowledging the current count stops breathing until the count changes.
 - [ ] Menu shows the same `Потребує уваги: 2` count.
@@ -325,6 +325,6 @@ Focused phone matrix — 2026-10-05:
 - [ ] Exact History route opens the intended History entry; return without Restore/Retry.
 - [ ] Exact available Bulk route opens the intended Bulk session; return without Continue/Rollback.
 
-Status: **PARTIAL PHONE PASS — rotation/navigation/acknowledgement checks pending**.
+Status: **PARTIAL PHONE PASS — ROTATION PASS; Back/Menu/routes/acknowledgement checks pending**.
 
 Do not manufacture remote failures merely to populate Recovery Center.
