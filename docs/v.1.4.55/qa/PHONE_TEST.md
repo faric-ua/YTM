@@ -266,7 +266,21 @@ Corrective acceptance:
 4. Return from Menu once without changing Skin; no extra recreation/flash.
 5. Confirm no Search/write/restore/delete or other domain action starts automatically.
 
-Result: `C1+` / `C1-`.
+Result: **C1+ — PHONE PASS 2026-10-05.**
+
+Exact installed candidate:
+- source/head `81642d6ea8f0335853d25295e6dcfdd32150801d`;
+- Validate Android run `37252745101 — SUCCESS`;
+- signed build run `37253621772 — SUCCESS`;
+- APK SHA-256 `c6e8c06ff9cc15f4caa562db1f2a1b30081734adf72c343127864ba8175b7869`.
+
+Phone evidence:
+- toolbar Back after committed Skin change no longer exposes the previous Home Skin;
+- alternate/system Back path passed;
+- returning from Menu without changing Skin remained clean;
+- no Search/write/restore/delete or other domain action auto-started.
+
+Issue #57 acceptance: **PASS / CLOSED**.
 
 Do not repeat #25, #41, Phase A, or v1.4.54 Tests 1–9.
 
