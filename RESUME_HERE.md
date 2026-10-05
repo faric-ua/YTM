@@ -49,17 +49,18 @@ Already PHONE PASS:
 - Back returns to Home with the same `⚠ 2` count and no visible auto-start;
 - Menu shows `Центр відновлення` / `Потребує уваги: 2`;
 - exact Pending route opens `The Prodigy - Baby's Got A Temper (2002)` Queue detail with rate-limit pause, `0/3` added and `3` waiting, without auto-Continue;
-- exact History route opens the intended `The Prodigy - Baby's Got A Temper (2002)` History detail with API-limit pause, `0/3` added, `3` waiting and the expected three queued tracks, without auto-Restore/Retry.
+- exact History route opens the intended `The Prodigy - Baby's Got A Temper (2002)` History detail with API-limit pause, `0/3` added, `3` waiting and the expected three queued tracks, without auto-Restore/Retry;
+- exact Bulk route opens `Синхронізація всіх` in `Частково завершено з помилкою` state with 15 planned playlists, 1 created, 18 tracks added and 1 not added, without auto-Continue/Rollback;
+- supplementary warning History route also opened `The Prodigy - Music for the Jilted Generation (1994)` with `12/13` added and 1 error.
 
 Still NOT verified:
-- exact available Bulk route;
 - direct visual confirmation that the acknowledged same-count `⚠ 2` badge stopped breathing. A still screenshot is insufficient for the animation check.
 
 ## NEXT ACTION — do this first
 
-1. Return from History, reopen Recovery Center and tap `Відкрити синхронізацію` on the available `Синхронізація всіх` warning card; confirm the intended Bulk session opens, then return without Continue/Rollback.
-2. On Home, directly observe `⚠ 2` for a few seconds and confirm whether it stays still after acknowledgement.
-3. Record the focused matrix and close #53 only after full PHONE PASS.
+1. Return to Home.
+2. Directly observe `⚠ 2` for about 3–5 seconds. Confirm whether it stays visually still after acknowledgement; it must not keep scaling/fading/breathing while the actionable count remains `2`.
+3. If it stays still, record final #53 PHONE PASS and close issue #53. If it still breathes, record FAIL and fix only the acknowledgement animation lifecycle.
 
 ## Consolidated phone matrix
 
