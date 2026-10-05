@@ -314,6 +314,7 @@ for pattern, label in (
         )
 PY_TILE_READABILITY
 
+APP_THEME="$SRC/ui/AppThemeManager.kt"
 MAIN="$SRC/MainActivity.kt"
 MENU="$SRC/MenuActivity.kt"
 HISTORY="$SRC/HistoryActivity.kt"
@@ -323,6 +324,39 @@ HISTORY_GROUP="$SRC/model/HistoryLogicalGroupPolicy.kt"
 HISTORY_GROUP_TEST="app/src/test/java/com/saney/ytmimporter/model/HistoryLogicalGroupPolicyTest.kt"
 PENDING="$SRC/PendingActivity.kt"
 RECENT_FILE="$SRC/RecentFileChooserActivity.kt"
+
+test -f "$APP_THEME" || fail "AppThemeManager missing"
+grep -Fq 'fun registerSkinChangeListener(' "$APP_THEME" ||
+  fail "Skin change listener registration API missing"
+grep -Fq 'fun unregisterSkinChangeListener(' "$APP_THEME" ||
+  fail "Skin change listener teardown API missing"
+grep -Fq 'AppThemeManager.registerSkinChangeListener(' "$MAIN" ||
+  fail "Home does not pre-refresh underneath Menu after Skin commit"
+grep -Fq 'AppThemeManager.unregisterSkinChangeListener(' "$MAIN" ||
+  fail "Home Skin listener lifecycle teardown missing"
+python - "$MAIN" <<'PY_THEME_FIRST_FRAME'
+from pathlib import Path
+import sys
+
+main = Path(sys.argv[1]).read_text(encoding="utf-8")
+listener = main.find("private val skinChangeListener")
+resume = main.find("override fun onResume()")
+if listener < 0:
+    raise SystemExit("FAIL: Home Skin change listener missing")
+block = main[listener:listener + 900]
+for required in (
+    "AppThemeManager.isSkinStylePreference(key)",
+    "AppThemeManager.recreateIfSkinChanged(this)",
+):
+    if required not in block:
+        raise SystemExit(
+            "FAIL: Home first-visible-frame Skin refresh missing " + required
+        )
+if resume < 0 or "AppThemeManager.recreateIfSkinChanged(this)" not in main[resume:resume + 500]:
+    raise SystemExit(
+        "FAIL: Home onResume Skin mismatch fail-safe removed"
+    )
+PY_THEME_FIRST_FRAME
 
 grep -Fq 'Готові:' "$MAIN" || fail "Home named ready counter missing"
 grep -Fq 'Перевірити:' "$MAIN" || fail "Home named review counter missing"
@@ -523,6 +557,7 @@ echo "- Bulk Preview/Session use shared semantic hierarchy with durable secondar
 echo "- Data recovery failures and Destination remote results use recreation-safe durable inline notices"
 echo "- Playlist Hub and URL Snapshot use named/structured card result hierarchy"
 echo "- Home/Queue/Data/File primary readability uses user-facing hierarchy and wording"
+echo "- committed Skin refreshes hidden Home before it can become visible; onResume remains a fail-safe"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- Activity-owned selectable text persists only on the same logical surface"
 echo "- selectable-text focus is restored without triggering actions"
