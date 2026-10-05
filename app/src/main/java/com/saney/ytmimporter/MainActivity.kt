@@ -118,7 +118,6 @@ class MainActivity : Activity() {
     private val visibleTracks = mutableListOf<Track>()
     private var homeScrollView: ScrollView? = null
     private val homeScrollPosition = ScrollPositionState(STATE_HOME_SCROLL_POSITION)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
