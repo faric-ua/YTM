@@ -10,29 +10,28 @@ Last updated: **2026-10-05**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase B — History Quick Restore (#55)**
+- Release: **v1.4.55 / Phase B — Recovery Center (#53)**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Phase A is PHONE PASS / CLOSED; do not repeat it.
-- Phase B #41 History filters is PHONE PASS / CLOSED.
-- Phase B #25 History logical grouping is B2+ / PHONE PASS / CLOSED.
-- BUG-051/#57 previous-Skin Home flash is **C1+ / PHONE PASS / CLOSED**:
-  - exact accepted source `81642d6ea8f0335853d25295e6dcfdd32150801d`;
-  - Validate `37252745101 — SUCCESS`;
-  - signed build `37253621772 — SUCCESS`;
-  - APK SHA-256 `c6e8c06ff9cc15f4caa562db1f2a1b30081734adf72c343127864ba8175b7869`;
-  - toolbar Back, alternate/system Back and no-change control passed;
-  - no domain action auto-started;
-  - issue #57 is closed.
-- Next Phase B item is #55: make the existing safe History restore action directly discoverable in Quick Actions.
-- #55 must reuse existing restore semantics and confirmation; no Search/YTM write auto-start and no title-based linkage inference.
+- Phase B #41, #25, BUG-051/#57 and #55 are PHONE PASS / CLOSED.
+- #55 final acceptance:
+  - guard-only HEAD `c5da0755cc59fe7eb5f16ab483ae233bd8861d19`;
+  - Validate `37255431011 — SUCCESS`;
+  - phone result `#55+`;
+  - restore confirmation survived rotation; Cancel was no-op;
+  - explicit restore produced **01 2001 Future Trance Vol.15 DISC / 41 tracks / local-only**;
+  - no Search/YTM write auto-started;
+  - issue #55 closed.
+- Active Phase B task: #53 Unified Recovery Center / `Потребує уваги`.
+- #53 must aggregate existing durable state read-only first; opening the surface must never mutate remote or local operation state.
 
 ## NEXT ACTION — do this first
 
-1. Finish BUG-051 documentation/manifest closeout and require one final exact-HEAD Validate PASS.
-2. Then read issue #55 plus current History detail/restore implementation.
-3. Surface `Відновити як поточний плейлист` in History Quick Actions by reusing the existing restore route.
-4. Preserve confirmation rotation safety and explicit-action-only semantics.
-5. Build/phone-test #55 only after source/static gates pass.
+1. Inspect `BulkSyncSessionStore`, `PendingJobStore`, relevant History recovery states, and existing recovery routes.
+2. Define a pure Recovery Center aggregation model/policy with stable item identity and explicit classification.
+3. Keep completed normal work out of actionable results; distinguish completed-with-warning.
+4. Add Home/Menu attention affordance only after the read-only model is covered by tests.
+5. No automatic Search/write/rollback/restore/delete on open/recreate/navigation.
 
 ## Consolidated phone matrix
 
