@@ -324,8 +324,8 @@ Focused phone matrix — 2026-10-05:
 - [x] Menu shows the same `Потребує уваги: 2` count.
 - [x] Exact Pending route opens the intended Queue job: `The Prodigy - Baby's Got A Temper (2002)`, write-rate-limit pause, `0/3` added and `3` waiting; opening the detail did not continue the job.
 - [x] Exact History route opens the intended `The Prodigy - Baby's Got A Temper (2002)` History detail: API-limit pause, `0/3` added, `3` waiting and the expected three queued tracks; opening the detail did not Restore/Retry.
-- [ ] Exact available Bulk route opens the intended Bulk session; return without Continue/Rollback.
+- [x] Exact Bulk route opens the intended `Синхронізація всіх` session: `Частково завершено з помилкою`, 15 playlists in plan, 1 playlist created, 18 tracks added, 1 track not added; opening the session did not Continue/Rollback.
 
-Status: **PARTIAL PHONE PASS — PENDING + HISTORY ROUTES PASS; Bulk route + breathing acknowledgement pending**.
+Status: **PARTIAL PHONE PASS — PENDING + HISTORY + BULK ROUTES PASS; breathing acknowledgement pending**.
 
 Do not manufacture remote failures merely to populate Recovery Center.
