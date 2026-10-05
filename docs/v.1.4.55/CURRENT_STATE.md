@@ -447,18 +447,23 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-Phase A is PHONE PASS / CLOSED. Phase B #41 and #25 are PHONE PASS / CLOSED.
+Phase A is PHONE PASS / CLOSED. Phase B #41, #25 and BUG-051/#57 are PHONE PASS / CLOSED.
 
-Active corrective work is BUG-051: a previously rendered Home Skin can be visible for
-about 0.30 s when Menu returns after applying another Skin. The prior v1.4.50
-`onResume() → recreateIfSkinChanged()` guard remains necessary but is too late for
-the first visible frame.
+BUG-051 final accepted candidate:
+- source `81642d6ea8f0335853d25295e6dcfdd32150801d`;
+- Validate `37252745101 — SUCCESS`;
+- signed run `37253621772 — SUCCESS`;
+- C1 phone acceptance: PASS.
 
-The corrective contract is:
-- explicit Skin Apply remains the only theme mutation;
-- hidden Home observes the committed Skin preference and recreates while Menu still covers it;
-- `onResume()` remains a defensive mismatch fallback;
-- no business/API/storage/History semantics change;
-- exact-HEAD Validate and signed real-phone transition retest are required before #57 closes.
+Next Phase B item: #55 / History Quick Restore discoverability.
 
-Do not repeat #25/#41/Phase A phone matrices.
+The #55 contract is explicit-action only:
+- surface `Відновити як поточний плейлист` directly in History detail Quick Actions;
+- reuse the existing confirmation and restore path;
+- current local workspace replacement remains explicit;
+- no Search or YTM write starts automatically;
+- preserve exact persisted linkage only when it truly exists;
+- never infer linkage from title;
+- confirmation must remain rotation-safe.
+
+Do not repeat #25/#41/BUG-051/Phase A phone matrices.
