@@ -447,23 +447,23 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-Phase A is PHONE PASS / CLOSED. Phase B #41, #25 and BUG-051/#57 are PHONE PASS / CLOSED.
+Phase A is PHONE PASS / CLOSED. Phase B #41, #25, BUG-051/#57 and #55 are PHONE PASS / CLOSED.
 
-BUG-051 final accepted candidate:
-- source `81642d6ea8f0335853d25295e6dcfdd32150801d`;
-- Validate `37252745101 — SUCCESS`;
-- signed run `37253621772 — SUCCESS`;
-- C1 phone acceptance: PASS.
+#55 final acceptance:
+- guard-only source `c5da0755cc59fe7eb5f16ab483ae233bd8861d19`;
+- Validate `37255431011 — SUCCESS`;
+- phone result `#55+`;
+- confirmation survived rotation and Cancel remained no-op;
+- explicit restore produced **01 2001 Future Trance Vol.15 DISC / 41 tracks / local-only**;
+- no Search or YTM write auto-started.
 
-Next Phase B item: #55 / History Quick Restore discoverability.
+Active Phase B item: #53 / Unified Recovery Center.
 
-The #55 contract is explicit-action only:
-- surface `Відновити як поточний плейлист` directly in History detail Quick Actions;
-- reuse the existing confirmation and restore path;
-- current local workspace replacement remains explicit;
-- no Search or YTM write starts automatically;
-- preserve exact persisted linkage only when it truly exists;
-- never infer linkage from title;
-- confirmation must remain rotation-safe.
+The #53 implementation order is intentionally safety-first:
+- inspect existing durable Bulk/Pending/History sources;
+- build a pure read-only aggregation policy first;
+- distinguish actionable unfinished work from completed-with-warning and completed;
+- only then add Home/Menu `Потребує уваги: N` presentation and one-tap navigation;
+- list rendering/recreation/navigation must never mutate or auto-start recovery work.
 
-Do not repeat #25/#41/BUG-051/Phase A phone matrices.
+Do not repeat #55/#57/#25/#41/Phase A phone matrices.
