@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.storage.BulkSyncSessionStore
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.recovery.RecoveryCenterSource
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.ReplacementLogDialog
 import com.saney.ytmimporter.ui.ScrollPositionState
@@ -216,6 +217,10 @@ class MenuActivity : Activity() {
                 )
             }
 
+        val recoverySnapshot =
+            RecoveryCenterSource(this)
+                .snapshot()
+
         addAction(
             content = content,
             title = "Тема",
@@ -242,6 +247,15 @@ class MenuActivity : Activity() {
             title = "Поточна синхронізація всіх",
             subtitle = "Переглянути прогрес і продовжити перервану синхронізацію",
             action = ACTION_BULK_SESSION
+        )
+
+        addAction(
+            content = content,
+            title = "Центр відновлення",
+            subtitle =
+                "Потребує уваги: " +
+                    recoverySnapshot.actionableCount,
+            action = ACTION_RECOVERY_CENTER
         )
 
         addAction(
@@ -944,6 +958,8 @@ class MenuActivity : Activity() {
             "BULK_SYNC"
         const val ACTION_BULK_SESSION =
             "BULK_SESSION"
+        const val ACTION_RECOVERY_CENTER =
+            "RECOVERY_CENTER"
         const val ACTION_DATA =
             "DATA"
         const val ACTION_SERVICE =
