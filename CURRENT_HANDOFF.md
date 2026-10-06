@@ -26,7 +26,7 @@ Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
 Active task: #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
 
-Current #54 status: **PHONE PARTIAL / Full Restore + History PHONE PASS; Playlist Project / typed cards / wrong-type source validated, signed phone acceptance pending**.
+Current #54 status: **PHONE PARTIAL / Full Restore + History PASS; Playlist Project typed cards + wrong-type PASS; only Playlist Project rotation/no-auto-import remains**.
 
 Implemented and verified:
 - content-first `YtmArtifactClassifier` + `YtmArtifactScopePolicy`;
@@ -68,12 +68,11 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-1. Validated source checkpoint: `b53a73ed6be46c932c7a21c0a314b3788fdb9931`; Validate `37536534440 — SUCCESS` (release preflight/JVM/unsigned assemble PASS).
-2. User: YTM Importer Menu → `1 — Sync YTM` → `6 — Validate + Build signed APK`.
-3. After signed BUILD PASS: `3 — Download signed APK` → `4 — Open APK folder` → install over current app.
-4. PHONE: **«Імпорт» → «Імпорт із файлу» → «CSV, TXT або YTM Project» → «Вибрати файл»**. Verify CSV/TXT + only YTM Project JSON in primary list, typed card metadata, **«Інший файл…»**, rotation continuity and no auto-import.
-5. Wrong-type PHONE check: **«Інший файл…»** → choose a known History JSON → expect **«Файл не підходить»** and a clear message that History JSON was detected but YTM Project is expected; no import/mutation.
-6. If PASS, finish focused #54 acceptance and only then close #54.
+1. Installed signed candidate: run `37546679576 — SUCCESS`, source `22721a7b64858cfad7416c85c7d867723cb16946`, artifact ID `11451227175`.
+2. PHONE PASS evidence already captured: **«Імпорт файла»** shows CSV/TXT/YTM Project typed cards with readable metadata; **«Інший файл…»** is present; known History JSON through fallback is blocked by **«Файл не підходить» → «Це History JSON, а тут потрібен YTM Project.»**.
+3. Remaining PHONE test only: while on **«Імпорт файла»**, rotate portrait → landscape → portrait without choosing a file.
+4. PASS = scoped/typed cards return near-immediately and no import auto-starts.
+5. After PASS, reconcile #54 issue acceptance and close only if nothing else remains.
 
 
 ## Immutable functional reference
