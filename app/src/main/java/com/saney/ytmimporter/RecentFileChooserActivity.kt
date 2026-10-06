@@ -392,41 +392,55 @@ class RecentFileChooserActivity : Activity() {
         entry:
             SafRecentFileQuery.Entry
     ): YtmArtifactType {
-        val type =
+        val raw =
             runCatching {
-                val raw =
-                    contentResolver
-                        .openInputStream(
-                            entry.uri
-                        )
-                        ?.bufferedReader(
-                            Charsets.UTF_8
-                        )
-                        ?.use {
-                            it.readText()
-                        }
-                        ?: error(
-                            "Файл недоступний для читання"
-                        )
+                contentResolver
+                    .openInputStream(
+                        entry.uri
+                    )
+                    ?.bufferedReader(
+                        Charsets.UTF_8
+                    )
+                    ?.use {
+                        it.readText()
+                    }
+                    ?: error(
+                        "Файл недоступний для читання"
+                    )
+            }.getOrElse {
+                return YtmArtifactType.UNKNOWN
+            }
 
-                YtmArtifactClassifier
-                    .inspect(raw)
-                    .type
-            }.getOrDefault(
-                YtmArtifactType.UNKNOWN
-            )
+        if (
+            Thread
+                .currentThread()
+                .isInterrupted
+        ) {
+            return YtmArtifactType.UNKNOWN
+        }
 
-        YtmArtifactClassificationCache
-            .put(
-                uri =
-                    entry.uri.toString(),
-                lastModified =
-                    entry.lastModified,
-                size =
-                    entry.size,
-                type =
-                    type
-            )
+        val type =
+            YtmArtifactClassifier
+                .inspect(raw)
+                .type
+
+        if (
+            !Thread
+                .currentThread()
+                .isInterrupted
+        ) {
+            YtmArtifactClassificationCache
+                .put(
+                    uri =
+                        entry.uri.toString(),
+                    lastModified =
+                        entry.lastModified,
+                    size =
+                        entry.size,
+                    type =
+                        type
+                )
+        }
 
         return type
     }
