@@ -13,7 +13,7 @@ object YtmArtifactClassificationCache {
     private val entries =
         LinkedHashMap<
             Key,
-            YtmArtifactType
+            YtmArtifactInspection
         >(
             32,
             0.75f,
@@ -26,6 +26,18 @@ object YtmArtifactClassificationCache {
         lastModified: Long,
         size: Long?
     ): YtmArtifactType? =
+        getInspection(
+            uri = uri,
+            lastModified = lastModified,
+            size = size
+        )?.type
+
+    @Synchronized
+    fun getInspection(
+        uri: String,
+        lastModified: Long,
+        size: Long?
+    ): YtmArtifactInspection? =
         entries[
             Key(
                 uri = uri,
@@ -40,6 +52,25 @@ object YtmArtifactClassificationCache {
         lastModified: Long,
         size: Long?,
         type: YtmArtifactType
+    ) {
+        putInspection(
+            uri = uri,
+            lastModified = lastModified,
+            size = size,
+            inspection =
+                YtmArtifactInspection(
+                    type = type
+                )
+        )
+    }
+
+    @Synchronized
+    fun putInspection(
+        uri: String,
+        lastModified: Long,
+        size: Long?,
+        inspection:
+            YtmArtifactInspection
     ) {
         entries
             .keys
@@ -59,7 +90,7 @@ object YtmArtifactClassificationCache {
                 size = size
             )
         ] =
-            type
+            inspection
 
         while (
             entries.size >
