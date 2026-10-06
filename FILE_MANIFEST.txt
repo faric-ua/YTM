@@ -174,7 +174,7 @@ dead1c65e49b2ddb  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
 fa2345eaa311674f  CURRENT_HANDOFF.md
 03fc725ca9b1f89a  docs/ASSISTANT_TOOL_MAP.md
-b27a0239f0f8c514  docs/assistant-kit/AUDIT_CATALOG.md
+145bb6c39b1b9104  docs/assistant-kit/AUDIT_CATALOG.md
 131ff62755c72a02  docs/assistant-kit/CONTEXT_FILES.txt
 b6a9a300bb8d0d5e  docs/assistant-kit/PORTABLE_AUDITS.txt
 a210d9ca8304f4bb  docs/assistant-kit/portable/ASSISTANT_WORKFLOW_TEMPLATE.md
