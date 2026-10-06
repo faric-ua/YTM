@@ -407,8 +407,8 @@ Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make
 - [x] Signed phone-retest candidate built successfully: run `37485298582`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` / ID `11423176882`; compare from corrective app-source `daaa599d…` to signed source shows docs/manifest-only changes.
 - [x] Download/install signed candidate and PHONE retest Full Restore path portrait → landscape → portrait: **PHONE PASS 2026-10-06**; cards returned near-immediately from the rotation cache and Restore did not auto-start.
 - [x] PHONE check History Import scoped chooser + rotation/no-auto-restore: **PASS 2026-10-07**; screen showed `Файли потрібного типу: 6`, History JSON candidates + `Інший файл…`, both rotations preserved the scoped list near-immediately and import did not auto-start.
-- [ ] Scope Playlist Project import to its expected JSON artifact type with explicit legacy/system fallback.
-- [ ] Add readable typed file cards and wrong-type validation messages without changing restore/import payload semantics.
+- [x] Scope Playlist Project import to its expected JSON artifact type with explicit legacy/system fallback while preserving CSV/TXT candidates.
+- [x] Add readable typed file cards and content-first wrong-type validation messages without changing restore/import payload semantics. Exact validated checkpoint `b53a73ed6be46c932c7a21c0a314b3788fdb9931`, Validate `37536534440 — SUCCESS` (preflight/JVM/assemble PASS).
 - [ ] Complete focused #54 phone matrix before closing #54.
 
 Remaining Phase B backlog:
@@ -429,13 +429,11 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Implement Playlist Project scoping, typed cards and wrong-type messages next.**
+**Build/install one signed #54 candidate for the remaining phone acceptance.**
 
-Full Restore and History scoped chooser phone slices are now **PASS**. The History screen showed 6 matching History JSON candidates plus **«Інший файл…»**; portrait → landscape → portrait preserved the scoped list near-immediately and no History import auto-started.
+Full Restore and History scoped chooser phone slices are **PASS**. Playlist Project scoping, typed cards and content-first wrong-type messages are implemented and validated on checkpoint `b53a73ed6be46c932c7a21c0a314b3788fdb9931`; Validate `37536534440 — SUCCESS` passed preflight, JVM tests and unsigned assemble.
 
-Next source work: scope the **«CSV, TXT або YTM Project» → «Вибрати файл»** flow so CSV/TXT remain available while JSON cards are limited to YTM Project; add readable artifact metadata on scoped cards; add reliable wrong-type JSON messages before owner validation without changing import/restore payload semantics.
-
-After source/static/Validate PASS, build one signed candidate and run the remaining focused #54 phone checks.
+Next: Termux `1 — Sync YTM` → `6 — Validate + Build signed APK`. After the exact signed build succeeds, use `3 — Download signed APK` → `4 — Open APK folder` → install over the current app. Then run only the remaining focused #54 phone checks for **«CSV, TXT або YTM Project» → «Вибрати файл»**, typed cards and wrong-type fallback messaging.
 
 ## Update rule
 
