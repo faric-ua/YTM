@@ -330,6 +330,9 @@ RECOVERY_ACTIVITY="$SRC/RecoveryCenterActivity.kt"
 RECOVERY_ATTENTION="$SRC/ui/RecoveryAttentionChrome.kt"
 PENDING="$SRC/PendingActivity.kt"
 RECENT_FILE="$SRC/RecentFileChooserActivity.kt"
+IMPORT="$SRC/ImportActivity.kt"
+ARTIFACT_CLASSIFIER="$SRC/storage/YtmArtifactClassifier.kt"
+ARTIFACT_CACHE="$SRC/storage/YtmArtifactClassificationCache.kt"
 
 test -f "$APP_THEME" || fail "AppThemeManager missing"
 grep -Fq 'fun registerImmediateSkinRefresh(' "$APP_THEME" ||
@@ -707,6 +710,29 @@ if '"Додати SAF-папку…"' in recent:
     raise SystemExit("FAIL: Recent File primary action exposes SAF jargon")
 PY_SURFACE_READABILITY
 
+for f in "$IMPORT" "$ARTIFACT_CLASSIFIER" "$ARTIFACT_CACHE"; do
+  test -f "$f" || fail "missing #54 artifact-library source: $f"
+done
+
+grep -Fq 'YtmArtifactScope' "$IMPORT" ||
+  fail "Playlist file import is not type-scoped"
+grep -Fq '.PLAYLIST_PROJECT' "$IMPORT" ||
+  fail "Playlist Project scope is not requested by ImportActivity"
+grep -Fq 'isDirectPlaylistTextCandidate(' "$RECENT_FILE" ||
+  fail "Playlist Project scope no longer preserves CSV/TXT candidates"
+grep -Fq 'artifactCardSummary(' "$RECENT_FILE" ||
+  fail "typed artifact metadata missing from scoped file cards"
+grep -Fq 'getInspection(' "$ARTIFACT_CACHE" ||
+  fail "artifact cache no longer retains typed metadata across rotation"
+grep -Fq 'putInspection(' "$ARTIFACT_CACHE" ||
+  fail "artifact metadata is not stored in the rotation cache"
+grep -Fq 'wrongTypeMessage(' "$DATA" ||
+  fail "Data restore/import wrong-type explanation missing"
+grep -Fq 'wrongTypeMessage(' "$IMPORT" ||
+  fail "Playlist Project wrong-type explanation missing"
+grep -Fq 'fun expectedType(' "$ARTIFACT_CLASSIFIER" ||
+  fail "artifact scope expected-type contract missing"
+
 grep -Fq 'if (BuildConfig.DEBUG)' "$QUOTA" ||
   fail "release Quota UI still exposes phone-QA controls"
 grep -Fq 'if (!BuildConfig.DEBUG)' "$QA_STORE" ||
@@ -735,6 +761,7 @@ echo "- Home/Queue/Data/File primary readability uses user-facing hierarchy and 
 echo "- committed Skin refreshes hidden Home before it can become visible; onResume remains a fail-safe"
 echo "- Recovery Center aggregation foundation is pure/read-only and covered across Bulk/Pending/History"
 echo "- Recovery Center screen routes to exact owners; Home/Menu attention remains read-only and explicit-action only"
+echo "- #54 file library keeps CSV/TXT import while scoping JSON, caches typed metadata, and explains reliable wrong types"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- Activity-owned selectable text persists only on the same logical surface"
 echo "- selectable-text focus is restored without triggering actions"
