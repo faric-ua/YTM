@@ -322,8 +322,8 @@ class RecentFileChooserActivity : Activity() {
     private fun inspectArtifactType(
         entry:
             SafRecentFileQuery.Entry
-    ): YtmArtifactType =
-        runCatching {
+    ): YtmArtifactType {
+        return runCatching {
             val raw =
                 contentResolver
                     .openInputStream(
@@ -335,8 +335,9 @@ class RecentFileChooserActivity : Activity() {
                     ?.use {
                         it.readText()
                     }
-                    ?: return@runCatching
-                        YtmArtifactType.UNKNOWN
+                    ?: error(
+                        "Файл недоступний для читання"
+                    )
 
             YtmArtifactClassifier
                 .inspect(raw)
@@ -344,6 +345,7 @@ class RecentFileChooserActivity : Activity() {
         }.getOrDefault(
             YtmArtifactType.UNKNOWN
         )
+    }
 
     private fun render() {
         val palette =
