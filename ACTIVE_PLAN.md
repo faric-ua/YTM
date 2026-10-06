@@ -404,7 +404,8 @@ Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make
 - [x] Record phone finding: rotation caused slow full JSON reclassification, including a ~25.3 MB backup.
 - [x] Implement bounded process-local classification cache keyed by `URI + lastModified + size`; changed/new files still reclassify and interrupted reads are not cached.
 - [x] Corrective source `daaa599da7c031c0df881b7fbd8b280f218d3913` passed exact-HEAD Validate `37407395790 — SUCCESS` with preflight/JVM/assemble PASS.
-- [ ] Build/install signed APK from corrective `daaa599d…` source and PHONE retest Full Restore chooser portrait → landscape → portrait for near-immediate card continuity and no auto-Restore.
+- [x] Signed phone-retest candidate built successfully: run `37485298582`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` / ID `11423176882`; compare from corrective app-source `daaa599d…` to signed source shows docs/manifest-only changes.
+- [ ] Download/install signed candidate and PHONE retest Full Restore chooser portrait → landscape → portrait for near-immediate card continuity and no auto-Restore.
 - [ ] PHONE check History Import scoped chooser + rotation/no-auto-restore.
 - [ ] Scope Playlist Project import to its expected JSON artifact type with explicit legacy/system fallback.
 - [ ] Add readable typed file cards and wrong-type validation messages without changing restore/import payload semantics.
@@ -428,11 +429,11 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Build the corrective #54 signed APK, then retest rotation only.**
+**Install the signed #54 rotation-cache candidate, then retest rotation only.**
 
-Current corrective **app-source**: `daaa599da7c031c0df881b7fbd8b280f218d3913`. Exact-HEAD Validate `37407395790 — SUCCESS` already passed preflight, JVM tests and unsigned assemble. Newer checkpoint/docs-only commits do not change that app-source; do not make further app-code changes before the signed/phone gate unless a verified fix is required.
+Corrective **app-source**: `daaa599da7c031c0df881b7fbd8b280f218d3913`. Exact-HEAD Validate `37407395790 — SUCCESS`. Signed candidate: run `37485298582 — SUCCESS`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact ID `11423176882`. Compare confirms later commits are docs/manifest-only, so app-code matches the corrective source.
 
-Termux flow: `1 — Sync YTM` → `6 — Validate + Build signed APK` → verify exact source → `3 — Download signed APK` → install. Phone retest: Full Restore chooser, wait for cards once, rotate portrait → landscape → portrait. Expected: cached unchanged cards reappear immediately/near-immediately, no long full JSON reclassification, no automatic Restore.
+Termux flow now: `3 — Download signed APK` → install. Phone retest: Full Restore chooser, wait for cards once, rotate portrait → landscape → portrait. Expected: cached unchanged cards reappear immediately/near-immediately, no long full JSON reclassification, no automatic Restore.
 
 After PASS, continue History Import chooser phone check; Playlist Project scoping and typed/wrong-type presentation remain open.
 
