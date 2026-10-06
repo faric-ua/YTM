@@ -296,7 +296,7 @@ and build evidence is not phone PASS.
 
 ## #54 type-aware file library — current checkpoint (2026-10-06)
 
-Status: **PHONE PARTIAL; Full Restore + History scoped chooser PHONE PASS, Playlist Project / typed cards / wrong-type acceptance open.**
+Status: **PHONE PARTIAL; Full Restore + History PASS; Playlist Project typed cards + wrong-type PASS; Playlist Project rotation/no-auto-import remains.**
 
 - classifier/scope foundation implemented;
 - Full Restore and History Import now request content-scoped recent JSON candidates;
@@ -312,7 +312,10 @@ Status: **PHONE PARTIAL; Full Restore + History scoped chooser PHONE PASS, Playl
 - History-only scoped chooser phone retest 2026-10-07: **PASS** — `Вибрати History JSON` showed 6 matching candidates plus `Інший файл…`; portrait → landscape → portrait preserved the scoped list near-immediately and no History import auto-started.
 - Playlist Project scoping / typed cards / wrong-type source checkpoint: `b53a73ed6be46c932c7a21c0a314b3788fdb9931`; Validate `37536534440 — SUCCESS` with release preflight, JVM tests and unsigned assemble PASS.
 - implementation keeps CSV/TXT candidates, scopes JSON to YTM Project, retains `Інший файл…`, caches full typed metadata for rotation, and reports reliably detected wrong artifact types before mutation while preserving owner validation.
-- next gate: exact signed build + focused phone acceptance for Playlist Project chooser/cards/rotation and wrong-type fallback.
+- signed phone candidate: run `37546679576 — SUCCESS`, source `22721a7b64858cfad7416c85c7d867723cb16946`, artifact ID `11451227175`; installed on phone.
+- Playlist Project presentation phone check: **PASS** — **«Імпорт файла»** shows typed CSV/TXT/YTM Project cards; YTM Project cards expose playlist title/track-count metadata; **«Інший файл…»** remains available.
+- wrong-type fallback phone check: **PASS** — known History JSON is blocked by **«Файл не підходить»** with detected/expected type wording and no import.
+- next gate: Playlist Project chooser portrait → landscape → portrait; require near-immediate scoped card continuity and no automatic import.
 
 ## Phase B — management / discoverability
 
