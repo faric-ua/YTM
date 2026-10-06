@@ -81,18 +81,13 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-1. Source implementation for Playlist Project scoping / typed cards / wrong-type messaging is validated at `b53a73ed6be46c932c7a21c0a314b3788fdb9931`; Validate `37536534440 — SUCCESS` passed release preflight, JVM tests and unsigned release assemble.
-2. On the phone open YTM Importer Menu and run `1 — Sync YTM`.
-3. Then run `6 — Validate + Build signed APK`. The menu script must accept only the exact current remote HEAD after its Validate succeeds and then dispatch/watch the signed build.
-4. After BUILD PASS: `3 — Download signed APK` → `4 — Open APK folder` → tap the downloaded v1.4.55 release APK and install it over the current app.
-5. Remaining PHONE acceptance:
-   - **«Імпорт» → «Імпорт із файлу» → «CSV, TXT або YTM Project» → «Вибрати файл»**;
-   - verify CSV/TXT remain available and JSON cards are YTM Project only;
-   - verify readable type/metadata on cards and **«Інший файл…»**;
-   - rotate portrait → landscape → portrait with no auto-import;
-   - through **«Інший файл…»**, choose a known History JSON and require **«Файл не підходить»** with a clear detected/expected type message and no import.
-6. Do not repeat the already accepted Full Restore / History chooser phone slices.
-7. Do not mark #54 CLOSED until this remaining phone acceptance passes.
+1. Signed candidate is installed: run `37546679576 — SUCCESS`, source `22721a7b64858cfad7416c85c7d867723cb16946`, artifact ID `11451227175`.
+2. Playlist Project typed-card presentation is PHONE PASS: **«Імпорт файла»** shows CSV/TXT + YTM Project cards with readable metadata and **«Інший файл…»**.
+3. Wrong-type fallback is PHONE PASS: choosing a known History JSON through **«Інший файл…»** shows **«Файл не підходить»** with **«Це History JSON, а тут потрібен YTM Project.»** and no import.
+4. Remaining test only: stay on **«Імпорт файла»**, rotate portrait → landscape → portrait without selecting a file.
+5. PASS requires the scoped list/cards to return near-immediately, remain correctly typed/scoped, and no import to start automatically.
+6. Do not repeat Full Restore or History chooser tests.
+7. If this rotation slice passes, reconcile final #54 acceptance and close only if the issue acceptance matrix is fully satisfied.
 
 ## Consolidated phone matrix
 
