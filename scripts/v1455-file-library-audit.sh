@@ -152,7 +152,7 @@ for forbidden in (
 
 for required in (
     "refreshRecentFiles()",
-    "inspectArtifactType(",
+    "inspectAndCacheArtifactType(",
     "runOnUiThread",
     "generation !=",
 ):
