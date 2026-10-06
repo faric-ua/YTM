@@ -140,6 +140,21 @@ ChatGPT should:
 - mark PASS/FAIL only for what the evidence actually proves;
 - then prepare the QA update package.
 
+## 9.1. User-facing phone and Termux instruction wording
+
+For every real-device QA step or phone-side operation, instructions to the user must mirror the controls they actually see.
+
+Rules:
+
+- Use the exact visible screen, section, dialog, button and menu labels from the current YTM Importer UI.
+- Write the complete navigation path when it helps, for example: **«Меню» → «Дані» → «Відновити з резервної копії» → «Вибрати резервну копію»**.
+- For Termux, use the exact menu number plus the exact menu label, for example: `3 — Download signed APK`.
+- Do not use internal engineering names such as `Full Restore chooser`, `scoped chooser`, `rotation cache`, `History Import flow` or activity/class names as the only actionable instruction.
+- If an internal term is useful, put it after the visible user action as a technical note, never instead of the visible action.
+- If the exact visible wording is uncertain, inspect the live branch/source/menu definition before instructing the user; do not invent a label.
+- For tests, separate **what the user must do** from **what should happen / what proves PASS** in plain language.
+- Prefer step-by-step taps and visible labels over developer shorthand so a phone test can be executed without knowing the implementation terminology.
+
 ## 10. Development priorities
 
 - Prioritize working functionality over UI polishing.
