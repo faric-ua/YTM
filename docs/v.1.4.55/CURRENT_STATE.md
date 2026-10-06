@@ -307,7 +307,8 @@ Status: **PHONE PARTIAL; corrective rotation-cache source validated, not yet pho
 - phone finding: after rotation, cards took too long to return because all JSON candidates were reread/reparsed; one visible backup was ~25.3 MB.
 - corrective source `daaa599da7c031c0df881b7fbd8b280f218d3913` adds a bounded process-local classification cache keyed by URI + lastModified + size, does not cache interrupted reads, and keeps final owner validation unchanged.
 - exact-HEAD Validate `37407395790 — SUCCESS`: release preflight PASS, JVM tests PASS, unsigned release assemble PASS.
-- next gate: signed build/install from corrective source, then focused Full Restore chooser portrait → landscape → portrait phone retest. **No PHONE PASS is claimed for the corrective source yet.**
+- signed phone-retest candidate: run `37485298582 — SUCCESS`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` / ID `11423176882`; compare from `daaa599d…` to `73ced…` is docs/manifest-only, so the APK app-code is the corrective rotation-cache source.
+- next gate: download/install that signed candidate, then focused Full Restore chooser portrait → landscape → portrait phone retest. **No PHONE PASS is claimed for the corrective source yet.**
 
 ## Phase B — management / discoverability
 
