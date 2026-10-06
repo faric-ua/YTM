@@ -26,7 +26,7 @@ Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
 Active task: #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
 
-Current #54 status: **PHONE PARTIAL / corrective rotation-cache source validated**.
+Current #54 status: **PHONE PARTIAL / Full Restore scoped chooser + rotation cache PHONE PASS; History/Project acceptance still open**.
 
 Implemented and verified:
 - content-first `YtmArtifactClassifier` + `YtmArtifactScopePolicy`;
@@ -57,7 +57,7 @@ Corrective implementation:
 - exact-HEAD Validate `37407395790 — SUCCESS`;
 - preflight/JVM/unsigned assemble PASS.
 
-Do **not** call the corrective source PHONE PASS yet.
+Corrective Full Restore rotation-cache behavior is now **PHONE PASS 2026-10-06**: cards returned near-immediately across portrait → landscape → portrait and no Restore auto-started. Do **not** close #54 yet.
 
 Signed phone-retest candidate is now available:
 - run `37485298582 — SUCCESS`;
@@ -68,12 +68,12 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-1. Verify live branch state; latest app-code remains corrective `daaa599da7c031c0df881b7fbd8b280f218d3913`, while later commits are docs-only.
-2. Signed candidate is already verified: run `37485298582`, source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact ID `11423176882`.
-3. User: Termux → `3 — Download signed APK` → `4 — Open APK folder` → tap the downloaded `YTM-Importer-v1.4.55-release.apk` and install it over the current app.
-4. In YTM Importer: **«Меню» → «Дані» → «Відновити з резервної копії» → «Вибрати резервну копію» → in «Відновити backup?» tap «Вибрати файл»**.
-5. On **«Вибрати backup»**, wait once for the file cards, then rotate portrait → landscape → portrait. PASS = cards return immediately/near-immediately after each rotation, no long full JSON reread/reclassification, and no automatic Restore.
-6. If PASS, continue the History import phone check using exact visible UI labels, then Playlist Project scoping / typed cards / wrong-type messages.
+1. In YTM Importer: **«Меню» → «Дані» → «Відновити лише історію» → «Вибрати файл історії»**.
+2. In **«Імпортувати History JSON?»** tap **«Вибрати файл»**.
+3. On **«Вибрати History JSON»**, verify only History-compatible JSON files appear in the scoped list plus **«Інший файл…»**.
+4. Rotate portrait → landscape → portrait without selecting/importing a file; cards should return near-immediately and no History import may auto-start.
+5. If PASS, continue Playlist Project scoping / typed cards / wrong-type messages.
+
 
 ## Immutable functional reference
 
