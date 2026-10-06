@@ -31,6 +31,10 @@ chat memory.
 9. Never mark phone behavior PASS from code inspection or a build. Phone behavior
    requires phone evidence.
 10. If repository documents disagree, reconcile them before implementation.
+11. When giving the user phone QA or Termux instructions, use the exact visible
+   labels and the full tap/navigation path from the live app/menu. Verify the live
+   source when wording is uncertain; internal flow names must not replace user-visible
+   instructions.
 
 ## Crash / context-loss rule
 
