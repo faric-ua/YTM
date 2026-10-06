@@ -433,9 +433,9 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 Corrective **app-source**: `daaa599da7c031c0df881b7fbd8b280f218d3913`. Exact-HEAD Validate `37407395790 — SUCCESS`. Signed candidate: run `37485298582 — SUCCESS`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact ID `11423176882`. Compare confirms later commits are docs/manifest-only, so app-code matches the corrective source.
 
-Termux flow now: `3 — Download signed APK` → install. Phone retest: Full Restore chooser, wait for cards once, rotate portrait → landscape → portrait. Expected: cached unchanged cards reappear immediately/near-immediately, no long full JSON reclassification, no automatic Restore.
+Phone flow now: Termux → `3 — Download signed APK` → install over the current app. Then in YTM Importer: **«Меню» → «Дані» → «Відновити з резервної копії» → «Вибрати резервну копію» → «Відновити backup?» → «Вибрати файл»**. On **«Вибрати backup»**, wait once for cards, then rotate portrait → landscape → portrait. Expected: unchanged cached cards return immediately/near-immediately, no long full JSON reread/reclassification, no automatic Restore.
 
-After PASS, continue History Import chooser phone check; Playlist Project scoping and typed/wrong-type presentation remain open.
+After PASS, continue the History import phone check using exact visible UI labels; Playlist Project scoping and typed/wrong-type presentation remain open.
 
 ## Update rule
 
