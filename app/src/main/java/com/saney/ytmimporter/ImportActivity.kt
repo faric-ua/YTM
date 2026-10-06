@@ -52,6 +52,11 @@ import com.saney.ytmimporter.storage.IncrementalDeltaManifestException
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.PlaylistProjectImport
 import com.saney.ytmimporter.storage.SafTreeAccess
+import com.saney.ytmimporter.storage.YtmArtifactClassifier
+import com.saney.ytmimporter.storage.YtmArtifactPresentation
+import com.saney.ytmimporter.storage.YtmArtifactScope
+import com.saney.ytmimporter.storage.YtmArtifactScopePolicy
+import com.saney.ytmimporter.storage.YtmArtifactType
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
 import java.util.UUID
@@ -3158,6 +3163,12 @@ class ImportActivity : Activity() {
                         "json"
                     )
                 )
+                putExtra(
+                    RecentFileChooserActivity.EXTRA_ARTIFACT_SCOPE,
+                    YtmArtifactScope
+                        .PLAYLIST_PROJECT
+                        .name
+                )
             },
             fileRequestCode
         )
@@ -3201,6 +3212,47 @@ class ImportActivity : Activity() {
             }
 
         if (
+            fileName
+                .substringAfterLast(
+                    '.',
+                    ""
+                )
+                .equals(
+                    "json",
+                    ignoreCase = true
+                )
+        ) {
+            val inspection =
+                YtmArtifactClassifier
+                    .inspect(text)
+
+            if (
+                inspection.type !=
+                    YtmArtifactType.UNKNOWN &&
+                !YtmArtifactScopePolicy
+                    .accepts(
+                        scope =
+                            YtmArtifactScope
+                                .PLAYLIST_PROJECT,
+                        type =
+                            inspection.type
+                    )
+            ) {
+                showFileImportFailure(
+                    YtmArtifactPresentation
+                        .wrongTypeMessage(
+                            scope =
+                                YtmArtifactScope
+                                    .PLAYLIST_PROJECT,
+                            detectedType =
+                                inspection.type
+                        )
+                )
+                return
+            }
+        }
+
+        if (
             PlaylistProjectCodec
                 .isProject(text)
         ) {
@@ -3242,6 +3294,24 @@ class ImportActivity : Activity() {
                     ?: "Помилка імпорту"
             )
         }
+    }
+
+    private fun showFileImportFailure(
+        message: String
+    ) {
+        UiChrome.showMessageDialog(
+            activity = this,
+            title = "Файл не підходить",
+            message = message,
+            actions =
+                listOf(
+                    UiChrome.DialogAction(
+                        label = "Закрити",
+                        tone =
+                            UiChrome.ActionTone.NORMAL
+                    ) {}
+                )
+        )
     }
 
     private fun importText() {
