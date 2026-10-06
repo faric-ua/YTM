@@ -16,6 +16,7 @@ import com.saney.ytmimporter.storage.AllFilesAccess
 import com.saney.ytmimporter.storage.DirectDownloadFileQuery
 import com.saney.ytmimporter.storage.SafRecentFileQuery
 import com.saney.ytmimporter.storage.SafTreeAccess
+import com.saney.ytmimporter.storage.YtmArtifactClassificationCache
 import com.saney.ytmimporter.storage.YtmArtifactClassifier
 import com.saney.ytmimporter.storage.YtmArtifactScope
 import com.saney.ytmimporter.storage.YtmArtifactScopePolicy
@@ -279,24 +280,78 @@ class RecentFileChooserActivity : Activity() {
 
         scopedLoadGeneration =
             generation
+
+        val cached =
+            sourceFiles.map {
+                    entry ->
+                entry to
+                    cachedArtifactType(
+                        entry
+                    )
+            }
+
+        val cachedMatches =
+            cached
+                .filter {
+                    (_, type) ->
+                    type != null &&
+                        YtmArtifactScopePolicy
+                            .accepts(
+                                scope = scope,
+                                type = type
+                            )
+                }
+                .map {
+                    (entry, _) ->
+                    entry
+                }
+
+        val uncached =
+            cached
+                .filter {
+                    (_, type) ->
+                    type == null
+                }
+                .map {
+                    (entry, _) ->
+                    entry
+                }
+
+        visibleRecentFiles =
+            cachedMatches
+
+        if (uncached.isEmpty()) {
+            scopedFilesLoading =
+                false
+            render()
+            return
+        }
+
         scopedFilesLoading =
             true
-        visibleRecentFiles =
-            emptyList()
         render()
 
         classifierExecutor.execute {
+            uncached.forEach {
+                    entry ->
+                inspectAndCacheArtifactType(
+                    entry
+                )
+            }
+
             val filtered =
                 sourceFiles.filter {
                         entry ->
 
+                    val type =
+                        cachedArtifactType(
+                            entry
+                        ) ?: YtmArtifactType.UNKNOWN
+
                     YtmArtifactScopePolicy
                         .accepts(
                             scope = scope,
-                            type =
-                                inspectArtifactType(
-                                    entry
-                                )
+                            type = type
                         )
                 }
 
@@ -319,32 +374,61 @@ class RecentFileChooserActivity : Activity() {
         }
     }
 
-    private fun inspectArtifactType(
+    private fun cachedArtifactType(
+        entry:
+            SafRecentFileQuery.Entry
+    ): YtmArtifactType? =
+        YtmArtifactClassificationCache
+            .get(
+                uri =
+                    entry.uri.toString(),
+                lastModified =
+                    entry.lastModified,
+                size =
+                    entry.size
+            )
+
+    private fun inspectAndCacheArtifactType(
         entry:
             SafRecentFileQuery.Entry
     ): YtmArtifactType {
-        return runCatching {
-            val raw =
-                contentResolver
-                    .openInputStream(
-                        entry.uri
-                    )
-                    ?.bufferedReader(
-                        Charsets.UTF_8
-                    )
-                    ?.use {
-                        it.readText()
-                    }
-                    ?: error(
-                        "Файл недоступний для читання"
-                    )
+        val type =
+            runCatching {
+                val raw =
+                    contentResolver
+                        .openInputStream(
+                            entry.uri
+                        )
+                        ?.bufferedReader(
+                            Charsets.UTF_8
+                        )
+                        ?.use {
+                            it.readText()
+                        }
+                        ?: error(
+                            "Файл недоступний для читання"
+                        )
 
-            YtmArtifactClassifier
-                .inspect(raw)
-                .type
-        }.getOrDefault(
-            YtmArtifactType.UNKNOWN
-        )
+                YtmArtifactClassifier
+                    .inspect(raw)
+                    .type
+            }.getOrDefault(
+                YtmArtifactType.UNKNOWN
+            )
+
+        YtmArtifactClassificationCache
+            .put(
+                uri =
+                    entry.uri.toString(),
+                lastModified =
+                    entry.lastModified,
+                size =
+                    entry.size,
+                type =
+                    type
+            )
+
+        return type
     }
 
     private fun render() {
