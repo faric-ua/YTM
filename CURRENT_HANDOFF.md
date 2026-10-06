@@ -20,46 +20,53 @@ Last updated: **2026-10-05**
 - Readability audit: `docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md`
 - Backlog reconciliation: `docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md`
 
-## Current work — 2026-10-05
+## Current work — 2026-10-06
 
 Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
 Active task: #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
 
-#54 foundation now established:
-- completed source inventory: single-file Data/Project flows vs account folder+manifest flows;
-- canonical contract: `docs/v.1.4.55/FILE_LIBRARY_CONTRACT.md`;
-- inventory evidence: `docs/v.1.4.55/FILE_LIBRARY_AUDIT_2026-10-05.md`;
-- pure `YtmArtifactClassifier` recognizes Full Local Backup, History Backup, Playlist Project, Pending Diagnostics, Account Library Manifest or UNKNOWN;
-- pure `YtmArtifactScopePolicy` accepts only the canonical artifact type for Full Restore / History Restore / Playlist Project;
-- JVM + static audit added; no chooser or mutation owner is wired to the classifier yet.
+Current #54 status: **PHONE PARTIAL / corrective rotation-cache source validated**.
 
-Validated/signed candidate:
-- implementation checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f` passed Validate Android `37257583900 — SUCCESS`;
-- final candidate HEAD `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
-- exact-HEAD Validate Android `37257995437 — SUCCESS`;
-- signed build `37338681198 — SUCCESS` from the exact candidate HEAD;
-- release preflight PASS;
-- JVM tests PASS;
-- unsigned and signed release gates PASS;
-- MainActivity cleanup budget PASS at 4089 lines.
+Implemented and verified:
+- content-first `YtmArtifactClassifier` + `YtmArtifactScopePolicy`;
+- Full Restore scoped to `FULL_LOCAL_RESTORE`;
+- History Import scoped to `HISTORY_RESTORE`;
+- explicit `Інший файл…` legacy/system fallback;
+- existing Full Backup / History owner validators still run after selection.
 
-Implemented Recovery Center:
-- `RecoveryCenterPolicy` is pure/read-only and aggregates all durable Bulk/Pending/relevant History state;
-- ACTION_REQUIRED and WARNING are separate; ordinary completed work is excluded;
-- Pending/History dedupe uses stable local/remote identity only, never title matching;
-- rollback pause exposes exact remaining APPLIED mutation count;
-- `RecoveryCenterActivity` lists all items with plain-language state, update time, happened/remaining/error text;
-- exact navigation goes to Bulk session, exact Pending job detail, or exact History detail;
-- opening/rendering/rotation/back does not execute recovery work;
-- Pending only resumes through its existing explicit Continue result path back to Main;
-- Home has compact `⚠ N` attention badge only for actionable items;
-- low-amplitude breathing respects disabled system animators and stops after opening/acknowledging the same current count;
-- Menu shows the same actionable count.
+First signed phone slice:
+- app source `bddebe7adb7a95c4bed88088cb5496fe92100614`;
+- Validate `37398594246 — SUCCESS`;
+- signed run `37405310918 — SUCCESS`;
+- installed on phone;
+- Full Restore chooser showed 9 matching Full Backup cards + `Інший файл…`;
+- no automatic Restore observed/intentionally triggered.
 
-No Search/write/rollback/restore/delete API semantics, durable mutation ledger ownership, Pending ownership or History meaning changed.
+Observed phone finding:
+- rotation caused a long reclassification pause;
+- a visible candidate was ~25.3 MB;
+- source confirmed that recreation reread all JSON files.
 
-**#53 final:** PHONE PASS / CLOSED. Home `⚠ 2`, Recovery Center list/read-only-open, both rotations, Back, Menu count, exact Pending/History/Bulk routes, no-auto-start and acknowledgement stop all passed on signed run `37338681198` from app source `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`.
+Corrective implementation:
+- branch/current source `daaa599da7c031c0df881b7fbd8b280f218d3913`;
+- bounded process-local cache keyed by URI + mtime + size;
+- unchanged file classifications can survive Activity recreation;
+- changed/new files reclassify off the UI thread;
+- interrupted reads are not cached;
+- exact-HEAD Validate `37407395790 — SUCCESS`;
+- preflight/JVM/unsigned assemble PASS.
+
+Do **not** call the corrective source PHONE PASS yet.
+
+## Exact next work
+
+1. Verify live HEAD has not moved from `daaa599da7c031c0df881b7fbd8b280f218d3913`.
+2. User: Termux `1 — Sync YTM` → `6 — Validate + Build signed APK`.
+3. Verify signed build source exactly matches the corrective source.
+4. User: `3 — Download signed APK` → install over current app.
+5. PHONE retest Full Restore chooser: wait for cards once, rotate portrait → landscape → portrait; expect immediate/near-immediate cached card return and no automatic Restore.
+6. If PASS, continue History Import scoped chooser phone check, then Playlist Project scoping / typed cards / wrong-type messages.
 
 ## Immutable functional reference
 
