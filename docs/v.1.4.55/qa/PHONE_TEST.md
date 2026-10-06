@@ -358,3 +358,21 @@ Next phone target:
 - verify only History-compatible candidates plus **«Інший файл…»**;
 - rotate portrait → landscape → portrait without choosing/importing a file;
 - require near-immediate card continuity and no automatic History import.
+
+
+### History-only scoped chooser — 2026-10-07
+
+Visible path:
+- **«Меню» → «Дані» → «Відновити лише історію» → «Вибрати файл історії»**;
+- in **«Імпортувати History JSON?»**: **«Вибрати файл»**;
+- target screen: **«Вибрати History JSON»**.
+
+Phone evidence:
+- header showed **«Файли потрібного типу: 6 • найсвіжіші зверху»**;
+- visible cards were `YTM_History_*.json` candidates;
+- footer exposed **«Додати папку…»**, **«Інший файл…»**, **«Скасувати»**;
+- user reported PASS for portrait → landscape → portrait: scoped cards returned near-immediately and the History import did not auto-start.
+
+Result: **#54 History scoped chooser / rotation slice — PHONE PASS.**
+
+#54 remains **PHONE PARTIAL / OPEN**. Next: Playlist Project scoping, typed cards and wrong-type messages.
