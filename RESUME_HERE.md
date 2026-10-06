@@ -81,7 +81,7 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-1. Verify live branch HEAD is still `daaa599da7c031c0df881b7fbd8b280f218d3913` or reconcile newer live truth.
+1. Verify live branch state. The corrective **app-source** is `daaa599da7c031c0df881b7fbd8b280f218d3913`; newer commits may be checkpoint/docs-only and must not be mistaken for a new app source.
 2. In the normal Termux YTM menu: `1 — Sync YTM`, then `6 — Validate + Build signed APK`.
 3. Confirm the signed run is built from the corrective app source; then `3 — Download signed APK` and install it over the current app.
 4. Focused phone retest only: open Full Restore chooser, wait once for cards, then portrait → landscape → portrait.
