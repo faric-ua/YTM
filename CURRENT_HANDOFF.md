@@ -26,7 +26,7 @@ Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
 Active task: #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
 
-Current #54 status: **PHONE PARTIAL / Full Restore + History scoped chooser PHONE PASS; Playlist Project / typed-card / wrong-type acceptance still open**.
+Current #54 status: **PHONE PARTIAL / Full Restore + History PHONE PASS; Playlist Project / typed cards / wrong-type source validated, signed phone acceptance pending**.
 
 Implemented and verified:
 - content-first `YtmArtifactClassifier` + `YtmArtifactScopePolicy`;
@@ -68,12 +68,12 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-1. Preserve accepted Full Restore + History chooser behavior.
-2. In the visible import path **«Імпорт» → «Імпорт із файлу» → «CSV, TXT або YTM Project» → «Вибрати файл»**, scope JSON candidates to YTM Project while keeping CSV/TXT available.
-3. Keep explicit **«Інший файл…»** fallback.
-4. Add readable artifact-type/count/schema/title metadata to scoped file cards where available.
-5. Add reliable wrong-type JSON messages before mutation; matching/UNKNOWN inputs still go through the existing Playlist Project / Full Backup / History owner validators.
-6. Validate source/static/JVM/release, then build one signed candidate for the remaining #54 phone acceptance.
+1. Validated source checkpoint: `b53a73ed6be46c932c7a21c0a314b3788fdb9931`; Validate `37536534440 — SUCCESS` (release preflight/JVM/unsigned assemble PASS).
+2. User: YTM Importer Menu → `1 — Sync YTM` → `6 — Validate + Build signed APK`.
+3. After signed BUILD PASS: `3 — Download signed APK` → `4 — Open APK folder` → install over current app.
+4. PHONE: **«Імпорт» → «Імпорт із файлу» → «CSV, TXT або YTM Project» → «Вибрати файл»**. Verify CSV/TXT + only YTM Project JSON in primary list, typed card metadata, **«Інший файл…»**, rotation continuity and no auto-import.
+5. Wrong-type PHONE check: **«Інший файл…»** → choose a known History JSON → expect **«Файл не підходить»** and a clear message that History JSON was detected but YTM Project is expected; no import/mutation.
+6. If PASS, finish focused #54 acceptance and only then close #54.
 
 
 ## Immutable functional reference
