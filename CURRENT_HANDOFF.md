@@ -49,7 +49,7 @@ Observed phone finding:
 - source confirmed that recreation reread all JSON files.
 
 Corrective implementation:
-- branch/current source `daaa599da7c031c0df881b7fbd8b280f218d3913`;
+- corrective app-source `daaa599da7c031c0df881b7fbd8b280f218d3913`; later checkpoint commits are documentation-only;
 - bounded process-local cache keyed by URI + mtime + size;
 - unchanged file classifications can survive Activity recreation;
 - changed/new files reclassify off the UI thread;
@@ -61,7 +61,7 @@ Do **not** call the corrective source PHONE PASS yet.
 
 ## Exact next work
 
-1. Verify live HEAD has not moved from `daaa599da7c031c0df881b7fbd8b280f218d3913`.
+1. Verify live branch state and confirm the latest app-code source is still `daaa599da7c031c0df881b7fbd8b280f218d3913`; tolerate newer docs-only checkpoint commits.
 2. User: Termux `1 — Sync YTM` → `6 — Validate + Build signed APK`.
 3. Verify signed build source exactly matches the corrective source.
 4. User: `3 — Download signed APK` → install over current app.
