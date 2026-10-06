@@ -12,7 +12,7 @@
 > 3. update **NEXT ACTION** so the first unchecked item is the real resume point;
 > 4. update `CURRENT_HANDOFF.md` when the resume point materially changes.
 
-Last updated: 2026-10-05
+Last updated: 2026-10-06
 
 ## Active release
 
@@ -397,10 +397,18 @@ Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make
 - [x] Inventory durable content/schema markers for Full Backup, History backup, Playlist Project, Pending diagnostics and account manifest flows.
 - [x] Define the content-first read-only classifier/scoped-candidate contract in `FILE_LIBRARY_CONTRACT.md`.
 - [x] Define canonical logical YTM data folders + SAF/legacy fallback without silent migration.
-- [x] Add pure `YtmArtifactClassifier` + `YtmArtifactScopePolicy` foundation with fail-closed UNKNOWN behavior and JVM matrix; no Activity is wired to it yet.
-- [ ] Scope Full Restore, History Import and Playlist Project import to their expected artifact types with explicit `Інший файл…` fallback.
+- [x] Add pure `YtmArtifactClassifier` + `YtmArtifactScopePolicy` foundation with fail-closed UNKNOWN behavior and JVM matrix.
+- [x] Wire Full Restore and History Import to content-scoped recent-file candidates with explicit `Інший файл…` fallback; owner validation remains authoritative.
+- [x] Validate first scoped chooser source `bddebe7adb7a95c4bed88088cb5496fe92100614` with run `37398594246 — SUCCESS`; signed run `37405310918 — SUCCESS` installed on phone.
+- [x] Phone partial: Full Restore chooser shows only matching Full Backup candidates (`9` observed) plus `Інший файл…`; no Restore intentionally started.
+- [x] Record phone finding: rotation caused slow full JSON reclassification, including a ~25.3 MB backup.
+- [x] Implement bounded process-local classification cache keyed by `URI + lastModified + size`; changed/new files still reclassify and interrupted reads are not cached.
+- [x] Corrective source `daaa599da7c031c0df881b7fbd8b280f218d3913` passed exact-HEAD Validate `37407395790 — SUCCESS` with preflight/JVM/assemble PASS.
+- [ ] Build/install signed APK from corrective `daaa599d…` source and PHONE retest Full Restore chooser portrait → landscape → portrait for near-immediate card continuity and no auto-Restore.
+- [ ] PHONE check History Import scoped chooser + rotation/no-auto-restore.
+- [ ] Scope Playlist Project import to its expected JSON artifact type with explicit legacy/system fallback.
 - [ ] Add readable typed file cards and wrong-type validation messages without changing restore/import payload semantics.
-- [ ] Add JVM/static guards and focused phone matrix before closing #54.
+- [ ] Complete focused #54 phone matrix before closing #54.
 
 Remaining Phase B backlog:
 - [ ] Simplified Termux operator menu/status (#52).
@@ -420,9 +428,13 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Validate #54 classifier foundation, then wire scoped candidates.**
+**Build the corrective #54 signed APK, then retest rotation only.**
 
-#53 remains PHONE PASS / CLOSED and must not be repeated. #54 inventory + contract are complete; pure classifier/scope policy and JVM/static guards are now in source. Require exact-HEAD Validate PASS before changing chooser rendering. After PASS, wire Full Restore and History Import to read-only scoped candidates first; preserve explicit system/legacy fallback and owner validation.
+Current corrective source: `daaa599da7c031c0df881b7fbd8b280f218d3913`. Exact-HEAD Validate `37407395790 — SUCCESS` already passed preflight, JVM tests and unsigned assemble. Do not change source before the signed/phone gate unless live repository truth has moved.
+
+Termux flow: `1 — Sync YTM` → `6 — Validate + Build signed APK` → verify exact source → `3 — Download signed APK` → install. Phone retest: Full Restore chooser, wait for cards once, rotate portrait → landscape → portrait. Expected: cached unchanged cards reappear immediately/near-immediately, no long full JSON reclassification, no automatic Restore.
+
+After PASS, continue History Import chooser phone check; Playlist Project scoping and typed/wrong-type presentation remain open.
 
 ## Update rule
 
