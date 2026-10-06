@@ -15,8 +15,9 @@ HISTORY="$SRC/storage/HistoryStore.kt"
 BACKUP="$SRC/storage/LocalBackupManager.kt"
 PROJECT="$SRC/storage/PlaylistProjectCodec.kt"
 CHOOSER="$SRC/RecentFileChooserActivity.kt"
+IMPORT="$SRC/ImportActivity.kt"
 
-for f in "$CLASSIFIER" "$CACHE" "$TEST" "$CACHE_TEST" "$CONTRACT" "$INVENTORY" "$DATA" "$HISTORY" "$BACKUP" "$PROJECT" "$CHOOSER"; do
+for f in "$CLASSIFIER" "$CACHE" "$TEST" "$CACHE_TEST" "$CONTRACT" "$INVENTORY" "$DATA" "$HISTORY" "$BACKUP" "$PROJECT" "$CHOOSER" "$IMPORT"; do
   test -f "$f" || fail "missing #54 foundation file: $f"
 done
 
@@ -103,7 +104,7 @@ for forbidden in (
         )
 PY_ARTIFACT_CACHE
 
-for test_name in   'sameFileIdentityReusesClassification'   'changedMetadataInvalidatesOldIdentity'   'newVersionReplacesOldIdentityForSameUri'   'cacheIsBounded'
+for test_name in   'sameFileIdentityReusesClassification'   'inspectionMetadataSurvivesRotationCache'   'changedMetadataInvalidatesOldIdentity'   'newVersionReplacesOldIdentityForSameUri'   'cacheIsBounded'
 do
   grep -Fq "$test_name" "$CACHE_TEST" ||
     fail "artifact cache JVM case missing: $test_name"
@@ -119,8 +120,12 @@ grep -Fq 'classifierExecutor' "$CHOOSER" ||
   fail "artifact classification is not kept off the UI thread"
 grep -Fq 'YtmArtifactClassificationCache' "$CHOOSER" ||
   fail "chooser does not reuse artifact classifications after recreation"
-grep -Fq 'cachedArtifactType' "$CHOOSER" ||
+grep -Fq 'cachedArtifactInspection' "$CHOOSER" ||
   fail "chooser cache lookup missing"
+grep -Fq 'artifactCardSummary' "$CHOOSER" ||
+  fail "typed artifact card metadata missing"
+grep -Fq 'isDirectPlaylistTextCandidate' "$CHOOSER" ||
+  fail "Playlist Project scope no longer preserves CSV/TXT"
 grep -Fq 'Thread' "$CHOOSER" ||
   fail "interrupted classification cache guard missing"
 grep -Fq '"Інший файл…"' "$CHOOSER" ||
@@ -152,7 +157,7 @@ for forbidden in (
 
 for required in (
     "refreshRecentFiles()",
-    "inspectAndCacheArtifactType(",
+    "inspectAndCacheArtifact(",
     "runOnUiThread",
     "generation !=",
 ):
@@ -166,8 +171,16 @@ grep -Fq '.inspectBackup(' "$DATA" ||
   fail "Full Restore owner validation missing"
 grep -Fq '.inspectImportJson(' "$DATA" ||
   fail "History owner validation missing"
-grep -Fq '.importProject(' "$SRC/ImportActivity.kt" ||
+grep -Fq '.importProject(' "$IMPORT" ||
   fail "Project owner validation missing"
+grep -Fq 'RecentFileChooserActivity.EXTRA_ARTIFACT_SCOPE' "$IMPORT" ||
+  fail "Playlist file import does not pass artifact scope"
+grep -Fq '.PLAYLIST_PROJECT' "$IMPORT" ||
+  fail "Playlist file import does not request PLAYLIST_PROJECT scope"
+grep -Fq 'wrongTypeMessage(' "$IMPORT" ||
+  fail "Playlist Project wrong-type explanation missing"
+grep -Fq 'wrongTypeMessage(' "$DATA" ||
+  fail "Data wrong-type explanation missing"
 grep -Fq 'Intent.ACTION_OPEN_DOCUMENT' "$CHOOSER" ||
   fail "explicit system-picker fallback missing"
 
@@ -176,6 +189,8 @@ echo "- #54 content-first artifact classifier foundation"
 echo "- fail-closed legacy array classification"
 echo "- pure scoped candidate policy"
 echo "- Full Restore + History Import scoped recent-file wiring"
+echo "- Playlist Project JSON scoping preserves CSV/TXT candidates"
+echo "- scoped cards expose typed metadata and reliable wrong-type explanations"
 echo "- background read-only classification with stale-result guard"
 echo "- bounded URI/mtime/size classification cache for rotation continuity"
 echo "- interrupted reads are not cached"
