@@ -77,17 +77,17 @@ Corrective rotation-cache source:
 - JVM tests PASS, including cache tests;
 - unsigned release assemble PASS.
 
-**Important:** the corrective `daaa599d…` app-source is **NOT phone PASS yet**. A signed phone-retest candidate now exists: run `37485298582 — SUCCESS`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` (artifact ID `11423176882`). GitHub compare confirms the commits from `daaa599d…` to `73ced…` are documentation/manifest-only, so the APK app-code is the validated corrective rotation-cache source.
+**Phone result:** the corrective rotation-cache behavior is **PHONE PASS 2026-10-06** on the signed candidate from run `37485298582`; portrait → landscape → portrait returned the already classified cards near-immediately and no Restore auto-started. #54 remains OPEN because History Import, Playlist Project scoping, typed cards and wrong-type messaging are still pending.
 
 ## NEXT ACTION — do this first
 
-1. Verify live branch state. The corrective **app-source** is `daaa599da7c031c0df881b7fbd8b280f218d3913`; newer commits may be checkpoint/docs-only and must not be mistaken for a new app source.
-2. Signed candidate is already built and verified: run `37485298582 — SUCCESS`, source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact ID `11423176882`.
-3. On the phone: Termux → `3 — Download signed APK` → `4 — Open APK folder` → tap the downloaded `YTM-Importer-v1.4.55-release.apk` and install it over the current app.
-4. In YTM Importer open: **«Меню» → «Дані» → «Відновити з резервної копії» → «Вибрати резервну копію»**.
-5. In the **«Відновити backup?»** dialog tap **«Вибрати файл»**. On **«Вибрати backup»**, wait once until the file cards appear.
-6. Rotate the phone portrait → landscape → portrait. PASS requires the unchanged cards to return immediately/near-immediately after each rotation, with no long full JSON reread/reclassification and no automatic Restore.
-7. After that PASS, continue #54 with the History import path using the same exact-visible-label instruction rule, then Playlist Project scoping / typed cards / wrong-type messaging. Do not mark #54 CLOSED before those remaining acceptance items.
+1. In YTM Importer open **«Меню» → «Дані»**.
+2. Find **«Відновити лише історію»** and tap **«Вибрати файл історії»**.
+3. In **«Імпортувати History JSON?»** tap **«Вибрати файл»**.
+4. On **«Вибрати History JSON»**, verify the list contains only History-compatible JSON candidates and the explicit **«Інший файл…»** fallback.
+5. Without selecting a History file, rotate portrait → landscape → portrait.
+6. PASS requires the scoped cards to remain correct and return near-immediately after rotation; no History import may auto-start.
+7. After that phone check, continue #54 with Playlist Project scoping / typed cards / wrong-type messaging. Do not mark #54 CLOSED yet.
 
 ## Consolidated phone matrix
 
