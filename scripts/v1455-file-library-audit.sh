@@ -73,6 +73,53 @@ grep -Fq 'Classification is read-only UX policy.' "$CONTRACT" ||
 grep -Fq 'never silently move legacy files' "$CONTRACT" ||
   fail "#54 legacy-file safety rule missing"
 
+grep -Fq 'EXTRA_ARTIFACT_SCOPE' "$CHOOSER" ||
+  fail "scoped chooser intent contract missing"
+grep -Fq 'YtmArtifactClassifier' "$CHOOSER" ||
+  fail "recent-file chooser does not classify JSON content"
+grep -Fq 'YtmArtifactScopePolicy' "$CHOOSER" ||
+  fail "recent-file chooser does not apply artifact scope"
+grep -Fq 'classifierExecutor' "$CHOOSER" ||
+  fail "artifact classification is not kept off the UI thread"
+grep -Fq '"Інший файл…"' "$CHOOSER" ||
+  fail "explicit legacy/system file fallback label missing"
+grep -Fq 'YtmArtifactScope' "$DATA" ||
+  fail "DataActivity scoped restore intent missing"
+grep -Fq '.FULL_LOCAL_RESTORE' "$DATA" ||
+  fail "Full Restore does not request FULL_LOCAL_RESTORE candidates"
+grep -Fq '.HISTORY_RESTORE' "$DATA" ||
+  fail "History Import does not request HISTORY_RESTORE candidates"
+grep -Fq 'RecentFileChooserActivity.EXTRA_ARTIFACT_SCOPE' "$DATA" ||
+  fail "DataActivity does not pass artifact scope to chooser"
+
+python - "$CHOOSER" <<'PY_SCOPED_CHOOSER'
+from pathlib import Path
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+for forbidden in (
+    "restoreBackupJson",
+    "restoreHistoryJson",
+    ".importProject(",
+    "YouTubeApi",
+):
+    if forbidden in text:
+        raise SystemExit(
+            "FAIL: scoped chooser can execute domain work: " + forbidden
+        )
+
+for required in (
+    "refreshRecentFiles()",
+    "inspectArtifactType(",
+    "runOnUiThread",
+    "generation !=",
+):
+    if required not in text:
+        raise SystemExit(
+            "FAIL: scoped chooser async/lifecycle guard missing: " + required
+        )
+PY_SCOPED_CHOOSER
+
 grep -Fq '.inspectBackup(' "$DATA" ||
   fail "Full Restore owner validation missing"
 grep -Fq '.inspectImportJson(' "$DATA" ||
@@ -86,6 +133,8 @@ echo "PASS:"
 echo "- #54 content-first artifact classifier foundation"
 echo "- fail-closed legacy array classification"
 echo "- pure scoped candidate policy"
+echo "- Full Restore + History Import scoped recent-file wiring"
+echo "- background read-only classification with stale-result guard"
 echo "- JVM matrix present"
 echo "- existing owner validators remain authoritative"
-echo "- legacy/system picker fallback retained"
+echo "- explicit «Інший файл…» legacy/system fallback retained"
