@@ -83,7 +83,7 @@ Corrective rotation-cache source:
 
 1. Verify live branch state. The corrective **app-source** is `daaa599da7c031c0df881b7fbd8b280f218d3913`; newer commits may be checkpoint/docs-only and must not be mistaken for a new app source.
 2. Signed candidate is already built and verified: run `37485298582 — SUCCESS`, source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact ID `11423176882`.
-3. On the phone: Termux → `3 — Download signed APK` → install the downloaded APK over the current app.
+3. On the phone: Termux → `3 — Download signed APK` → `4 — Open APK folder` → tap the downloaded `YTM-Importer-v1.4.55-release.apk` and install it over the current app.
 4. In YTM Importer open: **«Меню» → «Дані» → «Відновити з резервної копії» → «Вибрати резервну копію»**.
 5. In the **«Відновити backup?»** dialog tap **«Вибрати файл»**. On **«Вибрати backup»**, wait once until the file cards appear.
 6. Rotate the phone portrait → landscape → portrait. PASS requires the unchanged cards to return immediately/near-immediately after each rotation, with no long full JSON reread/reclassification and no automatic Restore.
