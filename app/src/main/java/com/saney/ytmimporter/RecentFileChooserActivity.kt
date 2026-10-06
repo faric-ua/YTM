@@ -18,6 +18,8 @@ import com.saney.ytmimporter.storage.SafRecentFileQuery
 import com.saney.ytmimporter.storage.SafTreeAccess
 import com.saney.ytmimporter.storage.YtmArtifactClassificationCache
 import com.saney.ytmimporter.storage.YtmArtifactClassifier
+import com.saney.ytmimporter.storage.YtmArtifactInspection
+import com.saney.ytmimporter.storage.YtmArtifactPresentation
 import com.saney.ytmimporter.storage.YtmArtifactScope
 import com.saney.ytmimporter.storage.YtmArtifactScopePolicy
 import com.saney.ytmimporter.storage.YtmArtifactType
@@ -285,7 +287,7 @@ class RecentFileChooserActivity : Activity() {
             sourceFiles.map {
                     entry ->
                 entry to
-                    cachedArtifactType(
+                    cachedArtifactInspection(
                         entry
                     )
             }
@@ -293,13 +295,12 @@ class RecentFileChooserActivity : Activity() {
         val cachedMatches =
             cached
                 .filter {
-                    (_, type) ->
-                    type != null &&
-                        YtmArtifactScopePolicy
-                            .accepts(
-                                scope = scope,
-                                type = type
-                            )
+                    (entry, inspection) ->
+                    isCandidateForScope(
+                        scope = scope,
+                        entry = entry,
+                        inspection = inspection
+                    )
                 }
                 .map {
                     (entry, _) ->
@@ -309,8 +310,12 @@ class RecentFileChooserActivity : Activity() {
         val uncached =
             cached
                 .filter {
-                    (_, type) ->
-                    type == null
+                    (entry, inspection) ->
+                    requiresArtifactInspection(
+                        scope = scope,
+                        entry = entry
+                    ) &&
+                        inspection == null
                 }
                 .map {
                     (entry, _) ->
@@ -334,7 +339,7 @@ class RecentFileChooserActivity : Activity() {
         classifierExecutor.execute {
             uncached.forEach {
                     entry ->
-                inspectAndCacheArtifactType(
+                inspectAndCacheArtifact(
                     entry
                 )
             }
@@ -342,17 +347,14 @@ class RecentFileChooserActivity : Activity() {
             val filtered =
                 sourceFiles.filter {
                         entry ->
-
-                    val type =
-                        cachedArtifactType(
-                            entry
-                        ) ?: YtmArtifactType.UNKNOWN
-
-                    YtmArtifactScopePolicy
-                        .accepts(
-                            scope = scope,
-                            type = type
-                        )
+                    isCandidateForScope(
+                        scope = scope,
+                        entry = entry,
+                        inspection =
+                            cachedArtifactInspection(
+                                entry
+                            )
+                    )
                 }
 
             runOnUiThread {
@@ -374,12 +376,12 @@ class RecentFileChooserActivity : Activity() {
         }
     }
 
-    private fun cachedArtifactType(
+    private fun cachedArtifactInspection(
         entry:
             SafRecentFileQuery.Entry
-    ): YtmArtifactType? =
+    ): YtmArtifactInspection? =
         YtmArtifactClassificationCache
-            .get(
+            .getInspection(
                 uri =
                     entry.uri.toString(),
                 lastModified =
@@ -388,10 +390,80 @@ class RecentFileChooserActivity : Activity() {
                     entry.size
             )
 
-    private fun inspectAndCacheArtifactType(
+    private fun requiresArtifactInspection(
+        scope: YtmArtifactScope,
         entry:
             SafRecentFileQuery.Entry
-    ): YtmArtifactType {
+    ): Boolean =
+        !isDirectPlaylistTextCandidate(
+            scope = scope,
+            entry = entry
+        )
+
+    private fun isCandidateForScope(
+        scope: YtmArtifactScope,
+        entry:
+            SafRecentFileQuery.Entry,
+        inspection:
+            YtmArtifactInspection?
+    ): Boolean {
+        if (
+            isDirectPlaylistTextCandidate(
+                scope = scope,
+                entry = entry
+            )
+        ) {
+            return true
+        }
+
+        val type =
+            inspection
+                ?.type
+                ?: return false
+
+        return YtmArtifactScopePolicy
+            .accepts(
+                scope = scope,
+                type = type
+            )
+    }
+
+    private fun isDirectPlaylistTextCandidate(
+        scope: YtmArtifactScope,
+        entry:
+            SafRecentFileQuery.Entry
+    ): Boolean {
+        if (
+            scope !=
+                YtmArtifactScope.PLAYLIST_PROJECT
+        ) {
+            return false
+        }
+
+        return fileExtension(entry) in
+            setOf(
+                "csv",
+                "txt"
+            )
+    }
+
+    private fun fileExtension(
+        entry:
+            SafRecentFileQuery.Entry
+    ): String =
+        entry.name
+            .substringAfterLast(
+                '.',
+                ""
+            )
+            .lowercase(
+                Locale.ROOT
+            )
+
+    private fun inspectAndCacheArtifact(
+        entry:
+            SafRecentFileQuery.Entry
+    ): YtmArtifactInspection {
         val raw =
             runCatching {
                 contentResolver
@@ -408,7 +480,10 @@ class RecentFileChooserActivity : Activity() {
                         "Файл недоступний для читання"
                     )
             }.getOrElse {
-                return YtmArtifactType.UNKNOWN
+                return YtmArtifactInspection(
+                    type =
+                        YtmArtifactType.UNKNOWN
+                )
             }
 
         if (
@@ -416,13 +491,15 @@ class RecentFileChooserActivity : Activity() {
                 .currentThread()
                 .isInterrupted
         ) {
-            return YtmArtifactType.UNKNOWN
+            return YtmArtifactInspection(
+                type =
+                    YtmArtifactType.UNKNOWN
+            )
         }
 
-        val type =
+        val inspection =
             YtmArtifactClassifier
                 .inspect(raw)
-                .type
 
         if (
             !Thread
@@ -430,19 +507,19 @@ class RecentFileChooserActivity : Activity() {
                 .isInterrupted
         ) {
             YtmArtifactClassificationCache
-                .put(
+                .putInspection(
                     uri =
                         entry.uri.toString(),
                     lastModified =
                         entry.lastModified,
                     size =
                         entry.size,
-                    type =
-                        type
+                    inspection =
+                        inspection
                 )
         }
 
-        return type
+        return inspection
     }
 
     private fun render() {
@@ -717,6 +794,28 @@ class RecentFileChooserActivity : Activity() {
             isClickable = true
             isFocusable = true
 
+            artifactCardSummary(
+                entry
+            )?.let {
+                    summary ->
+                addView(
+                    TextView(
+                        this@RecentFileChooserActivity
+                    ).apply {
+                        text = summary
+                        textSize = 12.5f
+                        setTypeface(
+                            typeface,
+                            Typeface.BOLD
+                        )
+                        setTextColor(
+                            palette.text
+                        )
+                        maxLines = 2
+                    }
+                )
+            }
+
             addView(
                 TextView(
                     this@RecentFileChooserActivity
@@ -730,6 +829,20 @@ class RecentFileChooserActivity : Activity() {
                     )
                     setTextColor(
                         palette.text
+                    )
+                    setPadding(
+                        0,
+                        if (
+                            artifactCardSummary(
+                                entry
+                            ) != null
+                        ) {
+                            dp(4)
+                        } else {
+                            0
+                        },
+                        0,
+                        0
                     )
                     maxLines = 2
                 }
@@ -761,6 +874,103 @@ class RecentFileChooserActivity : Activity() {
                 )
             }
         }
+    }
+
+    private fun artifactCardSummary(
+        entry:
+            SafRecentFileQuery.Entry
+    ): String? {
+        val scope =
+            artifactScope
+                ?: return null
+
+        if (
+            scope ==
+                YtmArtifactScope.PLAYLIST_PROJECT
+        ) {
+            when (fileExtension(entry)) {
+                "csv" ->
+                    return "CSV список"
+
+                "txt" ->
+                    return "TXT список"
+            }
+        }
+
+        val inspection =
+            cachedArtifactInspection(
+                entry
+            ) ?: return null
+
+        val parts =
+            mutableListOf(
+                YtmArtifactPresentation
+                    .label(
+                        inspection.type
+                    )
+            )
+
+        if (
+            inspection.type ==
+                YtmArtifactType.PLAYLIST_PROJECT
+        ) {
+            inspection.title
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+                ?.let {
+                    parts +=
+                        it.take(56)
+                }
+        }
+
+        inspection.itemCount
+            ?.let {
+                count ->
+                parts +=
+                    when (
+                        inspection.type
+                    ) {
+                        YtmArtifactType
+                            .FULL_LOCAL_BACKUP ->
+                            "Значень: $count"
+
+                        YtmArtifactType
+                            .HISTORY_BACKUP ->
+                            "Записів: $count"
+
+                        YtmArtifactType
+                            .PLAYLIST_PROJECT ->
+                            "Треків: $count"
+
+                        YtmArtifactType
+                            .PENDING_DIAGNOSTICS ->
+                            "Завдань: $count"
+
+                        YtmArtifactType
+                            .ACCOUNT_LIBRARY_MANIFEST ->
+                            "Плейлистів: $count"
+
+                        YtmArtifactType.UNKNOWN ->
+                            "Елементів: $count"
+                    }
+            }
+
+        inspection.schemaVersion
+            ?.let {
+                parts +=
+                    "schema $it"
+            }
+
+        inspection.appVersion
+            ?.let {
+                parts +=
+                    "v$it"
+            }
+
+        return parts.joinToString(
+            separator = " • "
+        )
     }
 
     private fun fileSubtitle(
@@ -966,14 +1176,22 @@ class RecentFileChooserActivity : Activity() {
         helpDialogOpen = true
 
         val scopeNote =
-            if (artifactScope != null) {
-                "Основний список показує лише файли потрібного типу, " +
-                    "визначені за вмістом JSON, а не за назвою файла.\n\n" +
-                    "«Інший файл…» відкриває системний вибір Android для legacy " +
-                    "або зовнішнього файла. Після вибору власник Restore/Import " +
-                    "ще раз перевірить формат перед будь-якою зміною даних.\n\n"
-            } else {
-                ""
+            when (artifactScope) {
+                YtmArtifactScope.PLAYLIST_PROJECT ->
+                    "Основний список залишає CSV/TXT доступними, а серед JSON показує " +
+                        "лише YTM Project, визначені за вмістом файла.\n\n" +
+                        "«Інший файл…» відкриває системний вибір Android для legacy " +
+                        "або зовнішнього файла. Перед імпортом формат перевіряється ще раз.\n\n"
+
+                null ->
+                    ""
+
+                else ->
+                    "Основний список показує лише файли потрібного типу, " +
+                        "визначені за вмістом JSON, а не за назвою файла.\n\n" +
+                        "«Інший файл…» відкриває системний вибір Android для legacy " +
+                        "або зовнішнього файла. Після вибору власник Restore/Import " +
+                        "ще раз перевірить формат перед будь-якою зміною даних.\n\n"
             }
 
         helpDialog =
