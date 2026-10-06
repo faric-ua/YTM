@@ -409,7 +409,7 @@ Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make
 - [x] PHONE check History Import scoped chooser + rotation/no-auto-restore: **PASS 2026-10-07**; screen showed `Файли потрібного типу: 6`, History JSON candidates + `Інший файл…`, both rotations preserved the scoped list near-immediately and import did not auto-start.
 - [x] Scope Playlist Project import to its expected JSON artifact type with explicit legacy/system fallback while preserving CSV/TXT candidates.
 - [x] Add readable typed file cards and content-first wrong-type validation messages without changing restore/import payload semantics. Exact validated checkpoint `b53a73ed6be46c932c7a21c0a314b3788fdb9931`, Validate `37536534440 — SUCCESS` (preflight/JVM/assemble PASS).
-- [ ] Complete focused #54 phone matrix before closing #54.
+- [ ] Complete focused #54 phone matrix before closing #54. Playlist Project typed-card + wrong-type slices are PHONE PASS; only Playlist Project chooser rotation/no-auto-import remains.
 
 Remaining Phase B backlog:
 - [ ] Simplified Termux operator menu/status (#52).
@@ -429,11 +429,16 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Build/install one signed #54 candidate for the remaining phone acceptance.**
+**Finish the last #54 phone slice: Playlist Project chooser rotation/no-auto-import.**
 
-Full Restore and History scoped chooser phone slices are **PASS**. Playlist Project scoping, typed cards and content-first wrong-type messages are implemented and validated on checkpoint `b53a73ed6be46c932c7a21c0a314b3788fdb9931`; Validate `37536534440 — SUCCESS` passed preflight, JVM tests and unsigned assemble.
+Full Restore and History scoped chooser phone slices are **PASS**. Signed #54 candidate run `37546679576 — SUCCESS`, source `22721a7b64858cfad7416c85c7d867723cb16946`, artifact ID `11451227175`, is installed.
 
-Next: Termux `1 — Sync YTM` → `6 — Validate + Build signed APK`. After the exact signed build succeeds, use `3 — Download signed APK` → `4 — Open APK folder` → install over the current app. Then run only the remaining focused #54 phone checks for **«CSV, TXT або YTM Project» → «Вибрати файл»**, typed cards and wrong-type fallback messaging.
+Playlist Project phone evidence is now also **PASS** for presentation and wrong-type protection:
+- **«Імпорт файла»** shows `CSV список`, `TXT список` and `YTM Project` typed cards; visible YTM Project cards include playlist title and track count metadata;
+- footer keeps **«Інший файл…»**;
+- selecting a known History JSON through **«Інший файл…»** shows **«Файл не підходить» → «Це History JSON, а тут потрібен YTM Project.»** and does not import it.
+
+Only the Playlist Project chooser rotation/no-auto-import slice remains before #54 can close.
 
 ## Update rule
 
