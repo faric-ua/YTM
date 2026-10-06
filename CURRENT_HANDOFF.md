@@ -70,7 +70,7 @@ Signed phone-retest candidate is now available:
 
 1. Verify live branch state; latest app-code remains corrective `daaa599da7c031c0df881b7fbd8b280f218d3913`, while later commits are docs-only.
 2. Signed candidate is already verified: run `37485298582`, source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact ID `11423176882`.
-3. User: Termux → `3 — Download signed APK` → install over the current app.
+3. User: Termux → `3 — Download signed APK` → `4 — Open APK folder` → tap the downloaded `YTM-Importer-v1.4.55-release.apk` and install it over the current app.
 4. In YTM Importer: **«Меню» → «Дані» → «Відновити з резервної копії» → «Вибрати резервну копію» → in «Відновити backup?» tap «Вибрати файл»**.
 5. On **«Вибрати backup»**, wait once for the file cards, then rotate portrait → landscape → portrait. PASS = cards return immediately/near-immediately after each rotation, no long full JSON reread/reclassification, and no automatic Restore.
 6. If PASS, continue the History import phone check using exact visible UI labels, then Playlist Project scoping / typed cards / wrong-type messages.
