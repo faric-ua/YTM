@@ -406,7 +406,7 @@ Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make
 - [x] Corrective source `daaa599da7c031c0df881b7fbd8b280f218d3913` passed exact-HEAD Validate `37407395790 — SUCCESS` with preflight/JVM/assemble PASS.
 - [x] Signed phone-retest candidate built successfully: run `37485298582`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` / ID `11423176882`; compare from corrective app-source `daaa599d…` to signed source shows docs/manifest-only changes.
 - [x] Download/install signed candidate and PHONE retest Full Restore path portrait → landscape → portrait: **PHONE PASS 2026-10-06**; cards returned near-immediately from the rotation cache and Restore did not auto-start.
-- [ ] PHONE check History Import scoped chooser + rotation/no-auto-restore.
+- [x] PHONE check History Import scoped chooser + rotation/no-auto-restore: **PASS 2026-10-07**; screen showed `Файли потрібного типу: 6`, History JSON candidates + `Інший файл…`, both rotations preserved the scoped list near-immediately and import did not auto-start.
 - [ ] Scope Playlist Project import to its expected JSON artifact type with explicit legacy/system fallback.
 - [ ] Add readable typed file cards and wrong-type validation messages without changing restore/import payload semantics.
 - [ ] Complete focused #54 phone matrix before closing #54.
@@ -429,13 +429,13 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**PHONE-check the History-only import chooser next.**
+**Implement Playlist Project scoping, typed cards and wrong-type messages next.**
 
-Corrective **app-source**: `daaa599da7c031c0df881b7fbd8b280f218d3913`. Validate `37407395790 — SUCCESS`; signed phone candidate run `37485298582 — SUCCESS`. Full Restore rotation-cache phone retest is now **PASS**.
+Full Restore and History scoped chooser phone slices are now **PASS**. The History screen showed 6 matching History JSON candidates plus **«Інший файл…»**; portrait → landscape → portrait preserved the scoped list near-immediately and no History import auto-started.
 
-Next phone flow in YTM Importer: **«Меню» → «Дані» → «Відновити лише історію» → «Вибрати файл історії» → in «Імпортувати History JSON?» tap «Вибрати файл»**. On **«Вибрати History JSON»**, verify only History-compatible JSON candidates are shown plus **«Інший файл…»**, then rotate portrait → landscape → portrait. Expected: cards remain scoped and return near-immediately; History import must not auto-start.
+Next source work: scope the **«CSV, TXT або YTM Project» → «Вибрати файл»** flow so CSV/TXT remain available while JSON cards are limited to YTM Project; add readable artifact metadata on scoped cards; add reliable wrong-type JSON messages before owner validation without changing import/restore payload semantics.
 
-After that phone check, Playlist Project scoping and typed/wrong-type presentation remain open.
+After source/static/Validate PASS, build one signed candidate and run the remaining focused #54 phone checks.
 
 ## Update rule
 
