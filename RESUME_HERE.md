@@ -77,13 +77,13 @@ Corrective rotation-cache source:
 - JVM tests PASS, including cache tests;
 - unsigned release assemble PASS.
 
-**Important:** the corrective `daaa599d…` source is **NOT phone PASS yet** and no signed-build run for this corrective source has been accepted/recorded yet.
+**Important:** the corrective `daaa599d…` app-source is **NOT phone PASS yet**. A signed phone-retest candidate now exists: run `37485298582 — SUCCESS`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` (artifact ID `11423176882`). GitHub compare confirms the commits from `daaa599d…` to `73ced…` are documentation/manifest-only, so the APK app-code is the validated corrective rotation-cache source.
 
 ## NEXT ACTION — do this first
 
 1. Verify live branch state. The corrective **app-source** is `daaa599da7c031c0df881b7fbd8b280f218d3913`; newer commits may be checkpoint/docs-only and must not be mistaken for a new app source.
-2. In the normal Termux YTM menu: `1 — Sync YTM`, then `6 — Validate + Build signed APK`.
-3. Confirm the signed run is built from the corrective app source; then `3 — Download signed APK` and install it over the current app.
+2. Signed candidate is already built and verified: run `37485298582 — SUCCESS`, source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact ID `11423176882`.
+3. In Termux use `3 — Download signed APK`, then install it over the current app.
 4. Focused phone retest only: open Full Restore chooser, wait once for cards, then portrait → landscape → portrait.
 5. Expected result: already classified unchanged cards reappear immediately/near-immediately, no long full reclassification pause, and no automatic Restore.
 6. After that PASS, continue #54 with History Import scoped chooser phone check, then Playlist Project scoping / typed cards / wrong-type messaging. Do not mark #54 CLOSED before those remaining acceptance items.
