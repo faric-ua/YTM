@@ -16,12 +16,17 @@ import com.saney.ytmimporter.storage.AllFilesAccess
 import com.saney.ytmimporter.storage.DirectDownloadFileQuery
 import com.saney.ytmimporter.storage.SafRecentFileQuery
 import com.saney.ytmimporter.storage.SafTreeAccess
+import com.saney.ytmimporter.storage.YtmArtifactClassifier
+import com.saney.ytmimporter.storage.YtmArtifactScope
+import com.saney.ytmimporter.storage.YtmArtifactScopePolicy
+import com.saney.ytmimporter.storage.YtmArtifactType
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.ui.ScrollPositionState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.Executors
 
 class RecentFileChooserActivity : Activity() {
     private var titleText =
@@ -33,6 +38,30 @@ class RecentFileChooserActivity : Activity() {
     private var allowedExtensions:
         Set<String> =
         emptySet()
+
+    private var artifactScope:
+        YtmArtifactScope? =
+        null
+
+    private var visibleRecentFiles:
+        List<SafRecentFileQuery.Entry> =
+        emptyList()
+
+    private var recentRoots:
+        List<SafTreeAccess.Root> =
+        emptyList()
+
+    private var allFilesGranted =
+        false
+
+    private var scopedFilesLoading =
+        false
+
+    private var scopedLoadGeneration =
+        0
+
+    private val classifierExecutor =
+        Executors.newSingleThreadExecutor()
 
     private var refreshAfterSettings =
         false
@@ -99,7 +128,19 @@ class RecentFileChooserActivity : Activity() {
                 ?.toSet()
                 ?: emptySet()
 
-        render()
+        artifactScope =
+            intent
+                .getStringExtra(
+                    EXTRA_ARTIFACT_SCOPE
+                )
+                ?.let { raw ->
+                    runCatching {
+                        YtmArtifactScope
+                            .valueOf(raw)
+                    }.getOrNull()
+                }
+
+        refreshRecentFiles()
 
         if (helpDialogOpen) {
             window.decorView.post {
@@ -139,6 +180,9 @@ class RecentFileChooserActivity : Activity() {
     }
 
     override fun onDestroy() {
+        scopedLoadGeneration += 1
+        classifierExecutor.shutdownNow()
+
         helpDialog
             ?.setOnDismissListener(null)
         helpDialog = null
@@ -150,7 +194,7 @@ class RecentFileChooserActivity : Activity() {
 
         if (refreshAfterSettings) {
             refreshAfterSettings = false
-            render()
+            refreshRecentFiles()
         }
     }
 
@@ -159,15 +203,12 @@ class RecentFileChooserActivity : Activity() {
         finish()
     }
 
-    private fun render() {
+    private fun refreshRecentFiles() {
         if (::scrollView.isInitialized) {
             scrollPosition.capture(
                 scrollView
             )
         }
-
-        val palette =
-            AppThemeManager.palette(this)
 
         val roots =
             SafTreeAccess.persistedRoots(
@@ -176,7 +217,7 @@ class RecentFileChooserActivity : Activity() {
                     SafTreeAccess.Access.READ
             )
 
-        val allFilesGranted =
+        val granted =
             AllFilesAccess.isGranted()
 
         val downloadFiles =
@@ -194,7 +235,7 @@ class RecentFileChooserActivity : Activity() {
                     allowedExtensions
             )
 
-        val recentFiles =
+        val sourceFiles =
             (
                 downloadFiles +
                     safFiles
@@ -215,6 +256,105 @@ class RecentFileChooserActivity : Activity() {
                 )
                 .take(200)
 
+        recentRoots =
+            roots
+        allFilesGranted =
+            granted
+
+        val scope =
+            artifactScope
+
+        if (scope == null) {
+            scopedLoadGeneration += 1
+            scopedFilesLoading =
+                false
+            visibleRecentFiles =
+                sourceFiles
+            render()
+            return
+        }
+
+        val generation =
+            scopedLoadGeneration + 1
+
+        scopedLoadGeneration =
+            generation
+        scopedFilesLoading =
+            true
+        visibleRecentFiles =
+            emptyList()
+        render()
+
+        classifierExecutor.execute {
+            val filtered =
+                sourceFiles.filter {
+                        entry ->
+
+                    YtmArtifactScopePolicy
+                        .accepts(
+                            scope = scope,
+                            type =
+                                inspectArtifactType(
+                                    entry
+                                )
+                        )
+                }
+
+            runOnUiThread {
+                if (
+                    isFinishing ||
+                    isDestroyed ||
+                    generation !=
+                        scopedLoadGeneration
+                ) {
+                    return@runOnUiThread
+                }
+
+                visibleRecentFiles =
+                    filtered
+                scopedFilesLoading =
+                    false
+                render()
+            }
+        }
+    }
+
+    private fun inspectArtifactType(
+        entry:
+            SafRecentFileQuery.Entry
+    ): YtmArtifactType =
+        runCatching {
+            val raw =
+                contentResolver
+                    .openInputStream(
+                        entry.uri
+                    )
+                    ?.bufferedReader(
+                        Charsets.UTF_8
+                    )
+                    ?.use {
+                        it.readText()
+                    }
+                    ?: return@runCatching
+                        YtmArtifactType.UNKNOWN
+
+            YtmArtifactClassifier
+                .inspect(raw)
+                .type
+        }.getOrDefault(
+            YtmArtifactType.UNKNOWN
+        )
+
+    private fun render() {
+        val palette =
+            AppThemeManager.palette(this)
+
+        val roots =
+            recentRoots
+
+        val recentFiles =
+            visibleRecentFiles
+
         val root =
             LinearLayout(this).apply {
                 orientation =
@@ -230,10 +370,16 @@ class RecentFileChooserActivity : Activity() {
             TextView(this).apply {
                 text =
                     when {
+                        scopedFilesLoading ->
+                            "Перевіряю типи JSON-файлів…"
+
                         AllFilesAccess.isRequired() &&
                             !allFilesGranted ->
                             "Надайте «Доступ до всіх файлів», щоб YTM Importer " +
-                                "автоматично показував Download • найсвіжіші зверху"
+                                "автоматично перевіряв Download • найсвіжіші зверху"
+
+                        artifactScope != null ->
+                            "Файли потрібного типу: ${recentFiles.size} • найсвіжіші зверху"
 
                         else ->
                             "Останні файли: ${recentFiles.size} • найсвіжіші зверху"
@@ -277,6 +423,9 @@ class RecentFileChooserActivity : Activity() {
                 TextView(this).apply {
                     text =
                         when {
+                            scopedFilesLoading ->
+                                "Перевіряю вміст JSON-файлів…"
+
                             AllFilesAccess.isRequired() &&
                                 !allFilesGranted ->
                                 "Натисніть «Надати доступ до всіх файлів», " +
@@ -628,10 +777,15 @@ class RecentFileChooserActivity : Activity() {
         buttons +=
             footerButton(
                 label =
-                    if (useCompactLandscapeLabels) {
-                        "Системний вибір…"
-                    } else {
-                        "Системний вибір файла…"
+                    when {
+                        artifactScope != null ->
+                            "Інший файл…"
+
+                        useCompactLandscapeLabels ->
+                            "Системний вибір…"
+
+                        else ->
+                            "Системний вибір файла…"
                     },
                 primary = false
             ) {
@@ -711,11 +865,23 @@ class RecentFileChooserActivity : Activity() {
 
         helpDialogOpen = true
 
+        val scopeNote =
+            if (artifactScope != null) {
+                "Основний список показує лише файли потрібного типу, " +
+                    "визначені за вмістом JSON, а не за назвою файла.\n\n" +
+                    "«Інший файл…» відкриває системний вибір Android для legacy " +
+                    "або зовнішнього файла. Після вибору власник Restore/Import " +
+                    "ще раз перевірить формат перед будь-якою зміною даних.\n\n"
+            } else {
+                ""
+            }
+
         helpDialog =
             UiChrome.showMessageDialog(
                 activity = this,
                 title = "Останні файли",
                 message =
+                    scopeNote +
                     "На Android 11+ YTM Importer може напряму читати Download після того, " +
                         "як ви вручну увімкнете спеціальний системний дозвіл «Доступ до всіх файлів».\n\n" +
                         "Після цього файли з Download показуються автоматично й сортуються " +
@@ -861,7 +1027,7 @@ class RecentFileChooserActivity : Activity() {
                     )
                 }
 
-                render()
+                refreshRecentFiles()
             }
 
             REQUEST_SYSTEM_DOCUMENT -> {
@@ -916,6 +1082,9 @@ class RecentFileChooserActivity : Activity() {
 
         const val EXTRA_ALLOWED_EXTENSIONS =
             "recent_file_chooser_allowed_extensions"
+
+        const val EXTRA_ARTIFACT_SCOPE =
+            "recent_file_chooser_artifact_scope"
 
         const val EXTRA_RESULT_KIND =
             "recent_file_chooser_result_kind"
