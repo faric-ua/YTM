@@ -296,7 +296,7 @@ and build evidence is not phone PASS.
 
 ## #54 type-aware file library — current checkpoint (2026-10-06)
 
-Status: **PHONE PARTIAL; Full Restore scoped chooser and corrective rotation cache PHONE PASS, remaining #54 acceptance open.**
+Status: **PHONE PARTIAL; Full Restore + History scoped chooser PHONE PASS, Playlist Project / typed cards / wrong-type acceptance open.**
 
 - classifier/scope foundation implemented;
 - Full Restore and History Import now request content-scoped recent JSON candidates;
@@ -309,7 +309,8 @@ Status: **PHONE PARTIAL; Full Restore scoped chooser and corrective rotation cac
 - exact-HEAD Validate `37407395790 — SUCCESS`: release preflight PASS, JVM tests PASS, unsigned release assemble PASS.
 - signed phone-retest candidate: run `37485298582 — SUCCESS`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` / ID `11423176882`; compare from `daaa599d…` to `73ced…` is docs/manifest-only, so the APK app-code is the corrective rotation-cache source.
 - phone retest 2026-10-06: **PASS** — after initial card load, portrait → landscape → portrait reused the rotation cache, cards returned near-immediately, and Restore did not auto-start.
-- next gate: History-only import scoped chooser phone check + rotation/no-auto-import; then Playlist Project scoping / typed cards / wrong-type messaging.
+- History-only scoped chooser phone retest 2026-10-07: **PASS** — `Вибрати History JSON` showed 6 matching candidates plus `Інший файл…`; portrait → landscape → portrait preserved the scoped list near-immediately and no History import auto-started.
+- next gate: Playlist Project scoping while preserving CSV/TXT, typed card metadata and reliable wrong-type JSON messages.
 
 ## Phase B — management / discoverability
 
