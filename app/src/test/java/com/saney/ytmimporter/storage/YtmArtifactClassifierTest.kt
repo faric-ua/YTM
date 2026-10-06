@@ -236,6 +236,31 @@ class YtmArtifactClassifierTest {
     }
 
     @Test
+    fun presentationExplainsReliableWrongType() {
+        assertEquals(
+            "Це History JSON, а тут потрібен Повний backup.",
+            YtmArtifactPresentation
+                .wrongTypeMessage(
+                    scope =
+                        YtmArtifactScope
+                            .FULL_LOCAL_RESTORE,
+                    detectedType =
+                        YtmArtifactType
+                            .HISTORY_BACKUP
+                )
+        )
+
+        assertEquals(
+            YtmArtifactType.PLAYLIST_PROJECT,
+            YtmArtifactScopePolicy
+                .expectedType(
+                    YtmArtifactScope
+                        .PLAYLIST_PROJECT
+                )
+        )
+    }
+
+    @Test
     fun scopesAcceptOnlyTheirCanonicalType() {
         assertTrue(
             YtmArtifactScopePolicy.accepts(
