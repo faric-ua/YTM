@@ -3211,45 +3211,33 @@ class ImportActivity : Activity() {
                 return
             }
 
+        val artifactInspection =
+            YtmArtifactClassifier
+                .inspect(text)
+
         if (
-            fileName
-                .substringAfterLast(
-                    '.',
-                    ""
-                )
-                .equals(
-                    "json",
-                    ignoreCase = true
+            artifactInspection.type !=
+                YtmArtifactType.UNKNOWN &&
+            !YtmArtifactScopePolicy
+                .accepts(
+                    scope =
+                        YtmArtifactScope
+                            .PLAYLIST_PROJECT,
+                    type =
+                        artifactInspection.type
                 )
         ) {
-            val inspection =
-                YtmArtifactClassifier
-                    .inspect(text)
-
-            if (
-                inspection.type !=
-                    YtmArtifactType.UNKNOWN &&
-                !YtmArtifactScopePolicy
-                    .accepts(
+            showFileImportFailure(
+                YtmArtifactPresentation
+                    .wrongTypeMessage(
                         scope =
                             YtmArtifactScope
                                 .PLAYLIST_PROJECT,
-                        type =
-                            inspection.type
+                        detectedType =
+                            artifactInspection.type
                     )
-            ) {
-                showFileImportFailure(
-                    YtmArtifactPresentation
-                        .wrongTypeMessage(
-                            scope =
-                                YtmArtifactScope
-                                    .PLAYLIST_PROJECT,
-                            detectedType =
-                                inspection.type
-                        )
-                )
-                return
-            }
+            )
+            return
         }
 
         if (
