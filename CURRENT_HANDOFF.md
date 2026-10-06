@@ -59,14 +59,20 @@ Corrective implementation:
 
 Do **not** call the corrective source PHONE PASS yet.
 
+Signed phone-retest candidate is now available:
+- run `37485298582 — SUCCESS`;
+- workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`;
+- artifact `YTM-Importer-v1.4.55-Release`;
+- artifact ID `11423176882`;
+- compare `daaa599d… → 73ced…` changes only checkpoint/docs/manifest files, so app-code remains the corrective rotation-cache source.
+
 ## Exact next work
 
-1. Verify live branch state and confirm the latest app-code source is still `daaa599da7c031c0df881b7fbd8b280f218d3913`; tolerate newer docs-only checkpoint commits.
-2. User: Termux `1 — Sync YTM` → `6 — Validate + Build signed APK`.
-3. Verify signed build source exactly matches the corrective source.
-4. User: `3 — Download signed APK` → install over current app.
-5. PHONE retest Full Restore chooser: wait for cards once, rotate portrait → landscape → portrait; expect immediate/near-immediate cached card return and no automatic Restore.
-6. If PASS, continue History Import scoped chooser phone check, then Playlist Project scoping / typed cards / wrong-type messages.
+1. Verify live branch state; latest app-code remains corrective `daaa599da7c031c0df881b7fbd8b280f218d3913`, while later commits are docs-only.
+2. Signed candidate is already verified: run `37485298582`, source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact ID `11423176882`.
+3. User: Termux `3 — Download signed APK` → install over current app.
+4. PHONE retest Full Restore chooser: wait for cards once, rotate portrait → landscape → portrait; expect immediate/near-immediate cached card return and no automatic Restore.
+5. If PASS, continue History Import scoped chooser phone check, then Playlist Project scoping / typed cards / wrong-type messages.
 
 ## Immutable functional reference
 
