@@ -405,7 +405,7 @@ Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make
 - [x] Implement bounded process-local classification cache keyed by `URI + lastModified + size`; changed/new files still reclassify and interrupted reads are not cached.
 - [x] Corrective source `daaa599da7c031c0df881b7fbd8b280f218d3913` passed exact-HEAD Validate `37407395790 — SUCCESS` with preflight/JVM/assemble PASS.
 - [x] Signed phone-retest candidate built successfully: run `37485298582`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` / ID `11423176882`; compare from corrective app-source `daaa599d…` to signed source shows docs/manifest-only changes.
-- [ ] Download/install signed candidate and PHONE retest Full Restore chooser portrait → landscape → portrait for near-immediate card continuity and no auto-Restore.
+- [x] Download/install signed candidate and PHONE retest Full Restore path portrait → landscape → portrait: **PHONE PASS 2026-10-06**; cards returned near-immediately from the rotation cache and Restore did not auto-start.
 - [ ] PHONE check History Import scoped chooser + rotation/no-auto-restore.
 - [ ] Scope Playlist Project import to its expected JSON artifact type with explicit legacy/system fallback.
 - [ ] Add readable typed file cards and wrong-type validation messages without changing restore/import payload semantics.
@@ -429,13 +429,13 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Install the signed #54 rotation-cache candidate, then retest rotation only.**
+**PHONE-check the History-only import chooser next.**
 
-Corrective **app-source**: `daaa599da7c031c0df881b7fbd8b280f218d3913`. Exact-HEAD Validate `37407395790 — SUCCESS`. Signed candidate: run `37485298582 — SUCCESS`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact ID `11423176882`. Compare confirms later commits are docs/manifest-only, so app-code matches the corrective source.
+Corrective **app-source**: `daaa599da7c031c0df881b7fbd8b280f218d3913`. Validate `37407395790 — SUCCESS`; signed phone candidate run `37485298582 — SUCCESS`. Full Restore rotation-cache phone retest is now **PASS**.
 
-Phone flow now: Termux → `3 — Download signed APK` → `4 — Open APK folder` → tap the downloaded `YTM-Importer-v1.4.55-release.apk` and install it over the current app. Then in YTM Importer: **«Меню» → «Дані» → «Відновити з резервної копії» → «Вибрати резервну копію» → «Відновити backup?» → «Вибрати файл»**. On **«Вибрати backup»**, wait once for cards, then rotate portrait → landscape → portrait. Expected: unchanged cached cards return immediately/near-immediately, no long full JSON reread/reclassification, no automatic Restore.
+Next phone flow in YTM Importer: **«Меню» → «Дані» → «Відновити лише історію» → «Вибрати файл історії» → in «Імпортувати History JSON?» tap «Вибрати файл»**. On **«Вибрати History JSON»**, verify only History-compatible JSON candidates are shown plus **«Інший файл…»**, then rotate portrait → landscape → portrait. Expected: cards remain scoped and return near-immediately; History import must not auto-start.
 
-After PASS, continue the History import phone check using exact visible UI labels; Playlist Project scoping and typed/wrong-type presentation remain open.
+After that phone check, Playlist Project scoping and typed/wrong-type presentation remain open.
 
 ## Update rule
 
