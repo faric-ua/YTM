@@ -310,7 +310,9 @@ Status: **PHONE PARTIAL; Full Restore + History scoped chooser PHONE PASS, Playl
 - signed phone-retest candidate: run `37485298582 — SUCCESS`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` / ID `11423176882`; compare from `daaa599d…` to `73ced…` is docs/manifest-only, so the APK app-code is the corrective rotation-cache source.
 - phone retest 2026-10-06: **PASS** — after initial card load, portrait → landscape → portrait reused the rotation cache, cards returned near-immediately, and Restore did not auto-start.
 - History-only scoped chooser phone retest 2026-10-07: **PASS** — `Вибрати History JSON` showed 6 matching candidates plus `Інший файл…`; portrait → landscape → portrait preserved the scoped list near-immediately and no History import auto-started.
-- next gate: Playlist Project scoping while preserving CSV/TXT, typed card metadata and reliable wrong-type JSON messages.
+- Playlist Project scoping / typed cards / wrong-type source checkpoint: `b53a73ed6be46c932c7a21c0a314b3788fdb9931`; Validate `37536534440 — SUCCESS` with release preflight, JVM tests and unsigned assemble PASS.
+- implementation keeps CSV/TXT candidates, scopes JSON to YTM Project, retains `Інший файл…`, caches full typed metadata for rotation, and reports reliably detected wrong artifact types before mutation while preserving owner validation.
+- next gate: exact signed build + focused phone acceptance for Playlist Project chooser/cards/rotation and wrong-type fallback.
 
 ## Phase B — management / discoverability
 
