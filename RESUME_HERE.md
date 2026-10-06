@@ -81,13 +81,18 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-1. Preserve the accepted Full Restore + History chooser behavior; do not repeat those phone slices.
-2. Implement Playlist Project scoping for the visible app path **«Імпорт» → «Імпорт із файлу» → «CSV, TXT або YTM Project» → «Вибрати файл»**.
-3. CSV/TXT must remain normal candidates. JSON candidates in the primary list must be YTM Playlist Project only; keep explicit **«Інший файл…»** fallback.
-4. Add readable artifact-type metadata to scoped cards using the existing read-only classifier/cache.
-5. If a reliably detected wrong-type JSON is selected through fallback, show what it is and what this action expects, then stop before mutation; existing owner validators remain authoritative for matching/UNKNOWN inputs.
-6. Run static/JVM/release validation. Only after exact source PASS, build a signed candidate and continue the remaining #54 phone matrix.
-7. Do not mark #54 CLOSED until Playlist Project, typed-card and wrong-type phone acceptance passes.
+1. Source implementation for Playlist Project scoping / typed cards / wrong-type messaging is validated at `b53a73ed6be46c932c7a21c0a314b3788fdb9931`; Validate `37536534440 — SUCCESS` passed release preflight, JVM tests and unsigned release assemble.
+2. On the phone open YTM Importer Menu and run `1 — Sync YTM`.
+3. Then run `6 — Validate + Build signed APK`. The menu script must accept only the exact current remote HEAD after its Validate succeeds and then dispatch/watch the signed build.
+4. After BUILD PASS: `3 — Download signed APK` → `4 — Open APK folder` → tap the downloaded v1.4.55 release APK and install it over the current app.
+5. Remaining PHONE acceptance:
+   - **«Імпорт» → «Імпорт із файлу» → «CSV, TXT або YTM Project» → «Вибрати файл»**;
+   - verify CSV/TXT remain available and JSON cards are YTM Project only;
+   - verify readable type/metadata on cards and **«Інший файл…»**;
+   - rotate portrait → landscape → portrait with no auto-import;
+   - through **«Інший файл…»**, choose a known History JSON and require **«Файл не підходить»** with a clear detected/expected type message and no import.
+6. Do not repeat the already accepted Full Restore / History chooser phone slices.
+7. Do not mark #54 CLOSED until this remaining phone acceptance passes.
 
 ## Consolidated phone matrix
 
