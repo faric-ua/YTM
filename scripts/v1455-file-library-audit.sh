@@ -5,7 +5,9 @@ fail(){ echo "FAIL: $1" >&2; exit 1; }
 
 SRC="app/src/main/java/com/saney/ytmimporter"
 CLASSIFIER="$SRC/storage/YtmArtifactClassifier.kt"
+CACHE="$SRC/storage/YtmArtifactClassificationCache.kt"
 TEST="app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactClassifierTest.kt"
+CACHE_TEST="app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactClassificationCacheTest.kt"
 CONTRACT="docs/v.1.4.55/FILE_LIBRARY_CONTRACT.md"
 INVENTORY="docs/v.1.4.55/FILE_LIBRARY_AUDIT_2026-10-05.md"
 DATA="$SRC/DataActivity.kt"
@@ -14,7 +16,7 @@ BACKUP="$SRC/storage/LocalBackupManager.kt"
 PROJECT="$SRC/storage/PlaylistProjectCodec.kt"
 CHOOSER="$SRC/RecentFileChooserActivity.kt"
 
-for f in "$CLASSIFIER" "$TEST" "$CONTRACT" "$INVENTORY" "$DATA" "$HISTORY" "$BACKUP" "$PROJECT" "$CHOOSER"; do
+for f in "$CLASSIFIER" "$CACHE" "$TEST" "$CACHE_TEST" "$CONTRACT" "$INVENTORY" "$DATA" "$HISTORY" "$BACKUP" "$PROJECT" "$CHOOSER"; do
   test -f "$f" || fail "missing #54 foundation file: $f"
 done
 
@@ -73,6 +75,40 @@ grep -Fq 'Classification is read-only UX policy.' "$CONTRACT" ||
 grep -Fq 'never silently move legacy files' "$CONTRACT" ||
   fail "#54 legacy-file safety rule missing"
 
+grep -Fq 'object YtmArtifactClassificationCache' "$CACHE" ||
+  fail "rotation-safe artifact cache missing"
+grep -Fq 'MAX_ENTRIES' "$CACHE" ||
+  fail "artifact classification cache is not bounded"
+grep -Fq 'lastModified' "$CACHE" ||
+  fail "artifact cache key does not include lastModified"
+grep -Fq 'size' "$CACHE" ||
+  fail "artifact cache key does not include size"
+
+python - "$CACHE" <<'PY_ARTIFACT_CACHE'
+from pathlib import Path
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+for forbidden in (
+    "android.",
+    "Activity",
+    "ContentResolver",
+    "restoreBackupJson",
+    "restoreHistoryJson",
+    "YouTubeApi",
+):
+    if forbidden in text:
+        raise SystemExit(
+            "FAIL: artifact cache owns Android/domain work: " + forbidden
+        )
+PY_ARTIFACT_CACHE
+
+for test_name in   'sameFileIdentityReusesClassification'   'changedMetadataInvalidatesOldIdentity'   'newVersionReplacesOldIdentityForSameUri'   'cacheIsBounded'
+do
+  grep -Fq "$test_name" "$CACHE_TEST" ||
+    fail "artifact cache JVM case missing: $test_name"
+done
+
 grep -Fq 'EXTRA_ARTIFACT_SCOPE' "$CHOOSER" ||
   fail "scoped chooser intent contract missing"
 grep -Fq 'YtmArtifactClassifier' "$CHOOSER" ||
@@ -81,6 +117,12 @@ grep -Fq 'YtmArtifactScopePolicy' "$CHOOSER" ||
   fail "recent-file chooser does not apply artifact scope"
 grep -Fq 'classifierExecutor' "$CHOOSER" ||
   fail "artifact classification is not kept off the UI thread"
+grep -Fq 'YtmArtifactClassificationCache' "$CHOOSER" ||
+  fail "chooser does not reuse artifact classifications after recreation"
+grep -Fq 'cachedArtifactType' "$CHOOSER" ||
+  fail "chooser cache lookup missing"
+grep -Fq 'Thread' "$CHOOSER" ||
+  fail "interrupted classification cache guard missing"
 grep -Fq '"Інший файл…"' "$CHOOSER" ||
   fail "explicit legacy/system file fallback label missing"
 grep -Fq 'YtmArtifactScope' "$DATA" ||
@@ -135,6 +177,8 @@ echo "- fail-closed legacy array classification"
 echo "- pure scoped candidate policy"
 echo "- Full Restore + History Import scoped recent-file wiring"
 echo "- background read-only classification with stale-result guard"
+echo "- bounded URI/mtime/size classification cache for rotation continuity"
+echo "- interrupted reads are not cached"
 echo "- JVM matrix present"
 echo "- existing owner validators remain authoritative"
 echo "- explicit «Інший файл…» legacy/system fallback retained"
