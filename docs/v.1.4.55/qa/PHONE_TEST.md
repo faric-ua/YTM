@@ -376,3 +376,29 @@ Phone evidence:
 Result: **#54 History scoped chooser / rotation slice — PHONE PASS.**
 
 #54 remains **PHONE PARTIAL / OPEN**. Next: Playlist Project scoping, typed cards and wrong-type messages.
+
+
+### Playlist Project typed cards + wrong-type fallback — 2026-10-07
+
+Signed candidate:
+- run `37546679576 — SUCCESS`;
+- source `22721a7b64858cfad7416c85c7d867723cb16946`;
+- artifact `YTM-Importer-v1.4.55-Release`;
+- artifact ID `11451227175`;
+- installed over the current app.
+
+Phone evidence:
+- **«Імпорт файла»** header showed **«Файли потрібного типу: 63 • найсвіжіші зверху»**;
+- visible primary candidates included `TXT список`, `CSV список` and `YTM Project`;
+- visible YTM Project cards showed readable playlist title and track count metadata, e.g. **«Треків: 12»**, while raw filename stayed secondary;
+- footer kept **«Додати папку…»**, **«Інший файл…»**, **«Скасувати»**;
+- through **«Інший файл…»**, a known History JSON produced **«Файл не підходить»** with **«Це History JSON, а тут потрібен YTM Project.»**;
+- no wrong-type import occurred.
+
+Result:
+- **#54 Playlist Project typed-card presentation — PHONE PASS**;
+- **#54 wrong-type fallback protection — PHONE PASS**.
+
+Still pending before #54 closure:
+- on **«Імпорт файла»**, portrait → landscape → portrait;
+- cards must return near-immediately, remain scoped/typed, and import must not auto-start.
