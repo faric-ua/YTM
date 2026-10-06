@@ -29,20 +29,58 @@ enum class YtmArtifactScope {
 }
 
 object YtmArtifactScopePolicy {
+    fun expectedType(
+        scope: YtmArtifactScope
+    ): YtmArtifactType =
+        when (scope) {
+            YtmArtifactScope.FULL_LOCAL_RESTORE ->
+                YtmArtifactType.FULL_LOCAL_BACKUP
+
+            YtmArtifactScope.HISTORY_RESTORE ->
+                YtmArtifactType.HISTORY_BACKUP
+
+            YtmArtifactScope.PLAYLIST_PROJECT ->
+                YtmArtifactType.PLAYLIST_PROJECT
+        }
+
     fun accepts(
         scope: YtmArtifactScope,
         type: YtmArtifactType
     ): Boolean =
-        when (scope) {
-            YtmArtifactScope.FULL_LOCAL_RESTORE ->
-                type == YtmArtifactType.FULL_LOCAL_BACKUP
+        type ==
+            expectedType(scope)
+}
 
-            YtmArtifactScope.HISTORY_RESTORE ->
-                type == YtmArtifactType.HISTORY_BACKUP
+object YtmArtifactPresentation {
+    fun label(
+        type: YtmArtifactType
+    ): String =
+        when (type) {
+            YtmArtifactType.FULL_LOCAL_BACKUP ->
+                "Повний backup"
 
-            YtmArtifactScope.PLAYLIST_PROJECT ->
-                type == YtmArtifactType.PLAYLIST_PROJECT
+            YtmArtifactType.HISTORY_BACKUP ->
+                "History JSON"
+
+            YtmArtifactType.PLAYLIST_PROJECT ->
+                "YTM Project"
+
+            YtmArtifactType.PENDING_DIAGNOSTICS ->
+                "Pending Queue JSON"
+
+            YtmArtifactType.ACCOUNT_LIBRARY_MANIFEST ->
+                "Manifest backup акаунта"
+
+            YtmArtifactType.UNKNOWN ->
+                "Невідомий JSON"
         }
+
+    fun wrongTypeMessage(
+        scope: YtmArtifactScope,
+        detectedType: YtmArtifactType
+    ): String =
+        "Це ${label(detectedType)}, а тут потрібен " +
+            "${label(YtmArtifactScopePolicy.expectedType(scope))}."
 }
 
 object YtmArtifactClassifier {
