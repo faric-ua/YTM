@@ -31,6 +31,7 @@ import com.saney.ytmimporter.storage.LocalBackupManager
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.SafTreeFileWriter
+import com.saney.ytmimporter.storage.YtmArtifactScope
 import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotCache
@@ -1422,14 +1423,24 @@ class DataActivity : Activity() {
     private fun launchJsonPicker(
         requestCode: Int
     ) {
+        val isFullRestore =
+            requestCode ==
+                restoreBackupRequestCode
+
         val title =
-            if (
-                requestCode ==
-                    restoreBackupRequestCode
-            ) {
+            if (isFullRestore) {
                 "Вибрати backup"
             } else {
                 "Вибрати History JSON"
+            }
+
+        val artifactScope =
+            if (isFullRestore) {
+                YtmArtifactScope
+                    .FULL_LOCAL_RESTORE
+            } else {
+                YtmArtifactScope
+                    .HISTORY_RESTORE
             }
 
         startActivityForResult(
@@ -1448,6 +1459,10 @@ class DataActivity : Activity() {
                 putExtra(
                     RecentFileChooserActivity.EXTRA_ALLOWED_EXTENSIONS,
                     arrayOf("json")
+                )
+                putExtra(
+                    RecentFileChooserActivity.EXTRA_ARTIFACT_SCOPE,
+                    artifactScope.name
                 )
             },
             requestCode
