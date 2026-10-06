@@ -38,6 +38,48 @@ class YtmArtifactClassificationCacheTest {
     }
 
     @Test
+    fun inspectionMetadataSurvivesRotationCache() {
+        val inspection =
+            YtmArtifactInspection(
+                type =
+                    YtmArtifactType
+                        .PLAYLIST_PROJECT,
+                schemaVersion = 3,
+                appVersion = "1.4.55",
+                itemCount = 13,
+                title = "The Prodigy"
+            )
+
+        YtmArtifactClassificationCache
+            .putInspection(
+                uri = "content://project/1",
+                lastModified = 100L,
+                size = 500L,
+                inspection = inspection
+            )
+
+        assertEquals(
+            inspection,
+            YtmArtifactClassificationCache
+                .getInspection(
+                    uri = "content://project/1",
+                    lastModified = 100L,
+                    size = 500L
+                )
+        )
+        assertEquals(
+            YtmArtifactType
+                .PLAYLIST_PROJECT,
+            YtmArtifactClassificationCache
+                .get(
+                    uri = "content://project/1",
+                    lastModified = 100L,
+                    size = 500L
+                )
+        )
+    }
+
+    @Test
     fun changedMetadataInvalidatesOldIdentity() {
         YtmArtifactClassificationCache
             .put(
