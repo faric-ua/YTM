@@ -296,7 +296,7 @@ and build evidence is not phone PASS.
 
 ## #54 type-aware file library — current checkpoint (2026-10-06)
 
-Status: **PHONE PARTIAL; corrective rotation-cache source validated, not yet phone accepted.**
+Status: **PHONE PARTIAL; Full Restore scoped chooser and corrective rotation cache PHONE PASS, remaining #54 acceptance open.**
 
 - classifier/scope foundation implemented;
 - Full Restore and History Import now request content-scoped recent JSON candidates;
@@ -308,7 +308,8 @@ Status: **PHONE PARTIAL; corrective rotation-cache source validated, not yet pho
 - corrective source `daaa599da7c031c0df881b7fbd8b280f218d3913` adds a bounded process-local classification cache keyed by URI + lastModified + size, does not cache interrupted reads, and keeps final owner validation unchanged.
 - exact-HEAD Validate `37407395790 — SUCCESS`: release preflight PASS, JVM tests PASS, unsigned release assemble PASS.
 - signed phone-retest candidate: run `37485298582 — SUCCESS`, workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`, artifact `YTM-Importer-v1.4.55-Release` / ID `11423176882`; compare from `daaa599d…` to `73ced…` is docs/manifest-only, so the APK app-code is the corrective rotation-cache source.
-- next gate: download/install that signed candidate, then focused Full Restore chooser portrait → landscape → portrait phone retest. **No PHONE PASS is claimed for the corrective source yet.**
+- phone retest 2026-10-06: **PASS** — after initial card load, portrait → landscape → portrait reused the rotation cache, cards returned near-immediately, and Restore did not auto-start.
+- next gate: History-only import scoped chooser phone check + rotation/no-auto-import; then Playlist Project scoping / typed cards / wrong-type messaging.
 
 ## Phase B — management / discoverability
 
