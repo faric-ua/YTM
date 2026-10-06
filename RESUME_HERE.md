@@ -5,7 +5,7 @@
 > Do not reconstruct the project from chat memory. Read this file from the live
 > `feat/v1.4.55-ux-hardening` branch first, then verify branch HEAD and latest Actions state.
 
-Last updated: **2026-10-06**
+Last updated: **2026-10-07**
 
 ## Live resume point
 
@@ -77,17 +77,17 @@ Corrective rotation-cache source:
 - JVM tests PASS, including cache tests;
 - unsigned release assemble PASS.
 
-**Phone result:** the corrective rotation-cache behavior is **PHONE PASS 2026-10-06** on the signed candidate from run `37485298582`; portrait → landscape → portrait returned the already classified cards near-immediately and no Restore auto-started. #54 remains OPEN because History Import, Playlist Project scoping, typed cards and wrong-type messaging are still pending.
+**Phone result:** Full Restore rotation-cache behavior is **PHONE PASS 2026-10-06**. History-only scoped chooser is **PHONE PASS 2026-10-07**: `Вибрати History JSON` showed `Файли потрібного типу: 6`, matching History JSON candidates and `Інший файл…`; portrait → landscape → portrait returned the scoped cards near-immediately and no History import auto-started. #54 remains OPEN for Playlist Project scoping, typed cards and wrong-type messaging.
 
 ## NEXT ACTION — do this first
 
-1. In YTM Importer open **«Меню» → «Дані»**.
-2. Find **«Відновити лише історію»** and tap **«Вибрати файл історії»**.
-3. In **«Імпортувати History JSON?»** tap **«Вибрати файл»**.
-4. On **«Вибрати History JSON»**, verify the list contains only History-compatible JSON candidates and the explicit **«Інший файл…»** fallback.
-5. Without selecting a History file, rotate portrait → landscape → portrait.
-6. PASS requires the scoped cards to remain correct and return near-immediately after rotation; no History import may auto-start.
-7. After that phone check, continue #54 with Playlist Project scoping / typed cards / wrong-type messaging. Do not mark #54 CLOSED yet.
+1. Preserve the accepted Full Restore + History chooser behavior; do not repeat those phone slices.
+2. Implement Playlist Project scoping for the visible app path **«Імпорт» → «Імпорт із файлу» → «CSV, TXT або YTM Project» → «Вибрати файл»**.
+3. CSV/TXT must remain normal candidates. JSON candidates in the primary list must be YTM Playlist Project only; keep explicit **«Інший файл…»** fallback.
+4. Add readable artifact-type metadata to scoped cards using the existing read-only classifier/cache.
+5. If a reliably detected wrong-type JSON is selected through fallback, show what it is and what this action expects, then stop before mutation; existing owner validators remain authoritative for matching/UNKNOWN inputs.
+6. Run static/JVM/release validation. Only after exact source PASS, build a signed candidate and continue the remaining #54 phone matrix.
+7. Do not mark #54 CLOSED until Playlist Project, typed-card and wrong-type phone acceptance passes.
 
 ## Consolidated phone matrix
 
