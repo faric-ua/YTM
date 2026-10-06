@@ -294,6 +294,21 @@ Evidence:
 Real-phone acceptance remains deferred to the consolidated Phase A matrix. Static
 and build evidence is not phone PASS.
 
+## #54 type-aware file library — current checkpoint (2026-10-06)
+
+Status: **PHONE PARTIAL; corrective rotation-cache source validated, not yet phone accepted.**
+
+- classifier/scope foundation implemented;
+- Full Restore and History Import now request content-scoped recent JSON candidates;
+- explicit `Інший файл…` fallback remains;
+- final Full Backup/History owner validators remain authoritative.
+- source `bddebe7adb7a95c4bed88088cb5496fe92100614` passed Validate `37398594246` and signed run `37405310918`; user installed it.
+- phone evidence on that signed slice: Full Restore chooser displayed 9 matching Full Backup candidates and explicit fallback.
+- phone finding: after rotation, cards took too long to return because all JSON candidates were reread/reparsed; one visible backup was ~25.3 MB.
+- corrective source `daaa599da7c031c0df881b7fbd8b280f218d3913` adds a bounded process-local classification cache keyed by URI + lastModified + size, does not cache interrupted reads, and keeps final owner validation unchanged.
+- exact-HEAD Validate `37407395790 — SUCCESS`: release preflight PASS, JVM tests PASS, unsigned release assemble PASS.
+- next gate: signed build/install from corrective source, then focused Full Restore chooser portrait → landscape → portrait phone retest. **No PHONE PASS is claimed for the corrective source yet.**
+
 ## Phase B — management / discoverability
 
 After Phase A source is coherent:
