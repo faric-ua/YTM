@@ -430,7 +430,7 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 **Build the corrective #54 signed APK, then retest rotation only.**
 
-Current corrective source: `daaa599da7c031c0df881b7fbd8b280f218d3913`. Exact-HEAD Validate `37407395790 — SUCCESS` already passed preflight, JVM tests and unsigned assemble. Do not change source before the signed/phone gate unless live repository truth has moved.
+Current corrective **app-source**: `daaa599da7c031c0df881b7fbd8b280f218d3913`. Exact-HEAD Validate `37407395790 — SUCCESS` already passed preflight, JVM tests and unsigned assemble. Newer checkpoint/docs-only commits do not change that app-source; do not make further app-code changes before the signed/phone gate unless a verified fix is required.
 
 Termux flow: `1 — Sync YTM` → `6 — Validate + Build signed APK` → verify exact source → `3 — Download signed APK` → install. Phone retest: Full Restore chooser, wait for cards once, rotate portrait → landscape → portrait. Expected: cached unchanged cards reappear immediately/near-immediately, no long full JSON reclassification, no automatic Restore.
 
