@@ -329,3 +329,32 @@ Focused phone matrix — 2026-10-05:
 Status: **PHONE PASS / CLOSED — Home/list/rotation/Back/Menu, Pending/History/Bulk exact routes, no-auto-start and breathing acknowledgement all passed.**
 
 Do not manufacture remote failures merely to populate Recovery Center.
+
+
+## Phase B #54 — Type-aware file library
+
+### Full Restore scoped chooser / rotation cache — 2026-10-06
+
+Candidate app-code:
+- corrective app-source `daaa599da7c031c0df881b7fbd8b280f218d3913`;
+- Validate Android `37407395790 — SUCCESS`;
+- signed build run `37485298582 — SUCCESS`;
+- workflow source `73cedbf64cd388bed065d20198f63e7940289ce3`;
+- artifact ID `11423176882`.
+
+Phone evidence:
+- Full Restore scoped chooser had already shown 9 matching Full Backup candidates plus `Інший файл…`;
+- after the corrective candidate was installed, the user waited once for the cards;
+- portrait → landscape → portrait returned the unchanged classified cards near-immediately using the rotation cache;
+- no long full JSON reread/reclassification was observed;
+- Restore did not auto-start.
+
+Result: **#54 Full Restore rotation slice — PHONE PASS.**
+
+#54 overall status remains **PHONE PARTIAL / OPEN**.
+
+Next phone target:
+- **«Меню» → «Дані» → «Відновити лише історію» → «Вибрати файл історії» → «Імпортувати History JSON?» → «Вибрати файл» → «Вибрати History JSON»**;
+- verify only History-compatible candidates plus **«Інший файл…»**;
+- rotate portrait → landscape → portrait without choosing/importing a file;
+- require near-immediate card continuity and no automatic History import.
