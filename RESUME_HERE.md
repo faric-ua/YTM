@@ -5,7 +5,7 @@
 > Do not reconstruct the project from chat memory. Read this file from the live
 > `feat/v1.4.55-ux-hardening` branch first, then verify branch HEAD and latest Actions state.
 
-Last updated: **2026-10-05**
+Last updated: **2026-10-06**
 
 ## Live resume point
 
@@ -33,42 +33,60 @@ Last updated: **2026-10-05**
 - #53 final phone result: **PHONE PASS / CLOSED**. Home/list/rotation/Back/Menu, exact Pending/History/Bulk routes, no-auto-start and acknowledgement stop all passed.
 - Phone QA partial PASS: Home displays `⚠ 2`; Recovery Center opens with two actionable items and a separate warning section; opening the center did not visibly auto-start recovery work; portrait → landscape → portrait while scrolled mid-list preserved the same logical Recovery Center area without visible auto-start; Back returned to normal Home with `⚠ 2`; Menu shows `Центр відновлення — Потребує уваги: 2`.
 
-## CRASH CHECKPOINT — 2026-10-05
+## CRASH CHECKPOINT — 2026-10-06
 
 If the chat/session is lost, resume **here**, not from older checkpoints.
 
-Just closed:
+Closed baseline:
 - #53 / Unified Recovery Center — **PHONE PASS / CLOSED**;
-- tested app source `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
-- exact-HEAD Validate `37257995437 — SUCCESS`;
-- signed run `37338681198 — SUCCESS`;
-- later branch commits are QA/docs-only.
-
-#53 accepted phone evidence:
-- Home `⚠ 2` and Menu `Потребує уваги: 2`;
-- Recovery Center actionable/warning separation;
-- portrait ↔ landscape scroll continuity;
-- Back without auto-start;
-- exact Pending, History and Bulk owner routes without automatic Continue/Retry/Restore/Rollback;
-- after acknowledgement, the unchanged `⚠ 2` badge stayed still and no longer breathed.
+- do not repeat the #53 phone matrix.
 
 Active task:
 - #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
 
-#54 source checkpoint:
-- inventory complete;
-- contract complete;
-- pure `YtmArtifactClassifier` + `YtmArtifactScopePolicy` added;
-- JVM/static guards added;
-- chooser behavior is intentionally unchanged until exact-HEAD Validate passes.
+#54 verified source state:
+- inventory + content-first file-library contract complete;
+- pure `YtmArtifactClassifier` + `YtmArtifactScopePolicy` implemented;
+- Full Restore requests only `FULL_LOCAL_RESTORE` candidates;
+- History Import requests only `HISTORY_RESTORE` candidates;
+- explicit `Інший файл…` fallback remains available;
+- existing `LocalBackupManager.inspectBackup()` and `HistoryStore.inspectImportJson()` remain authoritative before mutation.
+
+First scoped-chooser signed phone slice:
+- app source `bddebe7adb7a95c4bed88088cb5496fe92100614`;
+- exact-HEAD Validate Android `37398594246 — SUCCESS`;
+- signed build `37405310918 — SUCCESS`;
+- user installed that signed APK;
+- Full Restore chooser PHONE PARTIAL PASS: after classification it showed `Файли потрібного типу: 9`, Full Backup cards, and explicit `Інший файл…`;
+- no Restore was intentionally started during this chooser check.
+
+Phone finding found on that signed slice:
+- portrait → landscape caused a long return to `Перевіряю типи JSON-файлів…` / `Перевіряю вміст JSON-файлів…`;
+- a visible Full Backup candidate is ~25.3 MB;
+- source cause was confirmed: Activity recreation cleared visible candidates and reread/reparsed every JSON file.
+
+Corrective rotation-cache source:
+- current branch HEAD `daaa599da7c031c0df881b7fbd8b280f218d3913`;
+- bounded process-local artifact classification cache keyed by `URI + lastModified + size`;
+- unchanged classified files can be reused after Activity recreation;
+- changed/new files still classify off the UI thread;
+- interrupted reads are not cached;
+- cache remains read-only UX state and does not bypass final owner validation;
+- exact-HEAD Validate Android `37407395790 — SUCCESS`;
+- release preflight PASS;
+- JVM tests PASS, including cache tests;
+- unsigned release assemble PASS.
+
+**Important:** the corrective `daaa599d…` source is **NOT phone PASS yet** and no signed-build run for this corrective source has been accepted/recorded yet.
 
 ## NEXT ACTION — do this first
 
-1. Verify live HEAD and wait for exact-HEAD Validate Android on the new pure #54 classifier foundation.
-2. Read `docs/v.1.4.55/FILE_LIBRARY_CONTRACT.md` and `FILE_LIBRARY_AUDIT_2026-10-05.md`; inventory/contract are complete.
-3. After Validate PASS, wire **Full Restore and History Import only** to read-only scoped recent-file candidates using `YtmArtifactScopePolicy`.
-4. Preserve explicit system/legacy fallback and always run existing owner validation after file selection.
-5. Do not change backup/History/Project payload schemas and do not silently move user files.
+1. Verify live branch HEAD is still `daaa599da7c031c0df881b7fbd8b280f218d3913` or reconcile newer live truth.
+2. In the normal Termux YTM menu: `1 — Sync YTM`, then `6 — Validate + Build signed APK`.
+3. Confirm the signed run is built from the corrective app source; then `3 — Download signed APK` and install it over the current app.
+4. Focused phone retest only: open Full Restore chooser, wait once for cards, then portrait → landscape → portrait.
+5. Expected result: already classified unchanged cards reappear immediately/near-immediately, no long full reclassification pause, and no automatic Restore.
+6. After that PASS, continue #54 with History Import scoped chooser phone check, then Playlist Project scoping / typed cards / wrong-type messaging. Do not mark #54 CLOSED before those remaining acceptance items.
 
 ## Consolidated phone matrix
 
