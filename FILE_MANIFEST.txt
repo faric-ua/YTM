@@ -8,7 +8,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 841ac3888017a23d  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-5a06883b42b55f60  ACTIVE_PLAN.md
+622833e64fa74c57  ACTIVE_PLAN.md
 b19ca08e573c19c6  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -17,7 +17,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
 dead1c65e49b2ddb  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
-6b151d9d27dfcc5f  CURRENT_HANDOFF.md
+d5b58797d4a0a902  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -29,7 +29,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 6e26b2b806600ff2  RELEASE_TEST_STATUS.md
-e6e7f9e854a9eaac  RESUME_HERE.md
+c92e5db897fc22f5  RESUME_HERE.md
 07e29aacf2f1f66a  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -94,17 +94,17 @@ e6af758495c5bfa7  app/build.gradle.kts
 2d378e3d5b8e7a74  app/src/main/AndroidManifest.xml
 bb141a21da2e23bb  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 e8f9b88b6124d64b  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
-482f2e81922d8dc6  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
+0af4ad581bd9e32c  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 4da09cca8fb23e0b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 a25d17ce55fe6774  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
-dc90537bd866bd32  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
+9f9d6095d6dd410a  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
 738efa22c9b04a55  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 96762cccc29fff58  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
-8d47b9840e27cbce  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
+91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
 088d30cebc159efb  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 5c565252917f725e  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
@@ -163,8 +163,8 @@ cdc3478ae48a57bb  app/src/main/java/com/saney/ytmimporter/storage/RestorablePlay
 855d8a2560bcb389  app/src/main/java/com/saney/ytmimporter/storage/SafRecentFileQuery.kt
 f946829e8e807845  app/src/main/java/com/saney/ytmimporter/storage/SafTreeAccess.kt
 fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWriter.kt
-a0f2d6c3739df6ce  app/src/main/java/com/saney/ytmimporter/storage/YtmArtifactClassificationCache.kt
-34ef978e85233f8e  app/src/main/java/com/saney/ytmimporter/storage/YtmArtifactClassifier.kt
+60b8c61323691e6f  app/src/main/java/com/saney/ytmimporter/storage/YtmArtifactClassificationCache.kt
+bce7265e013c71ab  app/src/main/java/com/saney/ytmimporter/storage/YtmArtifactClassifier.kt
 c9be4e8b88578bdb  app/src/main/java/com/saney/ytmimporter/ui/AppThemeManager.kt
 fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome.kt
 88174cd2da5b393b  app/src/main/java/com/saney/ytmimporter/ui/HomeDashboardChrome.kt
@@ -238,8 +238,8 @@ ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecover
 28f601a5358ea777  app/src/test/java/com/saney/ytmimporter/recovery/RecoveryCenterPolicyTest.kt
 e2c34610a3853bc3  app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt
 a5cfdda45ea01b81  app/src/test/java/com/saney/ytmimporter/storage/QuotaMathTest.kt
-58b2d6d79f9659ea  app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactClassificationCacheTest.kt
-8b7225cd098df537  app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactClassifierTest.kt
+831c1373b7e7beea  app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactClassificationCacheTest.kt
+ba0683f9524d126e  app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactClassifierTest.kt
 88f7699b54a2e28b  app/src/test/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicyTest.kt
 0113b34cc00569a1  app/src/test/java/com/saney/ytmimporter/updater/UpdaterManifestPolicyTest.kt
 40aa6e5acb402d82  app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotCommitPolicyTest.kt
@@ -1501,7 +1501,7 @@ c7dcc3962a57c8a1  docs/v.1.4.55/ACTION_LAYOUT_AUDIT_2026-09-30.md
 e75fedf0e97b40a3  docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md
 bf8554506baff159  docs/v.1.4.55/BULK_HIERARCHY_AUDIT_2026-09-30.md
 97eda2909381f32d  docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md
-f4285ae0a309a48e  docs/v.1.4.55/CURRENT_STATE.md
+a60f2ebe0d84f93b  docs/v.1.4.55/CURRENT_STATE.md
 2b783092a8099b3c  docs/v.1.4.55/DESTRUCTIVE_CONFIRMATION_AUDIT_2026-09-30.md
 4d4bd7e63ea43833  docs/v.1.4.55/FILE_LIBRARY_AUDIT_2026-10-05.md
 60180d110e58838e  docs/v.1.4.55/FILE_LIBRARY_CONTRACT.md
@@ -1517,7 +1517,7 @@ c704c86772b65f8c  docs/v.1.4.55/diagrams/README.md
 27a15b16ec816765  docs/v.1.4.55/diagrams/UX_HARDENING_FLOW.md
 fc65b287a8cf23e1  docs/v.1.4.55/qa/BUG_REGISTER.md
 febf3fbcd4f5c8e5  docs/v.1.4.55/qa/EVIDENCE_MANIFEST.md
-1aa981a4f15d0e05  docs/v.1.4.55/qa/PHONE_TEST.md
+c4b830a2c2d4353b  docs/v.1.4.55/qa/PHONE_TEST.md
 91953c8f5c13af7d  docs/v.1.4.6/REGRESSION_CHECKLIST.md
 b19a7931871c062d  docs/v.1.4.6/RELEASE.md
 34feef4923c89b09  docs/v.1.4.6/diagrams/ACTION_HIERARCHY.md
@@ -1768,7 +1768,7 @@ d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 2e29e655a94f3422  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
 639044c8c4dd26b3  scripts/v1455-file-library-audit.sh
-2efa65e3243abd6b  scripts/v1455-ux-hardening-audit.sh
+9de04873be2d4d4d  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh
