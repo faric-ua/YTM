@@ -31,7 +31,11 @@ import com.saney.ytmimporter.storage.LocalBackupManager
 import com.saney.ytmimporter.storage.PendingJobStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.SafTreeFileWriter
+import com.saney.ytmimporter.storage.YtmArtifactClassifier
+import com.saney.ytmimporter.storage.YtmArtifactPresentation
 import com.saney.ytmimporter.storage.YtmArtifactScope
+import com.saney.ytmimporter.storage.YtmArtifactScopePolicy
+import com.saney.ytmimporter.storage.YtmArtifactType
 import com.saney.ytmimporter.ui.SafFileSaveFlow
 import com.saney.ytmimporter.youtube.SearchCache
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotCache
@@ -1469,6 +1473,38 @@ class DataActivity : Activity() {
         )
     }
 
+    private fun rejectReliableWrongArtifactType(
+        raw: String,
+        scope: YtmArtifactScope
+    ): Boolean {
+        val detectedType =
+            YtmArtifactClassifier
+                .inspect(raw)
+                .type
+
+        if (
+            detectedType ==
+                YtmArtifactType.UNKNOWN ||
+            YtmArtifactScopePolicy
+                .accepts(
+                    scope = scope,
+                    type = detectedType
+                )
+        ) {
+            return false
+        }
+
+        showRecoveryFailure(
+            YtmArtifactPresentation
+                .wrongTypeMessage(
+                    scope = scope,
+                    detectedType =
+                        detectedType
+                )
+        )
+        return true
+    }
+
     private fun prepareHistoryImport(
         uri: Uri
     ) {
@@ -1477,6 +1513,17 @@ class DataActivity : Activity() {
                 uri = uri,
                 label = "History JSON"
             ) ?: return
+
+        if (
+            rejectReliableWrongArtifactType(
+                raw = raw,
+                scope =
+                    YtmArtifactScope
+                        .HISTORY_RESTORE
+            )
+        ) {
+            return
+        }
 
         runCatching {
             historyStore
@@ -1624,6 +1671,17 @@ class DataActivity : Activity() {
                 uri = uri,
                 label = "backup"
             ) ?: return
+
+        if (
+            rejectReliableWrongArtifactType(
+                raw = raw,
+                scope =
+                    YtmArtifactScope
+                        .FULL_LOCAL_RESTORE
+            )
+        ) {
+            return
+        }
 
         runCatching {
             localBackupManager
