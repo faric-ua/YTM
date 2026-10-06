@@ -66,7 +66,7 @@ Phone finding found on that signed slice:
 - source cause was confirmed: Activity recreation cleared visible candidates and reread/reparsed every JSON file.
 
 Corrective rotation-cache source:
-- current branch HEAD `daaa599da7c031c0df881b7fbd8b280f218d3913`;
+- corrective app-source `daaa599da7c031c0df881b7fbd8b280f218d3913`; later checkpoint commits are documentation-only;
 - bounded process-local artifact classification cache keyed by `URI + lastModified + size`;
 - unchanged classified files can be reused after Activity recreation;
 - changed/new files still classify off the UI thread;
