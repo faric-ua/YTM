@@ -104,7 +104,7 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 96762cccc29fff58  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
-4a26432db93725b4  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
+8d47b9840e27cbce  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
 088d30cebc159efb  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 5c565252917f725e  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
@@ -163,6 +163,7 @@ cdc3478ae48a57bb  app/src/main/java/com/saney/ytmimporter/storage/RestorablePlay
 855d8a2560bcb389  app/src/main/java/com/saney/ytmimporter/storage/SafRecentFileQuery.kt
 f946829e8e807845  app/src/main/java/com/saney/ytmimporter/storage/SafTreeAccess.kt
 fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWriter.kt
+a0f2d6c3739df6ce  app/src/main/java/com/saney/ytmimporter/storage/YtmArtifactClassificationCache.kt
 34ef978e85233f8e  app/src/main/java/com/saney/ytmimporter/storage/YtmArtifactClassifier.kt
 c9be4e8b88578bdb  app/src/main/java/com/saney/ytmimporter/ui/AppThemeManager.kt
 fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome.kt
@@ -237,6 +238,7 @@ ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecover
 28f601a5358ea777  app/src/test/java/com/saney/ytmimporter/recovery/RecoveryCenterPolicyTest.kt
 e2c34610a3853bc3  app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt
 a5cfdda45ea01b81  app/src/test/java/com/saney/ytmimporter/storage/QuotaMathTest.kt
+58b2d6d79f9659ea  app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactClassificationCacheTest.kt
 8b7225cd098df537  app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactClassifierTest.kt
 88f7699b54a2e28b  app/src/test/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicyTest.kt
 0113b34cc00569a1  app/src/test/java/com/saney/ytmimporter/updater/UpdaterManifestPolicyTest.kt
@@ -1765,7 +1767,7 @@ d308452fe33231c1  scripts/v1453-quota-recovery-audit.sh
 d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 2e29e655a94f3422  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
-36019937875ee556  scripts/v1455-file-library-audit.sh
+67eb8711dce6fb24  scripts/v1455-file-library-audit.sh
 2efa65e3243abd6b  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 cf275a9ddfd583f3  tools/termux/README.md
