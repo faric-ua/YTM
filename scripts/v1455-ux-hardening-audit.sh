@@ -760,6 +760,7 @@ grep -Fq 'action.dismissOnClick' "$UI" ||
 
 python - "$PLAYLIST" "$CURRENT_PLAYLIST_STORE" <<'PY_LOCAL_PLAYLIST_EDIT'
 from pathlib import Path
+import re
 import sys
 
 playlist = Path(sys.argv[1]).read_text(encoding="utf-8")
