@@ -70,29 +70,22 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-### SLEEP CHECKPOINT — 2026-10-07
+PHONE #52 has started and exposed one corrective finding:
+- new Ukrainian menu loads;
+- stale local code path correctly recommends `1 — Оновити проєкт`;
+- after sync, readiness shows current code + Validate PASS;
+- bug: docs/tooling-only HEAD incorrectly recommended `5 — Зібрати новий APK`.
 
-Current task: **#52 / UX-047 Simplified Termux operator menu/status**.
+Correction is implemented in `ytm-status.sh`: compare previously downloaded APK source to current remote HEAD across Android/build inputs; only proven unchanged app inputs reuse the previous APK. Missing/unprovable source fails closed.
 
-Validated state:
-- tooling/source checkpoint `cf2298d7b340562f49131b09246f259a1d12cbfe`;
-- final pre-sleep docs/manifest handoff HEAD `fa7f378ff1768c24bf91a2928d8cb1bd9eb62050`;
-- exact-HEAD Validate `37552641156 — SUCCESS`;
-- release preflight / dedicated #52 audit / JVM / unsigned assemble PASS;
-- Android app source unchanged; no APK rebuild/install required.
+Next:
+1. exact-HEAD Validate corrective source;
+2. phone `1 — Оновити проєкт`;
+3. `2 — Перевірити, що зараз готово` retest only;
+4. require no-build message for tooling-only HEAD and compatible previous APK;
+5. then continue `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії`.
 
-PHONE QA has not started.
-
-Resume phone flow exactly:
-1. old local YTM menu → `1 — Sync YTM`;
-2. after sync → `0 — Вийти`;
-3. reopen the **YTM Importer** shortcut;
-4. confirm the new task-oriented menu;
-5. press `2 — Перевірити, що зараз готово`;
-6. send a screenshot before following its suggested next action;
-7. then continue `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії`.
-
-Do not repeat #53/#54.
+No APK rebuild/install. Do not repeat #53/#54.
 
 ## Immutable functional reference
 
