@@ -454,19 +454,16 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Validate and PHONE-retest the #52 tooling-only APK compatibility correction.**
+**PHONE-retest the #52 tooling-only APK compatibility correction.**
 
-PHONE finding from `2 — Перевірити, що зараз готово`: after sync the screen correctly showed current code + Validate PASS, but incorrectly suggested `5 — Зібрати новий APK` because there was no signed build for the docs/tooling-only HEAD.
+Corrective checkpoint `aa624982756d19b9bea844840f279e6ff77d4c7d` passed Validate `37637690717 — SUCCESS` (preflight / #52 audit / JVM / assemble PASS).
 
-Diagnosis: accepted signed app source `22721a7b64858cfad7416c85c7d867723cb16946` → current #52 HEAD changes only docs/audits/Termux tooling; Android/build inputs are unchanged.
-
-Correction implemented:
-- readiness checks the previously downloaded signed APK source against current remote HEAD over guarded Android/build paths;
-- proven no-change → previous APK is compatible and no new APK is requested;
-- unknown/unprovable compatibility fails closed and keeps normal signed-build requirement;
-- primary labels now distinguish `Підписаний APK для поточного HEAD`, `Android-застосунок`, and `Завантажений APK`.
-
-Next gate: exact-HEAD Validate PASS, then phone sync/reopen and repeat only `2 — Перевірити, що зараз готово` before continuing #52 menu QA.
+Retest only the readiness screen:
+1. `1 — Оновити проєкт`;
+2. return to main menu;
+3. `2 — Перевірити, що зараз готово`;
+4. require Android app compatibility to be recognized from the previous downloaded signed APK and **no** recommendation to `5 — Зібрати новий APK` for tooling-only changes;
+5. send the output before continuing `6` / `7` menu QA.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
