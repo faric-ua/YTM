@@ -7,6 +7,7 @@ STORE="$ROOT/app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStor
 POLICY="$ROOT/app/src/main/java/com/saney/ytmimporter/model/LocalPlaylistEditPolicy.kt"
 POLICY_TEST="$ROOT/app/src/test/java/com/saney/ytmimporter/model/LocalPlaylistEditPolicyTest.kt"
 UI="$ROOT/app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"
+CLEAR_ICON="$ROOT/app/src/main/res/drawable/ic_ytm_clear.xml"
 CONTRACT="$ROOT/docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_CONTRACT.md"
 BASELINE="$ROOT/docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md"
 PHONE="$ROOT/docs/v.1.4.55/qa/PHONE_TEST.md"
@@ -16,11 +17,11 @@ fail() {
   exit 1
 }
 
-for f in "$PLAYLIST" "$STORE" "$POLICY" "$POLICY_TEST" "$UI" "$CONTRACT" "$BASELINE" "$PHONE"; do
+for f in "$PLAYLIST" "$STORE" "$POLICY" "$POLICY_TEST" "$UI" "$CLEAR_ICON" "$CONTRACT" "$BASELINE" "$PHONE"; do
   test -f "$f" || fail "missing #30 regression file: $f"
 done
 
-for label in   'title = "Редагувати"'   '"Редагувати локальний плейлист"'   '"Лише в YTM Importer"'   '"Зберегти"'   '"Скасувати"'   '"Введіть назву плейлиста."'
+for label in   'title = "Редагувати"'   '"Редагувати локальний плейлист"'   '"Лише в YTM Importer"'   '"Зберегти"'   '"Скасувати"'   '"Введіть назву плейлиста."'   '"Очистити назву"'
 do
   grep -Fq "$label" "$PLAYLIST" ||
     fail "#30 visible editor contract missing: $label"
@@ -35,7 +36,17 @@ done
 grep -Fq 'heightFraction =' "$PLAYLIST" ||
   fail "#30 compact editor height opt-in missing"
 grep -Fq '0.72f' "$PLAYLIST" ||
-  fail "#30 compact editor height value changed"
+  fail "#30 portrait compact editor height value changed"
+grep -Fq 'Configuration' "$PLAYLIST" ||
+  fail "#30 orientation-aware editor sizing missing"
+grep -Fq 'ORIENTATION_LANDSCAPE' "$PLAYLIST" ||
+  fail "#30 landscape editor height policy missing"
+grep -Fq 'imeAware =' "$PLAYLIST" ||
+  fail "#30 editor does not opt into IME-safe fixed-footer behavior"
+grep -Fq 'R.drawable.ic_ytm_clear' "$PLAYLIST" ||
+  fail "#30 one-tap clear action icon missing"
+grep -Fq 'input.setText("")' "$PLAYLIST" ||
+  fail "#30 one-tap clear action no longer clears the complete name"
 grep -Fq 'addTextChangedListener(' "$PLAYLIST" ||
   fail "#30 editor no longer reacts to corrected text"
 grep -Fq 'isNotBlank() == true' "$PLAYLIST" ||
@@ -51,6 +62,16 @@ grep -Fq 'action.dismissOnClick' "$UI" ||
   fail "shared validating dialog action ignores dismissOnClick"
 grep -Fq 'heightFraction: Float = 1f' "$UI" ||
   fail "shared fixed-footer default height contract changed"
+grep -Fq 'imeAware: Boolean = false' "$UI" ||
+  fail "shared fixed-footer IME behavior is no longer opt-in"
+grep -Fq 'WindowInsetsCompat.Type' "$UI" ||
+  fail "shared fixed-footer inset handling missing"
+grep -Fq '.ime()' "$UI" ||
+  fail "#30 IME safe-inset support missing"
+grep -Fq 'SOFT_INPUT_ADJUST_RESIZE' "$UI" ||
+  fail "#30 Dialog Window is not configured for IME resize"
+grep -Fq 'activeHeightFraction' "$UI" ||
+  fail "#30 fixed-footer no longer expands within the remaining IME-safe viewport"
 grep -Fq '.coerceIn(' "$UI" ||
   fail "compact fixed-footer height is not bounded"
 grep -Fq 'dp(' "$UI" ||
@@ -93,7 +114,12 @@ rename_compact = "".join(rename.split())
 
 required_editor = [
     "showContentDialog(",
-    "heightFraction=0.72f",
+    "heightFraction=editorHeightFraction",
+    "imeAware=true",
+    "Configuration.ORIENTATION_LANDSCAPE",
+    "contentDescription=\"Очистити назву\"",
+    "R.drawable.ic_ytm_clear",
+    "input.setText(\"\")",
     "dismissOnClick=false",
     "editDraftName",
     "editTargetLocalPlaylistId",
@@ -166,17 +192,23 @@ content_sig = block(
     "fun showContentDialog(",
     "\n    fun showMultiChoiceDialog",
 )
-if "heightFraction: Float = 1f" not in content_sig:
-    raise SystemExit("FAIL: showContentDialog compact height is not opt-in")
+for item in (
+    "heightFraction: Float = 1f",
+    "imeAware: Boolean = false",
+):
+    if item not in content_sig:
+        raise SystemExit(
+            "FAIL: showContentDialog safe editor option is not opt-in: " + item
+        )
 
 message_sig = block(
     ui,
     "fun showMessageDialog(",
     "\n    fun showDangerConfirmDialog",
 )
-if "heightFraction" in message_sig:
+if "heightFraction" in message_sig or "imeAware" in message_sig:
     raise SystemExit(
-        "FAIL: compact editor height leaked into shared message-dialog API"
+        "FAIL: editor geometry/IME options leaked into shared message-dialog API"
     )
 
 fixed = block(
@@ -186,11 +218,18 @@ fixed = block(
 )
 for item in (
     "heightFraction: Float = 1f",
+    "imeAware: Boolean = false",
     ".coerceIn(",
     "0.45f",
     "1f",
     "320",
     "availableHeight",
+    "WindowInsetsCompat.Type",
+    ".ime()",
+    "isVisible(",
+    "SOFT_INPUT_ADJUST_RESIZE",
+    "activeHeightFraction",
+    "if (imeVisible)",
 ):
     if item not in fixed:
         raise SystemExit("FAIL: compact fixed-footer safety missing: " + item)
