@@ -87,6 +87,31 @@ describe_run() {
   esac
 }
 
+android_app_changed_between() {
+  local from_sha="$1"
+  local to_sha="$2"
+
+  [ -n "$from_sha" ] ||
+    return 2
+
+  git -C "$YTM_REPO_DIR" cat-file -e "$from_sha^{commit}" 2>/dev/null ||
+    return 2
+
+  if git -C "$YTM_REPO_DIR" diff --quiet "$from_sha" "$to_sha" -- \
+    app \
+    build.gradle.kts \
+    settings.gradle.kts \
+    gradle.properties \
+    gradle \
+    gradlew \
+    gradlew.bat
+  then
+    return 1
+  fi
+
+  return 0
+}
+
 VALIDATION_ROW="$(run_for_exact_head validate.yml "$REMOTE")"
 SIGNED_ROW="$(run_for_exact_head "$YTM_WORKFLOW" "$REMOTE")"
 
@@ -124,17 +149,28 @@ DOWNLOADED_PATH=""
 [ -s "$YTM_STATE_DIR/latest-apk.path" ] &&
   DOWNLOADED_PATH="$(cat "$YTM_STATE_DIR/latest-apk.path")"
 
+HAS_CURRENT_DOWNLOAD="no"
+HAS_COMPATIBLE_APK="no"
+ANDROID_APP_STATE="потребує нового APK"
+
 if [ "$DOWNLOADED_SOURCE" = "$REMOTE" ] &&
    [ -n "$DOWNLOADED_PATH" ] &&
    [ -s "$DOWNLOADED_PATH" ]; then
-  DOWNLOADED_STATE="завантажений ✅ (run $DOWNLOADED_RUN)"
+  DOWNLOADED_STATE="точно для поточного коду ✅ (run $DOWNLOADED_RUN)"
   HAS_CURRENT_DOWNLOAD="yes"
+  HAS_COMPATIBLE_APK="yes"
+  ANDROID_APP_STATE="поточний APK відповідає коду ✅"
+elif [ -n "$DOWNLOADED_SOURCE" ] &&
+     [ -n "$DOWNLOADED_PATH" ] &&
+     [ -s "$DOWNLOADED_PATH" ] &&
+     ! android_app_changed_between "$DOWNLOADED_SOURCE" "$REMOTE"; then
+  DOWNLOADED_STATE="попередній APK підходить ✅ (run $DOWNLOADED_RUN)"
+  HAS_COMPATIBLE_APK="yes"
+  ANDROID_APP_STATE="Android-застосунок не змінювався ✅"
 elif [ "$SIGNED_STATUS:$SIGNED_CONCLUSION" = "completed:success" ]; then
   DOWNLOADED_STATE="ще не завантажений"
-  HAS_CURRENT_DOWNLOAD="no"
 else
-  DOWNLOADED_STATE="—"
-  HAS_CURRENT_DOWNLOAD="no"
+  DOWNLOADED_STATE="немає сумісного APK"
 fi
 
 if [ "$CODE_KIND" = "DIRTY" ] ||
@@ -144,12 +180,14 @@ if [ "$CODE_KIND" = "DIRTY" ] ||
 elif [ "$CODE_KIND" = "BEHIND" ]; then
   NEXT_ACTION="1 — Оновити проєкт"
 elif [ "$VALIDATION_STATUS:$VALIDATION_CONCLUSION" = "completed:success" ]; then
-  if [ "$SIGNED_STATUS:$SIGNED_CONCLUSION" = "completed:success" ]; then
+  if [ "$HAS_COMPATIBLE_APK" = "yes" ]; then
     if [ "$HAS_CURRENT_DOWNLOAD" = "yes" ]; then
       NEXT_ACTION="4 — Відкрити папку з APK"
     else
-      NEXT_ACTION="3 — Завантажити готовий APK"
+      NEXT_ACTION="Новий APK не потрібен — Android-застосунок не змінювався."
     fi
+  elif [ "$SIGNED_STATUS:$SIGNED_CONCLUSION" = "completed:success" ]; then
+    NEXT_ACTION="3 — Завантажити готовий APK"
   elif [ "$SIGNED_STATUS" = "queued" ] ||
        [ "$SIGNED_STATUS" = "in_progress" ]; then
     NEXT_ACTION="Зачекай завершення збірки, потім повтори «2 — Перевірити, що зараз готово»"
@@ -171,8 +209,9 @@ echo "YTM Importer $VERSION"
 echo "========================================"
 echo "Код у Termux:                     $CODE_STATE"
 echo "Перевірка поточного коду:         $(describe_run "$VALIDATION_ROW")"
-echo "Підписаний APK для поточного коду: $(describe_run "$SIGNED_ROW")"
-echo "APK на телефоні:                  $DOWNLOADED_STATE"
+echo "Підписаний APK для поточного HEAD: $(describe_run "$SIGNED_ROW")"
+echo "Android-застосунок:               $ANDROID_APP_STATE"
+echo "Завантажений APK:                 $DOWNLOADED_STATE"
 echo
 echo "Що робити далі:"
 echo "  $NEXT_ACTION"
