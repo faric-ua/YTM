@@ -70,14 +70,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-1. Do not repeat #53 or #54 phone matrices.
-2. Start #52 / UX-047 from the live Termux scripts.
-3. Replace the default developer-oriented menu with task-oriented Ukrainian labels for normal phone QA.
-4. Remove the top-level ambiguity between `Status` and `Release status`.
-5. Status must clearly tell the user whether phone code matches current remote code, whether that exact code passed Validate, whether a signed APK exists for that exact code, and the single next action to take.
-6. Move shell/finalize/raw GitHub Actions details under an Advanced submenu, keeping all exact-HEAD guards unchanged.
-7. Add static guards, Validate, then focused phone QA for the menu/status flow.
-
+1. #52 Termux tooling implementation is complete; no Android app source changed.
+2. Run exact branch-head Validate; release preflight now includes `scripts/v1455-termux-operator-menu-audit.sh` and `bash -n` for every Termux script.
+3. On PASS, user starts from the old locally installed menu: `1 — Sync YTM` → `0 — Вийти` → reopen YTM Importer shortcut.
+4. PHONE check the new main menu labels and `2 — Перевірити, що зараз готово` plain-language summary / exact next action.
+5. PHONE check `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії` → `2 — Технічний стан релізу` current-vs-history separation.
+6. Verify `0 — Назад` returns from Advanced and normal operator workflow does not require raw Git/gh commands.
+7. No APK rebuild/install is required for #52 because the change is Termux tooling/docs only.
 
 ## Immutable functional reference
 
