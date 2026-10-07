@@ -10,9 +10,12 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.text.InputType
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -24,6 +27,7 @@ import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.storage.LocalPlaylistRenameResult
 import com.saney.ytmimporter.storage.PlaylistProjectCodec
 import com.saney.ytmimporter.storage.SafTreeFileWriter
 import com.saney.ytmimporter.ui.AppThemeManager
@@ -91,6 +95,28 @@ class PlaylistActivity : Activity() {
         Dialog? =
         null
 
+    private var editDialogOpen =
+        false
+
+    private var editDialog:
+        Dialog? =
+        null
+
+    private var editDraftName:
+        String? =
+        null
+
+    private var editTargetLocalPlaylistId:
+        String? =
+        null
+
+    private var editValidationError =
+        false
+
+    private var editNameInput:
+        EditText? =
+        null
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -115,6 +141,34 @@ class PlaylistActivity : Activity() {
                 )
                 ?: false
 
+        editDialogOpen =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_EDIT_DIALOG_OPEN,
+                    false
+                )
+                ?: false
+
+        editDraftName =
+            savedInstanceState
+                ?.getString(
+                    STATE_EDIT_DRAFT_NAME
+                )
+
+        editTargetLocalPlaylistId =
+            savedInstanceState
+                ?.getString(
+                    STATE_EDIT_TARGET_LOCAL_PLAYLIST_ID
+                )
+
+        editValidationError =
+            savedInstanceState
+                ?.getBoolean(
+                    STATE_EDIT_VALIDATION_ERROR,
+                    false
+                )
+                ?: false
+
         scrollPosition.restore(
             savedInstanceState
         )
@@ -132,6 +186,20 @@ class PlaylistActivity : Activity() {
         super.onResume()
         captureScrollPosition()
         render()
+
+        if (
+            editDialogOpen &&
+            editDialog
+                ?.isShowing != true
+        ) {
+            window.decorView.post {
+                if (!isFinishing && !isDestroyed) {
+                    showPlaylistEditor(
+                        restoring = true
+                    )
+                }
+            }
+        }
 
         if (
             projectDialogOpen &&
@@ -171,6 +239,25 @@ class PlaylistActivity : Activity() {
             replacementDialogOpen
         )
 
+        captureEditDraft()
+
+        outState.putBoolean(
+            STATE_EDIT_DIALOG_OPEN,
+            editDialogOpen
+        )
+        outState.putString(
+            STATE_EDIT_DRAFT_NAME,
+            editDraftName
+        )
+        outState.putString(
+            STATE_EDIT_TARGET_LOCAL_PLAYLIST_ID,
+            editTargetLocalPlaylistId
+        )
+        outState.putBoolean(
+            STATE_EDIT_VALIDATION_ERROR,
+            editValidationError
+        )
+
         scrollPosition.save(
             outState,
             scrollView
@@ -189,6 +276,7 @@ class PlaylistActivity : Activity() {
 
     override fun onPause() {
         captureScrollPosition()
+        captureEditDraft()
         super.onPause()
     }
 
@@ -211,6 +299,19 @@ class PlaylistActivity : Activity() {
                 null
             )
         replacementDialog =
+            null
+
+        editDialog
+            ?.setOnCancelListener(
+                null
+            )
+        editDialog
+            ?.setOnDismissListener(
+                null
+            )
+        editDialog =
+            null
+        editNameInput =
             null
         super.onDestroy()
     }
@@ -420,6 +521,16 @@ class PlaylistActivity : Activity() {
         content.addView(
             summaryCard(snapshot)
         )
+
+        addAction(
+            content = content,
+            title = "Редагувати",
+            subtitle =
+                "Змінити локальну назву; YouTube Music не змінюється",
+            primary = false
+        ) {
+            showPlaylistEditor()
+        }
 
         addAction(
             content = content,
@@ -1843,6 +1954,18 @@ class PlaylistActivity : Activity() {
 
         private const val STATE_REPLACEMENT_DIALOG_OPEN =
             "playlist_replacement_dialog_open"
+
+        private const val STATE_EDIT_DIALOG_OPEN =
+            "playlist_edit_dialog_open"
+
+        private const val STATE_EDIT_DRAFT_NAME =
+            "playlist_edit_draft_name"
+
+        private const val STATE_EDIT_TARGET_LOCAL_PLAYLIST_ID =
+            "playlist_edit_target_local_playlist_id"
+
+        private const val STATE_EDIT_VALIDATION_ERROR =
+            "playlist_edit_validation_error"
 
         private const val STATE_SCROLL_POSITION =
             "playlist_scroll_position"
