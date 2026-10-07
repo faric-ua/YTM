@@ -549,7 +549,7 @@ Focused phone matrix — exact visible flow:
 - [x] linked-YTM safety: local rename preserved YTM ID `PLBHSr6BvsM4o`, linked title, and the remote YouTube Music title remained unchanged;
 - [x] no Search/write/restore/delete action auto-started during open/rotation/cancel.
 
-Status: **FUNCTIONAL PHONE BASELINE PASS — FIRST UX CORRECTIVE PHONE FAIL / SECOND CORRECTIVE IN PROGRESS**.
+Status: **FUNCTIONAL PHONE BASELINE PASS — MODAL UX REJECTED / DEDICATED SCREEN R3 VALIDATE PENDING**.
 
 
 ### #30 functional phone baseline — PASS — 2026-10-08
@@ -593,3 +593,30 @@ Retest policy:
 - do **not** repeat the accepted functional matrix;
 - after the second corrective APK, test only portrait/landscape/IME geometry, × clear action, and validation clearing;
 - repeat rename persistence, blank rejection semantics, rotation persistence, Cancel, YTM linkage or remote-title checks only if their protected owner changes.
+
+
+### #30 R3 dedicated edit screen — focused smoke only
+
+Do **not** repeat the already accepted full #30 functional matrix.
+
+R3 source contract:
+- **«Поточний плейлист» → «Редагувати»** opens a dedicated screen, not a modal;
+- header **«Редагувати плейлист»**;
+- badge **«Лише локально»**;
+- × **«Очистити назву»**;
+- one footer **«Зберегти»**;
+- linked playlist shows read-only **«Назва в YouTube Music»** + YTM ID;
+- normal Activity `adjustResize`, no modal height fractions.
+
+Focused PHONE smoke:
+- [ ] dedicated screen opens and parent screen is no longer visually behind it;
+- [ ] portrait + keyboard: name field, × and Save remain reachable;
+- [ ] landscape + keyboard: content remains usable/reachable;
+- [ ] × clears the complete draft;
+- [ ] blank/unchanged draft → Save disabled;
+- [ ] changed valid draft → Save enabled;
+- [ ] blank validation disappears after typing valid text;
+- [ ] Back exits without saving the unsaved draft;
+- [ ] linked-YTM screen shows read-only remote name/ID.
+
+Full rename/persistence/rotation/Cancel/YTM-linkage/remote-title matrix stays carried forward unless a protected persistence/identity owner changes.
