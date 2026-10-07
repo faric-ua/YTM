@@ -1068,7 +1068,8 @@ object UiChrome {
         message: String,
         actions: List<DialogAction>,
         subtitle: String? = null,
-        actionLayout: DialogActionLayout = DialogActionLayout.AUTO
+        actionLayout: DialogActionLayout = DialogActionLayout.AUTO,
+        heightFraction: Float = 1f
     ): Dialog {
         val palette =
             AppThemeManager.palette(activity)
@@ -1209,7 +1210,8 @@ object UiChrome {
             card = card,
             content = body,
             actions = actions,
-            actionLayout = actionLayout
+            actionLayout = actionLayout,
+            heightFraction = heightFraction
         )
     }
 
@@ -1650,7 +1652,8 @@ object UiChrome {
         card: LinearLayout,
         content: View,
         actions: List<DialogAction>,
-        actionLayout: DialogActionLayout
+        actionLayout: DialogActionLayout,
+        heightFraction: Float = 1f
     ): Dialog {
         val contentScroll =
             ScrollView(activity).apply {
@@ -1710,15 +1713,23 @@ object UiChrome {
         return showFixedFooterDialog(
             activity = activity,
             dialog = dialog,
-            card = card
+            card = card,
+            heightFraction = heightFraction
         )
     }
 
     private fun showFixedFooterDialog(
         activity: Activity,
         dialog: Dialog,
-        card: LinearLayout
+        card: LinearLayout,
+        heightFraction: Float = 1f
     ): Dialog {
+        val boundedHeightFraction =
+            heightFraction
+                .coerceIn(
+                    0.45f,
+                    1f
+                )
         val horizontalInset =
             dp(activity, 18)
 
@@ -1739,6 +1750,68 @@ object UiChrome {
                     .MATCH_PARENT
             )
         )
+
+        if (
+            boundedHeightFraction <
+            0.999f
+        ) {
+            outer.addOnLayoutChangeListener {
+                    view,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _ ->
+                val availableHeight =
+                    (
+                        view.height -
+                            view.paddingTop -
+                            view.paddingBottom
+                        )
+                        .coerceAtLeast(0)
+
+                if (
+                    availableHeight >
+                    0
+                ) {
+                    val preferredHeight =
+                        (
+                            availableHeight *
+                                boundedHeightFraction
+                            )
+                            .toInt()
+                            .coerceAtLeast(
+                                dp(
+                                    activity,
+                                    320
+                                )
+                            )
+                            .coerceAtMost(
+                                availableHeight
+                            )
+
+                    val layoutParams =
+                        card.layoutParams as
+                            FrameLayout.LayoutParams
+
+                    if (
+                        layoutParams.height !=
+                        preferredHeight
+                    ) {
+                        layoutParams.height =
+                            preferredHeight
+                        layoutParams.gravity =
+                            Gravity.TOP or
+                                Gravity.CENTER_HORIZONTAL
+                        card.layoutParams =
+                            layoutParams
+                    }
+                }
+            }
+        }
 
         fun configureWindow() {
             val window =
