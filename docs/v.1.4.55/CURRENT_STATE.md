@@ -555,7 +555,7 @@ Phase B is complete. Next active work: Phase C #30 local playlist Edit.
 
 ## #30 local playlist Edit — source checkpoint (2026-10-07)
 
-Status: **SOURCE / STATIC / JVM / VALIDATE PASS — SIGNED BUILD + PHONE QA PENDING**.
+Status: **FUNCTIONAL PHONE BASELINE PASS — PRESENTATION CORRECTIVE VALIDATION PENDING**.
 
 - **«Поточний плейлист»** now exposes **«Редагувати»**;
 - editor **«Редагувати локальний плейлист»** changes only the local name;
@@ -570,4 +570,6 @@ Status: **SOURCE / STATIC / JVM / VALIDATE PASS — SIGNED BUILD + PHONE QA PEND
 
 Validated app/tooling HEAD: `b22274c33344ebe27d3a422e7dc30669a57ee6bf`; Validate `37681402021 — SUCCESS` (preflight / #30 static guards / JVM / unsigned assemble PASS).
 
-Next: finalize docs/manifest exact-HEAD gate → one signed candidate → focused #30 phone matrix.
+Functional PHONE baseline passed on signed run `37683871558` / source `54425e2aa25c7381164b52f0b7b93d5c65637745`, including linked-YTM ID preservation and unchanged remote YouTube Music title.
+
+A durable no-repeat baseline + dedicated regression audit are now present. Two presentation findings are being corrected: compact editor geometry and stale validation clearing. Next: exact-HEAD Validate → one corrective signed APK → only those two focused phone checks.
