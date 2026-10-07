@@ -454,21 +454,19 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**PHONE-check #52 Termux operator menu/status.**
+**SLEEP CHECKPOINT — resume #52 phone QA only.**
 
-Validated tooling checkpoint: `cf2298d7b340562f49131b09246f259a1d12cbfe`, Validate `37552222710 — SUCCESS`.
+Validated final handoff HEAD before sleep: `fa7f378ff1768c24bf91a2928d8cb1bd9eb62050`; Validate `37552641156 — SUCCESS`.
 
-Because the phone still has the old menu script until sync, the first visible action is the old label: `1 — Sync YTM`. After sync, exit and reopen the YTM Importer shortcut so the new menu script is loaded.
+PHONE QA has not started. Resume sequence:
+1. old local menu → `1 — Sync YTM`;
+2. `0 — Вийти`;
+3. reopen YTM Importer shortcut;
+4. new menu → `2 — Перевірити, що зараз готово`;
+5. send screenshot before following its suggested next action;
+6. then continue focused checks for `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії`.
 
-Phone targets:
-- new main menu labels match the #52 contract;
-- `2 — Перевірити, що зараз готово` is plain-language-first and gives one exact next action;
-- `6 — Перевірити локальні зміни` clearly shows clean/current local state;
-- `7 — Розширені / релізні дії` contains only secondary technical/release actions;
-- Advanced → `2 — Технічний стан релізу` visibly separates current candidate from recorded release history;
-- `0 — Назад` returns to the main menu.
-
-Do not build/download/install an APK for this Termux-only test.
+No APK rebuild/install. Do not repeat #53/#54.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
