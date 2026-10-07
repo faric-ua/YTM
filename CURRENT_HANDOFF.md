@@ -72,21 +72,15 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#30 functional PHONE baseline remains locked. First compact-height corrective was rejected by phone video.
+#30 functional PHONE baseline remains locked. Modal editor UX was rejected after phone-video review.
 
-Rejected phone candidate: HEAD `32b400fbed056d46b08e6d7f1f40e9d88e907726`, signed run `37692262880`.
-
-Second corrective is presentation-only:
-- orientation-aware editor height: portrait compact, landscape full safe viewport;
-- IME-aware safe insets + `SOFT_INPUT_ADJUST_RESIZE`; keyboard-visible editor fills remaining safe viewport;
-- one-tap × `Очистити назву` using `ic_ytm_clear`;
-- stale blank error clears on valid typing.
+R3 replaces the modal with dedicated `EditPlaylistActivity` and removes #30 dialog lifecycle/geometry code from `PlaylistActivity` / shared `UiChrome`.
 
 Next:
-1. refresh manifest and exact-HEAD Validate;
-2. one signed build;
-3. phone-smoke only editor geometry with/without IME in portrait/landscape, × clear, validation clearing;
-4. close #30 if UX is acceptable.
+1. exact-HEAD Validate;
+2. one signed R3 APK;
+3. focused PHONE smoke for dedicated screen / portrait+IME / landscape+IME / × clear / Save dirty+valid state / validation clearing / Back no-save / linked read-only YTM card;
+4. close #30 if acceptable.
 
 ## Immutable functional reference
 
