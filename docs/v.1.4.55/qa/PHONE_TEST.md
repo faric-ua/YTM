@@ -530,3 +530,20 @@ Final #52 result:
 - Advanced Back navigation — PASS.
 
 **#52 / UX-047 — PHONE PASS / CLOSED.**
+
+
+## Phase C #30 — Local playlist Edit
+
+Source/static checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
+
+Focused phone matrix — exact visible flow:
+- [ ] open **«Поточний плейлист»** and verify **«Редагувати»** is visible;
+- [ ] tap **«Редагувати»** → editor title is **«Редагувати локальний плейлист»** and copy says YouTube Music is not changed;
+- [ ] local-only rename: enter a new name → **«Зберегти»** → same screen shows the new name; reopen editor and verify persistence;
+- [ ] blank validation: enter whitespace → **«Зберегти»** → editor stays open with **«Введіть назву плейлиста.»** and name is not changed;
+- [ ] rotation draft: type an unsaved draft → portrait → landscape → portrait → same editor/draft remains and nothing is saved automatically;
+- [ ] Cancel: change draft → **«Скасувати»** → original persisted name remains;
+- [ ] linked-YTM safety: on a playlist that shows a YTM link, local rename preserves the same YTM destination/linkage and does not remotely rename it;
+- [ ] no Search/write/restore/delete action auto-starts during open/rotation/cancel.
+
+Status: **SOURCE IMPLEMENTED / VALIDATE + SIGNED BUILD PENDING**.
