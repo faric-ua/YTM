@@ -70,15 +70,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#52 `6 — Перевірити локальні зміни` is **PHONE PASS** on `9d7882cfb56fc53ef05419189e0fa4cad558f21b`; Local/Remote matched and working tree was clean.
+#52 Advanced submenu and technical release separation are **PHONE PASS**.
 
-Next:
-1. main menu → `7 — Розширені / релізні дії`;
-2. verify only the intended secondary actions are present;
-3. Advanced → `2 — Технічний стан релізу`;
-4. require clear `ПОТОЧНИЙ КАНДИДАТ` vs `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ` separation;
-5. verify `0 — Назад` returns to the main menu;
-6. if PASS, reconcile the full #52 acceptance matrix and close if nothing remains.
+Final phone action:
+1. from the technical release screen press Enter to return to Advanced;
+2. press `0 — Назад`;
+3. require the task-oriented main menu to reappear;
+4. if PASS, reconcile the complete #52 phone matrix and close #52 if no acceptance item remains.
 
 No APK rebuild/install. Do not repeat #53/#54.
 
