@@ -84,14 +84,25 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-1. #52 source implementation is complete; Android app code is unchanged.
-2. Main menu contract now uses: **`1 — Оновити проєкт`**, **`2 — Перевірити, що зараз готово`**, **`3 — Завантажити готовий APK`**, **`4 — Відкрити папку з APK`**, **`5 — Зібрати новий APK`**, **`6 — Перевірити локальні зміни`**, **`7 — Розширені / релізні дії`**, **`H — Допомога`**.
-3. Advanced menu owns shell / technical release state / stable publication / raw GitHub Actions.
-4. Primary readiness status reports only the current candidate and one exact `Що робити далі`; historical release metadata is visually separated in Advanced.
-5. `scripts/v1455-termux-operator-menu-audit.sh` guards labels, current-vs-history separation and exact-HEAD build/download safety.
-6. Next gate: exact branch-head Validate PASS.
-7. After PASS, phone flow starts from the currently installed old Termux menu: **`1 — Sync YTM` → `0 — Вийти` → reopen `YTM Importer`**. Then test only the new #52 menu/status surfaces.
-8. Do not repeat #53/#54 phone matrices and do not rebuild/install the Android APK for this tooling-only change.
+1. #52 tooling checkpoint `cf2298d7b340562f49131b09246f259a1d12cbfe` passed Validate `37552222710 — SUCCESS` with release preflight, #52 static audit, JVM tests and unsigned assemble PASS.
+2. No Android APK rebuild/install is needed: #52 changes only repository-owned Termux scripts/docs.
+3. On the phone, the first sync still uses the **old currently loaded menu label**: `1 — Sync YTM`.
+4. After sync: `0 — Вийти`, then reopen the **YTM Importer** Termux shortcut so the new menu script is loaded.
+5. Verify the new main menu shows:
+   - `1 — Оновити проєкт`;
+   - `2 — Перевірити, що зараз готово`;
+   - `3 — Завантажити готовий APK`;
+   - `4 — Відкрити папку з APK`;
+   - `5 — Зібрати новий APK`;
+   - `6 — Перевірити локальні зміни`;
+   - `7 — Розширені / релізні дії`;
+   - `H — Допомога`;
+   - `0 — Вийти`.
+6. Open `2 — Перевірити, що зараз готово`; require current-code status, Validate status, current-code signed APK status, phone-download status and one `Що робити далі` line.
+7. Open `6 — Перевірити локальні зміни`; require current/clean state.
+8. Open `7 — Розширені / релізні дії`; require shell / technical release / stable release / GitHub Actions only. Then open `2 — Технічний стан релізу` and require separate `ПОТОЧНИЙ КАНДИДАТ` and `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ` sections.
+9. `0 — Назад` must return to the new main menu.
+10. Do not repeat #53/#54 matrices.
 
 ## Consolidated phone matrix
 
