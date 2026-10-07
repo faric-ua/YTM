@@ -70,13 +70,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-Corrective source checkpoint `aa624982756d19b9bea844840f279e6ff77d4c7d` passed Validate `37637690717 — SUCCESS`.
+#52 readiness corrective is **PHONE PASS** on `8b2fafb9f48dd22db3976e3783cba6b3f029460a`: no needless APK build is suggested for tooling-only changes; previous signed APK run `37546679576` is recognized as compatible.
 
-PHONE retest only:
-1. `1 — Оновити проєкт`;
-2. `2 — Перевірити, що зараз готово`;
-3. require proven tooling-only compatibility to suppress `5 — Зібрати новий APK` and show the previous downloaded APK as compatible;
-4. then continue remaining #52 checks for `6` and `7` only after this PASS.
+Next:
+1. main menu → `6 — Перевірити локальні зміни`;
+2. require current branch/current local-vs-remote state and clean files;
+3. then continue `7 — Розширені / релізні дії` → `2 — Технічний стан релізу` current-vs-history separation;
+4. verify Advanced `0 — Назад` returns to main.
 
 No APK rebuild/install. Do not repeat #53/#54.
 
