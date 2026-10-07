@@ -10,9 +10,9 @@ Last updated: **2026-10-07**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase B — Type-aware file library (#54)**
+- Release: **v1.4.55 / Phase B — Simplified Termux operator menu (#52)**
 - Branch: `feat/v1.4.55-ux-hardening`
-- Phase A and Phase B #41/#25/#57/#55 are PHONE PASS / CLOSED.
+- Phase A and Phase B #41/#25/#57/#55/#53/#54 are PHONE PASS / CLOSED.
 - #53 candidate is implemented, validated and signed:
   - implementation checkpoint `7c21b0e50ef6e380c408302d3b493ea94895969f`, Validate `37257583900 — SUCCESS`;
   - final candidate HEAD `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
@@ -41,8 +41,11 @@ Closed baseline:
 - #53 / Unified Recovery Center — **PHONE PASS / CLOSED**;
 - do not repeat the #53 phone matrix.
 
+Closed task:
+- #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser — **PHONE PASS / CLOSED 2026-10-07**.
+
 Active task:
-- #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
+- #52 / UX-047 Simplify Termux menu for non-developer phone use.
 
 #54 verified source state:
 - inventory + content-first file-library contract complete;
@@ -81,13 +84,18 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-1. Signed candidate is installed: run `37546679576 — SUCCESS`, source `22721a7b64858cfad7416c85c7d867723cb16946`, artifact ID `11451227175`.
-2. Playlist Project typed-card presentation is PHONE PASS: **«Імпорт файла»** shows CSV/TXT + YTM Project cards with readable metadata and **«Інший файл…»**.
-3. Wrong-type fallback is PHONE PASS: choosing a known History JSON through **«Інший файл…»** shows **«Файл не підходить»** with **«Це History JSON, а тут потрібен YTM Project.»** and no import.
-4. Remaining test only: stay on **«Імпорт файла»**, rotate portrait → landscape → portrait without selecting a file.
-5. PASS requires the scoped list/cards to return near-immediately, remain correctly typed/scoped, and no import to start automatically.
-6. Do not repeat Full Restore or History chooser tests.
-7. If this rotation slice passes, reconcile final #54 acceptance and close only if the issue acceptance matrix is fully satisfied.
+1. #54 is **PHONE PASS / CLOSED**. Final Playlist Project test: on **«Імпорт файла»**, portrait → landscape → portrait returned the scoped/typed cards near-immediately and no import auto-started.
+2. Do not repeat #53 or #54 phone matrices.
+3. Start #52 / UX-047 by auditing the live Termux operator scripts:
+   - `tools/termux/ytm-menu.sh`;
+   - `ytm-status.sh`;
+   - `ytm-release-status.sh`;
+   - `ytm-build-apk.sh`;
+   - `ytm-download-apk.sh`;
+   - `ytm-help.sh`.
+4. Target default menu from #52: task-oriented Ukrainian wording, one unambiguous project-readiness/status path, and an Advanced submenu for shell/release/raw GitHub actions.
+5. Preserve exact-current-HEAD Validate and signed-build safety. Historical phone/release metadata must never look like the current candidate.
+6. After source/static/Validate PASS, run only the focused #52 phone menu/status matrix.
 
 ## Consolidated phone matrix
 
