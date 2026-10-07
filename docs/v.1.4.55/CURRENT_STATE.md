@@ -296,7 +296,7 @@ and build evidence is not phone PASS.
 
 ## #54 type-aware file library — current checkpoint (2026-10-06)
 
-Status: **PHONE PARTIAL; Full Restore + History PASS; Playlist Project typed cards + wrong-type PASS; Playlist Project rotation/no-auto-import remains.**
+Status: **PHONE PASS / CLOSED 2026-10-07.**
 
 - classifier/scope foundation implemented;
 - Full Restore and History Import now request content-scoped recent JSON candidates;
@@ -315,7 +315,8 @@ Status: **PHONE PARTIAL; Full Restore + History PASS; Playlist Project typed car
 - signed phone candidate: run `37546679576 — SUCCESS`, source `22721a7b64858cfad7416c85c7d867723cb16946`, artifact ID `11451227175`; installed on phone.
 - Playlist Project presentation phone check: **PASS** — **«Імпорт файла»** shows typed CSV/TXT/YTM Project cards; YTM Project cards expose playlist title/track-count metadata; **«Інший файл…»** remains available.
 - wrong-type fallback phone check: **PASS** — known History JSON is blocked by **«Файл не підходить»** with detected/expected type wording and no import.
-- next gate: Playlist Project chooser portrait → landscape → portrait; require near-immediate scoped card continuity and no automatic import.
+- final Playlist Project rotation phone check 2026-10-07: **PASS** — portrait → landscape → portrait returned the scoped/typed cards near-immediately and no import auto-started.
+- overall #54 result: **PHONE PASS / CLOSED**. Do not repeat this matrix.
 
 ## Phase B — management / discoverability
 
@@ -478,7 +479,9 @@ Phase A and Phase B #41/#25/BUG-051/#55/#53 are PHONE PASS / CLOSED.
 - signed run `37338681198 — SUCCESS`;
 - Recovery Center Home/Menu counts, actionable/warning separation, both rotations, Back, exact Pending/History/Bulk routes, no-auto-start and breathing acknowledgement all passed on phone.
 
-Active Phase B item: #54 / Type-aware YTM file library and scoped import/restore chooser.
+Closed Phase B item: #54 / Type-aware YTM file library — **PHONE PASS / CLOSED**.
+
+Active Phase B item: #52 / Simplified Termux operator menu/status.
 
 #54 foundation:
 - file-flow/schema inventory complete;
