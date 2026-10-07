@@ -248,9 +248,9 @@ versionName while pointing to different commits.
 
 `artifacts/apk/` is gitignored. Do not commit APK binaries into Git history.
 
-## 11. Open downloaded APK folder from Termux
+## 11. `4 — Відкрити папку з APK`
 
-Menu item 4 re-verifies the downloaded APK and opens the folder where that exact
+`4 — Відкрити папку з APK` re-verifies the downloaded APK and opens the folder where that exact
 APK already lives:
 
 `/storage/emulated/0/Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`
