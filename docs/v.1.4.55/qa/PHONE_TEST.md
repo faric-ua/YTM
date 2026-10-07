@@ -549,7 +549,7 @@ Focused phone matrix — exact visible flow:
 - [x] linked-YTM safety: local rename preserved YTM ID `PLBHSr6BvsM4o`, linked title, and the remote YouTube Music title remained unchanged;
 - [x] no Search/write/restore/delete action auto-started during open/rotation/cancel.
 
-Status: **FUNCTIONAL PHONE BASELINE PASS — TWO UX CORRECTIVES PENDING**.
+Status: **FUNCTIONAL PHONE BASELINE PASS — FIRST UX CORRECTIVE PHONE FAIL / SECOND CORRECTIVE IN PROGRESS**.
 
 
 ### #30 functional phone baseline — PASS — 2026-10-08
@@ -574,13 +574,22 @@ PHONE evidence:
 
 Result: **#30 FUNCTIONAL PHONE BASELINE PASS**.
 
-PHONE findings to correct without rerunning the full matrix:
-1. portrait editor leaves excessive empty vertical space between the name field and fixed footer;
-2. after blank validation, **«Введіть назву плейлиста.»** stays visible after the user enters a valid nonblank draft.
+PHONE findings are presentation-only; preserve the accepted functional baseline.
+
+First corrective candidate:
+- final HEAD `32b400fbed056d46b08e6d7f1f40e9d88e907726`;
+- Validate `37691496743 — SUCCESS`;
+- signed run `37692262880 — SUCCESS`;
+- follow-up user video: **PHONE UX FAIL**.
+
+Video findings:
+1. keyboard-open useful area is still cramped;
+2. portrait compact fraction must not be reused mechanically for landscape;
+3. IME must be a safe inset and footer must remain above it;
+4. add one-tap **× «Очистити назву»** for long names;
+5. retain the already implemented stale-validation clearing.
 
 Retest policy:
-- preserve this accepted functional baseline;
-- after the two corrective UI changes, rerun only:
-  1. editor compactness / footer accessibility in portrait + landscape;
-  2. blank error disappears after typing a nonblank draft;
-- do **not** repeat rename persistence, blank rejection semantics, rotation persistence, Cancel, YTM linkage or remote-title checks unless their protected source/contract changes.
+- do **not** repeat the accepted functional matrix;
+- after the second corrective APK, test only portrait/landscape/IME geometry, × clear action, and validation clearing;
+- repeat rename persistence, blank rejection semantics, rotation persistence, Cancel, YTM linkage or remote-title checks only if their protected owner changes.
