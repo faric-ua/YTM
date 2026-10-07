@@ -133,6 +133,7 @@ object UiChrome {
     data class DialogAction(
         val label: String,
         val tone: ActionTone = ActionTone.NORMAL,
+        val dismissOnClick: Boolean = true,
         val onClick: () -> Unit
     )
 
@@ -1358,7 +1359,12 @@ object UiChrome {
                 activity = activity,
                 action = action
             ) {
-                dialog.dismiss()
+                if (
+                    action.dismissOnClick
+                ) {
+                    dialog.dismiss()
+                }
+
                 action.onClick()
             }
 
