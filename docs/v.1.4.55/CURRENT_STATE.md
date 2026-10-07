@@ -551,3 +551,21 @@ Status: **PHONE PASS / CLOSED**.
 - Advanced `0 — Назад` → main menu — PASS.
 
 Phase B is complete. Next active work: Phase C #30 local playlist Edit.
+
+
+## #30 local playlist Edit — source checkpoint (2026-10-07)
+
+Status: **SOURCE / STATIC IMPLEMENTED — VALIDATE PENDING**.
+
+- **«Поточний плейлист»** now exposes **«Редагувати»**;
+- editor **«Редагувати локальний плейлист»** changes only the local name;
+- exact local/source/track/destination identity fields are preserved;
+- `CurrentPlaylistStore.save()` remains the write-through owner for `RestorablePlaylistStore`;
+- no remote YTM rename/API owner and no History rewrite;
+- blank input remains open with inline validation;
+- draft + exact target identity survive recreation without auto-save;
+- shared fixed-footer dialog action gained opt-in `dismissOnClick=false`, defaulting to the old behavior for every existing consumer;
+- JVM name-policy coverage and v1.4.55 static guards added;
+- source/static checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
+
+Next: exact-HEAD Validate → one signed candidate → focused #30 phone matrix.
