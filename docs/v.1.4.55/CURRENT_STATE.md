@@ -555,7 +555,7 @@ Phase B is complete. Next active work: Phase C #30 local playlist Edit.
 
 ## #30 local playlist Edit — source checkpoint (2026-10-07)
 
-Status: **SOURCE / STATIC IMPLEMENTED — VALIDATE PENDING**.
+Status: **SOURCE / STATIC / JVM / VALIDATE PASS — SIGNED BUILD + PHONE QA PENDING**.
 
 - **«Поточний плейлист»** now exposes **«Редагувати»**;
 - editor **«Редагувати локальний плейлист»** changes only the local name;
@@ -568,4 +568,6 @@ Status: **SOURCE / STATIC IMPLEMENTED — VALIDATE PENDING**.
 - JVM name-policy coverage and v1.4.55 static guards added;
 - source/static checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
 
-Next: exact-HEAD Validate → one signed candidate → focused #30 phone matrix.
+Validated app/tooling HEAD: `b22274c33344ebe27d3a422e7dc30669a57ee6bf`; Validate `37681402021 — SUCCESS` (preflight / #30 static guards / JVM / unsigned assemble PASS).
+
+Next: finalize docs/manifest exact-HEAD gate → one signed candidate → focused #30 phone matrix.
