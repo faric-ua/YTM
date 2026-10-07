@@ -471,26 +471,22 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**Validate second #30 presentation corrective after PHONE video FAIL.**
+**Validate #30 R3 dedicated edit screen.**
 
-Accepted functional PHONE baseline remains locked and must not be repeated.
+User rejected the modal interaction pattern after two phone-video iterations. Functional persistence/YTM baseline remains accepted.
 
-Rejected first corrective candidate:
-- HEAD `32b400fbed056d46b08e6d7f1f40e9d88e907726`;
-- signed run `37692262880 — SUCCESS`;
-- PHONE video: editor/IME ergonomics FAIL.
+R3 source now:
+- `PlaylistActivity` opens `EditPlaylistActivity`;
+- legacy edit-dialog state/methods are removed from the hub;
+- dedicated Activity uses `adjustResize`, normal page scrolling and one fixed page footer Save;
+- Save is enabled only for valid dirty text;
+- × `Очистити назву` clears the draft;
+- linked YTM title/ID are read-only;
+- Back exits without save;
+- #30-specific dialog height/IME changes were removed from shared `UiChrome`;
+- regression audit was rewritten around the dedicated-screen contract.
 
-Second corrective implementation:
-- portrait/IME-hidden keeps compact `0.72f` height;
-- landscape uses full safe height;
-- editor opts into `imeAware = true`;
-- IME becomes a safe inset + Dialog Window uses `SOFT_INPUT_ADJUST_RESIZE`;
-- while keyboard is visible, editor fills the remaining safe viewport so footer stays reachable;
-- one-tap `×` / **«Очистити назву»** using existing `ic_ytm_clear`;
-- stale blank-validation clearing remains;
-- no storage/identity/linkage/History/Search/YTM semantics changed.
-
-Next: manifest → exact-HEAD Validate → one signed APK → focused PHONE smoke only for portrait/landscape/IME geometry, × clear, and validation clearing.
+Next: manifest → exact-HEAD Validate → one signed R3 APK → focused PHONE smoke only; do not repeat the accepted full matrix.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
