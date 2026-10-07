@@ -441,3 +441,24 @@ Focused phone matrix:
 - [ ] Advanced `0 — Назад` returns to main menu.
 
 Status: **PHONE QA PENDING**.
+
+
+### #52 PHONE finding — tooling-only HEAD suggested needless APK build — 2026-10-07
+
+Observed after successful sync to `107b59270ed9954e8fe7cb1cccce1590d0c90878`:
+- **«Код у Termux: актуальний ✅»**;
+- **«Перевірка поточного коду: PASS ✅ (run 37556648938)»**;
+- no signed run existed for that exact docs/tooling HEAD;
+- readiness incorrectly suggested **`5 — Зібрати новий APK`**.
+
+Diagnosis:
+- compare from accepted signed app source `22721a7b64858cfad7416c85c7d867723cb16946` to the current HEAD contains only docs/audits/`tools/termux` changes;
+- no `app/` or Android build inputs changed;
+- therefore a new APK is unnecessary.
+
+Correction:
+- readiness now checks the previously downloaded signed APK source against the current remote HEAD using a guarded `git diff` over Android/build inputs;
+- if no Android/build input changed, it reports the previous APK as compatible and explicitly says a new APK is not needed;
+- if compatibility cannot be proven, it fails closed and retains the normal signed-build requirement.
+
+Status: **CORRECTIVE SOURCE IMPLEMENTED / VALIDATE PENDING**.
