@@ -454,19 +454,19 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**SLEEP CHECKPOINT — resume #52 phone QA only.**
+**Validate and PHONE-retest the #52 tooling-only APK compatibility correction.**
 
-Validated final handoff HEAD before sleep: `fa7f378ff1768c24bf91a2928d8cb1bd9eb62050`; Validate `37552641156 — SUCCESS`.
+PHONE finding from `2 — Перевірити, що зараз готово`: after sync the screen correctly showed current code + Validate PASS, but incorrectly suggested `5 — Зібрати новий APK` because there was no signed build for the docs/tooling-only HEAD.
 
-PHONE QA has not started. Resume sequence:
-1. old local menu → `1 — Sync YTM`;
-2. `0 — Вийти`;
-3. reopen YTM Importer shortcut;
-4. new menu → `2 — Перевірити, що зараз готово`;
-5. send screenshot before following its suggested next action;
-6. then continue focused checks for `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії`.
+Diagnosis: accepted signed app source `22721a7b64858cfad7416c85c7d867723cb16946` → current #52 HEAD changes only docs/audits/Termux tooling; Android/build inputs are unchanged.
 
-No APK rebuild/install. Do not repeat #53/#54.
+Correction implemented:
+- readiness checks the previously downloaded signed APK source against current remote HEAD over guarded Android/build paths;
+- proven no-change → previous APK is compatible and no new APK is requested;
+- unknown/unprovable compatibility fails closed and keeps normal signed-build requirement;
+- primary labels now distinguish `Підписаний APK для поточного HEAD`, `Android-застосунок`, and `Завантажений APK`.
+
+Next gate: exact-HEAD Validate PASS, then phone sync/reopen and repeat only `2 — Перевірити, що зараз готово` before continuing #52 menu QA.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
