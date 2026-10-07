@@ -1262,10 +1262,10 @@ Functional baseline: exact phone-accepted v1.4.54 source
 - [x] History logical grouping/provider affordances
 - [x] Recovery Center + compact breathing attention icon
 - [x] type-aware YTM file library / scoped chooser — #54 PHONE PASS / CLOSED
-- [ ] simplified Termux operator menu — #52 ACTIVE
+- [x] simplified Termux operator menu — #52 PHONE PASS / CLOSED
 
 ### Wave C — local convenience
-- [ ] local playlist Edit
+- [ ] local playlist Edit — #30 ACTIVE
 - [ ] blank URL inline validation
 - [ ] Review manual URL/manual-selection polish
 - [ ] Bulk preparation presentation/state cleanup
