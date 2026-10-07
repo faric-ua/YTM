@@ -60,34 +60,48 @@ Release preflight must fail if any of these invariants disappear:
 - current-store save still writes through to `RestorablePlaylistStore`;
 - blank-name policy remains covered by JVM tests.
 
-## Corrective UX findings after accepted baseline
+## Corrective UX history after accepted baseline
 
 The functional baseline remains accepted.
 
-The first presentation corrective was built from final HEAD `32b400fbed056d46b08e6d7f1f40e9d88e907726`
-and signed run `37692262880 — SUCCESS`, but follow-up phone video showed that
-the editor ergonomics were still not acceptable.
+### R1 / R2 modal attempts — rejected
 
-Observed presentation findings:
-1. applying the portrait compact fraction mechanically is not sufficient for landscape;
-2. with the keyboard open, useful editor space becomes cramped and copy/footer positioning feels unstable;
-3. IME must be treated as a safe inset so the fixed footer stays above the keyboard;
-4. long names need a one-tap **× / «Очистити назву»** action;
-5. blank validation must still disappear immediately after typing a valid nonblank draft.
+The first two presentation correctives tried to make the fixed-footer modal behave like a full editor.
+Phone video showed the pattern itself was wrong:
+- keyboard-open space became cramped;
+- rotation made the composition unstable;
+- landscape compressed the useful editing area;
+- the parent **«Поточний плейлист»** remained visible behind the editor and added visual noise;
+- adding × helped the field but did not fix the overall interaction model.
 
-Corrective implementation may touch editor presentation and shared fixed-footer sizing/IME handling only if:
-- shared defaults stay unchanged for dialogs that do not opt in;
-- local/remote persistence semantics remain unchanged;
-- release preflight/static audit remains PASS.
+Therefore modal height-fraction / IME tuning is no longer the #30 UI strategy.
 
-## Focused corrective retest only
+### R3 — dedicated screen
 
-After the next corrective APK is installed, manual retest is limited to:
+`PlaylistActivity` now opens `EditPlaylistActivity`.
 
-1. open **«Редагувати»** in portrait with keyboard hidden: editor is compact and the footer is visible;
-2. tap the name field: keyboard opens without covering the input/error/footer; **«Зберегти» / «Скасувати»** remain reachable;
-3. rotate to landscape with the editor/keyboard path and back: the editor uses the remaining safe viewport instead of becoming mechanically compressed;
-4. tap **× «Очистити назву»** and verify the complete field clears in one action;
-5. trigger blank validation, then type a nonblank draft; **«Введіть назву плейлиста.»** disappears immediately.
+R3 intentionally:
+- removes all edit-dialog lifecycle state from `PlaylistActivity`;
+- removes #30-specific height/IME extensions from shared `UiChrome`;
+- uses a normal Activity with `adjustResize`;
+- owns draft/original/target identity/validation state inside the editor screen;
+- uses one primary Save action whose enabled state is valid + dirty;
+- exposes × **«Очистити назву»**;
+- shows linked YTM title/ID read-only;
+- Back exits without save.
 
-If these focused presentation checks pass and the regression audit passes, #30 can close without repeating the accepted rename/persistence/rotation/no-auto-save/Cancel/YTM-linkage/remote-title matrix.
+## Focused R3 retest only
+
+After the R3 APK is installed, do not repeat the accepted full functional matrix.
+
+Manual R3 smoke is limited to:
+1. dedicated screen opens from **«Поточний плейлист» → «Редагувати»**;
+2. portrait + keyboard ergonomics;
+3. landscape + keyboard ergonomics;
+4. × clears the field;
+5. Save disabled for blank/unchanged and enabled for valid changed text;
+6. blank validation clears after valid typing;
+7. Back discards the unsaved draft;
+8. linked YTM read-only name/ID are visible.
+
+If these pass and the dedicated-screen regression audit passes, #30 may close without re-running the previously accepted remote-title/YTM-linkage/rename persistence matrix.
