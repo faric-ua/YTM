@@ -399,6 +399,25 @@ Result:
 - **#54 Playlist Project typed-card presentation — PHONE PASS**;
 - **#54 wrong-type fallback protection — PHONE PASS**.
 
-Still pending before #54 closure:
-- on **«Імпорт файла»**, portrait → landscape → portrait;
-- cards must return near-immediately, remain scoped/typed, and import must not auto-start.
+Final rotation/no-auto-import check passed; see the #54 closeout section below.
+
+
+### Playlist Project rotation + #54 closeout — 2026-10-07
+
+Visible screen:
+- **«Імпорт файла»** after **«Імпорт» → «Імпорт із файлу» → «CSV, TXT або YTM Project» → «Вибрати файл»**.
+
+Phone evidence:
+- portrait → landscape → portrait completed successfully;
+- scoped/typed cards returned near-immediately after both rotations;
+- CSV/TXT/YTM Project presentation remained intact;
+- no file import auto-started.
+
+Final #54 result:
+- Full Restore scoped chooser + rotation cache — **PASS**;
+- History scoped chooser + rotation — **PASS**;
+- Playlist Project scoping / typed cards — **PASS**;
+- wrong-type fallback protection — **PASS**;
+- Playlist Project rotation / no-auto-import — **PASS**.
+
+**#54 / UX-049 — PHONE PASS / CLOSED.**
