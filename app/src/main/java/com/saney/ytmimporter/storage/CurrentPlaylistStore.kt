@@ -2,6 +2,7 @@ package com.saney.ytmimporter.storage
 
 import android.content.Context
 import com.saney.ytmimporter.model.ImportedPlaylist
+import com.saney.ytmimporter.model.LocalPlaylistEditPolicy
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
@@ -18,6 +19,14 @@ data class CurrentPlaylistSnapshot(
     val localPlaylistId: String,
     val sourceHistoryId: String? = null
 )
+
+enum class LocalPlaylistRenameResult {
+    RENAMED,
+    UNCHANGED,
+    INVALID_NAME,
+    NOT_FOUND,
+    TARGET_CHANGED
+}
 
 class CurrentPlaylistStore(
     context: Context
@@ -287,6 +296,64 @@ class CurrentPlaylistStore(
 
             snapshot
         }.getOrNull()
+    }
+
+    @Synchronized
+    fun renameCurrentPlaylist(
+        expectedLocalPlaylistId: String,
+        rawName: String
+    ): LocalPlaylistRenameResult {
+        val normalizedName =
+            LocalPlaylistEditPolicy
+                .normalizeName(
+                    rawName
+                )
+                ?: return LocalPlaylistRenameResult
+                    .INVALID_NAME
+
+        val snapshot =
+            load()
+                ?: return LocalPlaylistRenameResult
+                    .NOT_FOUND
+
+        if (
+            snapshot.localPlaylistId !=
+            expectedLocalPlaylistId
+        ) {
+            return LocalPlaylistRenameResult
+                .TARGET_CHANGED
+        }
+
+        if (
+            snapshot.playlist.name ==
+            normalizedName
+        ) {
+            return LocalPlaylistRenameResult
+                .UNCHANGED
+        }
+
+        save(
+            playlist =
+                snapshot.playlist.copy(
+                    name =
+                        normalizedName
+                ),
+            sourceLabel =
+                snapshot.sourceLabel,
+            destinationPlaylistId =
+                snapshot
+                    .destinationPlaylistId,
+            destinationPlaylistTitle =
+                snapshot
+                    .destinationPlaylistTitle,
+            localPlaylistId =
+                snapshot.localPlaylistId,
+            sourceHistoryId =
+                snapshot.sourceHistoryId
+        )
+
+        return LocalPlaylistRenameResult
+            .RENAMED
     }
 
     @Synchronized
