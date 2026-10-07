@@ -2,7 +2,7 @@
 
 Issue: **#30 / UX-036**
 
-Status: **FUNCTIONAL PHONE BASELINE PASS — SECOND PRESENTATION CORRECTIVE IN PROGRESS**
+Status: **FUNCTIONAL PHONE BASELINE PASS — DEDICATED EDIT SCREEN R3 SOURCE IMPLEMENTED / VALIDATE PENDING**
 
 ## Goal
 
@@ -123,18 +123,58 @@ The accepted regression baseline and no-repeat policy live in `LOCAL_PLAYLIST_ED
 
 Do not repeat this full manual matrix unless a protected owner listed in the regression baseline changes.
 
-## Presentation corrective contract
+## Dedicated editor screen contract — R3
 
-- portrait with IME hidden may use compact `heightFraction = 0.72f`;
-- landscape uses the full safe editor height instead of reusing the portrait fraction;
-- the editor opts into `imeAware = true`;
-- IME insets become part of the safe viewport and the Dialog Window uses `SOFT_INPUT_ADJUST_RESIZE`;
-- while IME is visible, the card expands to the full remaining safe viewport so the fixed footer stays reachable;
-- the field exposes one-tap **× «Очистити назву»** using `ic_ytm_clear`;
-- the clear action empties only the draft and does not save automatically;
-- after blank validation, entering any nonblank draft hides **«Введіть назву плейлиста.»** immediately;
-- shared content-dialog defaults remain unchanged unless a caller opts into compact/IME-aware behavior;
-- these presentation corrections must not change storage, identity, linkage, History, Search or YTM write semantics.
+The modal editor pattern is retired.
 
-First corrective checkpoint `32b400fbed056d46b08e6d7f1f40e9d88e907726` / signed run `37692262880`
-was rejected by phone video for editor/IME ergonomics. The functional baseline remains accepted.
+Entry:
+- **«Поточний плейлист» → «Редагувати»** opens `EditPlaylistActivity`;
+- `PlaylistActivity` owns no edit dialog, edit-draft modal state, or editor validation state.
+
+Screen structure:
+- top bar: **← Редагувати плейлист**;
+- visible badge: **«Лише локально»**;
+- one multiline **«Локальна назва»** field;
+- one-tap × action with accessibility label **«Очистити назву»**;
+- one primary footer action **«Зберегти»**;
+- Back arrow / system Back cancels by finishing the screen and never saves.
+
+Save state:
+- **«Зберегти»** is disabled when the normalized name is blank;
+- **«Зберегти»** is disabled when the normalized name equals the original persisted name;
+- Save becomes enabled only for a valid dirty draft;
+- blank draft shows **«Назва не може бути порожньою.»**;
+- valid typing clears the blank message.
+
+Linked-YTM presentation:
+- when linked, show a read-only **«Назва в YouTube Music»** card and YTM ID;
+- editing that screen still changes only the local name;
+- when unlinked, show **«YouTube Music не змінюється.»**.
+
+Lifecycle / IME:
+- `EditPlaylistActivity` is declared with `windowSoftInputMode="adjustResize"`;
+- the page uses the normal Activity viewport instead of modal height fractions;
+- draft, original name, exact target `localPlaylistId` and validation visibility survive recreation;
+- if the current playlist identity changes, the editor fails closed and exits;
+- rotation never auto-saves.
+
+Persistence / safety:
+- Save still routes through `CurrentPlaylistStore.renameCurrentPlaylist()`;
+- the accepted identity/linkage/History/remote invariants remain unchanged;
+- shared `UiChrome` dialog geometry is no longer modified for this feature.
+
+## Focused R3 phone acceptance
+
+Do not repeat the full accepted functional matrix.
+
+Check only:
+1. **«Редагувати»** opens the dedicated full screen rather than a modal;
+2. portrait + keyboard: field, × and **«Зберегти»** remain usable without background-screen noise;
+3. landscape + keyboard: content remains scrollable/reachable and footer stays usable;
+4. × clears the full draft in one tap;
+5. Save is disabled for blank and unchanged names, enabled for a changed valid name;
+6. type after blank state and the validation message disappears;
+7. Back exits without saving the current draft;
+8. on a linked playlist, read-only YTM title/ID remain visible.
+
+The accepted rename/persistence/rotation/no-auto-save/Cancel/YTM-linkage/remote-title baseline is rerun only if a protected persistence/identity owner changes.
