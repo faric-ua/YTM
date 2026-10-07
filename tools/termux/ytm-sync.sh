@@ -68,7 +68,7 @@ else
     ytm_fail "Remote moved during fetch; run Sync again"
 
   if [ "$CURRENT_HEAD" = "$CURRENT_REMOTE" ]; then
-    echo "Already synchronized."
+    echo "Проєкт уже оновлений."
   elif git -C "$YTM_REPO_DIR" merge-base --is-ancestor "$CURRENT_HEAD" "$CURRENT_REMOTE"; then
     git -C "$YTM_REPO_DIR" merge --ff-only "$CURRENT_REMOTE"
   else
@@ -86,6 +86,6 @@ REMOTE_AFTER="$(ytm_remote_head "$BRANCH_AFTER")"
 ytm_require_clean
 
 echo
-echo "SYNCED"
+echo "ПРОЄКТ ОНОВЛЕНО ✅"
 echo "Branch: $BRANCH_AFTER"
-echo "HEAD:   $LOCAL_AFTER"
+echo "HEAD:   $LOCAL_AFTER"\necho\necho "Далі: 2 — Перевірити, що зараз готово"
