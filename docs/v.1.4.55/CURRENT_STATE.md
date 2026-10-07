@@ -481,7 +481,11 @@ Phase A and Phase B #41/#25/BUG-051/#55/#53/#54 are PHONE PASS / CLOSED.
 
 Closed Phase B item: #54 / Type-aware YTM file library — **PHONE PASS / CLOSED**.
 
-Active Phase B item: #52 / Simplified Termux operator menu/status.
+Closed Phase B item: #52 / Simplified Termux operator menu/status — **PHONE PASS / CLOSED**.
+
+Phase B status: **COMPLETE**.
+
+Active Phase C item: #30 / explicit local playlist Edit.
 
 #52 live starting point:
 - current default phone menu is still developer-oriented (`Sync YTM`, `Status`, `Open YTM shell`, `Validate + Build signed APK`, `Release status`, `Finalize stable release`, `GitHub Actions status`);
@@ -532,3 +536,18 @@ Correction:
 Status: **CORRECTIVE SOURCE / STATIC / VALIDATE PASS — PHONE RETEST PENDING**.
 
 Corrective checkpoint: `aa624982756d19b9bea844840f279e6ff77d4c7d`; Validate `37637690717 — SUCCESS` (preflight / #52 audit / JVM / assemble PASS). Next: phone readiness retest only.
+
+
+## #52 final closeout — 2026-10-07
+
+Status: **PHONE PASS / CLOSED**.
+
+- new Ukrainian operator menu — PASS;
+- readiness stale/current behavior — PASS;
+- tooling-only APK compatibility / no needless build — PASS;
+- local clean/current status — PASS;
+- Advanced submenu — PASS;
+- current candidate vs recorded history separation — PASS;
+- Advanced `0 — Назад` → main menu — PASS.
+
+Phase B is complete. Next active work: Phase C #30 local playlist Edit.
