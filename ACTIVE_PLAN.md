@@ -458,7 +458,7 @@ Checklist:
 - [x] Rotation/recreation state stores editor-open flag, draft, target `localPlaylistId` and validation state; Cancel/system cancel = no-op.
 - [x] Reject blank/whitespace-only names inline without dismissing or saving.
 - [x] Do not rewrite existing History audit records; no History owner is called by the rename path.
-- [ ] Static/JVM/Validate PASS before one focused phone candidate. Source/static implementation checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
+- [x] Static/JVM/Validate PASS before one focused phone candidate — validated app/tooling HEAD `b22274c33344ebe27d3a422e7dc30669a57ee6bf`, Validate `37681402021 — SUCCESS`.
 - [ ] PHONE acceptance for rename, Cancel, rotation and linked-YTM no-remote-mutation.
 
 Remaining Phase C backlog:
@@ -471,22 +471,18 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**Validate #30 local playlist Edit implementation, then build one signed phone candidate.**
+**Build one exact-HEAD signed #30 phone candidate.**
 
-Source/static checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
+Validated source/app checkpoint: `b22274c33344ebe27d3a422e7dc30669a57ee6bf`; Validate `37681402021 — SUCCESS` (release preflight / #30 static guards / JVM / unsigned assemble PASS).
 
-Implemented:
-- **«Поточний плейлист» → «Редагувати»**;
-- editor **«Редагувати локальний плейлист»** with fixed-footer **«Зберегти» / «Скасувати»**;
-- local-only rename through `CurrentPlaylistStore.renameCurrentPlaylist()`;
-- existing `save()` writes the same identity/linkage/tracks through to `RestorablePlaylistStore`;
-- blank validation stays inline and keeps the editor open;
-- rotation state preserves draft + exact target `localPlaylistId` without auto-save;
-- shared `UiChrome.DialogAction.dismissOnClick` defaults to existing behavior and is disabled only for validating Save;
-- dedicated JVM name-policy tests + v1.4.55 static guards added;
-- change class: **FUNCTIONAL_FEATURE (local-only)**; no remote/API/History semantics changed.
+Before dispatch, this docs checkpoint will be finalized and validated so the signed workflow source exactly matches the branch HEAD the phone downloads.
 
-Next gates: refresh manifest → exact-HEAD Validate → signed APK → focused PHONE QA for rename / blank / rotation draft / Cancel / linked-YTM identity.
+After signed-build PASS, PHONE QA starts with:
+- Termux `1 — Оновити проєкт`;
+- `3 — Завантажити готовий APK`;
+- `4 — Відкрити папку з APK`;
+- tap the v1.4.55 release APK and install over the current app;
+- then test **«Поточний плейлист» → «Редагувати»** only.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
