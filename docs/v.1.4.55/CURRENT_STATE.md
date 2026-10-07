@@ -555,7 +555,7 @@ Phase B is complete. Next active work: Phase C #30 local playlist Edit.
 
 ## #30 local playlist Edit — source checkpoint (2026-10-07)
 
-Status: **FUNCTIONAL PHONE BASELINE PASS — MODAL UX REJECTED / DEDICATED SCREEN R3 SOURCE IMPLEMENTED — VALIDATE PENDING**.
+Status: **FUNCTIONAL PHONE BASELINE PASS — DEDICATED SCREEN R3 VALIDATE PASS / SIGNED PHONE SMOKE PENDING**.
 
 - **«Поточний плейлист»** now exposes **«Редагувати»**;
 - editor **«Редагувати локальний плейлист»** changes only the local name;
@@ -579,3 +579,5 @@ Corrective checkpoint `03ddb8b6f8476d942eee68d0a429e5a137b7e706` passed Validate
 Second #30 presentation corrective follows user video evidence: landscape full-safe-height, IME-safe fixed-footer geometry, and one-tap × clear action. Functional baseline remains carried forward.
 
 #30 R3 replaces the rejected modal editor with `EditPlaylistActivity`; shared dialog geometry is no longer part of the feature. Dedicated-screen audit and focused phone-smoke contract are active.
+
+#30 R3 validated source checkpoint `133157098353f250e8536fd63bab65920b1555bf`; Validate `37701432833 — SUCCESS`. Next: exact-final docs gate → signed R3 APK → focused screen UX smoke only.
