@@ -87,22 +87,24 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-Current task: **#30 / UX-036 — dedicated edit screen R3**.
+Current task: **#30 / UX-036 — dedicated edit screen R3 signed-candidate gate**.
 
-Do not repeat the accepted functional #30 baseline.
+Validated R3 checkpoint:
+- HEAD `133157098353f250e8536fd63bab65920b1555bf`;
+- Validate `37701432833 — SUCCESS`;
+- dedicated #30 screen audit / preflight / JVM / unsigned assemble PASS.
 
-Modal R1/R2 were rejected from phone video. R3 replaces the modal completely:
-- `PlaylistActivity` → `EditPlaylistActivity`;
-- full page **«Редагувати плейлист»**;
-- badge **«Лише локально»**;
-- × **«Очистити назву»**;
+R3 architecture:
+- `PlaylistActivity` only launches `EditPlaylistActivity`;
+- no edit modal/state remains in the hub;
+- normal Activity `adjustResize`;
 - dirty/valid-only Save;
+- × clear;
+- Back=no-save;
 - linked YTM title/ID read-only;
-- `adjustResize` Activity; no modal height fractions;
-- Back = cancel/no save;
-- shared `UiChrome` editor-specific changes removed.
+- shared `UiChrome` no longer carries #30 editor geometry hacks.
 
-Next: exact-HEAD Validate → signed R3 APK → focused editor-screen smoke only. Do not repeat rename persistence, full rotation baseline, linked-YTM mutation or remote-title checks unless protected persistence/identity code changes.
+Next: finalize docs/manifest exact-HEAD gate → signed APK → focused R3 screen smoke only. Do not repeat the accepted full #30 or #52/#53/#54 matrices.
 
 ## Consolidated phone matrix
 
