@@ -87,20 +87,24 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-Current task: **#30 / UX-036 Local playlist Edit — corrective phone closeout only**.
+Current task: **#30 / UX-036 — second presentation corrective after video FAIL**.
 
-Functional matrix is already PHONE PASS and is protected by `LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md`; do not rerun it.
+Do not repeat the accepted functional #30 baseline.
 
-Corrective source/checkpoint:
-- `03ddb8b6f8476d942eee68d0a429e5a137b7e706`;
-- Validate `37690793773 — SUCCESS`;
-- dedicated #30 regression audit / preflight / JVM / unsigned assemble PASS.
+Latest user video was recorded on first corrective signed run `37692262880` / HEAD `32b400fbed056d46b08e6d7f1f40e9d88e907726` and showed:
+- keyboard-open editor still cramped;
+- landscape/rotation geometry still awkward;
+- no one-tap clear action for long names.
 
-Only two PHONE checks remain after exact-final-HEAD signed install:
-1. editor is compact in portrait and footer remains reachable in landscape;
-2. after blank validation, typing nonblank text hides **«Введіть назву плейлиста.»** immediately.
+Second corrective is implemented:
+- landscape full-safe-height policy;
+- IME-safe insets + resize and full remaining-height editor while keyboard is visible;
+- in-field × **«Очистити назву»**;
+- valid typing clears stale blank error.
 
-Do not repeat rename persistence, blank rejection semantics, rotation draft, Cancel, linked-YTM ID, remote-title, #52, #53 or #54 matrices.
+Dedicated #30 regression audit now guards these presentation contracts plus the already accepted functional owners.
+
+Next: exact-HEAD Validate → one signed APK → focused UI smoke only. Do not repeat rename/persistence/Cancel/YTM linkage/remote-title or #52/#53/#54 matrices.
 
 ## Consolidated phone matrix
 
