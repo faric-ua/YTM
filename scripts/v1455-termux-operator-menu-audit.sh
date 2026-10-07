@@ -59,14 +59,24 @@ grep -Fq 'Що робити далі:' "$STATUS" ||
   fail "primary readiness screen has no next-action guidance"
 grep -Fq 'Перевірка поточного коду:' "$STATUS" ||
   fail "current-code validation summary missing"
-grep -Fq 'Підписаний APK для поточного коду:' "$STATUS" ||
-  fail "current-code signed APK summary missing"
-grep -Fq 'APK на телефоні:' "$STATUS" ||
+grep -Fq 'Підписаний APK для поточного HEAD:' "$STATUS" ||
+  fail "current-HEAD signed APK summary missing"
+grep -Fq 'Android-застосунок:' "$STATUS" ||
+  fail "Android compatibility summary missing"
+grep -Fq 'Завантажений APK:' "$STATUS" ||
   fail "downloaded APK summary missing"
 grep -Fq 'VALIDATION_ROW="$(run_for_exact_head validate.yml "$REMOTE")"' "$STATUS" ||
   fail "readiness Validate is not pinned to current remote HEAD"
 grep -Fq 'SIGNED_ROW="$(run_for_exact_head "$YTM_WORKFLOW" "$REMOTE")"' "$STATUS" ||
   fail "readiness signed build is not pinned to current remote HEAD"
+grep -Fq 'android_app_unchanged_between()' "$STATUS" ||
+  fail "tooling-only APK compatibility helper missing"
+grep -Fq 'git -C "$YTM_REPO_DIR" diff --quiet "$from_sha" "$to_sha" --' "$STATUS" ||
+  fail "APK compatibility is not proven by git diff"
+grep -Fq 'app \\' "$STATUS" ||
+  fail "Android app path missing from compatibility guard"
+grep -Fq 'NEXT_ACTION="Новий APK не потрібен — Android-застосунок не змінювався."' "$STATUS" ||
+  fail "tooling-only HEAD still lacks no-rebuild next action"
 
 if grep -Fq 'Phone source:' "$STATUS" || grep -Fq 'RELEASE_META' "$STATUS"; then
   fail "historical release metadata leaked into primary readiness status"
