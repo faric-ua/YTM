@@ -2,7 +2,7 @@
 
 Issue: **#30 / UX-036**
 
-Status: **FUNCTIONAL PHONE BASELINE PASS — CORRECTIVE SOURCE VALIDATED / FOCUSED PHONE RETEST PENDING**
+Status: **FUNCTIONAL PHONE BASELINE PASS — SECOND PRESENTATION CORRECTIVE IN PROGRESS**
 
 ## Goal
 
@@ -125,10 +125,16 @@ Do not repeat this full manual matrix unless a protected owner listed in the reg
 
 ## Presentation corrective contract
 
-- editor may opt into `heightFraction = 0.72f`; shared `showContentDialog` default stays `1f`;
-- compact height is bounded between safe minimum behavior and the available viewport;
-- short/landscape screens may use the full available height so the fixed footer stays reachable;
+- portrait with IME hidden may use compact `heightFraction = 0.72f`;
+- landscape uses the full safe editor height instead of reusing the portrait fraction;
+- the editor opts into `imeAware = true`;
+- IME insets become part of the safe viewport and the Dialog Window uses `SOFT_INPUT_ADJUST_RESIZE`;
+- while IME is visible, the card expands to the full remaining safe viewport so the fixed footer stays reachable;
+- the field exposes one-tap **× «Очистити назву»** using `ic_ytm_clear`;
+- the clear action empties only the draft and does not save automatically;
 - after blank validation, entering any nonblank draft hides **«Введіть назву плейлиста.»** immediately;
+- shared content-dialog defaults remain unchanged unless a caller opts into compact/IME-aware behavior;
 - these presentation corrections must not change storage, identity, linkage, History, Search or YTM write semantics.
 
-Corrective source validation: `03ddb8b6f8476d942eee68d0a429e5a137b7e706`; Validate `37690793773 — SUCCESS` (dedicated #30 regression audit / release preflight / JVM / unsigned assemble PASS).
+First corrective checkpoint `32b400fbed056d46b08e6d7f1f40e9d88e907726` / signed run `37692262880`
+was rejected by phone video for editor/IME ergonomics. The functional baseline remains accepted.
