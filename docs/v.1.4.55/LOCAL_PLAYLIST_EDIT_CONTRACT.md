@@ -2,7 +2,7 @@
 
 Issue: **#30 / UX-036**
 
-Status: **SOURCE IMPLEMENTATION IN PROGRESS / PHONE QA PENDING**
+Status: **SOURCE / STATIC / JVM / VALIDATE PASS — SIGNED BUILD + PHONE QA PENDING**
 
 ## Goal
 
@@ -96,3 +96,14 @@ At minimum:
 - **«Скасувати»** after editing is a no-op;
 - on a YTM-linked playlist, local rename preserves the same YTM linkage/ID and does not rename remotely;
 - no Search/write/restore/delete operation auto-starts during open/rotation/cancel.
+
+## Validated source checkpoint
+
+- validated app/tooling HEAD: `b22274c33344ebe27d3a422e7dc30669a57ee6bf`;
+- Validate Android: `37681402021 — SUCCESS`;
+- release preflight: PASS;
+- #30 static guards: PASS;
+- JVM tests: PASS;
+- unsigned release assemble: PASS.
+
+Phone acceptance remains pending.
