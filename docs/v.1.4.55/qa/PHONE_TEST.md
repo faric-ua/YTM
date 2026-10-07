@@ -535,6 +535,9 @@ Final #52 result:
 ## Phase C #30 — Local playlist Edit
 
 Source/static checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
+Validated app/tooling HEAD: `b22274c33344ebe27d3a422e7dc30669a57ee6bf`.
+- Validate `37681402021 — SUCCESS`;
+- release preflight / #30 static guards / JVM / unsigned assemble PASS.
 
 Focused phone matrix — exact visible flow:
 - [ ] open **«Поточний плейлист»** and verify **«Редагувати»** is visible;
@@ -546,4 +549,4 @@ Focused phone matrix — exact visible flow:
 - [ ] linked-YTM safety: on a playlist that shows a YTM link, local rename preserves the same YTM destination/linkage and does not remotely rename it;
 - [ ] no Search/write/restore/delete action auto-starts during open/rotation/cancel.
 
-Status: **SOURCE IMPLEMENTED / VALIDATE + SIGNED BUILD PENDING**.
+Status: **SOURCE / STATIC / JVM / VALIDATE PASS — SIGNED BUILD + PHONE QA PENDING**.
