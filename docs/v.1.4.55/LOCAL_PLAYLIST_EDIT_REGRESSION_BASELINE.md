@@ -62,21 +62,32 @@ Release preflight must fail if any of these invariants disappear:
 
 ## Corrective UX findings after accepted baseline
 
-Two UI-only findings were discovered after the functional matrix passed:
+The functional baseline remains accepted.
 
-1. editor portrait geometry is too tall and leaves excessive empty space;
-2. blank validation copy remains visible after the user types a valid nonblank draft.
+The first presentation corrective was built from final HEAD `32b400fbed056d46b08e6d7f1f40e9d88e907726`
+and signed run `37692262880 — SUCCESS`, but follow-up phone video showed that
+the editor ergonomics were still not acceptable.
 
-Corrective implementation is allowed to touch editor presentation and shared fixed-footer sizing only if:
-- shared default behavior remains unchanged for existing dialogs;
+Observed presentation findings:
+1. applying the portrait compact fraction mechanically is not sufficient for landscape;
+2. with the keyboard open, useful editor space becomes cramped and copy/footer positioning feels unstable;
+3. IME must be treated as a safe inset so the fixed footer stays above the keyboard;
+4. long names need a one-tap **× / «Очистити назву»** action;
+5. blank validation must still disappear immediately after typing a valid nonblank draft.
+
+Corrective implementation may touch editor presentation and shared fixed-footer sizing/IME handling only if:
+- shared defaults stay unchanged for dialogs that do not opt in;
 - local/remote persistence semantics remain unchanged;
 - release preflight/static audit remains PASS.
 
 ## Focused corrective retest only
 
-After the corrective APK is installed, manual retest is limited to:
+After the next corrective APK is installed, manual retest is limited to:
 
-1. open **«Редагувати»** in portrait and landscape; editor/footer remain visible and the portrait layout is more compact;
-2. trigger blank validation, then type a nonblank draft; **«Введіть назву плейлиста.»** disappears immediately.
+1. open **«Редагувати»** in portrait with keyboard hidden: editor is compact and the footer is visible;
+2. tap the name field: keyboard opens without covering the input/error/footer; **«Зберегти» / «Скасувати»** remain reachable;
+3. rotate to landscape with the editor/keyboard path and back: the editor uses the remaining safe viewport instead of becoming mechanically compressed;
+4. tap **× «Очистити назву»** and verify the complete field clears in one action;
+5. trigger blank validation, then type a nonblank draft; **«Введіть назву плейлиста.»** disappears immediately.
 
-If those two checks pass and the static regression audit passes, #30 can close without repeating the accepted functional matrix.
+If these focused presentation checks pass and the regression audit passes, #30 can close without repeating the accepted rename/persistence/rotation/no-auto-save/Cancel/YTM-linkage/remote-title matrix.
