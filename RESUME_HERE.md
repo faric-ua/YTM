@@ -80,7 +80,7 @@ Corrective rotation-cache source:
 - JVM tests PASS, including cache tests;
 - unsigned release assemble PASS.
 
-**Phone result:** Full Restore rotation-cache behavior is **PHONE PASS 2026-10-06**. History-only scoped chooser is **PHONE PASS 2026-10-07**: `Вибрати History JSON` showed `Файли потрібного типу: 6`, matching History JSON candidates and `Інший файл…`; portrait → landscape → portrait returned the scoped cards near-immediately and no History import auto-started. #54 remains OPEN for Playlist Project scoping, typed cards and wrong-type messaging.
+**Phone result:** #54 is **PHONE PASS / CLOSED 2026-10-07**. Full Restore and History scoped chooser/rotation passed; Playlist Project `Імпорт файла` showed typed CSV/TXT/YTM Project cards, wrong-type History JSON was blocked with a clear message, and portrait → landscape → portrait returned the scoped/typed list near-immediately without auto-import.
 
 ## NEXT ACTION — do this first
 
