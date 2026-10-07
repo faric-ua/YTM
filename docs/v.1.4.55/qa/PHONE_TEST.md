@@ -457,8 +457,9 @@ Diagnosis:
 - therefore a new APK is unnecessary.
 
 Correction:
+- corrective Validate `37637690717 — SUCCESS` on `aa624982756d19b9bea844840f279e6ff77d4c7d`;
 - readiness now checks the previously downloaded signed APK source against the current remote HEAD using a guarded `git diff` over Android/build inputs;
 - if no Android/build input changed, it reports the previous APK as compatible and explicitly says a new APK is not needed;
 - if compatibility cannot be proven, it fails closed and retains the normal signed-build requirement.
 
-Status: **CORRECTIVE SOURCE IMPLEMENTED / VALIDATE PENDING**.
+Status: **CORRECTIVE SOURCE / STATIC / VALIDATE PASS — PHONE RETEST PENDING**.
