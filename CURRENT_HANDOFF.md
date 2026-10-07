@@ -72,13 +72,22 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-1. #52 is closed; do not repeat its Termux phone matrix.
-2. Phase B is complete; UX-028 Home detail drill-down was already completed earlier.
-3. Start #30 / UX-036 from live `PlaylistActivity`, `CurrentPlaylistStore` and `RestorablePlaylistStore`.
-4. Add explicit **«Редагувати»** from **«Поточний плейлист»**; Phase 1 edits local name only.
-5. Preserve local playlist identity/source/tracks/YTM linkage and keep remote rename out of this flow.
-6. Rotation-safe unsaved input; Cancel = no-op; blank validation.
-7. Add tests/static guards, exact-HEAD Validate, then one focused phone candidate.
+#30 / UX-036 source/static implementation is complete at checkpoint `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
+
+Implemented contract:
+- visible **«Редагувати»** on **«Поточний плейлист»**;
+- fixed-footer local editor with Save/Cancel;
+- local-name-only store mutation preserving exact identity/source/tracks/YTM linkage;
+- write-through via existing `CurrentPlaylistStore.save()` → `RestorablePlaylistStore.upsert()`;
+- no remote YTM update and no History rewrite;
+- blank validation stays open;
+- rotation-safe draft/target/error state and no auto-save.
+
+Next:
+1. refresh manifest;
+2. exact-HEAD Validate;
+3. if PASS, dispatch one signed build;
+4. phone QA exact visible flow starting from **«Поточний плейлист» → «Редагувати»**.
 
 ## Immutable functional reference
 
