@@ -450,15 +450,15 @@ Phase B is complete. Every completed Phase B item remains explicit-action and do
 Goal: add an explicit local-only edit flow from **«Поточний плейлист»** without changing playlist identity or silently mutating YTM.
 
 Checklist:
-- [ ] Add explicit **«Редагувати»** entry point from **«Поточний плейлист»**.
-- [ ] Phase 1 edits the local playlist name only.
-- [ ] Preserve the same `localPlaylistId`, source/history identity, selected video IDs and destination linkage.
-- [ ] Persist through `CurrentPlaylistStore` + `RestorablePlaylistStore`.
-- [ ] Linked YTM playlist must not be renamed remotely by this local edit flow.
-- [ ] Rotation preserves unsaved input; Cancel = no-op.
-- [ ] Reject blank/whitespace-only names.
-- [ ] Do not rewrite existing History audit records.
-- [ ] Static/JVM/Validate PASS before one focused phone candidate.
+- [x] Add explicit **«Редагувати»** entry point from **«Поточний плейлист»**.
+- [x] Phase 1 edits the local playlist name only.
+- [x] Preserve the same `localPlaylistId`, source/history identity, selected video IDs and destination linkage in the store-owned rename path.
+- [x] Persist through `CurrentPlaylistStore` + its existing `RestorablePlaylistStore` upsert path.
+- [x] Linked YTM playlist is not renamed remotely; the editor calls only the local store rename owner.
+- [x] Rotation/recreation state stores editor-open flag, draft, target `localPlaylistId` and validation state; Cancel/system cancel = no-op.
+- [x] Reject blank/whitespace-only names inline without dismissing or saving.
+- [x] Do not rewrite existing History audit records; no History owner is called by the rename path.
+- [ ] Static/JVM/Validate PASS before one focused phone candidate. Source/static implementation checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
 - [ ] PHONE acceptance for rename, Cancel, rotation and linked-YTM no-remote-mutation.
 
 Remaining Phase C backlog:
@@ -471,17 +471,22 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**Start Phase C with #30 / UX-036 — explicit local playlist Edit.**
+**Validate #30 local playlist Edit implementation, then build one signed phone candidate.**
 
-#52 / UX-047 is **PHONE PASS / CLOSED**. Do not repeat its Termux menu/status matrix.
+Source/static checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
 
-First #30 source step:
-1. audit `PlaylistActivity`, `CurrentPlaylistStore`, `RestorablePlaylistStore` and current playlist identity/linkage model;
-2. add one explicit **«Редагувати»** local-only entry point;
-3. Phase 1 edits name only and preserves `localPlaylistId`, source identity, tracks/videoIds and YTM linkage;
-4. rotation-safe unsaved input; Cancel = no-op; blank/whitespace validation;
-5. no remote YTM rename/mutation from this flow;
-6. add static/JVM coverage before phone QA.
+Implemented:
+- **«Поточний плейлист» → «Редагувати»**;
+- editor **«Редагувати локальний плейлист»** with fixed-footer **«Зберегти» / «Скасувати»**;
+- local-only rename through `CurrentPlaylistStore.renameCurrentPlaylist()`;
+- existing `save()` writes the same identity/linkage/tracks through to `RestorablePlaylistStore`;
+- blank validation stays inline and keeps the editor open;
+- rotation state preserves draft + exact target `localPlaylistId` without auto-save;
+- shared `UiChrome.DialogAction.dismissOnClick` defaults to existing behavior and is disabled only for validating Save;
+- dedicated JVM name-policy tests + v1.4.55 static guards added;
+- change class: **FUNCTIONAL_FEATURE (local-only)**; no remote/API/History semantics changed.
+
+Next gates: refresh manifest → exact-HEAD Validate → signed APK → focused PHONE QA for rename / blank / rotation draft / Cancel / linked-YTM identity.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
