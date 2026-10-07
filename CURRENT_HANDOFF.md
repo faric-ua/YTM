@@ -72,24 +72,18 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#30 functional PHONE matrix is **PASS and locked**. Do not rerun it unless a protected owner in `LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md` materially changes.
+#30 functional PHONE baseline is locked and protected by a dedicated regression audit.
 
-Accepted baseline: signed run `37683871558`, source `54425e2aa25c7381164b52f0b7b93d5c65637745`; linked YTM ID `PLBHSr6BvsM4o` and remote title non-mutation were phone-verified.
-
-Regression protection:
-- dedicated `scripts/v1455-local-playlist-edit-regression-audit.sh`;
-- wired into release preflight;
-- checks visible copy/actions, recreation state, local-only rename ownership, exact identity/linkage preservation, no History/remote/destructive owners, JVM blank policy and phone-baseline evidence.
-
-Current corrective slice is presentation-only:
-- compact editor height opt-in with shared default preserved;
-- stale blank validation clears on valid typing.
+Corrective source/checkpoint `03ddb8b6f8476d942eee68d0a429e5a137b7e706` passed Validate `37690793773 — SUCCESS`.
 
 Next:
-1. exact-HEAD Validate;
-2. one signed corrective APK;
-3. phone-check only compact portrait/landscape geometry + validation clearing;
-4. close #30 if both PASS.
+1. finalize this docs/manifest checkpoint and exact-HEAD Validate it;
+2. dispatch one signed build from that exact final HEAD;
+3. install over current app;
+4. phone-check only compact portrait/landscape editor geometry and stale-validation clearing;
+5. close #30 if both PASS.
+
+Do not rerun the accepted functional matrix unless a protected owner changes.
 
 ## Immutable functional reference
 
