@@ -2,7 +2,7 @@
 
 Issue: **#30 / UX-036**
 
-Status: **SOURCE / STATIC / JVM / VALIDATE PASS — SIGNED BUILD + PHONE QA PENDING**
+Status: **FUNCTIONAL PHONE BASELINE PASS — TWO PRESENTATION CORRECTIVES PENDING**
 
 ## Goal
 
@@ -106,4 +106,27 @@ At minimum:
 - JVM tests: PASS;
 - unsigned release assemble: PASS.
 
-Phone acceptance remains pending.
+Functional phone acceptance passed on signed run `37683871558` / source `54425e2aa25c7381164b52f0b7b93d5c65637745`.
+
+The accepted regression baseline and no-repeat policy live in `LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md`.
+
+## Accepted phone baseline
+
+- local rename + reopen persistence — PASS;
+- blank/whitespace rejection — PASS;
+- portrait → landscape → portrait unsaved draft retention — PASS;
+- recreation no auto-save — PASS;
+- **«Скасувати»** no-op — PASS;
+- linked YTM ID `PLBHSr6BvsM4o` preserved — PASS;
+- remote YouTube Music title remained unchanged — PASS;
+- no Search/write/restore/delete auto-start during lifecycle checks — PASS.
+
+Do not repeat this full manual matrix unless a protected owner listed in the regression baseline changes.
+
+## Presentation corrective contract
+
+- editor may opt into `heightFraction = 0.72f`; shared `showContentDialog` default stays `1f`;
+- compact height is bounded between safe minimum behavior and the available viewport;
+- short/landscape screens may use the full available height so the fixed footer stays reachable;
+- after blank validation, entering any nonblank draft hides **«Введіть назву плейлиста.»** immediately;
+- these presentation corrections must not change storage, identity, linkage, History, Search or YTM write semantics.
