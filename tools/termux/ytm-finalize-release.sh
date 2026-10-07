@@ -13,7 +13,7 @@ LOCAL_HEAD="$(git -C "$YTM_REPO_DIR" rev-parse HEAD)"
 REMOTE_HEAD="$(ytm_remote_head "$BRANCH")"
 
 [ "$LOCAL_HEAD" = "$REMOTE_HEAD" ] ||
-  ytm_fail "Repository is not synced to remote HEAD. Run menu item 1 first."
+  ytm_fail "Проєкт не оновлений до поточного коду. Спочатку виконай «1 — Оновити проєкт»."
 
 VERSION="$(
   sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' \
@@ -138,7 +138,7 @@ ensure_user_tag() {
   then
     cat "$error_file" >&2
     rm -f "$error_file"
-    ytm_fail "Cannot create release tag with current GitHub CLI token. Run once: gh auth refresh -h github.com -s workflow ; then rerun menu item 8."
+    ytm_fail "Не вдалося створити release tag. Після виправлення GitHub auth повтори «7 — Розширені / релізні дії» → «3 — Опублікувати stable release»."
   fi
 
   rm -f "$error_file"
