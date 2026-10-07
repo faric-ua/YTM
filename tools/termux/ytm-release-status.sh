@@ -91,7 +91,7 @@ git -C "$YTM_REPO_DIR" fetch --quiet origin "$BRANCH"
 FETCHED="$(git -C "$YTM_REPO_DIR" rev-parse FETCH_HEAD)"
 
 [ "$FETCHED" = "$REMOTE" ] ||
-  ytm_fail "Remote moved while checking status; run Status again"
+  ytm_fail "Код на GitHub змінився під час перевірки. Повтори цю дію."
 
 if [ "$LOCAL" = "$REMOTE" ]; then
   RELATION="SYNCED"
@@ -113,7 +113,8 @@ CHECKPOINT_TAG="$(meta_value checkpointTag)"
 [ -n "$PHASE" ] || PHASE="UNKNOWN"
 
 VALIDATION_ROW="$(run_for_exact_head validate.yml "$REMOTE")"
-SIGNED_ROW="$(run_for_exact_head "$YTM_WORKFLOW" "$APP_SOURCE")"
+CURRENT_SIGNED_ROW="$(run_for_exact_head "$YTM_WORKFLOW" "$REMOTE")"
+RECORDED_SIGNED_ROW="$(run_for_exact_head "$YTM_WORKFLOW" "$APP_SOURCE")"
 
 if [ -z "$TAG" ]; then
   TAG="v$VERSION"
@@ -131,43 +132,41 @@ else
   RELEASE_STATE="MISSING"
 fi
 
-echo "YTM release status"
-echo "=================="
+echo "YTM — технічний стан релізу"
+echo "========================================"
+echo
+echo "ПОТОЧНИЙ КАНДИДАТ"
 echo "Version:       $VERSION"
 echo "Branch:        $BRANCH"
 echo "Local HEAD:    $LOCAL"
 echo "Remote HEAD:   $REMOTE"
 echo "Repo:          $RELATION"
+format_run "$VALIDATION_ROW" "Current validation"
+format_run "$CURRENT_SIGNED_ROW" "Current signed APK"
 echo
-
-format_run "$VALIDATION_ROW" "HEAD validation"
-
-echo
+echo "ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ"
+echo "НЕ ВВАЖАЙ ЦЕ ПОТОЧНИМ КАНДИДАТОМ, ЯКЩО SHA ВІДРІЗНЯЄТЬСЯ."
 if [ -n "$APP_SOURCE" ]; then
-  echo "Phone source:  $APP_SOURCE"
+  echo "Recorded phone source: $APP_SOURCE"
 else
-  echo "Phone source:  NOT RECORDED"
+  echo "Recorded phone source: NOT RECORDED"
 fi
-
 if [ -n "$SIGNED_RUN_META" ]; then
-  echo "Signed run:    $SIGNED_RUN_META"
+  echo "Recorded signed run:   $SIGNED_RUN_META"
 fi
+format_run "$RECORDED_SIGNED_ROW" "Recorded-source build"
 
-format_run "$SIGNED_ROW" "Signed build"
-
-echo
 if [ -n "$QA_STATUS" ]; then
-  echo "QA:            $QA_STATUS"
+  echo "Recorded QA:           $QA_STATUS"
 else
-  echo "QA:            NOT RECORDED"
+  echo "Recorded QA:           NOT RECORDED"
 fi
-
-echo "Meta phase:    $PHASE"
+echo "Recorded phase:        $PHASE"
 
 if [ -n "$TAG_SHA" ]; then
-  echo "Release tag:   PRESENT ($TAG)"
+  echo "Release tag:           PRESENT ($TAG)"
 else
-  echo "Release tag:   MISSING ($TAG)"
+  echo "Release tag:           MISSING ($TAG)"
 fi
 
 if [ -n "$CHECKPOINT_TAG" ]; then
@@ -177,13 +176,13 @@ if [ -n "$CHECKPOINT_TAG" ]; then
     true
   )"
   if [ -n "$CHECKPOINT_SHA" ]; then
-    echo "Checkpoint:    PRESENT ($CHECKPOINT_TAG)"
+    echo "Checkpoint:            PRESENT ($CHECKPOINT_TAG)"
   else
-    echo "Checkpoint:    MISSING ($CHECKPOINT_TAG)"
+    echo "Checkpoint:            MISSING ($CHECKPOINT_TAG)"
   fi
 fi
 
-echo "GitHub release: $RELEASE_STATE"
+echo "GitHub release:        $RELEASE_STATE"
 
 if [ "$PHASE" = "final" ] &&
    [ -n "$TAG_SHA" ] &&
