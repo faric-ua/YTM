@@ -14,6 +14,10 @@ BULK_SESSION="$SRC/BulkSyncSessionActivity.kt"
 BULK_HELP="$SRC/bulk/BulkSyncHelpContent.kt"
 QUOTA="$SRC/QuotaActivity.kt"
 PLAYLIST="$SRC/PlaylistActivity.kt"
+CURRENT_PLAYLIST_STORE="$SRC/storage/CurrentPlaylistStore.kt"
+LOCAL_PLAYLIST_EDIT_POLICY="$SRC/model/LocalPlaylistEditPolicy.kt"
+LOCAL_PLAYLIST_EDIT_TEST="app/src/test/java/com/saney/ytmimporter/model/LocalPlaylistEditPolicyTest.kt"
+LOCAL_PLAYLIST_EDIT_CONTRACT="docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_CONTRACT.md"
 REVIEW="$SRC/ReviewActivity.kt"
 URL_SNAPSHOT="$SRC/UrlSnapshotActivity.kt"
 QA_STORE="$SRC/storage/BulkSyncQaFaultStore.kt"
@@ -25,7 +29,7 @@ SURFACE_READABILITY="docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md"
 PLAN="docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md"
 RECONCILIATION="docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md"
 
-for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$BULK_HELP" "$QUOTA" "$PLAYLIST" "$REVIEW" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
+for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$BULK_HELP" "$QUOTA" "$PLAYLIST" "$CURRENT_PLAYLIST_STORE" "$LOCAL_PLAYLIST_EDIT_POLICY" "$LOCAL_PLAYLIST_EDIT_TEST" "$LOCAL_PLAYLIST_EDIT_CONTRACT" "$REVIEW" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
@@ -733,6 +737,100 @@ grep -Fq 'wrongTypeMessage(' "$IMPORT" ||
 grep -Fq 'fun expectedType(' "$ARTIFACT_CLASSIFIER" ||
   fail "artifact scope expected-type contract missing"
 
+grep -Fq 'title = "Редагувати"' "$PLAYLIST" ||
+  fail "#30 Playlist edit entry point missing"
+grep -Fq '"Редагувати локальний плейлист"' "$PLAYLIST" ||
+  fail "#30 local playlist editor title missing"
+grep -Fq '"Лише в YTM Importer"' "$PLAYLIST" ||
+  fail "#30 editor does not distinguish local scope"
+grep -Fq 'dismissOnClick =' "$PLAYLIST" ||
+  fail "#30 validating Save action does not stay open"
+grep -Fq 'STATE_EDIT_DIALOG_OPEN' "$PLAYLIST" ||
+  fail "#30 editor open-state recreation key missing"
+grep -Fq 'STATE_EDIT_DRAFT_NAME' "$PLAYLIST" ||
+  fail "#30 editor draft recreation key missing"
+grep -Fq 'STATE_EDIT_TARGET_LOCAL_PLAYLIST_ID' "$PLAYLIST" ||
+  fail "#30 editor target identity recreation key missing"
+grep -Fq 'STATE_EDIT_VALIDATION_ERROR' "$PLAYLIST" ||
+  fail "#30 editor validation recreation key missing"
+grep -Fq 'val dismissOnClick: Boolean = true' "$UI" ||
+  fail "shared validating dialog-action dismissal contract missing"
+grep -Fq 'action.dismissOnClick' "$UI" ||
+  fail "shared dialog actions ignore dismissOnClick"
+
+python - "$PLAYLIST" "$CURRENT_PLAYLIST_STORE" <<'PY_LOCAL_PLAYLIST_EDIT'
+from pathlib import Path
+import sys
+
+playlist = Path(sys.argv[1]).read_text(encoding="utf-8")
+store = Path(sys.argv[2]).read_text(encoding="utf-8")
+
+editor = playlist.find("private fun showPlaylistEditor")
+editor_end = playlist.find("\n    private fun showProjectActions", editor)
+if editor < 0 or editor_end < 0:
+    raise SystemExit("FAIL: #30 editor implementation block missing")
+editor_block = playlist[editor:editor_end]
+
+for required in (
+    "showContentDialog(",
+    'label =\n                                "Зберегти"',
+    "dismissOnClick =\n                                false",
+    'label =\n                                "Скасувати"',
+    "renameCurrentPlaylist(",
+    "editDraftName",
+    "editTargetLocalPlaylistId",
+):
+    if required not in editor_block:
+        raise SystemExit("FAIL: #30 editor contract missing: " + required)
+
+for forbidden in (
+    "startActivity(",
+    "YouTubeApi",
+    "HistoryStore",
+    "finishWithAction(",
+):
+    if forbidden in editor_block:
+        raise SystemExit(
+            "FAIL: #30 local editor can navigate/mutate remote/history: " + forbidden
+        )
+
+rename = store.find("fun renameCurrentPlaylist")
+rename_end = store.find("\n    @Synchronized\n    fun clear", rename)
+if rename < 0 or rename_end < 0:
+    raise SystemExit("FAIL: #30 CurrentPlaylistStore rename owner missing")
+rename_block = store[rename:rename_end]
+
+for required in (
+    "expectedLocalPlaylistId",
+    "snapshot.localPlaylistId",
+    "snapshot.playlist.copy",
+    "snapshot.sourceLabel",
+    "snapshot.destinationPlaylistId",
+    "snapshot.destinationPlaylistTitle",
+    "snapshot.sourceHistoryId",
+    "save(",
+):
+    if required not in rename_block:
+        raise SystemExit("FAIL: #30 rename does not preserve: " + required)
+
+if "HistoryStore" in store or "YouTubeApi" in rename_block:
+    raise SystemExit("FAIL: #30 local rename reached History/remote owner")
+
+if "restorableStore.upsert(" not in store:
+    raise SystemExit("FAIL: CurrentPlaylistStore no longer writes through RestorablePlaylistStore")
+PY_LOCAL_PLAYLIST_EDIT
+
+grep -Fq 'fun normalizeName(' "$LOCAL_PLAYLIST_EDIT_POLICY" ||
+  fail "#30 local playlist name policy missing"
+grep -Fq 'normalizeName_rejectsBlankValue' "$LOCAL_PLAYLIST_EDIT_TEST" ||
+  fail "#30 blank-name JVM coverage missing"
+grep -Fq 'normalizeName_preservesInternalWhitespace' "$LOCAL_PLAYLIST_EDIT_TEST" ||
+  fail "#30 local name normalization coverage missing"
+grep -Fq 'Existing History records are audit history' "$LOCAL_PLAYLIST_EDIT_CONTRACT" ||
+  fail "#30 History non-rewrite contract missing"
+grep -Fq 'Remote-safety contract' "$LOCAL_PLAYLIST_EDIT_CONTRACT" ||
+  fail "#30 remote-safety contract missing"
+
 grep -Fq 'if (BuildConfig.DEBUG)' "$QUOTA" ||
   fail "release Quota UI still exposes phone-QA controls"
 grep -Fq 'if (!BuildConfig.DEBUG)' "$QA_STORE" ||
@@ -762,6 +860,7 @@ echo "- committed Skin refreshes hidden Home before it can become visible; onRes
 echo "- Recovery Center aggregation foundation is pure/read-only and covered across Bulk/Pending/History"
 echo "- Recovery Center screen routes to exact owners; Home/Menu attention remains read-only and explicit-action only"
 echo "- #54 file library keeps CSV/TXT import while scoping JSON, caches typed metadata, and explains reliable wrong types"
+echo "- #30 local playlist editor preserves stable identity/linkage, draft lifecycle and local-only persistence"
 echo "- restorable modals persist active selectable-text ranges"
 echo "- Activity-owned selectable text persists only on the same logical surface"
 echo "- selectable-text focus is restored without triggering actions"
