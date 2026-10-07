@@ -72,22 +72,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#30 / UX-036 source/static implementation is complete at checkpoint `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
-
-Implemented contract:
-- visible **«Редагувати»** on **«Поточний плейлист»**;
-- fixed-footer local editor with Save/Cancel;
-- local-name-only store mutation preserving exact identity/source/tracks/YTM linkage;
-- write-through via existing `CurrentPlaylistStore.save()` → `RestorablePlaylistStore.upsert()`;
-- no remote YTM update and no History rewrite;
-- blank validation stays open;
-- rotation-safe draft/target/error state and no auto-save.
+#30 source/static/JVM/build validation passed on `b22274c33344ebe27d3a422e7dc30669a57ee6bf`; Validate `37681402021 — SUCCESS`.
 
 Next:
-1. refresh manifest;
-2. exact-HEAD Validate;
-3. if PASS, dispatch one signed build;
-4. phone QA exact visible flow starting from **«Поточний плейлист» → «Редагувати»**.
+1. finalize docs/manifest checkpoint and exact-HEAD Validate it;
+2. dispatch one signed build from that exact final HEAD;
+3. phone sync/download/open/install using the visible Termux menu;
+4. run only the focused #30 editor matrix: visible entry, rename/persistence, blank validation, rotation draft, Cancel no-op, linked-YTM identity/no remote rename.
 
 ## Immutable functional reference
 
