@@ -87,29 +87,20 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-Current task: **#30 / UX-036 Local playlist Edit — UX corrective closeout only**.
+Current task: **#30 / UX-036 Local playlist Edit — corrective phone closeout only**.
 
-Functional PHONE baseline is already **PASS** and must not be repeated:
-- signed run `37683871558` / source `54425e2aa25c7381164b52f0b7b93d5c65637745`;
-- entry/editor copy PASS;
-- rename + reopen persistence PASS;
-- blank rejection PASS;
-- portrait → landscape → portrait unsaved draft PASS;
-- recreation no auto-save PASS;
-- Cancel no-op PASS;
-- linked YTM ID `PLBHSr6BvsM4o` preserved;
-- remote YouTube Music title remained unchanged.
+Functional matrix is already PHONE PASS and is protected by `LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md`; do not rerun it.
 
-Durable protection:
-- `docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md`;
-- `scripts/v1455-local-playlist-edit-regression-audit.sh`;
-- audit is wired into `scripts/release-preflight.sh`.
+Corrective source/checkpoint:
+- `03ddb8b6f8476d942eee68d0a429e5a137b7e706`;
+- Validate `37690793773 — SUCCESS`;
+- dedicated #30 regression audit / preflight / JVM / unsigned assemble PASS.
 
-Two UI-only correctives are implemented:
-1. compact editor fixed-footer geometry (`heightFraction = 0.72f`, shared default `1f`);
-2. stale blank-error text clears when draft becomes nonblank.
+Only two PHONE checks remain after exact-final-HEAD signed install:
+1. editor is compact in portrait and footer remains reachable in landscape;
+2. after blank validation, typing nonblank text hides **«Введіть назву плейлиста.»** immediately.
 
-Next: exact-HEAD Validate → signed corrective APK → PHONE retest only those two UI items. Do not repeat the full #30 matrix or #52/#53/#54.
+Do not repeat rename persistence, blank rejection semantics, rotation draft, Cancel, linked-YTM ID, remote-title, #52, #53 or #54 matrices.
 
 ## Consolidated phone matrix
 
