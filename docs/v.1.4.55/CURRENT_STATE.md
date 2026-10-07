@@ -500,7 +500,7 @@ Do not repeat closed #53/#54/Phase A phone matrices.
 
 ## #52 simplified Termux operator menu — current checkpoint (2026-10-07)
 
-Status: **SOURCE IMPLEMENTED / EXACT-HEAD VALIDATE PENDING**.
+Status: **SOURCE / STATIC / VALIDATE PASS — PHONE QA PENDING**.
 
 - default phone menu rewritten with task-oriented Ukrainian labels;
 - `2 — Перевірити, що зараз готово` is the single normal readiness view and reports current code, exact-current-code Validate, exact-current-code signed APK, downloaded APK and one next action;
@@ -511,4 +511,6 @@ Status: **SOURCE IMPLEMENTED / EXACT-HEAD VALIDATE PENDING**.
 - operator Help / toolkit README / command guide updated;
 - no Android app source changed, so phone acceptance requires Termux sync/reopen only, not a new APK.
 
-Next gate: exact-HEAD Validate PASS, then focused phone menu/status QA.
+Validated checkpoint: `cf2298d7b340562f49131b09246f259a1d12cbfe`; Validate `37552222710 — SUCCESS` with preflight/#52 audit/JVM/assemble PASS.
+
+Next gate: focused phone menu/status QA after Termux sync/reopen; no APK rebuild/install.
