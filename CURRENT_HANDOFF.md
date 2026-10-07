@@ -70,20 +70,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-PHONE #52 has started and exposed one corrective finding:
-- new Ukrainian menu loads;
-- stale local code path correctly recommends `1 — Оновити проєкт`;
-- after sync, readiness shows current code + Validate PASS;
-- bug: docs/tooling-only HEAD incorrectly recommended `5 — Зібрати новий APK`.
+Corrective source checkpoint `aa624982756d19b9bea844840f279e6ff77d4c7d` passed Validate `37637690717 — SUCCESS`.
 
-Correction is implemented in `ytm-status.sh`: compare previously downloaded APK source to current remote HEAD across Android/build inputs; only proven unchanged app inputs reuse the previous APK. Missing/unprovable source fails closed.
-
-Next:
-1. exact-HEAD Validate corrective source;
-2. phone `1 — Оновити проєкт`;
-3. `2 — Перевірити, що зараз готово` retest only;
-4. require no-build message for tooling-only HEAD and compatible previous APK;
-5. then continue `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії`.
+PHONE retest only:
+1. `1 — Оновити проєкт`;
+2. `2 — Перевірити, що зараз готово`;
+3. require proven tooling-only compatibility to suppress `5 — Зібрати новий APK` and show the previous downloaded APK as compatible;
+4. then continue remaining #52 checks for `6` and `7` only after this PASS.
 
 No APK rebuild/install. Do not repeat #53/#54.
 
