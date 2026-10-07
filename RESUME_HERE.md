@@ -10,7 +10,7 @@ Last updated: **2026-10-07**
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase B — Simplified Termux operator menu (#52)**
+- Release: **v1.4.55 / Phase C — Local playlist Edit (#30)**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Phase A and Phase B #41/#25/#57/#55/#53/#54 are PHONE PASS / CLOSED.
 - #53 candidate is implemented, validated and signed:
@@ -44,8 +44,11 @@ Closed baseline:
 Closed task:
 - #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser — **PHONE PASS / CLOSED 2026-10-07**.
 
+Closed task:
+- #52 / UX-047 Simplify Termux menu for non-developer phone use — **PHONE PASS / CLOSED 2026-10-07**.
+
 Active task:
-- #52 / UX-047 Simplify Termux menu for non-developer phone use.
+- #30 / UX-036 Add explicit Edit flow for the current local playlist.
 
 #54 verified source state:
 - inventory + content-first file-library contract complete;
@@ -84,24 +87,16 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-Current task: **#52 / UX-047 Simplified Termux operator menu/status**.
-
-PHONE QA progress:
-- readiness stale/current paths — PASS;
-- tooling-only APK compatibility correction — PASS;
-- `6 — Перевірити локальні зміни` — PASS;
-- `7 — Розширені / релізні дії` submenu labels — PASS;
-- Advanced `2 — Технічний стан релізу` current-vs-history separation — PASS.
-
-Current technical release screen correctly showed Local `9d7882...` behind Remote `98965b...` because documentation evidence was committed after the previous sync; this is expected and not a screen failure.
-
-Final phone check only:
-1. press Enter to return to the Advanced menu;
-2. press **`0 — Назад`**;
-3. require the new main YTM Importer menu to appear again;
-4. report PASS.
-
-No APK rebuild/install. Do not repeat #53/#54.
+1. #52 is **PHONE PASS / CLOSED**. Final Back check passed: Advanced `0 — Назад` returned to the new task-oriented main menu.
+2. Phase B is complete. UX-028 Home last-action detail drill-down was already closed earlier; do not reopen it.
+3. Start Phase C with #30 / UX-036: **«Поточний плейлист» → explicit «Редагувати»**.
+4. Phase 1 edits only the local playlist name.
+5. Preserve `localPlaylistId`, `sourceHistoryId`, source label, tracks/videoIds and destination linkage.
+6. Persist through `CurrentPlaylistStore` and `RestorablePlaylistStore`.
+7. If linked to YTM, local rename must not silently mutate the remote playlist.
+8. Rotation must preserve unsaved input; Cancel = no-op; blank/whitespace-only name rejected.
+9. Do not rewrite History audit records.
+10. Do not repeat #52/#53/#54 phone matrices.
 
 ## Consolidated phone matrix
 
