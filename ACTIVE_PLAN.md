@@ -454,18 +454,17 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**#52 PHONE QA — local-changes screen PASS; test Advanced menu next.**
+**#52 PHONE QA — Advanced menu + technical release separation PASS; verify Back next.**
 
-PHONE evidence on validated HEAD `9d7882cfb56fc53ef05419189e0fa4cad558f21b`, Validate `37641446596 — SUCCESS`:
-- `Гілка: feat/v1.4.55-ux-hardening`;
-- `Стан коду: актуально ✅`;
-- `Код у Termux: 9d7882cfb56f`;
-- `Код на GitHub: 9d7882cfb56f`;
-- `Локальні файли: без змін ✅`.
+PHONE evidence:
+- `7 — Розширені / релізні дії` shows only the intended secondary actions: shell, technical release status, stable publication, GitHub Actions, Back;
+- `2 — Технічний стан релізу` visibly separates `ПОТОЧНИЙ КАНДИДАТ` from `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`;
+- current candidate correctly showed Local behind Remote (`9d7882...` vs `98965b...`) because docs-only evidence commits were added after the previous phone sync;
+- exact remote Validate `37656824668 — SUCCESS` is shown for the current candidate.
 
-Result: `6 — Перевірити локальні зміни` is **PHONE PASS**.
+Result: Advanced menu structure + current-vs-history separation are **PHONE PASS**.
 
-Next phone step: `7 — Розширені / релізні дії` → verify visible submenu labels, then open `2 — Технічний стан релізу` and require clear separation between `ПОТОЧНИЙ КАНДИДАТ` and `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`. Finally verify `0 — Назад` returns to the main menu.
+Final #52 phone action: return to Advanced menu, press `0 — Назад`, and require the new main menu to reappear. If PASS, reconcile full #52 acceptance and close if nothing remains.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
