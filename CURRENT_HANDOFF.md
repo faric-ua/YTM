@@ -72,13 +72,24 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#30 source/static/JVM/build validation passed on `b22274c33344ebe27d3a422e7dc30669a57ee6bf`; Validate `37681402021 — SUCCESS`.
+#30 functional PHONE matrix is **PASS and locked**. Do not rerun it unless a protected owner in `LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md` materially changes.
+
+Accepted baseline: signed run `37683871558`, source `54425e2aa25c7381164b52f0b7b93d5c65637745`; linked YTM ID `PLBHSr6BvsM4o` and remote title non-mutation were phone-verified.
+
+Regression protection:
+- dedicated `scripts/v1455-local-playlist-edit-regression-audit.sh`;
+- wired into release preflight;
+- checks visible copy/actions, recreation state, local-only rename ownership, exact identity/linkage preservation, no History/remote/destructive owners, JVM blank policy and phone-baseline evidence.
+
+Current corrective slice is presentation-only:
+- compact editor height opt-in with shared default preserved;
+- stale blank validation clears on valid typing.
 
 Next:
-1. finalize docs/manifest checkpoint and exact-HEAD Validate it;
-2. dispatch one signed build from that exact final HEAD;
-3. phone sync/download/open/install using the visible Termux menu;
-4. run only the focused #30 editor matrix: visible entry, rename/persistence, blank validation, rotation draft, Cancel no-op, linked-YTM identity/no remote rename.
+1. exact-HEAD Validate;
+2. one signed corrective APK;
+3. phone-check only compact portrait/landscape geometry + validation clearing;
+4. close #30 if both PASS.
 
 ## Immutable functional reference
 
