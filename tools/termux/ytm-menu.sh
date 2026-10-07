@@ -4,9 +4,6 @@ set -u
 REPO="${YTM_REPO_DIR:-$HOME/YTM}"
 TOOLS="$REPO/tools/termux"
 
-# A Termux session can inherit a working directory that was removed by a prior
-# checkout/file-manager operation. Git calls fail before -C can recover from
-# that state, so always anchor the menu in a known-existing directory.
 cd "$HOME" || exit 1
 
 pause_menu() {
@@ -33,57 +30,31 @@ while true; do
   echo "          YTM Importer Menu"
   echo "========================================"
   echo
-  echo "1 — Sync YTM"
-  echo "2 — Status"
-  echo "3 — Download signed APK"
-  echo "4 — Open APK folder"
-  echo "5 — Open YTM shell"
-  echo "6 — Validate + Build signed APK"
-  echo "7 — Release status"
-  echo "8 — Finalize stable release"
-  echo "9 — GitHub Actions status"
-  echo "H — Help / Команди"
+  echo "1 — Оновити проєкт"
+  echo "2 — Перевірити, що зараз готово"
+  echo "3 — Завантажити готовий APK"
+  echo "4 — Відкрити папку з APK"
+  echo "5 — Зібрати новий APK"
+  echo "6 — Перевірити локальні зміни"
+  echo "7 — Розширені / релізні дії"
+  echo "H — Допомога"
   echo "0 — Вийти"
   echo
   printf "Вибір: "
   read -r choice
 
   case "$choice" in
-    1)
-      run_tool "ytm-sync.sh"
-      ;;
-    2)
-      run_tool "ytm-status.sh"
-      ;;
-    3)
-      run_tool "ytm-download-apk.sh"
-      ;;
-    4)
-      run_tool "ytm-install-apk.sh"
-      ;;
-    5)
-      clear
-      cd "$REPO" || exit 1
-      echo "YTM Importer:"
-      pwd
-      echo
-      exec bash -i
-      ;;
-    6)
-      run_tool "ytm-build-apk.sh"
-      ;;
+    1) run_tool "ytm-sync.sh" ;;
+    2) run_tool "ytm-status.sh" ;;
+    3) run_tool "ytm-download-apk.sh" ;;
+    4) run_tool "ytm-install-apk.sh" ;;
+    5) run_tool "ytm-build-apk.sh" ;;
+    6) run_tool "ytm-repo-status.sh" ;;
     7)
-      run_tool "ytm-release-status.sh"
+      clear
+      bash "$TOOLS/ytm-advanced-menu.sh"
       ;;
-    8)
-      run_tool "ytm-finalize-release.sh"
-      ;;
-    9)
-      run_tool "ytm-actions-status.sh"
-      ;;
-    h|H)
-      run_tool "ytm-help.sh"
-      ;;
+    h|H) run_tool "ytm-help.sh" ;;
     0)
       clear
       exit 0
