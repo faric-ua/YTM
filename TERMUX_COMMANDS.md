@@ -5,7 +5,7 @@ This is the reusable command guide for the phone-side part of the development wo
 Canonical collaboration/safety policy lives in `YTM_ASSISTANT_WORKFLOW.md`.
 New assistants start with `START_HERE_ASSISTANT.md`.
 
-Current default: ChatGPT performs repository changes directly through GitHub; **all normal phone-side operations use the repository-owned YTM Termux:Widget menu first** (sync/status/build/download/open APK folder/shell). If the menu has the needed action, do not replace it with a raw Git/gh command. Manual Git/package commands below are recovery and fallback tools only.
+Current default: ChatGPT performs repository changes directly through GitHub; **all normal phone-side operations use the repository-owned YTM Termux:Widget menu first** (update/readiness/build/download/open APK folder/local-change check). If the menu has the needed action, do not replace it with a raw Git/gh command. Manual Git/package commands below are recovery and fallback tools only.
 
 ## 1. Repository
 
@@ -402,30 +402,27 @@ Canonical scripts live under:
 
 `tools/termux/`
 
-The menu actions are:
+The normal phone menu actions are:
 
-1. `Sync YTM` — detects the newest release feature branch, safely switches to it when the release branch changed, then fast-forwards only; refuses dirty, ahead or diverged local state.
-2. `Status` — shows branch, local/remote HEAD, clean/dirty state and relation.
-3. `Download signed APK` — downloads only a successful build whose
-   `headSha` exactly equals the current remote branch HEAD, verifies SHA-256
-   and records the downloaded source/run.
-4. `Open APK folder` — re-verifies SHA-256 and opens the exact run folder
-   where the downloaded APK already lives under
-   `Documents/YTM/artifacts/apk/vX.Y.Z/run-<RUN_ID>/`.
-5. `Open YTM shell` — opens an interactive shell in the repository.
-6. `Validate + Build signed APK` — waits for the automatic `Validate Android`
-   run whose `headSha` exactly matches the current remote branch HEAD. Only after that
-   validation succeeds does it dispatch the signed APK workflow. A missing/failed
-   validation stops before any signed build is started.
-7. `Release status` — shows current branch/HEAD synchronization, exact-HEAD validation,
-   recorded phone-tested app source, exact signed run, QA status, release tag,
-   GitHub Release publication state and overall closeout state.
-8. `Finalize stable release` — guarded stable publication. It uses the exact
-   `appSourceSha` and `signedRun` already recorded in the active release metadata,
-   verifies validation/QA/source/SHA, creates stable + checkpoint tags on the tested
-   app source, publishes APK/SHA/update-manifest assets, and downloads them again for
-   verification. It does not rebuild the app.
+1. **Оновити проєкт** — safely follows the active release branch and fast-forwards only; dirty/ahead/diverged states are refused.
+2. **Перевірити, що зараз готово** — plain-language summary for current code, exact-current-code Validate, exact-current-code signed APK, downloaded APK, and one exact next menu action.
+3. **Завантажити готовий APK** — exact-current-remote-HEAD signed build only, with SHA-256 verification and recorded source/run.
+4. **Відкрити папку з APK** — re-verifies checksum/source compatibility and opens the original archived run folder.
+5. **Зібрати новий APK** — waits for exact-current-HEAD Validate PASS before dispatching a signed build.
+6. **Перевірити локальні зміни** — local/remote relation and dirty/clean diagnostics.
+7. **Розширені / релізні дії** — secondary menu for shell, technical release state, stable publication and raw Actions.
+H. **Допомога**.
 0. Exit.
+
+Advanced menu:
+
+1. **Відкрити YTM shell**
+2. **Технічний стан релізу** — visually separates the current candidate from recorded historical phone/release metadata.
+3. **Опублікувати stable release** — guarded publisher for already phone-tested release metadata; does not rebuild the app.
+4. **GitHub Actions**
+0. **Назад**
+
+For normal phone QA, do not use raw Git/gh commands when the menu has the needed action.
 
 Install or repair the widget shortcut with:
 
