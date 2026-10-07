@@ -2,7 +2,7 @@
 
 Issue: **#30 / UX-036**
 
-Status: **FUNCTIONAL PHONE BASELINE PASS — DEDICATED EDIT SCREEN R3 SOURCE IMPLEMENTED / VALIDATE PENDING**
+Status: **FUNCTIONAL PHONE BASELINE PASS — DEDICATED EDIT SCREEN R3 VALIDATE PASS / SIGNED PHONE SMOKE PENDING**
 
 ## Goal
 
@@ -178,3 +178,5 @@ Check only:
 8. on a linked playlist, read-only YTM title/ID remain visible.
 
 The accepted rename/persistence/rotation/no-auto-save/Cancel/YTM-linkage/remote-title baseline is rerun only if a protected persistence/identity owner changes.
+
+R3 validated source checkpoint: `133157098353f250e8536fd63bab65920b1555bf`; Validate `37701432833 — SUCCESS` (dedicated-screen regression audit / preflight / JVM / unsigned assemble PASS).
