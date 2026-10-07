@@ -773,15 +773,27 @@ editor_block = playlist[editor:editor_end]
 
 for required in (
     "showContentDialog(",
-    'label =\n                                "Зберегти"',
-    "dismissOnClick =\n                                false",
-    'label =\n                                "Скасувати"',
+    '"Зберегти"',
+    "dismissOnClick =",
+    '"Скасувати"',
     "renameCurrentPlaylist(",
     "editDraftName",
     "editTargetLocalPlaylistId",
 ):
     if required not in editor_block:
         raise SystemExit("FAIL: #30 editor contract missing: " + required)
+
+if not re.search(
+    r"editDialogOpen\s*&&\s*editDialog\s*\?\.isShowing\s*!=\s*true",
+    playlist,
+):
+    raise SystemExit("FAIL: #30 editor recreation guard missing")
+
+if not re.search(
+    r"showPlaylistEditor\(\s*restoring\s*=\s*true\s*\)",
+    playlist,
+):
+    raise SystemExit("FAIL: #30 editor is not restored after recreation")
 
 for forbidden in (
     "startActivity(",
