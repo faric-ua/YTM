@@ -87,17 +87,17 @@ describe_run() {
   esac
 }
 
-android_app_changed_between() {
+android_app_unchanged_between() {
   local from_sha="$1"
   local to_sha="$2"
 
   [ -n "$from_sha" ] ||
-    return 2
+    return 1
 
   git -C "$YTM_REPO_DIR" cat-file -e "$from_sha^{commit}" 2>/dev/null ||
-    return 2
+    return 1
 
-  if git -C "$YTM_REPO_DIR" diff --quiet "$from_sha" "$to_sha" -- \
+  git -C "$YTM_REPO_DIR" diff --quiet "$from_sha" "$to_sha" -- \
     app \
     build.gradle.kts \
     settings.gradle.kts \
@@ -105,11 +105,6 @@ android_app_changed_between() {
     gradle \
     gradlew \
     gradlew.bat
-  then
-    return 1
-  fi
-
-  return 0
 }
 
 VALIDATION_ROW="$(run_for_exact_head validate.yml "$REMOTE")"
@@ -163,7 +158,7 @@ if [ "$DOWNLOADED_SOURCE" = "$REMOTE" ] &&
 elif [ -n "$DOWNLOADED_SOURCE" ] &&
      [ -n "$DOWNLOADED_PATH" ] &&
      [ -s "$DOWNLOADED_PATH" ] &&
-     ! android_app_changed_between "$DOWNLOADED_SOURCE" "$REMOTE"; then
+     android_app_unchanged_between "$DOWNLOADED_SOURCE" "$REMOTE"; then
   DOWNLOADED_STATE="попередній APK підходить ✅ (run $DOWNLOADED_RUN)"
   HAS_COMPATIBLE_APK="yes"
   ANDROID_APP_STATE="Android-застосунок не змінювався ✅"
