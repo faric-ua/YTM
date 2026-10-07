@@ -2,12 +2,12 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PLAYLIST="$ROOT/app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt"
+HUB="$ROOT/app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt"
+EDITOR="$ROOT/app/src/main/java/com/saney/ytmimporter/EditPlaylistActivity.kt"
 STORE="$ROOT/app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt"
 POLICY="$ROOT/app/src/main/java/com/saney/ytmimporter/model/LocalPlaylistEditPolicy.kt"
 POLICY_TEST="$ROOT/app/src/test/java/com/saney/ytmimporter/model/LocalPlaylistEditPolicyTest.kt"
-UI="$ROOT/app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"
-CLEAR_ICON="$ROOT/app/src/main/res/drawable/ic_ytm_clear.xml"
+MANIFEST="$ROOT/app/src/main/AndroidManifest.xml"
 CONTRACT="$ROOT/docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_CONTRACT.md"
 BASELINE="$ROOT/docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md"
 PHONE="$ROOT/docs/v.1.4.55/qa/PHONE_TEST.md"
@@ -17,74 +17,67 @@ fail() {
   exit 1
 }
 
-for f in "$PLAYLIST" "$STORE" "$POLICY" "$POLICY_TEST" "$UI" "$CLEAR_ICON" "$CONTRACT" "$BASELINE" "$PHONE"; do
+for f in "$HUB" "$EDITOR" "$STORE" "$POLICY" "$POLICY_TEST" "$MANIFEST" "$CONTRACT" "$BASELINE" "$PHONE"; do
   test -f "$f" || fail "missing #30 regression file: $f"
 done
 
-for label in   'title = "Редагувати"'   '"Редагувати локальний плейлист"'   '"Лише в YTM Importer"'   '"Зберегти"'   '"Скасувати"'   '"Введіть назву плейлиста."'   '"Очистити назву"'
+grep -Fq 'title = "Редагувати"' "$HUB" ||
+  fail "#30 Current Playlist edit entry point missing"
+grep -Fq 'EditPlaylistActivity::class.java' "$HUB" ||
+  fail "#30 edit entry no longer opens dedicated screen"
+
+if grep -Fq 'showPlaylistEditor' "$HUB"; then
+  fail "#30 legacy modal editor returned to PlaylistActivity"
+fi
+if grep -Fq 'STATE_EDIT_DIALOG' "$HUB"; then
+  fail "#30 legacy modal lifecycle state returned to PlaylistActivity"
+fi
+
+for label in   '"Редагувати плейлист"'   '"Лише локально"'   '"Локальна назва"'   '"Зберегти"'   '"Очистити назву"'   '"Назва в YouTube Music"'   '"YouTube Music не змінюється."'   '"Назва не може бути порожньою."'
 do
-  grep -Fq "$label" "$PLAYLIST" ||
-    fail "#30 visible editor contract missing: $label"
+  grep -Fq "$label" "$EDITOR" ||
+    fail "#30 dedicated editor visible contract missing: $label"
 done
 
-for state_key in   STATE_EDIT_DIALOG_OPEN   STATE_EDIT_DRAFT_NAME   STATE_EDIT_TARGET_LOCAL_PLAYLIST_ID   STATE_EDIT_VALIDATION_ERROR
+for state_key in   STATE_TARGET_LOCAL_PLAYLIST_ID   STATE_ORIGINAL_NAME   STATE_DRAFT_NAME   STATE_VALIDATION_VISIBLE
 do
-  grep -Fq "$state_key" "$PLAYLIST" ||
-    fail "#30 recreation state missing: $state_key"
+  grep -Fq "$state_key" "$EDITOR" ||
+    fail "#30 dedicated editor recreation state missing: $state_key"
 done
 
-grep -Fq 'heightFraction =' "$PLAYLIST" ||
-  fail "#30 compact editor height opt-in missing"
-grep -Fq '0.72f' "$PLAYLIST" ||
-  fail "#30 portrait compact editor height value changed"
-grep -Fq 'Configuration' "$PLAYLIST" ||
-  fail "#30 orientation-aware editor sizing missing"
-grep -Fq 'ORIENTATION_LANDSCAPE' "$PLAYLIST" ||
-  fail "#30 landscape editor height policy missing"
-grep -Fq 'imeAware =' "$PLAYLIST" ||
-  fail "#30 editor does not opt into IME-safe fixed-footer behavior"
-grep -Fq 'R.drawable.ic_ytm_clear' "$PLAYLIST" ||
-  fail "#30 one-tap clear action icon missing"
-grep -Fq 'input.setText("")' "$PLAYLIST" ||
-  fail "#30 one-tap clear action no longer clears the complete name"
-grep -Fq 'addTextChangedListener(' "$PLAYLIST" ||
-  fail "#30 editor no longer reacts to corrected text"
-grep -Fq 'isNotBlank() == true' "$PLAYLIST" ||
-  fail "#30 valid draft no longer clears stale blank error"
-grep -Fq 'validation.visibility =' "$PLAYLIST" ||
-  fail "#30 inline validation visibility owner missing"
+grep -Fq 'android:name=".EditPlaylistActivity"' "$MANIFEST" ||
+  fail "#30 dedicated editor activity missing from manifest"
+grep -Fq 'android:windowSoftInputMode="adjustResize"' "$MANIFEST" ||
+  fail "#30 editor/activity IME resize contract missing"
 
-grep -Fq 'val dismissOnClick: Boolean = true' "$UI" ||
-  fail "shared dialog action default dismissal changed"
-grep -Fq 'if (' "$UI" ||
-  fail "UiChrome unexpectedly malformed"
-grep -Fq 'action.dismissOnClick' "$UI" ||
-  fail "shared validating dialog action ignores dismissOnClick"
-grep -Fq 'heightFraction: Float = 1f' "$UI" ||
-  fail "shared fixed-footer default height contract changed"
-grep -Fq 'imeAware: Boolean = false' "$UI" ||
-  fail "shared fixed-footer IME behavior is no longer opt-in"
-grep -Fq 'WindowInsetsCompat.Type' "$UI" ||
-  fail "shared fixed-footer inset handling missing"
-grep -Fq '.ime()' "$UI" ||
-  fail "#30 IME safe-inset support missing"
-grep -Fq 'SOFT_INPUT_ADJUST_RESIZE' "$UI" ||
-  fail "#30 Dialog Window is not configured for IME resize"
-grep -Fq 'activeHeightFraction' "$UI" ||
-  fail "#30 fixed-footer no longer expands within the remaining IME-safe viewport"
-grep -Fq '.coerceIn(' "$UI" ||
-  fail "compact fixed-footer height is not bounded"
-grep -Fq 'dp(' "$UI" ||
-  fail "UiChrome dp sizing helper missing"
+grep -Fq 'R.drawable.ic_ytm_clear' "$EDITOR" ||
+  fail "#30 one-tap clear icon missing"
+grep -Fq 'nameInput.setText("")' "$EDITOR" ||
+  fail "#30 one-tap clear no longer clears full draft"
+grep -Fq 'saveButton.isEnabled =' "$EDITOR" ||
+  fail "#30 Save dirty/valid state owner missing"
+grep -Fq 'normalized !=' "$EDITOR" ||
+  fail "#30 editor no longer compares normalized draft"
+grep -Fq 'originalName' "$EDITOR" ||
+  fail "#30 editor original-name identity missing"
+grep -Fq 'LocalPlaylistEditPolicy' "$EDITOR" ||
+  fail "#30 editor bypasses local-name validation policy"
+grep -Fq 'renameCurrentPlaylist(' "$EDITOR" ||
+  fail "#30 editor no longer saves through CurrentPlaylistStore owner"
+grep -Fq 'override fun onBackPressed' "$EDITOR" ||
+  fail "#30 Back/cancel contract missing"
+grep -Fq 'finish()' "$EDITOR" ||
+  fail "#30 dedicated editor cannot cancel/finish"
 
-python - "$PLAYLIST" "$STORE" "$UI" <<'PY'
+python - "$HUB" "$EDITOR" "$STORE" "$MANIFEST" <<'PY'
 from pathlib import Path
 import re
 import sys
 
-playlist = Path(sys.argv[1]).read_text(encoding="utf-8")
-store = Path(sys.argv[2]).read_text(encoding="utf-8")
-ui = Path(sys.argv[3]).read_text(encoding="utf-8")
+hub = Path(sys.argv[1]).read_text(encoding="utf-8")
+editor = Path(sys.argv[2]).read_text(encoding="utf-8")
+store = Path(sys.argv[3]).read_text(encoding="utf-8")
+manifest = Path(sys.argv[4]).read_text(encoding="utf-8")
 
 def block(text, start_marker, end_marker):
     start = text.find(start_marker)
@@ -93,60 +86,28 @@ def block(text, start_marker, end_marker):
         raise SystemExit(f"FAIL: missing block {start_marker}")
     return text[start:end]
 
-editor = block(
-    playlist,
-    "private fun showPlaylistEditor",
-    "\n    private fun showProjectActions",
-)
-save_editor = block(
-    playlist,
-    "private fun savePlaylistEditor",
-    "\n    private fun closePlaylistEditor",
-)
-rename = block(
-    store,
-    "fun renameCurrentPlaylist",
-    "\n    @Synchronized\n    fun clear",
-)
-
-editor_compact = "".join(editor.split())
-rename_compact = "".join(rename.split())
-
-required_editor = [
-    "showContentDialog(",
-    "heightFraction=editorHeightFraction",
-    "imeAware=true",
-    "Configuration.ORIENTATION_LANDSCAPE",
-    "contentDescription=\"Очистити назву\"",
-    "R.drawable.ic_ytm_clear",
-    "input.setText(\"\")",
-    "dismissOnClick=false",
-    "editDraftName",
-    "editTargetLocalPlaylistId",
-    "editValidationError",
-    "addTextChangedListener(",
-    "isNotBlank()==true",
-    "validation.visibility=View.GONE",
-]
-for item in required_editor:
-    if "".join(item.split()) not in editor_compact:
-        raise SystemExit("FAIL: #30 editor regression contract missing: " + item)
+if "UiChrome.showContentDialog(" in editor or "Dialog(" in editor:
+    raise SystemExit("FAIL: #30 dedicated editor regressed back to modal/dialog UI")
 
 if not re.search(
-    r"showPlaylistEditor\(\s*restoring\s*=\s*true\s*\)",
-    playlist,
+    r'android:name="\.EditPlaylistActivity"[\s\S]*?android:windowSoftInputMode="adjustResize"',
+    manifest,
 ):
-    raise SystemExit("FAIL: #30 editor is not restored after recreation")
+    raise SystemExit("FAIL: #30 editor manifest entry does not own adjustResize")
 
-if not re.search(
-    r"expectedId\s*!=\s*snapshot\.localPlaylistId",
+on_back = block(
     editor,
-):
-    raise SystemExit("FAIL: #30 stale editor target no longer fails closed")
+    "override fun onBackPressed",
+    "\n    private fun buildUi",
+)
+if "save()" in on_back or "renameCurrentPlaylist(" in on_back:
+    raise SystemExit("FAIL: #30 Back started a save")
 
-if "renameCurrentPlaylist(" not in save_editor:
-    raise SystemExit("FAIL: #30 Save no longer routes through local store rename owner")
-
+save = block(
+    editor,
+    "private fun save()",
+    "\n    private fun captureDraft",
+)
 for forbidden in (
     "SearchCoordinator",
     "PlaylistWriteCoordinator",
@@ -155,22 +116,66 @@ for forbidden in (
     "ACTION_RESTORE",
     "delete",
 ):
-    if forbidden in editor or forbidden in save_editor or forbidden in rename:
+    if forbidden in save:
         raise SystemExit(
-            "FAIL: #30 editor/store reached forbidden remote/history/destructive owner: "
+            "FAIL: #30 dedicated editor save reached forbidden remote/history/destructive owner: "
             + forbidden
         )
 
-required_rename = [
+if "renameCurrentPlaylist(" not in save:
+    raise SystemExit("FAIL: #30 dedicated editor does not use local rename owner")
+
+refresh = block(
+    editor,
+    "private fun refreshEditorState()",
+    "\n    private fun save()",
+)
+refresh_compact = "".join(refresh.split())
+for item in (
+    "normalizeName(draftName)",
+    "normalized!=originalName",
+    "saveButton.isEnabled=dirty",
+    "saveButton.alpha=",
+):
+    if "".join(item.split()) not in refresh_compact:
+        raise SystemExit("FAIL: #30 dirty/valid Save contract missing: " + item)
+
+on_create = block(
+    editor,
+    "override fun onCreate",
+    "\n    override fun onResume",
+)
+for item in (
+    "STATE_TARGET_LOCAL_PLAYLIST_ID",
+    "STATE_ORIGINAL_NAME",
+    "STATE_DRAFT_NAME",
+    "STATE_VALIDATION_VISIBLE",
+    "snapshot.localPlaylistId",
+):
+    if item not in on_create:
+        raise SystemExit("FAIL: #30 recreation/identity contract missing: " + item)
+
+if not re.search(
+    r"targetLocalPlaylistId\s*!=\s*snapshot\.localPlaylistId",
+    editor,
+):
+    raise SystemExit("FAIL: #30 stale editor target no longer fails closed")
+
+rename = block(
+    store,
+    "fun renameCurrentPlaylist",
+    "\n    @Synchronized\n    fun clear",
+)
+rename_compact = "".join(rename.split())
+for item in (
     "expectedLocalPlaylistId",
     "snapshot.localPlaylistId",
-    "snapshot.playlist.copy(name=normalizedName)",
+    "snapshot.playlist.copy",
     "snapshot.sourceLabel",
     "snapshot.destinationPlaylistId",
     "snapshot.destinationPlaylistTitle",
     "snapshot.sourceHistoryId",
-]
-for item in required_rename:
+):
     if "".join(item.split()) not in rename_compact:
         raise SystemExit("FAIL: #30 rename identity/linkage contract missing: " + item)
 
@@ -187,52 +192,13 @@ if copy_body != "name=normalizedName":
         "FAIL: #30 local rename changed more than playlist.name: " + copy_body
     )
 
-content_sig = block(
-    ui,
-    "fun showContentDialog(",
-    "\n    fun showMultiChoiceDialog",
-)
-for item in (
-    "heightFraction: Float = 1f",
-    "imeAware: Boolean = false",
-):
-    if item not in content_sig:
-        raise SystemExit(
-            "FAIL: showContentDialog safe editor option is not opt-in: " + item
-        )
+if "HistoryStore" in rename or "YouTubeApi" in rename:
+    raise SystemExit("FAIL: #30 local rename reached History/remote owner")
 
-message_sig = block(
-    ui,
-    "fun showMessageDialog(",
-    "\n    fun showDangerConfirmDialog",
-)
-if "heightFraction" in message_sig or "imeAware" in message_sig:
-    raise SystemExit(
-        "FAIL: editor geometry/IME options leaked into shared message-dialog API"
-    )
-
-fixed = block(
-    ui,
-    "private fun showFixedFooterDialog(",
-    "\n    private fun showCustomDialog",
-)
-for item in (
-    "heightFraction: Float = 1f",
-    "imeAware: Boolean = false",
-    ".coerceIn(",
-    "0.45f",
-    "1f",
-    "320",
-    "availableHeight",
-    "WindowInsetsCompat.Type",
-    ".ime()",
-    "isVisible(",
-    "SOFT_INPUT_ADJUST_RESIZE",
-    "activeHeightFraction",
-    "if (imeVisible)",
-):
-    if item not in fixed:
-        raise SystemExit("FAIL: compact fixed-footer safety missing: " + item)
+entry_index = hub.find('title = "Редагувати"')
+target_index = hub.find("EditPlaylistActivity::class.java", entry_index)
+if entry_index < 0 or target_index < 0:
+    raise SystemExit("FAIL: #30 hub edit action is not wired to dedicated editor")
 PY
 
 grep -Fq 'restorableStore.upsert(' "$STORE" ||
@@ -245,19 +211,15 @@ grep -Fq 'normalizeName_preservesInternalWhitespace' "$POLICY_TEST" ||
   fail "#30 normalization JVM regression missing"
 
 grep -Fq 'FUNCTIONAL PHONE BASELINE PASS' "$BASELINE" ||
-  fail "#30 accepted phone regression baseline missing"
+  fail "#30 accepted phone baseline missing"
 grep -Fq 'PLBHSr6BvsM4o' "$BASELINE" ||
-  fail "#30 accepted linked-YTM identity evidence missing"
+  fail "#30 accepted linked-YTM evidence missing"
 grep -Fq 'The Prodigy - Voodoo People / Out Of Space (Remixes) (2005)' "$BASELINE" ||
   fail "#30 remote-title evidence missing"
 grep -Fq 'do not invalidate the accepted phone baseline' "$BASELINE" ||
-  fail "#30 no-repeat regression rule missing"
-grep -Fq 'Focused corrective retest only' "$BASELINE" ||
-  fail "#30 focused corrective retest rule missing"
+  fail "#30 no-repeat baseline rule missing"
 
 grep -Fq '#30 FUNCTIONAL PHONE BASELINE PASS' "$PHONE" ||
   fail "#30 PHONE functional baseline not recorded"
-grep -Fq 'remote title stayed' "$PHONE" ||
-  fail "#30 remote-title PHONE evidence not recorded"
 
-echo "#30 local playlist Edit regression audit: PASS"
+echo "#30 local playlist Edit dedicated-screen regression audit: PASS"
