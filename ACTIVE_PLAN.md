@@ -12,7 +12,7 @@
 > 3. update **NEXT ACTION** so the first unchecked item is the real resume point;
 > 4. update `CURRENT_HANDOFF.md` when the resume point materially changes.
 
-Last updated: 2026-10-06
+Last updated: 2026-10-07
 
 ## Active release
 
@@ -389,7 +389,7 @@ Goal: aggregate durable unfinished/recoverable work into one read-only Recovery 
 - [x] Breathing/acknowledgement PHONE PASS: after opening Recovery Center and returning to Home with the same `⚠ 2` count, direct observation confirmed the badge stayed still.
 - [x] #53 focused phone matrix complete — **PHONE PASS / CLOSED**.
 
-### CURRENT TASK — Type-aware file/backup library and scoped chooser (#54)
+### CLOSED TASK — Type-aware file/backup library and scoped chooser (#54)
 
 Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make each save/import/restore entry point show the correct artifact type first, while preserving legacy-file fallback and existing restore/import semantics.
 
@@ -409,10 +409,34 @@ Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make
 - [x] PHONE check History Import scoped chooser + rotation/no-auto-restore: **PASS 2026-10-07**; screen showed `Файли потрібного типу: 6`, History JSON candidates + `Інший файл…`, both rotations preserved the scoped list near-immediately and import did not auto-start.
 - [x] Scope Playlist Project import to its expected JSON artifact type with explicit legacy/system fallback while preserving CSV/TXT candidates.
 - [x] Add readable typed file cards and content-first wrong-type validation messages without changing restore/import payload semantics. Exact validated checkpoint `b53a73ed6be46c932c7a21c0a314b3788fdb9931`, Validate `37536534440 — SUCCESS` (preflight/JVM/assemble PASS).
-- [ ] Complete focused #54 phone matrix before closing #54. Playlist Project typed-card + wrong-type slices are PHONE PASS; only Playlist Project chooser rotation/no-auto-import remains.
+- [x] Complete focused #54 phone matrix: Playlist Project `Імпорт файла` portrait → landscape → portrait returned the scoped/typed cards near-immediately and no import auto-started — **PHONE PASS 2026-10-07 / #54 CLOSED**.
+
+### CURRENT TASK — Simplified Termux operator menu/status (#52)
+
+Goal: make the default phone-side YTM Importer Menu understandable without requiring Git/GitHub vocabulary, while preserving all exact-HEAD safety guards.
+
+Current live menu verified before implementation:
+- `1 — Sync YTM`
+- `2 — Status`
+- `3 — Download signed APK`
+- `4 — Open APK folder`
+- `5 — Open YTM shell`
+- `6 — Validate + Build signed APK`
+- `7 — Release status`
+- `8 — Finalize stable release`
+- `9 — GitHub Actions status`
+- `H — Help / Команди`
+
+Checklist:
+- [ ] Replace the default menu with task-oriented Ukrainian labels for normal phone QA.
+- [ ] Remove the ambiguous top-level `Status` vs `Release status` split.
+- [ ] Make the primary status output distinguish current code, exact-current-code Validate, exact-current-code signed APK, and historical release metadata.
+- [ ] Move developer/release-only actions (shell/finalize/raw Actions details) under an Advanced submenu.
+- [ ] Keep exact-HEAD validation/build/download safety unchanged.
+- [ ] Add/update static guards and operator documentation.
+- [ ] Validate exact source, build one signed candidate if app/operator scripts require it, and run focused real-phone menu/status acceptance.
 
 Remaining Phase B backlog:
-- [ ] Simplified Termux operator menu/status (#52).
 - [ ] Home last-action detail drill-down to exact History detail.
 
 Every Phase B item must remain explicit-action and must not auto-start remote work.
@@ -429,16 +453,15 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Finish the last #54 phone slice: Playlist Project chooser rotation/no-auto-import.**
+**Start #52 / UX-047 — simplify the default Termux operator menu.**
 
-Full Restore and History scoped chooser phone slices are **PASS**. Signed #54 candidate run `37546679576 — SUCCESS`, source `22721a7b64858cfad7416c85c7d867723cb16946`, artifact ID `11451227175`, is installed.
+#54 / UX-049 is **PHONE PASS / CLOSED**. Do not repeat its Full Restore, History or Playlist Project phone matrix.
 
-Playlist Project phone evidence is now also **PASS** for presentation and wrong-type protection:
-- **«Імпорт файла»** shows `CSV список`, `TXT список` and `YTM Project` typed cards; visible YTM Project cards include playlist title and track count metadata;
-- footer keeps **«Інший файл…»**;
-- selecting a known History JSON through **«Інший файл…»** shows **«Файл не підходить» → «Це History JSON, а тут потрібен YTM Project.»** and does not import it.
-
-Only the Playlist Project chooser rotation/no-auto-import slice remains before #54 can close.
+First #52 source step:
+1. audit `tools/termux/ytm-menu.sh`, `ytm-status.sh`, `ytm-release-status.sh`, `ytm-build-apk.sh`, `ytm-download-apk.sh` and Help;
+2. design the task-oriented main menu from issue #52 while keeping exact-HEAD safety unchanged;
+3. move developer/release-only actions to an Advanced submenu;
+4. make status plain-language-first and clearly separate current candidate state from historical release metadata.
 
 ## Update rule
 
