@@ -84,18 +84,14 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-1. #54 is **PHONE PASS / CLOSED**. Final Playlist Project test: on **«Імпорт файла»**, portrait → landscape → portrait returned the scoped/typed cards near-immediately and no import auto-started.
-2. Do not repeat #53 or #54 phone matrices.
-3. Start #52 / UX-047 by auditing the live Termux operator scripts:
-   - `tools/termux/ytm-menu.sh`;
-   - `ytm-status.sh`;
-   - `ytm-release-status.sh`;
-   - `ytm-build-apk.sh`;
-   - `ytm-download-apk.sh`;
-   - `ytm-help.sh`.
-4. Target default menu from #52: task-oriented Ukrainian wording, one unambiguous project-readiness/status path, and an Advanced submenu for shell/release/raw GitHub actions.
-5. Preserve exact-current-HEAD Validate and signed-build safety. Historical phone/release metadata must never look like the current candidate.
-6. After source/static/Validate PASS, run only the focused #52 phone menu/status matrix.
+1. #52 source implementation is complete; Android app code is unchanged.
+2. Main menu contract now uses: **`1 — Оновити проєкт`**, **`2 — Перевірити, що зараз готово`**, **`3 — Завантажити готовий APK`**, **`4 — Відкрити папку з APK`**, **`5 — Зібрати новий APK`**, **`6 — Перевірити локальні зміни`**, **`7 — Розширені / релізні дії`**, **`H — Допомога`**.
+3. Advanced menu owns shell / technical release state / stable publication / raw GitHub Actions.
+4. Primary readiness status reports only the current candidate and one exact `Що робити далі`; historical release metadata is visually separated in Advanced.
+5. `scripts/v1455-termux-operator-menu-audit.sh` guards labels, current-vs-history separation and exact-HEAD build/download safety.
+6. Next gate: exact branch-head Validate PASS.
+7. After PASS, phone flow starts from the currently installed old Termux menu: **`1 — Sync YTM` → `0 — Вийти` → reopen `YTM Importer`**. Then test only the new #52 menu/status surfaces.
+8. Do not repeat #53/#54 phone matrices and do not rebuild/install the Android APK for this tooling-only change.
 
 ## Consolidated phone matrix
 
