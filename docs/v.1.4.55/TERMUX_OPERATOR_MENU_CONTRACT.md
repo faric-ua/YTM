@@ -2,7 +2,7 @@
 
 Issue: **#52 / UX-047**
 
-Status: **IMPLEMENTATION / PHONE QA PENDING**
+Status: **SOURCE / STATIC / VALIDATE PASS — PHONE QA PENDING**
 
 ## Goal
 
@@ -98,3 +98,13 @@ storage semantics or release identity rules.
 - the advanced release screen clearly separates current candidate from recorded history;
 - build/download/open-folder flows still enforce exact-source guards;
 - the user can complete the normal cycle without entering raw Git or GitHub commands.
+
+## Validated source checkpoint
+
+- tooling/source checkpoint: `cf2298d7b340562f49131b09246f259a1d12cbfe`;
+- Validate Android: `37552222710 — SUCCESS`;
+- release preflight: PASS;
+- `v1455-termux-operator-menu-audit.sh`: PASS;
+- JVM tests: PASS;
+- unsigned release assemble: PASS;
+- Android app source unchanged by #52; no new APK is required for focused Termux phone acceptance.
