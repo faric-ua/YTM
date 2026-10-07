@@ -73,8 +73,18 @@ grep -Fq 'android_app_unchanged_between()' "$STATUS" ||
   fail "tooling-only APK compatibility helper missing"
 grep -Fq 'git -C "$YTM_REPO_DIR" diff --quiet "$from_sha" "$to_sha" --' "$STATUS" ||
   fail "APK compatibility is not proven by git diff"
-grep -Fq 'app \\' "$STATUS" ||
-  fail "Android app path missing from compatibility guard"
+for guarded_path in \
+  '    app ' \
+  '    build.gradle.kts ' \
+  '    settings.gradle.kts ' \
+  '    gradle.properties ' \
+  '    gradle ' \
+  '    gradlew ' \
+  '    gradlew.bat'
+do
+  grep -Fq "$guarded_path" "$STATUS" ||
+    fail "Android/build compatibility path missing: $guarded_path"
+done
 grep -Fq 'NEXT_ACTION="Новий APK не потрібен — Android-застосунок не змінювався."' "$STATUS" ||
   fail "tooling-only HEAD still lacks no-rebuild next action"
 
