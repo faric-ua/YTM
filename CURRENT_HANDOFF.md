@@ -24,9 +24,11 @@ Last updated: **2026-10-07**
 
 Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
-Active task: #54 / UX-049 Type-aware YTM file library and scoped import/restore chooser.
+Closed task: #54 / UX-049 Type-aware YTM file library — **PHONE PASS / CLOSED 2026-10-07**.
 
-Current #54 status: **PHONE PARTIAL / Full Restore + History PASS; Playlist Project typed cards + wrong-type PASS; only Playlist Project rotation/no-auto-import remains**.
+Active task: #52 / UX-047 Simplified Termux operator menu/status.
+
+Final #54 status: **PHONE PASS / CLOSED** — Full Restore, History and Playlist Project scoping/rotation/no-auto-start passed; typed cards and wrong-type fallback passed.
 
 Implemented and verified:
 - content-first `YtmArtifactClassifier` + `YtmArtifactScopePolicy`;
@@ -68,11 +70,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-1. Installed signed candidate: run `37546679576 — SUCCESS`, source `22721a7b64858cfad7416c85c7d867723cb16946`, artifact ID `11451227175`.
-2. PHONE PASS evidence already captured: **«Імпорт файла»** shows CSV/TXT/YTM Project typed cards with readable metadata; **«Інший файл…»** is present; known History JSON through fallback is blocked by **«Файл не підходить» → «Це History JSON, а тут потрібен YTM Project.»**.
-3. Remaining PHONE test only: while on **«Імпорт файла»**, rotate portrait → landscape → portrait without choosing a file.
-4. PASS = scoped/typed cards return near-immediately and no import auto-starts.
-5. After PASS, reconcile #54 issue acceptance and close only if nothing else remains.
+1. Do not repeat #53 or #54 phone matrices.
+2. Start #52 / UX-047 from the live Termux scripts.
+3. Replace the default developer-oriented menu with task-oriented Ukrainian labels for normal phone QA.
+4. Remove the top-level ambiguity between `Status` and `Release status`.
+5. Status must clearly tell the user whether phone code matches current remote code, whether that exact code passed Validate, whether a signed APK exists for that exact code, and the single next action to take.
+6. Move shell/finalize/raw GitHub Actions details under an Advanced submenu, keeping all exact-HEAD guards unchanged.
+7. Add static guards, Validate, then focused phone QA for the menu/status flow.
 
 
 ## Immutable functional reference
