@@ -454,16 +454,19 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**PHONE-retest the #52 tooling-only APK compatibility correction.**
+**#52 PHONE QA — readiness corrective PASS; test local-changes screen next.**
 
-Corrective checkpoint `aa624982756d19b9bea844840f279e6ff77d4c7d` passed Validate `37637690717 — SUCCESS` (preflight / #52 audit / JVM / assemble PASS).
+PHONE evidence on HEAD `8b2fafb9f48dd22db3976e3783cba6b3f029460a`:
+- `Код у Termux: актуальний ✅`;
+- `Перевірка поточного коду: PASS ✅ (run 37638433786)`;
+- `Підписаний APK для поточного HEAD: ще немає`;
+- `Android-застосунок: Android-застосунок не змінювався ✅`;
+- `Завантажений APK: попередній APK підходить ✅ (run 37546679576)`;
+- `Що робити далі: Новий APK не потрібен — Android-застосунок не змінювався.`
 
-Retest only the readiness screen:
-1. `1 — Оновити проєкт`;
-2. return to main menu;
-3. `2 — Перевірити, що зараз готово`;
-4. require Android app compatibility to be recognized from the previous downloaded signed APK and **no** recommendation to `5 — Зібрати новий APK` for tooling-only changes;
-5. send the output before continuing `6` / `7` menu QA.
+Result: tooling-only APK compatibility correction is **PHONE PASS**; no needless build recommendation remains.
+
+Next phone step: from the main menu open `6 — Перевірити локальні зміни` and require current/clean local repository state. Then continue `7 — Розширені / релізні дії` only after that PASS.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
