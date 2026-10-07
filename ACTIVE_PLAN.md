@@ -434,7 +434,8 @@ Checklist:
 - [x] Move developer/release-only actions (shell/finalize/raw Actions details) under `7 — Розширені / релізні дії`.
 - [x] Keep exact-HEAD validation/build/download safety unchanged in source; #52 static audit explicitly guards the existing exact-source checks.
 - [x] Add/update static guards and operator documentation (`v1455-termux-operator-menu-audit.sh`, contract, toolkit README and command guide).
-- [ ] Validate exact source, then run focused real-phone menu/status acceptance. No APK rebuild is required because #52 changes only repository-owned Termux tooling/docs.
+- [x] Validate #52 tooling source checkpoint `cf2298d7b340562f49131b09246f259a1d12cbfe`: Validate `37552222710 — SUCCESS` (release preflight + #52 audit + JVM + unsigned assemble PASS). No APK rebuild required.
+- [ ] Run focused real-phone menu/status acceptance.
 
 Remaining Phase B backlog:
 - [ ] Home last-action detail drill-down to exact History detail.
@@ -453,15 +454,21 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Validate the #52 Termux operator-menu implementation, then run focused phone QA.**
+**PHONE-check #52 Termux operator menu/status.**
 
-Implemented source contract:
-- main menu: `1 — Оновити проєкт`, `2 — Перевірити, що зараз готово`, `3 — Завантажити готовий APK`, `4 — Відкрити папку з APK`, `5 — Зібрати новий APK`, `6 — Перевірити локальні зміни`, `7 — Розширені / релізні дії`, `H — Допомога`;
-- Advanced: `1 — Відкрити YTM shell`, `2 — Технічний стан релізу`, `3 — Опублікувати stable release`, `4 — GitHub Actions`, `0 — Назад`;
-- primary readiness screen is current-candidate-only and gives one `Що робити далі` instruction;
-- exact-HEAD Validate/build/download guards remain unchanged.
+Validated tooling checkpoint: `cf2298d7b340562f49131b09246f259a1d12cbfe`, Validate `37552222710 — SUCCESS`.
 
-After exact-HEAD Validate PASS, the phone only needs to sync/reopen the Termux menu and test the new menu/status surfaces; do not rebuild/install the Android APK for this tooling-only change.
+Because the phone still has the old menu script until sync, the first visible action is the old label: `1 — Sync YTM`. After sync, exit and reopen the YTM Importer shortcut so the new menu script is loaded.
+
+Phone targets:
+- new main menu labels match the #52 contract;
+- `2 — Перевірити, що зараз готово` is plain-language-first and gives one exact next action;
+- `6 — Перевірити локальні зміни` clearly shows clean/current local state;
+- `7 — Розширені / релізні дії` contains only secondary technical/release actions;
+- Advanced → `2 — Технічний стан релізу` visibly separates current candidate from recorded release history;
+- `0 — Назад` returns to the main menu.
+
+Do not build/download/install an APK for this Termux-only test.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
