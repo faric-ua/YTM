@@ -411,7 +411,7 @@ Goal: stop mixing unrelated JSON artifacts in generic recent-file flows and make
 - [x] Add readable typed file cards and content-first wrong-type validation messages without changing restore/import payload semantics. Exact validated checkpoint `b53a73ed6be46c932c7a21c0a314b3788fdb9931`, Validate `37536534440 — SUCCESS` (preflight/JVM/assemble PASS).
 - [x] Complete focused #54 phone matrix: Playlist Project `Імпорт файла` portrait → landscape → portrait returned the scoped/typed cards near-immediately and no import auto-started — **PHONE PASS 2026-10-07 / #54 CLOSED**.
 
-### CURRENT TASK — Simplified Termux operator menu/status (#52)
+### CLOSED TASK — Simplified Termux operator menu/status (#52)
 
 Goal: make the default phone-side YTM Importer Menu understandable without requiring Git/GitHub vocabulary, while preserving all exact-HEAD safety guards.
 
@@ -435,16 +435,33 @@ Checklist:
 - [x] Keep exact-HEAD validation/build/download safety unchanged in source; #52 static audit explicitly guards the existing exact-source checks.
 - [x] Add/update static guards and operator documentation (`v1455-termux-operator-menu-audit.sh`, contract, toolkit README and command guide).
 - [x] Validate #52 tooling source checkpoint `cf2298d7b340562f49131b09246f259a1d12cbfe`: Validate `37552222710 — SUCCESS` (release preflight + #52 audit + JVM + unsigned assemble PASS). No APK rebuild required.
-- [ ] Run focused real-phone menu/status acceptance.
+- [x] Run focused real-phone menu/status acceptance — **PHONE PASS 2026-10-07 / #52 CLOSED**.
 
-Remaining Phase B backlog:
-- [ ] Home last-action detail drill-down to exact History detail.
+Phase B status:
+- [x] Home last-action detail drill-down (BACKLOG UX-028) was already completed earlier and is not a remaining gate.
+- [x] #52 is the final Phase B item — **PHONE PASS / CLOSED**.
 
-Every Phase B item must remain explicit-action and must not auto-start remote work.
+Phase B is complete. Every completed Phase B item remains explicit-action and does not auto-start remote work.
 
 ## F. Phase C — local convenience
 
-- [ ] Local playlist Edit (#30).
+### CURRENT TASK — Local playlist Edit (#30)
+
+Goal: add an explicit local-only edit flow from **«Поточний плейлист»** without changing playlist identity or silently mutating YTM.
+
+Checklist:
+- [ ] Add explicit **«Редагувати»** entry point from **«Поточний плейлист»**.
+- [ ] Phase 1 edits the local playlist name only.
+- [ ] Preserve the same `localPlaylistId`, source/history identity, selected video IDs and destination linkage.
+- [ ] Persist through `CurrentPlaylistStore` + `RestorablePlaylistStore`.
+- [ ] Linked YTM playlist must not be renamed remotely by this local edit flow.
+- [ ] Rotation preserves unsaved input; Cancel = no-op.
+- [ ] Reject blank/whitespace-only names.
+- [ ] Do not rewrite existing History audit records.
+- [ ] Static/JVM/Validate PASS before one focused phone candidate.
+- [ ] PHONE acceptance for rename, Cancel, rotation and linked-YTM no-remote-mutation.
+
+Remaining Phase C backlog:
 - [ ] Blank URL inline validation (#29).
 - [ ] Review manual URL/manual-choice hierarchy (#40).
 - [ ] Bulk preparation presentation/state cleanup (#27/#28).
@@ -454,17 +471,17 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**#52 PHONE QA — Advanced menu + technical release separation PASS; verify Back next.**
+**Start Phase C with #30 / UX-036 — explicit local playlist Edit.**
 
-PHONE evidence:
-- `7 — Розширені / релізні дії` shows only the intended secondary actions: shell, technical release status, stable publication, GitHub Actions, Back;
-- `2 — Технічний стан релізу` visibly separates `ПОТОЧНИЙ КАНДИДАТ` from `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`;
-- current candidate correctly showed Local behind Remote (`9d7882...` vs `98965b...`) because docs-only evidence commits were added after the previous phone sync;
-- exact remote Validate `37656824668 — SUCCESS` is shown for the current candidate.
+#52 / UX-047 is **PHONE PASS / CLOSED**. Do not repeat its Termux menu/status matrix.
 
-Result: Advanced menu structure + current-vs-history separation are **PHONE PASS**.
-
-Final #52 phone action: return to Advanced menu, press `0 — Назад`, and require the new main menu to reappear. If PASS, reconcile full #52 acceptance and close if nothing remains.
+First #30 source step:
+1. audit `PlaylistActivity`, `CurrentPlaylistStore`, `RestorablePlaylistStore` and current playlist identity/linkage model;
+2. add one explicit **«Редагувати»** local-only entry point;
+3. Phase 1 edits name only and preserves `localPlaylistId`, source identity, tracks/videoIds and YTM linkage;
+4. rotation-safe unsaved input; Cancel = no-op; blank/whitespace validation;
+5. no remote YTM rename/mutation from this flow;
+6. add static/JVM coverage before phone QA.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
