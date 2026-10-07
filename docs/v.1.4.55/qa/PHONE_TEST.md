@@ -432,15 +432,15 @@ Validated tooling checkpoint:
 - no Android app-code change; no APK rebuild required for this focused phone test.
 
 Focused phone matrix:
-- [ ] old local menu: `1 — Sync YTM`; then `0 — Вийти`; reopen YTM Importer shortcut;
-- [ ] new main menu exact visible labels match #52 contract;
-- [ ] `2 — Перевірити, що зараз готово` shows plain-language current-candidate readiness + one `Що робити далі`;
-- [ ] `6 — Перевірити локальні зміни` shows current/clean local repository state;
-- [ ] `7 — Розширені / релізні дії` contains only secondary technical/release actions;
-- [ ] Advanced `2 — Технічний стан релізу` separates `ПОТОЧНИЙ КАНДИДАТ` from `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`;
-- [ ] Advanced `0 — Назад` returns to main menu.
+- [x] old local menu: `1 — Sync YTM`; then `0 — Вийти`; reopen YTM Importer shortcut;
+- [x] new main menu exact visible labels match #52 contract;
+- [x] `2 — Перевірити, що зараз готово` shows plain-language current-candidate readiness + one `Що робити далі`;
+- [x] `6 — Перевірити локальні зміни` shows current/clean local repository state;
+- [x] `7 — Розширені / релізні дії` contains only secondary technical/release actions;
+- [x] Advanced `2 — Технічний стан релізу` separates `ПОТОЧНИЙ КАНДИДАТ` from `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`;
+- [x] Advanced `0 — Назад` returns to main menu.
 
-Status: **PHONE QA PENDING**.
+Status: **PHONE PASS / CLOSED**.
 
 
 ### #52 PHONE finding — tooling-only HEAD suggested needless APK build — 2026-10-07
@@ -511,4 +511,22 @@ Current candidate correctly reported Local `9d7882...` behind Remote `98965b...`
 
 Result: **PASS** for Advanced menu contents and current-vs-history separation.
 
-Still pending: Advanced `0 — Назад` returns to the main menu.
+Final Back check passed; Advanced `0 — Назад` returned to the new main YTM Importer menu.
+
+
+### #52 final Back + closeout — PASS — 2026-10-07
+
+Phone evidence:
+- from Advanced menu, `0 — Назад` returned to the main **YTM Importer Menu**;
+- the main menu showed all task-oriented Ukrainian entries (`1` through `7`, `H`, `0`) as expected.
+
+Final #52 result:
+- main menu discoverability — PASS;
+- readiness guidance — PASS;
+- tooling-only APK compatibility — PASS;
+- local changes status — PASS;
+- Advanced submenu structure — PASS;
+- current-vs-history technical release separation — PASS;
+- Advanced Back navigation — PASS.
+
+**#52 / UX-047 — PHONE PASS / CLOSED.**
