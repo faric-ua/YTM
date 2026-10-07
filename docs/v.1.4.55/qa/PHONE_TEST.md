@@ -540,13 +540,47 @@ Validated app/tooling HEAD: `b22274c33344ebe27d3a422e7dc30669a57ee6bf`.
 - release preflight / #30 static guards / JVM / unsigned assemble PASS.
 
 Focused phone matrix — exact visible flow:
-- [ ] open **«Поточний плейлист»** and verify **«Редагувати»** is visible;
-- [ ] tap **«Редагувати»** → editor title is **«Редагувати локальний плейлист»** and copy says YouTube Music is not changed;
-- [ ] local-only rename: enter a new name → **«Зберегти»** → same screen shows the new name; reopen editor and verify persistence;
-- [ ] blank validation: enter whitespace → **«Зберегти»** → editor stays open with **«Введіть назву плейлиста.»** and name is not changed;
-- [ ] rotation draft: type an unsaved draft → portrait → landscape → portrait → same editor/draft remains and nothing is saved automatically;
-- [ ] Cancel: change draft → **«Скасувати»** → original persisted name remains;
-- [ ] linked-YTM safety: on a playlist that shows a YTM link, local rename preserves the same YTM destination/linkage and does not remotely rename it;
-- [ ] no Search/write/restore/delete action auto-starts during open/rotation/cancel.
+- [x] open **«Поточний плейлист»** and verify **«Редагувати»** is visible;
+- [x] tap **«Редагувати»** → editor title is **«Редагувати локальний плейлист»** and copy says YouTube Music is not changed;
+- [x] local-only rename: enter a new name → **«Зберегти»** → same screen shows the new name; reopen editor and verify persistence;
+- [x] blank validation: enter whitespace → **«Зберегти»** → editor stays open with **«Введіть назву плейлиста.»** and name is not changed;
+- [x] rotation draft: type an unsaved draft → portrait → landscape → portrait → same editor/draft remains and nothing is saved automatically;
+- [x] Cancel: change draft → **«Скасувати»** → original persisted name remains;
+- [x] linked-YTM safety: local rename preserved YTM ID `PLBHSr6BvsM4o`, linked title, and the remote YouTube Music title remained unchanged;
+- [x] no Search/write/restore/delete action auto-started during open/rotation/cancel.
 
-Status: **SOURCE / STATIC / JVM / VALIDATE PASS — SIGNED BUILD + PHONE QA PENDING**.
+Status: **FUNCTIONAL PHONE BASELINE PASS — TWO UX CORRECTIVES PENDING**.
+
+
+### #30 functional phone baseline — PASS — 2026-10-08
+
+Accepted signed candidate:
+- source HEAD `54425e2aa25c7381164b52f0b7b93d5c65637745`;
+- Validate `37682238560 — SUCCESS`;
+- signed build `37683871558 — SUCCESS`;
+- installed over the existing app.
+
+PHONE evidence:
+- **«Поточний плейлист» → «Редагувати»** visible and opens **«Редагувати локальний плейлист»**;
+- editor copy explicitly says the change is local and YouTube Music is not renamed;
+- local rename saved immediately and persisted after reopening the editor;
+- blank Save stayed open and showed **«Введіть назву плейлиста.»** without persisting invalid input;
+- unsaved draft survived portrait → landscape → portrait;
+- rotation did not auto-save;
+- **«Скасувати»** discarded the unsaved draft and preserved the last saved name;
+- linked-YTM rename preserved YTM ID `PLBHSr6BvsM4o`, linked title and 5/5 track state;
+- YouTube Music screenshot confirmed the remote title stayed **«The Prodigy - Voodoo People / Out Of Space (Remixes) (2005)»** and did not gain `local test`;
+- no Search/write/restore/delete operation auto-started during the editor lifecycle checks.
+
+Result: **#30 FUNCTIONAL PHONE BASELINE PASS**.
+
+PHONE findings to correct without rerunning the full matrix:
+1. portrait editor leaves excessive empty vertical space between the name field and fixed footer;
+2. after blank validation, **«Введіть назву плейлиста.»** stays visible after the user enters a valid nonblank draft.
+
+Retest policy:
+- preserve this accepted functional baseline;
+- after the two corrective UI changes, rerun only:
+  1. editor compactness / footer accessibility in portrait + landscape;
+  2. blank error disappears after typing a nonblank draft;
+- do **not** repeat rename persistence, blank rejection semantics, rotation persistence, Cancel, YTM linkage or remote-title checks unless their protected source/contract changes.
