@@ -471,19 +471,26 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**Build and install one exact-final-HEAD #30 corrective APK, then run only two focused phone checks.**
+**Validate second #30 presentation corrective after PHONE video FAIL.**
 
-Corrective source/checkpoint `03ddb8b6f8476d942eee68d0a429e5a137b7e706` passed Validate `37690793773 — SUCCESS` (dedicated #30 regression audit / release preflight / JVM / unsigned assemble PASS).
+Accepted functional PHONE baseline remains locked and must not be repeated.
 
-Functional PHONE baseline remains locked from signed run `37683871558` / source `54425e2aa25c7381164b52f0b7b93d5c65637745` and must not be repeated.
+Rejected first corrective candidate:
+- HEAD `32b400fbed056d46b08e6d7f1f40e9d88e907726`;
+- signed run `37692262880 — SUCCESS`;
+- PHONE video: editor/IME ergonomics FAIL.
 
-After this docs-only checkpoint is finalized and validated, do not move HEAD before signed build.
+Second corrective implementation:
+- portrait/IME-hidden keeps compact `0.72f` height;
+- landscape uses full safe height;
+- editor opts into `imeAware = true`;
+- IME becomes a safe inset + Dialog Window uses `SOFT_INPUT_ADJUST_RESIZE`;
+- while keyboard is visible, editor fills the remaining safe viewport so footer stays reachable;
+- one-tap `×` / **«Очистити назву»** using existing `ic_ytm_clear`;
+- stale blank-validation clearing remains;
+- no storage/identity/linkage/History/Search/YTM semantics changed.
 
-PHONE retest only:
-1. **«Поточний плейлист» → «Редагувати»**: portrait layout is visibly more compact; rotate to landscape and confirm editor/footer remain accessible;
-2. clear name → **«Зберегти»** to show **«Введіть назву плейлиста.»**, then type any nonblank text and confirm the error disappears immediately.
-
-If both PASS, close #30 without repeating rename/persistence/rotation-draft/Cancel/YTM-linkage/remote-title checks.
+Next: manifest → exact-HEAD Validate → one signed APK → focused PHONE smoke only for portrait/landscape/IME geometry, × clear, and validation clearing.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
