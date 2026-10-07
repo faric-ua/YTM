@@ -87,16 +87,21 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-1. #52 is **PHONE PASS / CLOSED**. Final Back check passed: Advanced `0 — Назад` returned to the new task-oriented main menu.
-2. Phase B is complete. UX-028 Home last-action detail drill-down was already closed earlier; do not reopen it.
-3. Start Phase C with #30 / UX-036: **«Поточний плейлист» → explicit «Редагувати»**.
-4. Phase 1 edits only the local playlist name.
-5. Preserve `localPlaylistId`, `sourceHistoryId`, source label, tracks/videoIds and destination linkage.
-6. Persist through `CurrentPlaylistStore` and `RestorablePlaylistStore`.
-7. If linked to YTM, local rename must not silently mutate the remote playlist.
-8. Rotation must preserve unsaved input; Cancel = no-op; blank/whitespace-only name rejected.
-9. Do not rewrite History audit records.
-10. Do not repeat #52/#53/#54 phone matrices.
+Current task: **#30 / UX-036 Local playlist Edit**.
+
+Source/static implementation checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
+
+Implemented:
+1. **«Поточний плейлист» → «Редагувати»**.
+2. Editor title **«Редагувати локальний плейлист»**; actions **«Зберегти» / «Скасувати»**.
+3. Only local `playlist.name` changes; `localPlaylistId`, `sourceHistoryId`, source label, tracks/video IDs and destination YTM linkage are preserved.
+4. Rename persists through `CurrentPlaylistStore` and its existing `RestorablePlaylistStore` upsert.
+5. No remote YTM rename and no History rewrite.
+6. Blank/whitespace name stays in the editor with inline validation and no save.
+7. Rotation/recreation preserves editor state, draft, exact target ID and validation state; restoration never auto-saves.
+8. Cancel/system cancel = no-op.
+
+Next: synchronize `FILE_MANIFEST.txt`, run exact-HEAD Validate, then build one signed APK for focused #30 phone acceptance. Do not repeat #52/#53/#54 matrices.
 
 ## Consolidated phone matrix
 
