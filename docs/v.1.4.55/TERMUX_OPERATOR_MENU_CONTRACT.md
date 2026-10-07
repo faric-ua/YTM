@@ -2,7 +2,7 @@
 
 Issue: **#52 / UX-047**
 
-Status: **SOURCE / STATIC / VALIDATE PASS — PHONE QA PENDING**
+Status: **PHONE PASS / CLOSED — 2026-10-07**
 
 ## Goal
 
@@ -126,3 +126,16 @@ storage semantics or release identity rules.
 - JVM tests: PASS;
 - unsigned release assemble: PASS;
 - Android app source unchanged by #52; no new APK is required for focused Termux phone acceptance.
+
+## Closure note — 2026-10-07
+
+#52 closed after real-phone acceptance:
+- new task-oriented Ukrainian main menu loaded correctly;
+- readiness stale-code path correctly directed the user to `1 — Оновити проєкт`;
+- tooling-only HEAD compatibility correctly suppressed an unnecessary Android APK build and reused the compatible previous APK;
+- `6 — Перевірити локальні зміни` showed current Local=Remote and clean working tree;
+- `7 — Розширені / релізні дії` contained only the intended secondary actions;
+- `2 — Технічний стан релізу` visibly separated `ПОТОЧНИЙ КАНДИДАТ` from `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`;
+- Advanced `0 — Назад` returned to the task-oriented main menu.
+
+Exact-HEAD safety guards remain unchanged.
