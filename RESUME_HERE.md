@@ -86,21 +86,19 @@ Corrective rotation-cache source:
 
 Current task: **#52 / UX-047 Simplified Termux operator menu/status**.
 
-Corrective checkpoint:
-- source/manifest HEAD `aa624982756d19b9bea844840f279e6ff77d4c7d`;
-- Validate `37637690717 — SUCCESS`;
-- release preflight / #52 static audit / JVM / unsigned assemble PASS.
+PHONE QA progress:
+- new Ukrainian main menu loaded — PASS;
+- stale-code readiness path → `1 — Оновити проєкт` — PASS;
+- tooling-only APK compatibility correction on HEAD `8b2fafb9f48dd22db3976e3783cba6b3f029460a` — **PHONE PASS**;
+- readiness now shows current code + Validate `37638433786` PASS, Android app unchanged, previous APK compatible (run `37546679576`), and no new APK required.
 
-PHONE finding fixed: a docs/Termux-only HEAD must not force a new Android APK when the previously downloaded signed APK source is proven app-compatible.
+Next phone step:
+1. press Enter to return to the main menu;
+2. open **`6 — Перевірити локальні зміни`**;
+3. require current branch/current code and **`Локальні файли: без змін ✅`**;
+4. send the full output before continuing to `7 — Розширені / релізні дії`.
 
-Resume on phone:
-1. `1 — Оновити проєкт`;
-2. return to main menu;
-3. `2 — Перевірити, що зараз готово`;
-4. expected: code current + Validate PASS; `Android-застосунок` says it did not change; previous downloaded APK is compatible; **no** `5 — Зібрати новий APK` recommendation;
-5. send the full output before continuing `6 — Перевірити локальні зміни` / `7 — Розширені / релізні дії`.
-
-No APK rebuild/install. Do not repeat #53/#54.
+Do not build/install an APK. Do not repeat #53/#54.
 
 ## Consolidated phone matrix
 
