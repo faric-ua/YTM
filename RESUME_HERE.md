@@ -87,23 +87,29 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-Current task: **#30 / UX-036 Local playlist Edit**.
+Current task: **#30 / UX-036 Local playlist Edit — UX corrective closeout only**.
 
-Validated source/app checkpoint:
-- HEAD `b22274c33344ebe27d3a422e7dc30669a57ee6bf`;
-- Validate `37681402021 — SUCCESS`;
-- release preflight / #30 static guards / JVM / unsigned assemble PASS.
+Functional PHONE baseline is already **PASS** and must not be repeated:
+- signed run `37683871558` / source `54425e2aa25c7381164b52f0b7b93d5c65637745`;
+- entry/editor copy PASS;
+- rename + reopen persistence PASS;
+- blank rejection PASS;
+- portrait → landscape → portrait unsaved draft PASS;
+- recreation no auto-save PASS;
+- Cancel no-op PASS;
+- linked YTM ID `PLBHSr6BvsM4o` preserved;
+- remote YouTube Music title remained unchanged.
 
-Implementation remains:
-- **«Поточний плейлист» → «Редагувати»**;
-- editor **«Редагувати локальний плейлист»**;
-- local-name-only persistence preserving exact local/source/track/YTM linkage identity;
-- no remote YTM rename and no History rewrite;
-- inline blank validation;
-- rotation-safe draft/target/error state;
-- Cancel/system cancel = no-op.
+Durable protection:
+- `docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md`;
+- `scripts/v1455-local-playlist-edit-regression-audit.sh`;
+- audit is wired into `scripts/release-preflight.sh`.
 
-Next gate: finalize docs/manifest → exact-HEAD Validate → dispatch one signed APK from that exact final HEAD → focused phone QA. Do not repeat #52/#53/#54.
+Two UI-only correctives are implemented:
+1. compact editor fixed-footer geometry (`heightFraction = 0.72f`, shared default `1f`);
+2. stale blank-error text clears when draft becomes nonblank.
+
+Next: exact-HEAD Validate → signed corrective APK → PHONE retest only those two UI items. Do not repeat the full #30 matrix or #52/#53/#54.
 
 ## Consolidated phone matrix
 
