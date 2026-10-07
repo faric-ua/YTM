@@ -16,7 +16,7 @@ RUN_ID="$(
 )"
 
 [ -n "$RUN_ID" ] ||
-  ytm_fail "No successful signed APK build exists for current remote HEAD $REMOTE_HEAD"
+  ytm_fail "Для поточного коду ще немає успішного signed APK. Спочатку виконай «5 — Зібрати новий APK»."
 
 RUN_HEAD="$(
   gh run view "$RUN_ID"     --repo "$YTM_GH_REPO"     --json headSha     --jq '.headSha'
@@ -81,8 +81,8 @@ printf '%s\n' "$RUN_ID" > "$YTM_STATE_DIR/latest-apk.run"
 printf '%s\n' "$BRANCH" > "$YTM_STATE_DIR/latest-apk.branch"
 
 echo
-echo "SIGNED APK READY"
+echo "APK ЗАВАНТАЖЕНО ✅"
 echo "RUN_ID=$RUN_ID"
 echo "SOURCE=$REMOTE_HEAD"
 echo "APK=$COPIED_APK"
-echo "APK_SHA256=$APK_SHA"
+echo "APK_SHA256=$APK_SHA"\necho\necho "Далі: 4 — Відкрити папку з APK"
