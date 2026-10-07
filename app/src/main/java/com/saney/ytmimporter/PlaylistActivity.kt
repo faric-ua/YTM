@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
@@ -18,6 +19,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -1506,7 +1509,7 @@ class PlaylistActivity : Activity() {
                 setPadding(
                     dp(12),
                     dp(10),
-                    dp(12),
+                    dp(52),
                     dp(10)
                 )
                 background =
@@ -1525,8 +1528,73 @@ class PlaylistActivity : Activity() {
                 )
             }
 
+        val inputContainer =
+            FrameLayout(this).apply {
+                addView(
+                    input,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                )
+            }
+
+        val clearButton =
+            ImageButton(this).apply {
+                contentDescription =
+                    "Очистити назву"
+                setImageResource(
+                    R.drawable.ic_ytm_clear
+                )
+                imageTintList =
+                    android.content.res
+                        .ColorStateList
+                        .valueOf(
+                            palette.muted
+                        )
+                setBackgroundColor(
+                    Color.TRANSPARENT
+                )
+                setPadding(
+                    dp(10),
+                    dp(10),
+                    dp(10),
+                    dp(10)
+                )
+                minimumWidth =
+                    dp(44)
+                minimumHeight =
+                    dp(44)
+                visibility =
+                    if (
+                        input.text
+                            .isNullOrEmpty()
+                    ) {
+                        View.GONE
+                    } else {
+                        View.VISIBLE
+                    }
+                setOnClickListener {
+                    input.setText("")
+                    input.requestFocus()
+                }
+            }
+
+        inputContainer.addView(
+            clearButton,
+            FrameLayout.LayoutParams(
+                dp(44),
+                dp(44),
+                Gravity.END or
+                    Gravity.CENTER_VERTICAL
+            ).apply {
+                marginEnd =
+                    dp(4)
+            }
+        )
+
         content.addView(
-            input,
+            inputContainer,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -1589,6 +1657,16 @@ class PlaylistActivity : Activity() {
                         text
                             ?.toString()
 
+                    clearButton.visibility =
+                        if (
+                            text
+                                .isNullOrEmpty()
+                        ) {
+                            View.GONE
+                        } else {
+                            View.VISIBLE
+                        }
+
                     if (
                         editValidationError &&
                         text
@@ -1607,6 +1685,19 @@ class PlaylistActivity : Activity() {
         editNameInput =
             input
 
+        val editorHeightFraction =
+            if (
+                resources
+                    .configuration
+                    .orientation ==
+                Configuration
+                    .ORIENTATION_LANDSCAPE
+            ) {
+                1f
+            } else {
+                0.72f
+            }
+
         editDialog =
             UiChrome.showContentDialog(
                 activity = this,
@@ -1620,7 +1711,9 @@ class PlaylistActivity : Activity() {
                         "не зміниться.",
                 content = content,
                 heightFraction =
-                    0.72f,
+                    editorHeightFraction,
+                imeAware =
+                    true,
                 actions =
                     listOf(
                         UiChrome.DialogAction(
