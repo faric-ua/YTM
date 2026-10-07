@@ -1258,11 +1258,11 @@ Functional baseline: exact phone-accepted v1.4.54 source
 - [ ] consolidated real-phone matrix
 
 ### Wave B — management/discoverability
-- [ ] History filters/findability
-- [ ] History logical grouping/provider affordances
-- [ ] Recovery Center + compact breathing attention icon
-- [ ] type-aware YTM file library / canonical folders
-- [ ] simplified Termux operator menu
+- [x] History filters/findability
+- [x] History logical grouping/provider affordances
+- [x] Recovery Center + compact breathing attention icon
+- [x] type-aware YTM file library / scoped chooser — #54 PHONE PASS / CLOSED
+- [ ] simplified Termux operator menu — #52 ACTIVE
 
 ### Wave C — local convenience
 - [ ] local playlist Edit
