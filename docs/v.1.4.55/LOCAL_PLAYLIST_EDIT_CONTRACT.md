@@ -2,7 +2,7 @@
 
 Issue: **#30 / UX-036**
 
-Status: **FUNCTIONAL PHONE BASELINE PASS — TWO PRESENTATION CORRECTIVES PENDING**
+Status: **FUNCTIONAL PHONE BASELINE PASS — CORRECTIVE SOURCE VALIDATED / FOCUSED PHONE RETEST PENDING**
 
 ## Goal
 
@@ -130,3 +130,5 @@ Do not repeat this full manual matrix unless a protected owner listed in the reg
 - short/landscape screens may use the full available height so the fixed footer stays reachable;
 - after blank validation, entering any nonblank draft hides **«Введіть назву плейлиста.»** immediately;
 - these presentation corrections must not change storage, identity, linkage, History, Search or YTM write semantics.
+
+Corrective source validation: `03ddb8b6f8476d942eee68d0a429e5a137b7e706`; Validate `37690793773 — SUCCESS` (dedicated #30 regression audit / release preflight / JVM / unsigned assemble PASS).
