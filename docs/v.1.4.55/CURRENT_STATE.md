@@ -471,7 +471,7 @@ Static/build PASS is not phone PASS.
 
 ## Immediate next work
 
-Phase A and Phase B #41/#25/BUG-051/#55/#53 are PHONE PASS / CLOSED.
+Phase A and Phase B #41/#25/BUG-051/#55/#53/#54 are PHONE PASS / CLOSED.
 
 #53 final accepted candidate:
 - app source `efab5dc15ce389aa50e5d9d15aa1cdd78e60e08f`;
@@ -483,14 +483,16 @@ Closed Phase B item: #54 / Type-aware YTM file library — **PHONE PASS / CLOSED
 
 Active Phase B item: #52 / Simplified Termux operator menu/status.
 
-#54 foundation:
-- file-flow/schema inventory complete;
-- `FILE_LIBRARY_CONTRACT.md` defines content-first classification, canonical logical folders, legacy fallback and owner-validation boundary;
-- pure `YtmArtifactClassifier` + `YtmArtifactScopePolicy` added with JVM/static guards;
-- no Activity/chooser behavior is wired yet, so restore/import semantics remain unchanged.
+#52 live starting point:
+- current default phone menu is still developer-oriented (`Sync YTM`, `Status`, `Open YTM shell`, `Validate + Build signed APK`, `Release status`, `Finalize stable release`, `GitHub Actions status`);
+- issue #52 requires task-oriented Ukrainian wording, one unambiguous readiness/status path, and an Advanced submenu for developer/release-only actions;
+- exact-HEAD Validate/build/download safety must remain unchanged;
+- historical release/phone metadata must be visually separated from the current candidate.
 
 Next:
-- exact-HEAD Validate the pure classifier foundation;
-- after PASS, wire Full Restore + History Import scoped candidates first, retaining explicit system fallback and existing owner validators.
+- audit the current Termux menu/status/help scripts;
+- implement the #52 menu/status structure;
+- add static guards and Validate;
+- run focused phone acceptance for menu readability and status correctness.
 
-Do not repeat closed #53/Phase A matrices and do not change restore/import payload semantics as part of the #54 UX foundation.
+Do not repeat closed #53/#54/Phase A phone matrices.
