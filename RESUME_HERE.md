@@ -86,23 +86,21 @@ Corrective rotation-cache source:
 
 Current task: **#52 / UX-047 Simplified Termux operator menu/status**.
 
-PHONE QA result so far:
-- new Ukrainian menu loaded successfully;
-- first readiness screen correctly detected local code was behind and instructed `1 — Оновити проєкт`;
-- after update, readiness correctly showed code current + Validate PASS;
-- finding: it incorrectly suggested `5 — Зібрати новий APK` even though #52 changed only Termux/docs and Android app/build inputs were unchanged.
+Corrective checkpoint:
+- source/manifest HEAD `aa624982756d19b9bea844840f279e6ff77d4c7d`;
+- Validate `37637690717 — SUCCESS`;
+- release preflight / #52 static audit / JVM / unsigned assemble PASS.
 
-Corrective source is implemented: readiness now proves Android compatibility against the previously downloaded signed APK source using `git diff` over guarded Android/build paths. Proven tooling-only changes must not trigger a new APK build.
+PHONE finding fixed: a docs/Termux-only HEAD must not force a new Android APK when the previously downloaded signed APK source is proven app-compatible.
 
-Next:
-1. wait for exact-HEAD Validate PASS for the corrective source;
-2. on phone run `1 — Оновити проєкт`;
-3. return/reopen YTM Importer menu;
-4. run `2 — Перевірити, що зараз готово`;
-5. expected: `Android-застосунок: Android-застосунок не змінювався ✅`, compatible previous APK shown, and **no** `5 — Зібрати новий APK` recommendation;
-6. send the result before continuing `6` / `7` menu checks.
+Resume on phone:
+1. `1 — Оновити проєкт`;
+2. return to main menu;
+3. `2 — Перевірити, що зараз готово`;
+4. expected: code current + Validate PASS; `Android-застосунок` says it did not change; previous downloaded APK is compatible; **no** `5 — Зібрати новий APK` recommendation;
+5. send the full output before continuing `6 — Перевірити локальні зміни` / `7 — Розширені / релізні дії`.
 
-No Android APK rebuild/install for this corrective tooling-only slice. Do not repeat #53/#54.
+No APK rebuild/install. Do not repeat #53/#54.
 
 ## Consolidated phone matrix
 
