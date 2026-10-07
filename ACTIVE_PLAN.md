@@ -471,22 +471,25 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**Validate #30 R3 dedicated edit screen.**
+**Build one exact-final-HEAD signed APK for #30 R3 dedicated editor screen.**
 
-User rejected the modal interaction pattern after two phone-video iterations. Functional persistence/YTM baseline remains accepted.
+Validated R3 source checkpoint: `133157098353f250e8536fd63bab65920b1555bf`; Validate `37701432833 — SUCCESS` (dedicated #30 screen audit / release preflight / JVM / unsigned assemble PASS).
 
-R3 source now:
-- `PlaylistActivity` opens `EditPlaylistActivity`;
-- legacy edit-dialog state/methods are removed from the hub;
-- dedicated Activity uses `adjustResize`, normal page scrolling and one fixed page footer Save;
-- Save is enabled only for valid dirty text;
-- × `Очистити назву` clears the draft;
-- linked YTM title/ID are read-only;
-- Back exits without save;
-- #30-specific dialog height/IME changes were removed from shared `UiChrome`;
-- regression audit was rewritten around the dedicated-screen contract.
+R3 replaces the rejected modal completely with `EditPlaylistActivity`; shared `UiChrome` editor-specific changes are removed.
 
-Next: manifest → exact-HEAD Validate → one signed R3 APK → focused PHONE smoke only; do not repeat the accepted full matrix.
+After this docs-only checkpoint is finalized and validated, do not move HEAD before signed build.
+
+PHONE smoke only:
+1. **«Поточний плейлист» → «Редагувати»** opens the dedicated page;
+2. portrait + keyboard usable; no parent-screen backdrop/noise;
+3. landscape + keyboard usable;
+4. × **«Очистити назву»** clears the entire draft;
+5. Save disabled for blank/unchanged, enabled for a valid changed name;
+6. blank validation clears after valid typing;
+7. Back exits without saving;
+8. linked playlist shows read-only YTM title/ID.
+
+Do not repeat the accepted full #30 functional matrix.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
