@@ -87,18 +87,25 @@ Corrective rotation-cache source:
 Current task: **#52 / UX-047 Simplified Termux operator menu/status**.
 
 PHONE QA progress:
-- new Ukrainian main menu loaded — PASS;
-- stale-code readiness path → `1 — Оновити проєкт` — PASS;
-- tooling-only APK compatibility correction on HEAD `8b2fafb9f48dd22db3976e3783cba6b3f029460a` — **PHONE PASS**;
-- readiness now shows current code + Validate `37638433786` PASS, Android app unchanged, previous APK compatible (run `37546679576`), and no new APK required.
+- readiness current/stale paths — PASS;
+- tooling-only APK compatibility correction — PASS;
+- `6 — Перевірити локальні зміни` — **PASS** on HEAD `9d7882cfb56fc53ef05419189e0fa4cad558f21b`, Validate `37641446596 — SUCCESS`: current branch, Local=Remote and clean working tree.
 
 Next phone step:
 1. press Enter to return to the main menu;
-2. open **`6 — Перевірити локальні зміни`**;
-3. require current branch/current code and **`Локальні файли: без змін ✅`**;
-4. send the full output before continuing to `7 — Розширені / релізні дії`.
+2. open **`7 — Розширені / релізні дії`**;
+3. verify submenu labels:
+   - `1 — Відкрити YTM shell`;
+   - `2 — Технічний стан релізу`;
+   - `3 — Опублікувати stable release`;
+   - `4 — GitHub Actions`;
+   - `0 — Назад`;
+4. open **`2 — Технічний стан релізу`**;
+5. require separate sections **`ПОТОЧНИЙ КАНДИДАТ`** and **`ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`**;
+6. send the full output;
+7. then test **`0 — Назад`** returns to the main menu.
 
-Do not build/install an APK. Do not repeat #53/#54.
+No APK rebuild/install. Do not repeat #53/#54.
 
 ## Consolidated phone matrix
 
