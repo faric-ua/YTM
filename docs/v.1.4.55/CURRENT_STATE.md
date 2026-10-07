@@ -514,3 +514,19 @@ Status: **SOURCE / STATIC / VALIDATE PASS — PHONE QA PENDING**.
 Validated checkpoint: `cf2298d7b340562f49131b09246f259a1d12cbfe`; Validate `37552222710 — SUCCESS` with preflight/#52 audit/JVM/assemble PASS.
 
 Next gate: focused phone menu/status QA after Termux sync/reopen; no APK rebuild/install.
+
+
+## #52 PHONE finding — needless APK build after tooling-only update
+
+Observed 2026-10-07:
+- new operator menu loaded and first readiness pass correctly directed stale local code to `1 — Оновити проєкт`;
+- after update, readiness correctly showed current code + Validate PASS;
+- because no signed build existed for that exact docs/tooling HEAD, readiness incorrectly suggested `5 — Зібрати новий APK`.
+
+Correction:
+- `ytm-status.sh` now compares the previously downloaded signed APK source to current remote HEAD over `app/` + Android/root Gradle build inputs;
+- proven unchanged Android/build inputs reuse the previous APK and suppress needless build;
+- missing/unprovable compatibility fails closed;
+- output distinguishes exact-HEAD signed build from Android app compatibility and downloaded APK.
+
+Status: **CORRECTIVE SOURCE IMPLEMENTED / EXACT-HEAD VALIDATE PENDING**.
