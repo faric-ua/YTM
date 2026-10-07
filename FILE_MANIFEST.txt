@@ -1773,7 +1773,7 @@ d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
 6b0f6c7591ef61c5  scripts/v1455-file-library-audit.sh
 f2a3a8fc068701c4  scripts/v1455-termux-operator-menu-audit.sh
-7e6a4dd437f1f7e0  scripts/v1455-ux-hardening-audit.sh
+0d63ddc71a15e73f  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 51053de6297a5c01  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh
