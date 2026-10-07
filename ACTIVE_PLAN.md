@@ -459,7 +459,7 @@ Checklist:
 - [x] Reject blank/whitespace-only names inline without dismissing or saving.
 - [x] Do not rewrite existing History audit records; no History owner is called by the rename path.
 - [x] Static/JVM/Validate PASS before one focused phone candidate — validated app/tooling HEAD `b22274c33344ebe27d3a422e7dc30669a57ee6bf`, Validate `37681402021 — SUCCESS`.
-- [ ] PHONE acceptance for rename, Cancel, rotation and linked-YTM no-remote-mutation.
+- [x] PHONE functional acceptance — entry/editor, rename+persistence, blank rejection, portrait↔landscape draft retention, no auto-save, Cancel no-op, linked-YTM identity and remote-title non-mutation all PASS on signed run `37683871558` / HEAD `54425e2aa25c7381164b52f0b7b93d5c65637745`.
 
 Remaining Phase C backlog:
 - [ ] Blank URL inline validation (#29).
@@ -471,18 +471,25 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**Build one exact-HEAD signed #30 phone candidate.**
+**Validate and phone-retest only the two #30 UX correctives. Do not rerun the accepted functional matrix.**
 
-Validated source/app checkpoint: `b22274c33344ebe27d3a422e7dc30669a57ee6bf`; Validate `37681402021 — SUCCESS` (release preflight / #30 static guards / JVM / unsigned assemble PASS).
+Functional PHONE baseline is locked in `docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md` and guarded by `scripts/v1455-local-playlist-edit-regression-audit.sh` wired into release preflight.
 
-Before dispatch, this docs checkpoint will be finalized and validated so the signed workflow source exactly matches the branch HEAD the phone downloads.
+Accepted baseline: signed run `37683871558`, source `54425e2aa25c7381164b52f0b7b93d5c65637745`.
 
-After signed-build PASS, PHONE QA starts with:
-- Termux `1 — Оновити проєкт`;
-- `3 — Завантажити готовий APK`;
-- `4 — Відкрити папку з APK`;
-- tap the v1.4.55 release APK and install over the current app;
-- then test **«Поточний плейлист» → «Редагувати»** only.
+Corrective source implemented:
+- editor opts into compact fixed-footer geometry via `heightFraction = 0.72f`; shared default remains `1f`;
+- compact height is bounded and falls back to full available height on short screens;
+- valid nonblank typing clears stale **«Введіть назву плейлиста.»** immediately;
+- no storage/identity/linkage/remote/History semantics changed.
+
+Next gates:
+1. exact-HEAD release preflight + JVM + assemble;
+2. one signed corrective APK;
+3. PHONE retest only:
+   - compact editor/footer accessibility in portrait + landscape;
+   - blank error disappears after typing a nonblank draft;
+4. if both PASS, close #30 without repeating rename/rotation/Cancel/YTM remote-title tests.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
