@@ -15,7 +15,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.FrameLayout
@@ -134,7 +133,6 @@ object UiChrome {
     data class DialogAction(
         val label: String,
         val tone: ActionTone = ActionTone.NORMAL,
-        val dismissOnClick: Boolean = true,
         val onClick: () -> Unit
     )
 
@@ -1154,9 +1152,7 @@ object UiChrome {
         content: View,
         actions: List<DialogAction>,
         subtitle: String? = null,
-        actionLayout: DialogActionLayout = DialogActionLayout.AUTO,
-        heightFraction: Float = 1f,
-        imeAware: Boolean = false
+        actionLayout: DialogActionLayout = DialogActionLayout.AUTO
     ): Dialog {
         val palette =
             AppThemeManager.palette(activity)
@@ -1212,9 +1208,7 @@ object UiChrome {
             card = card,
             content = body,
             actions = actions,
-            actionLayout = actionLayout,
-            heightFraction = heightFraction,
-            imeAware = imeAware
+            actionLayout = actionLayout
         )
     }
 
@@ -1364,12 +1358,7 @@ object UiChrome {
                 activity = activity,
                 action = action
             ) {
-                if (
-                    action.dismissOnClick
-                ) {
-                    dialog.dismiss()
-                }
-
+                dialog.dismiss()
                 action.onClick()
             }
 
@@ -1655,9 +1644,7 @@ object UiChrome {
         card: LinearLayout,
         content: View,
         actions: List<DialogAction>,
-        actionLayout: DialogActionLayout,
-        heightFraction: Float = 1f,
-        imeAware: Boolean = false
+        actionLayout: DialogActionLayout
     ): Dialog {
         val contentScroll =
             ScrollView(activity).apply {
@@ -1717,28 +1704,15 @@ object UiChrome {
         return showFixedFooterDialog(
             activity = activity,
             dialog = dialog,
-            card = card,
-            heightFraction = heightFraction,
-            imeAware = imeAware
+            card = card
         )
     }
 
     private fun showFixedFooterDialog(
         activity: Activity,
         dialog: Dialog,
-        card: LinearLayout,
-        heightFraction: Float = 1f,
-        imeAware: Boolean = false
+        card: LinearLayout
     ): Dialog {
-        val boundedHeightFraction =
-            heightFraction
-                .coerceIn(
-                    0.45f,
-                    1f
-                )
-
-        var activeHeightFraction =
-            boundedHeightFraction
         val horizontalInset =
             dp(activity, 18)
 
@@ -1759,69 +1733,6 @@ object UiChrome {
                     .MATCH_PARENT
             )
         )
-
-        if (
-            boundedHeightFraction <
-                0.999f ||
-            imeAware
-        ) {
-            outer.addOnLayoutChangeListener {
-                    view,
-                    _,
-                    _,
-                    _,
-                    _,
-                    _,
-                    _,
-                    _,
-                    _ ->
-                val availableHeight =
-                    (
-                        view.height -
-                            view.paddingTop -
-                            view.paddingBottom
-                        )
-                        .coerceAtLeast(0)
-
-                if (
-                    availableHeight >
-                    0
-                ) {
-                    val preferredHeight =
-                        (
-                            availableHeight *
-                                activeHeightFraction
-                            )
-                            .toInt()
-                            .coerceAtLeast(
-                                dp(
-                                    activity,
-                                    320
-                                )
-                            )
-                            .coerceAtMost(
-                                availableHeight
-                            )
-
-                    val layoutParams =
-                        card.layoutParams as
-                            FrameLayout.LayoutParams
-
-                    if (
-                        layoutParams.height !=
-                        preferredHeight
-                    ) {
-                        layoutParams.height =
-                            preferredHeight
-                        layoutParams.gravity =
-                            Gravity.TOP or
-                                Gravity.CENTER_HORIZONTAL
-                        card.layoutParams =
-                            layoutParams
-                    }
-                }
-            }
-        }
 
         fun configureWindow() {
             val window =
@@ -1857,13 +1768,6 @@ object UiChrome {
                 ViewGroup.LayoutParams
                     .MATCH_PARENT
             )
-
-            if (imeAware) {
-                window.setSoftInputMode(
-                    WindowManager.LayoutParams
-                        .SOFT_INPUT_ADJUST_RESIZE
-                )
-            }
         }
 
         var insetsApplied =
@@ -1968,38 +1872,13 @@ object UiChrome {
             ) {
                     view,
                     insets ->
-                val insetTypes =
-                    WindowInsetsCompat.Type
-                        .systemBars() or
-                        WindowInsetsCompat.Type
-                            .displayCutout() or
-                        (
-                            if (imeAware) {
-                                WindowInsetsCompat.Type
-                                    .ime()
-                            } else {
-                                0
-                            }
-                            )
-
                 val safeInsets =
                     insets.getInsets(
-                        insetTypes
-                    )
-
-                val imeVisible =
-                    imeAware &&
-                        insets.isVisible(
+                        WindowInsetsCompat.Type
+                            .systemBars() or
                             WindowInsetsCompat.Type
-                                .ime()
-                        )
-
-                activeHeightFraction =
-                    if (imeVisible) {
-                        1f
-                    } else {
-                        boundedHeightFraction
-                    }
+                                .displayCutout()
+                    )
 
                 view.setPadding(
                     horizontalInset +
