@@ -15,6 +15,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.FrameLayout
@@ -1154,7 +1155,8 @@ object UiChrome {
         actions: List<DialogAction>,
         subtitle: String? = null,
         actionLayout: DialogActionLayout = DialogActionLayout.AUTO,
-        heightFraction: Float = 1f
+        heightFraction: Float = 1f,
+        imeAware: Boolean = false
     ): Dialog {
         val palette =
             AppThemeManager.palette(activity)
@@ -1211,7 +1213,8 @@ object UiChrome {
             content = body,
             actions = actions,
             actionLayout = actionLayout,
-            heightFraction = heightFraction
+            heightFraction = heightFraction,
+            imeAware = imeAware
         )
     }
 
@@ -1653,7 +1656,8 @@ object UiChrome {
         content: View,
         actions: List<DialogAction>,
         actionLayout: DialogActionLayout,
-        heightFraction: Float = 1f
+        heightFraction: Float = 1f,
+        imeAware: Boolean = false
     ): Dialog {
         val contentScroll =
             ScrollView(activity).apply {
@@ -1714,7 +1718,8 @@ object UiChrome {
             activity = activity,
             dialog = dialog,
             card = card,
-            heightFraction = heightFraction
+            heightFraction = heightFraction,
+            imeAware = imeAware
         )
     }
 
@@ -1722,7 +1727,8 @@ object UiChrome {
         activity: Activity,
         dialog: Dialog,
         card: LinearLayout,
-        heightFraction: Float = 1f
+        heightFraction: Float = 1f,
+        imeAware: Boolean = false
     ): Dialog {
         val boundedHeightFraction =
             heightFraction
@@ -1730,6 +1736,9 @@ object UiChrome {
                     0.45f,
                     1f
                 )
+
+        var activeHeightFraction =
+            boundedHeightFraction
         val horizontalInset =
             dp(activity, 18)
 
@@ -1753,7 +1762,8 @@ object UiChrome {
 
         if (
             boundedHeightFraction <
-            0.999f
+                0.999f ||
+            imeAware
         ) {
             outer.addOnLayoutChangeListener {
                     view,
@@ -1780,7 +1790,7 @@ object UiChrome {
                     val preferredHeight =
                         (
                             availableHeight *
-                                boundedHeightFraction
+                                activeHeightFraction
                             )
                             .toInt()
                             .coerceAtLeast(
@@ -1847,6 +1857,13 @@ object UiChrome {
                 ViewGroup.LayoutParams
                     .MATCH_PARENT
             )
+
+            if (imeAware) {
+                window.setSoftInputMode(
+                    WindowManager.LayoutParams
+                        .SOFT_INPUT_ADJUST_RESIZE
+                )
+            }
         }
 
         var insetsApplied =
@@ -1951,13 +1968,38 @@ object UiChrome {
             ) {
                     view,
                     insets ->
+                val insetTypes =
+                    WindowInsetsCompat.Type
+                        .systemBars() or
+                        WindowInsetsCompat.Type
+                            .displayCutout() or
+                        (
+                            if (imeAware) {
+                                WindowInsetsCompat.Type
+                                    .ime()
+                            } else {
+                                0
+                            }
+                            )
+
                 val safeInsets =
                     insets.getInsets(
-                        WindowInsetsCompat.Type
-                            .systemBars() or
-                            WindowInsetsCompat.Type
-                                .displayCutout()
+                        insetTypes
                     )
+
+                val imeVisible =
+                    imeAware &&
+                        insets.isVisible(
+                            WindowInsetsCompat.Type
+                                .ime()
+                        )
+
+                activeHeightFraction =
+                    if (imeVisible) {
+                        1f
+                    } else {
+                        boundedHeightFraction
+                    }
 
                 view.setPadding(
                     horizontalInset +
