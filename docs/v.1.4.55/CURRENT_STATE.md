@@ -555,7 +555,7 @@ Phase B is complete. Next active work: Phase C #30 local playlist Edit.
 
 ## #30 local playlist Edit — source checkpoint (2026-10-07)
 
-Status: **FUNCTIONAL PHONE BASELINE PASS — CORRECTIVE VALIDATE PASS / FOCUSED PHONE RETEST PENDING**.
+Status: **FUNCTIONAL PHONE BASELINE PASS — FIRST CORRECTIVE PHONE UX FAIL / SECOND CORRECTIVE SOURCE IN PROGRESS**.
 
 - **«Поточний плейлист»** now exposes **«Редагувати»**;
 - editor **«Редагувати локальний плейлист»** changes only the local name;
@@ -575,3 +575,5 @@ Functional PHONE baseline passed on signed run `37683871558` / source `54425e2aa
 A durable no-repeat baseline + dedicated regression audit are now present. Two presentation findings are being corrected: compact editor geometry and stale validation clearing. Next: exact-HEAD Validate → one corrective signed APK → only those two focused phone checks.
 
 Corrective checkpoint `03ddb8b6f8476d942eee68d0a429e5a137b7e706` passed Validate `37690793773 — SUCCESS`. Full #30 functional matrix remains carried forward; only compact-window + validation-clearing phone checks remain.
+
+Second #30 presentation corrective follows user video evidence: landscape full-safe-height, IME-safe fixed-footer geometry, and one-tap × clear action. Functional baseline remains carried forward.
