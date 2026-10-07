@@ -34,11 +34,29 @@ It must show, in plain language:
 
 - whether the code in Termux matches the current remote branch;
 - exact-current-code Validate state;
-- exact-current-code signed APK state;
-- whether that exact APK has already been downloaded to the phone;
-- one concrete **Що робити далі** instruction using the exact visible menu label.
+- exact-current-HEAD signed APK state;
+- whether the Android app/build inputs changed relative to the previously downloaded signed APK;
+- whether a compatible APK is already downloaded;
+- one concrete **Що робити далі** instruction or a clear terminal state when no APK action is needed.
 
 Technical branch/SHA/run details may appear only below the plain-language summary.
+
+### Tooling-only HEAD compatibility
+
+A new repository HEAD does **not** automatically mean a new Android APK is required.
+
+If the previously downloaded signed APK source exists locally and `git diff` confirms that none of the Android/build inputs changed between that source and the current remote HEAD, the readiness view must say that the previous APK remains compatible and must **not** recommend **`5 — Зібрати новий APK`**.
+
+The guarded Android/build input set is:
+- `app/`;
+- root `build.gradle.kts`;
+- `settings.gradle.kts`;
+- `gradle.properties`;
+- `gradle/`;
+- `gradlew`;
+- `gradlew.bat`.
+
+If compatibility cannot be proven, fail closed and require a current signed APK.
 
 Historical release metadata must not appear in this primary readiness view.
 
