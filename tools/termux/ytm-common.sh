@@ -67,5 +67,5 @@ ytm_require_gh() {
 
 ytm_require_clean() {
   [ -z "$(git -C "$YTM_REPO_DIR" status --porcelain=v1 --untracked-files=all)" ] ||
-    ytm_fail "Working tree is not clean; inspect Status before sync"
+    ytm_fail "Є локальні зміни. Спочатку виконай «6 — Перевірити локальні зміни»."
 }
