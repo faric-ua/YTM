@@ -463,3 +463,18 @@ Correction:
 - if compatibility cannot be proven, it fails closed and retains the normal signed-build requirement.
 
 Status: **CORRECTIVE SOURCE / STATIC / VALIDATE PASS — PHONE RETEST PENDING**.
+
+
+### #52 readiness corrective retest — PASS — 2026-10-07
+
+Phone evidence on final corrective handoff HEAD `8b2fafb9f48dd22db3976e3783cba6b3f029460a`:
+- `Код у Termux: актуальний ✅`;
+- `Перевірка поточного коду: PASS ✅ (run 37638433786)`;
+- exact-HEAD signed APK: none;
+- Android app reported unchanged;
+- previous downloaded APK reported compatible: run `37546679576`;
+- next action: `Новий APK не потрібен — Android-застосунок не змінювався.`
+
+Result: **PASS** — tooling/docs-only changes no longer trigger a needless APK build recommendation.
+
+Minor copy polish noted but non-blocking: label/value repeats `Android-застосунок` twice. Functional contract is correct.
