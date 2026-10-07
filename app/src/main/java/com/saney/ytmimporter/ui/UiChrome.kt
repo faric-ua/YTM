@@ -1068,8 +1068,7 @@ object UiChrome {
         message: String,
         actions: List<DialogAction>,
         subtitle: String? = null,
-        actionLayout: DialogActionLayout = DialogActionLayout.AUTO,
-        heightFraction: Float = 1f
+        actionLayout: DialogActionLayout = DialogActionLayout.AUTO
     ): Dialog {
         val palette =
             AppThemeManager.palette(activity)
@@ -1154,7 +1153,8 @@ object UiChrome {
         content: View,
         actions: List<DialogAction>,
         subtitle: String? = null,
-        actionLayout: DialogActionLayout = DialogActionLayout.AUTO
+        actionLayout: DialogActionLayout = DialogActionLayout.AUTO,
+        heightFraction: Float = 1f
     ): Dialog {
         val palette =
             AppThemeManager.palette(activity)
