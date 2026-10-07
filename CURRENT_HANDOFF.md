@@ -72,18 +72,21 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#30 functional PHONE baseline is locked and protected by a dedicated regression audit.
+#30 functional PHONE baseline remains locked. First compact-height corrective was rejected by phone video.
 
-Corrective source/checkpoint `03ddb8b6f8476d942eee68d0a429e5a137b7e706` passed Validate `37690793773 — SUCCESS`.
+Rejected phone candidate: HEAD `32b400fbed056d46b08e6d7f1f40e9d88e907726`, signed run `37692262880`.
+
+Second corrective is presentation-only:
+- orientation-aware editor height: portrait compact, landscape full safe viewport;
+- IME-aware safe insets + `SOFT_INPUT_ADJUST_RESIZE`; keyboard-visible editor fills remaining safe viewport;
+- one-tap × `Очистити назву` using `ic_ytm_clear`;
+- stale blank error clears on valid typing.
 
 Next:
-1. finalize this docs/manifest checkpoint and exact-HEAD Validate it;
-2. dispatch one signed build from that exact final HEAD;
-3. install over current app;
-4. phone-check only compact portrait/landscape editor geometry and stale-validation clearing;
-5. close #30 if both PASS.
-
-Do not rerun the accepted functional matrix unless a protected owner changes.
+1. refresh manifest and exact-HEAD Validate;
+2. one signed build;
+3. phone-smoke only editor geometry with/without IME in portrait/landscape, × clear, validation clearing;
+4. close #30 if UX is acceptable.
 
 ## Immutable functional reference
 
