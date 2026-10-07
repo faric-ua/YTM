@@ -14,6 +14,7 @@ BULK_SESSION="$SRC/BulkSyncSessionActivity.kt"
 BULK_HELP="$SRC/bulk/BulkSyncHelpContent.kt"
 QUOTA="$SRC/QuotaActivity.kt"
 PLAYLIST="$SRC/PlaylistActivity.kt"
+EDIT_PLAYLIST="$SRC/EditPlaylistActivity.kt"
 CURRENT_PLAYLIST_STORE="$SRC/storage/CurrentPlaylistStore.kt"
 LOCAL_PLAYLIST_EDIT_POLICY="$SRC/model/LocalPlaylistEditPolicy.kt"
 LOCAL_PLAYLIST_EDIT_TEST="app/src/test/java/com/saney/ytmimporter/model/LocalPlaylistEditPolicyTest.kt"
@@ -29,7 +30,7 @@ SURFACE_READABILITY="docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md"
 PLAN="docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md"
 RECONCILIATION="docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md"
 
-for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$BULK_HELP" "$QUOTA" "$PLAYLIST" "$CURRENT_PLAYLIST_STORE" "$LOCAL_PLAYLIST_EDIT_POLICY" "$LOCAL_PLAYLIST_EDIT_TEST" "$LOCAL_PLAYLIST_EDIT_CONTRACT" "$REVIEW" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
+for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$BULK_HELP" "$QUOTA" "$PLAYLIST" "$EDIT_PLAYLIST" "$CURRENT_PLAYLIST_STORE" "$LOCAL_PLAYLIST_EDIT_POLICY" "$LOCAL_PLAYLIST_EDIT_TEST" "$LOCAL_PLAYLIST_EDIT_CONTRACT" "$REVIEW" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
@@ -739,101 +740,18 @@ grep -Fq 'fun expectedType(' "$ARTIFACT_CLASSIFIER" ||
 
 grep -Fq 'title = "Редагувати"' "$PLAYLIST" ||
   fail "#30 Playlist edit entry point missing"
-grep -Fq '"Редагувати локальний плейлист"' "$PLAYLIST" ||
-  fail "#30 local playlist editor title missing"
-grep -Fq '"Лише в YTM Importer"' "$PLAYLIST" ||
-  fail "#30 editor does not distinguish local scope"
-grep -Fq 'dismissOnClick =' "$PLAYLIST" ||
-  fail "#30 validating Save action does not stay open"
-grep -Fq 'STATE_EDIT_DIALOG_OPEN' "$PLAYLIST" ||
-  fail "#30 editor open-state recreation key missing"
-grep -Fq 'STATE_EDIT_DRAFT_NAME' "$PLAYLIST" ||
-  fail "#30 editor draft recreation key missing"
-grep -Fq 'STATE_EDIT_TARGET_LOCAL_PLAYLIST_ID' "$PLAYLIST" ||
-  fail "#30 editor target identity recreation key missing"
-grep -Fq 'STATE_EDIT_VALIDATION_ERROR' "$PLAYLIST" ||
-  fail "#30 editor validation recreation key missing"
-grep -Fq 'val dismissOnClick: Boolean = true' "$UI" ||
-  fail "shared validating dialog-action dismissal contract missing"
-grep -Fq 'action.dismissOnClick' "$UI" ||
-  fail "shared dialog actions ignore dismissOnClick"
-
-python - "$PLAYLIST" "$CURRENT_PLAYLIST_STORE" <<'PY_LOCAL_PLAYLIST_EDIT'
-from pathlib import Path
-import re
-import sys
-
-playlist = Path(sys.argv[1]).read_text(encoding="utf-8")
-store = Path(sys.argv[2]).read_text(encoding="utf-8")
-
-editor = playlist.find("private fun showPlaylistEditor")
-editor_end = playlist.find("\n    private fun showProjectActions", editor)
-if editor < 0 or editor_end < 0:
-    raise SystemExit("FAIL: #30 editor implementation block missing")
-editor_block = playlist[editor:editor_end]
-
-for required in (
-    "showContentDialog(",
-    '"Зберегти"',
-    "dismissOnClick =",
-    '"Скасувати"',
-    "renameCurrentPlaylist(",
-    "editDraftName",
-    "editTargetLocalPlaylistId",
-):
-    if required not in editor_block:
-        raise SystemExit("FAIL: #30 editor contract missing: " + required)
-
-if not re.search(
-    r"editDialogOpen\s*&&\s*editDialog\s*\?\.isShowing\s*!=\s*true",
-    playlist,
-):
-    raise SystemExit("FAIL: #30 editor recreation guard missing")
-
-if not re.search(
-    r"showPlaylistEditor\(\s*restoring\s*=\s*true\s*\)",
-    playlist,
-):
-    raise SystemExit("FAIL: #30 editor is not restored after recreation")
-
-for forbidden in (
-    "startActivity(",
-    "YouTubeApi",
-    "HistoryStore",
-    "finishWithAction(",
-):
-    if forbidden in editor_block:
-        raise SystemExit(
-            "FAIL: #30 local editor can navigate/mutate remote/history: " + forbidden
-        )
-
-rename = store.find("fun renameCurrentPlaylist")
-rename_end = store.find("\n    @Synchronized\n    fun clear", rename)
-if rename < 0 or rename_end < 0:
-    raise SystemExit("FAIL: #30 CurrentPlaylistStore rename owner missing")
-rename_block = store[rename:rename_end]
-
-rename_compact = "".join(rename_block.split())
-
-for required in (
-    "expectedLocalPlaylistId",
-    "snapshot.localPlaylistId",
-    "snapshot.playlist.copy",
-    "snapshot.sourceLabel",
-    "snapshot.destinationPlaylistId",
-    "snapshot.destinationPlaylistTitle",
-    "snapshot.sourceHistoryId",
-    "save(",
-):
-    if "".join(required.split()) not in rename_compact:
-        raise SystemExit("FAIL: #30 rename does not preserve: " + required)
-
-if "HistoryStore" in store or "YouTubeApi" in rename_block:
-    raise SystemExit("FAIL: #30 local rename reached History/remote owner")
-
-if "restorableStore.upsert(" not in store:
-    raise SystemExit("FAIL: CurrentPlaylistStore no longer writes through RestorablePlaylistStore")
-PY_LOCAL_PLAYLIST_EDIT
+grep -Fq 'EditPlaylistActivity::class.java' "$PLAYLIST" ||
+  fail "#30 Playlist edit entry does not open dedicated editor"
+grep -Fq '"Редагувати плейлист"' "$EDIT_PLAYLIST" ||
+  fail "#30 dedicated playlist editor title missing"
+grep -Fq '"Лише локально"' "$EDIT_PLAYLIST" ||
+  fail "#30 dedicated editor local-only scope missing"
+if grep -Fq 'showPlaylistEditor' "$PLAYLIST"; then
+  fail "#30 legacy modal editor returned to PlaylistActivity"
+fi
+if grep -Fq 'showContentDialog(' "$EDIT_PLAYLIST"; then
+  fail "#30 dedicated editor regressed back to modal UI"
+fi
 
 grep -Fq 'fun normalizeName(' "$LOCAL_PLAYLIST_EDIT_POLICY" ||
   fail "#30 local playlist name policy missing"
