@@ -84,31 +84,25 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-### SLEEP CHECKPOINT — 2026-10-07
-
 Current task: **#52 / UX-047 Simplified Termux operator menu/status**.
 
-Validated state:
-- tooling/source checkpoint `cf2298d7b340562f49131b09246f259a1d12cbfe`;
-- final docs/manifest handoff HEAD `fa7f378ff1768c24bf91a2928d8cb1bd9eb62050`;
-- exact-HEAD Validate `37552641156 — SUCCESS`;
-- release preflight / dedicated #52 audit / JVM / unsigned assemble PASS;
-- Android app source unchanged, so no APK rebuild/install is needed for #52.
+PHONE QA result so far:
+- new Ukrainian menu loaded successfully;
+- first readiness screen correctly detected local code was behind and instructed `1 — Оновити проєкт`;
+- after update, readiness correctly showed code current + Validate PASS;
+- finding: it incorrectly suggested `5 — Зібрати новий APK` even though #52 changed only Termux/docs and Android app/build inputs were unchanged.
 
-PHONE QA has **not started yet**.
+Corrective source is implemented: readiness now proves Android compatibility against the previously downloaded signed APK source using `git diff` over guarded Android/build paths. Proven tooling-only changes must not trigger a new APK build.
 
-Resume exactly here on the phone:
-1. Open the currently installed **old YTM Importer Menu**.
-2. Press **`1 — Sync YTM`**.
-3. After sync finishes, press **`0 — Вийти`**.
-4. Reopen the **YTM Importer** Termux shortcut so the new menu script is loaded.
-5. Confirm the new task-oriented menu appears.
-6. Press **`2 — Перевірити, що зараз готово`**.
-7. Do **not** follow the suggested next action yet; send a screenshot of that status screen to ChatGPT.
+Next:
+1. wait for exact-HEAD Validate PASS for the corrective source;
+2. on phone run `1 — Оновити проєкт`;
+3. return/reopen YTM Importer menu;
+4. run `2 — Перевірити, що зараз готово`;
+5. expected: `Android-застосунок: Android-застосунок не змінювався ✅`, compatible previous APK shown, and **no** `5 — Зібрати новий APK` recommendation;
+6. send the result before continuing `6` / `7` menu checks.
 
-After that screenshot, continue the focused #52 phone matrix with `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії`.
-
-Do not repeat #53/#54 phone matrices.
+No Android APK rebuild/install for this corrective tooling-only slice. Do not repeat #53/#54.
 
 ## Consolidated phone matrix
 
