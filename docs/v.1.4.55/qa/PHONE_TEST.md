@@ -492,3 +492,23 @@ Phone evidence:
 Validated HEAD: `9d7882cfb56fc53ef05419189e0fa4cad558f21b`; Validate `37641446596 — SUCCESS`.
 
 Result: **PASS**.
+
+
+### #52 Advanced menu + technical release separation — PASS — 2026-10-07
+
+Advanced submenu showed:
+- `1 — Відкрити YTM shell`;
+- `2 — Технічний стан релізу`;
+- `3 — Опублікувати stable release`;
+- `4 — GitHub Actions`;
+- `0 — Назад`.
+
+Technical release screen showed two explicit sections:
+- `ПОТОЧНИЙ КАНДИДАТ`;
+- `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`.
+
+Current candidate correctly reported Local `9d7882...` behind Remote `98965b...` because docs-only evidence commits had been pushed after the prior phone sync. Current remote Validate was PASS (`37656824668`).
+
+Result: **PASS** for Advanced menu contents and current-vs-history separation.
+
+Still pending: Advanced `0 — Назад` returns to the main menu.
