@@ -59,7 +59,7 @@ Corrective implementation:
 - exact-HEAD Validate `37407395790 — SUCCESS`;
 - preflight/JVM/unsigned assemble PASS.
 
-Corrective Full Restore rotation-cache behavior is **PHONE PASS 2026-10-06**. History-only scoped chooser is **PHONE PASS 2026-10-07**: `Вибрати History JSON` showed 6 matching candidates plus `Інший файл…`; both rotations preserved the list near-immediately and no History import auto-started. Do **not** close #54 yet.
+Corrective Full Restore rotation-cache behavior is **PHONE PASS 2026-10-06**. History-only scoped chooser is **PHONE PASS 2026-10-07**. Playlist Project typed cards, wrong-type fallback and final rotation/no-auto-import also passed on 2026-10-07; **#54 is CLOSED**.
 
 Signed phone-retest candidate is now available:
 - run `37485298582 — SUCCESS`;
@@ -147,12 +147,9 @@ delete, restore or save.
 These are **not automatically phone PASS**. Repository/static implementation is not
 real-device acceptance.
 
-## Exact next work
+## Historical #54 implementation sequence — complete
 
-1. require exact-HEAD Validate Android PASS for the pure #54 classifier foundation;
-2. after PASS, wire Full Restore and History Import recent-file lists to the scope policy as a read-only presentation filter;
-3. keep `Інший файл…` / system picker fallback and run the existing owner validator after selection;
-4. only then extend scoped JSON presentation to YTM Project import and typed metadata cards.
+The classifier → Full Restore/History scoping → Playlist Project/typed-card sequence is complete and PHONE PASS. Resume only from the #52 `Exact next work` section above.
 
 ## Working contract
 
