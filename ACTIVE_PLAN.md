@@ -471,25 +471,19 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**Validate and phone-retest only the two #30 UX correctives. Do not rerun the accepted functional matrix.**
+**Build and install one exact-final-HEAD #30 corrective APK, then run only two focused phone checks.**
 
-Functional PHONE baseline is locked in `docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md` and guarded by `scripts/v1455-local-playlist-edit-regression-audit.sh` wired into release preflight.
+Corrective source/checkpoint `03ddb8b6f8476d942eee68d0a429e5a137b7e706` passed Validate `37690793773 — SUCCESS` (dedicated #30 regression audit / release preflight / JVM / unsigned assemble PASS).
 
-Accepted baseline: signed run `37683871558`, source `54425e2aa25c7381164b52f0b7b93d5c65637745`.
+Functional PHONE baseline remains locked from signed run `37683871558` / source `54425e2aa25c7381164b52f0b7b93d5c65637745` and must not be repeated.
 
-Corrective source implemented:
-- editor opts into compact fixed-footer geometry via `heightFraction = 0.72f`; shared default remains `1f`;
-- compact height is bounded and falls back to full available height on short screens;
-- valid nonblank typing clears stale **«Введіть назву плейлиста.»** immediately;
-- no storage/identity/linkage/remote/History semantics changed.
+After this docs-only checkpoint is finalized and validated, do not move HEAD before signed build.
 
-Next gates:
-1. exact-HEAD release preflight + JVM + assemble;
-2. one signed corrective APK;
-3. PHONE retest only:
-   - compact editor/footer accessibility in portrait + landscape;
-   - blank error disappears after typing a nonblank draft;
-4. if both PASS, close #30 without repeating rename/rotation/Cancel/YTM remote-title tests.
+PHONE retest only:
+1. **«Поточний плейлист» → «Редагувати»**: portrait layout is visibly more compact; rotate to landscape and confirm editor/footer remain accessible;
+2. clear name → **«Зберегти»** to show **«Введіть назву плейлиста.»**, then type any nonblank text and confirm the error disappears immediately.
+
+If both PASS, close #30 without repeating rename/persistence/rotation-draft/Cancel/YTM-linkage/remote-title checks.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
