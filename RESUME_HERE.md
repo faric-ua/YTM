@@ -84,25 +84,31 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-1. #52 tooling checkpoint `cf2298d7b340562f49131b09246f259a1d12cbfe` passed Validate `37552222710 — SUCCESS` with release preflight, #52 static audit, JVM tests and unsigned assemble PASS.
-2. No Android APK rebuild/install is needed: #52 changes only repository-owned Termux scripts/docs.
-3. On the phone, the first sync still uses the **old currently loaded menu label**: `1 — Sync YTM`.
-4. After sync: `0 — Вийти`, then reopen the **YTM Importer** Termux shortcut so the new menu script is loaded.
-5. Verify the new main menu shows:
-   - `1 — Оновити проєкт`;
-   - `2 — Перевірити, що зараз готово`;
-   - `3 — Завантажити готовий APK`;
-   - `4 — Відкрити папку з APK`;
-   - `5 — Зібрати новий APK`;
-   - `6 — Перевірити локальні зміни`;
-   - `7 — Розширені / релізні дії`;
-   - `H — Допомога`;
-   - `0 — Вийти`.
-6. Open `2 — Перевірити, що зараз готово`; require current-code status, Validate status, current-code signed APK status, phone-download status and one `Що робити далі` line.
-7. Open `6 — Перевірити локальні зміни`; require current/clean state.
-8. Open `7 — Розширені / релізні дії`; require shell / technical release / stable release / GitHub Actions only. Then open `2 — Технічний стан релізу` and require separate `ПОТОЧНИЙ КАНДИДАТ` and `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ` sections.
-9. `0 — Назад` must return to the new main menu.
-10. Do not repeat #53/#54 matrices.
+### SLEEP CHECKPOINT — 2026-10-07
+
+Current task: **#52 / UX-047 Simplified Termux operator menu/status**.
+
+Validated state:
+- tooling/source checkpoint `cf2298d7b340562f49131b09246f259a1d12cbfe`;
+- final docs/manifest handoff HEAD `fa7f378ff1768c24bf91a2928d8cb1bd9eb62050`;
+- exact-HEAD Validate `37552641156 — SUCCESS`;
+- release preflight / dedicated #52 audit / JVM / unsigned assemble PASS;
+- Android app source unchanged, so no APK rebuild/install is needed for #52.
+
+PHONE QA has **not started yet**.
+
+Resume exactly here on the phone:
+1. Open the currently installed **old YTM Importer Menu**.
+2. Press **`1 — Sync YTM`**.
+3. After sync finishes, press **`0 — Вийти`**.
+4. Reopen the **YTM Importer** Termux shortcut so the new menu script is loaded.
+5. Confirm the new task-oriented menu appears.
+6. Press **`2 — Перевірити, що зараз готово`**.
+7. Do **not** follow the suggested next action yet; send a screenshot of that status screen to ChatGPT.
+
+After that screenshot, continue the focused #52 phone matrix with `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії`.
+
+Do not repeat #53/#54 phone matrices.
 
 ## Consolidated phone matrix
 
