@@ -26,7 +26,9 @@ Phase A and Phase B #41/#25/BUG-051/#55 are PHONE PASS / CLOSED.
 
 Closed task: #54 / UX-049 Type-aware YTM file library — **PHONE PASS / CLOSED 2026-10-07**.
 
-Active task: #52 / UX-047 Simplified Termux operator menu/status.
+Closed task: #52 / UX-047 Simplified Termux operator menu/status — **PHONE PASS / CLOSED 2026-10-07**.
+
+Active task: #30 / UX-036 explicit local playlist Edit.
 
 Final #54 status: **PHONE PASS / CLOSED** — Full Restore, History and Playlist Project scoping/rotation/no-auto-start passed; typed cards and wrong-type fallback passed.
 
@@ -70,15 +72,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#52 Advanced submenu and technical release separation are **PHONE PASS**.
-
-Final phone action:
-1. from the technical release screen press Enter to return to Advanced;
-2. press `0 — Назад`;
-3. require the task-oriented main menu to reappear;
-4. if PASS, reconcile the complete #52 phone matrix and close #52 if no acceptance item remains.
-
-No APK rebuild/install. Do not repeat #53/#54.
+1. #52 is closed; do not repeat its Termux phone matrix.
+2. Phase B is complete; UX-028 Home detail drill-down was already completed earlier.
+3. Start #30 / UX-036 from live `PlaylistActivity`, `CurrentPlaylistStore` and `RestorablePlaylistStore`.
+4. Add explicit **«Редагувати»** from **«Поточний плейлист»**; Phase 1 edits local name only.
+5. Preserve local playlist identity/source/tracks/YTM linkage and keep remote rename out of this flow.
+6. Rotation-safe unsaved input; Cancel = no-op; blank validation.
+7. Add tests/static guards, exact-HEAD Validate, then one focused phone candidate.
 
 ## Immutable functional reference
 
