@@ -89,19 +89,21 @@ Corrective rotation-cache source:
 
 Current task: **#30 / UX-036 Local playlist Edit**.
 
-Source/static implementation checkpoint: `3ff9765b11b9ca407ff611d05c7f0e242771fdba`.
+Validated source/app checkpoint:
+- HEAD `b22274c33344ebe27d3a422e7dc30669a57ee6bf`;
+- Validate `37681402021 — SUCCESS`;
+- release preflight / #30 static guards / JVM / unsigned assemble PASS.
 
-Implemented:
-1. **«Поточний плейлист» → «Редагувати»**.
-2. Editor title **«Редагувати локальний плейлист»**; actions **«Зберегти» / «Скасувати»**.
-3. Only local `playlist.name` changes; `localPlaylistId`, `sourceHistoryId`, source label, tracks/video IDs and destination YTM linkage are preserved.
-4. Rename persists through `CurrentPlaylistStore` and its existing `RestorablePlaylistStore` upsert.
-5. No remote YTM rename and no History rewrite.
-6. Blank/whitespace name stays in the editor with inline validation and no save.
-7. Rotation/recreation preserves editor state, draft, exact target ID and validation state; restoration never auto-saves.
-8. Cancel/system cancel = no-op.
+Implementation remains:
+- **«Поточний плейлист» → «Редагувати»**;
+- editor **«Редагувати локальний плейлист»**;
+- local-name-only persistence preserving exact local/source/track/YTM linkage identity;
+- no remote YTM rename and no History rewrite;
+- inline blank validation;
+- rotation-safe draft/target/error state;
+- Cancel/system cancel = no-op.
 
-Next: synchronize `FILE_MANIFEST.txt`, run exact-HEAD Validate, then build one signed APK for focused #30 phone acceptance. Do not repeat #52/#53/#54 matrices.
+Next gate: finalize docs/manifest → exact-HEAD Validate → dispatch one signed APK from that exact final HEAD → focused phone QA. Do not repeat #52/#53/#54.
 
 ## Consolidated phone matrix
 
