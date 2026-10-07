@@ -454,19 +454,18 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**#52 PHONE QA — readiness corrective PASS; test local-changes screen next.**
+**#52 PHONE QA — local-changes screen PASS; test Advanced menu next.**
 
-PHONE evidence on HEAD `8b2fafb9f48dd22db3976e3783cba6b3f029460a`:
-- `Код у Termux: актуальний ✅`;
-- `Перевірка поточного коду: PASS ✅ (run 37638433786)`;
-- `Підписаний APK для поточного HEAD: ще немає`;
-- `Android-застосунок: Android-застосунок не змінювався ✅`;
-- `Завантажений APK: попередній APK підходить ✅ (run 37546679576)`;
-- `Що робити далі: Новий APK не потрібен — Android-застосунок не змінювався.`
+PHONE evidence on validated HEAD `9d7882cfb56fc53ef05419189e0fa4cad558f21b`, Validate `37641446596 — SUCCESS`:
+- `Гілка: feat/v1.4.55-ux-hardening`;
+- `Стан коду: актуально ✅`;
+- `Код у Termux: 9d7882cfb56f`;
+- `Код на GitHub: 9d7882cfb56f`;
+- `Локальні файли: без змін ✅`.
 
-Result: tooling-only APK compatibility correction is **PHONE PASS**; no needless build recommendation remains.
+Result: `6 — Перевірити локальні зміни` is **PHONE PASS**.
 
-Next phone step: from the main menu open `6 — Перевірити локальні зміни` and require current/clean local repository state. Then continue `7 — Розширені / релізні дії` only after that PASS.
+Next phone step: `7 — Розширені / релізні дії` → verify visible submenu labels, then open `2 — Технічний стан релізу` and require clear separation between `ПОТОЧНИЙ КАНДИДАТ` and `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`. Finally verify `0 — Назад` returns to the main menu.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
