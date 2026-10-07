@@ -813,6 +813,8 @@ if rename < 0 or rename_end < 0:
     raise SystemExit("FAIL: #30 CurrentPlaylistStore rename owner missing")
 rename_block = store[rename:rename_end]
 
+rename_compact = "".join(rename_block.split())
+
 for required in (
     "expectedLocalPlaylistId",
     "snapshot.localPlaylistId",
@@ -823,7 +825,7 @@ for required in (
     "snapshot.sourceHistoryId",
     "save(",
 ):
-    if required not in rename_block:
+    if "".join(required.split()) not in rename_compact:
         raise SystemExit("FAIL: #30 rename does not preserve: " + required)
 
 if "HistoryStore" in store or "YouTubeApi" in rename_block:
