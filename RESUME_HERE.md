@@ -87,24 +87,22 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-Current task: **#30 / UX-036 — second presentation corrective after video FAIL**.
+Current task: **#30 / UX-036 — dedicated edit screen R3**.
 
 Do not repeat the accepted functional #30 baseline.
 
-Latest user video was recorded on first corrective signed run `37692262880` / HEAD `32b400fbed056d46b08e6d7f1f40e9d88e907726` and showed:
-- keyboard-open editor still cramped;
-- landscape/rotation geometry still awkward;
-- no one-tap clear action for long names.
+Modal R1/R2 were rejected from phone video. R3 replaces the modal completely:
+- `PlaylistActivity` → `EditPlaylistActivity`;
+- full page **«Редагувати плейлист»**;
+- badge **«Лише локально»**;
+- × **«Очистити назву»**;
+- dirty/valid-only Save;
+- linked YTM title/ID read-only;
+- `adjustResize` Activity; no modal height fractions;
+- Back = cancel/no save;
+- shared `UiChrome` editor-specific changes removed.
 
-Second corrective is implemented:
-- landscape full-safe-height policy;
-- IME-safe insets + resize and full remaining-height editor while keyboard is visible;
-- in-field × **«Очистити назву»**;
-- valid typing clears stale blank error.
-
-Dedicated #30 regression audit now guards these presentation contracts plus the already accepted functional owners.
-
-Next: exact-HEAD Validate → one signed APK → focused UI smoke only. Do not repeat rename/persistence/Cancel/YTM linkage/remote-title or #52/#53/#54 matrices.
+Next: exact-HEAD Validate → signed R3 APK → focused editor-screen smoke only. Do not repeat rename persistence, full rotation baseline, linked-YTM mutation or remote-title checks unless protected persistence/identity code changes.
 
 ## Consolidated phone matrix
 
