@@ -70,14 +70,29 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-1. Validated #52 tooling checkpoint: `cf2298d7b340562f49131b09246f259a1d12cbfe`; Validate `37552222710 — SUCCESS`.
-2. No APK rebuild/install: Android app source is unchanged.
-3. User starts with old local menu `1 — Sync YTM`, then `0 — Вийти`, then reopens the YTM Importer shortcut.
-4. PHONE: verify the new task-oriented main menu exactly matches the #52 contract.
-5. PHONE: `2 — Перевірити, що зараз готово` must present current-candidate readiness first and one exact next action.
-6. PHONE: `6 — Перевірити локальні зміни` must show current/clean local state.
-7. PHONE: `7 — Розширені / релізні дії` → `2 — Технічний стан релізу` must visibly separate current candidate from recorded history; `0 — Назад` returns to main.
-8. If PASS, close #52; do not repeat #53/#54.
+### SLEEP CHECKPOINT — 2026-10-07
+
+Current task: **#52 / UX-047 Simplified Termux operator menu/status**.
+
+Validated state:
+- tooling/source checkpoint `cf2298d7b340562f49131b09246f259a1d12cbfe`;
+- final pre-sleep docs/manifest handoff HEAD `fa7f378ff1768c24bf91a2928d8cb1bd9eb62050`;
+- exact-HEAD Validate `37552641156 — SUCCESS`;
+- release preflight / dedicated #52 audit / JVM / unsigned assemble PASS;
+- Android app source unchanged; no APK rebuild/install required.
+
+PHONE QA has not started.
+
+Resume phone flow exactly:
+1. old local YTM menu → `1 — Sync YTM`;
+2. after sync → `0 — Вийти`;
+3. reopen the **YTM Importer** shortcut;
+4. confirm the new task-oriented menu;
+5. press `2 — Перевірити, що зараз готово`;
+6. send a screenshot before following its suggested next action;
+7. then continue `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії`.
+
+Do not repeat #53/#54.
 
 ## Immutable functional reference
 
