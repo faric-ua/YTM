@@ -496,3 +496,19 @@ Next:
 - run focused phone acceptance for menu readability and status correctness.
 
 Do not repeat closed #53/#54/Phase A phone matrices.
+
+
+## #52 simplified Termux operator menu — current checkpoint (2026-10-07)
+
+Status: **SOURCE IMPLEMENTED / EXACT-HEAD VALIDATE PENDING**.
+
+- default phone menu rewritten with task-oriented Ukrainian labels;
+- `2 — Перевірити, що зараз готово` is the single normal readiness view and reports current code, exact-current-code Validate, exact-current-code signed APK, downloaded APK and one next action;
+- `6 — Перевірити локальні зміни` owns local repository diagnostics;
+- shell, technical release status, stable publication and raw Actions moved under `7 — Розширені / релізні дії`;
+- advanced release status visibly separates **ПОТОЧНИЙ КАНДИДАТ** from **ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ**;
+- exact-HEAD build/download checks remain present and are guarded by the new static audit;
+- operator Help / toolkit README / command guide updated;
+- no Android app source changed, so phone acceptance requires Termux sync/reopen only, not a new APK.
+
+Next gate: exact-HEAD Validate PASS, then focused phone menu/status QA.
