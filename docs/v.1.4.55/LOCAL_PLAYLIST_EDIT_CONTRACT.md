@@ -1,0 +1,98 @@
+# v1.4.55 — Local playlist Edit contract
+
+Issue: **#30 / UX-036**
+
+Status: **SOURCE IMPLEMENTATION IN PROGRESS / PHONE QA PENDING**
+
+## Goal
+
+Add one explicit local-only edit flow from **«Поточний плейлист»**.
+
+Phase 1 edits only the local playlist name.
+
+## Visible flow
+
+Parent screen:
+- **«Поточний плейлист»**.
+
+Entry action:
+- **«Редагувати»**;
+- subtitle makes clear that the change is local and YouTube Music is not changed.
+
+Editor:
+- title: **«Редагувати локальний плейлист»**;
+- local name input;
+- fixed-footer actions: **«Зберегти»** and **«Скасувати»**.
+
+The editor explicitly states that the linked YouTube Music playlist title is not renamed.
+
+## Persistence contract
+
+An accepted local rename changes only `ImportedPlaylist.name`.
+
+It must preserve:
+- `localPlaylistId`;
+- `sourceHistoryId`;
+- `sourceLabel`;
+- the complete track list and every selected video ID/status;
+- `destinationPlaylistId`;
+- `destinationPlaylistTitle`.
+
+The current snapshot is written through `CurrentPlaylistStore`.
+Its existing `save()` path remains the owner that also upserts the matching
+`RestorablePlaylistStore` snapshot.
+
+Existing History records are audit history and are not rewritten by local rename.
+
+## Remote-safety contract
+
+This flow does not call Search, YTM write, playlist-update or remote rename APIs.
+
+A local rename of a playlist already linked to YTM changes only the local YTM Importer
+display name. Remote rename, if ever added, remains a separate explicit operation.
+
+Title is display metadata and must never replace or infer playlist identity.
+
+## Validation
+
+- trim outer whitespace before persistence;
+- whitespace-only input is invalid;
+- invalid input keeps the editor open and shows an inline validation message;
+- no durable save occurs for invalid input.
+
+## Lifecycle
+
+While the editor is open:
+- rotation/recreation restores the editor over the same **«Поточний плейлист»**;
+- unsaved name draft survives;
+- the target `localPlaylistId` survives;
+- validation-error state survives;
+- restoration never saves automatically.
+
+If the current playlist identity changes while the editor is being restored, fail closed:
+dismiss the stale editor and require the user to open **«Редагувати»** again.
+
+## Navigation
+
+- **«Скасувати»** = no-op and returns to the same **«Поточний плейлист»**;
+- system Back/cancel = no-op;
+- successful **«Зберегти»** returns to the same screen and re-renders the new local name.
+
+## Window contract
+
+The editor uses the shared fixed-footer dialog pipeline.
+
+The **«Зберегти»** action is allowed to remain open for inline validation; shared
+`UiChrome.DialogAction.dismissOnClick` defaults to `true` so existing dialogs keep
+their behavior, while this editor opts out only for its validating Save action.
+
+## Phone acceptance
+
+At minimum:
+- rename a local-only current playlist and verify the new name immediately;
+- reopen **«Редагувати»** and verify the persisted name;
+- blank/whitespace Save stays open with visible validation and does not rename;
+- type an unsaved draft, rotate portrait → landscape → portrait, verify the draft survives;
+- **«Скасувати»** after editing is a no-op;
+- on a YTM-linked playlist, local rename preserves the same YTM linkage/ID and does not rename remotely;
+- no Search/write/restore/delete operation auto-starts during open/rotation/cancel.
