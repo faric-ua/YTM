@@ -428,13 +428,13 @@ Current live menu verified before implementation:
 - `H — Help / Команди`
 
 Checklist:
-- [ ] Replace the default menu with task-oriented Ukrainian labels for normal phone QA.
-- [ ] Remove the ambiguous top-level `Status` vs `Release status` split.
-- [ ] Make the primary status output distinguish current code, exact-current-code Validate, exact-current-code signed APK, and historical release metadata.
-- [ ] Move developer/release-only actions (shell/finalize/raw Actions details) under an Advanced submenu.
-- [ ] Keep exact-HEAD validation/build/download safety unchanged.
-- [ ] Add/update static guards and operator documentation.
-- [ ] Validate exact source, build one signed candidate if app/operator scripts require it, and run focused real-phone menu/status acceptance.
+- [x] Replace the default menu with task-oriented Ukrainian labels for normal phone QA.
+- [x] Remove the ambiguous top-level `Status` vs `Release status` split.
+- [x] Make the primary status output distinguish current code, exact-current-code Validate and exact-current-code signed APK; historical release metadata is excluded from the primary view and separated in Advanced.
+- [x] Move developer/release-only actions (shell/finalize/raw Actions details) under `7 — Розширені / релізні дії`.
+- [x] Keep exact-HEAD validation/build/download safety unchanged in source; #52 static audit explicitly guards the existing exact-source checks.
+- [x] Add/update static guards and operator documentation (`v1455-termux-operator-menu-audit.sh`, contract, toolkit README and command guide).
+- [ ] Validate exact source, then run focused real-phone menu/status acceptance. No APK rebuild is required because #52 changes only repository-owned Termux tooling/docs.
 
 Remaining Phase B backlog:
 - [ ] Home last-action detail drill-down to exact History detail.
@@ -453,16 +453,15 @@ Every Phase B item must remain explicit-action and must not auto-start remote wo
 
 ## NEXT ACTION
 
-**Start #52 / UX-047 — simplify the default Termux operator menu.**
+**Validate the #52 Termux operator-menu implementation, then run focused phone QA.**
 
-#54 / UX-049 is **PHONE PASS / CLOSED**. Do not repeat its Full Restore, History or Playlist Project phone matrix.
+Implemented source contract:
+- main menu: `1 — Оновити проєкт`, `2 — Перевірити, що зараз готово`, `3 — Завантажити готовий APK`, `4 — Відкрити папку з APK`, `5 — Зібрати новий APK`, `6 — Перевірити локальні зміни`, `7 — Розширені / релізні дії`, `H — Допомога`;
+- Advanced: `1 — Відкрити YTM shell`, `2 — Технічний стан релізу`, `3 — Опублікувати stable release`, `4 — GitHub Actions`, `0 — Назад`;
+- primary readiness screen is current-candidate-only and gives one `Що робити далі` instruction;
+- exact-HEAD Validate/build/download guards remain unchanged.
 
-First #52 source step:
-1. audit `tools/termux/ytm-menu.sh`, `ytm-status.sh`, `ytm-release-status.sh`, `ytm-build-apk.sh`, `ytm-download-apk.sh` and Help;
-2. design the task-oriented main menu from issue #52 while keeping exact-HEAD safety unchanged;
-3. move developer/release-only actions to an Advanced submenu;
-4. make status plain-language-first and clearly separate current candidate state from historical release metadata.
-
+After exact-HEAD Validate PASS, the phone only needs to sync/reopen the Termux menu and test the new menu/status surfaces; do not rebuild/install the Android APK for this tooling-only change.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when
