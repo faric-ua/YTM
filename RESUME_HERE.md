@@ -87,23 +87,19 @@ Corrective rotation-cache source:
 Current task: **#52 / UX-047 Simplified Termux operator menu/status**.
 
 PHONE QA progress:
-- readiness current/stale paths — PASS;
+- readiness stale/current paths — PASS;
 - tooling-only APK compatibility correction — PASS;
-- `6 — Перевірити локальні зміни` — **PASS** on HEAD `9d7882cfb56fc53ef05419189e0fa4cad558f21b`, Validate `37641446596 — SUCCESS`: current branch, Local=Remote and clean working tree.
+- `6 — Перевірити локальні зміни` — PASS;
+- `7 — Розширені / релізні дії` submenu labels — PASS;
+- Advanced `2 — Технічний стан релізу` current-vs-history separation — PASS.
 
-Next phone step:
-1. press Enter to return to the main menu;
-2. open **`7 — Розширені / релізні дії`**;
-3. verify submenu labels:
-   - `1 — Відкрити YTM shell`;
-   - `2 — Технічний стан релізу`;
-   - `3 — Опублікувати stable release`;
-   - `4 — GitHub Actions`;
-   - `0 — Назад`;
-4. open **`2 — Технічний стан релізу`**;
-5. require separate sections **`ПОТОЧНИЙ КАНДИДАТ`** and **`ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`**;
-6. send the full output;
-7. then test **`0 — Назад`** returns to the main menu.
+Current technical release screen correctly showed Local `9d7882...` behind Remote `98965b...` because documentation evidence was committed after the previous sync; this is expected and not a screen failure.
+
+Final phone check only:
+1. press Enter to return to the Advanced menu;
+2. press **`0 — Назад`**;
+3. require the new main YTM Importer menu to appear again;
+4. report PASS.
 
 No APK rebuild/install. Do not repeat #53/#54.
 
