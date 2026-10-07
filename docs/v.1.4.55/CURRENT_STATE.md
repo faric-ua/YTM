@@ -529,4 +529,6 @@ Correction:
 - missing/unprovable compatibility fails closed;
 - output distinguishes exact-HEAD signed build from Android app compatibility and downloaded APK.
 
-Status: **CORRECTIVE SOURCE IMPLEMENTED / EXACT-HEAD VALIDATE PENDING**.
+Status: **CORRECTIVE SOURCE / STATIC / VALIDATE PASS — PHONE RETEST PENDING**.
+
+Corrective checkpoint: `aa624982756d19b9bea844840f279e6ff77d4c7d`; Validate `37637690717 — SUCCESS` (preflight / #52 audit / JVM / assemble PASS). Next: phone readiness retest only.
