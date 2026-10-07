@@ -1386,6 +1386,368 @@ class PlaylistActivity : Activity() {
         )
     }
 
+    private fun captureEditDraft() {
+        if (!editDialogOpen) {
+            return
+        }
+
+        editNameInput
+            ?.let {
+                editDraftName =
+                    it.text
+                        .toString()
+            }
+    }
+
+    private fun showPlaylistEditor(
+        restoring: Boolean = false
+    ) {
+        if (
+            editDialog
+                ?.isShowing == true
+        ) {
+            return
+        }
+
+        val snapshot =
+            currentPlaylistStore
+                .load()
+                ?: run {
+                    clearPlaylistEditorState()
+                    return toast(
+                        "Немає активного плейлиста"
+                    )
+                }
+
+        if (restoring) {
+            val expectedId =
+                editTargetLocalPlaylistId
+
+            if (
+                expectedId.isNullOrBlank() ||
+                expectedId !=
+                    snapshot.localPlaylistId
+            ) {
+                clearPlaylistEditorState()
+                return toast(
+                    "Поточний плейлист змінився. " +
+                        "Відкрийте «Редагувати» ще раз."
+                )
+            }
+        } else {
+            editTargetLocalPlaylistId =
+                snapshot.localPlaylistId
+            editDraftName =
+                snapshot.playlist.name
+            editValidationError =
+                false
+        }
+
+        editDialogOpen =
+            true
+
+        val palette =
+            AppThemeManager.palette(this)
+
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
+            }
+
+        content.addView(
+            TextView(this).apply {
+                text =
+                    "Локальна назва"
+                textSize = 13f
+                setTypeface(
+                    typeface,
+                    Typeface.BOLD
+                )
+                setTextColor(
+                    palette.muted
+                )
+                setPadding(
+                    dp(4),
+                    0,
+                    dp(4),
+                    dp(6)
+                )
+            }
+        )
+
+        val input =
+            EditText(this).apply {
+                setText(
+                    editDraftName
+                        ?: snapshot.playlist.name
+                )
+                textSize = 16f
+                setTextColor(
+                    palette.text
+                )
+                setHintTextColor(
+                    palette.muted
+                )
+                hint =
+                    "Назва плейлиста"
+                gravity =
+                    Gravity.TOP or
+                        Gravity.START
+                inputType =
+                    InputType.TYPE_CLASS_TEXT or
+                        InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
+                        InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                setSingleLine(false)
+                minLines = 2
+                maxLines = 3
+                setPadding(
+                    dp(12),
+                    dp(10),
+                    dp(12),
+                    dp(10)
+                )
+                background =
+                    AppThemeManager
+                        .surfaceDrawable(
+                            context =
+                                this@PlaylistActivity,
+                            fill =
+                                palette.surfaceAlt,
+                            radiusDp = 12,
+                            accentStroke = true
+                        )
+
+                setSelection(
+                    text.length
+                )
+            }
+
+        content.addView(
+            input,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val validation =
+            TextView(this).apply {
+                text =
+                    "Введіть назву плейлиста."
+                textSize = 12.5f
+                setTextColor(
+                    palette.semantic.danger
+                )
+                setPadding(
+                    dp(4),
+                    dp(6),
+                    dp(4),
+                    0
+                )
+                visibility =
+                    if (
+                        editValidationError
+                    ) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
+            }
+
+        content.addView(
+            validation
+        )
+
+        editNameInput =
+            input
+
+        editDialog =
+            UiChrome.showContentDialog(
+                activity = this,
+                title =
+                    "Редагувати локальний плейлист",
+                subtitle =
+                    "Лише в YTM Importer",
+                message =
+                    "Змінюється тільки локальна назва. " +
+                        "Назва пов’язаного плейлиста в YouTube Music " +
+                        "не зміниться.",
+                content = content,
+                actions =
+                    listOf(
+                        UiChrome.DialogAction(
+                            label =
+                                "Зберегти",
+                            tone =
+                                UiChrome.ActionTone.ACCENT,
+                            dismissOnClick =
+                                false
+                        ) {
+                            savePlaylistEditor(
+                                input =
+                                    input,
+                                validation =
+                                    validation
+                            )
+                        },
+                        UiChrome.DialogAction(
+                            label =
+                                "Скасувати"
+                        ) {
+                            clearPlaylistEditorState()
+                        }
+                    )
+            ).also {
+                    dialog ->
+                dialog.setOnCancelListener {
+                    if (
+                        editDialog ===
+                        dialog
+                    ) {
+                        editDialog =
+                            null
+                        editNameInput =
+                            null
+                    }
+
+                    clearPlaylistEditorState()
+                }
+
+                dialog.setOnDismissListener {
+                    if (
+                        editDialog ===
+                        dialog
+                    ) {
+                        editDialog =
+                            null
+                        editNameInput =
+                            null
+                    }
+                }
+            }
+    }
+
+    private fun savePlaylistEditor(
+        input: EditText,
+        validation: TextView
+    ) {
+        val rawName =
+            input.text
+                .toString()
+
+        editDraftName =
+            rawName
+
+        val targetId =
+            editTargetLocalPlaylistId
+
+        if (
+            targetId.isNullOrBlank()
+        ) {
+            closePlaylistEditor()
+            render()
+            return toast(
+                "Поточний плейлист змінився. " +
+                    "Відкрийте «Редагувати» ще раз."
+            )
+        }
+
+        when (
+            currentPlaylistStore
+                .renameCurrentPlaylist(
+                    expectedLocalPlaylistId =
+                        targetId,
+                    rawName =
+                        rawName
+                )
+        ) {
+            LocalPlaylistRenameResult
+                .INVALID_NAME -> {
+                editValidationError =
+                    true
+                validation.visibility =
+                    View.VISIBLE
+                input.requestFocus()
+            }
+
+            LocalPlaylistRenameResult
+                .RENAMED -> {
+                closePlaylistEditor()
+                render()
+                toast(
+                    "Локальну назву збережено"
+                )
+            }
+
+            LocalPlaylistRenameResult
+                .UNCHANGED -> {
+                closePlaylistEditor()
+                render()
+                toast(
+                    "Назва не змінилася"
+                )
+            }
+
+            LocalPlaylistRenameResult
+                .NOT_FOUND -> {
+                closePlaylistEditor()
+                render()
+                toast(
+                    "Немає активного плейлиста"
+                )
+            }
+
+            LocalPlaylistRenameResult
+                .TARGET_CHANGED -> {
+                closePlaylistEditor()
+                render()
+                toast(
+                    "Поточний плейлист змінився. " +
+                        "Відкрийте «Редагувати» ще раз."
+                )
+            }
+        }
+    }
+
+    private fun closePlaylistEditor() {
+        val dialog =
+            editDialog
+
+        clearPlaylistEditorState()
+
+        dialog
+            ?.setOnCancelListener(
+                null
+            )
+        dialog
+            ?.dismiss()
+
+        if (
+            editDialog ===
+            dialog
+        ) {
+            editDialog =
+                null
+        }
+
+        editNameInput =
+            null
+    }
+
+    private fun clearPlaylistEditorState() {
+        editDialogOpen =
+            false
+        editDraftName =
+            null
+        editTargetLocalPlaylistId =
+            null
+        editValidationError =
+            false
+        editNameInput =
+            null
+    }
+
     private fun showProjectActions() {
         if (
             projectDialog
