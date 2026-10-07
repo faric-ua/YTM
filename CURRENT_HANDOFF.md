@@ -72,15 +72,16 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#30 functional PHONE baseline remains locked. Modal editor UX was rejected after phone-video review.
-
-R3 replaces the modal with dedicated `EditPlaylistActivity` and removes #30 dialog lifecycle/geometry code from `PlaylistActivity` / shared `UiChrome`.
+#30 R3 dedicated edit screen passed source/static/JVM/assemble validation on `133157098353f250e8536fd63bab65920b1555bf`; Validate `37701432833 — SUCCESS`.
 
 Next:
-1. exact-HEAD Validate;
-2. one signed R3 APK;
-3. focused PHONE smoke for dedicated screen / portrait+IME / landscape+IME / × clear / Save dirty+valid state / validation clearing / Back no-save / linked read-only YTM card;
-4. close #30 if acceptable.
+1. finalize docs/manifest exact-HEAD Validate;
+2. signed build from that exact HEAD;
+3. install over current app;
+4. focused dedicated-screen PHONE smoke only;
+5. close #30 if the new screen UX is accepted.
+
+Functional rename/persistence/YTM remote-safety baseline remains carried forward.
 
 ## Immutable functional reference
 
