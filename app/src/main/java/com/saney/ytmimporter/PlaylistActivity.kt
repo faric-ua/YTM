@@ -10,7 +10,9 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -1559,6 +1561,49 @@ class PlaylistActivity : Activity() {
             validation
         )
 
+        input.addTextChangedListener(
+            object :
+                TextWatcher {
+                override fun beforeTextChanged(
+                    text: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                    // No-op.
+                }
+
+                override fun onTextChanged(
+                    text: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                    // No-op.
+                }
+
+                override fun afterTextChanged(
+                    text: Editable?
+                ) {
+                    editDraftName =
+                        text
+                            ?.toString()
+
+                    if (
+                        editValidationError &&
+                        text
+                            ?.toString()
+                            ?.isNotBlank() == true
+                    ) {
+                        editValidationError =
+                            false
+                        validation.visibility =
+                            View.GONE
+                    }
+                }
+            }
+        )
+
         editNameInput =
             input
 
@@ -1574,6 +1619,8 @@ class PlaylistActivity : Activity() {
                         "Назва пов’язаного плейлиста в YouTube Music " +
                         "не зміниться.",
                 content = content,
+                heightFraction =
+                    0.72f,
                 actions =
                     listOf(
                         UiChrome.DialogAction(
