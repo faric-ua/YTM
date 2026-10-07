@@ -70,13 +70,14 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-1. #52 Termux tooling implementation is complete; no Android app source changed.
-2. Run exact branch-head Validate; release preflight now includes `scripts/v1455-termux-operator-menu-audit.sh` and `bash -n` for every Termux script.
-3. On PASS, user starts from the old locally installed menu: `1 — Sync YTM` → `0 — Вийти` → reopen YTM Importer shortcut.
-4. PHONE check the new main menu labels and `2 — Перевірити, що зараз готово` plain-language summary / exact next action.
-5. PHONE check `6 — Перевірити локальні зміни` and `7 — Розширені / релізні дії` → `2 — Технічний стан релізу` current-vs-history separation.
-6. Verify `0 — Назад` returns from Advanced and normal operator workflow does not require raw Git/gh commands.
-7. No APK rebuild/install is required for #52 because the change is Termux tooling/docs only.
+1. Validated #52 tooling checkpoint: `cf2298d7b340562f49131b09246f259a1d12cbfe`; Validate `37552222710 — SUCCESS`.
+2. No APK rebuild/install: Android app source is unchanged.
+3. User starts with old local menu `1 — Sync YTM`, then `0 — Вийти`, then reopens the YTM Importer shortcut.
+4. PHONE: verify the new task-oriented main menu exactly matches the #52 contract.
+5. PHONE: `2 — Перевірити, що зараз готово` must present current-candidate readiness first and one exact next action.
+6. PHONE: `6 — Перевірити локальні зміни` must show current/clean local state.
+7. PHONE: `7 — Розширені / релізні дії` → `2 — Технічний стан релізу` must visibly separate current candidate from recorded history; `0 — Назад` returns to main.
+8. If PASS, close #52; do not repeat #53/#54.
 
 ## Immutable functional reference
 
