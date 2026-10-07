@@ -421,3 +421,23 @@ Final #54 result:
 - Playlist Project rotation / no-auto-import — **PASS**.
 
 **#54 / UX-049 — PHONE PASS / CLOSED.**
+
+
+## Phase B #52 — Simplified Termux operator menu
+
+Validated tooling checkpoint:
+- source `cf2298d7b340562f49131b09246f259a1d12cbfe`;
+- Validate `37552222710 — SUCCESS`;
+- release preflight / #52 static audit / JVM / unsigned assemble PASS;
+- no Android app-code change; no APK rebuild required for this focused phone test.
+
+Focused phone matrix:
+- [ ] old local menu: `1 — Sync YTM`; then `0 — Вийти`; reopen YTM Importer shortcut;
+- [ ] new main menu exact visible labels match #52 contract;
+- [ ] `2 — Перевірити, що зараз готово` shows plain-language current-candidate readiness + one `Що робити далі`;
+- [ ] `6 — Перевірити локальні зміни` shows current/clean local repository state;
+- [ ] `7 — Розширені / релізні дії` contains only secondary technical/release actions;
+- [ ] Advanced `2 — Технічний стан релізу` separates `ПОТОЧНИЙ КАНДИДАТ` from `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ`;
+- [ ] Advanced `0 — Назад` returns to main menu.
+
+Status: **PHONE QA PENDING**.
