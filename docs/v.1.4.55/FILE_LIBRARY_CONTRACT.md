@@ -1,6 +1,6 @@
 # v1.4.55 — Type-aware YTM file library contract
 
-Status: **#54 FOUNDATION CONTRACT / IMPLEMENTATION IN PROGRESS**
+Status: **#54 PHONE PASS / CLOSED — 2026-10-07**
 
 Issue: **#54 / UX-049**
 
@@ -230,3 +230,17 @@ The final owner validator still runs even when the classifier says the type matc
 
 Do not combine this work with changes to backup payloads, History semantics, Queue
 semantics or account backup schemas.
+
+
+## Closure note — 2026-10-07
+
+#54 closed after real-phone acceptance of the user-facing chooser contract:
+- Full Restore shows matching Full Backup candidates and survives rotation with near-immediate cached card continuity;
+- History Import shows matching History JSON candidates and survives rotation without auto-import;
+- Playlist file import preserves CSV/TXT while JSON candidates are scoped to YTM Project;
+- scoped cards expose readable type/project/count metadata;
+- explicit **«Інший файл…»** remains available for legacy/external files;
+- reliably detected wrong-type JSON is blocked before mutation with detected/expected type wording;
+- Playlist Project chooser survives portrait → landscape → portrait without auto-import.
+
+The canonical `Documents/YTM/...` folder layout remains the logical storage direction. #54 does not silently migrate legacy files or broaden SAF permissions; any future automatic/default canonical-folder write behavior must be an explicit follow-up rather than being inferred from #54 closure.
