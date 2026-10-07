@@ -13,7 +13,7 @@ BRANCH_FILE="$YTM_STATE_DIR/latest-apk.branch"
 
 for f in "$PATH_FILE" "$SOURCE_FILE" "$RUN_FILE" "$BRANCH_FILE"; do
   [ -s "$f" ] ||
-    ytm_fail "No verified downloaded APK metadata. Use Download signed APK first."
+    ytm_fail "Немає перевіреного завантаженого APK. Спочатку виконай «3 — Завантажити готовий APK»."
 done
 
 APK="$(cat "$PATH_FILE")"
@@ -78,14 +78,14 @@ FOLDER_URI="content://com.android.externalstorage.documents/document/primary%3A$
 FOLDER_MIME="vnd.android.document/directory"
 
 echo
-echo "APK ready:"
+echo "APK ГОТОВИЙ ДО ВСТАНОВЛЕННЯ ✅"
 echo "RUN_ID=$RUN_ID"
 echo "SOURCE=$SOURCE"
 echo "FOLDER=$APK_DIR"
 echo "APK=$APK"
 echo
-echo "Opening the original downloaded APK folder."
-echo "Tap $(basename "$APK") to install it."
+echo "Відкриваю оригінальну папку завантаженого APK."
+echo "Торкнися $(basename "$APK"), щоб встановити його."
 
 command -v am >/dev/null 2>&1 ||
   ytm_fail "Android activity manager (am) is unavailable"
