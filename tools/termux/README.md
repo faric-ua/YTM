@@ -55,7 +55,7 @@ The shortcut becomes:
 - Install rechecks the recorded source against the current remote HEAD.
 - APK SHA-256 is checked after download and again before install.
 - Signed-build dispatch is gated by exact-HEAD validation.
-- Stable publication is separate from app compilation: item 8 republishes only the exact signed run recorded in release metadata and never rebuilds the phone-tested app.
+- Stable publication is separate from app compilation: `7 — Розширені / релізні дії` → `3 — Опублікувати stable release` republishes only the exact signed run recorded in release metadata and never rebuilds the phone-tested app.
 - Stable/checkpoint tags are pinned to the exact phone-tested app source, while later docs/tooling-only commits may remain on the release branch.
 - Manual build is a fallback; normal CI may be dispatched directly by ChatGPT.
 
