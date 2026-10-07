@@ -70,13 +70,15 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#52 readiness corrective is **PHONE PASS** on `8b2fafb9f48dd22db3976e3783cba6b3f029460a`: no needless APK build is suggested for tooling-only changes; previous signed APK run `37546679576` is recognized as compatible.
+#52 `6 — Перевірити локальні зміни` is **PHONE PASS** on `9d7882cfb56fc53ef05419189e0fa4cad558f21b`; Local/Remote matched and working tree was clean.
 
 Next:
-1. main menu → `6 — Перевірити локальні зміни`;
-2. require current branch/current local-vs-remote state and clean files;
-3. then continue `7 — Розширені / релізні дії` → `2 — Технічний стан релізу` current-vs-history separation;
-4. verify Advanced `0 — Назад` returns to main.
+1. main menu → `7 — Розширені / релізні дії`;
+2. verify only the intended secondary actions are present;
+3. Advanced → `2 — Технічний стан релізу`;
+4. require clear `ПОТОЧНИЙ КАНДИДАТ` vs `ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ` separation;
+5. verify `0 — Назад` returns to the main menu;
+6. if PASS, reconcile the full #52 acceptance matrix and close if nothing remains.
 
 No APK rebuild/install. Do not repeat #53/#54.
 
