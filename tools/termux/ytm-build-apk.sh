@@ -13,7 +13,7 @@ REMOTE_HEAD="$(ytm_remote_head "$BRANCH")"
 VALIDATION_WORKFLOW="validate.yml"
 VALIDATION_RUN_ID=""
 
-echo "Validation gate"
+echo "Перевірка поточного коду"
 echo "Branch: $BRANCH"
 echo "Source: $REMOTE_HEAD"
 echo
@@ -30,7 +30,7 @@ for _ in $(seq 1 90); do
 done
 
 [ -n "$VALIDATION_RUN_ID" ] ||
-  ytm_fail "No exact-HEAD validation run found yet. Wait for Validate Android and try item 6 again."
+  ytm_fail "Ще немає перевірки саме для поточного коду. Зачекай і повтори «2 — Перевірити, що зараз готово»."
 
 echo "Validation run: $VALIDATION_RUN_ID"
 
@@ -54,7 +54,7 @@ VALIDATION_CONCLUSION="$(
   ytm_fail "Validation did not pass"
 
 echo
-echo "VALIDATION PASS"
+echo "ПЕРЕВІРКА PASS ✅"
 echo
 
 
@@ -63,7 +63,7 @@ BEFORE_IDS="$(
   true
 )"
 
-echo "Manual signed build"
+echo "Збірка підписаного APK"
 echo "Branch: $BRANCH"
 echo "Source: $REMOTE_HEAD"
 echo
@@ -107,4 +107,4 @@ echo "BUILD PASS"
 echo "RUN_ID=$RUN_ID"
 echo "SOURCE=$REMOTE_HEAD"
 echo
-echo "Use menu item 3 to download this exact signed APK."
+echo "Далі: 3 — Завантажити готовий APK"
