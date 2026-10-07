@@ -6,20 +6,30 @@ The YTM widget must not depend on the Renault repository.
 
 ## Menu
 
-`ytm-menu.sh` exposes:
+`ytm-menu.sh` exposes the normal phone workflow in plain language:
 
-1. **Sync YTM** — clean-tree, fast-forward-only synchronization.
-2. **Status** — local/remote HEAD and clean/ahead/behind/diverged state.
-3. **Download signed APK** — only a successful GitHub Actions run whose
-   `headSha` exactly matches the current remote branch HEAD; stores it under
-   `artifacts/apk/vX.Y.Z/run-<RUN_ID>/`.
-4. **Open APK folder** — checksum + source-compatibility guard, then opens the
-   exact project archive folder that already contains the downloaded APK.
-5. **Open YTM shell** — interactive shell inside the repository.
-6. **Validate + Build signed APK** — requires a successful exact-HEAD validation before dispatching the signed build.
-7. **Release status** — shows branch/HEAD sync, exact-HEAD validation, phone-tested source, signed run, QA state, release tag and GitHub Release publication state.
-8. **Finalize stable release** — guarded publication of the already phone-tested signed APK. It requires exact-HEAD validation PASS, QA PASS, verifies the signed run/source/SHA, creates the stable + checkpoint tags on the exact phone-tested app source, publishes the GitHub Release assets, and verifies the published assets.
+1. **Оновити проєкт** — clean-tree, fast-forward-only synchronization.
+2. **Перевірити, що зараз готово** — the single normal readiness view: current code sync, exact-current-code Validate, exact-current-code signed APK, downloaded APK, and one next action.
+3. **Завантажити готовий APK** — downloads only a successful signed run whose `headSha` exactly matches the current remote branch HEAD.
+4. **Відкрити папку з APK** — checksum/source-compatibility guard, then opens the exact downloaded APK folder.
+5. **Зібрати новий APK** — requires successful exact-current-HEAD validation before dispatching the signed build.
+6. **Перевірити локальні зміни** — local branch relation + dirty/clean diagnostics.
+7. **Розширені / релізні дії** — opens a secondary menu for YTM shell, technical release status, guarded stable publication, and raw GitHub Actions status.
+H. **Допомога**.
 0. Exit.
+
+The old top-level `Status` / `Release status` split is intentionally removed.
+Historical phone/release metadata appears only in the advanced technical release view and is visually separated from the current candidate.
+
+### Advanced menu
+
+1. **Відкрити YTM shell**
+2. **Технічний стан релізу**
+3. **Опублікувати stable release**
+4. **GitHub Actions**
+0. **Назад**
+
+The technical release view separates **ПОТОЧНИЙ КАНДИДАТ** from **ЗАФІКСОВАНА ІСТОРІЯ РЕЛІЗУ**.
 
 ## One-time widget migration
 
