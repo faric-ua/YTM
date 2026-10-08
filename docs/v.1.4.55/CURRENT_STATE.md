@@ -581,3 +581,12 @@ Second #30 presentation corrective follows user video evidence: landscape full-s
 #30 R3 replaces the rejected modal editor with `EditPlaylistActivity`; shared dialog geometry is no longer part of the feature. Dedicated-screen audit and focused phone-smoke contract are active.
 
 #30 R3 validated source checkpoint `133157098353f250e8536fd63bab65920b1555bf`; Validate `37701432833 — SUCCESS`. Next: exact-final docs gate → signed R3 APK → focused screen UX smoke only.
+
+
+## #30 FINAL PHONE CLOSEOUT — 2026-10-08
+
+**CLOSED / PHONE ACCEPTED; no outstanding #30 QA.** Final dedicated editor code `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2` passed exact-HEAD Validate `37710803622` and signed build `37711110963`. Earlier phone-linked rename/persistence/YTM exact identity and unchanged remote title were verified and explicitly accepted by the user; no-repeat rule applies. R3 keyboard UX accepted (portrait inline keyboard-safe Save; landscape Android native fullscreen extracted text editor). `×`, changed valid Save state and Back/no-save PASS. GitHub issue #30 closed. Historical intermediate FAIL checkpoints above remain valid as history, but are superseded and are **not** active QA instructions.
+
+## NEXT ACTIVE #29 / UX-035 — URL Snapshot blank-input (2026-10-08)
+
+`UrlSnapshotActivity.kt` currently has `resolve.isEnabled = !state.running` and a blank click invokes `UrlSnapshotRemoteOperations.startResolve`, showing a global error. Change presentation only: disable read until nonblank trimmed URL exists; update enabled state immediately on typing/clear, no network on blank, rotation-safe draft; static/JVM tests + one targeted PHONE smoke. Do not reopen #30.

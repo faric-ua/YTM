@@ -445,7 +445,7 @@ Phase B is complete. Every completed Phase B item remains explicit-action and do
 
 ## F. Phase C — local convenience
 
-### CURRENT TASK — Local playlist Edit (#30)
+### COMPLETED TASK — Local playlist Edit (#30) — PHONE ACCEPTED / CLOSED 2026-10-08
 
 Goal: add an explicit local-only edit flow from **«Поточний плейлист»** without changing playlist identity or silently mutating YTM.
 
@@ -462,7 +462,7 @@ Checklist:
 - [x] PHONE functional acceptance — entry/editor, rename+persistence, blank rejection, portrait↔landscape draft retention, no auto-save, Cancel no-op, linked-YTM identity and remote-title non-mutation all PASS on signed run `37683871558` / HEAD `54425e2aa25c7381164b52f0b7b93d5c65637745`.
 
 Remaining Phase C backlog:
-- [ ] Blank URL inline validation (#29).
+- [ ] Blank URL inline validation (#29) — CURRENT TASK.
 - [ ] Review manual URL/manual-choice hierarchy (#40).
 - [ ] Bulk preparation presentation/state cleanup (#27/#28).
 - [ ] URL Snapshot action-fit stays under the shared adaptive-action contract.
@@ -471,18 +471,24 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**#30 R3 landscape IME correction (2026-10-08)**
+### CLOSED #30 / UX-036 — immutable accepted baseline
 
-- [x] Built/verified exact-HEAD keyboard-inset R3 candidate: `1591fcabc23840667d7353ffbde7abf96dff2d8c`, Validate `37709460440 — SUCCESS`, signed `37710164131 — SUCCESS`.
-- [x] Portrait IME + editor input + clear affordance + fixed Save above keyboard — **PHONE presentation PASS**; unchanged Save remains disabled.
-- [x] Landscape IME + in-place editor — **PHONE UX FAIL**: screen squeezed and text clipped. User approves return to Android's native fullscreen extracted text editor in landscape.
-- [x] Remove editor-local `IME_FLAG_NO_EXTRACT_UI`; retain editor-local `includeIme = true`, `IME_ACTION_DONE` and unchanged core ownership. Update static guards/contract/phone findings.
-- [ ] Exact new GitHub HEAD Validate Android must PASS (release-preflight, JVM, unsigned assemble).
-- [ ] Build/download/install one new signed APK for that exact HEAD.
-- [ ] Phone: portrait keyboard regression remains PASS, landscape fullscreen native editor is readable and returns to the dedicated Edit page.
-- [ ] Finish × clear, dirty/valid Save, Back no-save and linked YTM read-only smoke; close #30 only on phone acceptance.
+- [x] Exact R3 dedicated editor `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`; Validate `37710803622 — SUCCESS`; signed `37711110963 — SUCCESS`.
+- [x] Portrait + keyboard Save reachable; landscape native Android extracted editor user-accepted; closing returns to editor.
+- [x] × clears draft; valid dirty name enables Save; Back leaves the editor without saving, reopening shows previous name, not unsaved `TEST 123`.
+- [x] Earlier PHONE accepted linked-YTM identity/remote-title unchanged, rename/persistence/rotation. **User explicitly forbids rerunning this complete matrix without new contradictory evidence or a protected-owner change.**
+- [x] GitHub issue #30 CLOSED — 2026-10-08. No more editor IME height revisions.
 
-Do not repeat the accepted full functional rename/persistence/remote YTM identity matrix; it remains protected. No unrelated UI or stable-release actions.
+### CURRENT TASK #29 / UX-035 — URL Snapshot blank input
+
+- [x] Read #29 and inspect `UrlSnapshotActivity.kt`: `Прочитати URL` currently enabled for blank URL unless remote running; tapping blank creates global error instead of inline/disabled state.
+- [ ] Implement disabled read button for trimmed blank/whitespace; live updates while typing/clearing without triggering remote work; running state still blocks.
+- [ ] Verify rotation-preserved URL draft and enabled/disabled state; blank read must never call startResolve or alter resolved preview/status.
+- [ ] Add focused source/static + JVM tests, update #29 QA notes/guard and `FILE_MANIFEST.txt`; exact-HEAD Validate Android PASS.
+- [ ] Build one exact-HEAD signed APK and run focused portrait/landscape / rotation / Neon+Blue+Green PHONE smoke; do not re-test #30.
+- [ ] Close #29 only after PHONE PASS; then advance to #40.
+
+**NEXT ACTION: implement #29 small presentation-only guard, run Validate.**
 
 ## Update rule
 

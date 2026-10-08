@@ -28,7 +28,9 @@ Closed task: #54 / UX-049 Type-aware YTM file library — **PHONE PASS / CLOSED 
 
 Closed task: #52 / UX-047 Simplified Termux operator menu/status — **PHONE PASS / CLOSED 2026-10-07**.
 
-Active task: #30 / UX-036 explicit local playlist Edit.
+Closed task: #30 / UX-036 explicit local playlist Edit — PHONE ACCEPTED / CLOSED 2026-10-08.
+
+Active task: #29 / UX-035 blank URL input validation.
 
 Final #54 status: **PHONE PASS / CLOSED** — Full Restore, History and Playlist Project scoping/rotation/no-auto-start passed; typed cards and wrong-type fallback passed.
 
@@ -72,15 +74,11 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#30 R3 signed keyboard-inset candidate: app HEAD `1591fcabc23840667d7353ffbde7abf96dff2d8c`; Validate `37709460440 — SUCCESS`; signed `37710164131 — SUCCESS`.
+**#30 PHONE ACCEPTED / CLOSED 2026-10-08.** Source `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`; Validate `37710803622` SUCCESS; signed `37711110963` SUCCESS. Functional phone baseline already proved exact localPlaylistId / source / tracks / YTM linkage and remote unchanged title. R3 dedicated editor, portrait Save inset, user-approved native landscape fullscreen keyboard, ×, valid dirty Save and Back discard all accepted. **No repeat testing of #30, linked YTM or the editor unless its protected persistence/linkage owner actually changes or contradictory evidence emerges.** GitHub issue #30 CLOSED.
 
-Phone 2026-10-08:
-- portrait + keyboard: **PASS** — local name and × visible, primary Save clearly above IME;
-- landscape + keyboard: **FAIL** — with NO_EXTRACT_UI, Samsung split keyboard compresses the dedicated editor to a thin strip.
+**Active #29 / UX-035 — blank URL Snapshot input.** Phone finding: `Прочитати URL` is currently enabled for empty input and produces a global `Не вдалося прочитати URL` error. Source `UrlSnapshotActivity.kt`: current button enabled when `!state.running`, no blank guard. Product direction: disabled primary button until URL has non-whitespace input; update state immediately on typing/clear; no API/network/preview mutation on blank, rotation-preserved input/focus and theme-aware disabled state. Implement narrowly, source/JVM regression guards, exact-HEAD Validate, signed APK, focused PHONE acceptance. Then #40.
 
-User explicitly chose to use Android's native fullscreen extracted text input for landscape. Restore it by removing only `IME_FLAG_NO_EXTRACT_UI` from `EditPlaylistActivity` while retaining `includeIme = true` for portrait keyboard-safe Save and all accepted domain behavior. Update #30 audit/contract/phone findings/resume documents and the deterministic file manifest.
-
-**Next:** exact-new-HEAD Validate → one signed APK → portrait and landscape keyboard-focused phone smoke → remaining few editor checks → close #30 only if PASS. Do not repeat full functional baseline or change `UiChrome` shared defaults.
+Previous #30 failed modal/IME experiments are historical evidence, not pending work. Do not take the outdated #52 section as the next action.
 
 ## Immutable functional reference
 

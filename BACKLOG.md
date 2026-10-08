@@ -1278,3 +1278,10 @@ Readability audit:
 
 Master plan:
 `docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md`.
+
+
+## 2026-10-08 current Phase C checkpoint
+
+- [x] #30 / UX-036 Edit current local playlist — **PHONE ACCEPTED / CLOSED**. Dedicated editor, portrait keyboard-safe Save, native landscape extracted text entry, clear/dirty/Back accepted. Earlier exact linked-YTM identity + remote title PHONE PASS are locked; do not repeat without relevant functional change.
+- [ ] #29 / UX-035 URL Snapshot blank URL validation — **ACTIVE**. Button disabled for blank/whitespace instead of whole-screen read error; no remote work; rotation/Neon+Blue+Green QA.
+- [ ] #40 manual URL/choice UX — NEXT after #29, not started.

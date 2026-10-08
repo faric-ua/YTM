@@ -640,3 +640,22 @@ Installed R3 IME correction: `1591fcabc23840667d7353ffbde7abf96dff2d8c`, Validat
 - [ ] Landscape with Samsung keyboard visible: the in-place editor is compressed to a thin strip; the text is partly clipped against the header — **PHONE UX FAIL** even though Save is visible.
 
 User explicitly prefers the native Android fullscreen extracted keyboard in landscape. Next corrective change removes the editor-local NO_EXTRACT flag, keeps IME insets for portrait, and adds a regression guard preventing a repeat of this flag. Targeted next QA: native landscape text editor, return to dedicated edit screen, portrait still unchanged. #30 stays open pending acceptance.
+
+
+### #30 FINAL CLOSEOUT — PHONE ACCEPTED / CLOSED — 2026-10-08
+
+**The following supersedes only the earlier *pending* R3 smoke checkboxes; earlier FAIL recordings remain historical.** Last R3 signed app code `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`, Validate `37710803622 — SUCCESS`, signed `37711110963 — SUCCESS`.
+
+- [x] Dedicated editor screen (no modal backdrop), portrait/landscape IME-hidden, local-only label and read-only YTM representation — accepted.
+- [x] Portrait keyboard-safe input and visible Save footer — PHONE PASS.
+- [x] Landscape keyboard = native Android fullscreen extracted editor; returns to dedicated screen — user-accepted UX choice, not a defect.
+- [x] × clear — PHONE PASS.
+- [x] Disabled for blank/unchanged and enabled for valid modified text — source/static + PHONE focused states accepted.
+- [x] Back exits without saving; user confirmed unsaved `TEST 123` absent when reopening, persisted name intact — PHONE PASS (initial reported `−` clarified).
+- [x] Linked-YTM safety, same ID, unchanged remote title, draft/rotation and rename persistence — prior signed PHONE baseline PASS; user explicitly states this test is already done and forbids unnecessary repetition.
+
+**GitHub issue #30 CLOSED / no retest required** unless protected owners change or new contradictory evidence occurs. Do not convert old R3 FAIL subsections into new to-do items.
+
+### #29 NEXT FOCUSED PHONE TEST — NOT YET IMPLEMENTED
+
+URL Snapshot `Прочитати URL` must be disabled for blank/whitespace URL; no global ERROR/remote read from blank; typing nonblank enables it; clearing disables; preserve draft/disabled state across rotation; Neon/Blue/Green disabled contrast. This is **not PHONE PASS** until a new signed candidate is installed.

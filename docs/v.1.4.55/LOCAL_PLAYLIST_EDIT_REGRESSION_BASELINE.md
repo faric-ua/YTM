@@ -105,3 +105,8 @@ Manual R3 smoke is limited to:
 8. linked YTM read-only name/ID are visible.
 
 If these pass and the dedicated-screen regression audit passes, #30 may close without re-running the previously accepted remote-title/YTM-linkage/rename persistence matrix.
+
+
+## FINAL #30 NO-REPEAT LOCK — CLOSED / PHONE ACCEPTED 2026-10-08
+
+GitHub issue #30 closed after explicit user acceptance. Final code `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`; Validate `37710803622 — SUCCESS`; signed `37711110963 — SUCCESS`. Dedicated screen portrait keyboard-safe Save, native Android full-screen landscape text editor are final accepted UX. × clear, dirty valid Save and Back/no-save are PHONE PASS; earlier independently accepted linked YTM exact playlist identity + unchanged remote title remain authoritative. **Do not ask for these checks again** unless a protected identity/store/remote owner materially changes or fresh contradictory phone evidence is supplied. The historical list above is preserved for evidence, not a recurring acceptance matrix. Next issue #29 is independent.

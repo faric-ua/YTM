@@ -47,8 +47,8 @@ Closed task:
 Closed task:
 - #52 / UX-047 Simplify Termux menu for non-developer phone use — **PHONE PASS / CLOSED 2026-10-07**.
 
-Active task:
-- #30 / UX-036 Add explicit Edit flow for the current local playlist.
+Closed task:
+- #30 / UX-036 Dedicated local playlist Edit — **PHONE ACCEPTED / CLOSED 2026-10-08**. Full earlier linked-YTM/remote-safety baseline carried forward; no repeat without protected-owner change. Active task: #29 / UX-035 Blank URL validation.
 
 #54 verified source state:
 - inventory + content-first file-library contract complete;
@@ -87,17 +87,9 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-Current task: **#30 R3 landscape keyboard UX correction**.
+**#30 IS CLOSED — DO NOT REPEAT ACCEPTED PHONE TESTS.** GitHub issue #30 CLOSED 2026-10-08 by user decision. Last signed editor HEAD `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`, Validate `37710803622 — SUCCESS`, signed `37711110963 — SUCCESS`. User accepted portrait keyboard-safe Save and native Android full-screen landscape text editing; × clear, changed-valid Save, Back/no-auto-save all PHONE PASS. Earlier linked YTM exact ID + remote unchanged title were already independently phone-confirmed and user explicitly rejected redundant retesting. See `docs/v.1.4.55/qa/PHONE_TEST.md` and `LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md`.
 
-Last phone candidate:
-- source `1591fcabc23840667d7353ffbde7abf96dff2d8c`;
-- exact Validate `37709460440 — SUCCESS`, signed `37710164131 — SUCCESS`;
-- portrait + keyboard: **PHONE presentation PASS**, Save visible directly above IME;
-- landscape + keyboard: **PHONE UX FAIL**, editor compressed to a very thin strip.
-
-User chose to restore the native Android fullscreen extracted text editor for landscape rather than fight the landscape IME geometry. New change is editor-local only: remove `IME_FLAG_NO_EXTRACT_UI`, preserve `includeIme = true` and all previously accepted functional/remote-safety behavior. Static regression script and findings are updated.
-
-**NEXT ACTION:** wait for exact-new-HEAD Validate Android PASS; then build signed APK from that exact HEAD using the YTM Termux operator menu; phone-test portrait keyboard retained PASS + landscape native extracted editor + return to the app editor. Then finish the few remaining UI actions. **Do not close #30 before phone acceptance.**
+**CURRENT TASK: #29 / UX-035 — blank URL input on URL Snapshot screen.** Live issue: `https://github.com/faric-ua/YTM/issues/29`. Confirmed source GAP: `UrlSnapshotActivity.kt` enables `Прочитати URL` whenever not running, even if trimmed input is blank; blank tap currently goes to full remote ERROR state. Choose disabled blank-button UX with immediate in-place enabled/disabled updates, no remote/API call for blank/whitespace, preserved input and focus/rotation, stable Neon/Blue/Green semantics. Review `UrlSnapshotRemoteOperations` and existing guards, implement narrowly, add static/JVM checks, exact-HEAD Validate, then one focused PHONE UI check. Do not touch playlist store, YTM write, History, Bulk ledger or reopen #30.
 
 ## Consolidated phone matrix
 
