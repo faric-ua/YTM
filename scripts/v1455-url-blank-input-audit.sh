@@ -37,7 +37,7 @@ if "rawUrl.isNotBlank()" not in policy or "!running" not in policy:
 for name in ("blankAndWhitespaceOnlyDisableRead", "nonblankTextEnablesRead", "runningDisablesEvenNonblankRead"):
     if name not in test:
         raise SystemExit("FAIL: #29 JVM test missing: " + name)
-if "no API" not in contract.lower():
+if "no api" not in contract.lower():
     raise SystemExit("FAIL: #29 no-API safety contract missing")
 print("#29 URL Snapshot blank-input audit: PASS")
 PY_CHECK

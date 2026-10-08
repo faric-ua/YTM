@@ -1779,7 +1779,7 @@ d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 6b0f6c7591ef61c5  scripts/v1455-file-library-audit.sh
 54acd2ffe8682685  scripts/v1455-local-playlist-edit-regression-audit.sh
 f2a3a8fc068701c4  scripts/v1455-termux-operator-menu-audit.sh
-311123890cc02863  scripts/v1455-url-blank-input-audit.sh
+a3b628d5213feb9a  scripts/v1455-url-blank-input-audit.sh
 fdc8f2f95d8ce093  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 51053de6297a5c01  tools/termux/README.md
