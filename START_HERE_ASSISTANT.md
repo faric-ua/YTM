@@ -9,6 +9,14 @@ Do not begin by guessing from the code. Read `ACTIVE_PLAN.md` first, then this f
 
 For a mid-release/chat-crash resume, `ACTIVE_PLAN.md` is the mandatory crash-recovery checklist and `CURRENT_HANDOFF.md` is the short mutable snapshot of the exact active branch/PR/QA/next-step state.
 
+## Mandatory user-facing reply format
+
+After reading `RESUME_HERE.md`, read
+`docs/assistant-kit/USER_RESPONSE_TEMPLATE.md` before reporting project
+progress or handing off an APK. It defines the user-approved response sequence:
+short fix header, clear result, short Termux steps at the end, then 1–3 focused
+phone tests. Avoid inventing work for the user.
+
 ## 1. Project mission
 
 YTM Importer is an Android/Kotlin application for importing track lists and moving verified tracks into YouTube / YouTube Music workflows.

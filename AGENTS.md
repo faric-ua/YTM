@@ -36,6 +36,15 @@ chat memory.
    source when wording is uncertain; internal flow names must not replace user-visible
    instructions.
 
+## Mandatory reply layout (user-approved, 2026-10-08)
+
+Before replying to the user about project work, signed APK, Termux or PHONE QA,
+read `docs/assistant-kit/USER_RESPONSE_TEMPLATE.md`. Keep the user-facing
+order: **short issue/fix heading → useful results → short exact Termux menu steps
+at the END → 1–3 concise new APK tests as the LAST paragraph**.
+Do not substitute repetitive CI narration or re-test already accepted items.
+For long YTM work, keep exactly three visible parts with completion markers.
+
 ## Crash / context-loss rule
 
 After a chat crash, model replacement, context loss, or long pause:

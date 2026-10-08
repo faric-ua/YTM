@@ -9,6 +9,18 @@ Last updated: **2026-10-08**
 > Verify live GitHub HEAD/Actions, then confirm `ACTIVE_PLAN.md` has the same next action.
 > After every verified step, update the canonical resume pointer and execution checklist.
 
+## Reply format / user agreement
+
+Use `docs/assistant-kit/USER_RESPONSE_TEMPLATE.md` for every project
+progress and APK/PHONE handoff. Short heading → what changed/result → **at the
+end** Termux menu numbers/labels → **last** focused post-install test. This is
+a standing preference, not a new feature/QA gate. The #58 corrective app code
+HEAD `1bb60b4363a5f2127dcc29dca8c2b8f352c41093` has exact-source
+Validate Android `37822555605 — SUCCESS`, but a **new docs-only commit
+will advance HEAD**, so wait for its exact-HEAD Validate before signed APK.
+User's earlier #58 functional 1+/2+/3+ stay accepted. No Android source edits
+are part of the reply-format change.
+
 ## Active work
 
 - Repository: `faric-ua/YTM`

@@ -7,6 +7,15 @@
 
 Last updated: **2026-10-07**
 
+## User-facing answer format — mandatory
+
+Before project progress/phone handoff responses, read
+`docs/assistant-kit/USER_RESPONSE_TEMPLATE.md`. Keep the agreed order:
+**short fix heading → concise findings/result → final Termux menu steps →
+last paragraph: short APK phone test**. Give exact user-visible menu labels,
+provide ready test inputs, no repetitive completed QA. For long YTM work,
+use three visible parts; do not move Termux/phone QA above the final section.
+
 ## Live resume point
 
 - Repository: `faric-ua/YTM`

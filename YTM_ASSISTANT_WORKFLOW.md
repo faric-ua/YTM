@@ -155,6 +155,18 @@ Rules:
 - For tests, separate **what the user must do** from **what should happen / what proves PASS** in plain language.
 - Prefer step-by-step taps and visible labels over developer shorthand so a phone test can be executed without knowing the implementation terminology.
 
+## 9.2. Mandatory short user-facing response template
+
+The user-approved, reusable answer standard is:
+`docs/assistant-kit/USER_RESPONSE_TEMPLATE.md`.
+
+Always structure progress/completion as **short defect/fix heading, concise
+actual results, Termux:Widget menu actions at the end, then only the new
+post-install phone QA as the final paragraph**. Status must be verified; if
+exact-HEAD Validate is pending, say no Termux action yet; if signed already
+exists, do not rebuild. Do not bury phone instructions inside large CI
+chronologies or ask the user to find their own test URLs.
+
 ## 10. Development priorities
 
 - Prioritize working functionality over UI polishing.
