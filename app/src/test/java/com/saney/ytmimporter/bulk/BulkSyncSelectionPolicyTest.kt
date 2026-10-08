@@ -100,6 +100,30 @@ class BulkSyncSelectionPolicyTest {
     }
 
     @Test
+    fun linkedOnlySelection_excludesNewPlaylistCreations() {
+        val summary = summary(
+            row(id = "create", state = BulkSyncPlanState.NEW, writeUnits = 150),
+            row(id = "append", state = BulkSyncPlanState.LINKED, writeUnits = 100),
+            row(id = "already", state = BulkSyncPlanState.ALREADY_SYNCED),
+            row(id = "blocked", state = BulkSyncPlanState.BLOCKED)
+        )
+
+        val selected = BulkSyncSelectionPolicy.linkedOnlyIncludedIds(summary)
+        assertEquals(setOf("append"), selected)
+        assertEquals(0, BulkSyncSelectionPolicy.selectedSummary(summary, selected).count(BulkSyncPlanState.NEW))
+        assertEquals(100, BulkSyncSelectionPolicy.selectedSummary(summary, selected).estimatedWriteUnits)
+    }
+
+    @Test
+    fun linkedOnlySelection_withoutLinkedRows_isEmpty() {
+        val summary = summary(
+            row(id = "create", state = BulkSyncPlanState.NEW, writeUnits = 150),
+            row(id = "already", state = BulkSyncPlanState.ALREADY_SYNCED)
+        )
+        assertTrue(BulkSyncSelectionPolicy.linkedOnlyIncludedIds(summary).isEmpty())
+    }
+
+    @Test
     fun staleIncludedIds_areIgnored() {
         val summary =
             summary(
