@@ -87,16 +87,15 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-**PHONE-ACCEPTED / CLOSED — #30 and #29. Never repeat accepted phone matrices without a changed protected owner or new contradictory evidence.**
+**CLOSED / PHONE ACCEPTED:** #29, #30, #40. No repeat tests without new evidence or a protected owner change.
 
-- **#30 / UX-036:** dedicated local playlist editor — issue CLOSED 2026-10-08. Final signed source `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`, Validate `37710803622 — SUCCESS`, signed `37711110963 — SUCCESS`. Portrait Save above IME and user-accepted native landscape keyboard, clear ×, valid dirty Save, Back no-save, rotation, local rename persistence, exact linked-YTM identity and unchanged remote title all covered by accumulated phone evidence. Do not reopen the editor QA.
-- **#29 / UX-035:** blank URL Snapshot Read button — issue CLOSED 2026-10-08. Final source/signed HEAD `a6e8bf2db047fc85f047348b487d37f0936ecb96`; exact Validate `37715162616 — SUCCESS`; signed run `37717759648 — SUCCESS`. User supplied focused PHONE `1+ 2+ 3+ 4+`: blank disabled/no read, typing enables, × clears/disables, portrait→landscape→portrait preserves draft without auto-read. Reused theme-aware button visuals; theme-by-theme phone comparison not separately evidenced. No repeated #29 functional tests.
+- #29: URL Snapshot blank input, signed `37717759648`, user PHONE `1+ 2+ 3+ 4+`, CLOSED.
+- #30: local playlist Edit, signed `37711110963`, local name/unchanged linked YTM/Back/keyboard PASS, CLOSED.
+- #40: manual Review URL wrap, clear × and rotation were PHONE `+ всі`; final signed source `b1411e430443f1ca237bf863feed77130d004a5b`, Validate `37785508581` SUCCESS, signed `37791443481` SUCCESS. Screenshot verifies standalone pink `✓ Ручний вибір` on Mezziah and bold Rick Astley replacement versus green automatic track. User accepted visual result; issue CLOSED. The detail/skip/alternate theme weren't separately photographed; skip is JVM/static guarded.
 
-**CURRENT TASK: #40 / UX-039 — Review manual URL readability and manual-selection hierarchy.** Issue: `https://github.com/faric-ua/YTM/issues/40`. Initial source inspection confirms:
-1. `ReviewActivity.showManualUrlDialog()` still calls `setSingleLine(true)` and lacks a clear control for a long URL.
-2. Review list/details present `Ручний вибір:` as subordinate concatenated text; manual status is difficult to distinguish from automatically matched READY state.
+**ACTIVE #58 — Manual-only Review filter.** User asks to see only manually chosen matches among 41 Review tracks. Source `cf1401d666327ba442125e43ce73c44efa28576f` adds visible full-width `✓ Ручні (N)` under existing four, with count and filter using the same `ReviewManualPresentation.isManualChoice` as badge. Manual skipped/automatic matches excluded. Existing Review filter saved state and local-only operation preserved. JVM/static guards, release preflight/catalog/manifest and contract implemented.
 
-**#40 CODE IMPLEMENTED / VALIDATE PASS:** Android source HEAD `3fd6f05ccfdd5af0396c5887419224a774c40963`, Validate Android `37784993012 — SUCCESS` (preflight, #40 audit, JVM, unsigned assemble). Review manual URL now wraps over 2–3 lines with one-tap clear ×. Review list/detail have theme-accent `✓ Ручний вибір` status distinct from original title and more prominent selected replacement; skipped tracks are excluded by pure policy. Native AlertDialog controls, manual lookup and saved draft/track restoration stay unchanged. **NEXT ACTION: validate final docs HEAD, build one exact-HEAD signed APK and run focused #40 PHONE tests** (long URL/×, rotation/draft, no auto-lookup, manual vs auto/skip hierarchy). No repeat of #29/#30.
+**NEXT:** exact-final-HEAD Validate Android SUCCESS → one signed APK → only #58 phone check: manual count/results, `≡ Усі` restore, rotation. Do not rerun #29/#30/#40.
 
 ## Consolidated phone matrix
 

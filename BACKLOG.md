@@ -1267,7 +1267,8 @@ Functional baseline: exact phone-accepted v1.4.54 source
 ### Wave C — local convenience
 - [x] local playlist Edit — #30 PHONE ACCEPTED / CLOSED
 - [x] blank URL inline validation — #29 PHONE PASS / CLOSED
-- [ ] Review manual URL/manual-selection polish — #40 ACTIVE
+- [x] Review manual URL/manual-selection polish — #40 PHONE ACCEPTED / CLOSED
+- [ ] Manual-only Review filter — #58 CURRENT (code ready, PHONE pending)
 - [ ] Bulk preparation presentation/state cleanup
 
 Safety contract:
@@ -1284,4 +1285,5 @@ Master plan:
 
 - [x] #30 / UX-036 Edit current local playlist — **PHONE ACCEPTED / CLOSED**. Dedicated editor, portrait keyboard-safe Save, native landscape extracted text entry, clear/dirty/Back accepted. Earlier exact linked-YTM identity + remote title PHONE PASS are locked; do not repeat without relevant functional change.
 - [x] #29 / UX-035 URL Snapshot blank URL validation — **PHONE PASS / CLOSED 2026-10-08**. Final signed source `a6e8bf2db047fc85f047348b487d37f0936ecb96`; Validate `37715162616` SUCCESS; signed `37717759648` SUCCESS; user `1+ 2+ 3+ 4+` accepted. No repeats without new evidence.
-- [ ] #40 / UX-039 Review manual URL/choice UX — **SOURCE IMPLEMENTED / CI PASS / PHONE PENDING**. Android SHA `3fd6f05ccfdd5af0396c5887419224a774c40963`, Validate `37784993012` SUCCESS, no domain changes.
+- [x] #40 / UX-039 Review manual URL/choice UX — **PHONE ACCEPTED / CLOSED**. Signed `37791443481`, user `+ всі` for URL input; screenshot verifies manual/auto distinction.
+- [ ] #58 manual-only Review filter — **SOURCE IMPLEMENTED / VALIDATE+PHONE PENDING**. `✓ Ручні (N)` with same shared predicate, app SHA `cf1401d666327ba442125e43ce73c44efa28576f`.

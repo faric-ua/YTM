@@ -471,32 +471,21 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-### CLOSED #30 / UX-036 — no-repeat acceptance lock
+### CLOSED ACCEPTED — no regression replays
+- [x] #29 — blank URL Snapshot; signed `37717759648`, user PHONE `1+ 2+ 3+ 4+`, CLOSED.
+- [x] #30 — dedicated playlist Edit; signed `37711110963`, local-only/unchanged YouTube Music/Back and keyboard accepted, CLOSED.
+- [x] #40 — manual Review URL 2–3 lines/clear ×/rotation PHONE `+ всі`; screenshot shows distinct accent `✓ Ручний вибір` and highlighted replacement on the list. Signed source `b1411e430443f1ca237bf863feed77130d004a5b`, exact Validate `37785508581` SUCCESS, signed `37791443481` SUCCESS. User accepted layout; CLOSED. Not every detail/skip/theme case separately phone-photographed.
 
-- [x] Local-only dedicated editor; final source `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`; Validate `37710803622 — SUCCESS`; signed `37711110963 — SUCCESS`.
-- [x] Accumulated PHONE PASS: local rename persistence, YTM linkage/remote-title unchanged, ×, Save enablement, Back/no-save, portrait/landscape user-accepted keyboard UX. GitHub issue #30 CLOSED.
+### ACTIVE #58 — manual-only Review filter
+- [x] New user finding registered as <https://github.com/faric-ua/YTM/issues/58>.
+- [x] Source `cf1401d666327ba442125e43ce73c44efa28576f`: second-row `✓ Ручні (N)` without squeezing original four buttons; count and filter reuse `ReviewManualPresentation.isManualChoice`, skip/auto excluded.
+- [x] Existing `STATE_REVIEW_FILTER` rotation restore and `≡ Усі` preserved; no Search/YTM/API mutations.
+- [x] JVM count test, #58 static audit, updated #40 audit, release preflight, catalog, manifest, contract. Source release preflight and JVM tests PASS in `37794350918`; assemble/final-HEAD pending at this documentation checkpoint.
+- [ ] Exact final HEAD Validate Android PASS and one signed APK.
+- [ ] Focused PHONE: manual count/only manual matches; All restores 41 tracks; active filter survives rotation.
+- [ ] Close #58 after PHONE acceptance; then resume next backlog task.
 
-### CLOSED #29 / UX-035 — URL Snapshot blank input
-
-- [x] Disabled Read for blank/whitespace or while running, reactive text/× updates, explicit click guard and restored draft, without remote read/preview mutation.
-- [x] Pure `UrlSnapshotReadPolicy`, JVM coverage, #29 static preflight audit, generated audit catalog and deterministic file manifest.
-- [x] Exact signed source HEAD `a6e8bf2db047fc85f047348b487d37f0936ecb96`; Validate Android `37715162616 — SUCCESS`; signed APK `37717759648 — SUCCESS`.
-- [x] **PHONE PASS 2026-10-08**, user-reported `1+ 2+ 3+ 4+`: empty input disabled, nonblank enables, × disables, rotation retains draft/no auto-start.
-- [x] GitHub issue #29 CLOSED with phone details. No separate alternate-theme visual evidence; keep that qualification rather than invent a theme QA run.
-
-### CURRENT TASK #40 / UX-039 — Review manual URL and manual-selection hierarchy
-
-- [x] Read live GitHub issue #40 and identify two independent presentation findings.
-- [x] Initial source location: `ReviewActivity.showManualUrlDialog()` uses `EditText.setSingleLine(true)` and no clear control; Review card manually selected text is a lower-emphasis `Ручний вибір:` suffix.
-- [x] Review dialog lifecycle/remote lookup owner, URL Snapshot multiline+× reference and UI window safety; keep changes in Review presentation.
-- [x] Implement 2–3-line wrapped manual URL with clear ×, fixed native AlertDialog actions, separate theme-accent manual status in list/detail with emphasized chosen track and skipped-track protection. PHONE still pending.
-- [x] Pure `ReviewManualPresentation` JVM tests, targeted #40 audit invoked by release preflight, UX contract, generated audit catalog and file manifest.
-- [x] Android code source `3fd6f05ccfdd5af0396c5887419224a774c40963` validated: `37784993012 — SUCCESS` (preflight/JVM/assemble).
-- [ ] Exact-final-documentation-HEAD Validate Android PASS before one signed candidate.
-- [ ] Focused PHONE acceptance on the two #40 UI issues. No repeat of #29/#30 accepted matrices.
-- [ ] Close #40 only on acceptance; then inspect Phase C #27/#28.
-
-**NEXT ACTION: exact-final-HEAD Validate PASS → one signed APK → focused #40 PHONE acceptance. No #29/#30 retesting.**
+**NEXT ACTION: validate final docs HEAD, one signed APK, and scoped #58 phone test. No #40/#29/#30 repeats.**
 
 ## Update rule
 

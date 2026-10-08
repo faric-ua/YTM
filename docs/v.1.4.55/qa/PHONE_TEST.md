@@ -679,7 +679,7 @@ User explicitly reported **`1+ 2+ 3+ 4+`** for focused #29 phone smoke:
 
 The screenshots supplied in the same turn show GitHub Codespace Source Control with no visible uncommitted changes; they do **not** directly depict the YTM URL Snapshot screen. These four results are **user-reported phone evidence**, not screenshot-verifiable UI observations. Exact-theme Neon/Blue/Green manual comparison was not separately reported; existing theme-aware styling remained unchanged. Full unrelated feature matrix is unnecessary. GitHub #29 CLOSED. **Do not repeat #29 or #30 without an owner change/new contradictory evidence.**
 
-### #40 CURRENT NEXT FOCUSED QA — NOT YET IMPLEMENTED
+### #40 HISTORICAL PRE-IMPLEMENTATION QA (superseded)
 
 Two new Review UI presentation concerns only: multiline inspectable manual URL field with clear button; clear visible distinction between automatic match and a manually overridden track. Do not ask for #40 phone work until source/Validate/signed candidate is ready.
 
@@ -693,3 +693,18 @@ Android code source `3fd6f05ccfdd5af0396c5887419224a774c40963`, Validate Android
 - [x] Existing manual dialog draft/track rotation restoration and only-explicit-lookup route preserved.
 - [ ] **PHONE NOT TESTED:** long URL/×, keyboard and rotation, Cancel, manual/automatic/skip visual difference, Neon and alternate skin.
 - [ ] Exact final docs HEAD Validate + signed APK pending. Do not repeat #29/#30.
+
+
+### #40 FINAL PHONE ACCEPTANCE — CLOSED 2026-10-08
+
+Signed app `b1411e430443f1ca237bf863feed77130d004a5b`, Validate `37785508581` SUCCESS, signed `37791443481` SUCCESS. User `+ всі` for URL wrapping, × clear and rotation. Screenshot confirms separate accent `✓ Ручний вибір` for Mezziah and prominent Rick Astley replacement alongside ordinary automatic matches. User accepted layout. No repeat. Track detail/manual skip/alternate theme are not separately screenshot-tested; skip is JVM/static guarded.
+
+### #58 NEW FILTER — SOURCE READY, PHONE PENDING
+
+App source `cf1401d666327ba442125e43ce73c44efa28576f` adds visible `✓ Ручні (N)` full-width filter. N and local filtering reuse exact manual badge predicate.
+
+- [ ] Tap `✓ Ручні (N)`: only manual choices shown, count correct (may be 1 in pictured 41-track playlist).
+- [ ] Tap `≡ Усі`: full 41-track list restored.
+- [ ] Rotate portrait→landscape→portrait with manual filter active: filter remains, no auto Search/write.
+
+Do not rerun #29/#30/#40 accepted tests.

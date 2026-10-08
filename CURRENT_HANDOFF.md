@@ -76,13 +76,11 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-**Completed #30 — CLOSED / PHONE ACCEPTED 2026-10-08:** dedicated local playlist Edit; final signed code `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`, Validate `37710803622` SUCCESS, signed `37711110963` SUCCESS. Store/localPlaylistId/source/track/YTM identity, unchanged remote YouTube Music title and clear/dirty/Back/keyboard UX are accepted. Do not retest without a relevant owner change or new evidence.
+**CLOSED / ACCEPTED** #29/#30/#40. No repeat QA. #29 signed `37717759648`, user PHONE `1+ 2+ 3+ 4+`; #30 signed `37711110963`, accepted local-only Editor including YTM remote-title unchanged. #40 signed `37791443481`, user PHONE `+ всі` long Review URL/×/rotation; screenshot verifies separate accent `✓ Ручний вибір` status and prominent manually chosen replacement compared with automatic match. #40 GitHub CLOSED. Detail/skip/alternate skin phone visuals not individually provided; skip is tested in JVM/static.
 
-**Completed #29 — CLOSED / PHONE PASS 2026-10-08:** final source `a6e8bf2db047fc85f047348b487d37f0936ecb96`, Validate `37715162616` SUCCESS, signed `37717759648` SUCCESS. Phone report `1+ 2+ 3+ 4+`: blank URL disabled, entering text enables, × clears/disables, portrait→landscape→portrait preserves draft/no automatic read. Native theme-aware button styling reused, but no independently recorded Neon/Blue/Green side-by-side phone results. #29 test must not be rerun just to move to unrelated work.
+**ACTIVE #58** `https://github.com/faric-ua/YTM/issues/58` — local manual-selection filter. App code `cf1401d666327ba442125e43ce73c44efa28576f` adds full-width `✓ Ручні (N)` row following four existing Review filters. `ReviewManualPresentation.isManualChoice` drives count/badge/filter (manual skip and automatic match excluded). Existing Review saved-filter rotation state and `≡ Усі` semantics preserved; no remote/Search/Bulk/History/write changes. #58 JVM/static regression checks and contract/preflight/catalog added.
 
-**ACTIVE #40 / UX-039 CODE COMPLETE / CI PASS:** app source `3fd6f05ccfdd5af0396c5887419224a774c40963`, Validate Android `37784993012 — SUCCESS`. Review manual URL dialog now uses themed 2–3 line wrapping input and clear ×, with same AlertDialog fixed actions and saved draft+target. Review list/detail now distinguish `✓ Ручний вибір` separately, emphasize selected replacement, and do not mark skipped/no selected title as manual success. Pure policy JVM, static audit/preflight, catalog, manifest and contract added. Domain owner ReviewRemoteOperations/Search/Bulk/History/YTM unchanged. **Next:** exact final docs HEAD Validate → signed build → focused #40 PHONE acceptance (no #29/#30 retest).
-
-**Separate user environment:** GitHub Codespace `orange space enigma` for `faric-ua/YTM` on `main` is near its inactivity expiration; phone screenshots show empty Source Control Changes. Codespace deletion is not a branch/repository deletion. Absence of uncommitted changes is visible but unpushed local commits were not conclusively checked. This is not a YTM release gate.
+**NEXT:** exact-final-head Validate PASS, signed build, minimal user PHONE for manual-only count/list, All restore, rotation. #58 still OPEN / PHONE PENDING. Codespace was deleted by user and needs no attention.
 
 ## Immutable functional reference
 

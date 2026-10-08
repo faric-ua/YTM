@@ -601,7 +601,7 @@ App source `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095` implements blank/whitespac
 
 Final exact source `a6e8bf2db047fc85f047348b487d37f0936ecb96`; Validate `37715162616 — SUCCESS`; signed `37717759648 — SUCCESS`. User-reported PHONE `1+ 2+ 3+ 4+`: blank URL Read disabled, typing enables, × clears/disables, rotation preserves draft with no auto-read. GitHub issue #29 CLOSED. Previous source/failing Validate checkpoints above are history only and superseded. No further #29 testing without contradictory evidence or a protected owner change. Theme-specific phone comparison was not separately verified.
 
-## CURRENT NEXT — #40 / UX-039 Review manual URL and manual override hierarchy
+## HISTORICAL NEXT — #40 / UX-039 (now CLOSED)
 
 Problem A: Review manual URL dialog currently uses a single-line EditText with no one-tap clear; long URL cannot be inspected comfortably. Problem B: manual override status `Ручний вибір:` is low-emphasis concatenated detail, indistinguishable at a glance from an automatically matched READY card. Work is presentation-only; preserve ReviewRemoteOperations manual lookup API, track identity, Search/Bulk behavior and state restoration. Next inspect focused UI owners, implement, static/Validate, one signed PHONE slice. #29/#30 remain closed.
 
@@ -609,3 +609,8 @@ Problem A: Review manual URL dialog currently uses a single-line EditText with n
 ## #40 / UX-039 source validated (2026-10-08)
 
 Android code `3fd6f05ccfdd5af0396c5887419224a774c40963`, Validate Android `37784993012 — SUCCESS`. Review URL input now multiline+×, manual selected status appears distinctly from original name/list/detail and skipped manual tracks do not get false success. JVM policy and static audit/preflight, catalog, UX contract done. **Real-phone acceptance and signed final HEAD pending.** Search/Bulk/History/YTM remote owner unchanged, #29/#30 closed.
+
+
+## #40 PHONE CLOSED and #58 CURRENT — 2026-10-08
+
+#40 accepted: signed `37791443481`, user PHONE `+ всі` for manual URL/clear/rotation, screenshot proves manual badge and bold replacement versus automatic matches. #40 CLOSED, with no repeat. New finding #58 is distinct: Review lacks manual-only filter. Source `cf1401d666327ba442125e43ce73c44efa28576f` adds full-width `✓ Ручні (N)` using one shared manual-status predicate; existing four filters and rotation state retained. Static/JVM audits added; exact final HEAD Validate, signed build and focused PHONE still pending.
