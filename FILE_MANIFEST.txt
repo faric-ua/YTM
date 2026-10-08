@@ -107,7 +107,7 @@ be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
-088d30cebc159efb  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
+cb4089db9efe0671  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 5c565252917f725e  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 562db04bb216f33f  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
 8923bc28bad4dcbe  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
@@ -140,6 +140,7 @@ eed8894e069f7add  app/src/main/java/com/saney/ytmimporter/model/HistoryLogicalGr
 3b490140eb947377  app/src/main/java/com/saney/ytmimporter/parser/PlaylistParser.kt
 5386fcfb32f2cd76  app/src/main/java/com/saney/ytmimporter/recovery/RecoveryCenterPolicy.kt
 4774a721f5982e6d  app/src/main/java/com/saney/ytmimporter/recovery/RecoveryCenterSource.kt
+651b142c6cedb11f  app/src/main/java/com/saney/ytmimporter/review/ReviewManualPresentation.kt
 a2c5e210bdc20489  app/src/main/java/com/saney/ytmimporter/review/ReviewRemoteOperations.kt
 4d8c41475537ec61  app/src/main/java/com/saney/ytmimporter/search/SearchCoordinator.kt
 f94cbe33bfd389c4  app/src/main/java/com/saney/ytmimporter/search/SearchRecoveryCoordinator.kt
@@ -240,6 +241,7 @@ ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecover
 29f87967faf1d2b9  app/src/test/java/com/saney/ytmimporter/model/LocalPlaylistEditPolicyTest.kt
 06275431c3a23596  app/src/test/java/com/saney/ytmimporter/model/PlaylistLinkagePolicyTest.kt
 28f601a5358ea777  app/src/test/java/com/saney/ytmimporter/recovery/RecoveryCenterPolicyTest.kt
+4104901351627464  app/src/test/java/com/saney/ytmimporter/review/ReviewManualPresentationTest.kt
 e2c34610a3853bc3  app/src/test/java/com/saney/ytmimporter/search/SearchRecoveryPolicyTest.kt
 a5cfdda45ea01b81  app/src/test/java/com/saney/ytmimporter/storage/QuotaMathTest.kt
 831c1373b7e7beea  app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactClassificationCacheTest.kt
@@ -261,7 +263,7 @@ c046586be53a0584  artifacts/README.md
 3c8c6e273019f706  docs/HANDOFF_HARDENING_2026-09-17.md
 da6db67c9017a470  docs/README.md
 bb063331c071e088  docs/WORKFLOW_LESSONS.md
-93728c39dc111443  docs/assistant-kit/AUDIT_CATALOG.md
+bd4714dcb4f66283  docs/assistant-kit/AUDIT_CATALOG.md
 131ff62755c72a02  docs/assistant-kit/CONTEXT_FILES.txt
 b6a9a300bb8d0d5e  docs/assistant-kit/PORTABLE_AUDITS.txt
 b07c7177d0a2b73e  docs/assistant-kit/README.md
@@ -1516,6 +1518,7 @@ c0ca1dd903f31f86  docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md
 ad349ab098f5763e  docs/v.1.4.55/REGRESSION_CHECKLIST.md
 b67036413f2dc72a  docs/v.1.4.55/RELEASE.md
 5e2de2eb27025c40  docs/v.1.4.55/RELEASE_META.json
+eebcaf0739dc93f2  docs/v.1.4.55/REVIEW_MANUAL_URL_UX_CONTRACT.md
 06ebfb93568eb5ef  docs/v.1.4.55/SLEEP_CHECKPOINT_2026-10-01.md
 8bbb1622059f0ed3  docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md
 1748ec22ea8ca1fa  docs/v.1.4.55/TERMUX_OPERATOR_MENU_CONTRACT.md
@@ -1635,7 +1638,7 @@ dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
 34a319998981b650  scripts/release-close-audit.sh
 9c01ad273ef823e6  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-72494b4bbf3ca2d0  scripts/release-preflight.sh
+19d3e3ac751b6702  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1778,6 +1781,7 @@ d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
 6b0f6c7591ef61c5  scripts/v1455-file-library-audit.sh
 54acd2ffe8682685  scripts/v1455-local-playlist-edit-regression-audit.sh
+f16840eab06768be  scripts/v1455-review-manual-ux-audit.sh
 f2a3a8fc068701c4  scripts/v1455-termux-operator-menu-audit.sh
 a3b628d5213feb9a  scripts/v1455-url-blank-input-audit.sh
 fdc8f2f95d8ce093  scripts/v1455-ux-hardening-audit.sh

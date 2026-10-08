@@ -5,7 +5,7 @@ This file is generated from the repository audit scripts.
 Do not hand-edit the inventory; update scripts or
 `docs/assistant-kit/PORTABLE_AUDITS.txt`, then regenerate.
 
-Total audit scripts: **121**
+Total audit scripts: **122**
 
 ## Portable/system subset
 
@@ -176,6 +176,7 @@ contracts.
 - `scripts/v1454-wave4-rollback-audit.sh`
 - `scripts/v1455-file-library-audit.sh`
 - `scripts/v1455-local-playlist-edit-regression-audit.sh`
+- `scripts/v1455-review-manual-ux-audit.sh`
 - `scripts/v1455-termux-operator-menu-audit.sh`
 - `scripts/v1455-url-blank-input-audit.sh`
 - `scripts/v1455-ux-hardening-audit.sh`

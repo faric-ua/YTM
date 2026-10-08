@@ -12,6 +12,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.text.InputType
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.view.Gravity
@@ -21,6 +22,8 @@ import android.widget.AbsListView
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.ProgressBar
@@ -31,6 +34,7 @@ import androidx.core.content.FileProvider
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
+import com.saney.ytmimporter.review.ReviewManualPresentation
 import com.saney.ytmimporter.review.ReviewRemoteOperations
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
@@ -890,81 +894,68 @@ class ReviewActivity : Activity() {
                 )
             }
 
+        val hasManualChoice =
+            ReviewManualPresentation.isManualChoice(
+                manuallySelected = track.manuallySelected,
+                selectedTitle = track.selectedTitle
+            )
+        val palette = AppThemeManager.palette(this)
+
         content.addView(
             card().apply {
                 addView(
-                    TextView(
-                        this@ReviewActivity
-                    ).apply {
+                    TextView(this@ReviewActivity).apply {
                         text =
-                            statusLabel(track)
+                            if (hasManualChoice) {
+                                ReviewManualPresentation.STATUS_LABEL
+                            } else {
+                                statusLabel(track)
+                            }
                         textSize = 17f
                         setTextColor(
-                            statusColor(
-                                track.status
-                            )
+                            if (hasManualChoice) palette.accent
+                            else statusColor(track.status)
                         )
-                        setTypeface(
-                            typeface,
-                            Typeface.BOLD
-                        )
+                        setTypeface(typeface, Typeface.BOLD)
                     }
                 )
-
                 addView(
                     infoText(
                         buildString {
-                            append(
-                                "Оригінал:\n"
-                            )
-                            append(
-                                track.originalArtist
-                            )
+                            append("Оригінал:\n")
+                            append(track.originalArtist)
                             append(" — ")
-                            append(
-                                track.originalTitle
-                            )
-
-                            if (
-                                !track.selectedTitle
-                                    .isNullOrBlank()
-                            ) {
-                                append(
-                                    if (track.manuallySelected) {
-                                        "\n\nРучний вибір:\n"
-                                    } else {
-                                        "\n\nЗнайдено:\n"
-                                    }
-                                )
-                                append(
-                                    track.selectedTitle
-                                )
-
-                                if (
-                                    !track.selectedChannel
-                                        .isNullOrBlank()
-                                ) {
+                            append(track.originalTitle)
+                            if (!hasManualChoice && !track.selectedTitle.isNullOrBlank()) {
+                                append("\n\nЗнайдено:\n")
+                                append(track.selectedTitle)
+                                if (!track.selectedChannel.isNullOrBlank()) {
                                     append("\n")
-                                    append(
-                                        track.selectedChannel
-                                    )
+                                    append(track.selectedChannel)
                                 }
                             }
-
-                            if (
-                                !track.error
-                                    .isNullOrBlank()
-                            ) {
-                                append(
-                                    "\n\nПомилка:\n"
-                                )
-                                append(
-                                    track.error
-                                )
+                            if (!track.error.isNullOrBlank()) {
+                                append("\n\nПомилка:\n")
+                                append(track.error)
                             }
                         }
                     )
                 )
+                if (hasManualChoice) {
+                    addView(
+                        TextView(this@ReviewActivity).apply {
+                            text = track.selectedTitle
+                            textSize = 16f
+                            setTextColor(palette.text)
+                            setTypeface(typeface, Typeface.BOLD)
+                            setPadding(dp(2), dp(8), dp(2), dp(2))
+                            setTextIsSelectable(true)
+                        }
+                    )
+                    if (!track.selectedChannel.isNullOrBlank()) {
+                        addView(infoText(track.selectedChannel.orEmpty()))
+                    }
+                }
             }
         )
 
@@ -1216,19 +1207,62 @@ class ReviewActivity : Activity() {
         manualUrlHistoryIndex =
             track.historyIndex
 
+        val palette = AppThemeManager.palette(this)
         val input =
             EditText(this).apply {
-                hint =
-                    "https://music.youtube.com/watch?v=…"
-                setSingleLine(true)
-                setPadding(
-                    dp(14),
-                    dp(8),
-                    dp(14),
-                    dp(8)
-                )
+                hint = "https://music.youtube.com/watch?v=…"
+                setSingleLine(false)
+                setHorizontallyScrolling(false)
+                minLines = 2
+                maxLines = 3
+                gravity = Gravity.TOP or Gravity.START
+                inputType =
+                    InputType.TYPE_CLASS_TEXT or
+                        InputType.TYPE_TEXT_VARIATION_URI or
+                        InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                textSize = 15f
+                setTextColor(palette.text)
+                setHintTextColor(palette.mutedDim)
+                setPadding(dp(12), dp(12), dp(52), dp(12))
+                background =
+                    AppThemeManager.surfaceDrawable(
+                        context = this@ReviewActivity,
+                        fill = palette.surfaceAlt,
+                        radiusDp = 10,
+                        accentStroke = true
+                    )
                 setText(restoredValue)
                 setSelection(text.length)
+            }
+
+        val urlField =
+            FrameLayout(this).apply {
+                addView(
+                    input,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                )
+                addView(
+                    ImageButton(this@ReviewActivity).apply {
+                        contentDescription = "Очистити URL"
+                        setImageResource(R.drawable.ic_ytm_clear)
+                        setColorFilter(palette.muted)
+                        background = null
+                        setPadding(dp(10), dp(10), dp(10), dp(10))
+                        setOnClickListener {
+                            input.setText("")
+                            manualUrlDraft = ""
+                            input.requestFocus()
+                        }
+                    },
+                    FrameLayout.LayoutParams(
+                        dp(44),
+                        dp(44),
+                        Gravity.END or Gravity.CENTER_VERTICAL
+                    )
+                )
             }
 
         manualUrlInput = input
@@ -1243,7 +1277,7 @@ class ReviewActivity : Activity() {
                     "YTM Importer отримає реальну назву та канал через YouTube API " +
                         "і залишиться на екрані перевірки цього треку."
                 )
-                .setView(input)
+                .setView(urlField)
                 .setNegativeButton(
                     "Скасувати",
                     null
@@ -2551,58 +2585,49 @@ class ReviewActivity : Activity() {
                     LinearLayout
                     ?: createRow()
 
-            val title =
-                row.getChildAt(0)
-                    as TextView
-
-            val meta =
-                row.getChildAt(1)
-                    as TextView
+            val title = row.getChildAt(0) as TextView
+            val manualStatus = row.getChildAt(1) as TextView
+            val meta = row.getChildAt(2) as TextView
+            val manualChoice =
+                ReviewManualPresentation.isManualChoice(
+                    manuallySelected = track.manuallySelected,
+                    selectedTitle = track.selectedTitle
+                )
+            val palette = AppThemeManager.palette(this@ReviewActivity)
 
             title.text =
-                "${statusGlyph(track.status)} " +
-                    "${track.originalArtist} — " +
-                    track.originalTitle
-
+                (if (manualChoice) "" else "${statusGlyph(track.status)} ") +
+                    "${track.originalArtist} — " + track.originalTitle
             title.setTextColor(
-                statusColor(
-                    track.status
-                )
+                if (manualChoice) palette.text
+                else statusColor(track.status)
             )
+            manualStatus.visibility =
+                if (manualChoice) View.VISIBLE else View.GONE
+            manualStatus.text = ReviewManualPresentation.STATUS_LABEL
+            manualStatus.setTextColor(palette.accent)
 
             meta.text =
                 when {
-                    !track.selectedTitle
-                        .isNullOrBlank() ->
+                    !track.selectedTitle.isNullOrBlank() ->
                         buildString {
-                            if (track.manuallySelected) {
-                                append("Ручний вибір: ")
-                            } else {
-                                append("Знайдено: ")
-                            }
-
-                            append(
-                                track.selectedTitle
-                            )
-
-                            if (
-                                !track.selectedChannel
-                                    .isNullOrBlank()
-                            ) {
+                            if (!manualChoice) append("Знайдено: ")
+                            append(track.selectedTitle)
+                            if (!track.selectedChannel.isNullOrBlank()) {
                                 append(" • ")
-                                append(
-                                    track.selectedChannel
-                                )
+                                append(track.selectedChannel)
                             }
                         }
-
-                    !track.error
-                        .isNullOrBlank() ->
-                        track.error
-
-                    else ->
-                        "Кандидат ще не вибрано"
+                    !track.error.isNullOrBlank() -> track.error
+                    else -> "Кандидат ще не вибрано"
                 }
+            meta.setTextColor(
+                if (manualChoice) palette.text else palette.muted
+            )
+            meta.setTypeface(
+                null,
+                if (manualChoice) Typeface.BOLD else Typeface.NORMAL
+            )
 
             return row
         }
@@ -2642,6 +2667,25 @@ class ReviewActivity : Activity() {
                             Typeface.BOLD
                         )
                         maxLines = 2
+                    }
+                )
+
+                addView(
+                    TextView(this@ReviewActivity).apply {
+                        text = ReviewManualPresentation.STATUS_LABEL
+                        textSize = 13f
+                        setTypeface(typeface, Typeface.BOLD)
+                        setTextColor(AppThemeManager.palette(this@ReviewActivity).accent)
+                        setPadding(dp(10), dp(6), dp(10), dp(6))
+                        background =
+                            AppThemeManager.surfaceDrawable(
+                                context = this@ReviewActivity,
+                                fill = AppThemeManager.palette(this@ReviewActivity).surfaceAlt,
+                                radiusDp = 10,
+                                accentStroke = true,
+                                accentOverride = AppThemeManager.palette(this@ReviewActivity).accent
+                            )
+                        visibility = View.GONE
                     }
                 )
 
