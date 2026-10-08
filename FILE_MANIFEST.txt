@@ -8,7 +8,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 841ac3888017a23d  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-5853235bbcd7f53d  ACTIVE_PLAN.md
+53e448dbba8c8fbd  ACTIVE_PLAN.md
 b19ca08e573c19c6  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -17,7 +17,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
 e23203ace730f01e  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
-f8a7c772049e8659  CURRENT_HANDOFF.md
+585b444691967c65  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -29,7 +29,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-16ee71d92454ca97  RESUME_HERE.md
+3d581ffc073c464f  RESUME_HERE.md
 07e29aacf2f1f66a  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -96,7 +96,7 @@ bb141a21da2e23bb  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivit
 e8f9b88b6124d64b  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 0af4ad581bd9e32c  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 4da09cca8fb23e0b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
-04308d3f0009105d  app/src/main/java/com/saney/ytmimporter/EditPlaylistActivity.kt
+26e235d6d47f5d97  app/src/main/java/com/saney/ytmimporter/EditPlaylistActivity.kt
 a25d17ce55fe6774  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 e1d371ab53cffd83  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
@@ -1508,7 +1508,7 @@ bf8554506baff159  docs/v.1.4.55/BULK_HIERARCHY_AUDIT_2026-09-30.md
 2b783092a8099b3c  docs/v.1.4.55/DESTRUCTIVE_CONFIRMATION_AUDIT_2026-09-30.md
 4d4bd7e63ea43833  docs/v.1.4.55/FILE_LIBRARY_AUDIT_2026-10-05.md
 1a53d2d5629f8595  docs/v.1.4.55/FILE_LIBRARY_CONTRACT.md
-b2d0b0762a8eb042  docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_CONTRACT.md
+80504b6ec7e9f61b  docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_CONTRACT.md
 575f6a232efff63e  docs/v.1.4.55/LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md
 c0ca1dd903f31f86  docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md
 ad349ab098f5763e  docs/v.1.4.55/REGRESSION_CHECKLIST.md
@@ -1523,7 +1523,7 @@ c704c86772b65f8c  docs/v.1.4.55/diagrams/README.md
 27a15b16ec816765  docs/v.1.4.55/diagrams/UX_HARDENING_FLOW.md
 fc65b287a8cf23e1  docs/v.1.4.55/qa/BUG_REGISTER.md
 febf3fbcd4f5c8e5  docs/v.1.4.55/qa/EVIDENCE_MANIFEST.md
-f8c3dd5b4f8a3f24  docs/v.1.4.55/qa/PHONE_TEST.md
+d35a71587097f024  docs/v.1.4.55/qa/PHONE_TEST.md
 91953c8f5c13af7d  docs/v.1.4.6/REGRESSION_CHECKLIST.md
 b19a7931871c062d  docs/v.1.4.6/RELEASE.md
 34feef4923c89b09  docs/v.1.4.6/diagrams/ACTION_HIERARCHY.md
@@ -1774,7 +1774,7 @@ d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 2e29e655a94f3422  scripts/v1454-wave0-write-limit-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
 6b0f6c7591ef61c5  scripts/v1455-file-library-audit.sh
-3df451ff4a109fa3  scripts/v1455-local-playlist-edit-regression-audit.sh
+54acd2ffe8682685  scripts/v1455-local-playlist-edit-regression-audit.sh
 f2a3a8fc068701c4  scripts/v1455-termux-operator-menu-audit.sh
 fdc8f2f95d8ce093  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts

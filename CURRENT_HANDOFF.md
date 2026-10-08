@@ -72,15 +72,15 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#30 dedicated edit screen R3 has progressed to exact-HEAD signed PHONE screenshots:
-- R3 source `cb0e32414018afbf3ec2f129802430699fbc36f2`;
-- exact Validate `37701892983 — SUCCESS`;
-- signed build `37707129541 — SUCCESS`;
-- portrait and landscape layouts with keyboard hidden: accepted.
+#30 R3 signed keyboard-inset candidate: app HEAD `1591fcabc23840667d7353ffbde7abf96dff2d8c`; Validate `37709460440 — SUCCESS`; signed `37710164131 — SUCCESS`.
 
-**New R3 IME finding 2026-10-08 — phone UX FAIL:** portrait keyboard obscures the fixed Save footer; landscape keyboard switches to Android's fullscreen extracted editor. Localize correction to EditPlaylistActivity: include IME in root insets, set IME_FLAG_NO_EXTRACT_UI. Do not modify shared UiChrome behavior or local/remote storage operations.
+Phone 2026-10-08:
+- portrait + keyboard: **PASS** — local name and × visible, primary Save clearly above IME;
+- landscape + keyboard: **FAIL** — with NO_EXTRACT_UI, Samsung split keyboard compresses the dedicated editor to a thin strip.
 
-Next: exact HEAD Validate for this corrective commit → one signed APK → short portrait/landscape keyboard-visible PHONE retest → remaining tiny editor controls → close #30 only after phone evidence. Previously accepted #30 functional rename/persistence/YTM identity and remote-title baseline remains locked.
+User explicitly chose to use Android's native fullscreen extracted text input for landscape. Restore it by removing only `IME_FLAG_NO_EXTRACT_UI` from `EditPlaylistActivity` while retaining `includeIme = true` for portrait keyboard-safe Save and all accepted domain behavior. Update #30 audit/contract/phone findings/resume documents and the deterministic file manifest.
+
+**Next:** exact-new-HEAD Validate → one signed APK → portrait and landscape keyboard-focused phone smoke → remaining few editor checks → close #30 only if PASS. Do not repeat full functional baseline or change `UiChrome` shared defaults.
 
 ## Immutable functional reference
 

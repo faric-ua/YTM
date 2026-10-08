@@ -296,8 +296,7 @@ class EditPlaylistActivity :
                         InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
                         InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 imeOptions =
-                    EditorInfo.IME_ACTION_DONE or
-                        EditorInfo.IME_FLAG_NO_EXTRACT_UI
+                    EditorInfo.IME_ACTION_DONE
                 setSingleLine(
                     false
                 )

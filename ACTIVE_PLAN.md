@@ -471,18 +471,18 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**#30 R3 IME corrective (2026-10-08):**
+**#30 R3 landscape IME correction (2026-10-08)**
 
-- [x] Exact R3 signed build `37707129541` (HEAD `cb0e32414018afbf3ec2f129802430699fbc36f2`) verified SUCCESS.
-- [x] IME-hidden portrait and landscape screenshots accepted as focused presentation PASS.
-- [x] IME-visible screenshots identify portrait hidden Save footer and landscape Android extracted text mode; **phone UX FAIL**.
-- [x] Source cause identified: edge-to-edge screen requests system-bar insets but not IME, and input lacks NO_EXTRACT flag.
-- [ ] Verify corrective source/guards/manifest on a single GitHub commit and exact-HEAD Validate Android PASS.
-- [ ] Build one signed APK from that exact validated HEAD; download/install on phone.
-- [ ] Focused PHONE retest: portrait keyboard + visible/reachable Save; landscape keyboard without extracted fullscreen and with reachable editor controls; normal state after keyboard hide.
-- [ ] Check clear ×, dirty/valid Save state, Back=no-save and linked YTM read-only presentation; close #30 only after the R3 screen has been accepted.
+- [x] Built/verified exact-HEAD keyboard-inset R3 candidate: `1591fcabc23840667d7353ffbde7abf96dff2d8c`, Validate `37709460440 — SUCCESS`, signed `37710164131 — SUCCESS`.
+- [x] Portrait IME + editor input + clear affordance + fixed Save above keyboard — **PHONE presentation PASS**; unchanged Save remains disabled.
+- [x] Landscape IME + in-place editor — **PHONE UX FAIL**: screen squeezed and text clipped. User approves return to Android's native fullscreen extracted text editor in landscape.
+- [x] Remove editor-local `IME_FLAG_NO_EXTRACT_UI`; retain editor-local `includeIme = true`, `IME_ACTION_DONE` and unchanged core ownership. Update static guards/contract/phone findings.
+- [ ] Exact new GitHub HEAD Validate Android must PASS (release-preflight, JVM, unsigned assemble).
+- [ ] Build/download/install one new signed APK for that exact HEAD.
+- [ ] Phone: portrait keyboard regression remains PASS, landscape fullscreen native editor is readable and returns to the dedicated Edit page.
+- [ ] Finish × clear, dirty/valid Save, Back no-save and linked YTM read-only smoke; close #30 only on phone acceptance.
 
-Accepted functional phone baseline for rename/persistence/identity/linkage/remote safety is unchanged and is **not** repeated. No stable release or unrelated feature work yet.
+Do not repeat the accepted full functional rename/persistence/remote YTM identity matrix; it remains protected. No unrelated UI or stable-release actions.
 
 ## Update rule
 

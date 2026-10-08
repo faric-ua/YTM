@@ -54,10 +54,19 @@ grep -Fq 'R.drawable.ic_ytm_clear' "$EDITOR" ||
   fail "#30 one-tap clear icon missing"
 grep -Fq 'nameInput.setText("")' "$EDITOR" ||
   fail "#30 one-tap clear no longer clears full draft"
-grep -Fq 'EditorInfo.IME_FLAG_NO_EXTRACT_UI' "$EDITOR" ||
-  fail "#30 landscape editor can regress to extracted IME full-screen"
-grep -Eq 'includeIme[[:space:]]*=' "$EDITOR" ||
-  fail "#30 edge-to-edge editor no longer accounts for IME insets"
+if grep -Fq 'EditorInfo.IME_FLAG_NO_EXTRACT_UI' "$EDITOR"; then
+  fail "#30 landscape editor must allow the Android extracted full-screen keyboard"
+fi
+grep -Fq 'EditorInfo.IME_ACTION_DONE' "$EDITOR" ||
+  fail "#30 keyboard Done action disappeared"
+python - "$EDITOR" <<'PY_IME_INSETS'
+from pathlib import Path
+import re
+import sys
+editor = Path(sys.argv[1]).read_text(encoding='utf-8')
+if not re.search(r'includeIme\s*=\s*true', editor):
+    raise SystemExit('FAIL: #30 portrait editor must consume IME insets')
+PY_IME_INSETS
 grep -Fq 'saveButton.isEnabled =' "$EDITOR" ||
   fail "#30 Save dirty/valid state owner missing"
 grep -Fq 'normalized !=' "$EDITOR" ||

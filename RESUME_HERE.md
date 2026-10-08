@@ -87,17 +87,17 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-Current task: **#30 R3 keyboard-on corrective candidate**.
+Current task: **#30 R3 landscape keyboard UX correction**.
 
-Accepted code/CI baseline:
-- R3 dedicated edit screen signed HEAD `cb0e32414018afbf3ec2f129802430699fbc36f2`.
-- Validate `37701892983 — SUCCESS` and signed build `37707129541 — SUCCESS`.
-- Portrait/landscape with IME hidden: phone screenshots acceptable; Save disabled for unchanged title.
-- With IME shown: phone UX **FAIL** — portrait Save footer hidden behind keyboard; landscape Samsung/Android IME switches to fullscreen extracted text editor.
+Last phone candidate:
+- source `1591fcabc23840667d7353ffbde7abf96dff2d8c`;
+- exact Validate `37709460440 — SUCCESS`, signed `37710164131 — SUCCESS`;
+- portrait + keyboard: **PHONE presentation PASS**, Save visible directly above IME;
+- landscape + keyboard: **PHONE UX FAIL**, editor compressed to a very thin strip.
 
-Current work: editor-local `includeIme = true` in root inset request and `IME_FLAG_NO_EXTRACT_UI` on the name input; regression script/QA docs updated. Protected rename/store/YTM/History owners untouched.
+User chose to restore the native Android fullscreen extracted text editor for landscape rather than fight the landscape IME geometry. New change is editor-local only: remove `IME_FLAG_NO_EXTRACT_UI`, preserve `includeIme = true` and all previously accepted functional/remote-safety behavior. Static regression script and findings are updated.
 
-**NEXT ACTION:** verify the new corrective GitHub HEAD and its Validate result. If Validate succeeds, build one signed APK from that exact HEAD using the YTM Termux operator menu; phone-test portrait and landscape keyboard-open reachability only. If Validate fails, fix the source first. Never mark PHONE PASS from CI alone. #30 stays open until the IME-visible screen passes and the remaining small UI interactions are confirmed.
+**NEXT ACTION:** wait for exact-new-HEAD Validate Android PASS; then build signed APK from that exact HEAD using the YTM Termux operator menu; phone-test portrait keyboard retained PASS + landscape native extracted editor + return to the app editor. Then finish the few remaining UI actions. **Do not close #30 before phone acceptance.**
 
 ## Consolidated phone matrix
 

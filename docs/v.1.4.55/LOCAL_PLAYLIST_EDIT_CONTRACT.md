@@ -191,3 +191,13 @@ Corrective candidate is editor-local only:
 - No edit policy, playlist store, YTM linkage, History, Search, write, or remote operation is changed.
 
 Focused next PHONE acceptance: keyboard visible in portrait and landscape, field/clear/Save reachable above the keyboard or through the screen's scrollable content, no fullscreen extract takeover, keyboard dismissal leaves the correct disabled/dirty Save state. Existing accepted functional rename/identity/remote-title baseline is carried forward.
+
+## R3 phone correction — landscape system extract UI restored (2026-10-08)
+
+Signed keyboard-inset candidate `1591fcabc23840667d7353ffbde7abf96dff2d8c` passed Validate `37709460440` and signed build `37710164131`. Real-phone screenshots confirm **portrait + IME PASS for Save reachability**: the primary Save button is above the keyboard, and the name field and clear control are visible.
+
+**Landscape + IME UX FAIL:** the no-extract keyboard setting leaves an impractically short strip of the app editor visible between the header and wide landscape keyboard. The primary Save is reachable but the editable field/copy are crushed.
+
+Updated product decision: prefer native Android fullscreen extracted text input in landscape, while keeping the conventional in-place IME/Save layout in portrait. This is an intentional landscape UX exception to the in-place editing preference; it does not reopen the rejected modal editor design. Remove only `IME_FLAG_NO_EXTRACT_UI` from the name `EditText`; retain `IME_ACTION_DONE`, `includeIme = true`, normal Activity `adjustResize`, the fixed footer, and all local-only persistence/lifecycle/identity contracts. No additional keyboard geometry hacks.
+
+Acceptance for next signed candidate: portrait keyboard keeps Save visible; landscape keyboard opens the native fullscreen extracted editor with readable long name; leaving the keyboard returns to the dedicated editor. Keep existing no-auto-save/explicit valid Save behavior and run only focused UI checks. No full functional baseline repeat.

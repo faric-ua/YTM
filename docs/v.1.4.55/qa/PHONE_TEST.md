@@ -631,3 +631,12 @@ Installed signed R3: HEAD `cb0e32414018afbf3ec2f129802430699fbc36f2`, Validate `
 - [ ] **Landscape / IME shown — FAIL on this signed candidate:** keyboard enters full-screen extracted input mode, hiding the app editor and Save until `Готово`.
 
 R3 correction is limited to editor IME-safe insets and no-extract IME option. Re-test these two keyboard-on scenarios after a fresh exact-HEAD signed APK; do not re-run the already accepted #30 functional identity/persistence/YTM matrix. #30 remains open.
+
+### #30 R3 — portrait IME PASS / landscape inline IME FAIL (2026-10-08)
+
+Installed R3 IME correction: `1591fcabc23840667d7353ffbde7abf96dff2d8c`, Validate `37709460440 — SUCCESS`, signed `37710164131 — SUCCESS`.
+
+- [x] Portrait with Samsung keyboard visible: name field and × remain visible; **«Зберегти»** is now fully visible directly above the keyboard; unchanged name leaves Save disabled — **PHONE presentation PASS**.
+- [ ] Landscape with Samsung keyboard visible: the in-place editor is compressed to a thin strip; the text is partly clipped against the header — **PHONE UX FAIL** even though Save is visible.
+
+User explicitly prefers the native Android fullscreen extracted keyboard in landscape. Next corrective change removes the editor-local NO_EXTRACT flag, keeps IME insets for portrait, and adds a regression guard preventing a repeat of this flag. Targeted next QA: native landscape text editor, return to dedicated edit screen, portrait still unchanged. #30 stays open pending acceptance.
