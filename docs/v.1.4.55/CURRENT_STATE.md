@@ -590,3 +590,8 @@ Second #30 presentation corrective follows user video evidence: landscape full-s
 ## NEXT ACTIVE #29 / UX-035 — URL Snapshot blank-input (2026-10-08)
 
 `UrlSnapshotActivity.kt` currently has `resolve.isEnabled = !state.running` and a blank click invokes `UrlSnapshotRemoteOperations.startResolve`, showing a global error. Change presentation only: disable read until nonblank trimmed URL exists; update enabled state immediately on typing/clear, no network on blank, rotation-safe draft; static/JVM tests + one targeted PHONE smoke. Do not reopen #30.
+
+
+## #29 implementation source checkpoint — 2026-10-08
+
+App source `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095` implements blank/whitespace Read disabled, live TextWatcher state, secondary click guard, running-state disabled. Pure policy/JVM tests/static preflight check and `URL_SNAPSHOT_BLANK_INPUT_CONTRACT.md` included. GitHub issue #29 open; Validate `37714915522` started, signed APK and PHONE PASS **not claimed**. Closeout of #30 is unaffected.

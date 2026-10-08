@@ -482,13 +482,14 @@ Remaining Phase C backlog:
 ### CURRENT TASK #29 / UX-035 — URL Snapshot blank input
 
 - [x] Read #29 and inspect `UrlSnapshotActivity.kt`: `Прочитати URL` currently enabled for blank URL unless remote running; tapping blank creates global error instead of inline/disabled state.
-- [ ] Implement disabled read button for trimmed blank/whitespace; live updates while typing/clearing without triggering remote work; running state still blocks.
-- [ ] Verify rotation-preserved URL draft and enabled/disabled state; blank read must never call startResolve or alter resolved preview/status.
-- [ ] Add focused source/static + JVM tests, update #29 QA notes/guard and `FILE_MANIFEST.txt`; exact-HEAD Validate Android PASS.
+- [x] Implement disabled read button for blank/whitespace; live updates while typing/clearing without triggering remote work; running state still blocks.
+- [x] Source ownership: saved URL draft drives initial enabled state after recreation, no auto-read; blank click is guarded before startResolve. Phone rotation acceptance remains pending.
+- [x] Pure `UrlSnapshotReadPolicy`, new JVM test cases and focused static guard wired into release preflight, #29 contract and file manifest added at app source `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095`.
+- [ ] Exact-HEAD Validate Android PASS (run `37714915522` started for source; later docs-only HEAD requires its own validation).
 - [ ] Build one exact-HEAD signed APK and run focused portrait/landscape / rotation / Neon+Blue+Green PHONE smoke; do not re-test #30.
 - [ ] Close #29 only after PHONE PASS; then advance to #40.
 
-**NEXT ACTION: implement #29 small presentation-only guard, run Validate.**
+**NEXT ACTION: verify #29 exact-final-HEAD Validate Android; then signed build and focused PHONE smoke. Never repeat CLOSED #30.**
 
 ## Update rule
 

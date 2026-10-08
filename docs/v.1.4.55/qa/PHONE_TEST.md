@@ -659,3 +659,8 @@ User explicitly prefers the native Android fullscreen extracted keyboard in land
 ### #29 NEXT FOCUSED PHONE TEST — NOT YET IMPLEMENTED
 
 URL Snapshot `Прочитати URL` must be disabled for blank/whitespace URL; no global ERROR/remote read from blank; typing nonblank enables it; clearing disables; preserve draft/disabled state across rotation; Neon/Blue/Green disabled contrast. This is **not PHONE PASS** until a new signed candidate is installed.
+
+
+### #29 code checkpoint — source implementation, not PHONE PASS (2026-10-08)
+
+App source `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095`: URL Snapshot Read button blank/whitespace/running guard, typing and × state updates, click-safe no-op, restored state support. Pure JVM tests and `v1455-url-blank-input-audit.sh` added in release preflight; parser/resolver untouched. Source Validate `37714915522` started. **Phone checks above still unchecked.** Previous #30 PHONE ACCEPTED/CLOSED and no-repeat lock stays authoritative.
