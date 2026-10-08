@@ -10,6 +10,7 @@ SELECTABLE="$SRC/ui/SelectableTextState.kt"
 SELECTABLE_SURFACE="$SRC/ui/SelectableTextSurfaceState.kt"
 BULK_HIERARCHY="$SRC/ui/BulkHierarchyChrome.kt"
 BULK_PREVIEW="$SRC/BulkSyncPreviewActivity.kt"
+BULK_PREPARATION="$SRC/bulk/BulkSessionPreparationCoordinator.kt"
 BULK_SESSION="$SRC/BulkSyncSessionActivity.kt"
 BULK_HELP="$SRC/bulk/BulkSyncHelpContent.kt"
 QUOTA="$SRC/QuotaActivity.kt"
@@ -30,7 +31,7 @@ SURFACE_READABILITY="docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md"
 PLAN="docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md"
 RECONCILIATION="docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md"
 
-for f in "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$BULK_HELP" "$QUOTA" "$PLAYLIST" "$EDIT_PLAYLIST" "$CURRENT_PLAYLIST_STORE" "$LOCAL_PLAYLIST_EDIT_POLICY" "$LOCAL_PLAYLIST_EDIT_TEST" "$LOCAL_PLAYLIST_EDIT_CONTRACT" "$REVIEW" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
+for f in "$BULK_PREPARATION" "$UI" "$RESTORABLE" "$SELECTABLE" "$SELECTABLE_SURFACE" "$BULK_HIERARCHY" "$BULK_PREVIEW" "$BULK_SESSION" "$BULK_HELP" "$QUOTA" "$PLAYLIST" "$EDIT_PLAYLIST" "$CURRENT_PLAYLIST_STORE" "$LOCAL_PLAYLIST_EDIT_POLICY" "$LOCAL_PLAYLIST_EDIT_TEST" "$LOCAL_PLAYLIST_EDIT_CONTRACT" "$REVIEW" "$URL_SNAPSHOT" "$QA_STORE" "$TILE_CONTRACT" "$TILE_READABILITY" "$SAFETY" "$READABILITY" "$SURFACE_READABILITY" "$PLAN" "$RECONCILIATION"; do
   test -f "$f" || fail "missing v1.4.55 hardening file: $f"
 done
 
@@ -144,6 +145,53 @@ if re.search(
         "FAIL: Session emits raw technical failure only through transient Toast"
     )
 PY_BULK_HIERARCHY
+
+# #27/#28: retained single-flight Bulk preparation + stale status correctness.
+python3 - "$BULK_PREVIEW" "$BULK_PREPARATION" <<'PY_BULK_PREPARE_27_28'
+from pathlib import Path
+import re
+import sys
+preview, owner = (Path(p).read_text(encoding="utf-8") for p in sys.argv[1:])
+if 'private fun captureBaseline(' in preview:
+    raise SystemExit("FAIL #27: Activity owns preparation network work again")
+for field in (
+    'private var status: Status = Status.Idle',
+    'if (status is Status.Preparing) return false',
+    'context.applicationContext',
+    'fun observe(',
+    'fun detach(',
+    'fun consumeReadyNavigation(',
+    'BulkSyncSessionFactory.create(',
+    'BulkSyncSessionStore(appContext).upsert(session)',
+    'createBulkSyncCheckpointJson()',
+    'Status.Ready(session.sessionId)',
+):
+    if field not in owner:
+        raise SystemExit("FAIL #27: missing lifecycle/single-flight: " + field)
+for field in (
+    'BulkSessionPreparationCoordinator.observe(preparationObserver)',
+    'BulkSessionPreparationCoordinator.detach(preparationObserver)',
+    'setTitle("Підготовка Bulk-сесії")',
+    'showPreparationDialog(status.step)',
+    'BulkSessionPreparationCoordinator.Step.values()',
+    'plan?.let(::renderPlan)',
+    'consumeReadyNavigation(status.sessionId)',
+    'openSession(status.sessionId)',
+    'showPreparationFailure(status.message)',
+    'Запис у YouTube Music не починався.',
+    'setPositiveButton("Повторити")',
+):
+    if field not in preview:
+        raise SystemExit("FAIL #27/#28: missing presentation/reset: " + field)
+if 'Створюю local checkpoint і свіжий read-only remote baseline…' in preview:
+    raise SystemExit("FAIL #27/#28: stale engineering status returned")
+if 'api.createPlaylist(' in owner or 'api.insertPlaylistItem(' in owner:
+    raise SystemExit("FAIL #27: remote write leaked into preparation owner")
+# Durable session must be created before success is published.
+if owner.index('BulkSyncSessionStore(appContext).upsert(session)') > owner.index('Status.Ready(session.sessionId)'):
+    raise SystemExit("FAIL #27: Ready event precedes durable session storage")
+print("#27/#28 retained preparation and stale status audit: PASS")
+PY_BULK_PREPARE_27_28
 
 grep -Fq 'object SelectableTextState' "$SELECTABLE" ||
   fail "shared selectable-text state helper missing"

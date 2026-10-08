@@ -1318,3 +1318,12 @@ Saved full direction in `docs/product/PRODUCT_DIRECTION_2026-10-09.md` and
 - [ ] Localization and distinctive skins; optional compliant music/video playback as separate later module.
 
 **Process:** batch related UI, reuse accepted QA, no parallel audit per cosmetic tweak, always protect remote write/identity contracts; see linked product direction.
+
+
+### 2026-10-09 #27/#28 coherent Bulk wave — source candidate
+
+- [x] Unify preparation UI (#27) and stale return state (#28) in one source package.
+- [x] Process-retained single-flight checkpoint/read-only baseline/durable READY session; themed progress modal, error retry/back, stable Preview on return, no remote write.
+- [x] Extend existing v1454/v1455 audits, explicit combined contract, QA+handoff and deterministic manifest.
+- [ ] Exact final HEAD Validate SUCCESS → one signed APK → **one focused #27/#28 PHONE scenario**. Do not rerun accepted #58/#40/#29/#30.
+- [ ] Close #27/#28 after PHONE PASS and prepare a shipable v1.4.55 checkpoint. Future #59 features are separate.

@@ -483,22 +483,21 @@ do not redo #29/#30/#40/#58 accepted QA.
 
 ## NEXT ACTION
 
-### Accepted / locked — no repeat
-- [x] #29 URL Snapshot blank input — PHONE `1+ 2+ 3+ 4+`, CLOSED.
-- [x] #30 local playlist Edit — local rename/Back and unchanged linked YTM accepted, CLOSED.
-- [x] #40 Review URL/manual-choice presentation — `+ всі` plus manual-match card screenshot, CLOSED.
-- [x] #58 manual-only Review filter: `✓ Ручні (N)`, `≡ Усі` restoring 41 tracks, rotation — user PHONE `1+ 2+ 3+`.
-- [x] #58 landscape blocker: previous screenshot showed controls prevented scrolling; source moved controls into ListView header and added header-aware tap to avoid wrong-track navigation.
-- [x] Exact signed corrective candidate HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`: Validate Android `37826627416 — SUCCESS`, signed APK `37839577073 — SUCCESS`.
-- [x] User PHONE `+` for final landscape scroll to manual Mezziah and correct track open. This is user-reported, not screenshot-verified. GitHub #58 CLOSED on 2026-10-08.
+### CLOSED PHONE ACCEPTED — do not repeat
+- [x] #29 URL Snapshot blank input, #30 local playlist edit, #40 Review manual URL/status, #58 manual-only filter and landscape scrolling.
+- [x] #58 final signed `37839577073`; user `+` confirmed new landscape scroll/correct track tap, CLOSED.
 
-### NEW CURRENT TASK — Bulk preparation #27 / #28 (both OPEN)
-- [ ] Read issues <https://github.com/faric-ua/YTM/issues/27> and <https://github.com/faric-ua/YTM/issues/28>, identify exact relevant Bulk UI/lifecycle and safety contract owners.
-- [ ] Reconcile preparation-state presentation and stale status on returning to Bulk preview; split UI-only from any functional changes and define a focused, no-remote-auto-start QA plan.
-- [ ] Only after scope/plan: implement safely, extend targeted audit, validate exact HEAD and build one signed candidate if Android code changes.
-- [ ] PHONE only new #27/#28 behavior, no replay of CLOSED #58/#40/#29/#30.
+### CURRENT COHERENT WAVE #27 + #28 — source candidate
+- [x] Audit exact preview owner `BulkSyncPreviewActivity`: raw technical preparation subtitle, Activity executor destroyed on rotation, stale loading/progress after returning from session. Original `prepareSession` saved checkpoint → captured read-only remote baseline → persisted READY session, no write.
+- [x] Implement `BulkSessionPreparationCoordinator` as one process-scoped single-flight worker with application Context, observer detach/reattach across rotation, guarded once-only navigation and durable success/failure stage.
+- [x] Present dedicated themed `Підготовка Bulk-сесії` progress dialog with three plain-language steps, separate from old Preview; failure Retry/Back and explicit no-write message; no automatic YouTube mutation.
+- [x] On success / return to Preview, dismiss progress and render cached plan with stable ready status; avoid new read/write/duplicated preparation.
+- [x] Extend existing v1454 Bulk foundation and v1455 UX hardening static audits instead of introducing per-window audit; add coherent #27/#28 UX contract, current QA and manifested docs.
+- [ ] Verify exact final HEAD Validate Android (release preflight, JVM, assemble).
+- [ ] One signed APK from exact validated HEAD; focused PHONE on preparation, rotation, session ready/explicit Start and stable Preview on return; no intentional remote write required.
+- [ ] Close #27/#28 after PHONE acceptance, then separate v1.4.55 stable release checkpoint. Future #59 roadmap is not a release blocker.
 
-**NEXT ACTION: inspect #27/#28 existing source/contracts and write the minimal plan. #58 is CLOSED. No APK or Termux action for this documentation-only closeout.**
+**NEXT ACTION: exact-final-HEAD Validate, one signed APK and a single #27/#28 phone scenario; no rerun of accepted #58/#40/#29/#30.**
 
 ## Update rule
 

@@ -10,6 +10,7 @@ POLICY="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicy.kt"
 SELECTION_POLICY="app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicy.kt"
 SELECTION_TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicyTest.kt"
 PREVIEW="app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt"
+PREPARATION="app/src/main/java/com/saney/ytmimporter/bulk/BulkSessionPreparationCoordinator.kt"
 MENU="app/src/main/java/com/saney/ytmimporter/MenuActivity.kt"
 MANIFEST="app/src/main/AndroidManifest.xml"
 TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicyTest.kt"
@@ -28,7 +29,7 @@ QA_FAULT_TEST="app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncQaFaultPolic
 QUOTA_ACTIVITY="app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt"
 BACKUP="app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt"
 
-for file in "$POLICY" "$SELECTION_POLICY" "$SELECTION_TEST" "$PREVIEW" "$MENU" "$MANIFEST" "$TEST"   "$SESSION_MODEL" "$SESSION_STORE" "$CHECKPOINT_STORE" "$SESSION_FACTORY"   "$EXECUTION_POLICY" "$EXECUTOR" "$SESSION_ACTIVITY" "$SESSION_TEST" "$BULK_HELP" "$QA_FAULT" "$QA_FAULT_STORE" "$QA_FAULT_TEST" "$QUOTA_ACTIVITY" "$BACKUP"; do
+for file in "$POLICY" "$SELECTION_POLICY" "$SELECTION_TEST" "$PREVIEW" "$PREPARATION" "$MENU" "$MANIFEST" "$TEST"   "$SESSION_MODEL" "$SESSION_STORE" "$CHECKPOINT_STORE" "$SESSION_FACTORY"   "$EXECUTION_POLICY" "$EXECUTOR" "$SESSION_ACTIVITY" "$SESSION_TEST" "$BULK_HELP" "$QA_FAULT" "$QA_FAULT_STORE" "$QA_FAULT_TEST" "$QUOTA_ACTIVITY" "$BACKUP"; do
   [ -f "$file" ] || fail "Missing Bulk Sync foundation file: $file"
 done
 
@@ -63,7 +64,11 @@ grep -Fq 'selectedSummary_keepsOnlyIncludedExecutableRows' "$SELECTION_TEST"   |
 
 grep -Fq 'progressBarStyleHorizontal' "$PREVIEW"   || fail "Bulk preview active horizontal loading indicator missing"
 
-grep -Fq 'BulkSyncSessionFactory' "$PREVIEW"   || fail "Bulk preview does not create a durable session after explicit confirmation"
+grep -Fq 'BulkSyncSessionPreparationCoordinator' "$PREVIEW" ||
+  grep -Fq 'BulkSessionPreparationCoordinator' "$PREVIEW" ||
+  fail "Bulk Preview must invoke the explicit preparation owner"
+grep -Fq 'BulkSyncSessionFactory' "$PREPARATION" ||
+  fail "Bulk preparation no longer creates a durable session"
 
 grep -Fq 'BulkSyncSessionActivity::class.java' "$PREVIEW"   || fail "Bulk preview does not hand off to the session screen"
 
@@ -97,7 +102,8 @@ grep -Fq 'normalizeAfterColdOpen' "$SESSION_ACTIVITY"   || fail "Session cold-op
 
 [ "$(grep -Fc 'normalizeAfterColdOpen' "$SESSION_ACTIVITY")" -ge 2 ]   || fail "Session resume pause normalization missing"
 
-grep -Fq 'createBulkSyncCheckpointJson' "$PREVIEW"   || fail "Bulk local checkpoint creation missing"
+grep -Fq 'createBulkSyncCheckpointJson' "$PREPARATION" ||
+  fail "Bulk local checkpoint creation missing"
 
 grep -Fq 'restorable_playlist_v1' "$BACKUP"   || fail "Full Backup does not include RestorablePlaylistStore"
 

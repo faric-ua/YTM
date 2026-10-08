@@ -129,3 +129,26 @@ representative matrix:
 - no automatic remote work.
 
 Any shared regression stops the wave and is fixed at the shared layer.
+
+
+## Phase C combined wave #27/#28 — code candidate 2026-10-09
+
+One bounded Bulk-preparation wave replaces Activity-owned checkpoint/baseline
+work with a **single-flight process-retained** coordinator using only the
+application Context and a dedicated worker. During preparation, a themed
+noncancelable modal `Підготовка Bulk-сесії` shows three plain-language
+progress steps. Rotation detaches the old observer and attaches the new
+Activity without rescheduling work. The durable session is upserted
+before the Ready event; it opens the existing session screen with explicit
+Start, **not an automatic remote write**.
+
+On return from session, the Preview Activity re-renders the saved plan in a
+stable ready state: no stale `local checkpoint / remote baseline` message.
+Failure is durable in the coordinator and shows Retry/Back, no remote
+mutation. The existing `v1454-bulk-preflight-audit.sh` and
+`v1455-ux-hardening-audit.sh` are **extended** rather than adding a
+new cosmetic audit. Existing Bulk/rollback/History invariants untouched.
+
+**Not yet PHONE accepted.** After exact-HEAD CI, one signed APK, focused
+PHONE checks for preparing/rotation, Back from session stable preview and
+no automatic write. Old #29/#30/#40/#58 tests remain locked.

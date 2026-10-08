@@ -732,3 +732,14 @@ Corrective final app/docs source `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`; Val
 - [x] GitHub issue <https://github.com/faric-ua/YTM/issues/58> CLOSED.
 
 **Historical unchecked test instructions earlier in this file are superseded by this final checkpoint, not new retest requirements.** No #58/#40/#29/#30 replays. Next #27/#28 Bulk preparation is a separate scope and has no PHONE test yet.
+
+
+## #27/#28 SOURCE CANDIDATE (2026-10-09) — PHONE PENDING
+
+One coherent Bulk preparation/stale status fix: step modal, process-retained single-flight operation, no duplicate checkpoint/session on rotation, session created READY with **no YTM write**, Preview stable after leaving session. Extended preflight audits and no changes to Search/write/rollback.
+
+- [ ] With a prepared Bulk Preview of eligible playlists, choose `Створити сесію синхронізації` and confirm. Dedicated `Підготовка Bulk-сесії` shows simple steps, not `local checkpoint / remote baseline`.
+- [ ] Rotate during preparation; progress stays, no duplicate sessions/work. **Do not tap Start/Запустити**; session should open READY.
+- [ ] Back/Close to Preview: status `План готовий` or clear session ready; no stale preparation indicator. No automatic Search/write.
+
+**#29/#30/#40/#58 PHONE ACCEPTED/CLOSED — do not repeat.**

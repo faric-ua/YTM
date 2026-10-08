@@ -626,3 +626,8 @@ Exact original signed HEAD `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`, Validate 
 App/docs signed HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`, exact Validate `37826627416 — SUCCESS`, signed `37839577073 — SUCCESS`. Previously user passed manual-only filter/count, All restores 41 and rotation (`1+ 2+ 3+`); screenshot showed missing landscape scroll. Corrective uses a scrolling header and list-aware tap. User then replied `+` for remaining landscape scroll to manually selected Mezziah and opening the correct track. User-reported PHONE PASS (no new confirming screenshot). GitHub #58 CLOSED. No remote-domain change, no repeats of closed #29/#30/#40/#58.
 
 Next OPEN #27/#28 Bulk session preparation UI/stale completion message: inspect owners, write scope/plan first, do not start Bulk remotely as part of a UI audit. This closeout modifies docs only, does not require new APK.
+
+
+## #27/#28 Bulk preparation UI and state — code candidate 2026-10-09
+
+New `BulkSessionPreparationCoordinator` owns one in-flight checkpoint/baseline/durable READY session across Activity rotation with application context; `BulkSyncPreviewActivity` shows a bounded themed three-step dialog; on return it restores stable saved preview instead of old `local checkpoint / remote baseline` message. Failure retry/back, no automatic YTM writes. Existing v1454/v1455 audits extended, UX contract and manifest added. **Exact-final-HEAD Validate/signed/PHONE pending**. #27 and #28 OPEN until phone acceptance. Future issue #59 corrected Prodigy 3–7 track account-limit incident; no fixed playlist/day number.

@@ -130,3 +130,16 @@ works; advanced options do not overwhelm first-time users.
 
 **Active checkpoint:** #58 CLOSED / PHONE ACCEPTED. Next source work #27/#28.
 Future product ideas remain *planned*, not required for v1.4.55 closeout.
+
+## User correction — creation limit incident (2026-10-09)
+
+Observed sequential **The Prodigy playlists of ~3–7 tracks each**,
+not large 30-track sets. Six at that size cost roughly **1,200–2,400 general
+non-search units** for successful creation plus insert operations,
+excluding other project activity and failures. A prior 6×30 quota
+illustration is **not representative**. Record the error's actual
+`httpCode`, `reason`, UTC timestamp, privacy, prior daily usage and
+linked playlist identity before setting any assumed daily count.
+Public daily channel limit is undocumented numerically and cannot
+be assumed to govern private playlists. This is #59 future research;
+current scope remains combined #27/#28.

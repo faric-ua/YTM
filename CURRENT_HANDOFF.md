@@ -100,13 +100,11 @@ do not redo #29/#30/#40/#58 accepted QA.
 
 ## Exact next work
 
-**CLOSED / PHONE ACCEPTED #29, #30, #40, #58**. Do not repeat any accepted PHONE suites without protected owner changes or contrary phone evidence.
+**ACTIVE combined #27 UX-034 / #28 BUG-041 — SOURCE CANDIDATE.** Original `BulkSyncPreviewActivity.prepareSession` used an Activity-bound executor and raw `local checkpoint / read-only remote baseline` strings. It did not restore normal preview after navigation and could lose/double preparation on recreation.
 
-**#58 final user evidence:** manual-only filter/count, All restoring 41, filter rotation `1+ 2+ 3+` on previous signed run `37810023523`. New landscape screenshot identified collapsed list/no scroll. Corrected via scrollable ListView header + header-aware track selection. Final app/docs HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`, Validate `37826627416 — SUCCESS`, signed APK `37839577073 — SUCCESS`. User replied **`+`** to the only remaining landscape scroll → correct Mezziah tap test (user-reported; no new screenshot). Issue `#58` closed.
+New single-flight `BulkSessionPreparationCoordinator` owns checkpoint, read-only baseline and READY session persistence with app context and no remote write. `BulkSyncPreviewActivity` observes it, shows a dedicated step-based preparation dialog (not exposed debug copy); dialog is reconstructed safely on rotation. Session opens once, remains READY until explicit user Start; on return, `renderPlan()` restores stable Preview/status and action. Failures show in a Retry/Back confirmation, explicitly no remote write. Existing v1454/v1455 audits extended; code/UX contract planned together; no Search/ledger/rollback/YTM mutation changes.
 
-**NEXT OPEN #27 and #28** — Bulk session preparation presentation and stale preparing message after returning from completed session. Both issues OPEN, not implemented here. Read exact source/contracts and define a minimal safe plan. Protect all remote Search/Bulk write operations, checkpoint identity/ledger, History, Queue, user controls and lifecycle from auto-starts. No code changes in this docs closeout, so no APK rebuild needed merely to sync documentation.
-
-**Standing user reply format:** `docs/assistant-kit/USER_RESPONSE_TEMPLATE.md` first; heading → concise finding → final Termux menu block → last short APK test block.
+**GATE:** final exact-HEAD Validate then one signed APK and focused #27/#28 PHONE; no auto-write testing. Do not repeat PHONE ACCEPTED #58/#40/#30/#29. Issues #27/#28 remain OPEN until evidence. Future #59 roadmap includes corrected Prodigy 3–7 track observation; no asserted playlist/day cap. Canonical user reply template in `docs/assistant-kit/USER_RESPONSE_TEMPLATE.md`.
 
 ## Immutable functional reference
 

@@ -28,6 +28,7 @@ import com.saney.ytmimporter.bulk.BulkSyncPreflightPolicy
 import com.saney.ytmimporter.bulk.BulkSyncRemoteBaseline
 import com.saney.ytmimporter.bulk.BulkSyncRemoteSnapshot
 import com.saney.ytmimporter.bulk.BulkSyncSelectionPolicy
+import com.saney.ytmimporter.bulk.BulkSessionPreparationCoordinator
 import com.saney.ytmimporter.bulk.BulkSyncSessionFactory
 import com.saney.ytmimporter.search.SearchCoordinator
 import com.saney.ytmimporter.storage.BulkSyncCheckpointStore
@@ -118,6 +119,14 @@ class BulkSyncPreviewActivity : Activity() {
 
     private lateinit var previewModalController:
         RestorableModalController
+
+    private var preparationDialog: Dialog? = null
+    private var preparationSteps: TextView? = null
+    private var preparationFailureDialog: Dialog? = null
+
+    private val preparationObserver:
+        (BulkSessionPreparationCoordinator.Status) -> Unit =
+        { status -> renderPreparationStatus(status) }
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -220,6 +229,13 @@ class BulkSyncPreviewActivity : Activity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Subscribe to the process-scoped single-flight operation.
+        // A finished session must not leave a stale preparing subtitle.
+        BulkSessionPreparationCoordinator.observe(preparationObserver)
+    }
+
     override fun onSaveInstanceState(
         outState: Bundle
     ) {
@@ -270,6 +286,7 @@ class BulkSyncPreviewActivity : Activity() {
     }
 
     override fun onPause() {
+        BulkSessionPreparationCoordinator.detach(preparationObserver)
         if (::scrollView.isInitialized) {
             scrollPosition.capture(
                 scrollView
@@ -279,6 +296,11 @@ class BulkSyncPreviewActivity : Activity() {
     }
 
     override fun onDestroy() {
+        preparationDialog?.dismiss()
+        preparationDialog = null
+        preparationSteps = null
+        preparationFailureDialog?.dismiss()
+        preparationFailureDialog = null
         helpDialog
             ?.setOnDismissListener(null)
         helpDialog = null
@@ -1509,202 +1531,164 @@ class BulkSyncPreviewActivity : Activity() {
     private fun prepareSession(
         summary: BulkSyncPlanSummary
     ) {
-        if (loading) {
+        if (loading ||
+            BulkSessionPreparationCoordinator.current() is
+                BulkSessionPreparationCoordinator.Status.Preparing
+        ) {
             return
         }
 
-        val auth =
-            AuthSessionStore.current()
-
+        val auth = AuthSessionStore.current()
         val token =
-            auth.accessToken
-                ?.takeIf(
-                    String::isNotBlank
-                )
+            auth.accessToken?.takeIf(String::isNotBlank)
                 ?: return toast(
-                    "Підключіть Google / YTM перед створенням сесії синхронізації."
+                    "Підключіть Google / YTM перед підготовкою сесії."
                 )
 
-        loading = true
-        confirmationButton.isEnabled =
-            false
-        statusText.text =
-            "Створюю local checkpoint і свіжий read-only remote baseline…"
-        showLoading(
-            "Створюю checkpoint та remote baseline…"
-        )
+        if (
+            BulkSessionPreparationCoordinator.start(
+                context = applicationContext,
+                summary = summary,
+                accessToken = token,
+                auth = auth
+            )
+        ) {
+            loading = true
+            confirmationButton.isEnabled = false
+            renderPreparationStatus(
+                BulkSessionPreparationCoordinator.current()
+            )
+        }
+    }
 
-        executor.execute {
-            try {
-                val checkpointJson =
-                    LocalBackupManager(this)
-                        .createBulkSyncCheckpointJson()
+    private fun renderPreparationStatus(
+        status: BulkSessionPreparationCoordinator.Status
+    ) {
+        if (isFinishing || isDestroyed ||
+            !::confirmationButton.isInitialized
+        ) return
 
-                val checkpoint =
-                    BulkSyncCheckpointStore(this)
-                        .save(
-                            checkpointJson
-                        )
+        when (status) {
+            is BulkSessionPreparationCoordinator.Status.Preparing -> {
+                loading = true
+                confirmationButton.isEnabled = false
+                statusText.text = "Підготовка сесії синхронізації…"
+                // Preview-only in-page loading must never overlap preparation.
+                hideLoading()
+                showPreparationDialog(status.step)
+            }
 
-                val baselineResult =
-                    captureBaseline(
-                        accessToken =
-                            token,
-                        auth =
-                            auth
-                    )
-
+            is BulkSessionPreparationCoordinator.Status.Ready -> {
+                closePreparationDialog()
+                loading = false
+                plan?.let(::renderPlan)
                 if (
-                    baselineResult.second >
-                    0
+                    BulkSessionPreparationCoordinator
+                        .consumeReadyNavigation(status.sessionId)
                 ) {
-                    quotaTracker.recordGeneralUnits(
-                        baselineResult.second
-                    )
+                    openSession(status.sessionId)
                 }
+            }
 
-                val session =
-                    BulkSyncSessionFactory
-                        .create(
-                            summary =
-                                summary,
-                            snapshots =
-                                restorableStore
-                                    .getAll(),
-                            checkpointId =
-                                checkpoint
-                                    .checkpointId,
-                            baseline =
-                                baselineResult
-                                    .first
-                        )
+            is BulkSessionPreparationCoordinator.Status.Failed -> {
+                closePreparationDialog()
+                loading = false
+                plan?.let(::renderPlan)
+                statusText.text =
+                    "Підготовку не завершено. Запис у YouTube Music не починався."
+                showPreparationFailure(status.message)
+            }
 
-                BulkSyncSessionStore(this)
-                    .upsert(
-                        session
-                    )
-
-                runOnUiThread {
-                    if (
-                        !isFinishing &&
-                        !isDestroyed
-                    ) {
-                        loading = false
-                        openSession(
-                            session.sessionId
-                        )
-                    }
-                }
-            } catch (error: Throwable) {
-                runOnUiThread {
-                    if (
-                        !isFinishing &&
-                        !isDestroyed
-                    ) {
-                        loading = false
-                        hideLoading()
-                        confirmationButton.isEnabled =
-                            (
-                                summary.count(
-                                    BulkSyncPlanState.NEW
-                                ) +
-                                    summary.count(
-                                        BulkSyncPlanState.LINKED
-                                    )
-                            ) > 0
-                        val errorText =
-                            safeError(
-                                error
-                            )
-                        statusText.text =
-                            "Preview готовий. Сесію не створено.\n" +
-                                "Причина: " +
-                                errorText
-                        toast(
-                            "Не вдалося створити сесію синхронізації. Деталі залишилися на екрані."
-                        )
-                    }
+            BulkSessionPreparationCoordinator.Status.Idle -> {
+                closePreparationDialog()
+                // Do not interfere with a separately running preview read.
+                if (plan != null && !loading) {
+                    plan?.let(::renderPlan)
                 }
             }
         }
     }
 
-    private fun captureBaseline(
-        accessToken: String,
-        auth: AuthSessionStore.Snapshot
-    ): Pair<BulkSyncRemoteBaseline, Int> {
-        var readUnits = 0
-
-        val owned =
-            api.listMyPlaylists(
-                accessToken =
-                    accessToken
-            ) {
-                readUnits +=
-                    QuotaTracker
-                        .SIMPLE_LIST_COST
-            }
-
-        val ownedById =
-            owned.associateBy {
-                it.id
-            }
-
-        val playlists =
-            owned.map {
-                    info ->
-                val snapshot =
-                    api.listPlaylistSnapshotItems(
-                        accessToken =
-                            accessToken,
-                        playlistId =
-                            info.id
-                    ) {
-                        readUnits +=
-                            QuotaTracker
-                                .SIMPLE_LIST_COST
-                    }
-
-                BulkSyncBaselinePlaylist(
-                    playlistId =
-                        info.id,
-                    title =
-                        info.title,
-                    privacyStatus =
-                        info.privacyStatus,
-                    items =
-                        snapshot.items.map {
-                            item ->
-                            BulkSyncBaselineItem(
-                                playlistItemId =
-                                    item.playlistItemId,
-                                sourcePosition =
-                                    item.sourcePosition,
-                                videoId =
-                                    item.videoId
-                            )
-                        }
+    private fun showPreparationDialog(
+        currentStep: BulkSessionPreparationCoordinator.Step
+    ) {
+        if (preparationDialog?.isShowing != true) {
+            val palette = AppThemeManager.palette(this)
+            val content =
+                LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setPadding(dp(20), dp(14), dp(20), dp(16))
+                }
+            content.addView(
+                ProgressBar(this).apply {
+                    isIndeterminate = true
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(28)
                 )
-            }
+            )
+            preparationSteps =
+                TextView(this).apply {
+                    textSize = 15f
+                    setTextColor(palette.text)
+                    setPadding(0, dp(16), 0, dp(4))
+                }
+            content.addView(preparationSteps)
+            preparationDialog =
+                UiChrome.alertBuilder(this)
+                    .setTitle("Підготовка Bulk-сесії")
+                    .setView(content)
+                    .setCancelable(false)
+                    .create()
+                    .also { it.show() }
+        }
 
-        return Pair(
-            BulkSyncRemoteBaseline(
-                capturedAt =
-                    System.currentTimeMillis(),
-                googleEmail =
-                    auth.googleAccountInfo
-                        ?.email,
-                youtubeChannelId =
-                    auth.youtubeChannelInfo
-                        ?.id,
-                youtubeChannelTitle =
-                    auth.youtubeChannelInfo
-                        ?.title,
-                playlists =
-                    playlists
-            ),
-            readUnits
-        )
+        preparationSteps?.text =
+            BulkSessionPreparationCoordinator.Step.values()
+                .mapIndexed { index, step ->
+                    when {
+                        index < currentStep.ordinal ->
+                            "✓ ${step.label}"
+                        index == currentStep.ordinal ->
+                            "● ${step.label}"
+                        else ->
+                            "○ ${step.label}"
+                    }
+                }
+                .joinToString("\n")
+    }
+
+    private fun closePreparationDialog() {
+        preparationDialog?.dismiss()
+        preparationDialog = null
+        preparationSteps = null
+    }
+
+    private fun showPreparationFailure(message: String) {
+        if (preparationFailureDialog?.isShowing == true) return
+
+        preparationFailureDialog =
+            UiChrome.alertBuilder(this)
+                .setTitle("Не вдалося підготувати сесію")
+                .setMessage(
+                    "Запис у YouTube Music не починався.\n\n" +
+                        "Причина: $message"
+                )
+                .setNegativeButton("Назад") { _, _ ->
+                    BulkSessionPreparationCoordinator.clearFailure()
+                    preparationFailureDialog = null
+                    plan?.let(::renderPlan)
+                }
+                .setPositiveButton("Повторити") { _, _ ->
+                    BulkSessionPreparationCoordinator.clearFailure()
+                    preparationFailureDialog = null
+                    plan?.let {
+                        prepareSession(selectedPlanSummary(it))
+                    }
+                }
+                .create()
+                .also { it.show() }
     }
 
     private fun openSession(
