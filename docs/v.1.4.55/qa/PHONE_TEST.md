@@ -682,3 +682,14 @@ The screenshots supplied in the same turn show GitHub Codespace Source Control w
 ### #40 CURRENT NEXT FOCUSED QA — NOT YET IMPLEMENTED
 
 Two new Review UI presentation concerns only: multiline inspectable manual URL field with clear button; clear visible distinction between automatic match and a manually overridden track. Do not ask for #40 phone work until source/Validate/signed candidate is ready.
+
+
+### #40 / UX-039 — IMPLEMENTED / CI PASS, PHONE PENDING (2026-10-08)
+
+Android code source `3fd6f05ccfdd5af0396c5887419224a774c40963`, Validate Android `37784993012 — SUCCESS` (preflight/#40 static audit/JVM/unsigned release).
+
+- [x] Wrapped 2–3-line YouTube/YTM URL field with clear ×, unchanged AlertDialog Cancel/Use action owner.
+- [x] Separate accent `✓ Ручний вибір` label in Review list/detail; manual match title emphasized; skipped/no-title tracks do not falsely display manual-success status.
+- [x] Existing manual dialog draft/track rotation restoration and only-explicit-lookup route preserved.
+- [ ] **PHONE NOT TESTED:** long URL/×, keyboard and rotation, Cancel, manual/automatic/skip visual difference, Neon and alternate skin.
+- [ ] Exact final docs HEAD Validate + signed APK pending. Do not repeat #29/#30.

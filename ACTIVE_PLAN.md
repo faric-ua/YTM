@@ -488,14 +488,15 @@ Remaining Phase C backlog:
 
 - [x] Read live GitHub issue #40 and identify two independent presentation findings.
 - [x] Initial source location: `ReviewActivity.showManualUrlDialog()` uses `EditText.setSingleLine(true)` and no clear control; Review card manually selected text is a lower-emphasis `Ручний вибір:` suffix.
-- [ ] Review exact Review dialog lifecycle state, manual lookup guard and URL wrapping/clear conventions; define focused change without changing remote behavior.
-- [ ] Implement readable multiline URL entry with clear control and stable portrait/landscape/rotation draft; semantic manual-choice label clearly distinguished from automatic match.
-- [ ] Add targeted #40 source/JVM audit where appropriate; update release preflight, catalog and file manifest.
-- [ ] Exact-HEAD Validate Android PASS → one signed candidate only when Android code actually changed.
+- [x] Review dialog lifecycle/remote lookup owner, URL Snapshot multiline+× reference and UI window safety; keep changes in Review presentation.
+- [x] Implement 2–3-line wrapped manual URL with clear ×, fixed native AlertDialog actions, separate theme-accent manual status in list/detail with emphasized chosen track and skipped-track protection. PHONE still pending.
+- [x] Pure `ReviewManualPresentation` JVM tests, targeted #40 audit invoked by release preflight, UX contract, generated audit catalog and file manifest.
+- [x] Android code source `3fd6f05ccfdd5af0396c5887419224a774c40963` validated: `37784993012 — SUCCESS` (preflight/JVM/assemble).
+- [ ] Exact-final-documentation-HEAD Validate Android PASS before one signed candidate.
 - [ ] Focused PHONE acceptance on the two #40 UI issues. No repeat of #29/#30 accepted matrices.
 - [ ] Close #40 only on acceptance; then inspect Phase C #27/#28.
 
-**NEXT ACTION: inspect the #40 Review UI owners and start presentation-only changes. No additional #29/#30 phone tests.**
+**NEXT ACTION: exact-final-HEAD Validate PASS → one signed APK → focused #40 PHONE acceptance. No #29/#30 retesting.**
 
 ## Update rule
 

@@ -96,7 +96,7 @@ Corrective rotation-cache source:
 1. `ReviewActivity.showManualUrlDialog()` still calls `setSingleLine(true)` and lacks a clear control for a long URL.
 2. Review list/details present `Ручний вибір:` as subordinate concatenated text; manual status is difficult to distinguish from automatically matched READY state.
 
-**NEXT ACTION:** inspect #40 exact UI owners, protected lifecycle/remote safety contracts and existing related audits, implement a focused presentation-only change (readable multiline URL input/clear + a clearly distinct manual-selection label), add regression safeguards, exact-HEAD Validate → signed candidate → minimal #40 PHONE smoke. Do **not** modify Review manual lookup remote request semantics, Search/Bulk, #29 or #30.
+**#40 CODE IMPLEMENTED / VALIDATE PASS:** Android source HEAD `3fd6f05ccfdd5af0396c5887419224a774c40963`, Validate Android `37784993012 — SUCCESS` (preflight, #40 audit, JVM, unsigned assemble). Review manual URL now wraps over 2–3 lines with one-tap clear ×. Review list/detail have theme-accent `✓ Ручний вибір` status distinct from original title and more prominent selected replacement; skipped tracks are excluded by pure policy. Native AlertDialog controls, manual lookup and saved draft/track restoration stay unchanged. **NEXT ACTION: validate final docs HEAD, build one exact-HEAD signed APK and run focused #40 PHONE tests** (long URL/×, rotation/draft, no auto-lookup, manual vs auto/skip hierarchy). No repeat of #29/#30.
 
 ## Consolidated phone matrix
 
