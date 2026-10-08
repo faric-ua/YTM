@@ -462,8 +462,8 @@ Checklist:
 - [x] PHONE functional acceptance — entry/editor, rename+persistence, blank rejection, portrait↔landscape draft retention, no auto-save, Cancel no-op, linked-YTM identity and remote-title non-mutation all PASS on signed run `37683871558` / HEAD `54425e2aa25c7381164b52f0b7b93d5c65637745`.
 
 Remaining Phase C backlog:
-- [ ] Blank URL inline validation (#29) — CURRENT TASK.
-- [ ] Review manual URL/manual-choice hierarchy (#40).
+- [x] Blank URL inline validation (#29) — PHONE PASS / CLOSED 2026-10-08.
+- [ ] Review manual URL/manual-choice hierarchy (#40) — CURRENT TASK.
 - [ ] Bulk preparation presentation/state cleanup (#27/#28).
 - [ ] URL Snapshot action-fit stays under the shared adaptive-action contract.
 
@@ -471,25 +471,31 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-### CLOSED #30 / UX-036 — immutable accepted baseline
+### CLOSED #30 / UX-036 — no-repeat acceptance lock
 
-- [x] Exact R3 dedicated editor `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`; Validate `37710803622 — SUCCESS`; signed `37711110963 — SUCCESS`.
-- [x] Portrait + keyboard Save reachable; landscape native Android extracted editor user-accepted; closing returns to editor.
-- [x] × clears draft; valid dirty name enables Save; Back leaves the editor without saving, reopening shows previous name, not unsaved `TEST 123`.
-- [x] Earlier PHONE accepted linked-YTM identity/remote-title unchanged, rename/persistence/rotation. **User explicitly forbids rerunning this complete matrix without new contradictory evidence or a protected-owner change.**
-- [x] GitHub issue #30 CLOSED — 2026-10-08. No more editor IME height revisions.
+- [x] Local-only dedicated editor; final source `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`; Validate `37710803622 — SUCCESS`; signed `37711110963 — SUCCESS`.
+- [x] Accumulated PHONE PASS: local rename persistence, YTM linkage/remote-title unchanged, ×, Save enablement, Back/no-save, portrait/landscape user-accepted keyboard UX. GitHub issue #30 CLOSED.
 
-### CURRENT TASK #29 / UX-035 — URL Snapshot blank input
+### CLOSED #29 / UX-035 — URL Snapshot blank input
 
-- [x] Read #29 and inspect `UrlSnapshotActivity.kt`: `Прочитати URL` currently enabled for blank URL unless remote running; tapping blank creates global error instead of inline/disabled state.
-- [x] Implement disabled read button for blank/whitespace; live updates while typing/clearing without triggering remote work; running state still blocks.
-- [x] Source ownership: saved URL draft drives initial enabled state after recreation, no auto-read; blank click is guarded before startResolve. Phone rotation acceptance remains pending.
-- [x] Pure `UrlSnapshotReadPolicy`, new JVM test cases and focused static guard wired into release preflight, #29 contract and file manifest added at app source `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095`.
-- [ ] Exact-HEAD Validate Android PASS (run `37714915522` started for source; later docs-only HEAD requires its own validation).
-- [ ] Build one exact-HEAD signed APK and run focused portrait/landscape / rotation / Neon+Blue+Green PHONE smoke; do not re-test #30.
-- [ ] Close #29 only after PHONE PASS; then advance to #40.
+- [x] Disabled Read for blank/whitespace or while running, reactive text/× updates, explicit click guard and restored draft, without remote read/preview mutation.
+- [x] Pure `UrlSnapshotReadPolicy`, JVM coverage, #29 static preflight audit, generated audit catalog and deterministic file manifest.
+- [x] Exact signed source HEAD `a6e8bf2db047fc85f047348b487d37f0936ecb96`; Validate Android `37715162616 — SUCCESS`; signed APK `37717759648 — SUCCESS`.
+- [x] **PHONE PASS 2026-10-08**, user-reported `1+ 2+ 3+ 4+`: empty input disabled, nonblank enables, × disables, rotation retains draft/no auto-start.
+- [x] GitHub issue #29 CLOSED with phone details. No separate alternate-theme visual evidence; keep that qualification rather than invent a theme QA run.
 
-**NEXT ACTION: verify #29 exact-final-HEAD Validate Android; then signed build and focused PHONE smoke. Never repeat CLOSED #30.**
+### CURRENT TASK #40 / UX-039 — Review manual URL and manual-selection hierarchy
+
+- [x] Read live GitHub issue #40 and identify two independent presentation findings.
+- [x] Initial source location: `ReviewActivity.showManualUrlDialog()` uses `EditText.setSingleLine(true)` and no clear control; Review card manually selected text is a lower-emphasis `Ручний вибір:` suffix.
+- [ ] Review exact Review dialog lifecycle state, manual lookup guard and URL wrapping/clear conventions; define focused change without changing remote behavior.
+- [ ] Implement readable multiline URL entry with clear control and stable portrait/landscape/rotation draft; semantic manual-choice label clearly distinguished from automatic match.
+- [ ] Add targeted #40 source/JVM audit where appropriate; update release preflight, catalog and file manifest.
+- [ ] Exact-HEAD Validate Android PASS → one signed candidate only when Android code actually changed.
+- [ ] Focused PHONE acceptance on the two #40 UI issues. No repeat of #29/#30 accepted matrices.
+- [ ] Close #40 only on acceptance; then inspect Phase C #27/#28.
+
+**NEXT ACTION: inspect the #40 Review UI owners and start presentation-only changes. No additional #29/#30 phone tests.**
 
 ## Update rule
 

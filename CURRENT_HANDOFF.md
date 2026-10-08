@@ -2,7 +2,7 @@
 
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-10-07**
+Last updated: **2026-10-08**
 
 > **FIRST READ: `RESUME_HERE.md`**
 >
@@ -30,7 +30,9 @@ Closed task: #52 / UX-047 Simplified Termux operator menu/status — **PHONE PAS
 
 Closed task: #30 / UX-036 explicit local playlist Edit — PHONE ACCEPTED / CLOSED 2026-10-08.
 
-Active task: #29 / UX-035 blank URL input validation.
+Closed task: #29 / UX-035 blank URL Snapshot Read — **PHONE PASS / CLOSED 2026-10-08**.
+
+Active task: #40 / UX-039 Review manual URL and manual-selection visibility.
 
 Final #54 status: **PHONE PASS / CLOSED** — Full Restore, History and Playlist Project scoping/rotation/no-auto-start passed; typed cards and wrong-type fallback passed.
 
@@ -74,11 +76,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-**#30 PHONE ACCEPTED / CLOSED 2026-10-08.** Source `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`; Validate `37710803622` SUCCESS; signed `37711110963` SUCCESS. Functional phone baseline already proved exact localPlaylistId / source / tracks / YTM linkage and remote unchanged title. R3 dedicated editor, portrait Save inset, user-approved native landscape fullscreen keyboard, ×, valid dirty Save and Back discard all accepted. **No repeat testing of #30, linked YTM or the editor unless its protected persistence/linkage owner actually changes or contradictory evidence emerges.** GitHub issue #30 CLOSED.
+**Completed #30 — CLOSED / PHONE ACCEPTED 2026-10-08:** dedicated local playlist Edit; final signed code `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`, Validate `37710803622` SUCCESS, signed `37711110963` SUCCESS. Store/localPlaylistId/source/track/YTM identity, unchanged remote YouTube Music title and clear/dirty/Back/keyboard UX are accepted. Do not retest without a relevant owner change or new evidence.
 
-**Active #29 / UX-035 — blank URL Snapshot input.** Phone finding: `Прочитати URL` is currently enabled for empty input and produces a global `Не вдалося прочитати URL` error. Source `UrlSnapshotActivity.kt`: current button enabled when `!state.running`, no blank guard. Product direction: disabled primary button until URL has non-whitespace input; update state immediately on typing/clear; no API/network/preview mutation on blank, rotation-preserved input/focus and theme-aware disabled state. Implementation at app SHA `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095` completed with pure UI policy, live enabled state, explicit blank-click guard, JVM tests, static release-preflight audit and source contract. Validate `37714915522` started. Final docs commit will need exact-final-HEAD validation. Next signed APK → focused #29 PHONE smoke; no #30 retest. Then #40.
+**Completed #29 — CLOSED / PHONE PASS 2026-10-08:** final source `a6e8bf2db047fc85f047348b487d37f0936ecb96`, Validate `37715162616` SUCCESS, signed `37717759648` SUCCESS. Phone report `1+ 2+ 3+ 4+`: blank URL disabled, entering text enables, × clears/disables, portrait→landscape→portrait preserves draft/no automatic read. Native theme-aware button styling reused, but no independently recorded Neon/Blue/Green side-by-side phone results. #29 test must not be rerun just to move to unrelated work.
 
-Previous #30 failed modal/IME experiments are historical evidence, not pending work. Do not take the outdated #52 section as the next action.
+**ACTIVE #40 / UX-039:** Review manual URL entry and manually selected candidate visibility. Source `ReviewActivity.showManualUrlDialog()` remains single-line with no × clear and a long YouTube URL cannot be inspected. Manual overrides still appear as low-emphasis `Ручний вибір:` among an otherwise matched-looking card. Next: read Review Activity lifecycle, source tests and UI safety contracts; implement presentation-only wrap/clear plus distinct manual-selection label; no automatic lookup, no Search/Bulk/History/remote request changes; scoped Validate and phone QA. No additional #29/#30 work.
+
+**Separate user environment:** GitHub Codespace `orange space enigma` for `faric-ua/YTM` on `main` is near its inactivity expiration; phone screenshots show empty Source Control Changes. Codespace deletion is not a branch/repository deletion. Absence of uncommitted changes is visible but unpushed local commits were not conclusively checked. This is not a YTM release gate.
 
 ## Immutable functional reference
 
@@ -150,7 +154,7 @@ real-device acceptance.
 
 ## Historical #54 implementation sequence — complete
 
-The classifier → Full Restore/History scoping → Playlist Project/typed-card sequence is complete and PHONE PASS. Resume only from the #52 `Exact next work` section above.
+The classifier → Full Restore/History scoping → Playlist Project/typed-card sequence is complete and PHONE PASS. Resume only from the **CURRENT #40 Exact next work** section above.
 
 ## Working contract
 

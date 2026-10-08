@@ -587,7 +587,7 @@ Second #30 presentation corrective follows user video evidence: landscape full-s
 
 **CLOSED / PHONE ACCEPTED; no outstanding #30 QA.** Final dedicated editor code `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2` passed exact-HEAD Validate `37710803622` and signed build `37711110963`. Earlier phone-linked rename/persistence/YTM exact identity and unchanged remote title were verified and explicitly accepted by the user; no-repeat rule applies. R3 keyboard UX accepted (portrait inline keyboard-safe Save; landscape Android native fullscreen extracted text editor). `×`, changed valid Save state and Back/no-save PASS. GitHub issue #30 closed. Historical intermediate FAIL checkpoints above remain valid as history, but are superseded and are **not** active QA instructions.
 
-## NEXT ACTIVE #29 / UX-035 — URL Snapshot blank-input (2026-10-08)
+## HISTORICAL NEXT #29 / UX-035 — pre-implementation state (2026-10-08)
 
 `UrlSnapshotActivity.kt` currently has `resolve.isEnabled = !state.running` and a blank click invokes `UrlSnapshotRemoteOperations.startResolve`, showing a global error. Change presentation only: disable read until nonblank trimmed URL exists; update enabled state immediately on typing/clear, no network on blank, rotation-safe draft; static/JVM tests + one targeted PHONE smoke. Do not reopen #30.
 
@@ -595,3 +595,12 @@ Second #30 presentation corrective follows user video evidence: landscape full-s
 ## #29 implementation source checkpoint — 2026-10-08
 
 App source `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095` implements blank/whitespace Read disabled, live TextWatcher state, secondary click guard, running-state disabled. Pure policy/JVM tests/static preflight check and `URL_SNAPSHOT_BLANK_INPUT_CONTRACT.md` included. GitHub issue #29 open; Validate `37714915522` started, signed APK and PHONE PASS **not claimed**. Closeout of #30 is unaffected.
+
+
+## #29 FINAL CLOSEOUT — PHONE PASS / CLOSED 2026-10-08
+
+Final exact source `a6e8bf2db047fc85f047348b487d37f0936ecb96`; Validate `37715162616 — SUCCESS`; signed `37717759648 — SUCCESS`. User-reported PHONE `1+ 2+ 3+ 4+`: blank URL Read disabled, typing enables, × clears/disables, rotation preserves draft with no auto-read. GitHub issue #29 CLOSED. Previous source/failing Validate checkpoints above are history only and superseded. No further #29 testing without contradictory evidence or a protected owner change. Theme-specific phone comparison was not separately verified.
+
+## CURRENT NEXT — #40 / UX-039 Review manual URL and manual override hierarchy
+
+Problem A: Review manual URL dialog currently uses a single-line EditText with no one-tap clear; long URL cannot be inspected comfortably. Problem B: manual override status `Ручний вибір:` is low-emphasis concatenated detail, indistinguishable at a glance from an automatically matched READY card. Work is presentation-only; preserve ReviewRemoteOperations manual lookup API, track identity, Search/Bulk behavior and state restoration. Next inspect focused UI owners, implement, static/Validate, one signed PHONE slice. #29/#30 remain closed.

@@ -1,6 +1,6 @@
 # v1.4.55 / #29 — URL Snapshot blank-input contract
 
-Status: **SOURCE IMPLEMENTED — VALIDATE / PHONE PENDING**.
+Status: **PHONE ACCEPTED / CLOSED — 2026-10-08**. Exact HEAD `a6e8bf2db047fc85f047348b487d37f0936ecb96`; Validate `37715162616 — SUCCESS`; signed `37717759648 — SUCCESS`.
 
 On `UrlSnapshotActivity`, the explicit `Прочитати URL` action is disabled when
 the input is blank or contains only whitespace, and while a read is already
@@ -21,9 +21,17 @@ Source owners: `UrlSnapshotActivity` (TextWatcher/click guard),
 `UrlSnapshotReadPolicy` (pure UI enablement), corresponding JVM tests and
 `scripts/v1455-url-blank-input-audit.sh` wired into release preflight.
 
-Focused PHONE acceptance (pending): blank/spaces disabled/no error; paste text
-enables without auto-read; × clears/disables; rotation preserves draft and state;
-Neon/Blue/Green show meaningful contrast; optional explicit valid URL read.
+Focused PHONE report — **PASS 1+ 2+ 3+ 4+** (user, 2026-10-08):
+blank/whitespace disables Read without remote error; entering nonblank draft
+enables without auto-read; × clears and disables; rotation preserves draft
+without auto-read. The accompanying screenshots were of GitHub Codespace,
+not the YTM URL UI; this is explicitly user-reported acceptance.
+Neon/Blue/Green individual visual checks were not separately reported;
+existing theme-aware button styling was preserved. Future new evidence of a
+contrast defect may be tracked independently, not as a repeat of #29.
+
+**Do not re-run this accepted #29 phone matrix** unless the relevant owner
+changes or new contradictory evidence appears.
 
 #30 local Playlist Edit is **PHONE ACCEPTED / CLOSED** and must not be
 retested due to this unrelated #29 presentation-only change.

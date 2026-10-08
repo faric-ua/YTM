@@ -656,7 +656,7 @@ User explicitly prefers the native Android fullscreen extracted keyboard in land
 
 **GitHub issue #30 CLOSED / no retest required** unless protected owners change or new contradictory evidence occurs. Do not convert old R3 FAIL subsections into new to-do items.
 
-### #29 NEXT FOCUSED PHONE TEST — NOT YET IMPLEMENTED
+### #29 HISTORICAL PHONE PLAN — BEFORE IMPLEMENTATION
 
 URL Snapshot `Прочитати URL` must be disabled for blank/whitespace URL; no global ERROR/remote read from blank; typing nonblank enables it; clearing disables; preserve draft/disabled state across rotation; Neon/Blue/Green disabled contrast. This is **not PHONE PASS** until a new signed candidate is installed.
 
@@ -664,3 +664,21 @@ URL Snapshot `Прочитати URL` must be disabled for blank/whitespace URL;
 ### #29 code checkpoint — source implementation, not PHONE PASS (2026-10-08)
 
 App source `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095`: URL Snapshot Read button blank/whitespace/running guard, typing and × state updates, click-safe no-op, restored state support. Pure JVM tests and `v1455-url-blank-input-audit.sh` added in release preflight; parser/resolver untouched. Source Validate `37714915522` started. **Phone checks above still unchecked.** Previous #30 PHONE ACCEPTED/CLOSED and no-repeat lock stays authoritative.
+
+
+### #29 FINAL PHONE CLOSEOUT — ACCEPTED / CLOSED — 2026-10-08
+
+Final code/signed HEAD `a6e8bf2db047fc85f047348b487d37f0936ecb96`.
+Validate Android `37715162616 — SUCCESS`; signed build `37717759648 — SUCCESS`.
+
+User explicitly reported **`1+ 2+ 3+ 4+`** for focused #29 phone smoke:
+- [x] 1 — empty URL/whitespace → Read disabled, no full-screen error/read.
+- [x] 2 — typed nonblank `TEST 123` → Read enabled without automatic reading.
+- [x] 3 — × clears URL → Read disabled immediately, no read/error started.
+- [x] 4 — portrait→landscape→portrait with draft → text retained and no automatic read.
+
+The screenshots supplied in the same turn show GitHub Codespace Source Control with no visible uncommitted changes; they do **not** directly depict the YTM URL Snapshot screen. These four results are **user-reported phone evidence**, not screenshot-verifiable UI observations. Exact-theme Neon/Blue/Green manual comparison was not separately reported; existing theme-aware styling remained unchanged. Full unrelated feature matrix is unnecessary. GitHub #29 CLOSED. **Do not repeat #29 or #30 without an owner change/new contradictory evidence.**
+
+### #40 CURRENT NEXT FOCUSED QA — NOT YET IMPLEMENTED
+
+Two new Review UI presentation concerns only: multiline inspectable manual URL field with clear button; clear visible distinction between automatic match and a manually overridden track. Do not ask for #40 phone work until source/Validate/signed candidate is ready.

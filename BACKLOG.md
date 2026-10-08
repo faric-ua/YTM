@@ -1265,9 +1265,9 @@ Functional baseline: exact phone-accepted v1.4.54 source
 - [x] simplified Termux operator menu — #52 PHONE PASS / CLOSED
 
 ### Wave C — local convenience
-- [ ] local playlist Edit — #30 ACTIVE
-- [ ] blank URL inline validation
-- [ ] Review manual URL/manual-selection polish
+- [x] local playlist Edit — #30 PHONE ACCEPTED / CLOSED
+- [x] blank URL inline validation — #29 PHONE PASS / CLOSED
+- [ ] Review manual URL/manual-selection polish — #40 ACTIVE
 - [ ] Bulk preparation presentation/state cleanup
 
 Safety contract:
@@ -1283,5 +1283,5 @@ Master plan:
 ## 2026-10-08 current Phase C checkpoint
 
 - [x] #30 / UX-036 Edit current local playlist — **PHONE ACCEPTED / CLOSED**. Dedicated editor, portrait keyboard-safe Save, native landscape extracted text entry, clear/dirty/Back accepted. Earlier exact linked-YTM identity + remote title PHONE PASS are locked; do not repeat without relevant functional change.
-- [ ] #29 / UX-035 URL Snapshot blank URL validation — **SOURCE IMPLEMENTED, VALIDATE/PHONE PENDING**. App commit `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095`; no-remote blank input, rotation/theme PHONE smoke remains.
-- [ ] #40 manual URL/choice UX — NEXT after #29, not started.
+- [x] #29 / UX-035 URL Snapshot blank URL validation — **PHONE PASS / CLOSED 2026-10-08**. Final signed source `a6e8bf2db047fc85f047348b487d37f0936ecb96`; Validate `37715162616` SUCCESS; signed `37717759648` SUCCESS; user `1+ 2+ 3+ 4+` accepted. No repeats without new evidence.
+- [ ] #40 / UX-039 Review manual URL/choice UX — **CURRENT NEXT**. Single-line URL field + insufficient manual-match distinction; UI-only scope.

@@ -87,16 +87,24 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-**#30 IS CLOSED — DO NOT REPEAT ACCEPTED PHONE TESTS.** GitHub issue #30 CLOSED 2026-10-08 by user decision. Last signed editor HEAD `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`, Validate `37710803622 — SUCCESS`, signed `37711110963 — SUCCESS`. User accepted portrait keyboard-safe Save and native Android full-screen landscape text editing; × clear, changed-valid Save, Back/no-auto-save all PHONE PASS. Earlier linked YTM exact ID + remote unchanged title were already independently phone-confirmed and user explicitly rejected redundant retesting. See `docs/v.1.4.55/qa/PHONE_TEST.md` and `LOCAL_PLAYLIST_EDIT_REGRESSION_BASELINE.md`.
+**PHONE-ACCEPTED / CLOSED — #30 and #29. Never repeat accepted phone matrices without a changed protected owner or new contradictory evidence.**
 
-**CURRENT TASK: #29 / UX-035 — blank URL input on URL Snapshot screen.** Live issue: `https://github.com/faric-ua/YTM/issues/29`. Confirmed source GAP: `UrlSnapshotActivity.kt` enables `Прочитати URL` whenever not running, even if trimmed input is blank; blank tap currently goes to full remote ERROR state. Choose disabled blank-button UX with immediate in-place enabled/disabled updates, no remote/API call for blank/whitespace, preserved input and focus/rotation, stable Neon/Blue/Green semantics. Implementation source `6e959b5a8a3d9a4829b9d8faceeab7eb4964b095` now has UI click guard, live enabled state, pure JVM policy/test, static release-preflight guard and #29 contract. Validate `37714915522` started; **next: exact-final-HEAD Validate PASS → signed APK → one focused PHONE UI check**, not repeat #30. Do not touch playlist store, YTM write, History, Bulk ledger or reopen #30.
+- **#30 / UX-036:** dedicated local playlist editor — issue CLOSED 2026-10-08. Final signed source `3f6ee0bb202f5cb337e7b5c90562ab528756e2d2`, Validate `37710803622 — SUCCESS`, signed `37711110963 — SUCCESS`. Portrait Save above IME and user-accepted native landscape keyboard, clear ×, valid dirty Save, Back no-save, rotation, local rename persistence, exact linked-YTM identity and unchanged remote title all covered by accumulated phone evidence. Do not reopen the editor QA.
+- **#29 / UX-035:** blank URL Snapshot Read button — issue CLOSED 2026-10-08. Final source/signed HEAD `a6e8bf2db047fc85f047348b487d37f0936ecb96`; exact Validate `37715162616 — SUCCESS`; signed run `37717759648 — SUCCESS`. User supplied focused PHONE `1+ 2+ 3+ 4+`: blank disabled/no read, typing enables, × clears/disables, portrait→landscape→portrait preserves draft without auto-read. Reused theme-aware button visuals; theme-by-theme phone comparison not separately evidenced. No repeated #29 functional tests.
+
+**CURRENT TASK: #40 / UX-039 — Review manual URL readability and manual-selection hierarchy.** Issue: `https://github.com/faric-ua/YTM/issues/40`. Initial source inspection confirms:
+1. `ReviewActivity.showManualUrlDialog()` still calls `setSingleLine(true)` and lacks a clear control for a long URL.
+2. Review list/details present `Ручний вибір:` as subordinate concatenated text; manual status is difficult to distinguish from automatically matched READY state.
+
+**NEXT ACTION:** inspect #40 exact UI owners, protected lifecycle/remote safety contracts and existing related audits, implement a focused presentation-only change (readable multiline URL input/clear + a clearly distinct manual-selection label), add regression safeguards, exact-HEAD Validate → signed candidate → minimal #40 PHONE smoke. Do **not** modify Review manual lookup remote request semantics, Search/Bulk, #29 or #30.
 
 ## Consolidated phone matrix
 
-The candidate must cover Home/Menu, Bulk Preview/Session, History list/detail, Queue,
-Data/file chooser, long Help/destructive confirmation, portrait/landscape and both
-rotations, Neon plus Blue/Green, scroll/selectable-text retention, Back/Cancel/Close,
-and no automatic Search/write/rollback/delete/restore/save.
+**Scope phone QA to the exact changed owner and its lifecycle/interaction contract.**
+The full historical screen matrix is a reference for broad shared changes, not a
+mandatory repeat for unrelated presentation-only fixes. For #40, test the
+manual URL field, manual-choice visual hierarchy, rotation, Back/Cancel,
+and no auto-lookup. Do not rerun accepted #29/#30 screens.
 
 ## Mandatory recovery order
 
