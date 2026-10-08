@@ -766,6 +766,37 @@ class ReviewActivity : Activity() {
 
         root.addView(filterRow)
 
+        // Keep the existing four filters readable; the optional manual
+        // selection filter has its own full-width row.
+        val manualChoiceCount =
+            snapshot.playlist.tracks.count { track ->
+                ReviewManualPresentation.isManualChoice(
+                    manuallySelected = track.manuallySelected,
+                    selectedTitle = track.selectedTitle
+                )
+            }
+
+        val manualFilterRow =
+            LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(dp(12), 0, dp(12), dp(8))
+            }
+
+        manualFilterRow.addView(
+            compactFilterButton("✓ Ручні ($manualChoiceCount)") {
+                reviewFilter = ReviewFilter.MANUAL
+                listFirstVisiblePosition = 0
+                listTopOffset = 0
+                adapter.setFilter(ReviewFilter.MANUAL)
+                list.setSelection(0)
+            },
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(44)
+            )
+        )
+        root.addView(manualFilterRow)
+
         root.addView(
             list,
             LinearLayout.LayoutParams(
@@ -2532,6 +2563,12 @@ class ReviewActivity : Activity() {
                             track.status ==
                                 TrackStatus.REVIEW
 
+                        ReviewFilter.MANUAL ->
+                            ReviewManualPresentation.isManualChoice(
+                                manuallySelected = track.manuallySelected,
+                                selectedTitle = track.selectedTitle
+                            )
+
                         ReviewFilter.READY ->
                             track.status in
                                 setOf(
@@ -2743,7 +2780,8 @@ class ReviewActivity : Activity() {
         ALL,
         REVIEW,
         READY,
-        PROBLEMS
+        PROBLEMS,
+        MANUAL
     }
 
     companion object {

@@ -208,6 +208,7 @@ check_file "scripts/v1455-file-library-audit.sh"
 check_file "scripts/v1455-local-playlist-edit-regression-audit.sh"
 check_file "scripts/v1455-url-blank-input-audit.sh"
 check_file "scripts/v1455-review-manual-ux-audit.sh"
+check_file "scripts/v1455-review-manual-filter-audit.sh"
 check_file "scripts/v1455-termux-operator-menu-audit.sh"
 check_file "docs/v.1.4.55/TERMUX_OPERATOR_MENU_CONTRACT.md"
 check_file "app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotTitleBackfill.kt"
@@ -340,6 +341,7 @@ bash scripts/v1455-file-library-audit.sh
 bash scripts/v1455-local-playlist-edit-regression-audit.sh
 bash scripts/v1455-url-blank-input-audit.sh
 bash scripts/v1455-review-manual-ux-audit.sh
+bash scripts/v1455-review-manual-filter-audit.sh
 bash scripts/v1455-termux-operator-menu-audit.sh
 bash scripts/documentation-system-audit.sh
 bash scripts/project-handoff-audit.sh

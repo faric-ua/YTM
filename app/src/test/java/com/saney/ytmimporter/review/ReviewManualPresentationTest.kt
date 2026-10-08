@@ -1,5 +1,6 @@
 package com.saney.ytmimporter.review
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,5 +16,23 @@ class ReviewManualPresentationTest {
     @Test fun manuallySkippedWithoutSelectedTitleMustNotLookSuccessful() {
         assertFalse(ReviewManualPresentation.isManualChoice(true, null))
         assertFalse(ReviewManualPresentation.isManualChoice(true, " "))
+    }
+
+    @Test fun manualFilterCountExcludesAutomaticAndSkipped() {
+        val tracks = listOf(
+            true to "Selected manually",
+            false to "Matched automatically",
+            true to null,
+            true to " "
+        )
+        assertEquals(
+            1,
+            tracks.count { (manuallySelected, selectedTitle) ->
+                ReviewManualPresentation.isManualChoice(
+                    manuallySelected,
+                    selectedTitle
+                )
+            }
+        )
     }
 }

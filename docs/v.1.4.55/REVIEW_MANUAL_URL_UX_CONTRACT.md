@@ -1,6 +1,6 @@
 # v1.4.55 — #40 Review manual URL / manual-choice presentation
 
-**SOURCE CANDIDATE — Validate Android and PHONE acceptance pending.**
+**PHONE ACCEPTED / CLOSED 2026-10-08.** App HEAD `b1411e430443f1ca237bf863feed77130d004a5b`; exact Validate `37785508581 — SUCCESS`; signed `37791443481 — SUCCESS`. User PHONE PASS 3/3 for long URL wrapping, × clear and draft retained across rotation, plus a screenshot confirming the manual badge and replacement are visually distinct from automatic matches. Track detail, manual skip and alternate theme were not individually screenshot-verified; existing JVM/static tests guard the skip behavior. A separate #58 filter follow-up is outside the accepted #40 scope.
 
 Review track → `Вставити YouTube / YTM URL` opens the same native
 AlertDialog with a theme-aware 2–3-line wrapping URI input, clear × labeled
@@ -30,3 +30,8 @@ FOCUSED PHONE QA PENDING:
    from automatic matches; manual skip must not show successful-choice label.
 5. Check Neon and an alternate theme for legible manual status.
 Do not repeat accepted #29/#30 tests.
+
+
+## No-repeat final note
+
+#40 is CLOSED. Do not require another phone test of long URL, clear, rotation or manual-match list badge because #58 introduces a separate local-only filter. Its acceptance is scoped to `✓ Ручні (N)` versus `≡ Усі` and rotation. Historical checklist above documents the original contract, not a reopened QA gate.

@@ -23,8 +23,8 @@ if dialog.count('ReviewRemoteOperations') != 1:
 for tok in ('STATE_MANUAL_URL_DIALOG_OPEN', 'STATE_MANUAL_URL_DRAFT', 'STATE_MANUAL_URL_HISTORY_INDEX'):
     if tok not in review:
         raise SystemExit('FAIL #40 lost state: ' + tok)
-if review.count('ReviewManualPresentation.isManualChoice(') != 2:
-    raise SystemExit('FAIL #40 manual match policy not used in list and detail')
+if review.count('ReviewManualPresentation.isManualChoice(') != 4:
+    raise SystemExit('FAIL #40/#58 manual match policy must cover list, detail, filter and count')
 for tok in ('manualStatus.visibility =', 'row.getChildAt(2) as TextView', 'manualStatus.setTextColor(palette.accent)'):
     if tok not in review:
         raise SystemExit('FAIL #40 recycled row state missing: ' + tok)
