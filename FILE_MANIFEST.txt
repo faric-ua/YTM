@@ -110,7 +110,7 @@ f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 088d30cebc159efb  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 5c565252917f725e  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 562db04bb216f33f  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
-90d313b61d6f1697  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
+8923bc28bad4dcbe  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 99e25606f1e7db96  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
 5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
@@ -188,6 +188,7 @@ f8eef70204bb169c  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapsho
 9c3e2cda7e13c759  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotCommitPolicy.kt
 a7e3ea909f69dfb5  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotDuplicatePolicy.kt
 188eba82e35ca27c  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotLocalCommitter.kt
+d0a955ea1ab22526  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotReadPolicy.kt
 6991fcfe2716678f  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotRemoteOperations.kt
 ef7080f7c90cb7fa  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotResolution.kt
 1162d71aecb66e25  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotResolver.kt
@@ -247,6 +248,7 @@ ba0683f9524d126e  app/src/test/java/com/saney/ytmimporter/storage/YtmArtifactCla
 0113b34cc00569a1  app/src/test/java/com/saney/ytmimporter/updater/UpdaterManifestPolicyTest.kt
 40aa6e5acb402d82  app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotCommitPolicyTest.kt
 5fc5ed6af5faa29f  app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotDuplicatePolicyTest.kt
+bb5b229e26feed22  app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotReadPolicyTest.kt
 0971fccf248b1dfd  app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotResolverTest.kt
 bfa4be449a7c9da8  app/src/test/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotSourceParserTest.kt
 e646bea8a86f872e  app/src/test/java/com/saney/ytmimporter/write/WritePausePolicyTest.kt
@@ -1518,6 +1520,7 @@ b67036413f2dc72a  docs/v.1.4.55/RELEASE.md
 8bbb1622059f0ed3  docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md
 1748ec22ea8ca1fa  docs/v.1.4.55/TERMUX_OPERATOR_MENU_CONTRACT.md
 ebd6581c82253c7f  docs/v.1.4.55/TILE_CARD_READABILITY_AUDIT_2026-10-01.md
+7729638fee0335fc  docs/v.1.4.55/URL_SNAPSHOT_BLANK_INPUT_CONTRACT.md
 32a685d5af6e2a87  docs/v.1.4.55/UX_HARDENING_MASTER_PLAN.md
 c704c86772b65f8c  docs/v.1.4.55/diagrams/README.md
 27a15b16ec816765  docs/v.1.4.55/diagrams/UX_HARDENING_FLOW.md
@@ -1632,7 +1635,7 @@ dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
 34a319998981b650  scripts/release-close-audit.sh
 9c01ad273ef823e6  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-929d1374a5b0ced4  scripts/release-preflight.sh
+72494b4bbf3ca2d0  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1776,6 +1779,7 @@ d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 6b0f6c7591ef61c5  scripts/v1455-file-library-audit.sh
 54acd2ffe8682685  scripts/v1455-local-playlist-edit-regression-audit.sh
 f2a3a8fc068701c4  scripts/v1455-termux-operator-menu-audit.sh
+311123890cc02863  scripts/v1455-url-blank-input-audit.sh
 fdc8f2f95d8ce093  scripts/v1455-ux-hardening-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 51053de6297a5c01  tools/termux/README.md

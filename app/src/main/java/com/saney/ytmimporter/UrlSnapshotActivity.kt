@@ -5,7 +5,9 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
@@ -22,6 +24,7 @@ import com.saney.ytmimporter.urlsnapshot.UrlSnapshotAvailability
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotDuplicateMode
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotDuplicatePolicy
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotLocalCommitter
+import com.saney.ytmimporter.urlsnapshot.UrlSnapshotReadPolicy
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotRemoteOperations
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotResolvedItem
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotUnavailableReason
@@ -409,29 +412,75 @@ class UrlSnapshotActivity : Activity() {
                         topMarginDp =
                             10
                     ) {
-                        duplicateChoiceOpen =
-                            false
                         captureInput()
-
-                        UrlSnapshotRemoteOperations
-                            .startResolve(
-                                context =
-                                    this@UrlSnapshotActivity,
-                                rawUrl =
-                                    enteredUrl
+                        if (
+                            UrlSnapshotReadPolicy.canRead(
+                                enteredUrl,
+                                UrlSnapshotRemoteOperations.current().running
                             )
+                        ) {
+                            duplicateChoiceOpen =
+                                false
+                            UrlSnapshotRemoteOperations
+                                .startResolve(
+                                    context =
+                                        this@UrlSnapshotActivity,
+                                    rawUrl =
+                                        enteredUrl
+                                )
+                        } else {
+                            // No remote state mutation for blank input.
+                            urlInput.requestFocus()
+                        }
                     }
 
-                resolve.isEnabled =
-                    !state.running
+                fun refreshResolveButton() {
+                    val enabled =
+                        UrlSnapshotReadPolicy.canRead(
+                            enteredUrl,
+                            state.running
+                        )
 
-                resolve.alpha =
-                    if (state.running) {
-                        0.65f
-                    } else {
-                        1f
+                    resolve.isEnabled =
+                        enabled
+                    resolve.alpha =
+                        if (enabled) {
+                            1f
+                        } else {
+                            0.45f
+                        }
+                }
+
+                urlInput.addTextChangedListener(
+                    object : TextWatcher {
+                        override fun beforeTextChanged(
+                            text: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
+                            // No-op.
+                        }
+
+                        override fun onTextChanged(
+                            text: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            // No-op.
+                        }
+
+                        override fun afterTextChanged(
+                            text: Editable?
+                        ) {
+                            enteredUrl =
+                                text?.toString().orEmpty()
+                            refreshResolveButton()
+                        }
                     }
-
+                )
+                refreshResolveButton()
                 addView(
                     resolve
                 )
