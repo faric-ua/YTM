@@ -296,7 +296,8 @@ class EditPlaylistActivity :
                         InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
                         InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 imeOptions =
-                    EditorInfo.IME_ACTION_DONE
+                    EditorInfo.IME_ACTION_DONE or
+                        EditorInfo.IME_FLAG_NO_EXTRACT_UI
                 setSingleLine(
                     false
                 )
@@ -492,7 +493,9 @@ class EditPlaylistActivity :
                 extraTopDp =
                     4,
                 extraBottomDp =
-                    8
+                    8,
+                includeIme =
+                    true
             )
 
         nameInput.addTextChangedListener(

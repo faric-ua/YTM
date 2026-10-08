@@ -54,6 +54,10 @@ grep -Fq 'R.drawable.ic_ytm_clear' "$EDITOR" ||
   fail "#30 one-tap clear icon missing"
 grep -Fq 'nameInput.setText("")' "$EDITOR" ||
   fail "#30 one-tap clear no longer clears full draft"
+grep -Fq 'EditorInfo.IME_FLAG_NO_EXTRACT_UI' "$EDITOR" ||
+  fail "#30 landscape editor can regress to extracted IME full-screen"
+grep -Eq 'includeIme[[:space:]]*=' "$EDITOR" ||
+  fail "#30 edge-to-edge editor no longer accounts for IME insets"
 grep -Fq 'saveButton.isEnabled =' "$EDITOR" ||
   fail "#30 Save dirty/valid state owner missing"
 grep -Fq 'normalized !=' "$EDITOR" ||

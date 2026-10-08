@@ -180,3 +180,14 @@ Check only:
 The accepted rename/persistence/rotation/no-auto-save/Cancel/YTM-linkage/remote-title baseline is rerun only if a protected persistence/identity owner changes.
 
 R3 validated source checkpoint: `133157098353f250e8536fd63bab65920b1555bf`; Validate `37701432833 — SUCCESS` (dedicated-screen regression audit / preflight / JVM / unsigned assemble PASS).
+
+## R3 IME screenshot finding and focused correction — 2026-10-08
+
+Signed source `cb0e32414018afbf3ec2f129802430699fbc36f2`, signed run `37707129541`, has passed the IME-closed portrait/landscape screen layout check. New phone screenshots show two remaining UX defects: portrait IME can cover the fixed Save footer; landscape IME launches Android's fullscreen extracted-text editor rather than preserving the YTM screen. R3 is **not yet PHONE PASS**.
+
+Corrective candidate is editor-local only:
+- `EditPlaylistActivity` requests `includeIme = true` from the existing shared screen-inset helper; shared helper defaults are untouched.
+- The name `EditText` adds `IME_FLAG_NO_EXTRACT_UI` while keeping `IME_ACTION_DONE`.
+- No edit policy, playlist store, YTM linkage, History, Search, write, or remote operation is changed.
+
+Focused next PHONE acceptance: keyboard visible in portrait and landscape, field/clear/Save reachable above the keyboard or through the screen's scrollable content, no fullscreen extract takeover, keyboard dismissal leaves the correct disabled/dirty Save state. Existing accepted functional rename/identity/remote-title baseline is carried forward.

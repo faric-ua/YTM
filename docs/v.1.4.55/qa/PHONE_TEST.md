@@ -620,3 +620,14 @@ Focused PHONE smoke:
 - [ ] linked-YTM screen shows read-only remote name/ID.
 
 Full rename/persistence/rotation/Cancel/YTM-linkage/remote-title matrix stays carried forward unless a protected persistence/identity owner changes.
+
+### #30 R3 — IME-visible phone screenshot finding (2026-10-08)
+
+Installed signed R3: HEAD `cb0e32414018afbf3ec2f129802430699fbc36f2`, Validate `37701892983 — SUCCESS`, signed build `37707129541 — SUCCESS`.
+
+- [x] Portrait / IME hidden: dedicated editor and fixed Save visible; Save disabled for unchanged name.
+- [x] Landscape / IME hidden: dedicated editor layout and Save visible without observed clipping.
+- [ ] **Portrait / IME shown — FAIL on this signed candidate:** Save is not visible above the keyboard.
+- [ ] **Landscape / IME shown — FAIL on this signed candidate:** keyboard enters full-screen extracted input mode, hiding the app editor and Save until `Готово`.
+
+R3 correction is limited to editor IME-safe insets and no-extract IME option. Re-test these two keyboard-on scenarios after a fresh exact-HEAD signed APK; do not re-run the already accepted #30 functional identity/persistence/YTM matrix. #30 remains open.

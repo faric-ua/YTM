@@ -72,16 +72,15 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-#30 R3 dedicated edit screen passed source/static/JVM/assemble validation on `133157098353f250e8536fd63bab65920b1555bf`; Validate `37701432833 — SUCCESS`.
+#30 dedicated edit screen R3 has progressed to exact-HEAD signed PHONE screenshots:
+- R3 source `cb0e32414018afbf3ec2f129802430699fbc36f2`;
+- exact Validate `37701892983 — SUCCESS`;
+- signed build `37707129541 — SUCCESS`;
+- portrait and landscape layouts with keyboard hidden: accepted.
 
-Next:
-1. finalize docs/manifest exact-HEAD Validate;
-2. signed build from that exact HEAD;
-3. install over current app;
-4. focused dedicated-screen PHONE smoke only;
-5. close #30 if the new screen UX is accepted.
+**New R3 IME finding 2026-10-08 — phone UX FAIL:** portrait keyboard obscures the fixed Save footer; landscape keyboard switches to Android's fullscreen extracted editor. Localize correction to EditPlaylistActivity: include IME in root insets, set IME_FLAG_NO_EXTRACT_UI. Do not modify shared UiChrome behavior or local/remote storage operations.
 
-Functional rename/persistence/YTM remote-safety baseline remains carried forward.
+Next: exact HEAD Validate for this corrective commit → one signed APK → short portrait/landscape keyboard-visible PHONE retest → remaining tiny editor controls → close #30 only after phone evidence. Previously accepted #30 functional rename/persistence/YTM identity and remote-title baseline remains locked.
 
 ## Immutable functional reference
 

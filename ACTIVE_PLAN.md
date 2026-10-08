@@ -471,25 +471,19 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-**Build one exact-final-HEAD signed APK for #30 R3 dedicated editor screen.**
+**#30 R3 IME corrective (2026-10-08):**
 
-Validated R3 source checkpoint: `133157098353f250e8536fd63bab65920b1555bf`; Validate `37701432833 — SUCCESS` (dedicated #30 screen audit / release preflight / JVM / unsigned assemble PASS).
+- [x] Exact R3 signed build `37707129541` (HEAD `cb0e32414018afbf3ec2f129802430699fbc36f2`) verified SUCCESS.
+- [x] IME-hidden portrait and landscape screenshots accepted as focused presentation PASS.
+- [x] IME-visible screenshots identify portrait hidden Save footer and landscape Android extracted text mode; **phone UX FAIL**.
+- [x] Source cause identified: edge-to-edge screen requests system-bar insets but not IME, and input lacks NO_EXTRACT flag.
+- [ ] Verify corrective source/guards/manifest on a single GitHub commit and exact-HEAD Validate Android PASS.
+- [ ] Build one signed APK from that exact validated HEAD; download/install on phone.
+- [ ] Focused PHONE retest: portrait keyboard + visible/reachable Save; landscape keyboard without extracted fullscreen and with reachable editor controls; normal state after keyboard hide.
+- [ ] Check clear ×, dirty/valid Save state, Back=no-save and linked YTM read-only presentation; close #30 only after the R3 screen has been accepted.
 
-R3 replaces the rejected modal completely with `EditPlaylistActivity`; shared `UiChrome` editor-specific changes are removed.
+Accepted functional phone baseline for rename/persistence/identity/linkage/remote safety is unchanged and is **not** repeated. No stable release or unrelated feature work yet.
 
-After this docs-only checkpoint is finalized and validated, do not move HEAD before signed build.
-
-PHONE smoke only:
-1. **«Поточний плейлист» → «Редагувати»** opens the dedicated page;
-2. portrait + keyboard usable; no parent-screen backdrop/noise;
-3. landscape + keyboard usable;
-4. × **«Очистити назву»** clears the entire draft;
-5. Save disabled for blank/unchanged, enabled for a valid changed name;
-6. blank validation clears after valid typing;
-7. Back exits without saving;
-8. linked playlist shows read-only YTM title/ID.
-
-Do not repeat the accepted full #30 functional matrix.
 ## Update rule
 
 Never mark a checkbox from intent, static inspection alone, or an old chat claim when

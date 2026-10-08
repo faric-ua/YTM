@@ -87,24 +87,17 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-Current task: **#30 / UX-036 — dedicated edit screen R3 signed-candidate gate**.
+Current task: **#30 R3 keyboard-on corrective candidate**.
 
-Validated R3 checkpoint:
-- HEAD `133157098353f250e8536fd63bab65920b1555bf`;
-- Validate `37701432833 — SUCCESS`;
-- dedicated #30 screen audit / preflight / JVM / unsigned assemble PASS.
+Accepted code/CI baseline:
+- R3 dedicated edit screen signed HEAD `cb0e32414018afbf3ec2f129802430699fbc36f2`.
+- Validate `37701892983 — SUCCESS` and signed build `37707129541 — SUCCESS`.
+- Portrait/landscape with IME hidden: phone screenshots acceptable; Save disabled for unchanged title.
+- With IME shown: phone UX **FAIL** — portrait Save footer hidden behind keyboard; landscape Samsung/Android IME switches to fullscreen extracted text editor.
 
-R3 architecture:
-- `PlaylistActivity` only launches `EditPlaylistActivity`;
-- no edit modal/state remains in the hub;
-- normal Activity `adjustResize`;
-- dirty/valid-only Save;
-- × clear;
-- Back=no-save;
-- linked YTM title/ID read-only;
-- shared `UiChrome` no longer carries #30 editor geometry hacks.
+Current work: editor-local `includeIme = true` in root inset request and `IME_FLAG_NO_EXTRACT_UI` on the name input; regression script/QA docs updated. Protected rename/store/YTM/History owners untouched.
 
-Next: finalize docs/manifest exact-HEAD gate → signed APK → focused R3 screen smoke only. Do not repeat the accepted full #30 or #52/#53/#54 matrices.
+**NEXT ACTION:** verify the new corrective GitHub HEAD and its Validate result. If Validate succeeds, build one signed APK from that exact HEAD using the YTM Termux operator menu; phone-test portrait and landscape keyboard-open reachability only. If Validate fails, fix the source first. Never mark PHONE PASS from CI alone. #30 stays open until the IME-visible screen passes and the remaining small UI interactions are confirmed.
 
 ## Consolidated phone matrix
 
