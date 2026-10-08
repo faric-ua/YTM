@@ -53,3 +53,13 @@ count, filter classification or rotation state changes.
 landscape, swipe upward to reveal manually selected Mezziah card, tap it and
 verify it opens that same Mezziah track. Portrait remains reachable. Do not
 repeat 1+/2+/3+ or previously accepted #29/#30/#40 tests.
+
+
+## #58 phone closeout (2026-10-08) — accepted
+
+- Original filter/count/All/rotation: user PHONE `1+ 2+ 3+` on previous signed APK `37810023523`.
+- Landscape screenshot exposed no visible list rows; corrective moved summary/actions/filters into ListView header and uses header-aware tap.
+- Corrective final signed HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`, Validate `37826627416 — SUCCESS`, signed `37839577073 — SUCCESS`.
+- User replied `+` for focused landscape scroll to manually selected Mezziah and opening the correct track; this is **user-reported PHONE PASS**, without additional screenshot.
+- GitHub #58 **CLOSED**. Earlier pending checkboxes are historical acceptance planning; no repeated QA without new contradiction or changed owner.
+- Next #27/#28 Bulk preparation UI/state is unrelated. Docs-only closeout does not require a fresh APK.

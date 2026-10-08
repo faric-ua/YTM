@@ -12,7 +12,7 @@
 > 3. update **NEXT ACTION** so the first unchecked item is the real resume point;
 > 4. update `CURRENT_HANDOFF.md` when the resume point materially changes.
 
-Last updated: 2026-10-07
+Last updated: 2026-10-08
 
 ## Active release
 
@@ -463,7 +463,7 @@ Checklist:
 
 Remaining Phase C backlog:
 - [x] Blank URL inline validation (#29) — PHONE PASS / CLOSED 2026-10-08.
-- [ ] Review manual URL/manual-choice hierarchy (#40) — CURRENT TASK.
+- [x] Review manual URL/manual-choice hierarchy (#40) — PHONE ACCEPTED / CLOSED 2026-10-08.
 - [ ] Bulk preparation presentation/state cleanup (#27/#28).
 - [ ] URL Snapshot action-fit stays under the shared adaptive-action contract.
 
@@ -471,23 +471,22 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-### ACCEPTED / CLOSED #29, #30, #40
-- [x] #29 blank URL; user 1+ 2+ 3+ 4+ and signed `37717759648`.
-- [x] #30 dedicated local playlist Edit; local-only rename and linked YTM identity/remote-safe phone acceptance.
-- [x] #40 long manual URL / × / rotation user `+ всі`; separate status `✓ Ручний вибір` phone screenshot confirmed, signed `37791443481`. No repeats.
+### Accepted / locked — no repeat
+- [x] #29 URL Snapshot blank input — PHONE `1+ 2+ 3+ 4+`, CLOSED.
+- [x] #30 local playlist Edit — local rename/Back and unchanged linked YTM accepted, CLOSED.
+- [x] #40 Review URL/manual-choice presentation — `+ всі` plus manual-match card screenshot, CLOSED.
+- [x] #58 manual-only Review filter: `✓ Ручні (N)`, `≡ Усі` restoring 41 tracks, rotation — user PHONE `1+ 2+ 3+`.
+- [x] #58 landscape blocker: previous screenshot showed controls prevented scrolling; source moved controls into ListView header and added header-aware tap to avoid wrong-track navigation.
+- [x] Exact signed corrective candidate HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`: Validate Android `37826627416 — SUCCESS`, signed APK `37839577073 — SUCCESS`.
+- [x] User PHONE `+` for final landscape scroll to manual Mezziah and correct track open. This is user-reported, not screenshot-verified. GitHub #58 CLOSED on 2026-10-08.
 
-### ACTIVE #58 — Manual-only Review filter
-- [x] Dedicated full-width `✓ Ручні (N)` below unchanged four filters, actual manual selection predicate; skips/automatic excluded. Original source `cf1401d666327ba442125e43ce73c44efa28576f`.
-- [x] Original source and final-docs HEAD Validate `37794350918` and `37794944749` SUCCESS; signed `37810023523` on `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`.
-- [x] PHONE functional **1+ 2+ 3+** accepted: correct manual-only filtering/count, All restores 41, rotation preserves filter.
-- [x] NEW screenshot finding: landscape summary/project/filter/manual rows occupy all available height, weighted ListView has no visible track rows and cannot scroll; #58 remains OPEN.
-- [x] Corrective source moves summary/project/filter/manual into scrollable ListView header, adds header before adapter and uses list-level row accessor to avoid off-by-one; keeps fixed topbar and create/add footer.
-- [x] Extend #58 regression audit and lifecycle/UI contract, no Search/remote/store changes.
-- [ ] **Exact final HEAD Validate Android PASS** for corrective candidate.
-- [ ] One signed APK and **only landscape corrective PHONE**: swipe to manual Mezziah card, tap it, verify correct track opens; portrait still usable.
-- [ ] Close #58 only after this; then next Phase C backlog item.
+### NEW CURRENT TASK — Bulk preparation #27 / #28 (both OPEN)
+- [ ] Read issues <https://github.com/faric-ua/YTM/issues/27> and <https://github.com/faric-ua/YTM/issues/28>, identify exact relevant Bulk UI/lifecycle and safety contract owners.
+- [ ] Reconcile preparation-state presentation and stale status on returning to Bulk preview; split UI-only from any functional changes and define a focused, no-remote-auto-start QA plan.
+- [ ] Only after scope/plan: implement safely, extend targeted audit, validate exact HEAD and build one signed candidate if Android code changes.
+- [ ] PHONE only new #27/#28 behavior, no replay of CLOSED #58/#40/#29/#30.
 
-**NEXT ACTION: exact-HEAD Validate → one signed build → one short landscape-scroll PHONE check. All earlier accepted tests remain locked.**
+**NEXT ACTION: inspect #27/#28 existing source/contracts and write the minimal plan. #58 is CLOSED. No APK or Termux action for this documentation-only closeout.**
 
 ## Update rule
 

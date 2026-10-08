@@ -5,7 +5,7 @@
 > Do not reconstruct the project from chat memory. Read this file from the live
 > `feat/v1.4.55-ux-hardening` branch first, then verify branch HEAD and latest Actions state.
 
-Last updated: **2026-10-07**
+Last updated: **2026-10-08**
 
 ## User-facing answer format — mandatory
 
@@ -19,7 +19,7 @@ use three visible parts; do not move Termux/phone QA above the final section.
 ## Live resume point
 
 - Repository: `faric-ua/YTM`
-- Release: **v1.4.55 / Phase C — Local playlist Edit (#30)**
+- Release: **v1.4.55 / Phase C — #58 CLOSED, next #27/#28 Bulk preparation UX**
 - Branch: `feat/v1.4.55-ux-hardening`
 - Phase A and Phase B #41/#25/#57/#55/#53/#54 are PHONE PASS / CLOSED.
 - #53 candidate is implemented, validated and signed:
@@ -96,13 +96,13 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-**NO RETEST: #29, #30, #40 are PHONE ACCEPTED / CLOSED.** Source and QA evidence remain in GitHub, not repeated without changed functional owners or contradictory evidence.
+**#58 / manual-only Review filter and landscape viewport — PHONE ACCEPTED / CLOSED 2026-10-08.** No repeat of accepted tests. Signed candidate exact app/docs HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`, Validate Android `37826627416 — SUCCESS`, signed APK `37839577073 — SUCCESS`. User initially `1+ 2+ 3+` for manual filter/count, `≡ Усі` restoring 41, rotation state. A real-phone landscape screenshot showed missing scroll; corrective moved Review controls into the scrollable ListView header with safe track click mapping. User subsequently answered `+` to the **single new landscape scroll/Mezziah-track-tap phone test**. This latter acceptance is user-reported (no new screenshot), not falsely claimed as screenshot-verified. GitHub #58 CLOSED.
 
-**ACTIVE #58 — Manual-only Review filter, functional PHONE 3/3 PASS; landscape accessibility blocker.** On signed HEAD `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`, Validate `37794944749 — SUCCESS`, signed `37810023523 — SUCCESS`, user reported `1+ 2+ 3+` for manual-only count/selection, All restoring 41, and rotation retaining filter. **Real phone landscape screenshot** shows summary, actions and both filter rows consuming the entire short screen, with no track rows or scroll. This is a new defect; **#58 remains OPEN** until fixed.
+**#29, #30, #40 remain PHONE ACCEPTED / CLOSED** with historical evidence retained. Do not rerun #58/#40/#29/#30 unless a protected owner changes or new evidence contradicts acceptance.
 
-**Corrective source candidate:** Review list header now contains summary, project actions and both filter rows. Header and track cards share one scrollable ListView viewport, leaving top bar and create/add footer fixed. Header is added before setting the adapter; row taps use `list.getItemAtPosition(position) as? Track` to prevent off-by-one wrong-track opens. Original filter, store and Search/YTM owner logic remain unchanged. #58 audit and contract updated.
+**NEXT ACTIVE TASK: #27 and #28 — Bulk session preparation UI and stale status after closing the session.** Both issues are OPEN; next action is **read their exact contracts/source, reconcile scope, prepare a focused source/phone plan**. No Bulk API, write, checkpoint, ledger, Queue or remote mutation may run automatically. No new Android changes or APK requested yet.
 
-**NEXT:** exact-final-HEAD Validate Android PASS → one signed APK → **only one landscape scroll PHONE test:** swipe up to see genuine manual Mezziah card and tap to open correct track. No repeats of accepted #58 1+/2+/3+ or #29/#30/#40. GitHub issue: `https://github.com/faric-ua/YTM/issues/58`.
+**Formatting rule:** first read `docs/assistant-kit/USER_RESPONSE_TEMPLATE.md`; short fix heading → concise outcome → final Termux instructions → last tiny new APK test. The #58 closeout is documentation-only; no APK rebuild is warranted merely to mark this pass.
 
 ## Consolidated phone matrix
 

@@ -14,12 +14,12 @@ Last updated: **2026-10-08**
 Use `docs/assistant-kit/USER_RESPONSE_TEMPLATE.md` for every project
 progress and APK/PHONE handoff. Short heading → what changed/result → **at the
 end** Termux menu numbers/labels → **last** focused post-install test. This is
-a standing preference, not a new feature/QA gate. The #58 corrective app code
-HEAD `1bb60b4363a5f2127dcc29dca8c2b8f352c41093` has exact-source
-Validate Android `37822555605 — SUCCESS`, but a **new docs-only commit
-will advance HEAD**, so wait for its exact-HEAD Validate before signed APK.
-User's earlier #58 functional 1+/2+/3+ stay accepted. No Android source edits
-are part of the reply-format change.
+a standing preference, not a new feature/QA gate. #58 is now **PHONE ACCEPTED / CLOSED** on signed app/docs HEAD
+`b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`, Validate `37826627416 — SUCCESS`,
+signed `37839577073 — SUCCESS`. User reported `+` for final
+landscape scrolling and correct Mezziah row tap, after the earlier accepted
+`1+ 2+ 3+`. The next source work is #27/#28; this closeout is docs-only,
+so it does not trigger a new APK. Do not repeat closed phone tests.
 
 ## Active work
 
@@ -88,13 +88,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-**CLOSED / ACCEPTED:** #29, #30, #40. No regression replay. #29 signed `37717759648`, user 1+/2+/3+/4+; #30 signed `37711110963`, local Edit/remote unchanged; #40 signed `37791443481`, user `+ всі` URL wrapping/clear/rotation plus screenshot verified manual badge and selected replacement.
+**CLOSED / PHONE ACCEPTED #29, #30, #40, #58**. Do not repeat any accepted PHONE suites without protected owner changes or contrary phone evidence.
 
-**ACTIVE #58**, `https://github.com/faric-ua/YTM/issues/58`. Baseline app/HEAD `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`, Validate `37794944749` SUCCESS, signed `37810023523` SUCCESS, **PHONE functional 1+ 2+ 3+ PASS** for manual count/filter, All restores 41, rotation retains selected filter. New **landscape screenshot blocker:** summary/actions/filter rows and footer consume the available window; weighted ListView rows/scroll disappear.
+**#58 final user evidence:** manual-only filter/count, All restoring 41, filter rotation `1+ 2+ 3+` on previous signed run `37810023523`. New landscape screenshot identified collapsed list/no scroll. Corrected via scrollable ListView header + header-aware track selection. Final app/docs HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`, Validate `37826627416 — SUCCESS`, signed APK `37839577073 — SUCCESS`. User replied **`+`** to the only remaining landscape scroll → correct Mezziah tap test (user-reported; no new screenshot). Issue `#58` closed.
 
-**CURRENT CORRECTIVE:** In `ReviewActivity.showListScreen()`, move summary, project row, four filter buttons and manual filter into a single ListView header (inserted before adapter), leaving only top bar and create/add footer fixed. Header and track rows scroll as one; use `list.getItemAtPosition(position) as? Track` so header does not shift click target. Extend #58 static audit and contract, sync deterministic manifest. Filter classification, state saved/restored and no remote calls unchanged.
+**NEXT OPEN #27 and #28** — Bulk session preparation presentation and stale preparing message after returning from completed session. Both issues OPEN, not implemented here. Read exact source/contracts and define a minimal safe plan. Protect all remote Search/Bulk write operations, checkpoint identity/ledger, History, Queue, user controls and lifecycle from auto-starts. No code changes in this docs closeout, so no APK rebuild needed merely to sync documentation.
 
-**NEXT:** exact final HEAD Validate PASS → one signed APK → **only landscape scroll + correct Mezziah row tap PHONE**. #58 stays OPEN until passed. Codespace was deleted by user, not part of app workflow.
+**Standing user reply format:** `docs/assistant-kit/USER_RESPONSE_TEMPLATE.md` first; heading → concise finding → final Termux menu block → last short APK test block.
 
 ## Immutable functional reference
 
@@ -166,7 +166,7 @@ real-device acceptance.
 
 ## Historical #54 implementation sequence — complete
 
-The classifier → Full Restore/History scoping → Playlist Project/typed-card sequence is complete and PHONE PASS. Resume only from the **CURRENT #40 Exact next work** section above.
+The classifier → Full Restore/History scoping → Playlist Project/typed-card sequence is complete and PHONE PASS. Resume from the latest **Exact next work** section above; old #40/#58 notes are historical.
 
 ## Working contract
 

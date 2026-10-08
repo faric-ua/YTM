@@ -720,3 +720,15 @@ Baseline branch/signed HEAD `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`, Validate
 - [ ] New exact-HEAD Validate → one signed APK → **ONLY** landscape Review swipe up/down to expose the manual Mezziah track, tap it and verify correct track opens; portrait still usable.
 
 Do NOT repeat original #58 three successes or closed #29/#30/#40.
+
+
+### #58 FINAL PHONE ACCEPTED / CLOSED — 2026-10-08
+
+Corrective final app/docs source `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`; Validate Android `37826627416 — SUCCESS`, signed APK `37839577073 — SUCCESS` verified live.
+
+- [x] Original manual-only Review filter count, `≡ Усі` restoring 41 tracks, rotation state: user `1+ 2+ 3+` (previous signed `37810023523`).
+- [x] Source fix for real-phone landscape screenshot where the list could not scroll: summary/actions/filters included in the scrolling ListView header; tapped track mapping protected against header offset.
+- [x] User response `+` for **only remaining landscape scroll and correct Mezziah track open** after new APK install. **User-reported PHONE PASS**, no new screenshot for this specific final corrective check.
+- [x] GitHub issue <https://github.com/faric-ua/YTM/issues/58> CLOSED.
+
+**Historical unchecked test instructions earlier in this file are superseded by this final checkpoint, not new retest requirements.** No #58/#40/#29/#30 replays. Next #27/#28 Bulk preparation is a separate scope and has no PHONE test yet.

@@ -1268,7 +1268,7 @@ Functional baseline: exact phone-accepted v1.4.54 source
 - [x] local playlist Edit — #30 PHONE ACCEPTED / CLOSED
 - [x] blank URL inline validation — #29 PHONE PASS / CLOSED
 - [x] Review manual URL/manual-selection polish — #40 PHONE ACCEPTED / CLOSED
-- [ ] Manual-only Review filter — #58 CURRENT (code ready, PHONE pending)
+- [x] Manual-only Review filter — #58 PHONE ACCEPTED / CLOSED 2026-10-08
 - [ ] Bulk preparation presentation/state cleanup
 
 Safety contract:
@@ -1286,7 +1286,7 @@ Master plan:
 - [x] #30 / UX-036 Edit current local playlist — **PHONE ACCEPTED / CLOSED**. Dedicated editor, portrait keyboard-safe Save, native landscape extracted text entry, clear/dirty/Back accepted. Earlier exact linked-YTM identity + remote title PHONE PASS are locked; do not repeat without relevant functional change.
 - [x] #29 / UX-035 URL Snapshot blank URL validation — **PHONE PASS / CLOSED 2026-10-08**. Final signed source `a6e8bf2db047fc85f047348b487d37f0936ecb96`; Validate `37715162616` SUCCESS; signed `37717759648` SUCCESS; user `1+ 2+ 3+ 4+` accepted. No repeats without new evidence.
 - [x] #40 / UX-039 Review manual URL/choice UX — **PHONE ACCEPTED / CLOSED**. Signed `37791443481`, user `+ всі` for URL input; screenshot verifies manual/auto distinction.
-- [ ] #58 manual-only Review filter — **SOURCE IMPLEMENTED / VALIDATE+PHONE PENDING**. `✓ Ручні (N)` with same shared predicate, app SHA `cf1401d666327ba442125e43ce73c44efa28576f`.
+- [x] #58 manual-only Review filter — **PHONE ACCEPTED / CLOSED**. Final signed `37839577073` / source `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`, user `1+ 2+ 3+` then final landscape-scroll `+`.
 
 
 ### #58 corrected landscape viewport — 2026-10-08
@@ -1295,3 +1295,13 @@ Master plan:
 - [x] Screenshot defect: landscape Review rows inaccessible and no scroll because fixed top sections exhaust height.
 - [x] Source corrective: list-header scrolling for summary/project/all filter controls, header-aware track tap, static source audit; no Search/write changes.
 - [ ] Exact final HEAD Validate + signed build, then ONLY landscape scroll/tap correct Mezziah track QA. #58 stays OPEN until passed. #29/#30/#40 CLOSED.
+
+
+### #58 final acceptance → #27/#28 next — 2026-10-08
+
+- [x] #58 original Review manual filter count/All/rotation: PHONE `1+ 2+ 3+`.
+- [x] #58 landscape scroll corrective: user PHONE `+` after signed `37839577073` / HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`; issue CLOSED. Prior portrait/landscape no-scroll screenshot is historical pre-fix evidence, not a current blocker.
+- [ ] **NEXT #27** polished Bulk preparation state — <https://github.com/faric-ua/YTM/issues/27>.
+- [ ] **NEXT #28** stale preparation status after Bulk session closes — <https://github.com/faric-ua/YTM/issues/28>.
+
+First inspect both issues/contracts/source. Do not re-run closed #58/#40/#29/#30 checks.

@@ -619,3 +619,10 @@ Android code `3fd6f05ccfdd5af0396c5887419224a774c40963`, Validate Android `37784
 ## #58 new landscape-scroll blocker / corrective — 2026-10-08
 
 Exact original signed HEAD `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`, Validate `37794944749` SUCCESS, signed `37810023523` SUCCESS. User PHONE functional `1+ 2+ 3+` accepted for manual filter, All restore 41 and rotation. Landscape screenshot documents no scroll or track rows because fixed summary/project/filter/footer fill the height. Corrective source moves nonessential controls into ListView header before adapter and fixes list click offset with header-aware item access. Existing UI/state and remote contracts untouched. **New exact HEAD CI and one landscape scroll/tap phone check pending; #58 OPEN.**
+
+
+## #58 FINAL PHONE ACCEPTED / CLOSED — 2026-10-08
+
+App/docs signed HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`, exact Validate `37826627416 — SUCCESS`, signed `37839577073 — SUCCESS`. Previously user passed manual-only filter/count, All restores 41 and rotation (`1+ 2+ 3+`); screenshot showed missing landscape scroll. Corrective uses a scrolling header and list-aware tap. User then replied `+` for remaining landscape scroll to manually selected Mezziah and opening the correct track. User-reported PHONE PASS (no new confirming screenshot). GitHub #58 CLOSED. No remote-domain change, no repeats of closed #29/#30/#40/#58.
+
+Next OPEN #27/#28 Bulk session preparation UI/stale completion message: inspect owners, write scope/plan first, do not start Bulk remotely as part of a UI audit. This closeout modifies docs only, does not require new APK.
