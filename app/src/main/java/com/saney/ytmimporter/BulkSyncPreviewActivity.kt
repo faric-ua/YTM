@@ -928,6 +928,48 @@ class BulkSyncPreviewActivity : Activity() {
             )
         )
 
+        // Safe bulk shortcuts: linked-only never schedules remote playlist creation.
+        val selectionActions = LinearLayout(this)
+        val selectAll = Button(this).apply {
+            text = "Усі готові"
+            textSize = 13f
+            setOnClickListener {
+                applyQuickSelection(
+                    summary,
+                    BulkSyncSelectionPolicy.defaultIncludedIds(summary)
+                )
+            }
+        }
+        val selectLinkedOnly = Button(this).apply {
+            text = "Лише доповнити"
+            textSize = 13f
+            setOnClickListener {
+                applyQuickSelection(
+                    summary,
+                    BulkSyncSelectionPolicy.linkedOnlyIncludedIds(summary)
+                )
+            }
+        }
+        UiChrome.addAdaptiveActionButtons(
+            activity = this,
+            container = selectionActions,
+            buttons = listOf(selectAll, selectLinkedOnly),
+            buttonHeightDp = 48,
+            tones = listOf(
+                UiChrome.ActionTone.NORMAL,
+                UiChrome.ActionTone.NORMAL
+            )
+        )
+        summaryPanel.addView(
+            selectionActions,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = dp(8)
+            }
+        )
+
         if (stateCounts.isNotBlank()) {
             summaryPanel.addView(
                 BulkHierarchyChrome.secondary(
@@ -1093,6 +1135,33 @@ class BulkSyncPreviewActivity : Activity() {
                 includedIds =
                     includedExecutableIds
             )
+
+    private fun applyQuickSelection(
+        summary: BulkSyncPlanSummary,
+        requestedIds: Set<String>
+    ) {
+        if (
+            loading ||
+            BulkSessionPreparationCoordinator.current() is
+                BulkSessionPreparationCoordinator.Status.Preparing
+        ) {
+            return
+        }
+
+        val previousScrollY = scrollView.scrollY
+        includedExecutableIds.clear()
+        includedExecutableIds.addAll(
+            BulkSyncSelectionPolicy.sanitizeIncludedIds(
+                summary = summary,
+                includedIds = requestedIds
+            )
+        )
+        selectionInitialized = true
+        renderPlan(summary)
+        scrollView.post {
+            scrollView.scrollTo(0, previousScrollY)
+        }
+    }
 
     private fun setRowIncluded(
         summary: BulkSyncPlanSummary,
