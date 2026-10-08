@@ -1639,9 +1639,11 @@ class BulkSyncPreviewActivity : Activity() {
                 UiChrome.alertBuilder(this)
                     .setTitle("Підготовка Bulk-сесії")
                     .setView(content)
-                    .setCancelable(false)
-                    .create()
-                    .also { it.show() }
+                    .show()
+                    .also { dialog ->
+                        dialog.setCancelable(false)
+                        dialog.setCanceledOnTouchOutside(false)
+                    }
         }
 
         preparationSteps?.text =
@@ -1687,8 +1689,7 @@ class BulkSyncPreviewActivity : Activity() {
                         prepareSession(selectedPlanSummary(it))
                     }
                 }
-                .create()
-                .also { it.show() }
+                .show()
     }
 
     private fun openSession(
