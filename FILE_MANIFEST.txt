@@ -8,16 +8,16 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 841ac3888017a23d  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-1b298152a039170a  ACTIVE_PLAN.md
+7901642f74cbedc3  ACTIVE_PLAN.md
 b19ca08e573c19c6  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
-d928534e35ad8ff0  BACKLOG.md
+6b206f9e52530448  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
-8bb08e2fcf504424  CURRENT_HANDOFF.md
+7d732eda03299cb4  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -29,7 +29,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-8718f76c28e4803f  RESUME_HERE.md
+e07f87958f8fd958  RESUME_HERE.md
 07e29aacf2f1f66a  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -107,7 +107,7 @@ be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
-8d0a03f0e34cd769  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
+350505edd235e5f6  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 5c565252917f725e  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 562db04bb216f33f  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
 8923bc28bad4dcbe  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
@@ -1508,7 +1508,7 @@ c7dcc3962a57c8a1  docs/v.1.4.55/ACTION_LAYOUT_AUDIT_2026-09-30.md
 e75fedf0e97b40a3  docs/v.1.4.55/BACKLOG_RECONCILIATION_2026-09-29.md
 bf8554506baff159  docs/v.1.4.55/BULK_HIERARCHY_AUDIT_2026-09-30.md
 97eda2909381f32d  docs/v.1.4.55/CRITICAL_TRANSIENT_AUDIT_2026-10-01.md
-1f8713d40a4bc57c  docs/v.1.4.55/CURRENT_STATE.md
+c8a53ab4f03e4bd0  docs/v.1.4.55/CURRENT_STATE.md
 2b783092a8099b3c  docs/v.1.4.55/DESTRUCTIVE_CONFIRMATION_AUDIT_2026-09-30.md
 4d4bd7e63ea43833  docs/v.1.4.55/FILE_LIBRARY_AUDIT_2026-10-05.md
 1a53d2d5629f8595  docs/v.1.4.55/FILE_LIBRARY_CONTRACT.md
@@ -1518,7 +1518,7 @@ c0ca1dd903f31f86  docs/v.1.4.55/READABILITY_AUDIT_2026-09-29.md
 ad349ab098f5763e  docs/v.1.4.55/REGRESSION_CHECKLIST.md
 b67036413f2dc72a  docs/v.1.4.55/RELEASE.md
 5e2de2eb27025c40  docs/v.1.4.55/RELEASE_META.json
-dcbbdcb0246a3d8c  docs/v.1.4.55/REVIEW_MANUAL_FILTER_CONTRACT.md
+4f5525ef6875feaa  docs/v.1.4.55/REVIEW_MANUAL_FILTER_CONTRACT.md
 cc99b44a6bdfc4b9  docs/v.1.4.55/REVIEW_MANUAL_URL_UX_CONTRACT.md
 06ebfb93568eb5ef  docs/v.1.4.55/SLEEP_CHECKPOINT_2026-10-01.md
 8bbb1622059f0ed3  docs/v.1.4.55/SURFACE_READABILITY_AUDIT_2026-10-01.md
@@ -1530,7 +1530,7 @@ c704c86772b65f8c  docs/v.1.4.55/diagrams/README.md
 27a15b16ec816765  docs/v.1.4.55/diagrams/UX_HARDENING_FLOW.md
 fc65b287a8cf23e1  docs/v.1.4.55/qa/BUG_REGISTER.md
 febf3fbcd4f5c8e5  docs/v.1.4.55/qa/EVIDENCE_MANIFEST.md
-c4c6af0da523f321  docs/v.1.4.55/qa/PHONE_TEST.md
+f4f5f34dfa7c5ddf  docs/v.1.4.55/qa/PHONE_TEST.md
 91953c8f5c13af7d  docs/v.1.4.6/REGRESSION_CHECKLIST.md
 b19a7931871c062d  docs/v.1.4.6/RELEASE.md
 34feef4923c89b09  docs/v.1.4.6/diagrams/ACTION_HIERARCHY.md
@@ -1782,7 +1782,7 @@ d5bcf29a25b73670  scripts/v1454-bulk-preflight-audit.sh
 8e77f00e91c15db2  scripts/v1454-wave4-rollback-audit.sh
 6b0f6c7591ef61c5  scripts/v1455-file-library-audit.sh
 54acd2ffe8682685  scripts/v1455-local-playlist-edit-regression-audit.sh
-f784f146fa26ad16  scripts/v1455-review-manual-filter-audit.sh
+a4ce15041fd56f92  scripts/v1455-review-manual-filter-audit.sh
 3b9f64db4e202db3  scripts/v1455-review-manual-ux-audit.sh
 f2a3a8fc068701c4  scripts/v1455-termux-operator-menu-audit.sh
 a3b628d5213feb9a  scripts/v1455-url-blank-input-audit.sh

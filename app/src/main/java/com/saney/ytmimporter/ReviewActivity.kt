@@ -637,6 +637,12 @@ class ReviewActivity : Activity() {
             )
         )
 
+        // Scroll summary and controls with the track list on short screens.
+        val listHeader =
+            LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+            }
+
         val summary =
             TextView(this).apply {
                 text =
@@ -663,7 +669,7 @@ class ReviewActivity : Activity() {
                     )
             }
 
-        root.addView(
+        listHeader.addView(
             summary,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -706,7 +712,7 @@ class ReviewActivity : Activity() {
             )
         }
 
-        root.addView(projectRow)
+        listHeader.addView(projectRow)
 
         val filterRow =
             LinearLayout(this).apply {
@@ -723,6 +729,8 @@ class ReviewActivity : Activity() {
                 clipToPadding = false
                 setPadding(dp(10), 0, dp(10), dp(14))
                 setBackgroundColor(AppThemeManager.palette(this@ReviewActivity).background)
+                // Header must be attached before the adapter.
+                addHeaderView(listHeader, null, false)
             }
 
         val adapter = ReviewListAdapter(snapshot.playlist.tracks)
@@ -764,7 +772,7 @@ class ReviewActivity : Activity() {
             )
         }
 
-        root.addView(filterRow)
+        listHeader.addView(filterRow)
 
         // Keep the existing four filters readable; the optional manual
         // selection filter has its own full-width row.
@@ -795,7 +803,7 @@ class ReviewActivity : Activity() {
                 dp(44)
             )
         )
-        root.addView(manualFilterRow)
+        listHeader.addView(manualFilterRow)
 
         root.addView(
             list,
@@ -836,9 +844,9 @@ class ReviewActivity : Activity() {
                 position,
                 _ ->
 
+            // List position includes the header; do not offset tracks.
             captureReviewViewport()
-            adapter
-                .getItem(position)
+            (list.getItemAtPosition(position) as? Track)
                 ?.let { track ->
                     trackScrollPosition.reset()
                     trackScrollHistoryIndex = null

@@ -20,8 +20,8 @@ for text in (
     'compactFilterButton("✓ Ручні ($manualChoiceCount)")',
     'val manualChoiceCount =',
     'val manualFilterRow =',
-    'root.addView(filterRow)',
-    'root.addView(manualFilterRow)',
+    'listHeader.addView(filterRow)',
+    'listHeader.addView(manualFilterRow)',
     'adapter.setFilter(ReviewFilter.MANUAL)',
     'STATE_REVIEW_FILTER',
     'ReviewFilter.valueOf(it)',
@@ -29,6 +29,25 @@ for text in (
 ):
     if text not in review:
         raise SystemExit("FAIL #58: missing manual filter / state ownership: " + text)
+layout = review.split('private fun showListScreen()', 1)[1].split('private fun showTrackScreen(', 1)[0]
+for token in (
+    'val listHeader =',
+    'listHeader.addView(\n            summary,',
+    'listHeader.addView(projectRow)',
+    'listHeader.addView(filterRow)',
+    'listHeader.addView(manualFilterRow)',
+    'addHeaderView(listHeader, null, false)',
+    'list.getItemAtPosition(position) as? Track',
+):
+    if token not in layout:
+        raise SystemExit('FAIL #58: landscape scroll guard missing: ' + token)
+if not re.search(r'addHeaderView\(listHeader, null, false\)[\s\S]*?list\.adapter\s*=\s*adapter', layout):
+    raise SystemExit('FAIL #58: addHeaderView must precede setAdapter')
+for bad in ('root.addView(summary', 'root.addView(projectRow)',
+            'root.addView(filterRow)', 'root.addView(manualFilterRow)',
+            'adapter.getItem(position)'):
+    if bad in layout:
+        raise SystemExit('FAIL #58: short-screen collapse / wrong-track risk: ' + bad)
 if review.count('ReviewManualPresentation.isManualChoice(') != 4:
     raise SystemExit('FAIL #58: the same predicate must drive badge, detail, count and filter')
 if not re.search(r'ReviewFilter\.MANUAL\s*->\s*ReviewManualPresentation\.isManualChoice\(', review):

@@ -471,21 +471,23 @@ Remaining Phase C backlog:
 
 ## NEXT ACTION
 
-### CLOSED ACCEPTED — no regression replays
-- [x] #29 — blank URL Snapshot; signed `37717759648`, user PHONE `1+ 2+ 3+ 4+`, CLOSED.
-- [x] #30 — dedicated playlist Edit; signed `37711110963`, local-only/unchanged YouTube Music/Back and keyboard accepted, CLOSED.
-- [x] #40 — manual Review URL 2–3 lines/clear ×/rotation PHONE `+ всі`; screenshot shows distinct accent `✓ Ручний вибір` and highlighted replacement on the list. Signed source `b1411e430443f1ca237bf863feed77130d004a5b`, exact Validate `37785508581` SUCCESS, signed `37791443481` SUCCESS. User accepted layout; CLOSED. Not every detail/skip/theme case separately phone-photographed.
+### ACCEPTED / CLOSED #29, #30, #40
+- [x] #29 blank URL; user 1+ 2+ 3+ 4+ and signed `37717759648`.
+- [x] #30 dedicated local playlist Edit; local-only rename and linked YTM identity/remote-safe phone acceptance.
+- [x] #40 long manual URL / × / rotation user `+ всі`; separate status `✓ Ручний вибір` phone screenshot confirmed, signed `37791443481`. No repeats.
 
-### ACTIVE #58 — manual-only Review filter
-- [x] New user finding registered as <https://github.com/faric-ua/YTM/issues/58>.
-- [x] Source `cf1401d666327ba442125e43ce73c44efa28576f`: second-row `✓ Ручні (N)` without squeezing original four buttons; count and filter reuse `ReviewManualPresentation.isManualChoice`, skip/auto excluded.
-- [x] Existing `STATE_REVIEW_FILTER` rotation restore and `≡ Усі` preserved; no Search/YTM/API mutations.
-- [x] JVM count test, #58 static audit, updated #40 audit, release preflight, catalog, manifest, contract. Source release preflight and JVM tests PASS in `37794350918`; assemble/final-HEAD pending at this documentation checkpoint.
-- [ ] Exact final HEAD Validate Android PASS and one signed APK.
-- [ ] Focused PHONE: manual count/only manual matches; All restores 41 tracks; active filter survives rotation.
-- [ ] Close #58 after PHONE acceptance; then resume next backlog task.
+### ACTIVE #58 — Manual-only Review filter
+- [x] Dedicated full-width `✓ Ручні (N)` below unchanged four filters, actual manual selection predicate; skips/automatic excluded. Original source `cf1401d666327ba442125e43ce73c44efa28576f`.
+- [x] Original source and final-docs HEAD Validate `37794350918` and `37794944749` SUCCESS; signed `37810023523` on `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`.
+- [x] PHONE functional **1+ 2+ 3+** accepted: correct manual-only filtering/count, All restores 41, rotation preserves filter.
+- [x] NEW screenshot finding: landscape summary/project/filter/manual rows occupy all available height, weighted ListView has no visible track rows and cannot scroll; #58 remains OPEN.
+- [x] Corrective source moves summary/project/filter/manual into scrollable ListView header, adds header before adapter and uses list-level row accessor to avoid off-by-one; keeps fixed topbar and create/add footer.
+- [x] Extend #58 regression audit and lifecycle/UI contract, no Search/remote/store changes.
+- [ ] **Exact final HEAD Validate Android PASS** for corrective candidate.
+- [ ] One signed APK and **only landscape corrective PHONE**: swipe to manual Mezziah card, tap it, verify correct track opens; portrait still usable.
+- [ ] Close #58 only after this; then next Phase C backlog item.
 
-**NEXT ACTION: validate final docs HEAD, one signed APK, and scoped #58 phone test. No #40/#29/#30 repeats.**
+**NEXT ACTION: exact-HEAD Validate → one signed build → one short landscape-scroll PHONE check. All earlier accepted tests remain locked.**
 
 ## Update rule
 

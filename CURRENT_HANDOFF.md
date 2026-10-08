@@ -76,11 +76,13 @@ Signed phone-retest candidate is now available:
 
 ## Exact next work
 
-**CLOSED / ACCEPTED** #29/#30/#40. No repeat QA. #29 signed `37717759648`, user PHONE `1+ 2+ 3+ 4+`; #30 signed `37711110963`, accepted local-only Editor including YTM remote-title unchanged. #40 signed `37791443481`, user PHONE `+ всі` long Review URL/×/rotation; screenshot verifies separate accent `✓ Ручний вибір` status and prominent manually chosen replacement compared with automatic match. #40 GitHub CLOSED. Detail/skip/alternate skin phone visuals not individually provided; skip is tested in JVM/static.
+**CLOSED / ACCEPTED:** #29, #30, #40. No regression replay. #29 signed `37717759648`, user 1+/2+/3+/4+; #30 signed `37711110963`, local Edit/remote unchanged; #40 signed `37791443481`, user `+ всі` URL wrapping/clear/rotation plus screenshot verified manual badge and selected replacement.
 
-**ACTIVE #58** `https://github.com/faric-ua/YTM/issues/58` — local manual-selection filter. App code `cf1401d666327ba442125e43ce73c44efa28576f` adds full-width `✓ Ручні (N)` row following four existing Review filters. `ReviewManualPresentation.isManualChoice` drives count/badge/filter (manual skip and automatic match excluded). Existing Review saved-filter rotation state and `≡ Усі` semantics preserved; no remote/Search/Bulk/History/write changes. #58 JVM/static regression checks and contract/preflight/catalog added.
+**ACTIVE #58**, `https://github.com/faric-ua/YTM/issues/58`. Baseline app/HEAD `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`, Validate `37794944749` SUCCESS, signed `37810023523` SUCCESS, **PHONE functional 1+ 2+ 3+ PASS** for manual count/filter, All restores 41, rotation retains selected filter. New **landscape screenshot blocker:** summary/actions/filter rows and footer consume the available window; weighted ListView rows/scroll disappear.
 
-**NEXT:** exact-final-head Validate PASS, signed build, minimal user PHONE for manual-only count/list, All restore, rotation. #58 still OPEN / PHONE PENDING. Codespace was deleted by user and needs no attention.
+**CURRENT CORRECTIVE:** In `ReviewActivity.showListScreen()`, move summary, project row, four filter buttons and manual filter into a single ListView header (inserted before adapter), leaving only top bar and create/add footer fixed. Header and track rows scroll as one; use `list.getItemAtPosition(position) as? Track` so header does not shift click target. Extend #58 static audit and contract, sync deterministic manifest. Filter classification, state saved/restored and no remote calls unchanged.
+
+**NEXT:** exact final HEAD Validate PASS → one signed APK → **only landscape scroll + correct Mezziah row tap PHONE**. #58 stays OPEN until passed. Codespace was deleted by user, not part of app workflow.
 
 ## Immutable functional reference
 

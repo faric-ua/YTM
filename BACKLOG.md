@@ -1287,3 +1287,11 @@ Master plan:
 - [x] #29 / UX-035 URL Snapshot blank URL validation — **PHONE PASS / CLOSED 2026-10-08**. Final signed source `a6e8bf2db047fc85f047348b487d37f0936ecb96`; Validate `37715162616` SUCCESS; signed `37717759648` SUCCESS; user `1+ 2+ 3+ 4+` accepted. No repeats without new evidence.
 - [x] #40 / UX-039 Review manual URL/choice UX — **PHONE ACCEPTED / CLOSED**. Signed `37791443481`, user `+ всі` for URL input; screenshot verifies manual/auto distinction.
 - [ ] #58 manual-only Review filter — **SOURCE IMPLEMENTED / VALIDATE+PHONE PENDING**. `✓ Ручні (N)` with same shared predicate, app SHA `cf1401d666327ba442125e43ce73c44efa28576f`.
+
+
+### #58 corrected landscape viewport — 2026-10-08
+
+- [x] Functional filter accepted on phone: `1+ 2+ 3+`, signed `37810023523`, all 41 return under `≡ Усі`.
+- [x] Screenshot defect: landscape Review rows inaccessible and no scroll because fixed top sections exhaust height.
+- [x] Source corrective: list-header scrolling for summary/project/all filter controls, header-aware track tap, static source audit; no Search/write changes.
+- [ ] Exact final HEAD Validate + signed build, then ONLY landscape scroll/tap correct Mezziah track QA. #58 stays OPEN until passed. #29/#30/#40 CLOSED.

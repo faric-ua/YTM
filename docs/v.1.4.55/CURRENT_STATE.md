@@ -614,3 +614,8 @@ Android code `3fd6f05ccfdd5af0396c5887419224a774c40963`, Validate Android `37784
 ## #40 PHONE CLOSED and #58 CURRENT — 2026-10-08
 
 #40 accepted: signed `37791443481`, user PHONE `+ всі` for manual URL/clear/rotation, screenshot proves manual badge and bold replacement versus automatic matches. #40 CLOSED, with no repeat. New finding #58 is distinct: Review lacks manual-only filter. Source `cf1401d666327ba442125e43ce73c44efa28576f` adds full-width `✓ Ручні (N)` using one shared manual-status predicate; existing four filters and rotation state retained. Static/JVM audits added; exact final HEAD Validate, signed build and focused PHONE still pending.
+
+
+## #58 new landscape-scroll blocker / corrective — 2026-10-08
+
+Exact original signed HEAD `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`, Validate `37794944749` SUCCESS, signed `37810023523` SUCCESS. User PHONE functional `1+ 2+ 3+` accepted for manual filter, All restore 41 and rotation. Landscape screenshot documents no scroll or track rows because fixed summary/project/filter/footer fill the height. Corrective source moves nonessential controls into ListView header before adapter and fixes list click offset with header-aware item access. Existing UI/state and remote contracts untouched. **New exact HEAD CI and one landscape scroll/tap phone check pending; #58 OPEN.**

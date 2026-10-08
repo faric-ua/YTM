@@ -87,15 +87,13 @@ Corrective rotation-cache source:
 
 ## NEXT ACTION — do this first
 
-**CLOSED / PHONE ACCEPTED:** #29, #30, #40. No repeat tests without new evidence or a protected owner change.
+**NO RETEST: #29, #30, #40 are PHONE ACCEPTED / CLOSED.** Source and QA evidence remain in GitHub, not repeated without changed functional owners or contradictory evidence.
 
-- #29: URL Snapshot blank input, signed `37717759648`, user PHONE `1+ 2+ 3+ 4+`, CLOSED.
-- #30: local playlist Edit, signed `37711110963`, local name/unchanged linked YTM/Back/keyboard PASS, CLOSED.
-- #40: manual Review URL wrap, clear × and rotation were PHONE `+ всі`; final signed source `b1411e430443f1ca237bf863feed77130d004a5b`, Validate `37785508581` SUCCESS, signed `37791443481` SUCCESS. Screenshot verifies standalone pink `✓ Ручний вибір` on Mezziah and bold Rick Astley replacement versus green automatic track. User accepted visual result; issue CLOSED. The detail/skip/alternate theme weren't separately photographed; skip is JVM/static guarded.
+**ACTIVE #58 — Manual-only Review filter, functional PHONE 3/3 PASS; landscape accessibility blocker.** On signed HEAD `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`, Validate `37794944749 — SUCCESS`, signed `37810023523 — SUCCESS`, user reported `1+ 2+ 3+` for manual-only count/selection, All restoring 41, and rotation retaining filter. **Real phone landscape screenshot** shows summary, actions and both filter rows consuming the entire short screen, with no track rows or scroll. This is a new defect; **#58 remains OPEN** until fixed.
 
-**ACTIVE #58 — Manual-only Review filter.** User asks to see only manually chosen matches among 41 Review tracks. Source `cf1401d666327ba442125e43ce73c44efa28576f` adds visible full-width `✓ Ручні (N)` under existing four, with count and filter using the same `ReviewManualPresentation.isManualChoice` as badge. Manual skipped/automatic matches excluded. Existing Review filter saved state and local-only operation preserved. JVM/static guards, release preflight/catalog/manifest and contract implemented.
+**Corrective source candidate:** Review list header now contains summary, project actions and both filter rows. Header and track cards share one scrollable ListView viewport, leaving top bar and create/add footer fixed. Header is added before setting the adapter; row taps use `list.getItemAtPosition(position) as? Track` to prevent off-by-one wrong-track opens. Original filter, store and Search/YTM owner logic remain unchanged. #58 audit and contract updated.
 
-**NEXT:** exact-final-HEAD Validate Android SUCCESS → one signed APK → only #58 phone check: manual count/results, `≡ Усі` restore, rotation. Do not rerun #29/#30/#40.
+**NEXT:** exact-final-HEAD Validate Android PASS → one signed APK → **only one landscape scroll PHONE test:** swipe up to see genuine manual Mezziah card and tap to open correct track. No repeats of accepted #58 1+/2+/3+ or #29/#30/#40. GitHub issue: `https://github.com/faric-ua/YTM/issues/58`.
 
 ## Consolidated phone matrix
 

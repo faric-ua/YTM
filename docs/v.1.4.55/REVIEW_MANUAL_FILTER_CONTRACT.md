@@ -32,3 +32,24 @@ only the tracks that were chosen manually.
    filter is still active and no Search/write starts.
 
 No new signed APK until exact-final-HEAD Validate Android PASS.
+
+
+## 2026-10-08: corrective for landscape scroll
+
+Original #58 PHONE functional checks **1+ 2+ 3+ PASS** (manual filter count,
+All restores 41 tracks, rotation preserves filter). Screenshot in landscape
+shows controls filling the height and no visible rows or scrolling. This is a
+new short-screen usability blocker; #58 stays OPEN.
+
+Corrective contract: in `ReviewActivity.showListScreen()` only top bar and
+create/add footer remain fixed. Playlist summary, project actions, both filter
+rows are in a single non-selectable `ListView` header, inserted **before** the
+adapter. This header scrolls together with track rows even on small landscape
+heights. Click uses `list.getItemAtPosition(position) as? Track` to avoid
+opening the wrong track because of header offset. No Search, YTM API, data,
+count, filter classification or rotation state changes.
+
+**Only outstanding PHONE QA:** install new exact-HEAD signed APK, rotate to
+landscape, swipe upward to reveal manually selected Mezziah card, tap it and
+verify it opens that same Mezziah track. Portrait remains reachable. Do not
+repeat 1+/2+/3+ or previously accepted #29/#30/#40 tests.

@@ -708,3 +708,15 @@ App source `cf1401d666327ba442125e43ce73c44efa28576f` adds visible `✓ Ручн
 - [ ] Rotate portrait→landscape→portrait with manual filter active: filter remains, no auto Search/write.
 
 Do not rerun #29/#30/#40 accepted tests.
+
+
+### #58 signed PHONE 1+/2+/3+ and new LANDSCAPE ACCESS BLOCKER — 2026-10-08
+
+Baseline branch/signed HEAD `65e45213ea283f7bef9551ec1d6d702ac18ca0ad`, Validate `37794944749` SUCCESS, signed `37810023523` SUCCESS.
+
+- [x] User explicitly reports `1+ 2+ 3+`: `✓ Ручні (1)` applies manual-only filter, `≡ Усі` restores 41, portrait↔landscape rotation keeps filter. **Accepted; no retest.**
+- [x] New landscape screenshot shows playlist summary (41), project actions, four filters, `✓ Ручні (1)` and fixed bottom create/add, but **no track card or usable scroll**. The weighted ListView collapses under fixed controls. **New blocker; #58 stays OPEN.**
+- [x] Corrective source moves summary/project/both filter rows into a single scrollable ListView header before adapter, keeps fixed topbar and footer, and fixes header-offset wrong-track clicks with list-level accessor. Regression source audit expanded.
+- [ ] New exact-HEAD Validate → one signed APK → **ONLY** landscape Review swipe up/down to expose the manual Mezziah track, tap it and verify correct track opens; portrait still usable.
+
+Do NOT repeat original #58 three successes or closed #29/#30/#40.
