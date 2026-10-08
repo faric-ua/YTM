@@ -22,6 +22,18 @@ object BulkSyncSelectionPolicy {
             }
             .toSet()
 
+    /** A zero-create session: append only to verified linked YTM playlists. */
+    fun linkedOnlyIncludedIds(
+        summary: BulkSyncPlanSummary
+    ): Set<String> =
+        summary.rows
+            .filter {
+                it.state == BulkSyncPlanState.LINKED
+            }
+            .mapTo(linkedSetOf()) {
+                it.localPlaylistId
+            }
+
     fun sanitizeIncludedIds(
         summary: BulkSyncPlanSummary,
         includedIds: Set<String>
