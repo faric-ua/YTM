@@ -92,7 +92,7 @@ ef3b8e222ece4b05  YTM_ASSISTANT_WORKFLOW.md
 e6af758495c5bfa7  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 cc77b1bafb5454b0  app/src/main/AndroidManifest.xml
-ada6a5e823ed328f  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
+e2cb9c148fc9b7a2  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 e8f9b88b6124d64b  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 0af4ad581bd9e32c  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 4da09cca8fb23e0b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
@@ -122,7 +122,7 @@ ff6ee274bacb9f4a  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncPreflight
 4947f9d0beb06f85  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncQaFault.kt
 3db02888be385cc4  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncRollbackExecutor.kt
 dc9c62fd21affffc  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncRollbackPolicy.kt
-f942aded2bded718  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicy.kt
+10216ebe9c111124  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicy.kt
 6e8c8a0e4c5124d1  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSession.kt
 ac76c084e381f3c0  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSessionFactory.kt
 9430712c6f05319e  app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt
@@ -234,7 +234,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 5dfe2d611d0acf07  app/src/main/res/xml/file_paths.xml
 351daabcfb9ec663  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicyTest.kt
 6ad846614cd4bb87  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncQaFaultPolicyTest.kt
-d4ffb945edd77802  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicyTest.kt
+d52736a993ac9175  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicyTest.kt
 89af9e1339fccff5  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt
 ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecoveryPolicyTest.kt
 9cc5a3fa406839b4  app/src/test/java/com/saney/ytmimporter/model/HistoryListFilterPolicyTest.kt
