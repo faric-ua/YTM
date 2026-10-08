@@ -94,6 +94,18 @@ Corrective rotation-cache source:
 
 **Phone result:** #54 is **PHONE PASS / CLOSED 2026-10-07**. Full Restore and History scoped chooser/rotation passed; Playlist Project `Імпорт файла` showed typed CSV/TXT/YTM Project cards, wrong-type History JSON was blocked with a clear message, and portrait → landscape → portrait returned the scoped/typed list near-immediately without auto-import.
 
+## Product vision / anti-churn delivery lock (2026-10-09)
+
+**Read `docs/product/PRODUCT_DIRECTION_2026-10-09.md` before widening feature scope.** User ideas,
+YouTube create limits/queue, one-action Bulk UX, tap-to-copy track titles,
+matching misses in Future Trance Volume 15, simpler export, localization,
+distinct skins and optional legitimate music/video playback are captured
+in [roadmap #59](https://github.com/faric-ua/YTM/issues/59).
+**Do not implement them all at once or require them to close v1.4.55.**
+Finish #27/#28 → coherent stable release checkpoint → subsequent vertical
+feature wave(s). One focused phone smoke per actual changed contract;
+do not redo #29/#30/#40/#58 accepted QA.
+
 ## NEXT ACTION — do this first
 
 **#58 / manual-only Review filter and landscape viewport — PHONE ACCEPTED / CLOSED 2026-10-08.** No repeat of accepted tests. Signed candidate exact app/docs HEAD `b8222fc24264edf6ece3cf1cc30ea4aa3dbca4b4`, Validate Android `37826627416 — SUCCESS`, signed APK `37839577073 — SUCCESS`. User initially `1+ 2+ 3+` for manual filter/count, `≡ Усі` restoring 41, rotation state. A real-phone landscape screenshot showed missing scroll; corrective moved Review controls into the scrollable ListView header with safe track click mapping. User subsequently answered `+` to the **single new landscape scroll/Mezziah-track-tap phone test**. This latter acceptance is user-reported (no new screenshot), not falsely claimed as screenshot-verified. GitHub #58 CLOSED.

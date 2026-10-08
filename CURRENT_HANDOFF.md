@@ -86,6 +86,18 @@ Signed phone-retest candidate is now available:
 - artifact ID `11423176882`;
 - compare `daaa599d… → 73ced…` changes only checkpoint/docs/manifest files, so app-code remains the corrective rotation-cache source.
 
+## Product vision / anti-churn delivery lock (2026-10-09)
+
+**Read `docs/product/PRODUCT_DIRECTION_2026-10-09.md` before widening feature scope.** User ideas,
+YouTube create limits/queue, one-action Bulk UX, tap-to-copy track titles,
+matching misses in Future Trance Volume 15, simpler export, localization,
+distinct skins and optional legitimate music/video playback are captured
+in [roadmap #59](https://github.com/faric-ua/YTM/issues/59).
+**Do not implement them all at once or require them to close v1.4.55.**
+Finish #27/#28 → coherent stable release checkpoint → subsequent vertical
+feature wave(s). One focused phone smoke per actual changed contract;
+do not redo #29/#30/#40/#58 accepted QA.
+
 ## Exact next work
 
 **CLOSED / PHONE ACCEPTED #29, #30, #40, #58**. Do not repeat any accepted PHONE suites without protected owner changes or contrary phone evidence.

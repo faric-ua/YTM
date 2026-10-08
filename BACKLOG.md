@@ -1305,3 +1305,16 @@ Master plan:
 - [ ] **NEXT #28** stale preparation status after Bulk session closes — <https://github.com/faric-ua/YTM/issues/28>.
 
 First inspect both issues/contracts/source. Do not re-run closed #58/#40/#29/#30 checks.
+
+
+### 2026-10-09 — consolidated user product roadmap (#59)
+
+Saved full direction in `docs/product/PRODUCT_DIRECTION_2026-10-09.md` and
+<https://github.com/faric-ua/YTM/issues/59>:
+- [ ] Release gate: finish #27/#28, then stable v1.4.55 without blocking on all dreams.
+- [ ] One-action sync over current Bulk engine + queue with provider-limit-safe pause and idempotency.
+- [ ] Tap original Review track Artist — Title to copy; simple export default/advanced chooser.
+- [ ] Future Trance Vol.15 ~4 low-confidence matches: user screenshot pending; diagnose API candidate/scoring.
+- [ ] Localization and distinctive skins; optional compliant music/video playback as separate later module.
+
+**Process:** batch related UI, reuse accepted QA, no parallel audit per cosmetic tweak, always protect remote write/identity contracts; see linked product direction.
