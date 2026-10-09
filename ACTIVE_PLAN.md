@@ -527,3 +527,17 @@ This supersedes stale historic unchecked v1.4.55 items **only for the isolated p
 
 **NEXT ACTION:** manifest → exact-final-HEAD Validate; never mark APK signed or PHONE PASS from source changes.
 
+## CURRENT TASK — 2026-10-09 / Manual create batch in existing Bulk session
+
+- [x] Recover validated `feat/v1.4.56-bulk-limit-guard` source HEAD `d19e105e`, Validate `37864960961 SUCCESS`.
+- [x] Create isolated `feat/v1.4.56-bulk-create-batches` branch from that HEAD.
+- [x] Persist `maxCreatesPerRun` in durable Bulk session JSON. Missing legacy value stays unlimited; new sessions default to 3 new creates per manual run.
+- [x] Add selector `1 / 3 / 5` for a session using existing lifecycle-aware dialog; block settings changes during running/uncertain/rollback.
+- [x] Insert a pre-create stop after current playlist item insertions complete, before a new CREATE_PLAYLIST, using confirmed ledger count. State `PAUSED_CREATE_BATCH` resumes **only by explicit button**, does not schedule background writes.
+- [x] Add focused policy and factory unit tests; preserve YTM quota/rate protection, identity and rollback.
+- [ ] Regenerate/check deterministic manifest, inspect exact final HEAD Validate preflight/JVM/assemble, fix any failure.
+- [ ] Coherent signed APK and one scoped phone smoke later; do not intentionally provoke YouTube account limits.
+- [ ] Preserve separate v1.4.55 acceptance gate (#27/#28 exact signed APK) before stable release.
+
+**NEXT ACTION:** manifest + exact-HEAD Validate. Current batch is SOURCE ONLY until tests verify. Full autonomous queue and account-wide day cap remain future roadmap, not implemented.
+
