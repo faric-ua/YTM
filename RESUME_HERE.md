@@ -143,3 +143,12 @@ After every verified progress step that changes the resume point:
 - update `CURRENT_HANDOFF.md` when materially changed;
 - keep generated artifacts synchronized;
 - never mark phone PASS from code/static/CI alone.
+
+## NEW CHAT RESUME — 2026-10-09 / Bulk rate-limit safety wave
+
+The **new isolated source branch** is `feat/v1.4.56-bulk-limit-guard`, based on exact previously validated `feat/v1.4.56-bulk-safe-selection` HEAD `83c712b9fc5899916d61356d0ad8606cabc3c9e2`. This branch is **post-v1.4.55 experimental**, not published or PHONE ACCEPTED. The v1.4.55 signed candidate remains separate: code `4e7c04e179413a3123b19d086255107db6cb7f5e`, Validate `37849092895`, signed `37854904363`. #27/#28 exact-APK phone identity remains unconfirmed; do not close these or publish a stable v1.4.55 based on a generic `+`.
+
+New `BulkWriteRetryGuard`: parse YouTube `Retry-After` delta-seconds/RFC1123; after rate/resource/HTTP429 limit, persist an explicit manual-resume not-before timestamp on the session with a **local minimum wait of 15 minutes** where necessary. This is a conservative application-specific guard, **not** the documented YouTube daily playlist creation count and **not** a guarantee of unblocking. `BulkSyncExecutionPolicy`, Bulk Session UI and `BulkSyncExecutor` all block premature retry; executor guards before any remote write. UI displays phone-local retry time and specific HTTP error reason. Waiting is never auto-scheduled. Old session JSON without the timestamp stays readable. Current source adds unit tests for header formats, deadline and explicit resume. The existing v1.4.56 safe-selection shortcuts `Усі готові` / `Лише доповнити` are inherited unchanged. Existing Bulk mutation ledger, single session, explicit Start and rollback are preserved.
+
+**NEXT:** verify final branch HEAD / Validate Android after `FILE_MANIFEST.txt` is regenerated and docs synced; if PASS, retain source-only pending signed APK, and do **one** scoped phone QA later (induced live rate failures are NOT requested). Further feature wave remains a durable user-opt-in playlist-create queue with unknown provider limit; no guessed daily cap, no blind auto-retries, no unapproved remote mutations.
+
