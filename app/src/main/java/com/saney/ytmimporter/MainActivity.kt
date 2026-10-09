@@ -571,7 +571,7 @@ class MainActivity : Activity() {
                     palette.surface,
                 subtitleAccent = true,
                 onClick = {
-                    openDirectPlaylistHub()
+                    openDirectPlaylistLibrary()
                 }
             )
 
@@ -691,19 +691,13 @@ class MainActivity : Activity() {
 
         quickSection.addView(quickRow)
 
-        // One visible entry point for every saved/local/online playlist.
         quickSection.addView(
-            HomeDashboardChrome.workflowButton(
-                activity = this,
-                label = "Мої плейлісти • Бібліотека",
-                primary = false
-            ) {
-                openDirectPlaylistLibrary()
-            },
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(54)
-            ).apply { topMargin = dp(8) }
+            HomeDashboardChrome.workflowButton(this,
+                "Мої плейлісти • Бібліотека", false
+            ) { openDirectPlaylistLibrary() },
+            LinearLayout.LayoutParams(-1, dp(54)).apply {
+                topMargin = dp(8)
+            }
         )
 
         content.addView(
@@ -1218,13 +1212,9 @@ class MainActivity : Activity() {
             }
 
             playlistLibraryRequestCode -> {
-                if (data.getBooleanExtra(
-                        PlaylistLibraryActivity.EXTRA_CURRENT_CHANGED, false
-                    )
-                ) {
+                if (data.getBooleanExtra(PlaylistLibraryActivity.EXTRA_CURRENT_CHANGED, false)) {
                     reloadCurrentWorkspace(force = true)
-                    status("Вибрано поточний плейліст із бібліотеки. " +
-                        "YouTube Music не змінено.")
+                    status("Поточний плейліст змінено локально. YTM не змінено.")
                 }
             }
 
@@ -1304,17 +1294,10 @@ class MainActivity : Activity() {
         createPlaylist()
     }
 
-    private fun openDirectPlaylistHub() {
-        clearDelegatedReturnRoute()
-        openDirectPlaylistLibrary()
-    }
-
     private fun openDirectPlaylistLibrary() {
         clearDelegatedReturnRoute()
-        startActivityForResult(
-            Intent(this, PlaylistLibraryActivity::class.java),
-            playlistLibraryRequestCode
-        )
+        startActivityForResult(Intent(this, PlaylistLibraryActivity::class.java),
+            playlistLibraryRequestCode)
     }
 
     private fun openPlaylistHub() {
