@@ -233,6 +233,10 @@ class BulkSyncSessionStore(
                 "retryNotBeforeEpochMs",
                 session.retryNotBeforeEpochMs ?: JSONObject.NULL
             )
+            .put(
+                "maxCreatesPerRun",
+                session.maxCreatesPerRun ?: JSONObject.NULL
+            )
 
     private fun sessionFromJson(
         root: JSONObject
@@ -342,7 +346,10 @@ class BulkSyncSessionStore(
                 ),
             retryNotBeforeEpochMs =
                 root.optLong("retryNotBeforeEpochMs", 0L)
-                    .takeIf { it > 0L }
+                    .takeIf { it > 0L },
+            maxCreatesPerRun =
+                root.optInt("maxCreatesPerRun", 0)
+                    .takeIf { it in com.saney.ytmimporter.bulk.BulkCreateBatchPolicy.SIZES }
         )
     }
 
