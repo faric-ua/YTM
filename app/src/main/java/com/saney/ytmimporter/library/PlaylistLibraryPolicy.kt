@@ -37,25 +37,26 @@ object PlaylistLibraryPolicy {
 
         saved.forEach { snapshot ->
             if (!savedIds.add(snapshot.localPlaylistId)) return@forEach
-            val playing = current?.localPlaylistId == snapshot.localPlaylistId
-            val playlist = if (playing) current.playlist else snapshot.playlist
+            val active = current?.takeIf {
+                it.localPlaylistId == snapshot.localPlaylistId
+            }
+            val playing = active != null
+            val playlist = active?.playlist ?: snapshot.playlist
             result += LocalLibraryItem(
                 identity = "saved:" + snapshot.localPlaylistId,
                 localPlaylistId = snapshot.localPlaylistId,
                 historyEntryId = snapshot.sourceHistoryId,
                 title = playlist.name,
-                sourceLabel = if (playing) current.sourceLabel else snapshot.sourceLabel,
+                sourceLabel = active?.sourceLabel ?: snapshot.sourceLabel,
                 trackCount = playlist.tracks.size,
                 sampleVideoId = playlist.tracks.firstNotNullOfOrNull {
                     it.selectedVideoId?.takeIf(String::isNotBlank)
                 },
                 destinationPlaylistId =
-                    if (playing) current.destinationPlaylistId
-                    else snapshot.destinationPlaylistId,
+                    active?.destinationPlaylistId ?: snapshot.destinationPlaylistId,
                 destinationTitle =
-                    if (playing) current.destinationPlaylistTitle
-                    else snapshot.destinationPlaylistTitle,
-                updatedAt = if (playing) current.updatedAt else snapshot.updatedAt,
+                    active?.destinationPlaylistTitle ?: snapshot.destinationPlaylistTitle,
+                updatedAt = active?.updatedAt ?: snapshot.updatedAt,
                 source = if (playing) LocalLibrarySource.CURRENT else LocalLibrarySource.SAVED,
                 isCurrent = playing
             )
