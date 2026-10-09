@@ -691,14 +691,10 @@ class MainActivity : Activity() {
 
         quickSection.addView(quickRow)
 
-        quickSection.addView(
-            HomeDashboardChrome.workflowButton(this,
-                "Мої плейлісти • Бібліотека", false
-            ) { openDirectPlaylistLibrary() },
-            LinearLayout.LayoutParams(-1, dp(54)).apply {
-                topMargin = dp(8)
-            }
-        )
+        quickSection.addView(HomeDashboardChrome.workflowButton(
+            this, "Мої плейлісти • Бібліотека", false
+        ) { openDirectPlaylistLibrary() },
+            LinearLayout.LayoutParams(-1, dp(54)).apply { topMargin = dp(8) })
 
         content.addView(
             quickSection,
@@ -1209,13 +1205,6 @@ class MainActivity : Activity() {
 
             playlistScreenRequestCode -> {
                 handlePlaylistHubResult(data)
-            }
-
-            playlistLibraryRequestCode -> {
-                if (data.getBooleanExtra(PlaylistLibraryActivity.EXTRA_CURRENT_CHANGED, false)) {
-                    reloadCurrentWorkspace(force = true)
-                    status("Поточний плейліст змінено локально. YTM не змінено.")
-                }
             }
 
             destinationScreenRequestCode -> {
