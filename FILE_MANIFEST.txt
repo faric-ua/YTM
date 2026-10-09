@@ -91,9 +91,9 @@ bf54b69b8bb58e3d  TERMUX_COMMANDS.md
 22bed1fcaf915359  YTM_ASSISTANT_WORKFLOW.md
 d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
-3ae4f30cd935ab3d  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
+c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
-7b04f5d6fb11b28c  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
+3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
 cc77b1bafb5454b0  app/src/main/AndroidManifest.xml
 57766be00795264b  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 471fe06f23073bd4  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
