@@ -580,21 +580,25 @@ object UiChrome {
         container: LinearLayout,
         buttons: List<Button>,
         buttonHeightDp: Int = 54,
-        tones: List<ActionTone> = emptyList()
+        tones: List<ActionTone> = emptyList(),
+        minButtonWidthDp: Int = 132,
+        horizontalChromeDp: Int = 48
     ) {
         if (buttons.isEmpty()) {
             return
         }
 
+        // Embedded cards and inset footers have less room than screenWidthDp.
+        // Callers can reserve their actual horizontal chrome before deciding
+        // between horizontal and full-width stacked buttons.
         val horizontal =
-            useHorizontalActionRow(
+            fitsHorizontalActionGroup(
                 context = activity,
                 actionCount = buttons.size,
-                minButtonWidthDp = 132,
-                labels =
-                    buttons.map {
-                        it.text
-                    }
+                minButtonWidthDp = minButtonWidthDp,
+                labels = buttons.map { it.text },
+                textSizeSp = 15f,
+                chromeWidthDp = horizontalChromeDp.toFloat()
             )
 
         container.orientation =
