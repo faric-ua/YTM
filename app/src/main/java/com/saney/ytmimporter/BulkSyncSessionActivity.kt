@@ -15,6 +15,7 @@ import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.bulk.BulkSyncExecutionPolicy
 import com.saney.ytmimporter.bulk.BulkSyncExecutor
+import com.saney.ytmimporter.bulk.BulkCreateBatchPolicy
 import com.saney.ytmimporter.bulk.BulkWriteRetryGuard
 import com.saney.ytmimporter.bulk.BulkSyncHelpContent
 import com.saney.ytmimporter.bulk.BulkSyncQaFaultPolicy
@@ -43,7 +44,8 @@ import java.util.Date
 
 class BulkSyncSessionActivity : Activity() {
     private enum class SessionModal {
-        ROLLBACK_CONFIRM
+        ROLLBACK_CONFIRM,
+        CREATE_BATCH_SIZE
     }
 
     private val worker =
@@ -589,6 +591,34 @@ class BulkSyncSessionActivity : Activity() {
         }
     }
 
+    private fun showBatchSizePicker() {
+        if (running) return
+        sessionModalController.show(
+            modalId = SessionModal.CREATE_BATCH_SIZE.name,
+            renderer = ::renderSessionModal
+        )
+    }
+
+    private fun setBatchSize(size: Int) {
+        if (running || size !in BulkCreateBatchPolicy.SIZES) return
+        val id = sessionId ?: return
+        val current = sessionStore.get(id) ?: return
+        if (current.state !in setOf(
+                BulkSyncSessionState.READY,
+                BulkSyncSessionState.PAUSED_CREATE_BATCH,
+                BulkSyncSessionState.PAUSED_INTERRUPTED,
+                BulkSyncSessionState.PAUSED_WRITE_QUOTA,
+                BulkSyncSessionState.PAUSED_RATE_LIMIT,
+                BulkSyncSessionState.PAUSED_AUTH
+            )
+        ) return
+        sessionStore.upsert(current.copy(
+            maxCreatesPerRun = size,
+            updatedAt = System.currentTimeMillis()
+        ))
+        sessionStore.get(id)?.let(::render)
+    }
+
     private fun showRollbackConfirmation(
         session: BulkSyncSession
     ) {
@@ -621,6 +651,32 @@ class BulkSyncSessionActivity : Activity() {
                 ?: return null
 
         return when (modal) {
+            SessionModal.CREATE_BATCH_SIZE -> {
+                if (running || session.isTerminal ||
+                    session.state == BulkSyncSessionState.RUNNING ||
+                    BulkCreateBatchPolicy.remainingCreates(session) == 0
+                ) return null
+
+                UiChrome.showFixedFooterMessageDialog(
+                    activity = this,
+                    title = "Нових плейлістів за запуск",
+                    message =
+                        "Це обережна кількість для одного ручного запуску, " +
+                        "а не офіційний денний ліміт YouTube. " +
+                        "Після пакета програма зупиниться. " +
+                        "Наступний пакет запускається тільки вручну.",
+                    actions =
+                        BulkCreateBatchPolicy.SIZES.sorted().map { size ->
+                            UiChrome.DialogAction(label = "$size за запуск") {
+                                sessionModalController.clearState()
+                                setBatchSize(size)
+                            }
+                        } + UiChrome.DialogAction(label = "Скасувати") {
+                            sessionModalController.clearState()
+                        }
+                )
+            }
+
             SessionModal.ROLLBACK_CONFIRM -> {
                 if (
                     !BulkSyncRollbackPolicy
@@ -1013,6 +1069,32 @@ class BulkSyncSessionActivity : Activity() {
             )
         )
 
+        val remainingCreates = BulkCreateBatchPolicy.remainingCreates(session)
+        if (remainingCreates > 0 && !session.isTerminal) {
+            val batchSize = session.maxCreatesPerRun
+            summaryPanel.addView(
+                BulkHierarchyChrome.secondary(
+                    activity = this,
+                    text = "Нових ще в плані: $remainingCreates • " +
+                        "за один запуск: " +
+                        (batchSize?.toString() ?: "без обмеження (стара сесія)")
+                )
+            )
+            if (!running && session.state != BulkSyncSessionState.RUNNING) {
+                val batchButton = Button(this).apply {
+                    text = "Змінити розмір пакета"
+                    isAllCaps = false
+                    setOnClickListener { showBatchSizePicker() }
+                }
+                UiChrome.styleAdaptiveActionButton(
+                    activity = this,
+                    button = batchButton,
+                    tone = UiChrome.ActionTone.NORMAL
+                )
+                summaryPanel.addView(batchButton)
+            }
+        }
+
         summaryPanel.addView(
             BulkHierarchyChrome.primary(
                 activity = this,
@@ -1253,6 +1335,9 @@ class BulkSyncSessionActivity : Activity() {
                 session.state ==
                     BulkSyncSessionState.READY ->
                     "Почати синхронізацію"
+
+                session.state == BulkSyncSessionState.PAUSED_CREATE_BATCH ->
+                    "Продовжити наступний пакет"
 
                 else ->
                     "Продовжити"
@@ -1534,6 +1619,7 @@ class BulkSyncSessionActivity : Activity() {
             BulkSyncSessionState.PAUSED_SEARCH_QUOTA,
             BulkSyncSessionState.PAUSED_WRITE_QUOTA,
             BulkSyncSessionState.PAUSED_RATE_LIMIT,
+            BulkSyncSessionState.PAUSED_CREATE_BATCH,
             BulkSyncSessionState.PAUSED_AUTH,
             BulkSyncSessionState.PAUSED_INTERRUPTED,
             BulkSyncSessionState.ROLLING_BACK,
@@ -1608,6 +1694,9 @@ class BulkSyncSessionActivity : Activity() {
 
             BulkSyncSessionState.PAUSED_RATE_LIMIT ->
                 "Пауза — тимчасовий ліміт API"
+
+            BulkSyncSessionState.PAUSED_CREATE_BATCH ->
+                "Пакет створення завершено"
 
             BulkSyncSessionState.PAUSED_AUTH ->
                 "Пауза — потрібна авторизація"
