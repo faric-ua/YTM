@@ -8,7 +8,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 841ac3888017a23d  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-a87d4013a3b1b512  ACTIVE_PLAN.md
+8a64974f2b2ce5e4  ACTIVE_PLAN.md
 acd045e07c18ca3c  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -17,7 +17,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
 3655c3c06d7e538e  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
-b90ad136d5a9f927  CURRENT_HANDOFF.md
+02124bd8b427ef6e  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -29,7 +29,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-4621dad62c0494a7  RESUME_HERE.md
+1abebd522f36ef85  RESUME_HERE.md
 3d71c8321499182a  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -93,7 +93,7 @@ e6af758495c5bfa7  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 cc77b1bafb5454b0  app/src/main/AndroidManifest.xml
 e2cb9c148fc9b7a2  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
-e8f9b88b6124d64b  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
+cdbd172382d1c0aa  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 0af4ad581bd9e32c  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 4da09cca8fb23e0b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 26e235d6d47f5d97  app/src/main/java/com/saney/ytmimporter/EditPlaylistActivity.kt
@@ -115,16 +115,17 @@ c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.
 99e25606f1e7db96  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
 5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
 bcd64759292d16a9  app/src/main/java/com/saney/ytmimporter/bulk/BulkSessionPreparationCoordinator.kt
-a81d706fd5bafad6  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutionPolicy.kt
-d0462a8fe6cdfb05  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutor.kt
+efba2ebd404eaa0f  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutionPolicy.kt
+d8ca36d3258891f5  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncExecutor.kt
 cc8920504c28c3e1  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncHelpContent.kt
 ff6ee274bacb9f4a  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicy.kt
 4947f9d0beb06f85  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncQaFault.kt
 3db02888be385cc4  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncRollbackExecutor.kt
 dc9c62fd21affffc  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncRollbackPolicy.kt
 10216ebe9c111124  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicy.kt
-6e8c8a0e4c5124d1  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSession.kt
+35d77ceb9b485bb8  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSession.kt
 ac76c084e381f3c0  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncSessionFactory.kt
+e9076775ed60f7e0  app/src/main/java/com/saney/ytmimporter/bulk/BulkWriteRetryGuard.kt
 9430712c6f05319e  app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt
 64dfbecaec3cc3a7  app/src/main/java/com/saney/ytmimporter/destination/DestinationForwardedWritePlan.kt
 a27466468fd212eb  app/src/main/java/com/saney/ytmimporter/destination/DestinationRemoteOperations.kt
@@ -154,7 +155,7 @@ c606025da7de4466  app/src/main/java/com/saney/ytmimporter/storage/AccountLibrary
 21f9907bf0ae81c8  app/src/main/java/com/saney/ytmimporter/storage/AllFilesAccess.kt
 2bf17651466d4795  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncCheckpointStore.kt
 727fa7dde0b6e167  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncQaFaultStore.kt
-cd6cdf5286434a29  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncSessionStore.kt
+2351707c35a0b8aa  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncSessionStore.kt
 1804214523c1d5ce  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
 52e409baf9a0ed79  app/src/main/java/com/saney/ytmimporter/storage/DirectDownloadFileQuery.kt
 835027dec859c077  app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
@@ -202,7 +203,7 @@ ef7080f7c90cb7fa  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapsho
 49ea39322f16188f  app/src/main/java/com/saney/ytmimporter/youtube/MatchScorer.kt
 df98593f1614f580  app/src/main/java/com/saney/ytmimporter/youtube/PlaylistEditPolicy.kt
 e0bbad95f7dda319  app/src/main/java/com/saney/ytmimporter/youtube/SearchCache.kt
-884cbc4ac25c9c92  app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
+26efe5d164738b71  app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
 6ecbcbde9759db28  app/src/main/java/com/saney/ytmimporter/youtube/YouTubeLimitPolicy.kt
 b7d379baa14b67cd  app/src/main/res/drawable/bg_ytm_dialog.xml
 8e20eea93a69f40b  app/src/main/res/drawable/ic_arrow_back_24.xml
@@ -236,6 +237,7 @@ ea8180e420e98f2d  app/src/main/res/values/colors.xml
 6ad846614cd4bb87  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncQaFaultPolicyTest.kt
 d52736a993ac9175  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSelectionPolicyTest.kt
 89af9e1339fccff5  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt
+64e19bcc5ad4ab9c  app/src/test/java/com/saney/ytmimporter/bulk/BulkWriteRetryGuardTest.kt
 ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecoveryPolicyTest.kt
 9cc5a3fa406839b4  app/src/test/java/com/saney/ytmimporter/model/HistoryListFilterPolicyTest.kt
 55401bf27c73fe85  app/src/test/java/com/saney/ytmimporter/model/HistoryLogicalGroupPolicyTest.kt
@@ -330,7 +332,7 @@ e9d9473d790b8b85  docs/documentation/HISTORICAL_RELEASE_MATRIX.md
 99c7f4028960389c  docs/issues/BUG-004/PHONE_REPRO_v1.4.40_2026-09-19.md
 896621664e5d5f19  docs/issues/BUG-009/PHONE_REPRO_v1.4.40_2026-09-19.md
 f0b2bc4a157dcf09  docs/plans/YTM_ACCOUNT_LIBRARY_IMPORT_EXPORT.md
-d9a70646c6395c9b  docs/product/PRODUCT_DIRECTION_2026-10-09.md
+1cf4b83558f464e6  docs/product/PRODUCT_DIRECTION_2026-10-09.md
 b899bbc8a360bb81  docs/roadmap/SKINS.md
 9e3cb6ec2ad54362  docs/roadmap/UPDATER.md
 b6489bea87909d95  docs/test-data/collections/House_Dance_Hit_2000/House_Dance_Hit_2000_Vol1_YTM.txt
