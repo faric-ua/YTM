@@ -152,3 +152,17 @@ New `BulkWriteRetryGuard`: parse YouTube `Retry-After` delta-seconds/RFC1123; af
 
 **NEXT:** verify final branch HEAD / Validate Android after `FILE_MANIFEST.txt` is regenerated and docs synced; if PASS, retain source-only pending signed APK, and do **one** scoped phone QA later (induced live rate failures are NOT requested). Further feature wave remains a durable user-opt-in playlist-create queue with unknown provider limit; no guessed daily cap, no blind auto-retries, no unapproved remote mutations.
 
+## NEW CHAT RESUME — 2026-10-09 / Durable manual create batches
+
+Active **experimental** post-v1.4.55 source: `feat/v1.4.56-bulk-create-batches`, based on validated `feat/v1.4.56-bulk-limit-guard` HEAD `d19e105e7cbdc3796ba908ae98d15b0d5beb7858` (Validate #37864960961 SUCCESS). The former v1.4.56 safe-selection and Retry-After/cooldown improvements are inherited.
+
+Implemented in one coherent safe slice:
+- Existing Bulk Session now supports **per-manual-run creation batching**, default **3 new playlists per explicit Start/Continue**, selectable 1/3/5 on the session UI. This is a **local preference, not YouTube's numeric playlist cap**.
+- Persist session `maxCreatesPerRun` in existing Bulk session JSON; legacy sessions with missing field remain *unlimited* and unchanged unless user opts in.
+- `BulkCreateBatchPolicy` counts only confirmed `APPLIED CREATE_PLAYLIST` entries; after limit, finish existing row's `INSERT_PLAYLIST_ITEM` operations first, then stop *before next playlist create* as `PAUSED_CREATE_BATCH`; journal/checkpoint and remote IDs remain authoritative. Subsequent batch requires a new user click; rotation/restart never starts work.
+- Batch sizing cannot mutate a running session, uncertain PREPARED create/insert, or rollback state; existing YTM rate/quota pauses and uncertain-write guards take precedence.
+- New JVM pure policy tests and factory default test. `FILE_MANIFEST.txt` must be current. Check exact final HEAD CI before claiming PASS.
+- This is **NOT** a background scheduler or complete automatic creation queue; it implements persistent session batching and explicit continuation only.
+
+**NEXT ACTION:** Verify exact-HEAD GitHub Actions Validate (preflight, JVM and assemble), then decide combined signed QA checkpoint. Do not mark PHONE PASS, publish, or close #27/#28 from source/CI alone; v1.4.55 candidate remains validated/signed but exact-APK phone identity is unconfirmed. Do not redo accepted #29/#30/#40/#58 tests. Roadmap #59 is the umbrella for subsequent safe queue work.
+
