@@ -111,7 +111,8 @@ data class BulkSyncSession(
     val plan: List<BulkSyncSessionRow>,
     val currentPlanIndex: Int,
     val mutationLedger: List<BulkSyncMutation>,
-    val lastError: String? = null
+    val lastError: String? = null,
+    val retryNotBeforeEpochMs: Long? = null
 ) {
     val isTerminal: Boolean
         get() {
