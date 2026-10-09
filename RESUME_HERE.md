@@ -166,3 +166,13 @@ Implemented in one coherent safe slice:
 
 **NEXT ACTION:** Verify exact-HEAD GitHub Actions Validate (preflight, JVM and assemble), then decide combined signed QA checkpoint. Do not mark PHONE PASS, publish, or close #27/#28 from source/CI alone; v1.4.55 candidate remains validated/signed but exact-APK phone identity is unconfirmed. Do not redo accepted #29/#30/#40/#58 tests. Roadmap #59 is the umbrella for subsequent safe queue work.
 
+## UI QA FOLLOW-UP — 2026-10-09 / Bulk actions overflow on phone
+
+User-provided phone screenshots after exact-signed `feat/v1.4.56-zz-current` HEAD `7bcb3a6343dc558923d8849f726f56c7b33b5f40` (signed run `37932562156`) confirm durable Bulk Session can be created with 5 selected rows, of which 2 are NEW, and shows default **3 creates per manual launch** plus "Змінити розмір пакета". PHONE-QA of the **batch controls** is observed at rest; no remote writes were attempted.
+
+New **visual UX finding**: on narrow phone text scaling, Preview's quick-selection `Лише доповнити` is clipped to `Лише`; Session footer button `Почати синхронізацію` is clipped to `Почати` because adaptive width chooses layout before primary caption is assigned. These are UI layout defects; no YTM mutation observed.
+
+**Implemented source fix on same active branch:** adaptive action layout supports explicit width reservations for nested cards; Preview quick buttons choose full-width stack when actual card is narrow; Session footer starts with a real caption and reflows on every session-state change with reserved inset width / sufficient height / up to two text lines. Existing remote API, durable ledger, rollback, and create-batch semantics remain unchanged. CI and signed APK must be re-checked at the latest branch HEAD before PHONE PASS.
+
+**NEXT:** exact-HEAD Validate preflight + JVM tests + unsigned assemble; only then signed APK from current branch and 1 scoped phone visual QA (Preview shortcut full labels + Session footer full labels) **without pressing Start**. Old signed APK `37932562156` does not include this UI fix and must not be reused to claim it. Avoid using in-app stable "Check update": it does not deliver a feature-branch QA build.
+
