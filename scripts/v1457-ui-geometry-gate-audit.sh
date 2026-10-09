@@ -40,4 +40,20 @@ grep -Fq 'connectedDebugAndroidTest' "$CI" ||
 grep -Fq 'UiGeometryTestActivity' "$MANIFEST" ||
   fail 'test-only activity is not registered for debug builds'
 
-echo "PASS: actual-measured adaptive actions + blocking Android emulator UI test contract"
+REAL_TEST="app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt"
+REAL_PREVIEW="app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt"
+test -s "$REAL_TEST" || fail 'actual Bulk screen instrumented tests missing'
+grep -Fq 'fun actualPreview_showsBothQuickSelectionLabelsInItsNestedCard()' "$REAL_TEST" ||
+  fail 'actual Preview nested-card caption assertion missing'
+grep -Fq 'fun actualSession_readyActionsStayFullyVisibleAboveLongPlan()' "$REAL_TEST" ||
+  fail 'actual Session footer geometry assertion missing'
+grep -Fq 'fun actualSession_landscapeAndPortrait_keepFooterVisibleWithoutWrite()' "$REAL_TEST" ||
+  fail 'actual Session rotation and zero-mutation assertion missing'
+grep -Fq 'if (BuildConfig.DEBUG)' "$REAL_PREVIEW" ||
+  fail 'read-only preview fixture is not guarded as debug-only'
+grep -Fq 'EXTRA_DEBUG_READ_ONLY_PLAN' "$REAL_PREVIEW" ||
+  fail 'actual Preview cannot bypass remote preflight for instrumented geometry'
+grep -Fq 'assertEquals(0, stored?.mutationLedger?.size)' "$REAL_TEST" ||
+  fail 'actual screen fixture lost its no-remote-mutation assertion'
+
+echo "PASS: measured adaptive actions + blocking emulator + real Bulk Activity UI assertions"
