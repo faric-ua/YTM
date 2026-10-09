@@ -112,7 +112,9 @@ data class BulkSyncSession(
     val currentPlanIndex: Int,
     val mutationLedger: List<BulkSyncMutation>,
     val lastError: String? = null,
-    val retryNotBeforeEpochMs: Long? = null
+    val retryNotBeforeEpochMs: Long? = null,
+    // Null means pre-existing legacy session: keep its previously accepted behavior.
+    val maxCreatesPerRun: Int? = null
 ) {
     val isTerminal: Boolean
         get() {
