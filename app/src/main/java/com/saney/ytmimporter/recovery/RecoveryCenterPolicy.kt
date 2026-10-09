@@ -128,6 +128,7 @@ object RecoveryCenterPolicy {
                 BulkSyncSessionState.PAUSED_SEARCH_QUOTA,
                 BulkSyncSessionState.PAUSED_WRITE_QUOTA,
                 BulkSyncSessionState.PAUSED_RATE_LIMIT,
+                BulkSyncSessionState.PAUSED_CREATE_BATCH,
                 BulkSyncSessionState.PAUSED_AUTH,
                 BulkSyncSessionState.PAUSED_INTERRUPTED,
                 BulkSyncSessionState.ROLLING_BACK,
@@ -360,6 +361,9 @@ object RecoveryCenterPolicy {
 
             BulkSyncSessionState.PAUSED_RATE_LIMIT ->
                 "Призупинено через ліміт запитів"
+
+            BulkSyncSessionState.PAUSED_CREATE_BATCH ->
+                "Пакет створення завершено; продовжити вручну"
 
             BulkSyncSessionState.PAUSED_AUTH ->
                 "Потрібна Google/YTM авторизація"
