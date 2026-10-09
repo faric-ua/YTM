@@ -15,6 +15,7 @@ import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.bulk.BulkSyncExecutionPolicy
 import com.saney.ytmimporter.bulk.BulkSyncExecutor
+import com.saney.ytmimporter.bulk.BulkWriteRetryGuard
 import com.saney.ytmimporter.bulk.BulkSyncHelpContent
 import com.saney.ytmimporter.bulk.BulkSyncQaFaultPolicy
 import com.saney.ytmimporter.bulk.BulkSyncRollbackExecutor
@@ -37,6 +38,8 @@ import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.youtube.YouTubeApi
 import java.util.concurrent.Executors
+import java.text.DateFormat
+import java.util.Date
 
 class BulkSyncSessionActivity : Activity() {
     private enum class SessionModal {
@@ -807,6 +810,12 @@ class BulkSyncSessionActivity : Activity() {
             sessionStore.get(id)
                 ?: return renderMissing()
 
+        if (BulkWriteRetryGuard.isWaiting(session)) {
+            render(session)
+            toast("Захисна пауза ще діє. Час відновлення показано на екрані.")
+            return
+        }
+
         val token =
             AuthSessionStore.current()
                 .accessToken
@@ -1148,6 +1157,32 @@ class BulkSyncSessionActivity : Activity() {
                     text =
                         "Деталі: " +
                             session.lastError
+                )
+            )
+        }
+
+        val retryNotBefore = session.retryNotBeforeEpochMs
+        if (
+            session.state == BulkSyncSessionState.PAUSED_RATE_LIMIT &&
+            retryNotBefore != null
+        ) {
+            val waiting = BulkWriteRetryGuard.isWaiting(session)
+            val localTime = DateFormat.getDateTimeInstance(
+                DateFormat.SHORT,
+                DateFormat.SHORT
+            ).format(Date(retryNotBefore))
+            summaryPanel.addView(
+                BulkHierarchyChrome.primary(
+                    activity = this,
+                    text =
+                        if (waiting) {
+                            "Захисна пауза до $localTime (час телефону). " +
+                                "До цього часу нові записи не запускаються."
+                        } else {
+                            "Мінімальна пауза минула. YouTube не гарантує " +
+                                "розблокування — продовження лише вручну."
+                        },
+                    tone = BulkHierarchyChrome.Tone.WARNING
                 )
             )
         }
