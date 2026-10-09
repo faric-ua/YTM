@@ -19,7 +19,8 @@ class YouTubeApiException(
     val reason: String?,
     override val message: String,
     val status: String? = null,
-    val detailReasons: List<String> = emptyList()
+    val detailReasons: List<String> = emptyList(),
+    val retryAfterHeader: String? = null
 ) : IllegalStateException(message) {
     val limitKind: YouTubeLimitKind? =
         YouTubeLimitPolicy.classify(
@@ -56,7 +57,11 @@ class YouTubeApi(
     private val accessTokenRecovery:
         YouTubeAccessTokenRecovery? = null
 ) {
-    data class ApiResponse(val code: Int, val body: String)
+    data class ApiResponse(
+        val code: Int,
+        val body: String,
+        val retryAfterHeader: String? = null
+    )
 
     data class PlaylistVideoIdsResult(
         val videoIds: Set<String>,
@@ -1164,6 +1169,11 @@ class YouTubeApi(
         val code =
             connection.responseCode
 
+        val retryAfterHeader =
+            connection.getHeaderField("Retry-After")
+                ?.trim()
+                ?.takeIf(String::isNotBlank)
+
         val input =
             if (code in 200..299) {
                 connection.inputStream
@@ -1187,7 +1197,8 @@ class YouTubeApi(
 
         return ApiResponse(
             code = code,
-            body = text
+            body = text,
+            retryAfterHeader = retryAfterHeader
         )
     }
 
@@ -1288,7 +1299,8 @@ class YouTubeApi(
             reason = reason,
             message = fullMessage,
             status = status,
-            detailReasons = detailReasons
+            detailReasons = detailReasons,
+            retryAfterHeader = response.retryAfterHeader
         )
     }
 
