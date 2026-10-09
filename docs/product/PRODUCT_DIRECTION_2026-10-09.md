@@ -143,3 +143,8 @@ linked playlist identity before setting any assumed daily count.
 Public daily channel limit is undocumented numerically and cannot
 be assumed to govern private playlists. This is #59 future research;
 current scope remains combined #27/#28.
+
+## Implementation note — post-v1.4.55 Bulk limit guard, 2026-10-09
+
+The isolated branch `feat/v1.4.56-bulk-limit-guard` builds on already validated safe-selection shortcuts. Source now records API `Retry-After` on failures, preserves a durable rate pause across restart, prevents premature manual/API write resume, and exposes the real HTTP error reason. The application-specific minimum pause is 15 minutes, not evidence of YouTube's numeric playlist limits or a bypass strategy. This is an incremental safety layer for the eventual persistent opt-in creation queue, **not** the complete queue and **not** a stable release/phone acceptance. Never auto-resume when the pause expires.
+
