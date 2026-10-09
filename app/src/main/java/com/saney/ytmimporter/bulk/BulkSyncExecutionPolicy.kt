@@ -214,8 +214,13 @@ object BulkSyncExecutionPolicy {
         }
 
     fun canExplicitlyResume(
-        session: BulkSyncSession
+        session: BulkSyncSession,
+        nowEpochMs: Long = System.currentTimeMillis()
     ): Boolean {
+        if (BulkWriteRetryGuard.isWaiting(session, nowEpochMs)) {
+            return false
+        }
+
         if (
             session.state !in
             setOf(
