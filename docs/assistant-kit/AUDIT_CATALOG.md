@@ -181,7 +181,6 @@ contracts.
 - `scripts/v1455-termux-operator-menu-audit.sh`
 - `scripts/v1455-url-blank-input-audit.sh`
 - `scripts/v1455-ux-hardening-audit.sh`
-
 - `scripts/v1457-ui-geometry-gate-audit.sh`
 
 ## Usage rule
