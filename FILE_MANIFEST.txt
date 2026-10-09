@@ -272,7 +272,7 @@ c046586be53a0584  artifacts/README.md
 3c8c6e273019f706  docs/HANDOFF_HARDENING_2026-09-17.md
 da6db67c9017a470  docs/README.md
 bb063331c071e088  docs/WORKFLOW_LESSONS.md
-3d7822bd0337c81b  docs/assistant-kit/AUDIT_CATALOG.md
+f2d5c6457dce0b8d  docs/assistant-kit/AUDIT_CATALOG.md
 131ff62755c72a02  docs/assistant-kit/CONTEXT_FILES.txt
 b6a9a300bb8d0d5e  docs/assistant-kit/PORTABLE_AUDITS.txt
 b07c7177d0a2b73e  docs/assistant-kit/README.md
