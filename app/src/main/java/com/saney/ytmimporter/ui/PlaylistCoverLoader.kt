@@ -32,6 +32,7 @@ object PlaylistCoverLoader {
                 ?: return
         image.tag = address
         synchronized(cache) { cache.get(address) }?.let {
+            image.clearColorFilter()
             image.setImageBitmap(it)
             return
         }
@@ -52,6 +53,7 @@ object PlaylistCoverLoader {
             synchronized(cache) { cache.put(address, bitmap) }
             activity.runOnUiThread {
                 if (!activity.isDestroyed && image.tag == address) {
+                    image.clearColorFilter()
                     image.setImageBitmap(bitmap)
                 }
             }
