@@ -58,6 +58,12 @@
             android:screenOrientation="unspecified" />
 
         <activity
+            android:name=".PlaylistLibraryActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".PlaylistActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />
