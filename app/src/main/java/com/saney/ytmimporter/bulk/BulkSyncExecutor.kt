@@ -30,6 +30,11 @@ class BulkSyncExecutor(
                     "Bulk-сесію не знайдено"
                 )
 
+        // An early manual retry must not issue even a single new remote write.
+        if (BulkWriteRetryGuard.isWaiting(session)) {
+            return session
+        }
+
         if (
             BulkSyncExecutionPolicy
                 .hasUncertainPreparedMutation(
@@ -61,8 +66,8 @@ class BulkSyncExecutor(
                     BulkSyncSessionState.RUNNING,
                 updatedAt =
                     System.currentTimeMillis(),
-                lastError =
-                    null
+                lastError = null,
+                retryNotBeforeEpochMs = null
             )
 
         save(
@@ -1042,6 +1047,15 @@ class BulkSyncExecutor(
                     state,
                 updatedAt =
                     System.currentTimeMillis(),
+                retryNotBeforeEpochMs =
+                    if (state == BulkSyncSessionState.PAUSED_RATE_LIMIT) {
+                        BulkWriteRetryGuard.retryNotBefore(
+                            retryAfterHeader = apiError.retryAfterHeader,
+                            nowEpochMs = System.currentTimeMillis()
+                        )
+                    } else {
+                        null
+                    },
                 lastError =
                     if (
                         state ==
