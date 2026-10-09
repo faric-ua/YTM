@@ -1291,7 +1291,7 @@ class YouTubeApi(
 
         val fullMessage =
             "$action: HTTP ${response.code}" +
-                if (message.isNotBlank()) " — $message" else "" +
+                (if (message.isNotBlank()) " — $message" else "") +
                 reasonSuffix
 
         throw YouTubeApiException(
