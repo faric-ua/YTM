@@ -68,6 +68,17 @@ class BulkCreateBatchPolicyTest {
     }
 
     @Test
+    fun batchPause_remainsExplicitlyResumableWithoutAutoStart() {
+        val paused = session(3).copy(
+            state = BulkSyncSessionState.PAUSED_CREATE_BATCH
+        )
+        assertTrue(
+            BulkSyncExecutionPolicy.canExplicitlyResume(paused)
+        )
+        assertFalse(paused.isTerminal)
+    }
+
+    @Test
     fun choices_haveSafeDefault() {
         assertEquals(setOf(1, 3, 5), BulkCreateBatchPolicy.SIZES)
         assertEquals(3, BulkCreateBatchPolicy.DEFAULT_MAX_CREATES)
