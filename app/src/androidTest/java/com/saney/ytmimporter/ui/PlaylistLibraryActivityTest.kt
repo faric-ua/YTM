@@ -82,7 +82,7 @@ class PlaylistLibraryActivityTest {
             idle()
             scene.onActivity { activity ->
                 assertTrue(activity.window.decorView.hasText("Тестова пісня"))
-                assertTrue(activity.window.decorView.hasText("Поточний плейліст"))
+                assertTrue(activity.window.decorView.hasText("Відкрити поточний плейліст"))
             }
             scene.recreate()
             idle()
