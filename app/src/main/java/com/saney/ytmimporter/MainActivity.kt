@@ -66,6 +66,7 @@ class MainActivity : Activity() {
     private val menuScreenRequestCode = 1501
     private val quotaScreenRequestCode = 1502
     private val playlistScreenRequestCode = 1601
+    private val playlistLibraryRequestCode = 1602
     private val historyScreenRequestCode = 1701
     private val authRequestCode = 9001
     private val executor = Executors.newSingleThreadExecutor()
@@ -690,6 +691,21 @@ class MainActivity : Activity() {
 
         quickSection.addView(quickRow)
 
+        // One visible entry point for every saved/local/online playlist.
+        quickSection.addView(
+            HomeDashboardChrome.workflowButton(
+                activity = this,
+                label = "Мої плейлісти • Бібліотека",
+                primary = false
+            ) {
+                openDirectPlaylistLibrary()
+            },
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(54)
+            ).apply { topMargin = dp(8) }
+        )
+
         content.addView(
             quickSection,
             LinearLayout.LayoutParams(
@@ -1201,6 +1217,17 @@ class MainActivity : Activity() {
                 handlePlaylistHubResult(data)
             }
 
+            playlistLibraryRequestCode -> {
+                if (data.getBooleanExtra(
+                        PlaylistLibraryActivity.EXTRA_CURRENT_CHANGED, false
+                    )
+                ) {
+                    reloadCurrentWorkspace(force = true)
+                    status("Вибрано поточний плейліст із бібліотеки. " +
+                        "YouTube Music не змінено.")
+                }
+            }
+
             destinationScreenRequestCode -> {
                 handleDestinationResult(data)
             }
@@ -1279,7 +1306,15 @@ class MainActivity : Activity() {
 
     private fun openDirectPlaylistHub() {
         clearDelegatedReturnRoute()
-        openPlaylistHub()
+        openDirectPlaylistLibrary()
+    }
+
+    private fun openDirectPlaylistLibrary() {
+        clearDelegatedReturnRoute()
+        startActivityForResult(
+            Intent(this, PlaylistLibraryActivity::class.java),
+            playlistLibraryRequestCode
+        )
     }
 
     private fun openPlaylistHub() {
