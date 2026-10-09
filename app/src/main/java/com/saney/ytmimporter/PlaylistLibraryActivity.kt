@@ -1,7 +1,7 @@
 package com.saney.ytmimporter
 
 import android.app.Activity
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -33,6 +33,7 @@ import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.PlaylistCoverLoader
+import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.UiChrome
 import com.saney.ytmimporter.youtube.YouTubeApi
 import java.util.concurrent.Executors
@@ -68,6 +69,7 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var layoutButton: Button
     private lateinit var searchBox: EditText
     private lateinit var statusLabel: TextView
+    private lateinit var modalController: RestorableModalController
 
     private val palette get() = AppThemeManager.palette(this)
 
@@ -81,8 +83,11 @@ class PlaylistLibraryActivity : Activity() {
         selectedRemote = savedInstanceState?.getString("remote")
         visibleTrackLimit = savedInstanceState?.getInt("limit") ?: 60
         ensureRemoteAccountIsolation()
+        modalController = RestorableModalController(this, STATE_MODAL)
+        modalController.restore(savedInstanceState)
         buildUi()
         renderContent()
+        modalController.restoreAfterContentReady(::renderConfirmation)
         if (onlineTab && cachedPlaylists == null && token() != null) {
             loadRemoteList()
         } else if (onlineTab && selectedRemote != null &&
@@ -104,10 +109,12 @@ class PlaylistLibraryActivity : Activity() {
         outState.putString("local", selectedLocal)
         outState.putString("remote", selectedRemote)
         outState.putInt("limit", visibleTrackLimit)
+        modalController.save(outState)
         super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
+        modalController.onDestroy()
         worker.shutdownNow()
         super.onDestroy()
     }
@@ -325,31 +332,7 @@ class PlaylistLibraryActivity : Activity() {
         )
         if (!item.isCurrent) {
             addFullButton("Зробити поточним плейлістом") {
-                AlertDialog.Builder(this)
-                    .setTitle("Змінити поточний плейліст?")
-                    .setMessage("Поточний плейліст уже збережений локально. " +
-                        "Новий вибір не запускає пошук або запис у YouTube.")
-                    .setNegativeButton("Скасувати", null)
-                    .setPositiveButton("Перемкнути") { _, _ ->
-                        val resolvedId = item.localPlaylistId
-                            ?: plan?.localPlaylistId
-                            ?: return@setPositiveButton
-                        currentStore.save(
-                            playlist = playlist,
-                            sourceLabel = item.sourceLabel,
-                            destinationPlaylistId =
-                                item.destinationPlaylistId,
-                            destinationPlaylistTitle =
-                                item.destinationTitle,
-                            localPlaylistId = resolvedId,
-                            sourceHistoryId = item.historyEntryId
-                        )
-                        setResult(RESULT_OK, Intent().putExtra(EXTRA_CURRENT_CHANGED, true))
-                        selectedLocal = "saved:$resolvedId"
-                        toast("Плейліст став поточним")
-                        renderContent()
-                    }
-                    .show()
+                showConfirmation(MODAL_SWITCH, item.identity)
             }
         } else {
             addFullButton("Відкрити поточний плейліст →") {
@@ -442,31 +425,108 @@ class PlaylistLibraryActivity : Activity() {
             if (linked == null) "Зберегти локальну копію як поточну"
             else "Зробити локальну копію поточною"
         ) {
-            AlertDialog.Builder(this)
-                .setTitle("Зберегти плейліст на телефоні?")
-                .setMessage("Збережу назви та videoId треків локально й зроблю " +
-                    "плейліст поточним. Медіафайли не завантажуються. " +
-                    "YouTube Music не змінюється.")
-                .setNegativeButton("Скасувати", null)
-                .setPositiveButton("Зберегти") { _, _ ->
-                    val existingId = linked?.localPlaylistId
-                    val source = linked?.playlist
-                    val finalTracks = if (source != null) source.tracks
-                        else tracks.map { it.copy() }.toMutableList()
-                    currentStore.save(
-                        playlist = ImportedPlaylist(item.title, finalTracks),
-                        sourceLabel = "YouTube • ${item.title}",
-                        destinationPlaylistId = item.id,
-                        destinationPlaylistTitle = item.title,
-                        localPlaylistId = existingId
-                    )
-                    setResult(RESULT_OK, Intent().putExtra(EXTRA_CURRENT_CHANGED, true))
-                    toast("Збережено локально. Нічого не записано в YouTube.")
-                }
-                .show()
+            showConfirmation(MODAL_SAVE_REMOTE, playlistId)
         }
         addHeading("Треки • ${tracks.size}")
         showTracks(tracks)
+    }
+
+    private fun showConfirmation(type: String, id: String) {
+        modalController.show(
+            modalId = type,
+            args = Bundle().apply { putString("item", id) },
+            renderer = ::renderConfirmation
+        )
+    }
+
+    private fun renderConfirmation(type: String, args: Bundle): Dialog? {
+        val id = args.getString("item") ?: return null
+        val title: String
+        val message: String
+        val actionLabel: String
+        when (type) {
+            MODAL_SWITCH -> {
+                if (localItems().none { it.identity == id }) return null
+                title = "Змінити поточний плейліст?"
+                message = "Попередній плейліст збережений локально. " +
+                    "Ця дія не запускає пошук або запис у YouTube."
+                actionLabel = "Перемкнути"
+            }
+            MODAL_SAVE_REMOTE -> {
+                if (cachedTracks[id] == null ||
+                    cachedPlaylists?.none { it.id == id } != false
+                ) return null
+                title = "Зберегти плейліст на телефоні?"
+                message = "Збережу назви та videoId треків локально й зроблю " +
+                    "плейліст поточним. Медіафайли не завантажуються, " +
+                    "YouTube Music не змінюється."
+                actionLabel = "Зберегти"
+            }
+            else -> return null
+        }
+        return UiChrome.showFixedFooterMessageDialog(
+            activity = this,
+            title = title,
+            message = message,
+            actions = listOf(
+                UiChrome.DialogAction(
+                    label = actionLabel,
+                    tone = UiChrome.ActionTone.ACCENT
+                ) {
+                    modalController.clearState()
+                    if (type == MODAL_SWITCH) setLocalCurrent(id)
+                    else saveRemoteAsCurrent(id)
+                },
+                UiChrome.DialogAction("Скасувати") {
+                    modalController.clearState()
+                }
+            )
+        )
+    }
+
+    private fun setLocalCurrent(identity: String) {
+        val item = localItems().firstOrNull { it.identity == identity } ?: return
+        val saved = item.localPlaylistId?.let(savedStore::get)
+        val current = currentStore.load()?.takeIf {
+            it.localPlaylistId == item.localPlaylistId
+        }
+        val history = item.historyEntryId?.let(historyStore::get)
+        val plan = history?.let {
+            HistoryRecoveryPolicy.plan(it, saved, "history-library-${it.id}")
+        }
+        val playlist = current?.playlist ?: saved?.playlist ?: plan?.playlist ?: return
+        val resolvedId = item.localPlaylistId ?: plan?.localPlaylistId ?: return
+        currentStore.save(
+            playlist = playlist,
+            sourceLabel = item.sourceLabel,
+            destinationPlaylistId = item.destinationPlaylistId,
+            destinationPlaylistTitle = item.destinationTitle,
+            localPlaylistId = resolvedId,
+            sourceHistoryId = item.historyEntryId
+        )
+        setResult(RESULT_OK, Intent().putExtra(EXTRA_CURRENT_CHANGED, true))
+        selectedLocal = "saved:$resolvedId"
+        toast("Плейліст став поточним")
+        renderContent()
+    }
+
+    private fun saveRemoteAsCurrent(id: String) {
+        val item = cachedPlaylists?.firstOrNull { it.id == id } ?: return
+        val tracks = cachedTracks[id] ?: return
+        val linked = savedStore.getAll().firstOrNull {
+            it.destinationPlaylistId == id
+        }
+        val chosenTracks = linked?.playlist?.tracks
+            ?: tracks.map { it.copy() }.toMutableList()
+        currentStore.save(
+            playlist = ImportedPlaylist(item.title, chosenTracks),
+            sourceLabel = "YouTube • ${item.title}",
+            destinationPlaylistId = item.id,
+            destinationPlaylistTitle = item.title,
+            localPlaylistId = linked?.localPlaylistId
+        )
+        setResult(RESULT_OK, Intent().putExtra(EXTRA_CURRENT_CHANGED, true))
+        toast("Збережено локально. Нічого не записано в YouTube.")
     }
 
     private fun loadRemoteList() {
@@ -713,6 +773,9 @@ class PlaylistLibraryActivity : Activity() {
 
     companion object {
         const val EXTRA_CURRENT_CHANGED = "playlist_library_current_changed"
+        private const val STATE_MODAL = "playlist_library_modal"
+        private const val MODAL_SWITCH = "switch_local_current"
+        private const val MODAL_SAVE_REMOTE = "save_remote_local"
         private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
 
         // Temporary, account-scoped metadata cache survives Android rotation,
