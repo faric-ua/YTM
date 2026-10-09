@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() { echo "FAIL: $1" >&2; exit 1; }
+
+UI="app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt"
+TEST="app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt"
+FIXTURE="app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt"
+MANIFEST="app/src/debug/AndroidManifest.xml"
+CI=".github/workflows/validate.yml"
+
+for file in "$UI" "$TEST" "$FIXTURE" "$MANIFEST" "$CI" app/build.gradle.kts; do
+  test -s "$file" || fail "missing UI geometry gate owner: $file"
+done
+
+grep -Fq 'container.addOnLayoutChangeListener(measureListener)' "$UI" ||
+  fail 'the shared renderer no longer measures actual container bounds'
+grep -Fq 'button.paint.measureText(button.text.toString())' "$UI" ||
+  fail 'adaptive actions no longer measure current caption font width'
+grep -Fq 'actionWidthsDp.maxOrNull()' "$UI" ||
+  fail 'equal-weight rows no longer reserve the widest peer caption'
+grep -Fq 'ViewGroup.LayoutParams.WRAP_CONTENT' "$UI" ||
+  fail 'adaptive actions no longer support accessible wrapped height'
+grep -Fq 'ui_chrome_action_layout_listener' "$UI" ||
+  fail 'adaptive action observer lifecycle tag missing'
+grep -Fq 'fun previewQuickActions_showCompleteCaptionsInsidePaddedCard()' "$TEST" ||
+  fail 'Bulk preview clipping regression assertion missing'
+grep -Fq 'fun sessionFooter_staysVisibleAndKeepsCompleteLongActionAtLargeTextSize()' "$TEST" ||
+  fail 'Bulk Session clipping/viewport assertion missing'
+grep -Fq 'fun rotationRebuildsSafeActionLayoutWithoutClickingAnything()' "$TEST" ||
+  fail 'rotation with no action execution assertion missing'
+grep -Fq 'no YouTube writes' "$TEST" ||
+  fail 'isolated synthetic test fixture contract missing'
+grep -Fq 'androidTestImplementation("androidx.test.ext:junit:' app/build.gradle.kts ||
+  fail 'Android instrumented JUnit not configured'
+grep -Fq 'ui-geometry:' "$CI" ||
+  fail 'Android emulator UI gate missing from Validate workflow'
+grep -Fq 'connectedDebugAndroidTest' "$CI" ||
+  fail 'Validate does not run real Android instrumentation tests'
+grep -Fq 'UiGeometryTestActivity' "$MANIFEST" ||
+  fail 'test-only activity is not registered for debug builds'
+
+echo "PASS: actual-measured adaptive actions + blocking Android emulator UI test contract"
