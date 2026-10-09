@@ -5,7 +5,7 @@ This file is generated from the repository audit scripts.
 Do not hand-edit the inventory; update scripts or
 `docs/assistant-kit/PORTABLE_AUDITS.txt`, then regenerate.
 
-Total audit scripts: **123**
+Total audit scripts: **124**
 
 ## Portable/system subset
 
@@ -181,6 +181,8 @@ contracts.
 - `scripts/v1455-termux-operator-menu-audit.sh`
 - `scripts/v1455-url-blank-input-audit.sh`
 - `scripts/v1455-ux-hardening-audit.sh`
+
+- `scripts/v1457-ui-geometry-gate-audit.sh`
 
 ## Usage rule
 
