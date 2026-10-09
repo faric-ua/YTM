@@ -81,6 +81,14 @@ class BulkWriteRetryGuardTest {
                 now
             )
         )
+        assertFalse(
+            BulkSyncExecutionPolicy.canExplicitlyResume(cooldown, now)
+        )
+        assertTrue(
+            BulkSyncExecutionPolicy.canExplicitlyResume(
+                cooldown, now + minWait
+            )
+        )
     }
 
     private fun minimalSession(): BulkSyncSession =
