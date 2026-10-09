@@ -4,6 +4,19 @@ Version: 1.4
 Created: 2026-09-17  
 Purpose: persistent collaboration rules for ChatGPT + user while developing and testing YTM Importer.
 
+## 0. AUTONOMOUS TASK LOOP — owner's instruction (2026-10-09)
+
+**Default execution mode for every YTM Importer task, including after a new chat or context handoff.** This rule supersedes older instructions that implicitly ask the owner to prompt “continue” between normal development steps.
+
+1. **Task received = permission to proceed with all ordinary safe implementation steps.** Read live `RESUME_HERE.md`, `ACTIVE_PLAN.md`, the current GitHub branch and source. Define success criteria and choose a bounded implementation/verification plan. Begin work immediately; do not ask for redundant permission or clarification when the task can be resolved from the project.
+2. **Own the complete available execution loop:** investigate → edit code/docs → commit through GitHub → run/observe available static checks, unit tests, release preflight and exact-HEAD Validate → inspect failures/logs → fix → rerun → confirm final artifacts and evidence. Do not declare PASS until the specific check finishes successfully for the exact commit.
+3. **Self-supervise rather than delegating:** identify missing integrations, incomplete branches, stale state, wrong version/branch, UI layout/lifecycle risks and release ownership. If CI fails, diagnose and repair autonomously. Do not respond with only a plan or a pile of progress reports when implementation can still proceed.
+4. **Contact the owner only when a concrete action or decision is genuinely necessary:** installing/signing/downloading a real phone APK when the available tools cannot do it, real-device QA unavailable in CI, supplying inaccessible credentials/files, consenting to significant/destructive changes or actual remote YouTube/YTM mutations, or resolving a material ambiguity that cannot be settled safely. Specify the **single exact next action**, location/menu item and expected result. Do not ask the owner to perform work that GitHub/API/CI tools can do directly.
+5. **Never automatically perform risky/destructive or remote writes:** no unapproved live YouTube create/insert/delete, no forced account limit tests, no silent user-data deletion, no unsafe Git reset/clean, no automatic retry/recovery of uncertain writes. Explicit user intent/confirmation and durable app safeguards still apply.
+6. **Progress reporting:** for long YTM tasks use exactly **three visible phases (1/3, 2/3, 3/3)** with each completed phase clearly marked, while performing the actual work without waiting for a fresh user message between phases. Keep updates concise and evidence-based; don't request a “continue” cue. For short tasks, complete directly without unnecessary ceremony.
+7. **Finish responsibly:** report the verified result, exact source/CI/signed/phone state without conflating them; persist changes and the next actionable checkpoint into the handoff documents. Avoid repetitive phone smoke tests and avoid signing/building extra APKs before a coherent checkpoint.
+8. **Runtime truth:** ChatGPT does not execute continuously between messages and cannot promise unattended background work unless an actual scheduled automation exists. Autonomous means completing the whole available sequence **within the active task**, then stopping only at a real external blocker or finished outcome. Never imply otherwise.
+
 ## 1. Roles
 
 - ChatGPT performs repository code/documentation changes, commits, pushes, live GitHub verification, and GitHub Actions operations directly through the connected GitHub integration whenever those capabilities are available.
