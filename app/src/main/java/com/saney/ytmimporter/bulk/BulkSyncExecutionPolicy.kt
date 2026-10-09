@@ -230,6 +230,8 @@ object BulkSyncExecutionPolicy {
                 BulkSyncSessionState
                     .PAUSED_RATE_LIMIT,
                 BulkSyncSessionState
+                    .PAUSED_CREATE_BATCH,
+                BulkSyncSessionState
                     .PAUSED_AUTH,
                 BulkSyncSessionState
                     .PAUSED_INTERRUPTED
