@@ -69,6 +69,10 @@ class CurrentPlaylistStore(
         val resolvedSourceHistoryId =
             sourceHistoryId
                 ?: previousRoot
+                    ?.takeIf {
+                        it.optNullableString("localPlaylistId") ==
+                            resolvedLocalPlaylistId
+                    }
                     ?.optNullableString(
                         "sourceHistoryId"
                     )
