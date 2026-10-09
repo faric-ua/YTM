@@ -157,6 +157,7 @@ check_file "scripts/mainactivity-cleanup-audit.sh"
 check_file "scripts/search-coordinator-audit.sh"
 check_file "scripts/ui-chrome-audit.sh"
 check_file "scripts/ui-window-contract-audit.sh"
+check_file "scripts/v1457-ui-geometry-gate-audit.sh"
 check_file "scripts/dialog-style-audit.sh"
 check_file "scripts/button-layout-audit.sh"
 check_file "scripts/compact-review-audit.sh"
@@ -350,6 +351,7 @@ bash scripts/result-modal-audit.sh
 bash scripts/qa-plan-audit.sh
 bash scripts/ui-chrome-audit.sh
 bash scripts/ui-window-contract-audit.sh
+bash scripts/v1457-ui-geometry-gate-audit.sh
 bash scripts/dialog-style-audit.sh
 bash scripts/button-layout-audit.sh
 bash scripts/compact-review-audit.sh
