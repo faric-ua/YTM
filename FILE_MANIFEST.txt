@@ -1810,4 +1810,4 @@ c014e29783373746  tools/termux/ytm-finalize-release.sh
 10bc294251a1400b  tools/termux/ytm-release-status.sh
 0d0e22c4ec0747ad  tools/termux/ytm-repo-status.sh
 323d09dbf541c009  tools/termux/ytm-status.sh
-c8964a95af19eba4  tools/termux/ytm-sync.sh
+885486df90269f49  tools/termux/ytm-sync.sh
