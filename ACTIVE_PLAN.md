@@ -541,3 +541,13 @@ This supersedes stale historic unchecked v1.4.55 items **only for the isolated p
 
 **NEXT ACTION:** manifest + exact-HEAD Validate. Current batch is SOURCE ONLY until tests verify. Full autonomous queue and account-wide day cap remain future roadmap, not implemented.
 
+## Active UI correction — 2026-10-09
+
+- [x] Phone evidence: Batch UI visible (2 new / 5 selected; 3 per run) on signed `37932562156`. New clipping: Preview `Лише доповнити` shows only `Лише`; Session footer `Почати синхронізацію` shows only `Почати`.
+- [x] Correct `UiChrome.addAdaptiveActionButtons` for nested-card reserved horizontal width while retaining old API defaults.
+- [x] Preview quick selection requires wider row; stack on compact cards.
+- [x] Session footer uses real primary caption before first layout, reflows after caption/status change, and allows 2 text lines with larger tap target.
+- [ ] Regenerate manifest and inspect exact-HEAD Validate PASS.
+- [ ] Rebuild/download new signed candidate (not previous signed run) and perform only this focused UI QA. No YouTube write during visual QA.
+- [ ] Stop if local Termux is dirty; no reset or stash manipulation automatically.
+
