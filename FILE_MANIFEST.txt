@@ -105,7 +105,7 @@ ca9dddb5b1dd2181  app/src/main/AndroidManifest.xml
 a25d17ce55fe6774  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 e1d371ab53cffd83  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
-f0ca0cd75751bf86  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+13233499ac40f776  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
