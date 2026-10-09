@@ -95,3 +95,11 @@ Current static gate:
 
 This rule exists specifically to prevent a shared layout regression from being found
 repeatedly during unrelated feature QA.
+
+## Enforced geometry regression gate (2026-10-09)
+
+**Static checks alone are not UI PASS.** The canonical `UiChrome` action renderer now measures actual laid-out container bounds (including nested card padding and safe-area insets), calculates equal-weight row capacity from the widest *current* caption, then switches row/stack without invoking any action. When a session caption or container dimensions change, rerender/reflow must preserve button order and behavior. Footer buttons have minimum accessible touch height, not hard clipped height.
+
+`app/src/androidTest/.../AdaptiveActionsGeometryTest.kt` runs against a debug-only synthetic `UiGeometryTestActivity`. It validates full captions for `Усі готові` / `Лише доповнити` and `Почати синхронізацію` / `Закрити`, measured container geometry, large text, fixed footer versus long scroll content, and rotation without clicks. This activity never contacts Google or YouTube and has no remote mutation paths.
+
+`.github/workflows/validate.yml` now includes a **blocking real Android emulator job** for instrumented UI assertions in addition to the established preflight, JVM and release assemble job. `scripts/v1457-ui-geometry-gate-audit.sh` verifies the guardrail is still wired. Android emulator SUCCESS is narrower than PHONE PASS: final physical-device readability and account-specific navigation must still be confirmed where applicable. Expand to other UI owners after this foundation is green.
