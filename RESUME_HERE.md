@@ -184,3 +184,8 @@ Source-only active branch `feat/v1.4.57-ui-geometry-gate` from prior validated d
 
 **NEXT:** regenerate `FILE_MANIFEST.txt`, verify final exact-HEAD GitHub Validate **both** jobs (preflight/JVM/unsigned release + emulator instrumented geometry); diagnose/re-run failures. Do not label unverified emulator UI results or uninstalled APK as PHONE PASS. Once green, decide whether a single later signed APK is justified for scoped real-device verification. Preserve old signed candidate and no auto YTM writes.
 
+## LATEST SOURCE RESUME — real Bulk screen owner tests (2026-10-09)
+
+After source-only `feat/v1.4.57-ui-geometry-gate` final HEAD `5bd13b2ed446633dac70ceac5769bd8b96096005`, Validate #37946419445 SUCCESS including 6/6 emulator test-host cases, the follow-up `feat/v1.4.57-real-screen-qa` introduces instrumentation of the **actual** Bulk Preview and Session Activities. Debug-only read-only preview plan injected by Intent skips loadPreview and any remote YTM lookup; this code path is guarded by `BuildConfig.DEBUG` and the Activity is not exported. Session tests load a local fake READY session, makeActive=false, never click write actions, and verify mutation ledger stays empty. Test cases cover real nested Preview buttons, real Session footer, recreation, and portrait/landscape, plus inherited 6 UiChrome-host cases. Existing user's signed APK is older than this branch; do not conflate a phone smoke with source checks.
+
+**NEXT:** refresh deterministic `FILE_MANIFEST.txt`, exact-HEAD two-job Validate, inspect/fix errors; no user intervention or signed APK needed for source-level CI.
