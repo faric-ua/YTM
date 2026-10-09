@@ -93,7 +93,7 @@ d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
-9668a63c17ce6289  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
+d1ffd0abe677ecce  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
 3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
 ca9dddb5b1dd2181  app/src/main/AndroidManifest.xml
@@ -164,7 +164,7 @@ c606025da7de4466  app/src/main/java/com/saney/ytmimporter/storage/AccountLibrary
 2bf17651466d4795  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncCheckpointStore.kt
 727fa7dde0b6e167  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncQaFaultStore.kt
 8ebb952d5156f8a5  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncSessionStore.kt
-1804214523c1d5ce  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
+a7c51a26f60137e4  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
 52e409baf9a0ed79  app/src/main/java/com/saney/ytmimporter/storage/DirectDownloadFileQuery.kt
 835027dec859c077  app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
 6c482fb50c942036  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
