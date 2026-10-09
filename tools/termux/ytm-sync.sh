@@ -39,12 +39,11 @@ if [ "$TARGET_BRANCH" != "$CURRENT_BRANCH" ]; then
   echo "  to:   $TARGET_BRANCH"
   echo
 
-  # Fetch the target into its remote-tracking ref explicitly.
-  # "git fetch origin branch" may populate only FETCH_HEAD, so a new branch
-  # cannot safely use "git switch --track origin/branch" without this mapping.
-  git -C "$YTM_REPO_DIR" fetch --quiet origin \
-    "refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
-  TARGET_REMOTE="$(git -C "$YTM_REPO_DIR" rev-parse "refs/remotes/origin/$TARGET_BRANCH")"
+  # Some Termux clones fetch only one configured remote branch.
+  # Always fetch the target commit and create a local branch from the
+  # concrete commit SHA, not from a possibly unrecognized origin/ ref.
+  git -C "$YTM_REPO_DIR" fetch --quiet origin "refs/heads/$TARGET_BRANCH"
+  TARGET_REMOTE="$(git -C "$YTM_REPO_DIR" rev-parse FETCH_HEAD)"
 
   if git -C "$YTM_REPO_DIR" show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
     TARGET_LOCAL="$(
@@ -62,7 +61,7 @@ if [ "$TARGET_BRANCH" != "$CURRENT_BRANCH" ]; then
       git -C "$YTM_REPO_DIR" merge --ff-only "$TARGET_REMOTE"
     fi
   else
-    git -C "$YTM_REPO_DIR" switch       --track       -c "$TARGET_BRANCH"       "origin/$TARGET_BRANCH"
+    git -C "$YTM_REPO_DIR" switch --no-track -c "$TARGET_BRANCH" "$TARGET_REMOTE"
   fi
 else
   git -C "$YTM_REPO_DIR" fetch --quiet origin "$CURRENT_BRANCH"
