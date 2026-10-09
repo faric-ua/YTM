@@ -9,7 +9,13 @@ Do not begin by guessing from the code. Read `ACTIVE_PLAN.md` first, then this f
 
 For a mid-release/chat-crash resume, `ACTIVE_PLAN.md` is the mandatory crash-recovery checklist and `CURRENT_HANDOFF.md` is the short mutable snapshot of the exact active branch/PR/QA/next-step state.
 
-## Mandatory user-facing reply format
+## Mandatory user-facing reply format## NON-NEGOTIABLE EXECUTION MODE — owner instruction 2026-10-09
+
+Read `YTM_ASSISTANT_WORKFLOW.md → §0 AUTONOMOUS TASK LOOP` **before starting work**. The owner expects the assistant to accept a task and then independently execute the entire safe available cycle: investigate, implement, inspect/test/logs, fix, re-run exact-HEAD CI, verify, and update handoff documents **without repeatedly asking the owner to say "continue"**. Only stop to request an exact external action or informed decision that cannot be safely done using connected tools (for example phone-only QA, inaccessible secrets, destructive actions or real YouTube mutations).
+
+For long YTM tasks, three short visible checkpoints document actual progress; they are **not three independent user approvals**. No invented background execution. Source/Validate/signed APK/PHONE PASS are distinct gates. Prefer one concrete action for the owner over long lists; routine work remains the assistant's responsibility.
+
+
 
 After reading `RESUME_HERE.md`, read
 `docs/assistant-kit/USER_RESPONSE_TEMPLATE.md` before reporting project
