@@ -195,3 +195,7 @@ Isolated active development: `feat/v1.4.56-bulk-limit-guard`, based on validated
 
 NEXT: regenerate file manifest and check Validate; then one scoped APK/PHONE flow only if relevant; continue future #59 safe creation queue separately.
 
+## NEW SOURCE WAVE — 2026-10-09 / YTM Bulk manual create batching
+
+Source branch `feat/v1.4.56-bulk-create-batches` extends validated `d19e105e` rate-limit branch; the v1.4.55 signed APK branch is untouched. Bulk creates now use local user-selectable batch size (1,3,5; default 3 for new sessions), persist settings in the existing session, and pause before the next CREATE after the last batch playlist's tracks are inserted. `PAUSED_CREATE_BATCH` is nonterminal and only manually resumed. Previous sessions retain preexisting semantics via null JSON default. No new write engine, no background work, no YouTube daily cap guesses. JVM checks added; GitHub Actions outcome must be checked at exact final HEAD. Continue from `RESUME_HERE.md` and `ACTIVE_PLAN.md`, not historical v1.4.55 task notes.
+
