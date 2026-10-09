@@ -248,6 +248,7 @@ class YouTubeApi(
                     )
             }
 
+            onListRequest()
             val response =
                 request(
                     "GET",
