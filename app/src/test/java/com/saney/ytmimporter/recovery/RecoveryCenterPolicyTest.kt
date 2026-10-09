@@ -101,6 +101,21 @@ class RecoveryCenterPolicyTest {
     }
 
     @Test
+    fun pausedCreationBatchRemainsActionableNotFailure() {
+        val snapshot = RecoveryCenterPolicy.build(
+            bulkSessions = listOf(
+                bulkSession(state = BulkSyncSessionState.PAUSED_CREATE_BATCH)
+            ),
+            pendingJobs = emptyList(),
+            historyEntries = emptyList()
+        )
+
+        assertEquals(1, snapshot.actionableCount)
+        assertEquals(RecoveryRoute.BULK_SESSION, snapshot.actionableItems.single().route)
+        assertTrue(snapshot.actionableItems.single().stateLabel.contains("Пакет створення"))
+    }
+
+    @Test
     fun rollbackPausedShowsExactAppliedRemainingCount() {
         val snapshot =
             RecoveryCenterPolicy.build(
