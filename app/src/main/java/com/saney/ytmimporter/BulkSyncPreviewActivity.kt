@@ -1899,7 +1899,7 @@ class BulkSyncPreviewActivity : Activity() {
 
     companion object {
         // Only consumed in DEBUG; this Activity is non-exported.
-        internal const val EXTRA_DEBUG_READ_ONLY_PLAN =
+        const val EXTRA_DEBUG_READ_ONLY_PLAN =
             "bulk_sync_debug_read_only_geometry_plan"
 
         private const val STATE_PLAN =
