@@ -6,9 +6,9 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 207aa607b11cc911  .github/workflows/bootstrap.yml
 957b553c7b6dec80  .github/workflows/build-apk.yml
 06a09c3088029d02  .github/workflows/publish-release.yml
-841ac3888017a23d  .github/workflows/validate.yml
+bb9e8bdcdeb0decb  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-806d0748fbae2aa2  ACTIVE_PLAN.md
+c066f11be559568a  ACTIVE_PLAN.md
 acd045e07c18ca3c  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -17,7 +17,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
 3655c3c06d7e538e  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
-a50fa1db82715d67  CURRENT_HANDOFF.md
+e386f6c2722b99cd  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -29,7 +29,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-a355f240acd63d7f  RESUME_HERE.md
+0487a8480ed9ab36  RESUME_HERE.md
 02cff781bf9d6506  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -89,8 +89,11 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 bf54b69b8bb58e3d  TERMUX_COMMANDS.md
 55cdc8a68f1e48f2  TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt
 22bed1fcaf915359  YTM_ASSISTANT_WORKFLOW.md
-e6af758495c5bfa7  app/build.gradle.kts
+d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
+3ae4f30cd935ab3d  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
+bf1a58d090226215  app/src/debug/AndroidManifest.xml
+7b04f5d6fb11b28c  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
 cc77b1bafb5454b0  app/src/main/AndroidManifest.xml
 57766be00795264b  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 471fe06f23073bd4  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
@@ -183,7 +186,7 @@ fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome
 c930f8781965f59d  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextState.kt
 5020cb0274b7a831  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextSurfaceState.kt
 9280056bf2b0b6b0  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-03532a5c0e8b98f6  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+33dfdf918ffb513d  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 78da56fe6d4f0417  app/src/main/java/com/saney/ytmimporter/ui/WorkflowRelayOverlay.kt
 97950a5f9f861111  app/src/main/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicy.kt
 8bc5cda5c2b4c663  app/src/main/java/com/saney/ytmimporter/updater/UpdaterManifestPolicy.kt
@@ -231,6 +234,7 @@ ae92c429e7ef5c0b  app/src/main/res/mipmap-anydpi-v33/ic_launcher_round.xml
 47431d9a9242459a  app/src/main/res/mipmap-anydpi/ic_launcher.xml
 47431d9a9242459a  app/src/main/res/mipmap-anydpi/ic_launcher_round.xml
 ea8180e420e98f2d  app/src/main/res/values/colors.xml
+2c8480e6ab81ee19  app/src/main/res/values/ids.xml
 7c794e3e8b44bad5  app/src/main/res/values/strings.xml
 9d05e1fd1b661172  app/src/main/res/values/styles.xml
 5dfe2d611d0acf07  app/src/main/res/xml/file_paths.xml
@@ -290,7 +294,7 @@ c9a0f203088b48a9  docs/assistant-kit/portable/templates/RELEASE.md.template
 2d333ebed3c466b5  docs/assistant-kit/portable/templates/RELEASE_META.json.template
 51098420dcf58c17  docs/assistant-kit/portable/templates/TEST_RUN.md.template
 50133b42aa9ddedb  docs/assistant-kit/portable/templates/UI_WINDOW_QA.md.template
-401cdbddde7fb9af  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
+63395db2add43a6f  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
 15e4b7411a52b7f0  docs/design/THEME_STATE_REFERENCE.md
 663807a41f7e5fd7  docs/design/TILE_UI_CONTRACT.md
 584d9fec4a5aa921  docs/design/UI_WINDOW_QA_CONTRACT.md
@@ -1647,7 +1651,7 @@ dbae38eb6b71cb3f  scripts/playlist-write-coordinator-audit.sh
 34a319998981b650  scripts/release-close-audit.sh
 9c01ad273ef823e6  scripts/release-documentation-audit.sh
 3aee5f50ca1d7265  scripts/release-metadata-audit.py
-73b0c9a097998f02  scripts/release-preflight.sh
+e033cedfc8f2809d  scripts/release-preflight.sh
 394aa3b0170a4062  scripts/result-modal-audit.sh
 d039ca6361aaaa34  scripts/rotation-layout-audit.sh
 4110b25bf6591ec7  scripts/search-coordinator-audit.sh
@@ -1795,6 +1799,7 @@ a4ce15041fd56f92  scripts/v1455-review-manual-filter-audit.sh
 f2a3a8fc068701c4  scripts/v1455-termux-operator-menu-audit.sh
 a3b628d5213feb9a  scripts/v1455-url-blank-input-audit.sh
 70cdb592759cded6  scripts/v1455-ux-hardening-audit.sh
+556051ce6e244493  scripts/v1457-ui-geometry-gate-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 51053de6297a5c01  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh
