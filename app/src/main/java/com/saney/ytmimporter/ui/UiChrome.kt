@@ -533,9 +533,12 @@ object UiChrome {
         val gapsDp =
             (actionCount - 1) *
                 8f
+        // Buttons in our horizontal rows use equal weights. The widest
+        // caption therefore determines EVERY button's minimum width:
+        // summing unrelated per-label widths can falsely approve a row.
         val requiredWidthDp =
             chromeWidthDp +
-                actionWidthsDp.sum() +
+                (actionWidthsDp.maxOrNull() ?: 0f) * actionCount +
                 gapsDp
 
         return context.resources
@@ -601,52 +604,90 @@ object UiChrome {
                 chromeWidthDp = horizontalChromeDp.toFloat()
             )
 
-        container.orientation =
-            if (horizontal) {
-                LinearLayout.HORIZONTAL
-            } else {
-                LinearLayout.VERTICAL
-            }
+        // Replace an old observer when session state changes and the action
+        // captions are recomputed. No Activity-wide / static listener cache.
+        (container.getTag(R.id.ui_chrome_action_layout_listener)
+            as? View.OnLayoutChangeListener)?.let {
+            container.removeOnLayoutChangeListener(it)
+        }
 
         buttons.forEachIndexed { index, button ->
             styleAdaptiveActionButton(
                 activity = activity,
                 button = button,
-                tone =
-                    tones.getOrNull(
-                        index
-                    )
-                        ?: if (index == 0) {
-                            ActionTone.ACCENT
-                        } else {
-                            ActionTone.NORMAL
-                        }
-            )
-
-            container.addView(
-                button,
-                if (horizontal) {
-                    LinearLayout.LayoutParams(
-                        0,
-                        dp(activity, buttonHeightDp),
-                        1f
-                    ).apply {
-                        if (index > 0) {
-                            marginStart = dp(activity, 8)
-                        }
-                    }
-                } else {
-                    LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        dp(activity, buttonHeightDp)
-                    ).apply {
-                        if (index > 0) {
-                            topMargin = dp(activity, 8)
-                        }
-                    }
-                }
+                tone = tones.getOrNull(index)
+                    ?: if (index == 0) ActionTone.ACCENT else ActionTone.NORMAL
             )
         }
+
+        var currentHorizontal: Boolean? = null
+
+        fun reflow(useRow: Boolean) {
+            if (currentHorizontal == useRow) return
+            currentHorizontal = useRow
+            container.orientation =
+                if (useRow) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
+
+            buttons.forEachIndexed { index, button ->
+                val params =
+                    if (useRow) {
+                        LinearLayout.LayoutParams(
+                            0,
+                            dp(activity, buttonHeightDp),
+                            1f
+                        ).apply {
+                            if (index > 0) marginStart = dp(activity, 8)
+                        }
+                    } else {
+                        LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            dp(activity, buttonHeightDp)
+                        ).apply {
+                            if (index > 0) topMargin = dp(activity, 8)
+                        }
+                    }
+                if (button.parent === container) {
+                    button.layoutParams = params
+                } else {
+                    (button.parent as? ViewGroup)?.removeView(button)
+                    container.addView(button, params)
+                }
+            }
+        }
+
+        // The initial (pre-measure) estimate avoids a first-frame flash.
+        // The authoritative decision happens after Android measures the
+        // real container including parent/card padding and system insets.
+        reflow(horizontal)
+
+        val measureListener = View.OnLayoutChangeListener {
+                _, _, _, _, _, _, _, _, _ ->
+            val available = container.width -
+                container.paddingLeft - container.paddingRight
+            if (available <= 0) return@OnLayoutChangeListener
+
+            val maxRequiredButtonPx = buttons.maxOf { button ->
+                // Preserve actual font scaling, style and compound padding.
+                // Leave an extra 12dp for letter spacing / glyph rounding.
+                kotlin.math.ceil(
+                    button.paint.measureText(button.text.toString())
+                        .toDouble()
+                ).toInt() +
+                    button.compoundPaddingLeft +
+                    button.compoundPaddingRight +
+                    dp(activity, 12)
+            }
+            val required = maxOf(
+                dp(activity, minButtonWidthDp),
+                maxRequiredButtonPx
+            ) * buttons.size + dp(activity, 8) * (buttons.size - 1)
+            reflow(buttons.size > 1 && required <= available)
+        }
+        container.setTag(
+            R.id.ui_chrome_action_layout_listener,
+            measureListener
+        )
+        container.addOnLayoutChangeListener(measureListener)
     }
 
     fun styleAdaptiveActionButton(
