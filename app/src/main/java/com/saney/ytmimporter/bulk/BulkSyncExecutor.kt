@@ -1057,11 +1057,18 @@ class BulkSyncExecutor(
                         null
                     },
                 lastError =
-                    if (
-                        state ==
-                        BulkSyncSessionState.RUNNING
-                    ) {
+                    if (state == BulkSyncSessionState.RUNNING) {
                         null
+                    } else if (
+                        state == BulkSyncSessionState.PAUSED_RATE_LIMIT ||
+                        state == BulkSyncSessionState.PAUSED_WRITE_QUOTA
+                    ) {
+                        val reason = apiError.reason
+                            ?: apiError.detailReasons.firstOrNull()
+                            ?: apiError.status
+                            ?: "не вказана"
+                        message + "\nДіагностика YouTube: HTTP " +
+                            apiError.httpCode + " • причина: " + reason
                     } else {
                         message
                     }
