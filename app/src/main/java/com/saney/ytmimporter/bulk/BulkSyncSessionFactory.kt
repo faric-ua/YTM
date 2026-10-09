@@ -108,7 +108,8 @@ object BulkSyncSessionFactory {
             mutationLedger =
                 emptyList(),
             lastError =
-                null
+                null,
+            maxCreatesPerRun = BulkCreateBatchPolicy.DEFAULT_MAX_CREATES
         )
     }
 
