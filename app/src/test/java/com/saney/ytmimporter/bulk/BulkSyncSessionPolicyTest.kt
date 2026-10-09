@@ -84,6 +84,10 @@ class BulkSyncSessionPolicyTest {
             )
 
         assertEquals(
+            BulkCreateBatchPolicy.DEFAULT_MAX_CREATES,
+            session.maxCreatesPerRun
+        )
+        assertEquals(
             BulkSyncSessionRowState.READY,
             session.plan[0].state
         )
