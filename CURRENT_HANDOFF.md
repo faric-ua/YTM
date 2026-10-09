@@ -199,3 +199,7 @@ NEXT: regenerate file manifest and check Validate; then one scoped APK/PHONE flo
 
 Source branch `feat/v1.4.56-bulk-create-batches` extends validated `d19e105e` rate-limit branch; the v1.4.55 signed APK branch is untouched. Bulk creates now use local user-selectable batch size (1,3,5; default 3 for new sessions), persist settings in the existing session, and pause before the next CREATE after the last batch playlist's tracks are inserted. `PAUSED_CREATE_BATCH` is nonterminal and only manually resumed. Previous sessions retain preexisting semantics via null JSON default. No new write engine, no background work, no YouTube daily cap guesses. JVM checks added; GitHub Actions outcome must be checked at exact final HEAD. Continue from `RESUME_HERE.md` and `ACTIVE_PLAN.md`, not historical v1.4.55 task notes.
 
+## NEWEST PHONE QA SOURCE — 2026-10-09
+
+Observed: signed `37932562156` for `7bcb3a63` runs the Batch Session creation UI and shows default 3 new creates per explicit run. User screenshot revealed truncated Preview quick-select and Session action labels in portrait due adaptive row overoptimism and initial empty primary text. Corrected UI source on branch `feat/v1.4.56-zz-current` (UiChrome + BulkSyncPreviewActivity + BulkSyncSessionActivity), no write policy changes. Must verify final Validate and sign newer APK before calling UI PHONE PASS. Next phone smoke: confirm `Усі готові`, `Лише доповнити`, `Почати синхронізацію`, `Закрити` fully visible and uncropped; do NOT start remote writes.
+
