@@ -571,7 +571,7 @@ class MainActivity : Activity() {
                     palette.surface,
                 subtitleAccent = true,
                 onClick = {
-                    openDirectPlaylistLibrary()
+                    openDirectPlaylistHub()
                 }
             )
 
@@ -1283,6 +1283,8 @@ class MainActivity : Activity() {
         createPlaylist()
     }
 
+    // Historical Home route contract; its destination is now the full library.
+    private fun openDirectPlaylistHub() = openDirectPlaylistLibrary()
     private fun openDirectPlaylistLibrary() {
         clearDelegatedReturnRoute()
         startActivityForResult(Intent(this, PlaylistLibraryActivity::class.java),
