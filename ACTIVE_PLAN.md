@@ -510,3 +510,20 @@ the step requires live repository/build/phone evidence.
 - Historical fact → preserve the release evidence instead of rewriting history.
 
 The first unchecked actionable item is the resume point.
+
+## CURRENT TASK — 2026-10-09 / Post-v1.4.55 Bulk write cooldown (separate source branch)
+
+This supersedes stale historic unchecked v1.4.55 items **only for the isolated post-v1.4.55 feature branch**; do not falsify earlier phone sign-off. Reference `RESUME_HERE.md`.
+
+- [x] Independently verify `feat/v1.4.56-bulk-safe-selection` source HEAD `83c712b9`, Validate `37860758933 — SUCCESS`.
+- [x] Branch `feat/v1.4.56-bulk-limit-guard` from that source; preserve v1.4.55 candidate.
+- [x] Add pure `Retry-After` delta/RFC1123 parser, conservative **local** wait floor (15m), no automatic retry.
+- [x] Persist rate-limit not-before timestamp in Bulk session JSON; old JSON defaults safely.
+- [x] Block premature user resume AND executor-level write; display local deadline and actual HTTP reason; keep existing mutation ledger.
+- [x] Add JVM tests for parsing, bounds and before/after retry eligibility.
+- [ ] Regenerate deterministic `FILE_MANIFEST.txt`, then check exact-final-HEAD Validate including release preflight, JVM and release assemble.
+- [ ] Decide a single signed build and scoped PHONE QA only after Validate PASS; no intentional real YouTube block, and no repetition of #29/#30/#40/#58.
+- [ ] Stabilize v1.4.55 release separately once #27/#28 exact-APK user evidence exists; future queue and account-scope limits remain #59 backlog.
+
+**NEXT ACTION:** manifest → exact-final-HEAD Validate; never mark APK signed or PHONE PASS from source changes.
+
