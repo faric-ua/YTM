@@ -1,6 +1,7 @@
 package com.saney.ytmimporter.ui
 
 import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
@@ -99,6 +100,34 @@ class BulkRealScreenGeometryTest {
         sessionScenario(sessionId).use { scenario ->
             idle()
             scenario.recreate()
+            idle()
+            scenario.onActivity { activity ->
+                assertActionsReadable(
+                    activity,
+                    actionButtons(activity, "Почати синхронізацію", "Закрити")
+                )
+                val stored = BulkSyncSessionStore(activity).get(sessionId)
+                assertEquals(BulkSyncSessionState.READY, stored?.state)
+                assertEquals(0, stored?.mutationLedger?.size)
+            }
+        }
+    }
+
+    @Test
+    fun actualSession_landscapeAndPortrait_keepFooterVisibleWithoutWrite() {
+        val sessionId = makeReadySession()
+        sessionScenario(sessionId).use { scenario ->
+            scenario.onActivity {
+                it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            }
+            idle()
+            scenario.onActivity { activity ->
+                assertActionsReadable(
+                    activity,
+                    actionButtons(activity, "Почати синхронізацію", "Закрити")
+                )
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
             idle()
             scenario.onActivity { activity ->
                 assertActionsReadable(
