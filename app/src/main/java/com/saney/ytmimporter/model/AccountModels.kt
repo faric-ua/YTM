@@ -14,5 +14,6 @@ data class YouTubePlaylistInfo(
     val id: String,
     val title: String,
     val privacyStatus: String,
-    val itemCount: Long
+    val itemCount: Long,
+    val thumbnailUrl: String? = null
 )
