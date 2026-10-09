@@ -29,7 +29,7 @@ grep -Fq 'fun sessionFooter_staysVisibleAndKeepsCompleteLongActionAtLargeTextSiz
   fail 'Bulk Session clipping/viewport assertion missing'
 grep -Fq 'fun rotationRebuildsSafeActionLayoutWithoutClickingAnything()' "$TEST" ||
   fail 'rotation with no action execution assertion missing'
-grep -Fq 'no YouTube writes' "$TEST" ||
+grep -Fq 'never open Bulk Sync, read an account or contact YouTube' "$TEST" ||
   fail 'isolated synthetic test fixture contract missing'
 grep -Fq 'androidTestImplementation("androidx.test.ext:junit:' app/build.gradle.kts ||
   fail 'Android instrumented JUnit not configured'
