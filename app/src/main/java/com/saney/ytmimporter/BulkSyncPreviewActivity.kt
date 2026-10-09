@@ -954,11 +954,15 @@ class BulkSyncPreviewActivity : Activity() {
             activity = this,
             container = selectionActions,
             buttons = listOf(selectAll, selectLinkedOnly),
-            buttonHeightDp = 48,
+            buttonHeightDp = 56,
             tones = listOf(
                 UiChrome.ActionTone.NORMAL,
                 UiChrome.ActionTone.NORMAL
-            )
+            ),
+            // These actions live inside the padded preview card, not directly
+            // below the screen edge. Prefer stacking to truncating either label.
+            minButtonWidthDp = 190,
+            horizontalChromeDp = 104
         )
         summaryPanel.addView(
             selectionActions,
