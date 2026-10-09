@@ -565,3 +565,15 @@ This supersedes stale historic unchecked v1.4.55 items **only for the isolated p
 - [ ] Expand measured geometry coverage to remaining layout owners in subsequent waves; no remote writes or forced provider limits during UI QA.
 
 **NEXT ACTION:** refresh deterministic manifest and inspect exact-HEAD Validate **including emulator job**. This is new source/dev tooling, not yet PHONE PASS.
+
+## NEXT WAVE — v1.4.57 real Bulk Activity UI regression (2026-10-09)
+
+- [x] Base isolated `feat/v1.4.57-real-screen-qa` on validated `5bd13b2e` (CI #37946419445, 6/6 synthetic Android UI tests PASS).
+- [x] Add actual `BulkSyncPreviewActivity` instrumentation setup: debug-only injected read-only `BulkSyncPlanSummary` instead of network preflight; completely disabled in release.
+- [x] Add actual `BulkSyncSessionActivity` setup using a synthetic READY session persisted ONLY into ephemeral emulator app storage, `makeActive = false`; no buttons clicked and no Google credentials.
+- [x] Add 5 real Activity instrumentation tests: actual Preview nested action labels, Preview recreate/restore, Session footer with long list, Session recreate without mutation, Session landscape → portrait without mutation.
+- [x] Update source audit so real Activity coverage and debug-only guard must stay present.
+- [ ] Regenerate manifest and verify **both exact-HEAD CI jobs**: preflight/JVM/assemble + emulator instrumentation suite; independently inspect emulator test count. Fix/re-run failures without phone dependency.
+- [ ] Later expand authentic screen-owner matrix to other screens and dialogs; keep signed physical-phone QA separate, avoid generating unnecessary APK.
+
+**NEXT:** final-HEAD Android emulator SUCCESS, not just static PASS. The owner's existing signed APK is from prior branch and does not include this source wave.
