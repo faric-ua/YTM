@@ -551,3 +551,17 @@ This supersedes stale historic unchecked v1.4.55 items **only for the isolated p
 - [ ] Rebuild/download new signed candidate (not previous signed run) and perform only this focused UI QA. No YouTube write during visual QA.
 - [ ] Stop if local Termux is dirty; no reset or stash manipulation automatically.
 
+## ACTIVE NEXT WAVE — v1.4.57 / blocking rendered Android UI geometry gate
+
+- [x] Read active source and explain why legacy grep/window/rotation audits did not inspect rendered button bounds.
+- [x] Create isolated branch `feat/v1.4.57-ui-geometry-gate` from prior exact-HEAD docs checkpoint `de9f4ad4813629b60bacfec06b7297d7a269d260` (previous phone-signed v1.4.56 branch untouched).
+- [x] Shared `UiChrome` equal-weight row check uses widest peer caption; reflows from measured container width after insets / card padding, not estimated display width alone; minimum button height allows large font.
+- [x] Introduce debug-only Android UI fixture, isolated from login / YouTube / mutation flows.
+- [x] Add AndroidJUnit4 instrumented geometry regression tests for Bulk Preview + Session action caption fit, width changes, long scrolling, rotation and zero clicks.
+- [x] Add dedicated blocking emulator job to `Validate Android`, alongside existing preflight/JVM/release assemble.
+- [x] Add manifest/static guard checks and update UI contract documentation.
+- [ ] Regenerate `FILE_MANIFEST.txt`, verify exact-HEAD preflight + JVM + Android emulator geometry tests + unsigned assemble. Repair all encountered failures without delegating routine work.
+- [ ] Later, one signed QA candidate + one focused real-device smoke for changes, only if required and after CI PASS.
+- [ ] Expand measured geometry coverage to remaining layout owners in subsequent waves; no remote writes or forced provider limits during UI QA.
+
+**NEXT ACTION:** refresh deterministic manifest and inspect exact-HEAD Validate **including emulator job**. This is new source/dev tooling, not yet PHONE PASS.
