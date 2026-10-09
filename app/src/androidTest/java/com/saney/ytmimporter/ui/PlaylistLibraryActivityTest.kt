@@ -37,7 +37,7 @@ class PlaylistLibraryActivityTest {
             localPlaylistId = id
         )
 
-        ActivityScenario.launch(
+        ActivityScenario.launch<PlaylistLibraryActivity>(
             Intent(context, PlaylistLibraryActivity::class.java)
         ).use { scene ->
             idle()
@@ -65,7 +65,7 @@ class PlaylistLibraryActivityTest {
             sourceLabel = "Локальний тест",
             localPlaylistId = "details-${UUID.randomUUID()}"
         )
-        ActivityScenario.launch(
+        ActivityScenario.launch<PlaylistLibraryActivity>(
             Intent(context, PlaylistLibraryActivity::class.java)
         ).use { scene ->
             idle()
@@ -106,7 +106,7 @@ class PlaylistLibraryActivityTest {
 
     @Test fun onlineTabWithoutConsentOrTokenDoesNotStartRemoteRead() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        ActivityScenario.launch(
+        ActivityScenario.launch<PlaylistLibraryActivity>(
             Intent(context, PlaylistLibraryActivity::class.java)
         ).use { scene ->
             idle()
