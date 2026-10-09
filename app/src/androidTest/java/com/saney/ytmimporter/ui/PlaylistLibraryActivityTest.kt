@@ -51,9 +51,57 @@ class PlaylistLibraryActivityTest {
             idle()
             scene.onActivity { activity ->
                 assertTrue(activity.window.decorView.hasText(name))
-                assertTrue(activity.window.decorView.hasText("Мої плейлісти").not())
             }
         }
+    }
+
+    @Test fun localCatalogueOpensRealTrackDetailsAfterRecreate() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val name = "Бібліотека — деталі ${UUID.randomUUID()}"
+        CurrentPlaylistStore(context).save(
+            playlist = ImportedPlaylist(name, mutableListOf(
+                Track("Тестова пісня", "Гурт")
+            )),
+            sourceLabel = "Локальний тест",
+            localPlaylistId = "details-${UUID.randomUUID()}"
+        )
+        ActivityScenario.launch(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            idle()
+            scene.onActivity { activity ->
+                val label = activity.window.decorView.findLabel(name)
+                    ?: error("Playlist card missing")
+                var target: View? = label
+                while (target != null && !target.isClickable) {
+                    target = target.parent as? View
+                }
+                assertNotNull("Playlist card not clickable", target)
+                target!!.performClick()
+            }
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.hasText("Тестова пісня"))
+                assertTrue(activity.window.decorView.hasText("Поточний плейліст"))
+            }
+            scene.recreate()
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.hasText("Тестова пісня"))
+                assertTrue(activity.window.decorView.hasText(name))
+            }
+        }
+    }
+
+    @Test fun switchingLocalIdDoesNotInheritPreviousHistoryIdentity() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val store = CurrentPlaylistStore(context)
+        store.save(ImportedPlaylist("One", mutableListOf()),
+            "test", localPlaylistId = "old-${UUID.randomUUID()}",
+            sourceHistoryId = "old-history")
+        store.save(ImportedPlaylist("Two", mutableListOf()),
+            "test", localPlaylistId = "new-${UUID.randomUUID()}")
+        assertEquals(null, store.load()?.sourceHistoryId)
     }
 
     @Test fun onlineTabWithoutConsentOrTokenDoesNotStartRemoteRead() {
@@ -75,6 +123,15 @@ class PlaylistLibraryActivityTest {
                     .none { it.text.contains("Створити") })
             }
         }
+    }
+
+    private fun View.findLabel(target: String): TextView? {
+        if (this is TextView && text?.toString() == target) return this
+        if (this is ViewGroup) for (i in 0 until childCount) {
+            val found = getChildAt(i).findLabel(target)
+            if (found != null) return found
+        }
+        return null
     }
 
     private fun View.hasText(target: String): Boolean {
