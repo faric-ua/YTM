@@ -229,6 +229,10 @@ class BulkSyncSessionStore(
                 "lastError",
                 session.lastError
             )
+            .put(
+                "retryNotBeforeEpochMs",
+                session.retryNotBeforeEpochMs ?: JSONObject.NULL
+            )
 
     private fun sessionFromJson(
         root: JSONObject
@@ -335,7 +339,10 @@ class BulkSyncSessionStore(
             lastError =
                 root.optNullableString(
                     "lastError"
-                )
+                ),
+            retryNotBeforeEpochMs =
+                root.optLong("retryNotBeforeEpochMs", 0L)
+                    .takeIf { it > 0L }
         )
     }
 
