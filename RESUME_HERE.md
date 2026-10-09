@@ -178,3 +178,9 @@ New **visual UX finding**: on narrow phone text scaling, Preview's quick-selecti
 
 **NEXT:** exact-HEAD Validate preflight + JVM tests + unsigned assemble; only then signed APK from current branch and 1 scoped phone visual QA (Preview shortcut full labels + Session footer full labels) **without pressing Start**. Old signed APK `37932562156` does not include this UI fix and must not be reused to claim it. Avoid using in-app stable "Check update": it does not deliver a feature-branch QA build.
 
+## LATEST RESUME — 2026-10-09 / Rendered UI geometry test gate
+
+Source-only active branch `feat/v1.4.57-ui-geometry-gate` from prior validated docs checkpoint `de9f4ad4813629b60bacfec06b7297d7a269d260`. This branch introduces actual Android action layout measurement + debug-only safe instrumentation fixture + **blocking Android emulator geometry job** in GitHub Validate. The tests use synthetic captions and never touch Google/YouTube accounts. Legacy grep audits remain supporting checks, not a substitute for rendered-layout evidence.
+
+**NEXT:** regenerate `FILE_MANIFEST.txt`, verify final exact-HEAD GitHub Validate **both** jobs (preflight/JVM/unsigned release + emulator instrumented geometry); diagnose/re-run failures. Do not label unverified emulator UI results or uninstalled APK as PHONE PASS. Once green, decide whether a single later signed APK is justified for scoped real-device verification. Preserve old signed candidate and no auto YTM writes.
+
