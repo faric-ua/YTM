@@ -195,7 +195,15 @@ class YouTubeApi(
                                 .orEmpty()
                                 .ifBlank { "private" },
                         itemCount =
-                            contentDetails?.optLong("itemCount", 0L) ?: 0L
+                            contentDetails?.optLong("itemCount", 0L) ?: 0L,
+                        thumbnailUrl =
+                            snippet?.optJSONObject("thumbnails")
+                                ?.let { thumbnails ->
+                                    (thumbnails.optJSONObject("medium")
+                                        ?: thumbnails.optJSONObject("default"))
+                                        ?.optString("url")
+                                        ?.takeIf(String::isNotBlank)
+                                }
                     )
                 }
             }
