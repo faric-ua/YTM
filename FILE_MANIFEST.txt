@@ -8,7 +8,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 841ac3888017a23d  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-9a5cf54d44a86a0c  ACTIVE_PLAN.md
+806d0748fbae2aa2  ACTIVE_PLAN.md
 acd045e07c18ca3c  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -17,7 +17,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
 3655c3c06d7e538e  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
-a1f4156b1a6290e9  CURRENT_HANDOFF.md
+a50fa1db82715d67  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -29,7 +29,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-5f4cee13a7d95015  RESUME_HERE.md
+926823baf6a67be8  RESUME_HERE.md
 3d71c8321499182a  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -92,8 +92,8 @@ ef3b8e222ece4b05  YTM_ASSISTANT_WORKFLOW.md
 e6af758495c5bfa7  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 cc77b1bafb5454b0  app/src/main/AndroidManifest.xml
-e2cb9c148fc9b7a2  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
-2956f504f82a9e55  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
+57766be00795264b  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
+471fe06f23073bd4  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 0af4ad581bd9e32c  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 4da09cca8fb23e0b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 26e235d6d47f5d97  app/src/main/java/com/saney/ytmimporter/EditPlaylistActivity.kt
@@ -183,7 +183,7 @@ fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome
 c930f8781965f59d  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextState.kt
 5020cb0274b7a831  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextSurfaceState.kt
 9280056bf2b0b6b0  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-aafb5c23dae8de8a  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+03532a5c0e8b98f6  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 78da56fe6d4f0417  app/src/main/java/com/saney/ytmimporter/ui/WorkflowRelayOverlay.kt
 97950a5f9f861111  app/src/main/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicy.kt
 8bc5cda5c2b4c663  app/src/main/java/com/saney/ytmimporter/updater/UpdaterManifestPolicy.kt
