@@ -629,11 +629,15 @@ object UiChrome {
                 if (useRow) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
 
             buttons.forEachIndexed { index, button ->
+                // Min-height, not a fixed height: captions permitted to wrap
+                // must grow at accessibility font scales rather than clip.
+                button.minHeight = dp(activity, buttonHeightDp)
+                button.minimumHeight = dp(activity, buttonHeightDp)
                 val params =
                     if (useRow) {
                         LinearLayout.LayoutParams(
                             0,
-                            dp(activity, buttonHeightDp),
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
                             1f
                         ).apply {
                             if (index > 0) marginStart = dp(activity, 8)
@@ -641,7 +645,7 @@ object UiChrome {
                     } else {
                         LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
-                            dp(activity, buttonHeightDp)
+                            ViewGroup.LayoutParams.WRAP_CONTENT
                         ).apply {
                             if (index > 0) topMargin = dp(activity, 8)
                         }
