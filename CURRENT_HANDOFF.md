@@ -186,3 +186,12 @@ user performs real-device QA → ChatGPT records evidence and advances
 `ACTIVE_PLAN.md`.
 
 Repository/live GitHub truth beats old chat memory.
+
+## CONTINUATION OVERRIDE — 2026-10-09 / Bulk limit safety branch
+
+For the next source change, first read `RESUME_HERE.md`, then `ACTIVE_PLAN.md`. **Do not use historical v1.4.55 "next source #27/#28" as the branch selection:** source `feat/v1.4.55-ux-hardening` was already implemented at `4e7c04e`, successfully validated/signed (runs `37849092895`/`37854904363`) and awaits exact-APK phone acceptance/stable release. Do not close #27/#28 without it.
+
+Isolated active development: `feat/v1.4.56-bulk-limit-guard`, based on validated `83c712b9` (safe selection). The new Bulk limit response path retains `Retry-After`, persists local not-before in the existing Bulk session, blocks premature resume at UI/policy/executor, shows a precise time and HTTP reason, and never schedules a remote write. A **15-minute app-specific minimum wait** is a safety floor, not a YouTube public/daily playlist allowance. New tests are source-only until exact-HEAD CI green. No new player, export, themes, or parallel execution engine were introduced.
+
+NEXT: regenerate file manifest and check Validate; then one scoped APK/PHONE flow only if relevant; continue future #59 safe creation queue separately.
+
