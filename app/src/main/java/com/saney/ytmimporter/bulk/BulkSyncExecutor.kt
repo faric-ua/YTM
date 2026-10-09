@@ -60,6 +60,11 @@ class BulkSyncExecutor(
             return session
         }
 
+        // One explicit Start/Continue authorizes at most one local create batch.
+        // Already confirmed creates in the durable ledger do not count twice.
+        val createdAtManualStart =
+            BulkCreateBatchPolicy.appliedCreates(session)
+
         session =
             session.copy(
                 state =
@@ -125,6 +130,23 @@ class BulkSyncExecutor(
                     onProgress
                 )
                 return session
+            }
+
+            if (BulkCreateBatchPolicy.shouldPauseBeforeCreate(
+                    session = session,
+                    createdAtManualStart = createdAtManualStart,
+                    next = next
+                )
+            ) {
+                val paused = session.copy(
+                    state = BulkSyncSessionState.PAUSED_CREATE_BATCH,
+                    updatedAt = System.currentTimeMillis(),
+                    lastError =
+                        "Пакет створення завершено. Готові плейлисти збережені; " +
+                            "наступний пакет почнеться лише після натискання «Продовжити»."
+                )
+                save(paused, onProgress)
+                return paused
             }
 
             session =
