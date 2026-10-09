@@ -221,7 +221,8 @@ class YouTubeApi(
 
     fun listPlaylistTracks(
         accessToken: String,
-        playlistId: String
+        playlistId: String,
+        onListRequest: () -> Unit = {}
     ): PlaylistTracksResult {
         val tracks = mutableListOf<Track>()
         var pageToken: String? = null
