@@ -69,6 +69,9 @@ class BulkSyncSessionActivity : Activity() {
     private lateinit var closeButton:
         Button
 
+    private lateinit var footerActionsContainer:
+        LinearLayout
+
     private lateinit var scrollView:
         ScrollView
 
@@ -504,7 +507,7 @@ class BulkSyncSessionActivity : Activity() {
             )
         )
 
-        val actions =
+        footerActionsContainer =
             LinearLayout(this).apply {
                 setPadding(
                     dp(12),
@@ -516,6 +519,7 @@ class BulkSyncSessionActivity : Activity() {
 
         primaryButton =
             Button(this).apply {
+                text = "Почати синхронізацію"
                 isAllCaps = false
                 textSize = 15f
                 setOnClickListener {
@@ -535,18 +539,9 @@ class BulkSyncSessionActivity : Activity() {
                 }
             }
 
-        UiChrome.addAdaptiveActionButtons(
-            activity = this,
-            container = actions,
-            buttons =
-                listOf(
-                    primaryButton,
-                    closeButton
-                ),
-            buttonHeightDp = 54
-        )
+        layoutFooterActions()
 
-        root.addView(actions)
+        root.addView(footerActionsContainer)
 
         setContentView(root)
 
@@ -558,6 +553,23 @@ class BulkSyncSessionActivity : Activity() {
         scrollPosition.restoreInto(
             scrollView
         )
+    }
+
+    private fun layoutFooterActions() {
+        // Primary caption varies with session state; recalculate the action
+        // row *after* setting the caption, not just during activity creation.
+        // Full-width buttons on compact screens prevent truncation.
+        footerActionsContainer.removeAllViews()
+        UiChrome.addAdaptiveActionButtons(
+            activity = this,
+            container = footerActionsContainer,
+            buttons = listOf(primaryButton, closeButton),
+            buttonHeightDp = 72,
+            minButtonWidthDp = 190,
+            horizontalChromeDp = 80
+        )
+        primaryButton.maxLines = 2
+        closeButton.maxLines = 2
     }
 
     private fun handlePrimaryAction() {
@@ -1389,6 +1401,10 @@ class BulkSyncSessionActivity : Activity() {
             tone =
                 UiChrome.ActionTone.NORMAL
         )
+
+        // The initial button is a placeholder; after each READY/PAUSED/
+        // rollback transition reflow using the actual button labels.
+        layoutFooterActions()
     }
 
     private fun rowView(
