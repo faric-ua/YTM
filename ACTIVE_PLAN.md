@@ -577,3 +577,19 @@ This supersedes stale historic unchecked v1.4.55 items **only for the isolated p
 - [ ] Later expand authentic screen-owner matrix to other screens and dialogs; keep signed physical-phone QA separate, avoid generating unnecessary APK.
 
 **NEXT:** final-HEAD Android emulator SUCCESS, not just static PASS. The owner's existing signed APK is from prior branch and does not include this source wave.
+
+## ACTIVE FEATURE — Playlist Library from Home (2026-10-09)
+
+User wants a **discoverable playlist catalogue** rather than finding old lists via History or hidden files. Entry point is Home's interactive current-playlist tile plus new visible `Мої плейлісти • Бібліотека` quick action. No changes to existing Playlist Hub delegated Home return route.
+
+- [x] Build pure `PlaylistLibraryPolicy` combining all `RestorablePlaylistStore` items, current snapshot and *history-only* entries, with stable dedup and clear archived/history labels.
+- [x] Implement `PlaylistLibraryActivity` offline catalogue with search, two-column tiles or compact one-column rows, optional best-effort YouTube thumbnail previews, track details, and explicit “Зробити поточним” preserving local identity; reopen existing `PlaylistActivity`.
+- [x] Separate read-only YouTube tab listing account-owned playlists using existing `YouTubeApi.listMyPlaylists`; lazily list a selected playlist's track metadata via `listPlaylistTracks`. Keep request-level API units in `QuotaTracker`; no write, no live provider mutation.
+- [x] Explicit remote→local conversion with confirmation and retained YTM linkage; no hidden media download or background operations.
+- [x] User-triggered song link opens official YouTube; **embedded in-app YouTube playback remains a separate future validated implementation**, not an unofficial stream extractor.
+- [x] Add local policy JVM tests and 2 Android instrumentation tests for actual library UI.
+- [ ] Run manifest generation and exact-HEAD Validate **both** JVM+assemble and emulator instrumentation, fix any failures.
+- [ ] Follow-on wave: official embeddable YouTube player (respect Referer, player min size, ads and controls) and a dedicated phone-QA acceptance. No fake standalone audio-only API player.
+- [ ] Signed APK only at a coherent checkpoint. Installed phone APK remains untouched until verification.
+
+**NEXT:** exact-HEAD CI with existing and new tests, then fix any issues autonomously.
