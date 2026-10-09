@@ -35,7 +35,8 @@ class UiGeometryTestActivity : Activity() {
         widthDp: Int,
         fontSp: Float,
         firstCaption: String = "Усі готові",
-        secondCaption: String = "Лише доповнити"
+        secondCaption: String = "Лише доповнити",
+        minButtonWidthDp: Int = 132
     ) {
         val root = makeRoot()
         val card = LinearLayout(this).apply {
@@ -44,7 +45,7 @@ class UiGeometryTestActivity : Activity() {
         }
         root.addView(
             card,
-            LinearLayout.LayoutParams(dp(widthDp), ViewGroup.LayoutParams.WRAP_CONTENT)
+            LinearLayout.LayoutParams(dp(safeFixtureWidth(widthDp)), ViewGroup.LayoutParams.WRAP_CONTENT)
         )
 
         val actionsContainer = LinearLayout(this)
@@ -63,7 +64,7 @@ class UiGeometryTestActivity : Activity() {
             container = actionsContainer,
             buttons = actions,
             buttonHeightDp = 64,
-            minButtonWidthDp = 132,
+            minButtonWidthDp = minButtonWidthDp,
             // Deliberately optimistic pre-measure estimate: measured bounds
             // MUST override it before Android paints the horizontal layout.
             horizontalChromeDp = 0
@@ -107,7 +108,7 @@ class UiGeometryTestActivity : Activity() {
         root.addView(
             footer,
             LinearLayout.LayoutParams(
-                dp(widthDp), ViewGroup.LayoutParams.WRAP_CONTENT
+                dp(safeFixtureWidth(widthDp)), ViewGroup.LayoutParams.WRAP_CONTENT
             )
         )
         configureActions(footer, primary, secondary, fontSp)
@@ -153,6 +154,13 @@ class UiGeometryTestActivity : Activity() {
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
     }
+
+    // A requested synthetic width must never extend beyond the actual
+    // emulator window; otherwise global-visible-rect clipping tests would
+    // incorrectly blame UiChrome for a fixture that is wider than the screen.
+    private fun safeFixtureWidth(requestedDp: Int): Int =
+        minOf(requestedDp, resources.configuration.screenWidthDp - 32)
+            .coerceAtLeast(220)
 
     private fun dp(value: Int) =
         (value * resources.displayMetrics.density + 0.5f).toInt()
