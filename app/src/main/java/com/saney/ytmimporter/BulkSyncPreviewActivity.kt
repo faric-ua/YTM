@@ -207,9 +207,23 @@ class BulkSyncPreviewActivity : Activity() {
                 )
                 ?: 0
 
-        if (restoredPlan != null) {
-            plan = restoredPlan
-            renderPlan(restoredPlan)
+        // Instrumentation-only read-only plan injected by the Android test.
+        // Disabled in release and never exported. Avoid background YTM reads
+        // or mutations when checking the REAL Preview Activity's geometry.
+        @Suppress("DEPRECATION")
+        val geometryTestPlan =
+            if (BuildConfig.DEBUG) {
+                intent.getSerializableExtra(
+                    EXTRA_DEBUG_READ_ONLY_PLAN
+                ) as? BulkSyncPlanSummary
+            } else {
+                null
+            }
+        val initialPlan = restoredPlan ?: geometryTestPlan
+
+        if (initialPlan != null) {
+            plan = initialPlan
+            renderPlan(initialPlan)
         } else {
             loadPreview()
         }
@@ -1884,6 +1898,10 @@ class BulkSyncPreviewActivity : Activity() {
         ).toInt()
 
     companion object {
+        // Only consumed in DEBUG; this Activity is non-exported.
+        internal const val EXTRA_DEBUG_READ_ONLY_PLAN =
+            "bulk_sync_debug_read_only_geometry_plan"
+
         private const val STATE_PLAN =
             "bulk_sync_preview_plan"
 
