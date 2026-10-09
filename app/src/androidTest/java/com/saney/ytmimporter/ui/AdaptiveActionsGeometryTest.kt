@@ -67,7 +67,8 @@ class AdaptiveActionsGeometryTest {
                     widthDp = 340,
                     fontSp = 15f,
                     firstCaption = "Усі",
-                    secondCaption = "Лише"
+                    secondCaption = "Лише",
+                    minButtonWidthDp = 110
                 )
             }
             awaitLayout()
