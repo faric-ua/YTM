@@ -8,7 +8,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 bb9e8bdcdeb0decb  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-c066f11be559568a  ACTIVE_PLAN.md
+9d3cbbeca48edb36  ACTIVE_PLAN.md
 acd045e07c18ca3c  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -17,7 +17,7 @@ a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
 3655c3c06d7e538e  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
-e386f6c2722b99cd  CURRENT_HANDOFF.md
+cc9a3ca788c692ef  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
 14fdc97fd32e82fd  OPEN_QUESTIONS.md
 58962236a30e5022  PRIVACY.md
@@ -29,7 +29,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-0487a8480ed9ab36  RESUME_HERE.md
+c6998fbdb577baed  RESUME_HERE.md
 02cff781bf9d6506  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -92,10 +92,11 @@ bf54b69b8bb58e3d  TERMUX_COMMANDS.md
 d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
+fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
 3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
 cc77b1bafb5454b0  app/src/main/AndroidManifest.xml
-57766be00795264b  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
+004317077f78b30e  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 471fe06f23073bd4  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 0af4ad581bd9e32c  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
 4da09cca8fb23e0b  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
@@ -294,7 +295,7 @@ c9a0f203088b48a9  docs/assistant-kit/portable/templates/RELEASE.md.template
 2d333ebed3c466b5  docs/assistant-kit/portable/templates/RELEASE_META.json.template
 51098420dcf58c17  docs/assistant-kit/portable/templates/TEST_RUN.md.template
 50133b42aa9ddedb  docs/assistant-kit/portable/templates/UI_WINDOW_QA.md.template
-63395db2add43a6f  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
+0fa347f662d59060  docs/design/RESPONSIVE_ACTION_LAYOUT_CONTRACT.md
 15e4b7411a52b7f0  docs/design/THEME_STATE_REFERENCE.md
 663807a41f7e5fd7  docs/design/TILE_UI_CONTRACT.md
 584d9fec4a5aa921  docs/design/UI_WINDOW_QA_CONTRACT.md
@@ -1799,7 +1800,7 @@ a4ce15041fd56f92  scripts/v1455-review-manual-filter-audit.sh
 f2a3a8fc068701c4  scripts/v1455-termux-operator-menu-audit.sh
 a3b628d5213feb9a  scripts/v1455-url-blank-input-audit.sh
 70cdb592759cded6  scripts/v1455-ux-hardening-audit.sh
-556051ce6e244493  scripts/v1457-ui-geometry-gate-audit.sh
+9439a05ec6fa613c  scripts/v1457-ui-geometry-gate-audit.sh
 3ef7b58ae9c2bd82  settings.gradle.kts
 51053de6297a5c01  tools/termux/README.md
 62444c868836cc71  tools/termux/install-widget.sh
