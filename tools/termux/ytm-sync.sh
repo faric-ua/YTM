@@ -39,8 +39,12 @@ if [ "$TARGET_BRANCH" != "$CURRENT_BRANCH" ]; then
   echo "  to:   $TARGET_BRANCH"
   echo
 
-  git -C "$YTM_REPO_DIR" fetch --quiet origin "$TARGET_BRANCH"
-  TARGET_REMOTE="$(git -C "$YTM_REPO_DIR" rev-parse FETCH_HEAD)"
+  # Fetch the target into its remote-tracking ref explicitly.
+  # "git fetch origin branch" may populate only FETCH_HEAD, so a new branch
+  # cannot safely use "git switch --track origin/branch" without this mapping.
+  git -C "$YTM_REPO_DIR" fetch --quiet origin \
+    "refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+  TARGET_REMOTE="$(git -C "$YTM_REPO_DIR" rev-parse "refs/remotes/origin/$TARGET_BRANCH")"
 
   if git -C "$YTM_REPO_DIR" show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
     TARGET_LOCAL="$(
@@ -88,4 +92,6 @@ ytm_require_clean
 echo
 echo "ПРОЄКТ ОНОВЛЕНО ✅"
 echo "Branch: $BRANCH_AFTER"
-echo "HEAD:   $LOCAL_AFTER"\necho\necho "Далі: 2 — Перевірити, що зараз готово"
+echo "HEAD:   $LOCAL_AFTER"
+echo
+echo "Далі: 2 — Перевірити, що зараз готово"
