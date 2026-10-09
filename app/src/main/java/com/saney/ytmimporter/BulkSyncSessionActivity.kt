@@ -603,6 +603,8 @@ class BulkSyncSessionActivity : Activity() {
         if (running || size !in BulkCreateBatchPolicy.SIZES) return
         val id = sessionId ?: return
         val current = sessionStore.get(id) ?: return
+        if (BulkSyncExecutionPolicy.hasUncertainPreparedMutation(current)) return
+        if (BulkCreateBatchPolicy.remainingCreates(current) == 0) return
         if (current.state !in setOf(
                 BulkSyncSessionState.READY,
                 BulkSyncSessionState.PAUSED_CREATE_BATCH,
@@ -654,6 +656,7 @@ class BulkSyncSessionActivity : Activity() {
             SessionModal.CREATE_BATCH_SIZE -> {
                 if (running || session.isTerminal ||
                     session.state == BulkSyncSessionState.RUNNING ||
+                    BulkSyncExecutionPolicy.hasUncertainPreparedMutation(session) ||
                     BulkCreateBatchPolicy.remainingCreates(session) == 0
                 ) return null
 
@@ -1080,7 +1083,17 @@ class BulkSyncSessionActivity : Activity() {
                         (batchSize?.toString() ?: "без обмеження (стара сесія)")
                 )
             )
-            if (!running && session.state != BulkSyncSessionState.RUNNING) {
+            if (!running &&
+                session.state in setOf(
+                    BulkSyncSessionState.READY,
+                    BulkSyncSessionState.PAUSED_CREATE_BATCH,
+                    BulkSyncSessionState.PAUSED_INTERRUPTED,
+                    BulkSyncSessionState.PAUSED_WRITE_QUOTA,
+                    BulkSyncSessionState.PAUSED_RATE_LIMIT,
+                    BulkSyncSessionState.PAUSED_AUTH
+                ) &&
+                !BulkSyncExecutionPolicy.hasUncertainPreparedMutation(session)
+            ) {
                 val batchButton = Button(this).apply {
                     text = "Змінити розмір пакета"
                     isAllCaps = false
