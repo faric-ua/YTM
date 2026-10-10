@@ -32,6 +32,14 @@ v1.4.55 — UX Hardening / Control — DEVELOPMENT / WAVE A
 - [ ] **Never mutate source data or playlist identity** to remove a visual repeat. Preserve original YouTube video title, channel, `videoId`, track order, saved local metadata and all search/sync/export/write identifiers. Full untouched metadata should remain accessible in track details, even if list row presentation is compact.
 - [ ] **Future QA:** verify `The Prodigy - Firestarter (Official Video) / The Prodigy`, `Weather Experience / The Prodigy - Topic`, tracks already lacking artist prefixes, and long mixed-language titles, in both local and YouTube details. Check no actual duplicate rows are introduced and source/channel information stays understandable. **TODO only: do not implement, refresh remote data or build an APK now.**
 
+## Deferred UX TODO — Playlist track row number-to-thumbnail spacing (PHONE screenshot 2026-10-11)
+
+**Observed:** after adding official YouTube track thumbnails in `PlaylistLibraryActivity.showTracks()`, there is visibly excessive empty space between the ordinal (`1.`, `10.` etc.) and its preview image, especially in landscape. The current row uses outer horizontal `8dp` padding plus a fixed `37dp` ordinal column and then a thumbnail with `9dp` trailing margin; the fixed column can create unnecessary blank space. User requests compact, consistent alignment. **TODO only; preserve installed APK for now.**
+
+- [ ] **Tighten ordinal → thumbnail grouping:** use the minimum measured width for the track number with a modest explicit gap before the preview, rather than a visually oversized fixed number column. Preserve aligned image starts across rows with 1-, 2-, and 3-digit ordinals (or use a right-aligned dynamically sized number slot), with no overlap or clipping at large font scales.
+- [ ] **Improve overall track-row density:** keep thumbnails compact and in a consistent aspect ratio, tune horizontal padding and image-to-title gap, maintain readable title/artist and full-size ▶ touch target, and give more horizontal room to long track names. Include rows lacking thumbnails/videoId in the layout QA.
+- [ ] **Scoped QA:** check portrait and landscape, numbered rows 1/9/10/99/100, mixed title lengths and Accessibility font scaling. Confirm no accidental track reorder, data edits or playback action changes. **Backlog only; no UI code edit or APK build in this wave.**
+
 ## Deferred feature TODO — Playlist-wide in-app playback (owner request 2026-10-10)
 
 **Already implemented in v1.4.58 source:** tapping a local or YouTube playlist card opens its track list; each eligible track has a `▶` button which opens an in-app visible official YouTube WebView player, showing video with audio. This plays **only one selected track**. The signed QA APK (run `38083466922`, app source `5b22dce9`) includes this functionality, but phone playback remains unverified and YouTube can forbid embedding on some videos.
