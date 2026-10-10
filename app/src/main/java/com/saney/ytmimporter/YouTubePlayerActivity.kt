@@ -2,6 +2,7 @@ package com.saney.ytmimporter
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
@@ -31,6 +32,9 @@ class YouTubePlayerActivity : Activity() {
     private var fullscreen: View? = null
     private var fullscreenCallback: WebChromeClient.CustomViewCallback? = null
 
+    private val landscape get() =
+        resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
@@ -44,7 +48,7 @@ class YouTubePlayerActivity : Activity() {
         }
         page = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(12), dp(8), dp(12), dp(12))
+            setPadding(dp(12), dp(if (landscape) 4 else 8), dp(12), dp(12))
         }
         root.addView(page, FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -106,9 +110,7 @@ class YouTubePlayerActivity : Activity() {
             }
         }
         player = web
-        page.addView(web, LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, dp(232)
-        ).apply { topMargin = dp(12) })
+        page.addView(web, videoLayoutParams())
 
         page.addView(caption(
             "Офіційний YouTube-плеєр. Деякі відео можуть забороняти вбудоване відтворення.",
@@ -134,6 +136,26 @@ class YouTubePlayerActivity : Activity() {
             mapOf("Referer" to YouTubeEmbedPolicy.referer(packageName))
         )
     }
+
+    /**
+     * Orientation changes must not tear down the active WebView or restart the
+     * video. Android delivers this callback when configChanges is declared in
+     * AndroidManifest; playback itself stays under official YouTube controls.
+     *
+     * Do not infer PLAYING from the Activity being visible. Conditional
+     * autoplay/fullscreen will require explicit trusted YouTube player state.
+     */
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (!::page.isInitialized) return
+        page.setPadding(dp(12), dp(if (landscape) 4 else 8), dp(12), dp(12))
+        player?.layoutParams = videoLayoutParams()
+    }
+
+    private fun videoLayoutParams() = LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        dp(if (landscape) 186 else 232)
+    ).apply { topMargin = dp(if (landscape) 6 else 12) }
 
     override fun onPause() {
         player?.onPause()
@@ -183,7 +205,11 @@ class YouTubePlayerActivity : Activity() {
         Button(this).apply {
             text = label
             isAllCaps = false
+            textSize = 14f
             maxLines = 2
+            minHeight = dp(48)
+            setTextColor(AppThemeManager.palette(this@YouTubePlayerActivity).text)
+            background = AppThemeManager.neutralButtonDrawable(this@YouTubePlayerActivity)
             setOnClickListener { onClick() }
         }
 

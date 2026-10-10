@@ -2,6 +2,7 @@ package com.saney.ytmimporter.ui
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -138,6 +139,48 @@ class PlaylistLibraryActivityTest {
         }
     }
 
+    @Test fun landscapeLibraryUsesCompactHeaderAndSearchOnDemand() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        CurrentPlaylistStore(context).save(
+            ImportedPlaylist("Контроль повороту", mutableListOf()),
+            "Локальна перевірка",
+            localPlaylistId = "landscape-${UUID.randomUUID()}"
+        )
+        ActivityScenario.launch<PlaylistLibraryActivity>(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            scene.onActivity {
+                it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            }
+            idle()
+            scene.onActivity { activity ->
+                val controls = activity.window.decorView.collectButtons()
+                assertTrue(controls.any {
+                    it.contentDescription == "На телефоні" && it.isShown
+                })
+                assertTrue(controls.any {
+                    it.contentDescription == "Знайти плейліст" && it.isShown
+                })
+                assertTrue(controls.any {
+                    it.contentDescription == "Відкрити поточний плейліст" && it.isShown
+                })
+                assertTrue(controls.any {
+                    it.contentDescription == "Список одним стовпчиком" && it.isShown
+                })
+                assertTrue(controls.none {
+                    it.text.toString() == "Поточний плейліст →" && it.isShown
+                })
+                controls.first { it.contentDescription == "Знайти плейліст" }.performClick()
+            }
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.hasVisibleSearch())
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+            idle()
+        }
+    }
+
     @Test fun onlineTabWithoutConsentOrTokenDoesNotStartRemoteRead() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         ActivityScenario.launch<PlaylistLibraryActivity>(
@@ -166,6 +209,15 @@ class PlaylistLibraryActivityTest {
             if (found != null) return found
         }
         return null
+    }
+
+    private fun View.hasVisibleSearch(): Boolean {
+        if (this is android.widget.EditText &&
+            hint?.toString() == "Знайти плейліст" && isShown) return true
+        if (this is ViewGroup) for (i in 0 until childCount) {
+            if (getChildAt(i).hasVisibleSearch()) return true
+        }
+        return false
     }
 
     private fun View.hasPreview(target: String): Boolean {

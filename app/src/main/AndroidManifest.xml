@@ -59,6 +59,7 @@
 
         <activity
             android:name=".YouTubePlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize"
             android:exported="false"
             android:screenOrientation="unspecified" />
 
