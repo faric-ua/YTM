@@ -619,9 +619,12 @@ class PlaylistLibraryActivity : Activity() {
                 ?.takeIf { VIDEO_ID.matches(it) }
             if (id != null) {
                 val play = button("▶") {
-                    // Official YouTube handoff, not stream extraction or DRM bypass.
-                    openExternal("https://www.youtube.com/watch?v=$id")
-                }.apply { contentDescription = "Відкрити $title на YouTube" }
+                    startActivity(
+                        Intent(this, YouTubePlayerActivity::class.java)
+                            .putExtra(YouTubePlayerActivity.EXTRA_VIDEO_ID, id)
+                            .putExtra(YouTubePlayerActivity.EXTRA_TITLE, title)
+                    )
+                }.apply { contentDescription = "Відтворити $title у застосунку" }
                 row.addView(play, LinearLayout.LayoutParams(dp(54), dp(48)))
             }
             body.addView(row, LinearLayout.LayoutParams(
