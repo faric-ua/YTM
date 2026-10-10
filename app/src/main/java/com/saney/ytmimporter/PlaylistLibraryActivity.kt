@@ -2,10 +2,12 @@ package com.saney.ytmimporter
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.res.Configuration
 import android.content.Intent
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.text.TextUtils
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -64,6 +66,10 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var root: LinearLayout
     private lateinit var body: LinearLayout
     private lateinit var scroller: ScrollView
+    private lateinit var tabsRow: LinearLayout
+    private lateinit var filtersRow: LinearLayout
+    private lateinit var compactLocalTabButton: Button
+    private lateinit var compactOnlineTabButton: Button
     private lateinit var localTabButton: Button
     private lateinit var onlineTabButton: Button
     private lateinit var layoutButton: Button
@@ -72,6 +78,8 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var modalController: RestorableModalController
 
     private val palette get() = AppThemeManager.palette(this)
+    private val landscape get() =
+        resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,29 +147,54 @@ class PlaylistLibraryActivity : Activity() {
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(12), dp(8), dp(12), dp(6))
+            setPadding(dp(if (landscape) 8 else 12), dp(if (landscape) 3 else 8),
+                dp(if (landscape) 8 else 12), dp(if (landscape) 3 else 6))
         }
         header.addView(button("‹") { onBackPressed() },
-            LinearLayout.LayoutParams(dp(54), dp(50)))
-        header.addView(text("Бібліотека плейлістів", 21f, true, palette.accent).apply {
+            LinearLayout.LayoutParams(dp(if (landscape) 46 else 54), dp(48)))
+        header.addView(text("Бібліотека плейлістів",
+            if (landscape) 18f else 21f, true, palette.accent).apply {
             setPadding(dp(9), 0, 0, 0)
-            maxLines = 2
+            maxLines = if (landscape) 1 else 2
+            ellipsize = TextUtils.TruncateAt.END
         }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+
+        // In landscape, keep the two library sources in the existing header.
+        // This gives the track list the vertical space used by large tabs.
+        compactLocalTabButton = button("📱") { selectTab(false) }.apply {
+            contentDescription = "На телефоні"
+            textSize = 18f
+        }
+        compactOnlineTabButton = button("YT") { selectTab(true) }.apply {
+            contentDescription = "YouTube"
+            textSize = 14f
+        }
+        if (landscape) {
+            header.addView(compactLocalTabButton,
+                LinearLayout.LayoutParams(dp(48), dp(48)).apply {
+                    marginStart = dp(7)
+                })
+            header.addView(compactOnlineTabButton,
+                LinearLayout.LayoutParams(dp(48), dp(48)).apply {
+                    marginStart = dp(7)
+                })
+        }
         root.addView(header)
 
-        val tabs = LinearLayout(this).apply {
+        tabsRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             setPadding(dp(12), dp(4), dp(12), dp(4))
+            visibility = if (landscape) View.GONE else View.VISIBLE
         }
         localTabButton = button("На телефоні") { selectTab(false) }
         onlineTabButton = button("YouTube") { selectTab(true) }
-        tabs.addView(localTabButton, LinearLayout.LayoutParams(0, dp(54), 1f))
-        tabs.addView(onlineTabButton, LinearLayout.LayoutParams(0, dp(54), 1f).apply {
+        tabsRow.addView(localTabButton, LinearLayout.LayoutParams(0, dp(54), 1f))
+        tabsRow.addView(onlineTabButton, LinearLayout.LayoutParams(0, dp(54), 1f).apply {
             marginStart = dp(8)
         })
-        root.addView(tabs)
+        root.addView(tabsRow)
 
-        val filters = LinearLayout(this).apply {
+        filtersRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(12), dp(5), dp(12), dp(5))
@@ -184,19 +217,24 @@ class PlaylistLibraryActivity : Activity() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
-        filters.addView(searchBox, LinearLayout.LayoutParams(0, dp(51), 1f))
+        filtersRow.addView(searchBox, LinearLayout.LayoutParams(0, dp(51), 1f))
         layoutButton = button("▦") {
             columns = if (columns == 2) 1 else 2
             updateTopControls()
             renderContent()
         }
-        filters.addView(layoutButton, LinearLayout.LayoutParams(dp(58), dp(51)).apply {
+        filtersRow.addView(layoutButton, LinearLayout.LayoutParams(dp(58), dp(51)).apply {
             marginStart = dp(8)
         })
-        root.addView(filters)
+        root.addView(filtersRow)
 
         statusLabel = text("", 13f, false, palette.muted).apply {
-            setPadding(dp(17), dp(5), dp(17), dp(8))
+            setPadding(dp(if (landscape) 12 else 17), dp(5),
+                dp(if (landscape) 12 else 17), dp(if (landscape) 4 else 8))
+            if (landscape) {
+                maxLines = 1
+                ellipsize = TextUtils.TruncateAt.END
+            }
         }
         root.addView(statusLabel)
         scroller = ScrollView(this).apply {
@@ -234,12 +272,15 @@ class PlaylistLibraryActivity : Activity() {
     private fun updateTopControls() {
         localTabButton.setTextColor(if (!onlineTab) palette.accent else palette.text)
         onlineTabButton.setTextColor(if (onlineTab) palette.accent else palette.text)
+        compactLocalTabButton.setTextColor(if (!onlineTab) palette.accent else palette.text)
+        compactOnlineTabButton.setTextColor(if (onlineTab) palette.accent else palette.text)
+        filtersRow.visibility =
+            if (selectedLocal == null && selectedRemote == null) View.VISIBLE else View.GONE
         layoutButton.text = if (columns == 2) "☰" else "▦"
         layoutButton.contentDescription =
             if (columns == 2) "Список одним стовпчиком" else "Плитки у два стовпчики"
-        searchBox.visibility =
-            if (selectedLocal == null && selectedRemote == null) View.VISIBLE else View.GONE
-        layoutButton.visibility = searchBox.visibility
+        searchBox.visibility = View.VISIBLE
+        layoutButton.visibility = View.VISIBLE
     }
 
     private fun renderContent() {
@@ -598,14 +639,29 @@ class PlaylistLibraryActivity : Activity() {
             return
         }
         tracks.take(visibleTrackLimit).forEachIndexed { i, track ->
+            val id = track.selectedVideoId?.takeIf { VIDEO_ID.matches(it) }
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(dp(10), dp(10), dp(8), dp(10))
+                setPadding(dp(8), dp(if (landscape) 5 else 8),
+                    dp(8), dp(if (landscape) 5 else 8))
                 background = surface(palette.surface, 10)
             }
             row.addView(text("${i + 1}.", 13f, true, palette.muted),
                 LinearLayout.LayoutParams(dp(37), ViewGroup.LayoutParams.WRAP_CONTENT))
+            if (id != null) {
+                val thumbnail = ImageView(this).apply {
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    setImageResource(R.drawable.ic_ytm_playlist_add)
+                    setColorFilter(palette.muted)
+                    background = surface(palette.surfaceAlt, 8)
+                    contentDescription = "Прев’ю: ${track.originalTitle}"
+                }
+                row.addView(thumbnail, LinearLayout.LayoutParams(
+                    dp(if (landscape) 76 else 68), dp(if (landscape) 43 else 43)
+                ).apply { marginEnd = dp(9) })
+                PlaylistCoverLoader.bind(this, thumbnail, id)
+            }
             val title = track.selectedTitle?.takeIf(String::isNotBlank)
                 ?: track.originalTitle
             val detail = text(
@@ -615,8 +671,6 @@ class PlaylistLibraryActivity : Activity() {
             row.addView(detail, LinearLayout.LayoutParams(
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
             ))
-            val id = track.selectedVideoId
-                ?.takeIf { VIDEO_ID.matches(it) }
             if (id != null) {
                 val play = button("▶") {
                     startActivity(

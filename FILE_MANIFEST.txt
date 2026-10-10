@@ -93,7 +93,7 @@ d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
-e32c359b154a6e6d  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
+5db1924347f9292f  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
 9cdb4d3ba54b8b38  app/src/androidTest/java/com/saney/ytmimporter/ui/YouTubePlayerActivityTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
 3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
@@ -110,7 +110,7 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-97797efcd178dd3c  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
+ef2e3d08ddc5dcfc  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
@@ -185,7 +185,7 @@ c9be4e8b88578bdb  app/src/main/java/com/saney/ytmimporter/ui/AppThemeManager.kt
 fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome.kt
 88174cd2da5b393b  app/src/main/java/com/saney/ytmimporter/ui/HomeDashboardChrome.kt
 8763d6337d2bee83  app/src/main/java/com/saney/ytmimporter/ui/HomeHistoryDetailLink.kt
-ae5a171eb82fb382  app/src/main/java/com/saney/ytmimporter/ui/PlaylistCoverLoader.kt
+af61177f28408c0c  app/src/main/java/com/saney/ytmimporter/ui/PlaylistCoverLoader.kt
 84c2c819d25be316  app/src/main/java/com/saney/ytmimporter/ui/RecoveryAttentionChrome.kt
 7e65143a9419153e  app/src/main/java/com/saney/ytmimporter/ui/ReplacementLogDialog.kt
 071bf2751d4693fa  app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt

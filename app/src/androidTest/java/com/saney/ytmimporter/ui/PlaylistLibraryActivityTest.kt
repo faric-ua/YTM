@@ -104,6 +104,40 @@ class PlaylistLibraryActivityTest {
         assertEquals(null, store.load()?.sourceHistoryId)
     }
 
+    @Test fun localTrackRowHasPreviewAndPlaybackAction() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val name = "Бібліотека прев’ю ${UUID.randomUUID()}"
+        CurrentPlaylistStore(context).save(
+            playlist = ImportedPlaylist(name, mutableListOf(
+                Track("Трек з прев’ю", "Виконавець", selectedVideoId = "abcdefghijk")
+            )),
+            sourceLabel = "Локальна перевірка прев’ю",
+            localPlaylistId = "preview-${UUID.randomUUID()}"
+        )
+        ActivityScenario.launch<PlaylistLibraryActivity>(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            idle()
+            scene.onActivity { activity ->
+                val label = activity.window.decorView.findLabel(name)
+                    ?: error("Playlist card missing")
+                var card: View? = label
+                while (card != null && !card.isClickable) {
+                    card = card.parent as? View
+                }
+                assertNotNull(card)
+                card!!.performClick()
+            }
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.hasText("Трек з прев’ю"))
+                assertTrue(activity.window.decorView.hasPreview("Прев’ю: Трек з прев’ю"))
+                assertTrue(activity.window.decorView.collectButtons()
+                    .any { it.contentDescription == "Відтворити Трек з прев’ю у застосунку" })
+            }
+        }
+    }
+
     @Test fun onlineTabWithoutConsentOrTokenDoesNotStartRemoteRead() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         ActivityScenario.launch<PlaylistLibraryActivity>(
@@ -132,6 +166,14 @@ class PlaylistLibraryActivityTest {
             if (found != null) return found
         }
         return null
+    }
+
+    private fun View.hasPreview(target: String): Boolean {
+        if (this is android.widget.ImageView && contentDescription == target) return true
+        if (this is ViewGroup) for (i in 0 until childCount) {
+            if (getChildAt(i).hasPreview(target)) return true
+        }
+        return false
     }
 
     private fun View.hasText(target: String): Boolean {
