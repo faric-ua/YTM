@@ -1,5 +1,14 @@
 # YTM Importer — CURRENT HANDOFF
 
+## ACTIVE QA HANDOFF — 2026-10-11 / Consolidated Playlist Library bundle
+
+- Active branch: `feat/v1.4.58-playlist-player`, immutable **tested app source** `1ec733b6d8c10a728b4ac7b34e10d94a28662273`.
+- GitHub Validate run `38092377414`: **SUCCESS, BOTH jobs**; preflight/JVM/unsigned release and Android emulator with actual UI rotation coverage passed.
+- Source completed together: landscape compact source/search/current/grid controls; aligned card heights and truthful phone-metadata/YTM-linked badges; preview/ordinal spacing/title/channel improvements; player buttons follow AppThemeManager, WebView no longer destroyed by ordinary rotation. Prior official visible YouTube player and explicit watch fallback preserved.
+- Deferred/not tested: conditional automatic fullscreen only while YouTube is playing (requires trustworthy provider state), automatic next-track playlist queue, durable offline-first per-account YouTube metadata, real-phone playback continuation.
+- **NEXT:** final docs-only Validate exact HEAD, manually signed one QA APK, narrow phone test matrix in `ACTIVE_PLAN.md`. No Google/YTM write or data migration; do not merge main yet. Inherited Gradle v1.4.55/code98 and APK artifact name are not a stable v1.4.58 release.
+- Manual action requests: warning badge first and clear `Run workflow` steps, short 8-digit HEAD. Do not ask for APK unless the signed artifact for the same app source is absent.
+
 ## LATEST ACTIVE SOURCE — 2026-10-10 / v1.4.58 Playlist Library and Player
 
 Experimental branch `feat/v1.4.58-playlist-player`; stacked on

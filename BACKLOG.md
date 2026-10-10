@@ -3,6 +3,19 @@
 ## Current
 v1.4.55 — UX Hardening / Control — DEVELOPMENT / WAVE A
 
+## Playlist Library consolidated QA wave — source complete, phone QA pending (2026-10-11)
+
+**ONE app-source bundle:** `1ec733b6d8c10a728b4ac7b34e10d94a28662273`, Validate `38092377414` **SUCCESS** (both jobs). The older `Deferred UX TODO` descriptions below record original requests; these source changes supersede their “do not implement now” notes **for the specific implemented parts only**. Do not mark original broader feature promises fully closed before phone acceptance.
+
+- [x] Responsive Library: icon actions for local/YouTube, magnifier search on demand, current playlist and one/two-column switch in landscape header; hide large current CTA in landscape.
+- [x] Card source geometry: shared fixed title/subtitle/footer slots in two-column grid; `▯ ✓` blue theme-aware status means saved local playlist metadata (NOT downloaded media); `YTM ✓` accented status means stored YTM linkage (NOT full track synchronization), remote cards remain YouTube-source labeled.
+- [x] Track details: shrink uniform numbered slot by digit count, maintain thumbnail + ▶, present title distinct from channel and condense only unambiguous leading `Channel - ` prefix without changing saved metadata.
+- [x] Player chrome: themed buttons and responsive official YouTube player shell; Activity rotation preserves current WebView instead of destroying/reloading it. Emulator contract tests added.
+- [ ] **PHONE QA** above appearance and actual ongoing YouTube audio/video across portrait ↔ landscape and Back. This must not be stamped PASS based on emulator alone.
+- [ ] **OPEN** playback-state-aware automatic fullscreen on landscape ONLY while actually playing, normal portrait return; paused/not-started must remain ordinary layout. Avoid guessing provider playback state.
+- [ ] **DEFERRED FEATURE:** persist private per-account YouTube playlist/tracks metadata to disk, quiet quota-safe read-only refresh without page redraw, offline metadata browse, strict account isolation.
+- [ ] **DEFERRED FEATURE:** playable full playlist queue with auto-next/previous/seek and repeat/shuffle design, using only permitted official player APIs. No stream extraction or background-audio promises.
+
 ## Deferred UX TODO — Playlist Library landscape icon-only toolbar (PHONE screenshot 2026-10-11)
 
 **Owner request — TODO ONLY, do not implement now.** On the experimental v1.4.58 Library landscape screen, source-switch controls `📱` and `YT` were already moved to the header and accepted provisionally; their final icons may be redesigned later. The remaining search field, large `Поточний плейліст →` action and list/grid toggle still consume valuable height and reduce visible covers. Landscape browsing should prioritize the actual playlist cards and fast visual scanning.

@@ -1,5 +1,18 @@
 # YTM Importer — ACTIVE PLAN
 
+## CURRENT ACTIVE QA BUNDLE — Library responsive controls + stable player rotation (2026-10-11)
+
+- [x] Consolidate the recent 2026-10-10/11 phone UX backlog into one source wave and separate durable remote metadata / full playlist queue into future functional stages.
+- [x] Implement common compact landscape header, search-on-demand, one/two-column catalogue styles, equal card height/footer alignment, local-metadata and linked-YTM status indicators, compact preview/track numbering, clearer channel labeling and themed YouTube player actions.
+- [x] Preserve WebView on ordinary orientation changes via Activity `configChanges` and resize layout without reloading the player. Note: automatic fullscreen conditional on real PLAYING remains **open**; no false claims.
+- [x] Exact app-source SHA `1ec733b6d8c10a728b4ac7b34e10d94a28662273` — **Validate Android 38092377414 SUCCESS** (release preflight, JVM, unsigned release, emulator UI + rotation tests).
+- [ ] Confirm final documentation-only handoff HEAD passes Validate; app source must remain unchanged.
+- [ ] Create **one signed QA APK**, workflow `build-apk.yml` from `feat/v1.4.58-playlist-player` after green final docs HEAD. Manual launch requires prominent warning per USER_RESPONSE_TEMPLATE.md. APK filename may remain v1.4.55 due release-preflight-mandated metadata (code 98).
+- [ ] Focused phone acceptance: landscape compact controls/search, consistent local+YTM badges/grid, shorter track ordinal spacing/title/channel, WebView rotation playing/paused/Back. **No extra unrelated phone QA or automatic YTM write.**
+- [ ] After phone results, decide whether to fix conditional playback-state fullscreen separately. Durable per-account remote metadata storage/silent refresh and full queue/auto-next are future functional stages, not hidden in this bundle.
+
+**NEXT ACTION:** verify final exact HEAD Validate, then one signed feature-branch QA APK; do not publish/merge.
+
 ## CURRENT TASK — v1.4.58 library + official player QA (2026-10-10)
 
 This **newer source-only workstream supersedes the older v1.4.55 checkpoint as the live assistant resume pointer**, without reclassifying v1.4.55 or its phone evidence as released.

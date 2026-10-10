@@ -1,5 +1,15 @@
 # YTM Importer — RESUME HERE
 
+## CURRENT QA BUNDLE — 2026-10-11 / Playlist Library + player rotation
+
+- **Branch:** `feat/v1.4.58-playlist-player`; **tested app source HEAD:** `1ec733b6d8c10a728b4ac7b34e10d94a28662273`.
+- **CI:** Validate Android [38092377414](https://github.com/faric-ua/YTM/actions/runs/38092377414) **SUCCESS**, both `validate` and Android UI emulator jobs. Preflight, JVM, unsigned release and instrumented screen tests passed.
+- **Consolidated changes (single app-source commit):** compact landscape Library header (local/YouTube/search-on-demand/current/list-grid), no tall landscape current CTA, uniform two-column cards and metadata footers, accurate phone-metadata vs linked-YTM badges, compact numbered track rows with previews and distinct YouTube channel, themed player controls, non-recreating player WebView on normal orientation change. `PlaylistCoverLoader` already has bounded 24MB/240-image on-device thumbnail caching.
+- **Not implemented / do not claim:** automatic landscape fullscreen based on actual YouTube playback state; full-playlist auto-next queue; durable per-account remote playlist metadata/offline-first sync. Existing documented playback interruption symptom still requires real-device retest before BUG CLOSED.
+- **No remote writes, no destructive migration, no implicit local playlist overwrite.** The separate YTM Bulk engine/History are untouched.
+- **NEXT:** create **one signed QA APK from the exact final docs/manifest HEAD after its Validate PASS** via the existing manual `build-apk.yml` workflow. Signed build must not be mistaken for the unsigned Validate output. Inherited Android `versionName=1.4.55` / `versionCode=98` remains enforced by the release preflight, although source development is the v1.4.58 feature branch. Confirm branch/short HEAD in the user's manual-action notice.
+- **Focused phone tests only:** A: landscape header, search, current shortcut and grid/list, rotate; B: local/YouTube cards equal height and source badges; C: track previews, compact ordinals and channel vs title; D: start *embeddable* YouTube video and rotate both ways, verify audio/position survive, Back behavior. Do not repeat unrelated closed Phone QA; no PHONE PASS until actual user confirmation.
+
 ## LATEST VERIFIED RESUME — 2026-10-10 / Playlist library + official player
 
 - **Active experimental feature branch:** `feat/v1.4.58-playlist-player` (from `feat/v1.4.58-playlist-library`).
