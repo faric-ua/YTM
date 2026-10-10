@@ -1,5 +1,18 @@
 # YTM Importer — ACTIVE PLAN
 
+## CURRENT TASK — v1.4.58 library + official player QA (2026-10-10)
+
+This **newer source-only workstream supersedes the older v1.4.55 checkpoint as the live assistant resume pointer**, without reclassifying v1.4.55 or its phone evidence as released.
+
+- [x] Recover and inspect the live playlist-library/player GitHub branches, source and existing tests.
+- [x] Correct the stale manifest blocker; implement official in-app YouTube WebView player, 11-character ID gate, app Referer, explicit official watch fallback, safe local/remote ▶ route and offline invalid-ID Android test.
+- [x] Exact app-source `56108f43fe0d6c5b9c8c4d3be2ef3d7a508fda49` — Validate run `38062540413` SUCCESS (both regular and emulator jobs).
+- [ ] Confirm final documentation HEAD has the same complete Validate green gates.
+- [ ] Build one signed feature-branch QA APK, do not publish or merge to main.
+- [ ] Focused PHONE QA: Home → Playlist → local cards/detail/track ▶ opens internal YouTube player, visible controls, Back and rotation; YouTube tab remote read-only list + one track ▶. Provider embed block may be tested by external fallback; never attempt remote writes or clear app data.
+
+**NEXT ACTION:** exact final docs-HEAD Validate, then signed QA via Termux menu; no phone PASS before installation.
+
 > **SECOND READ AFTER `RESUME_HERE.md`**
 >
 > `RESUME_HERE.md` is the canonical crash-resume pointer. After a new chat,

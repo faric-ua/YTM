@@ -1,5 +1,14 @@
 # YTM Importer — RESUME HERE
 
+## LATEST VERIFIED RESUME — 2026-10-10 / Playlist library + official player
+
+- **Active experimental feature branch:** `feat/v1.4.58-playlist-player` (from `feat/v1.4.58-playlist-library`).
+- The local/remote playlist catalogue is source-implemented: Home Playlist entry opens Library; local Current + durable saved snapshots + marked History-only archives; two-column tiles/one-column list, covers, search, details, explicit local switching; YouTube tab is read-only with lazy track metadata and explicit local copy confirmation.
+- Official **in-app visible YouTube WebView playback** now replaces the external-only ▶ handoff from playlist track rows. Uses canonical 11-character videoId, full YouTube iframe with controls, `autoplay=0`, OS WebView, app HTTP Referer, no OAuth token sent to the player, and an explicit official watch fallback. Offline media / background-audio extraction / DRM bypass are not implemented.
+- **Validated app source:** `56108f43fe0d6c5b9c8c4d3be2ef3d7a508fda49`; exact-HEAD **Validate Android run `38062540413` SUCCESS**, including preflight, JVM tests, unsigned release and emulator instrumentation. The prior manifest-only failure was corrected. No signed APK or real-device player acceptance for this source has been observed.
+- **NEXT ACTION:** maintain this source branch independently from stable `main`; obtain a signed QA APK from the verified final docs HEAD only after final Validate; install over existing app without data clear; test Library local/YouTube tiles and one public playable track ▶ → visible in-app YouTube playback → Back, including rotation. Phone `+` / `−` is still needed before claiming PHONE PASS.
+- Distinguish YouTube embedded playback availability (provider may reject embedding) from app failures. No YTM write, automatic playlist restore, sync or destructive operation is part of player launch. The Gradle application version remains inherited v1.4.55/code 98 on this source-only experimental branch; do not claim v1.4.58 published.
+
 > **WORK MODE (2026-10-09, owner instruction):** `YTM_ASSISTANT_WORKFLOW.md §0` is mandatory. After a task, independently execute and verify all safe accessible steps, diagnose failures, re-run CI and document results. Do not ask for repeated "continue" prompts. Involve the owner only for concrete phone/credential/risky-write decisions. No simulated background work. These rules remain active across new chat handoffs; live branch/HEAD still must be verified before work.
 
 > **FIRST FILE FOR EVERY NEW CHAT / SESSION**

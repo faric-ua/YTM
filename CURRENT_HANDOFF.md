@@ -1,8 +1,24 @@
 # YTM Importer — CURRENT HANDOFF
 
+## LATEST ACTIVE SOURCE — 2026-10-10 / v1.4.58 Playlist Library and Player
+
+Experimental branch `feat/v1.4.58-playlist-player`; stacked on
+`feat/v1.4.58-playlist-library`. Local Library/YouTube read-only catalogue and
+official in-app WebView playback are **source implemented**. The current
+validated **app-source SHA** is `56108f43fe0d6c5b9c8c4d3be2ef3d7a508fda49`,
+Validate run `38062540413` **SUCCESS** (preflight/JVM/unsigned/emulator).
+The old CI fail was a stale `FILE_MANIFEST.txt`, repaired. The official
+player uses app Referer, no autoplay, no stream extraction and a watch-on-YouTube
+fallback; track ▶ no longer leaves the app by default.
+
+**NEXT:** exact-HEAD docs validation, then **signed QA build / real phone test**.
+No signed or PHONE PASS is claimed yet; no changes to `main`.
+Inherited Gradle version is still v1.4.55/code 98 (experimental branch, not a published v1.4.58 release).
+Historical v1.4.55 notes below remain release evidence, not this branch's latest work.
+
 This is the **mutable crash-recovery snapshot** for the current development session.
 
-Last updated: **2026-10-08**
+Last updated: **2026-10-10**
 
 > **FIRST READ: `RESUME_HERE.md`**
 >
