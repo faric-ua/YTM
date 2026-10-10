@@ -7,6 +7,11 @@ v1.4.55 — UX Hardening / Control — DEVELOPMENT / WAVE A
 
 - [ ] **Playlist Library / consistent grid tiles (deferred; DO NOT IMPLEMENT in current wave).** Phone screenshots of the v1.4.58 experimental playlist library show uneven two-column card heights, cover presentation, and text/status row placement in both `На телефоні` and `YouTube`. Establish one reusable responsive tile contract for both sources: equal card heights per grid row, consistent cover-image frame/aspect ratio without distortion, bounded title area (e.g. fixed line count + ellipsis with full title still available on open), and fixed aligned metadata/source/status slots so counts, `YTM` linkage and remote visibility do not shift the bottoms of adjacent tiles. Preserve readability of long titles, source identity, current-playlist distinction, and one-column/list mode. Verify both tabs on a real phone in portrait and landscape when this work is explicitly scheduled. **Backlog only: do not change the UI/code, playlist data, remote API, or build an APK for this finding now.**
 
+**Two presentation modes in both sources (owner clarification 2026-10-10; TODO only):**
+- **Compact grid — 2 cards per row:** shared uniform tile dimensions/cover frames; show only key information (cover, title, track/video count, source/link status), with controlled truncation and aligned metadata. Do not let longer names create uneven adjacent card heights.
+- **Expanded feed — 1 full-width card per row:** one-column vertically scrolling list using a wider card and **more playlist information** than the compact grid; prioritize a more readable/full title and expanded existing metadata (track/video count, local vs YouTube source, linked YTM/current marker and, where applicable, visibility). Never invent unsupported properties.
+- Let the user switch **grid ⇄ expanded feed** from the Library's view-mode control. Apply the same predictable responsive style across `На телефоні` and `YouTube`; keep long names legible, covers undistorted and card spacing consistent in either view. Scope future QA to both modes, both tabs, portrait/landscape. **Deferred**: do not modify production code, layouts or current APK now.
+
 ## Known
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 v1.4.32 partial PASS; v1.4.33 unified modal fix carried into v1.4.34 — representative phone retest required
