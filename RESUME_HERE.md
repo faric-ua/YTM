@@ -18,6 +18,14 @@
 
 Last updated: **2026-10-08**
 
+## Immediate manual-action signal (2026-10-10)
+
+If the owner must manually start an APK build or another blocked action, follow
+`docs/assistant-kit/USER_RESPONSE_TEMPLATE.md → ОБОВ'ЯЗКОВИЙ СИГНАЛ`:
+put a prominent yellow/warning **«ПОТРІБНА ДІЯ — ЗАПУСТИ APK ВРУЧНУ»**
+notice at the TOP, then one exact GitHub/Termux action and live 8-char HEAD.
+Do not bury it below CI history. If no owner action is required, say so.
+
 ## User-facing answer format — mandatory
 
 Before project progress/phone handoff responses, read
