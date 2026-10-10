@@ -12,6 +12,15 @@ v1.4.55 — UX Hardening / Control — DEVELOPMENT / WAVE A
 - **Expanded feed — 1 full-width card per row:** one-column vertically scrolling list using a wider card and **more playlist information** than the compact grid; prioritize a more readable/full title and expanded existing metadata (track/video count, local vs YouTube source, linked YTM/current marker and, where applicable, visibility). Never invent unsupported properties.
 - Let the user switch **grid ⇄ expanded feed** from the Library's view-mode control. Apply the same predictable responsive style across `На телефоні` and `YouTube`; keep long names legible, covers undistorted and card spacing consistent in either view. Scope future QA to both modes, both tabs, portrait/landscape. **Deferred**: do not modify production code, layouts or current APK now.
 
+## Deferred feature TODO — Playlist-wide in-app playback (owner request 2026-10-10)
+
+**Already implemented in v1.4.58 source:** tapping a local or YouTube playlist card opens its track list; each eligible track has a `▶` button which opens an in-app visible official YouTube WebView player, showing video with audio. This plays **only one selected track**. The signed QA APK (run `38083466922`, app source `5b22dce9`) includes this functionality, but phone playback remains unverified and YouTube can forbid embedding on some videos.
+
+- [ ] **Full playlist playback on the phone** from either `На телефоні` or `YouTube`: add explicit `Відтворити все` / play-from-selected-track in playlist details, respecting the original order and identifiers without any implicit playlist copy or remote YTM write.
+- [ ] **Sequential player and queue:** automatic next playable track on completion, clear queue/current track, previous/pause-play/next actions and explicit stop/back. Never start automatically merely from opening a playlist card.
+- [ ] **Playable YouTube video/audio using the visible authorized embedded YouTube player**, not scraping media URLs or inventing audio-only capabilities. Audio-focused/background playback is separate future research subject to platform rules; no media extraction, DRM bypass or offline downloads. Handle unavailable/private/embedding-disabled entries with clear status and controlled skip/fallback.
+- [ ] **Lifecycle + acceptance:** define rotation/lock/return/queue behavior, preserve explicit user intent, and verify on a physical phone in both library tabs, including transitions and unavailable items. **Backlog only — no player/playlist implementation changes, no new APK and no PHONE PASS claim now.**
+
 ## Known
 - BUG-001/Q-001 OPEN
 - BUG-002/Q-002 v1.4.32 partial PASS; v1.4.33 unified modal fix carried into v1.4.34 — representative phone retest required
