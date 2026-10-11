@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -69,11 +70,11 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var scroller: ScrollView
     private lateinit var tabsRow: LinearLayout
     private lateinit var filtersRow: LinearLayout
-    private lateinit var compactLocalTabButton: Button
-    private lateinit var compactOnlineTabButton: Button
-    private lateinit var compactSearchButton: Button
-    private lateinit var compactCurrentButton: Button
-    private lateinit var compactLayoutButton: Button
+    private lateinit var compactLocalTabButton: ImageButton
+    private lateinit var compactOnlineTabButton: ImageButton
+    private lateinit var compactSearchButton: ImageButton
+    private lateinit var compactCurrentButton: ImageButton
+    private lateinit var compactLayoutButton: ImageButton
     private lateinit var localTabButton: Button
     private lateinit var onlineTabButton: Button
     private lateinit var layoutButton: Button
@@ -168,15 +169,15 @@ class PlaylistLibraryActivity : Activity() {
 
         // In landscape, keep the two library sources in the existing header.
         // This gives the track list the vertical space used by large tabs.
-        compactLocalTabButton = button("📱") { selectTab(false) }.apply {
-            contentDescription = "На телефоні"
-            textSize = 18f
-        }
-        compactOnlineTabButton = button("YT") { selectTab(true) }.apply {
-            contentDescription = "YouTube"
-            textSize = 14f
-        }
-        compactSearchButton = button("⌕") {
+        compactLocalTabButton = iconButton(
+            R.drawable.ic_ytm_device, "На телефоні"
+        ) { selectTab(false) }
+        compactOnlineTabButton = iconButton(
+            R.drawable.ic_ytm_youtube_play, "YouTube"
+        ) { selectTab(true) }
+        compactSearchButton = iconButton(
+            R.drawable.ic_ytm_search, "Знайти плейліст"
+        ) {
             landscapeSearchOpen = !landscapeSearchOpen
             updateTopControls()
             if (landscapeSearchOpen) {
@@ -184,18 +185,17 @@ class PlaylistLibraryActivity : Activity() {
             } else {
                 searchBox.clearFocus()
             }
-        }.apply {
-            contentDescription = "Знайти плейліст"
-            textSize = 22f
         }
-        compactCurrentButton = button("↗") {
-            startActivity(Intent(this, PlaylistActivity::class.java))
-        }.apply { contentDescription = "Відкрити поточний плейліст" }
-        compactLayoutButton = button("☰") {
+        compactCurrentButton = iconButton(
+            R.drawable.ic_ytm_library_current, "Відкрити поточний плейліст"
+        ) { startActivity(Intent(this, PlaylistActivity::class.java)) }
+        compactLayoutButton = iconButton(
+            R.drawable.ic_ytm_view_list, "Список одним стовпчиком"
+        ) {
             columns = if (columns == 2) 1 else 2
             updateTopControls()
             renderContent()
-        }.apply { contentDescription = "Список одним стовпчиком" }
+        }
         if (landscape) {
             val actions = listOf(compactLocalTabButton, compactOnlineTabButton,
                 compactSearchButton, compactCurrentButton, compactLayoutButton)
@@ -298,17 +298,22 @@ class PlaylistLibraryActivity : Activity() {
     private fun updateTopControls() {
         localTabButton.setTextColor(if (!onlineTab) palette.accent else palette.text)
         onlineTabButton.setTextColor(if (onlineTab) palette.accent else palette.text)
-        compactLocalTabButton.setTextColor(if (!onlineTab) palette.accent else palette.text)
-        compactOnlineTabButton.setTextColor(if (onlineTab) palette.accent else palette.text)
+        compactLocalTabButton.setColorFilter(if (!onlineTab) palette.accent else palette.text)
+        compactOnlineTabButton.setColorFilter(if (onlineTab) palette.accent else palette.text)
         val catalogue = selectedLocal == null && selectedRemote == null
+        // Search/grid actions operate on the catalogue, not on track details.
+        compactSearchButton.visibility = if (catalogue) View.VISIBLE else View.GONE
+        compactLayoutButton.visibility = if (catalogue) View.VISIBLE else View.GONE
         filtersRow.visibility = if (catalogue && (!landscape || landscapeSearchOpen))
             View.VISIBLE else View.GONE
         layoutButton.text = if (columns == 2) "☰" else "▦"
         layoutButton.contentDescription =
             if (columns == 2) "Список одним стовпчиком" else "Плитки у два стовпчики"
-        compactLayoutButton.text = layoutButton.text
+        compactLayoutButton.setImageResource(
+            if (columns == 2) R.drawable.ic_ytm_view_list else R.drawable.ic_ytm_view_grid
+        )
         compactLayoutButton.contentDescription = layoutButton.contentDescription
-        compactSearchButton.setTextColor(
+        compactSearchButton.setColorFilter(
             if (landscapeSearchOpen) palette.accent else palette.text)
         compactCurrentButton.isEnabled = currentStore.load() != null
         compactCurrentButton.alpha = if (compactCurrentButton.isEnabled) 1f else 0.45f
@@ -800,8 +805,8 @@ class PlaylistLibraryActivity : Activity() {
             setOnClickListener { info.onClick() }
         }
         val cover = ImageView(this).apply {
-            scaleType = ImageView.ScaleType.CENTER_CROP
-            setImageResource(R.drawable.ic_ytm_playlist_add)
+            scaleType = ImageView.ScaleType.CENTER_INSIDE
+            setImageResource(R.drawable.ic_ytm_music)
             setColorFilter(palette.muted)
             background = surface(palette.surfaceAlt, 10)
             contentDescription = "Обкладинка плейліста"
@@ -833,8 +838,14 @@ class PlaylistLibraryActivity : Activity() {
             minimumHeight = dp(24)
         }
         if (info.localSaved) {
-            footer.addView(text("▯ ✓", 11f, true, palette.semantic.duplicate).apply {
+            footer.addView(ImageView(this).apply {
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
+                setImageResource(R.drawable.ic_ytm_device)
+                setColorFilter(palette.semantic.duplicate)
                 contentDescription = "Дані плейліста збережені на телефоні"
+            }, LinearLayout.LayoutParams(dp(17), dp(19)))
+            footer.addView(text("✓", 12f, true, palette.semantic.duplicate).apply {
+                setPadding(dp(3), 0, 0, 0)
             })
         }
         if (info.linkedYtm) {
@@ -875,6 +886,22 @@ class PlaylistLibraryActivity : Activity() {
             bottomMargin = dp(8)
         })
         b.minHeight = dp(54)
+    }
+
+    /** Icon-only actions are ImageButtons, never text/emoji glyphs that wrap. */
+    private fun iconButton(
+        icon: Int, description: String, onClick: () -> Unit
+    ): ImageButton = ImageButton(this).apply {
+        setImageResource(icon)
+        setColorFilter(palette.text)
+        scaleType = ImageView.ScaleType.CENTER_INSIDE
+        setPadding(dp(10), dp(10), dp(10), dp(10))
+        contentDescription = description
+        minimumHeight = dp(48)
+        minimumWidth = dp(46)
+        background = surface(palette.surfaceAlt, 12)
+        isFocusable = true
+        setOnClickListener { onClick() }
     }
 
     private fun button(label: String, onClick: () -> Unit): Button =

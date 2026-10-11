@@ -41,6 +41,7 @@ object PlaylistCoverLoader {
         image.tag = address
         synchronized(cache) { cache.get(address) }?.let {
             image.clearColorFilter()
+            image.scaleType = ImageView.ScaleType.FIT_CENTER
             image.setImageBitmap(it)
             return
         }
@@ -63,6 +64,7 @@ object PlaylistCoverLoader {
                 owner.runOnUiThread {
                     if (!owner.isDestroyed && target.tag == address) {
                         target.clearColorFilter()
+                        target.scaleType = ImageView.ScaleType.FIT_CENTER
                         target.setImageBitmap(bitmap)
                     }
                 }

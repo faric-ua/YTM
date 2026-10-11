@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -154,23 +155,23 @@ class PlaylistLibraryActivityTest {
             }
             idle()
             scene.onActivity { activity ->
-                val controls = activity.window.decorView.collectButtons()
-                assertTrue(controls.any {
-                    it.contentDescription == "На телефоні" && it.isShown
-                })
-                assertTrue(controls.any {
-                    it.contentDescription == "Знайти плейліст" && it.isShown
-                })
-                assertTrue(controls.any {
-                    it.contentDescription == "Відкрити поточний плейліст" && it.isShown
-                })
-                assertTrue(controls.any {
-                    it.contentDescription == "Список одним стовпчиком" && it.isShown
-                })
+                val controls = activity.window.decorView.collectActions()
+                for (name in listOf(
+                    "На телефоні", "YouTube", "Знайти плейліст",
+                    "Відкрити поточний плейліст", "Список одним стовпчиком"
+                )) {
+                    assertTrue("Missing vector icon: $name", controls.any {
+                        it is ImageButton && it.contentDescription == name &&
+                            it.drawable != null && it.isShown
+                    })
+                }
                 assertTrue(controls.none {
-                    it.text.toString() == "Поточний плейліст →" && it.isShown
+                    it is Button && it.text.toString() == "Поточний плейліст →" &&
+                        it.isShown
                 })
-                controls.first { it.contentDescription == "Знайти плейліст" }.performClick()
+                controls.first {
+                    it.contentDescription == "Знайти плейліст"
+                }.performClick()
             }
             idle()
             scene.onActivity { activity ->
@@ -233,6 +234,14 @@ class PlaylistLibraryActivityTest {
         if (this is ViewGroup) for (i in 0 until childCount)
             if (getChildAt(i).hasText(target)) return true
         return false
+    }
+
+    private fun View.collectActions(): List<View> = buildList {
+        if (this@collectActions is Button || this@collectActions is ImageButton)
+            add(this@collectActions)
+        if (this@collectActions is ViewGroup)
+            for (i in 0 until this@collectActions.childCount)
+                addAll(this@collectActions.getChildAt(i).collectActions())
     }
 
     private fun View.collectButtons(): List<Button> = buildList {

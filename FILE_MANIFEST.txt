@@ -93,7 +93,7 @@ d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
-13db7f7738304e9e  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
+626f2abf9efebf36  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
 4632c91acb804674  app/src/androidTest/java/com/saney/ytmimporter/ui/YouTubePlayerActivityTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
 3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
@@ -110,7 +110,7 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-3c70ecd878ae14aa  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
+f2055d18423bf140  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
@@ -185,7 +185,7 @@ c9be4e8b88578bdb  app/src/main/java/com/saney/ytmimporter/ui/AppThemeManager.kt
 fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome.kt
 88174cd2da5b393b  app/src/main/java/com/saney/ytmimporter/ui/HomeDashboardChrome.kt
 8763d6337d2bee83  app/src/main/java/com/saney/ytmimporter/ui/HomeHistoryDetailLink.kt
-af61177f28408c0c  app/src/main/java/com/saney/ytmimporter/ui/PlaylistCoverLoader.kt
+0ea0984f13db164c  app/src/main/java/com/saney/ytmimporter/ui/PlaylistCoverLoader.kt
 84c2c819d25be316  app/src/main/java/com/saney/ytmimporter/ui/RecoveryAttentionChrome.kt
 7e65143a9419153e  app/src/main/java/com/saney/ytmimporter/ui/ReplacementLogDialog.kt
 071bf2751d4693fa  app/src/main/java/com/saney/ytmimporter/ui/RestorableModalController.kt
@@ -224,10 +224,12 @@ b7d379baa14b67cd  app/src/main/res/drawable/bg_ytm_dialog.xml
 26e83b8e1b7d0938  app/src/main/res/drawable/ic_launcher_monochrome.xml
 c0bad27e1d705a3d  app/src/main/res/drawable/ic_ytm_clear.xml
 36c369c7cb4d497a  app/src/main/res/drawable/ic_ytm_delete.xml
+cd198506c250db35  app/src/main/res/drawable/ic_ytm_device.xml
 df71e3c795fdd8e4  app/src/main/res/drawable/ic_ytm_download.xml
 c7bb40a5439df404  app/src/main/res/drawable/ic_ytm_edit.xml
 6928f23cfd7311d6  app/src/main/res/drawable/ic_ytm_history.xml
 0bce0ab85d328832  app/src/main/res/drawable/ic_ytm_home.xml
+39243446d994b02c  app/src/main/res/drawable/ic_ytm_library_current.xml
 7ec44badf6300538  app/src/main/res/drawable/ic_ytm_link.xml
 ad61e7aa914e70b9  app/src/main/res/drawable/ic_ytm_more.xml
 23eb60ca635f46d6  app/src/main/res/drawable/ic_ytm_music.xml
@@ -235,6 +237,9 @@ d6fc687f18625e14  app/src/main/res/drawable/ic_ytm_playlist_add.xml
 d976c7bb3d0302e7  app/src/main/res/drawable/ic_ytm_queue.xml
 f2257d911c5a115f  app/src/main/res/drawable/ic_ytm_quota.xml
 a22bc2231f5a6fd9  app/src/main/res/drawable/ic_ytm_search.xml
+cbfddac00e3a04e8  app/src/main/res/drawable/ic_ytm_view_grid.xml
+92399488bc31b022  app/src/main/res/drawable/ic_ytm_view_list.xml
+3a6a732a493cd3cb  app/src/main/res/drawable/ic_ytm_youtube_play.xml
 a0feff2b77e0e4f2  app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
 a0feff2b77e0e4f2  app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
 ae92c429e7ef5c0b  app/src/main/res/mipmap-anydpi-v33/ic_launcher.xml
