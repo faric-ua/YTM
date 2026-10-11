@@ -5,7 +5,8 @@
 - [x] History without localPlaylistId no longer collapses by identical title/source/remote playlist ID: show each operation separately. This may increase the "На телефоні" count but does not create or change any stored playlist.
 - [x] Exact active-account YouTube `playlistId` matching with local `destinationPlaylistId` shows neutral `Збіг ID` on both cards. Same names NEVER cause a match. Both cards remain separate; no sync/track verification or additional API requests.
 - [x] Pure JVM tests cover missing account/list, near IDs, different names/same ID, same names/different ID, distinct History edits and two local records linked to same ID. Illustrated Help explains ID vs actual tracks.
-- [ ] CI and signed-phone QA before accepting the new UI. Track counts, titles, storage and playback are unchanged; number of visible History cards may rise.
+- [x] Exact code HEAD `53f176ec`: Validate `38153435363` PASS both jobs (JVM/unsigned release and emulator).
+- [ ] Signed-phone QA before accepting new UI. Track counts, titles, storage and playback are unchanged; number of visible History cards may rise.
 - [ ] Deferred owner-requested portrait Play centering stays untouched. No automatic duplicate merging or cross-account inference.
 
 

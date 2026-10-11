@@ -5,8 +5,8 @@
 - [x] Fixed unsafe History-only fallback: only shared localPlaylistId may collapse operations; without it each History row survives, even if title, source label or destination YTM ID match. Matches HistoryLogicalGroupPolicy semantics. Local track lists and History storage remain unmodified.
 - [x] New pure `PlaylistLibraryIdentityPolicy.exactRemoteMatches` uses only exact IDs in **currently fetched account** list; never names/artwork/count. Show "Збіг ID" on both cards while preserving both as distinct, clickable records; Help explicitly says no track verification.
 - [x] JVM tests for two similar editions, repeated orphan remote ID, exact-ID title difference, same-title IDs different, multiple local links, stale/unknown/blank IDs; Android Help text regression.
-- [ ] Exact-code-head Validate JVM, release and emulator; repair failures without weakening safety.
-- [ ] After final CI, one new signed APK and *focused* phone QA: all/phone/YouTube scope, counts (may rise because hidden History becomes visible), ID-match caption, independent card tap, rotation; no remote writes.
+- [x] Exact code HEAD `53f176ece3a91c7b33e9c16724bd9ffc542b7788`: Validate `38153435363` PASS (JVM tests, release preflight/unsigned build, emulator UI). Previous `f07182a` failed on Help modal window assertion; fixed by `53f176ec` and superseded.
+- [ ] **NEXT EXTERNAL ACTION:** after docs-only exact-HEAD Validate, start one signed APK from `feat/v1.4.58-playlist-player` (Termux:Widget → 1 Оновити проєкт → 5 Зібрати новий APK); then *focused* phone QA: all/phone/YouTube scope, counts (may rise because hidden History becomes visible), ID-match caption, independent card tap, rotation; no remote writes.
 - [ ] Keep deferred: portrait Play optical centering, album artwork gaps and deeper account/provenance read-only diagnosis. No auto merging/deletion.
 
 

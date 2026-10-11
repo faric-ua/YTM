@@ -2,7 +2,7 @@
 
 ## NEXT VERIFICATION GATE — 2026-10-11 / History identity and remote-ID hints
 
-Working branch `feat/v1.4.58-playlist-player`. Prior signed `55096f34` / `38148291586` accepted on phone (+), with portrait Play centering deferred. New code changes only `PlaylistLibraryPolicy` for orphan History no longer silently grouped by title/remote ID and adds pure exact-ID relation policy + small `Збіг ID` caption on independent local+YouTube catalogue cards. Help clarifies match is not evidence all tracks are present. Tests cover identity cases; no YTM API writes or extra read beyond existing on-demand catalogue. **NEXT:** exact-head Validate (both jobs) → one signed Android APK from final HEAD (Termux:Widget 1 update → 5 build) → narrow phone QA including changed counts. No destructive merges, no release publish.
+Working branch `feat/v1.4.58-playlist-player`. Prior signed `55096f34` / `38148291586` accepted on phone (+), with portrait Play centering deferred. New code changes only `PlaylistLibraryPolicy` for orphan History no longer silently grouped by title/remote ID and adds pure exact-ID relation policy + small `Збіг ID` caption on independent local+YouTube catalogue cards. Help clarifies match is not evidence all tracks are present. Tests cover identity cases; no YTM API writes or extra read beyond existing on-demand catalogue. **CODE VALIDATED:** `53f176ec`, run `38153435363` PASS both jobs. **NEXT:** check docs-only CI → one signed Android APK from final HEAD (Termux:Widget 1 update → 5 build) → narrow phone QA including changed counts. No destructive merges, no release publish.
 
 
 ## RESUME — 2026-10-11 / PHONE PASS with Play TODO postponed
