@@ -91,7 +91,22 @@ class PlaylistLibraryActivityTest {
             idle()
             scene.onActivity { activity ->
                 assertTrue(activity.window.decorView.hasText("Тестова пісня"))
-                assertTrue(activity.window.decorView.hasText("Відкрити поточний плейліст"))
+                val root = activity.window.decorView
+                assertTrue(root.collectActions().none {
+                    it is ImageButton && it.isShown &&
+                        it.contentDescription in listOf("На телефоні", "YouTube")
+                })
+                assertTrue(root.collectActions().any {
+                    it is ImageButton && it.isShown &&
+                        it.contentDescription == "Відкрити поточний плейліст"
+                })
+                assertTrue(root.collectActions().any {
+                    it is ImageButton && it.isShown &&
+                        it.contentDescription == "Довідка бібліотеки плейлістів"
+                })
+                assertTrue(root.collectButtons().none {
+                    it.isShown && it.text.toString().contains("До всіх плейлістів")
+                })
             }
             scene.recreate()
             idle()
@@ -171,10 +186,68 @@ class PlaylistLibraryActivityTest {
             idle()
             scene.onActivity { activity ->
                 assertTrue(activity.window.decorView.hasText("Трек з прев’ю"))
-                assertTrue(activity.window.decorView.hasPreview("Прев’ю: Трек з прев’ю"))
-                assertTrue(activity.window.decorView.collectButtons()
-                    .any { it.contentDescription == "Відтворити Трек з прев’ю у застосунку" })
+                val root = activity.window.decorView
+                val image = root.findImageDescription("Прев’ю: Трек з прев’ю")
+                    ?: error("Portrait artwork missing")
+                assertTrue(image.alpha in 0.39f..0.51f)
+                val overlay = image.parent as? FrameLayout
+                    ?: error("Portrait artwork must fill an overlay frame")
+                val play = root.collectButtons().firstOrNull {
+                    it.contentDescription == "Відтворити Трек з прев’ю у застосунку"
+                } ?: error("Portrait overlay play missing")
+                assertTrue(play.parent === overlay)
+                assertTrue(overlay.hasText("1."))
+                assertTrue(root.hasText("Трек з прев’ю"))
             }
+        }
+    }
+
+    @Test fun landscapeDetailsKeepRowsAndHideCatalogueSourceActions() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val name = "Деталі landscape ${UUID.randomUUID()}"
+        CurrentPlaylistStore(context).save(
+            ImportedPlaylist(name, mutableListOf(
+                Track("Ландшафтний трек", "Виконавець", selectedVideoId = "abcdefghijk")
+            )), "Локальний тест",
+            localPlaylistId = "landscape-details-${UUID.randomUUID()}"
+        )
+        ActivityScenario.launch<PlaylistLibraryActivity>(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            scene.onActivity {
+                it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            }
+            idle()
+            scene.onActivity { activity ->
+                val label = activity.window.decorView.findLabel(name)
+                    ?: error("Card missing")
+                var item: View? = label
+                while (item != null && !item.isClickable) item = item.parent as? View
+                assertNotNull(item)
+                item!!.performClick()
+            }
+            idle()
+            scene.onActivity { activity ->
+                val root = activity.window.decorView
+                assertTrue(root.hasText("Ландшафтний трек"))
+                assertTrue(root.collectActions().none {
+                    it is ImageButton && it.isShown &&
+                        it.contentDescription in listOf("На телефоні", "YouTube",
+                            "Знайти плейліст", "Список одним стовпчиком")
+                })
+                assertTrue(root.collectActions().any {
+                    it is ImageButton && it.isShown &&
+                        it.contentDescription == "Довідка бібліотеки плейлістів"
+                })
+                val image = root.findImageDescription("Прев’ю: Ландшафтний трек")
+                    ?: error("Landscape cover missing")
+                assertTrue(image.parent is LinearLayout)
+                assertTrue(root.collectButtons().any {
+                    it.contentDescription == "Відтворити Ландшафтний трек у застосунку"
+                })
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+            idle()
         }
     }
 

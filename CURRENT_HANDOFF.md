@@ -1,5 +1,10 @@
 # YTM Importer — CURRENT HANDOFF
 
+## ACTIVE IMPLEMENTATION — 2026-10-11 / Portrait track details & meaning of ✓
+
+Branch `feat/v1.4.58-playlist-player`; prior signed phone candidate `bf22d9c1`, workflow `38144764657` SUCCESS. Owner screenshots accepted illustrated Help and landscape catalogue but requested minimal detail header, removing redundant back/large current CTA and full-width subdued artwork with Play/ordinal overlays ONLY in portrait track rows. New code changes PlaylistLibraryActivity and its Android UI tests. Help now says explicitly: count ✓ = filter selected; Phone ✓ = metadata local; YouTube ✓ = stored remote link ID; plain YouTube = remote account list with no confirmed local match. None proves all track membership. Separate future verification/status planned, not implemented. The landscape track row layout is intentionally untouched. **NEXT:** exact-HEAD Validate PASS (both JVM/release and emulator) then one signed candidate; phone QA for new details only. Do not mutate YTM, merge, publish or infer full sync from checkmarks.
+
+
 ## VERIFIED CI / NEXT GATE — 2026-10-11
 
 Active branch `feat/v1.4.58-playlist-player`. Application code ends at `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`; prior docs HEAD `09e1c5090d085db5c04023ecf9e7cfa2e1cc8134` passed **Validate Android `38141951467` BOTH jobs SUCCESS** (preflight, JVM, unsigned release and emulator instrumentation including older Bulk geometry test). First failed run `38141213793` is superseded. This commit is a docs-only QA checkpoint: verify exact-HEAD CI before signing. Previous **signed** run `38139308362` is older `fe7c5f21` and excludes latest changes. Current-HEAD signed APK and PHONE PASS have not been verified. **NEXT:** after exact-HEAD Validate, one signed workflow via Termux:Widget `1 — Оновити проєкт` → `5 — Зібрати новий APK`, then `3 — Завантажити готовий APK` → `4 — Відкрити папку з APK`; focused Library phone QA. Do not merge/publish, mutate playlist identities or run YouTube writes.

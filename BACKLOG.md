@@ -1,5 +1,16 @@
 # YTM Importer — Roadmap
 
+## OPEN / PHONE QA — Track detail layout, badges and Help (2026-10-11)
+
+Owner screenshots of signed source `bf22d9c1` show the library catalogue and illustrated Help are visually acceptable in both orientations. This finding concerns **track-details screens**, not the accepted landscape catalogue/grid.
+
+- [x] Record existing true badge semantics: phone count `68 ✓` is a **selected filter** only; YouTube count `54` is an account playlist count (not full-sync), with ✓ only if source filter selected. Footer **Phone ✓** means metadata saved locally (not media files); footer **YouTube ✓** means local record stores a remote playlist ID (not all tracks successfully synced); remote **YouTube** text without ✓ means an account-only listing with no confirmed local identity.
+- [x] Record desired future, **not implemented**: verify actual remote playlist membership/track counts against the correct account, local IDs and results before giving an independent completeness indicator (verified ✓ / unknown ? / incomplete or unavailable warning). Never repurpose selection or identity badges as completeness. No automatic API writes or repeated quota-heavy reads.
+- [ ] **New source implementation — CI and phone acceptance required:** when an individual playlist is open, hide header Phone/YouTube source switches, search and grid/list; keep compact current-playlist and Help actions right-aligned, including portrait; remove redundant “← До всіх плейлістів” and remote back buttons (the header Back arrow owns catalogue navigation). Keep explicit "Зробити поточним" and "Переглянути на YouTube Music" actions.
+- [ ] **Portrait tracks:** each row uses a full-width subdued (about 45% opacity) preview, index overlay at top-left, smaller translucent Play overlay near top center, and full-width multiline track title/channel below. Do not alter IDs, metadata or play route; safe placeholder if preview unavailable. **Landscape track rows:** preserve accepted existing horizontal geometry and Play placement, while using the compact detail header.
+- [ ] Add Android emulator assertions for detail-only actions, portrait artwork/Play overlay and unchanged landscape row hierarchy; require exact-HEAD Validate PASS before one new signed QA APK and focused phone screenshots; no main merge/publish until acceptance.
+
+
 ## OPEN / QA — Illustrated Help, centered counters and source status (2026-10-11)
 
 Phone screenshot review: the unified catalogue and sorting work in portrait and landscape. Owner requests Help with **every real icon next to its own full explanation**, larger truly centered device/YouTube counts (e.g. 68 / 54, never hardcode), and one matching YouTube icon in cards (✓ when local entry is linked, no ✓ for a fetched account-only record). Missing archive art and duplicate names also require evidence-based diagnosis.

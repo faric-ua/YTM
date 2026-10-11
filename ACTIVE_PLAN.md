@@ -1,5 +1,16 @@
 # YTM Importer — ACTIVE PLAN
 
+## ACTIVE — 2026-10-11 / Detail-only header and portrait track artwork
+
+- [x] Owner phone screenshots accepted illustrated Help and landscape catalogue; identify count ✓ as selection, footer ✓ as stored link/metadata and account-only YouTube text as no confirmed local link. No track completeness proof exists.
+- [x] Add explicit Help wording and record distinct future track-completeness state in BACKLOG; never claim synchronization from link/filter badges.
+- [ ] Validate source/test changes for detail-only header: compact Current/Help at right in both orientations; hidden source/search/grid in details; remove duplicate back/full current CTA; header Back remains catalogue navigation.
+- [ ] Validate portrait full-width 45%-alpha artwork with overlay index/Play and full-width text while preserving existing landscape track rows.
+- [ ] Confirm exact-HEAD Android Validate and UI tests, then one signed APK and only new focused phone QA. No YouTube mutations, storage migration or title-based dedupe.
+
+**NEXT ACTION:** verify exact-HEAD Validate for this implementation, fix any failed test, then sign one scoped QA APK. No new user action until CI is green.
+
+
 ## ACTIVE — Help with illustration, counters, YouTube identity (2026-10-11)
 
 - [x] Screenshot/root-cause audit of poor Help, misaligned small 68/54 source counts and inconsistent `YTM ✓` text vs YouTube vector.

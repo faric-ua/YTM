@@ -1,5 +1,10 @@
 # YTM Importer — RESUME HERE
 
+## NEW RESUME POINT — 2026-10-11 / Detail track UI
+
+Working branch `feat/v1.4.58-playlist-player`; baseline signed screenshot source `bf22d9c1` / signed run `38144764657` SUCCESS. In response to latest user phone screenshots, new implementation adds detail-only header (right aligned Current & Help, no Phone/YouTube/search/layout controls; no duplicate catalogue-back buttons), portrait artwork filling each row horizontally with opacity 45% and overlaid number/Play, and keeps landscape rows untouched. Help explains selection ✓ vs local metadata ✓ vs YTM link ✓ vs remote account-only label; no assertion of complete track sync. TODO includes separate completeness status after real safe read-only comparison. **NEXT:** check CI on latest HEAD; fix code/tests if failure; then exactly one signed APK before focused PHONE acceptance. Branch/release only, no main merge, no YTM writes or data changes.
+
+
 ## VERIFIED RESUME GATE — 2026-10-11 / Library UI CI
 
 Branch `feat/v1.4.58-playlist-player`; app-code `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`, prior docs HEAD `09e1c5090d085db5c04023ecf9e7cfa2e1cc8134` verified by `38141951467` **SUCCESS BOTH Validate jobs**. Earlier failure `38141213793` superseded. This docs-only commit must be checked against its own exact-HEAD CI before signing. Previous signed APK `38139308362` was older `fe7c5f21`. **NEXT ACTION:** after exact-head CI, one signed build via Termux:Widget YTM Importer `1 — Оновити проєкт` → `5 — Зібрати новий APK`, then `3 — Завантажити готовий APK` → `4 — Відкрити папку з APK`. Phone QA: illustrated Help/rotation, counters, badge icons and History cover sample. Do not claim PHONE PASS or alter remote YTM/identity/storage/main.

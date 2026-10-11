@@ -71,6 +71,8 @@ class PlaylistLibraryActivity : Activity() {
     private var loadingTracks = false
     private var loadError: String? = null
 
+    private lateinit var detailActions: LinearLayout
+    private lateinit var detailCurrentButton: ImageButton
     private lateinit var root: LinearLayout
     private lateinit var body: LinearLayout
     private lateinit var scroller: ScrollView
@@ -212,6 +214,24 @@ class PlaylistLibraryActivity : Activity() {
         val actions = listOf(compactLocalTabButton, compactOnlineTabButton,
             compactSearchButton, compactCurrentButton, compactLayoutButton,
             compactHelpButton)
+        // A detail screen has only Current and Help on its right edge.
+        // Landscape reuses their existing header buttons; portrait has its own pair.
+        detailActions = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL or Gravity.END
+        }
+        detailCurrentButton = iconButton(
+            R.drawable.ic_ytm_library_current, "Відкрити поточний плейліст"
+        ) { startActivity(Intent(this, PlaylistActivity::class.java)) }
+        detailActions.addView(detailCurrentButton, LinearLayout.LayoutParams(
+            dp(44), dp(48)
+        ).apply { marginStart = dp(4) })
+        detailActions.addView(iconButton(
+            R.drawable.ic_ytm_help, "Довідка бібліотеки плейлістів"
+        ) { showHelp() }, LinearLayout.LayoutParams(dp(44), dp(48)).apply {
+            marginStart = dp(4)
+        })
+        if (!landscape) header.addView(detailActions)
         if (landscape) {
             actions.forEach {
                 header.addView(it, LinearLayout.LayoutParams(dp(44), dp(48)).apply {
@@ -311,8 +331,14 @@ class PlaylistLibraryActivity : Activity() {
             if (remoteSelected) palette.accent else palette.text)
         compactLocalTabButton.isSelected = localSelected
         compactOnlineTabButton.isSelected = remoteSelected
+        compactLocalTabButton.visibility = if (catalogue) View.VISIBLE else View.GONE
+        compactOnlineTabButton.visibility = if (catalogue) View.VISIBLE else View.GONE
         compactSearchButton.visibility = if (catalogue) View.VISIBLE else View.GONE
         compactLayoutButton.visibility = if (catalogue) View.VISIBLE else View.GONE
+        if (!landscape) {
+            tabsRow.visibility = if (catalogue) View.VISIBLE else View.GONE
+            detailActions.visibility = if (catalogue) View.GONE else View.VISIBLE
+        }
         filtersRow.visibility =
             if (catalogue && landscapeSearchOpen) View.VISIBLE else View.GONE
         compactLayoutButton.setImageResource(
@@ -324,6 +350,8 @@ class PlaylistLibraryActivity : Activity() {
             if (landscapeSearchOpen) palette.accent else palette.text)
         compactCurrentButton.isEnabled = currentStore.load() != null
         compactCurrentButton.alpha = if (compactCurrentButton.isEnabled) 1f else 0.45f
+        detailCurrentButton.isEnabled = compactCurrentButton.isEnabled
+        detailCurrentButton.alpha = compactCurrentButton.alpha
         // Catalogue context is inside the bordered card; only track details
         // retain the existing narrow status caption.
         statusLabel.visibility = if (catalogue) View.GONE else View.VISIBLE
@@ -596,10 +624,7 @@ class PlaylistLibraryActivity : Activity() {
             return
         }
         statusLabel.text = "На телефоні • ${item.trackCount} треків"
-        addFullButton("← До всіх плейлістів") {
-            selectedLocal = null
-            renderContent()
-        }
+        // The header Back arrow already returns to the catalogue.
         addHeading(playlist.name)
         addInfo(
             when (item.source) {
@@ -610,10 +635,6 @@ class PlaylistLibraryActivity : Activity() {
         if (!item.isCurrent) {
             addFullButton("Зробити поточним плейлістом") {
                 showConfirmation(MODAL_SWITCH, item.identity)
-            }
-        } else {
-            addFullButton("Відкрити поточний плейліст →") {
-                startActivity(Intent(this, PlaylistActivity::class.java))
             }
         }
         item.destinationPlaylistId?.let { remoteId ->
@@ -636,10 +657,7 @@ class PlaylistLibraryActivity : Activity() {
             return
         }
         statusLabel.text = "YouTube • ${item.itemCount} відео • тільки читання"
-        addFullButton("← До плейлістів YouTube") {
-            selectedRemote = null
-            renderContent()
-        }
+        // One header Back path is shared by local and YouTube details.
         addHeading(item.title)
         addInfo("На YouTube • ${item.privacyStatus}. Треки не завантажуються на телефон.")
         addFullButton("Відкрити в YouTube Music ↗") {
@@ -795,11 +813,14 @@ class PlaylistLibraryActivity : Activity() {
                 "за абеткою А–Я / Я–А або за кількістю треків. " +
                 "Для YouTube дата може бути невідомою.")
         entry(R.drawable.ic_ytm_device, "Лічильник телефону",
-            "Кількість локальних позицій у бібліотеці. Галочка біля числа " +
-                "позначає активний фільтр телефону.", palette.semantic.duplicate)
+            "Кількість локальних записів. ✓ біля ЧИСЛА означає лише " +
+                "вибраний фільтр «Телефон», а не перевірені треки.",
+            palette.semantic.duplicate)
         entry(R.drawable.ic_ytm_youtube_play, "Лічильник YouTube",
-            "Кількість плейлістів, прочитаних з акаунта. " +
-                "Символ «—» означає, що число ще невідоме.", palette.accent)
+            "Кількість плейлістів, прочитаних з акаунта. ✓ біля ЧИСЛА " +
+                "означає вибраний фільтр «YouTube». Без ✓ фільтр не вибрано; " +
+                "«—» — кількість невідома. Це не стан синхронізації.",
+            palette.accent)
         section("Позначки внизу карток")
         entry(R.drawable.ic_ytm_device, "Телефон ✓",
             "Назви, ID та список треків збережені локально в застосунку. " +
@@ -810,9 +831,14 @@ class PlaylistLibraryActivity : Activity() {
                 "YouTube Music. Це НЕ гарантує синхронізацію кожного треку.",
             palette.accent)
         entry(R.drawable.ic_ytm_youtube_play, "YouTube (без галочки)",
-            "Плейліст отримано з каталогу акаунта, але його локальне " +
-                "збереження чи зв’язок із місцевим записом не підтверджено.",
+            "Напис «YouTube» означає плейліст із каталогу акаунта. " +
+                "На відміну від YouTube ✓, локальний зв’язок за ID тут " +
+                "не підтверджено. Жоден із цих значків не перевіряє всі треки.",
             palette.accent)
+        entry(R.drawable.ic_ytm_help, "Повнота треків — окремий стан",
+            "Не можна знати, чи кожен трек присутній на YouTube, доки " +
+                "не порівняно склади плейлистів. Позначки ✓, ? або помилку " +
+                "для повноти можна показувати лише після такої перевірки.")
         section("Обкладинки та дублікати")
         entry(R.drawable.ic_ytm_music, "Немає обкладинки",
             "Мініатюра береться з доступних YouTube-даних за videoId. " +
@@ -943,6 +969,11 @@ class PlaylistLibraryActivity : Activity() {
         val numberWidth = dp(19 + tracks.size.toString().length * 8)
         tracks.take(visibleTrackLimit).forEachIndexed { i, track ->
             val id = track.selectedVideoId?.takeIf { VIDEO_ID.matches(it) }
+            if (!landscape) {
+                addPortraitTrack(track, i, id)
+                return@forEachIndexed
+            }
+            // Accepted landscape row layout below remains unchanged.
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
@@ -1021,6 +1052,97 @@ class PlaylistLibraryActivity : Activity() {
                 scroller.post { if (!isDestroyed) scroller.scrollTo(0, before) }
             }
         }
+    }
+
+    /** Portrait-only tile; metadata and player video IDs are never changed. */
+    private fun addPortraitTrack(track: Track, index: Int, id: String?) {
+        val title = track.selectedTitle?.takeIf(String::isNotBlank)
+            ?: track.originalTitle
+        val channel = track.selectedChannel?.takeIf(String::isNotBlank)
+            ?: track.originalArtist
+        val prefixed = "$channel - "
+        val displayTitle = if (channel.isNotBlank() &&
+            title.startsWith(prefixed, ignoreCase = true)
+        ) title.substring(prefixed.length).ifBlank { title } else title
+
+        val tile = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(7), dp(7), dp(7), dp(9))
+            background = surface(palette.surface, 10)
+        }
+        val artwork = FrameLayout(this).apply {
+            minimumHeight = dp(112)
+            background = surface(palette.surfaceAlt, 9)
+        }
+        val cover = ImageView(this).apply {
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            setImageResource(R.drawable.ic_ytm_music)
+            setColorFilter(palette.muted)
+            alpha = 0.45f
+            contentDescription = "Прев’ю: ${track.originalTitle}"
+        }
+        artwork.addView(cover, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, dp(112)
+        ))
+        if (id != null) PlaylistCoverLoader.bind(this, cover, id)
+
+        artwork.addView(text("${index + 1}.", 14f, true, palette.text).apply {
+            setPadding(dp(7), dp(3), dp(7), dp(3))
+            background = surface(palette.surface, 7)
+            contentDescription = "Трек ${index + 1}"
+        }, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+            Gravity.TOP or Gravity.START
+        ).apply { leftMargin = dp(6); topMargin = dp(6) })
+
+        if (id != null) {
+            val play = button("▶") {
+                startActivity(
+                    Intent(this, YouTubePlayerActivity::class.java)
+                        .putExtra(YouTubePlayerActivity.EXTRA_VIDEO_ID, id)
+                        .putExtra(YouTubePlayerActivity.EXTRA_TITLE, title)
+                )
+            }.apply {
+                contentDescription = "Відтворити $title у застосунку"
+                textSize = 18f
+                minWidth = 0
+                minimumWidth = 0
+                minHeight = 0
+                minimumHeight = 0
+                setPadding(0, 0, 0, 0)
+                setTextColor(android.graphics.Color.WHITE)
+                background = GradientDrawable().apply {
+                    setColor(0x77000000)
+                    cornerRadius = dp(12).toFloat()
+                }
+            }
+            artwork.addView(play, FrameLayout.LayoutParams(
+                dp(42), dp(42), Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            ).apply { topMargin = dp(6) })
+        }
+        tile.addView(artwork, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, dp(112)
+        ))
+        tile.addView(text(displayTitle, 15f, true, palette.text).apply {
+            maxLines = 4
+            ellipsize = TextUtils.TruncateAt.END
+            setPadding(dp(4), dp(7), dp(4), 0)
+            contentDescription = "Назва відео: $title. Канал: $channel"
+        }, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ))
+        if (channel.isNotBlank()) {
+            tile.addView(text("Канал: $channel", 12f, false, palette.muted).apply {
+                maxLines = 2
+                ellipsize = TextUtils.TruncateAt.END
+                setPadding(dp(4), dp(3), dp(4), 0)
+            }, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ))
+        }
+        body.addView(tile, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { bottomMargin = dp(6) })
     }
 
     private data class CardInfo(
