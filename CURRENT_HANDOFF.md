@@ -1,5 +1,11 @@
 # YTM Importer — CURRENT HANDOFF
 
+## CURRENT HANDOFF — 2026-10-11 / Visual icons and cover-art code PASS
+
+**Branch:** `feat/v1.4.58-playlist-player`. **App-source candidate:** `44d91f8ffda25cffc1005eaed7e5b0006c9a03be`, **Validate `38134018586` SUCCESS BOTH jobs**. New UI code removes font/emoji-dependent icon buttons, uses 5 vector drawables, a proper local metadata phone+check status, neutral missing-art icon and FIT_CENTER official YouTube cover previews; scoped Android emulator tests updated. No YTM writes/API mutations or storage migration.
+
+**Status:** CODE PASS / PHONE QA PENDING. Previous signed run `38093341675` is *older code* `6aa42797`, not new candidate. Next: ensure docs-only HEAD Validate pass, then manually dispatch build-apk.yml on exact branch/HEAD. Gradle still `1.4.55`/code98 (release metadata), despite v1.4.58 development name. Present simple warning at top when manual action required. Phone compare landscape 5 buttons, footer phone/YTM badges, playlist archive artwork fallbacks and grid/list. Retest YouTube playback rotation separately; conditional fullscreen, auto-next and per-account offline-first metadata remain OPEN.
+
 ## CURRENT STOP POINT — 2026-10-11 / SAFE SLEEP CHECKPOINT
 
 Follow `RESUME_HERE.md → END-OF-DAY SYNCHRONIZATION CHECKPOINT` and `BACKLOG.md → OPEN UX TODO — Playlist Library icons, cover fallback and visual polish`. Branch `feat/v1.4.58-playlist-player`; **last compiled app code** `1ec733b6`, **signed and visibly installed source/docs HEAD** `6aa42797`, Validate `38092727427` PASS BOTH, signed QA `38093341675` SUCCESS. User screenshots reveal YT compact icon wraps, `⌕` looks wrong, emoji phone / `▯ ✓` local badge fail design-system consistency, ambiguous placeholder artwork for some archived playlists. **Do not fix yet**: user is stopping for sleep and requested TODO+checkpoint only. Real player continuity/conditional fullscreen not phone accepted. No new signed build on documentation-only commit. Resuming next time: verify live HEAD, inspect icons/artwork fallback, one focused app-code polish wave on user authorization, then CI and scoped phone QA.

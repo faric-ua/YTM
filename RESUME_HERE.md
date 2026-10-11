@@ -1,5 +1,14 @@
 # YTM Importer — RESUME HERE
 
+## RESUME POINT — 2026-10-11 / Vector icons + neutral artwork wave
+
+- Repo `faric-ua/YTM`, branch `feat/v1.4.58-playlist-player`.
+- **Validated app source** `44d91f8ffda25cffc1005eaed7e5b0006c9a03be`; **Validate Android `38134018586` SUCCESS (both jobs)**. Changed Activity presentation, official thumbnail display, five new vector drawables, and scoped instrumentation tests. No YouTube API write, metadata mutation or media stream extraction.
+- New screenshot-based issues now source-fixed: vertical `YT` text, wrong `⌕` glyph, emoji phone icon, unrecognizable `▯ ✓` footer glyph, generic plus-sign cover fallback and cropped artwork. See `BACKLOG.md → CURRENT CODE-ACCEPTED WAVE`.
+- **NOT phone-accepted and not signed yet on this app source**. Last previous signed/installed candidate run `38093341675` for prior HEAD `6aa42797`; never mistake it for the new code. New APK must come from final current docs/head on this branch, after Validate PASS, using manual `build-apk.yml`. Gradle Android `versionName=1.4.55`, `versionCode=98` remain release-preflight locked despite v1.4.58 feature branch name.
+- **NEXT:** verify final docs-only HEAD and CI, then display one clear **ПОТРІБНА ДІЯ — ЗАПУСТИ APK ВРУЧНУ** callout with GitHub workflow link, correct branch, exact 8-char HEAD; signed artifact confirmation is separate. Narrow phone QA: 5 header icons/search/grid, blue phone ✓/YTM badges, neutral archive covers and uncropped artwork. Player rotation is still not PHONE PASS. Avoid repeating earlier Library catalogue tests.
+- Larger deferred work unchanged: verify YouTube player rotation/conditional fullscreen on device; auto-next queue; local-first per-account remote metadata and flicker-free quota-safe read-only refreshing.
+
 ## END-OF-DAY SYNCHRONIZATION CHECKPOINT — 2026-10-11 (docs-only)
 
 **STATUS: SAFE PAUSE / no code change requested.** User installed the consolidated experimental Playlist Library candidate and supplied portrait/landscape screenshots of local track details, compact landscape header, 2-column grid and one-column list. The screenshots provide **partial visual evidence only**; do not claim player rotation/video-continuity PHONE PASS or full Library acceptance.

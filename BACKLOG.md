@@ -1,5 +1,17 @@
 # YTM Importer — Roadmap
 
+## CURRENT CODE-ACCEPTED WAVE — Playlist Library vector icons and cover fallback (2026-10-11)
+
+**Implemented source:** `44d91f8ffda25cffc1005eaed7e5b0006c9a03be` (`44d91f8f`), branch `feat/v1.4.58-playlist-player`. **GitHub Validate Android `38134018586` — SUCCESS, BOTH jobs** (release preflight/JVM/unsigned release; Android emulator UI test with actual landscape vector icon checks). **PHONE QA NOT YET DONE**. This changes Library presentation and cover display only; no writes/remote playlist mutations or playlist data migration.
+
+- [x] Replace landscape-header font-dependent emoji/`YT` wrapping/`⌕` glyph with five theme-tinted vector `ImageButton` controls: phone, YouTube, existing vector magnifier, current playlist and list/grid. Preserve accessible labels and click semantics. Hide irrelevant search/list controls when viewing an individual playlist's tracks.
+- [x] Replace misleading `▯ ✓` local saved label with a blue theme-semantic drawable smartphone and adjacent checkmark, independently from `YTM ✓`. Phone icon still means **saved metadata**, not offline audio/video.
+- [x] Use neutral `ic_ytm_music` for missing playlist covers (never action-looking plus icon), and `FIT_CENTER` for retrieved cover art both RAM/disk and async fetch, preserving original visible artwork within consistent frames. Retain bounded private artwork cache and strict official YouTube thumbnail hostname allowance. **Not resolved:** why each archived entry lacks a valid sample videoId/cover metadata or whether specific fetches fail; missing source data cannot be invented from an album title.
+- [x] Update scoped Android UI tests to assert five vector `ImageButton` actions render, maintain portrait tests and touch/visibility semantics.
+- [ ] **PHONE CHECK** new icons and badges (landscape/portrait, large font if available), neutral cover fallback in archive and FIT_CENTER artwork presentation, search and list/grid click flow. Do not mark PASS until user verifies on a signed APK from the new code.
+- [ ] **FUTURE** source-aware cover availability diagnostics and preserving/fetching metadata from local saved references without remote unintended YouTube reads. UI fallback should not promise all archived playlists have art.
+- [ ] **SEPARATE** YouTube player playback rotation continuity, conditional fullscreen only during actual playback, full playlist queue, and persistent per-account remote list metadata remain their own non-UI feature slices.
+
 ## OPEN UX TODO — Playlist Library icons, cover fallback and visual polish (2026-10-11 phone screenshots)
 
 **Source:** screenshots of the latest signed QA APK from `feat/v1.4.58-playlist-player`; **evidence:** [signed workflow 38093341675](https://github.com/faric-ua/YTM/actions/runs/38093341675), exact APK app/doc HEAD `6aa427977a7a7d70dd2076a2ce8dee50fbe2aa6b`. This is real-phone **visual feedback only**, not a completed full phone test. **DO NOT IMPLEMENT NOW; owner explicitly asked for a GitHub TODO + safe end-of-day checkpoint.**

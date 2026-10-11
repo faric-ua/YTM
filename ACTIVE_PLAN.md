@@ -1,5 +1,17 @@
 # YTM Importer — ACTIVE PLAN
 
+## ACTIVE — 2026-10-11 / One vector icon & artwork QA candidate
+
+- [x] Audit current source, preserve safe GitHub checkpoint `93fd8af5` and last signed run `38093341675`.
+- [x] Implement theme-tinted image action buttons (local/YouTube/search/current/grid-list), consistent blue smartphone ✓ metadata indicator, neutral non-action-like fallback artwork, no crop of loaded official YouTube preview images, update scoped Android UI tests.
+- [x] App-source SHA `44d91f8ffda25cffc1005eaed7e5b0006c9a03be`; **Validate Android `38134018586` SUCCESS, both jobs** including actual emulator instrumentation.
+- [ ] Verify final documentation-only HEAD Validate; compare diffs to guarantee no further app source modification.
+- [ ] Manually start **one signed** `Build Signed Android APK` on `feat/v1.4.58-playlist-player` only after final Validate success; provide conspicuous action box and 8-digit HEAD. Do not claim signed output based only on unsigned Validate.
+- [ ] Narrow phone QA: all 5 icon controls in landscape, source search/filter toggle, two-column versus expanded list; local phone/YouTube badges; archive cover fallback and artwork ratios. Real YouTube playback rotation is separately open.
+- [ ] Close specific visual findings only after PHONE acceptance; do not modify existing History, remote playlists or write APIs. Persistent YT catalogue mirror and full player queue are separate milestones.
+
+**NEXT:** one signed QA APK after final HEAD Validate, without redoing old tests.
+
 ## SAFE PAUSE — 2026-10-11 / Installed consolidated Library APK, visual feedback
 
 - [x] Consolidated feature app source `1ec733b6` plus docs HEAD `6aa42797`; Validate `38092727427` **SUCCESS (both jobs)**; signed APK workflow `38093341675` **SUCCESS** for exact `6aa42797`.
