@@ -1,5 +1,16 @@
 # YTM Importer — ACTIVE PLAN
 
+## ACTIVE — Help with illustration, counters, YouTube identity (2026-10-11)
+
+- [x] Screenshot/root-cause audit of poor Help, misaligned small 68/54 source counts and inconsistent `YTM ✓` text vs YouTube vector.
+- [x] Build illustrated Help rows with title, real drawable and useful text, preserving lifecycle and screen; differentiate Phone ✓ saved metadata, YouTube ✓ linked local ID, YouTube without ✓ remote catalogue.
+- [x] Center/enlarge counts without affecting sort button; skip invalid videoId for local/History preview sample and add coverage in JVM/instrumented tests.
+- [x] Fix ImageView selector test to exclude top header ImageButton `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`.
+- [ ] Validate exact code head `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`; latest GitHub run pending. Previous `38141213793` had BulkRealScreenGeometryTest "No text layout: Почати синхронізацію" alongside the corrected image-selector failure.
+- [ ] Update final docs-only head and Validate, then exactly one signed workflow via manual action if connector cannot dispatch.
+- [ ] Provide numbered PHONE QA with the exact app path: Home → Плейліст → ? (illustrated Help + rotation); Home → Плейліст → [catalogue top] counts and badge icon comparisons; Help → close → sample archive `The Prodigy — Selected Mixes` and duplicated `db ost`. No repeat old closed tests.
+- [ ] Separate future tasks: identity-safe duplicate grouping, archive missing-art diagnosis, player rotation, background metadata/local cache and queue.
+
 ## ACTIVE — Unified Library UX candidate (2026-10-11)
 
 - [x] Inspect prior signed baseline `b9cded25` and latest screenshots; distinguish local History snapshots from remote owned account playlists.

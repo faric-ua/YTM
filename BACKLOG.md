@@ -1,5 +1,19 @@
 # YTM Importer — Roadmap
 
+## OPEN / QA — Illustrated Help, centered counters and source status (2026-10-11)
+
+Phone screenshot review: the unified catalogue and sorting work in portrait and landscape. Owner requests Help with **every real icon next to its own full explanation**, larger truly centered device/YouTube counts (e.g. 68 / 54, never hardcode), and one matching YouTube icon in cards (✓ when local entry is linked, no ✓ for a fetched account-only record). Missing archive art and duplicate names also require evidence-based diagnosis.
+
+- [x] Code SHA `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`: replace paragraph Help with themed scrollable rows for phone, YouTube, search, current, list/grid, ?, sort, both count meanings, phone ✓, YouTube ✓, YouTube without ✓, placeholder art and duplicate names; retain rotation-restorable Help dialog and explicit close.
+- [x] Center counters in whole panel independently of sorting icon; enlarge icons and count text. Unknown YouTube count remains `—` until fetched.
+- [x] Replace text `YTM ✓` with matching YouTube vector + ✓ for **linked ID**. YouTube catalogue without ✓ remains a separate source state. Phone ✓ means only locally stored list/IDs, **not offline media**. Never infer sync completion from badges.
+- [x] Skip invalid playlist-art video IDs and use the next valid 11-char video ID from stored playlist/History tracks; keep official YouTube thumbnail cache and neutral placeholder for missing IDs. JVM tests added.
+- [x] Add Android UI tests for vector badges and the centered count container; counter test selector distinguishes images from header ImageButtons.
+- [ ] Obtain full PASS for Validate + Android emulator; one new signed APK from exact final HEAD, and phone QA for illustrated Help/rotation, count alignment, icons and archived cover.
+- [ ] Investigate why some History-only records have no cover (missing track video IDs vs failed fetch vs no source art); avoid guessing artwork via titles or extra quota-heavy reads.
+- [ ] Investigate duplicate names/editions `db ost`, `The Prodigy — Experience: Expanded`: compare localPlaylistId, sourceHistoryId, remote destination ID and actual track lists. DO NOT collapse records solely by title or delete/synchronize anything automatically.
+- [ ] Separate deferred: persistent account-isolated metadata caching and quiet refresh, player interruption on rotation, playback-state fullscreen and playlist auto-next.
+
 ## ACTIVE — Unified Playlist Library UI: all/local/YouTube + filters, sorting, Help (2026-10-11)
 
 Owner supplied portrait/landscape screenshots and requested a unified bordered catalogue card rather than a tall "На телефоні: N • Збережені та архівні плейлісти" banner. **Source commit `f59091889cb515acb0b2f7222b51928a7a279aca` — implemented, Validate Android `38138143854` PASS BOTH jobs; PHONE QA pending.**

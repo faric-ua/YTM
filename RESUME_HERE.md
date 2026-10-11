@@ -1,5 +1,11 @@
 # YTM Importer — RESUME HERE
 
+## CURRENT RESUME — 2026-10-11 / Playlist Library Help + visual consistency
+
+Project `faric-ua/YTM`, branch `feat/v1.4.58-playlist-player`; **latest app-code HEAD `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`**. User provided real portrait/landscape screenshots on prior signed candidate `fe7c5f21` (signed run `38139308362` SUCCESS); new changes not yet installed. First code Validate `38141213793` had emulator failures: unrelated Bulk Sync geometry fixture and a too-broad new ImageView test selector; selector corrected in `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`, latest CI must be checked. Never claim code PASS or signed success before logs confirm.
+
+Done in new code: rich icon-per-explanation Help with UiChrome.showContentDialog and RestorableModalController; enlarged counters centered in FrameLayout, sort stays right; same YouTube drawable with ✓ for linked local playlist ID and without ✓ for owned remote catalogue; skip invalid cover IDs to use next valid track videoId. No remote writes, media downloads or destructive edits. Full backlog in BACKLOG.md. **NEXT:** finish Validate, fix/diagnose any unrelated flaky instrumented test; then docs-only HEAD and final CI, one signed APK from final head if manual trigger required. Provide FULL on-phone menu path, not vague test tasks, e.g. `Головний екран → Плейліст → Бібліотека плейлістів → ?`; test known examples `db ost`, `The Prodigy — Experience: Expanded`. Android versionName remains 1.4.55/code98 although this is experimental v1.4.58 code.
+
 ## CURRENT ACTIVE CHECKPOINT — 2026-10-11 / Combined Playlist Library
 
 **Branch** `feat/v1.4.58-playlist-player`, **new app source** `f59091889cb515acb0b2f7222b51928a7a279aca` (Validate Android `38138143854` PASS BOTH jobs; signed APK for this code still pending). Last signed GOOD baseline `b9cded25`, workflow `38135150801` attempt 2 SUCCESS; first attempt failed transient Maven dependencies, no source error.
