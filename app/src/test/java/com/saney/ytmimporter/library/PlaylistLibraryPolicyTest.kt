@@ -37,10 +37,29 @@ class PlaylistLibraryPolicyTest {
                 history("h3", null, "Other", 8)
             )
         )
-        assertEquals(2, list.size)
+        assertEquals(3, list.size)
         assertEquals("history:h2", list[0].identity)
+        assertEquals("history:h1", list[1].identity)
         assertEquals(LocalLibrarySource.HISTORY, list[0].source)
         assertFalse(list[0].isCurrent)
+    }
+
+    @Test fun orphanHistoryWithSameRemoteIdDoesNotDisappear() {
+        val list = PlaylistLibraryPolicy.build(
+            emptyList(), null,
+            listOf(history("h1", null, "db ost", 10, "PLsame"),
+                history("h2", null, "db ost", 20, "PLsame")))
+        assertEquals(listOf("history:h2", "history:h1"), list.map { it.identity })
+    }
+
+    @Test fun distinctEditionsSharingTitleRemainIndependent() {
+        val list = PlaylistLibraryPolicy.build(
+            emptyList(), null,
+            listOf(history("e1", null, "Experience: Expanded", 10, "PLone"),
+                history("e2", null, "Experience: Expanded", 20, "PLtwo")))
+        assertEquals(2, list.size)
+        assertEquals(setOf("PLone", "PLtwo"),
+            list.mapNotNull { it.destinationPlaylistId }.toSet())
     }
 
     @Test fun historicalRemoteAndPersistedLocalKeepLinkageButNotDuplicated() {

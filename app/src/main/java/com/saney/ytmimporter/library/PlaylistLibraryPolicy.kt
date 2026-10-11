@@ -87,19 +87,15 @@ object PlaylistLibraryPolicy {
             savedIds += current.localPlaylistId
         }
 
-        // Keep only the latest entry for a historical playlist that has no
-        // restorable snapshot. A YTM write and a local import are not two
-        // different playlists merely because they generated two history rows.
+        // Match only durable LOCAL IDs. Orphan History rows are independent
+        // snapshots, even if their titles, sources or YouTube IDs coincide.
+        // Align with HistoryLogicalGroupPolicy's operation-scoped fallback.
         val historicalKeys = mutableSetOf<String>()
         history.sortedByDescending { it.updatedAt }.forEach { entry ->
             if (entry.tracks.isEmpty()) return@forEach
             val id = entry.localPlaylistId?.takeIf(String::isNotBlank)
             if (id != null && id in savedIds) return@forEach
-            val key = when {
-                id != null -> "local:$id"
-                !entry.playlistId.isNullOrBlank() -> "remote:${entry.playlistId}"
-                else -> "label:${entry.playlistName.trim().lowercase()}:${entry.sourceLabel.trim().lowercase()}"
-            }
+            val key = if (id != null) "local:$id" else "operation:${entry.id}"
             if (!historicalKeys.add(key)) return@forEach
             result += LocalLibraryItem(
                 identity = "history:" + entry.id,

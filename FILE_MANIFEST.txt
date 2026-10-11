@@ -139,7 +139,8 @@ e9076775ed60f7e0  app/src/main/java/com/saney/ytmimporter/bulk/BulkWriteRetryGua
 64dfbecaec3cc3a7  app/src/main/java/com/saney/ytmimporter/destination/DestinationForwardedWritePlan.kt
 a27466468fd212eb  app/src/main/java/com/saney/ytmimporter/destination/DestinationRemoteOperations.kt
 b13d29a22b59303d  app/src/main/java/com/saney/ytmimporter/history/HistoryRecoveryPolicy.kt
-c802311c04604f68  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryPolicy.kt
+fae1f536e9f4821a  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryIdentityPolicy.kt
+cccd9f725edae129  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryPolicy.kt
 f95cf0389c0c041f  app/src/main/java/com/saney/ytmimporter/library/YouTubeEmbedPolicy.kt
 40a855ae48921e2e  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 cb264b7524d6f606  app/src/main/java/com/saney/ytmimporter/model/HistoryEntry.kt
@@ -260,7 +261,8 @@ d52736a993ac9175  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSelection
 c59f67d8bd6625e5  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt
 64e19bcc5ad4ab9c  app/src/test/java/com/saney/ytmimporter/bulk/BulkWriteRetryGuardTest.kt
 ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecoveryPolicyTest.kt
-22d29bf2428a46f3  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryPolicyTest.kt
+a49ded4ccbfcedc7  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryIdentityPolicyTest.kt
+c26a14dfee9654fa  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryPolicyTest.kt
 5a47b3bfd3c3d716  app/src/test/java/com/saney/ytmimporter/library/YouTubeEmbedPolicyTest.kt
 9cc5a3fa406839b4  app/src/test/java/com/saney/ytmimporter/model/HistoryListFilterPolicyTest.kt
 55401bf27c73fe85  app/src/test/java/com/saney/ytmimporter/model/HistoryLogicalGroupPolicyTest.kt
