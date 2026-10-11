@@ -1,5 +1,10 @@
 # YTM Importer — CURRENT HANDOFF
 
+## CURRENT — 2026-10-11 / Detail PHONE PASS, Play alignment deferred
+
+Branch `feat/v1.4.58-playlist-player`. Exact app source `55096f3417674612771f1d17c2dd7ff11f06e527` Validate `38146950959` PASS both jobs (22 UI tests), signed APK `38148291586` SUCCESS and artifact ready. Owner returned `+` after phone check of revised playlist details: **FOCUSED PHONE PASS** with deferred visual defect (portrait Play container off-center on thumbnail and ▶ glyph off-center within button). **Do not fix now.** This checkpoint is documentation only; no app source change or rebuild. **NEXT:** audit identity-safe local/History/YouTube duplicate listings (`db ost`, `The Prodigy — Experience: Expanded`) by exact IDs/account, not names, before any UI grouping. No delete/merge/remote writes, no stable publication.
+
+
 ## ACTIVE IMPLEMENTATION — 2026-10-11 / Portrait track details & meaning of ✓
 
 Branch `feat/v1.4.58-playlist-player`; prior signed phone candidate `bf22d9c1`, workflow `38144764657` SUCCESS. Owner screenshots accepted illustrated Help and landscape catalogue but requested minimal detail header, removing redundant back/large current CTA and full-width subdued artwork with Play/ordinal overlays ONLY in portrait track rows. New code changes PlaylistLibraryActivity and its Android UI tests. Help now says explicitly: count ✓ = filter selected; Phone ✓ = metadata local; YouTube ✓ = stored remote link ID; plain YouTube = remote account list with no confirmed local match. None proves all track membership. Separate future verification/status planned, not implemented. The landscape track row layout is intentionally untouched. **NEXT:** exact-HEAD Validate PASS (both JVM/release and emulator) then one signed candidate; phone QA for new details only. Do not mutate YTM, merge, publish or infer full sync from checkmarks.

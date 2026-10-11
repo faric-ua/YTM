@@ -1,5 +1,10 @@
 # YTM Importer — RESUME HERE
 
+## RESUME — 2026-10-11 / PHONE PASS with Play TODO postponed
+
+Repository `faric-ua/YTM`, branch `feat/v1.4.58-playlist-player`. Last app/source SHA `55096f3417674612771f1d17c2dd7ff11f06e527`, Validate `38146950959` PASS both jobs, signed run `38148291586` SUCCESS. Owner supplied `+` for individual-playlist portrait and landscape phone QA; **focused PHONE PASS**, not full player-lifecycle evidence. Nonblocking TODO (no fix now): Play overlay position relative to portrait thumbnail and optical center of ▶ inside button. Don't touch app code or build APK for this documentation checkpoint. **NEXT ACTION:** audit exact identity/provenance of library duplicates using local/history/YTM IDs and account scope; design safe read-only relationship/grouping, tests before implementation. Do not merge/delete existing lists or make YouTube writes.
+
+
 ## NEW RESUME POINT — 2026-10-11 / Detail track UI
 
 Working branch `feat/v1.4.58-playlist-player`; baseline signed screenshot source `bf22d9c1` / signed run `38144764657` SUCCESS. In response to latest user phone screenshots, new implementation adds detail-only header (right aligned Current & Help, no Phone/YouTube/search/layout controls; no duplicate catalogue-back buttons), portrait artwork filling each row horizontally with opacity 45% and overlaid number/Play, and keeps landscape rows untouched. Help explains selection ✓ vs local metadata ✓ vs YTM link ✓ vs remote account-only label; no assertion of complete track sync. TODO includes separate completeness status after real safe read-only comparison. **NEXT:** check CI on latest HEAD; fix code/tests if failure; then exactly one signed APK before focused PHONE acceptance. Branch/release only, no main merge, no YTM writes or data changes.

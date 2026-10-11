@@ -1,5 +1,18 @@
 # YTM Importer — Roadmap
 
+## PHONE QA PASS / UX DEFERRED — Portrait preview Play alignment (2026-10-11)
+
+Owner replied `+` after checking details UI on phone: **FOCUSED PHONE PASS**, except one nonblocking UX defect. Source `55096f34`, Validate `38146950959` PASS both jobs, signed run `38148291586` SUCCESS.
+
+- [ ] **DO NOT FIX NOW:** In portrait track detail, translucent Play container is not visually centered relative to thumbnail and ▶ triangle is itself off-center inside the container. Treat as **two independent centering issues**. Future fix: center overlay relative to preview frame, use optically centered vector instead of glyph with inherited Button/text baselines, retain accessible touch target/contrast and the same playback ID; verify with phone screenshot. No new APK for this alone.
+
+## NEXT — Read-only identity-safe duplicates audit
+
+- [x] Initial source audit: saved/current dedupe by localPlaylistId; History keyed by localId/remoteId or fallback title+source; local and YouTube cards appended separately. Similar titles do not guarantee same playlist.
+- [ ] Audit `db ost` and `The Prodigy — Experience: Expanded` using real localPlaylistId, sourceHistoryId, destinationPlaylistId, remote account ID and track video IDs, never only their names.
+- [ ] Design non-destructive grouping/link display based on exact account-scoped identity, with tests for same title/different editions, exact local+remote ID, missing ID, History snapshots, rotation and account changes. Do not silently merge, delete, reorder, sync or rewrite.
+
+
 ## OPEN / PHONE QA — Track detail layout, badges and Help (2026-10-11)
 
 Owner screenshots of signed source `bf22d9c1` show the library catalogue and illustrated Help are visually acceptable in both orientations. This finding concerns **track-details screens**, not the accepted landscape catalogue/grid.

@@ -1,5 +1,17 @@
 # YTM Importer — ACTIVE PLAN
 
+## NOW — 2026-10-11 / v1.4.58 detail PHONE PASS + deferred Play TODO
+
+- [x] App source `55096f3417674612771f1d17c2dd7ff11f06e527`: Validate `38146950959` PASS both jobs (22/22 emulator UI); exact SHA signed APK run `38148291586` SUCCESS with artifact.
+- [x] Owner reported `+` for playlist details after testing phone. Mark **FOCUSED PHONE PASS with one deferred visual issue**, not full-app or YouTube player lifecycle PASS.
+- [x] Record **deferred/DO NOT FIX NOW**: portrait Play container not centered relative to thumbnail; triangle glyph separately not centered within the button. Keep code and accepted APK unchanged.
+- [x] Static catalogue identity audit: saved/current keyed by localPlaylistId; History sometimes by exact IDs but fallback by title+source; remote catalogue appended independently.
+- [ ] **NEXT:** examine duplicate names `db ost` / `The Prodigy — Experience: Expanded`, define read-only identity-safe grouping based on localPlaylistId, sourceHistoryId, destination YouTube playlistId and account ownership. No grouping on title alone, no deletion, no remote writes. Add deterministic tests before code.
+- [ ] Later separate Play centering fix, with explicit portrait/landscape phone regression. Do not rebuild APK just for TODO.
+
+**NEXT ACTION:** identity-safe duplicate catalogue audit and tests design; no Termux or signing step needed for this docs-only commit.
+
+
 ## ACTIVE — 2026-10-11 / Detail-only header and portrait track artwork
 
 - [x] Owner phone screenshots accepted illustrated Help and landscape catalogue; identify count ✓ as selection, footer ✓ as stored link/metadata and account-only YouTube text as no confirmed local link. No track completeness proof exists.
