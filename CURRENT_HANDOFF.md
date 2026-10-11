@@ -1,5 +1,10 @@
 # YTM Importer — CURRENT HANDOFF
 
+## CURRENT CANDIDATE — 2026-10-11 / Identity-safe catalogue
+
+Branch `feat/v1.4.58-playlist-player`; accepted baseline `55096f34`, signed run `38148291586`, owner PHONE+ (deferred Play centering). New candidate fixes library read-only History filtering: without localPlaylistId, every History operation remains individually visible, even with equal name/source/YTM ID. This aligns existing HistoryLogicalGroupPolicy; previously hidden editions may increase local count. New pure `PlaylistLibraryIdentityPolicy` matches `destinationPlaylistId` to already-fetched current-account owned YouTube playlist IDs, adds `Збіг ID` to BOTH separate cards and explains it in Help. No card collapse, sync inference, new API request, writes, data deletion or migration. JVM + Android Help assertion updated. **CI pending**, then one signed APK and focused phone check. Keep owner-deferred Play geometry TODO unchanged.
+
+
 ## CURRENT — 2026-10-11 / Detail PHONE PASS, Play alignment deferred
 
 Branch `feat/v1.4.58-playlist-player`. Exact app source `55096f3417674612771f1d17c2dd7ff11f06e527` Validate `38146950959` PASS both jobs (22 UI tests), signed APK `38148291586` SUCCESS and artifact ready. Owner returned `+` after phone check of revised playlist details: **FOCUSED PHONE PASS** with deferred visual defect (portrait Play container off-center on thumbnail and ▶ glyph off-center within button). **Do not fix now.** This checkpoint is documentation only; no app source change or rebuild. **NEXT:** audit identity-safe local/History/YouTube duplicate listings (`db ost`, `The Prodigy — Experience: Expanded`) by exact IDs/account, not names, before any UI grouping. No delete/merge/remote writes, no stable publication.

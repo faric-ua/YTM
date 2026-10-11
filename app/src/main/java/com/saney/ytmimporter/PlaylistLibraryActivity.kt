@@ -28,6 +28,7 @@ import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.history.HistoryRecoveryPolicy
 import com.saney.ytmimporter.library.LocalLibraryItem
 import com.saney.ytmimporter.library.LocalLibrarySource
+import com.saney.ytmimporter.library.PlaylistLibraryIdentityPolicy
 import com.saney.ytmimporter.library.PlaylistLibraryPolicy
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.Track
@@ -379,11 +380,16 @@ class PlaylistLibraryActivity : Activity() {
     private fun renderLocalCatalogue() = renderCatalogue()
 
     private fun renderCatalogue() {
-        val localVisible = if (showsLocal()) localItems() else emptyList()
+        val allLocal = localItems()
+        val localVisible = if (showsLocal()) allLocal else emptyList()
         val remoteEnabled = showsRemote()
         val access = token()
         val remoteItems = if (remoteEnabled && access != null)
             cachedPlaylists.orEmpty() else emptyList()
+        // Cross-reference only IDs in the current account's already fetched
+        // catalogue. Retain BOTH cards and NEVER infer identical track lists.
+        val exactLinks = PlaylistLibraryIdentityPolicy.exactRemoteMatches(
+            allLocal, remoteItems)
 
         // A single large frame owns the count toolbar and the artwork grid.
         val panel = LinearLayout(this).apply {
@@ -415,7 +421,7 @@ class PlaylistLibraryActivity : Activity() {
             })
         }
         counter(R.drawable.ic_ytm_device, "На телефоні",
-            localItems().size.toString() +
+            allLocal.size.toString() +
                 if (!showAll && !onlineTab) " ✓" else "",
             palette.semantic.duplicate)
         counter(R.drawable.ic_ytm_youtube_play, "YouTube",
@@ -456,11 +462,14 @@ class PlaylistLibraryActivity : Activity() {
         localVisible.forEach { item ->
             all += CardInfo(
                 title = item.title,
-                subtitle = "${item.trackCount} треків • " + when (item.source) {
-                    LocalLibrarySource.CURRENT -> "Поточний"
-                    LocalLibrarySource.SAVED -> "На телефоні"
-                    LocalLibrarySource.HISTORY -> "Архів History"
-                },
+                subtitle = (if (item.destinationPlaylistId?.let {
+                    it in exactLinks
+                } == true) "Збіг ID • " else "") +
+                    "${item.trackCount} треків • " + when (item.source) {
+                        LocalLibrarySource.CURRENT -> "Поточний"
+                        LocalLibrarySource.SAVED -> "На телефоні"
+                        LocalLibrarySource.HISTORY -> "Архів History"
+                    },
                 videoId = item.sampleVideoId,
                 localSaved = item.source != LocalLibrarySource.HISTORY,
                 linkedYtm = item.destinationPlaylistId != null,
@@ -477,7 +486,8 @@ class PlaylistLibraryActivity : Activity() {
         remoteItems.forEach { item ->
             all += CardInfo(
                 title = item.title,
-                subtitle = "${item.itemCount} відео • ${item.privacyStatus}",
+                subtitle = (if (item.id in exactLinks) "Збіг ID • " else "") +
+                    "${item.itemCount} відео • ${item.privacyStatus}",
                 videoId = null,
                 thumbnail = item.thumbnailUrl,
                 badge = "YouTube",
@@ -848,6 +858,12 @@ class PlaylistLibraryActivity : Activity() {
             "Один плейліст може бути поточним, збереженим, в History і на YouTube. " +
                 "Самі назви не підтверджують, що це точні дублікати: " +
                 "поки записи не об’єднуються автоматично.")
+        entry(R.drawable.ic_ytm_youtube_play, "Збіг ID",
+            "У локальній та YouTube-картці знайдено однаковий playlistId " +
+                "у вже завантаженому каталозі поточного акаунта. " +
+                "Це НЕ підтверджує однакові треки, повну синхронізацію " +
+                "чи власника історичного запису. Обидві картки збережено.",
+            palette.accent)
         return content
     }
 

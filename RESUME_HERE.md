@@ -1,5 +1,10 @@
 # YTM Importer — RESUME HERE
 
+## NEXT VERIFICATION GATE — 2026-10-11 / History identity and remote-ID hints
+
+Working branch `feat/v1.4.58-playlist-player`. Prior signed `55096f34` / `38148291586` accepted on phone (+), with portrait Play centering deferred. New code changes only `PlaylistLibraryPolicy` for orphan History no longer silently grouped by title/remote ID and adds pure exact-ID relation policy + small `Збіг ID` caption on independent local+YouTube catalogue cards. Help clarifies match is not evidence all tracks are present. Tests cover identity cases; no YTM API writes or extra read beyond existing on-demand catalogue. **NEXT:** exact-head Validate (both jobs) → one signed Android APK from final HEAD (Termux:Widget 1 update → 5 build) → narrow phone QA including changed counts. No destructive merges, no release publish.
+
+
 ## RESUME — 2026-10-11 / PHONE PASS with Play TODO postponed
 
 Repository `faric-ua/YTM`, branch `feat/v1.4.58-playlist-player`. Last app/source SHA `55096f3417674612771f1d17c2dd7ff11f06e527`, Validate `38146950959` PASS both jobs, signed run `38148291586` SUCCESS. Owner supplied `+` for individual-playlist portrait and landscape phone QA; **focused PHONE PASS**, not full player-lifecycle evidence. Nonblocking TODO (no fix now): Play overlay position relative to portrait thumbnail and optical center of ▶ inside button. Don't touch app code or build APK for this documentation checkpoint. **NEXT ACTION:** audit exact identity/provenance of library duplicates using local/history/YTM IDs and account scope; design safe read-only relationship/grouping, tests before implementation. Do not merge/delete existing lists or make YouTube writes.

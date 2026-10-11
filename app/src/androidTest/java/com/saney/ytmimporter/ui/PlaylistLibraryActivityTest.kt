@@ -343,6 +343,7 @@ class PlaylistLibraryActivityTest {
             idle()
             scene.onActivity { activity ->
                 assertTrue(activity.window.decorView.hasText("Всі •"))
+                assertTrue(activity.window.decorView.hasText("Збіг ID"))
                 // Help opens a descriptive modal, never starts any playlist flow.
             }
         }

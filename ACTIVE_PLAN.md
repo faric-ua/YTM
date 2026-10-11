@@ -1,5 +1,15 @@
 # YTM Importer — ACTIVE PLAN
 
+## ACTIVE — 2026-10-11 / Catalogue exact-ID cross-reference (code candidate)
+
+- [x] Fixed unsafe History-only fallback: only shared localPlaylistId may collapse operations; without it each History row survives, even if title, source label or destination YTM ID match. Matches HistoryLogicalGroupPolicy semantics. Local track lists and History storage remain unmodified.
+- [x] New pure `PlaylistLibraryIdentityPolicy.exactRemoteMatches` uses only exact IDs in **currently fetched account** list; never names/artwork/count. Show "Збіг ID" on both cards while preserving both as distinct, clickable records; Help explicitly says no track verification.
+- [x] JVM tests for two similar editions, repeated orphan remote ID, exact-ID title difference, same-title IDs different, multiple local links, stale/unknown/blank IDs; Android Help text regression.
+- [ ] Exact-code-head Validate JVM, release and emulator; repair failures without weakening safety.
+- [ ] After final CI, one new signed APK and *focused* phone QA: all/phone/YouTube scope, counts (may rise because hidden History becomes visible), ID-match caption, independent card tap, rotation; no remote writes.
+- [ ] Keep deferred: portrait Play optical centering, album artwork gaps and deeper account/provenance read-only diagnosis. No auto merging/deletion.
+
+
 ## NOW — 2026-10-11 / v1.4.58 detail PHONE PASS + deferred Play TODO
 
 - [x] App source `55096f3417674612771f1d17c2dd7ff11f06e527`: Validate `38146950959` PASS both jobs (22/22 emulator UI); exact SHA signed APK run `38148291586` SUCCESS with artifact.
