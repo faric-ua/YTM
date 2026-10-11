@@ -333,9 +333,11 @@ class PlaylistLibraryActivityTest {
             scene.onActivity { activity ->
                 assertTrue(activity.window.decorView.hasText("Всі •"))
                 assertTrue(activity.window.decorView.hasText(name))
-                val help = activity.window.decorView.collectActions()
-                    .first { it.contentDescription == "Довідка бібліотеки плейлістів" }
-                assertTrue(help.isShown)
+                // Details keep a second Help control in the hidden header.
+                // A catalogue test must select the actually visible one.
+                val help = activity.window.decorView.collectActions().first {
+                    it.isShown && it.contentDescription == "Довідка бібліотеки плейлістів"
+                }
                 help.performClick()
             }
             idle()
