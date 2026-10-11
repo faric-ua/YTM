@@ -1,5 +1,18 @@
 # YTM Importer — RESUME HERE
 
+## END-OF-DAY SYNCHRONIZATION CHECKPOINT — 2026-10-11 (docs-only)
+
+**STATUS: SAFE PAUSE / no code change requested.** User installed the consolidated experimental Playlist Library candidate and supplied portrait/landscape screenshots of local track details, compact landscape header, 2-column grid and one-column list. The screenshots provide **partial visual evidence only**; do not claim player rotation/video-continuity PHONE PASS or full Library acceptance.
+
+- **Repository / working branch:** `faric-ua/YTM` / `feat/v1.4.58-playlist-player`.
+- **Frozen app source:** `1ec733b6d8c10a728b4ac7b34e10d94a28662273` — app-source feature commit.
+- **Latest source+docs candidate installed/tested visually:** `6aa427977a7a7d70dd2076a2ce8dee50fbe2aa6b`.
+- **Validate:** `38092727427` SUCCESS (both jobs). **Signed QA APK:** `38093341675` SUCCESS for exact `6aa42797`, NOT another older APK. APK may display inherited `v1.4.55`/code98 by release-preflight lock even though code branch is v1.4.58.
+- **New TODO only:** malformed narrow `YT` button wraps to two lines; `⌕` search icon confusing; emoji phone header icon and `▯ ✓` status icon visually inconsistent; ambiguous current/menu glyphs; some archive card artwork shows generic `ic_ytm_playlist_add` fallback. Root of missing art **not yet established**, distinguish missing sampleVideoId from fetch/caching failure. See `BACKLOG.md → OPEN UX TODO — Playlist Library icons, cover fallback and visual polish`. Keep this out of app code until owner says resume.
+- **Still open:** verify real playback continuity on rotation and conditional fullscreen rule, persistent remote account-isolated metadata with flicker-free refresh, full playlist queue/next and provider-safe controls. No YTM write, hidden sync or downloaded media has been added.
+- **NEXT WHEN USER RETURNS:** inspect exact live HEAD, then group the *visual icon/thumbnail defects* into one small implementation slice only on explicit user request; before coding inspect exact fallback conditions and icon assets. Source-free checkpoint is complete; do NOT request another APK based solely on docs updates. Later, do narrow phone QA of corrected icons/artwork plus player rotation issue separately.
+- **Owner status:** ending work for sleep. No Termux steps, no phone tests, no new build requested tonight.
+
 ## CURRENT QA BUNDLE — 2026-10-11 / Playlist Library + player rotation
 
 - **Branch:** `feat/v1.4.58-playlist-player`; **tested app source HEAD:** `1ec733b6d8c10a728b4ac7b34e10d94a28662273`.

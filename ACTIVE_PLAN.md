@@ -1,5 +1,16 @@
 # YTM Importer — ACTIVE PLAN
 
+## SAFE PAUSE — 2026-10-11 / Installed consolidated Library APK, visual feedback
+
+- [x] Consolidated feature app source `1ec733b6` plus docs HEAD `6aa42797`; Validate `38092727427` **SUCCESS (both jobs)**; signed APK workflow `38093341675` **SUCCESS** for exact `6aa42797`.
+- [x] User provided real-device screenshots of portrait track details, landscape compact header, two-column cards and list mode. Count as **partial visual QA only**, not full PHONE PASS for rotation, video playback or complete app.
+- [x] Captured new visual findings under `BACKLOG.md → OPEN UX TODO — Playlist Library icons, cover fallback and visual polish` (YT line wrap, strange search glyph, emoji phone, empty-looking local phone status, generic plus-art fallback and unified image geometry). Documented reasons from source without changing program files.
+- [ ] After explicit owner go-ahead, implement a **single focused icon/artwork polish wave**, preserve semantics, test on Android emulator, produce one new signed candidate only after green Validate.
+- [ ] Keep **separate** deeper streams: YouTube video playback rotation + playback-aware fullscreen; durable per-account metadata with quiet refresh; full playlist next-track queue.
+- [ ] Receive actual phone playback continuity test before closing rotation BUG. Do not repeat old accepted work.
+
+**NEXT ACTION:** wait for owner to resume; tonight is a docs-only checkpoint. No new APK run or Termux action required.
+
 ## CURRENT ACTIVE QA BUNDLE — Library responsive controls + stable player rotation (2026-10-11)
 
 - [x] Consolidate the recent 2026-10-10/11 phone UX backlog into one source wave and separate durable remote metadata / full playlist queue into future functional stages.

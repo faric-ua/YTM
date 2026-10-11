@@ -1,5 +1,9 @@
 # YTM Importer — CURRENT HANDOFF
 
+## CURRENT STOP POINT — 2026-10-11 / SAFE SLEEP CHECKPOINT
+
+Follow `RESUME_HERE.md → END-OF-DAY SYNCHRONIZATION CHECKPOINT` and `BACKLOG.md → OPEN UX TODO — Playlist Library icons, cover fallback and visual polish`. Branch `feat/v1.4.58-playlist-player`; **last compiled app code** `1ec733b6`, **signed and visibly installed source/docs HEAD** `6aa42797`, Validate `38092727427` PASS BOTH, signed QA `38093341675` SUCCESS. User screenshots reveal YT compact icon wraps, `⌕` looks wrong, emoji phone / `▯ ✓` local badge fail design-system consistency, ambiguous placeholder artwork for some archived playlists. **Do not fix yet**: user is stopping for sleep and requested TODO+checkpoint only. Real player continuity/conditional fullscreen not phone accepted. No new signed build on documentation-only commit. Resuming next time: verify live HEAD, inspect icons/artwork fallback, one focused app-code polish wave on user authorization, then CI and scoped phone QA.
+
 ## ACTIVE QA HANDOFF — 2026-10-11 / Consolidated Playlist Library bundle
 
 - Active branch: `feat/v1.4.58-playlist-player`, immutable **tested app source** `1ec733b6d8c10a728b4ac7b34e10d94a28662273`.
