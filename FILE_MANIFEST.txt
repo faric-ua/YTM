@@ -93,7 +93,7 @@ d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
-b7f55bec60617e0c  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
+36f103dbba38ea35  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
 4632c91acb804674  app/src/androidTest/java/com/saney/ytmimporter/ui/YouTubePlayerActivityTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
 3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
@@ -110,7 +110,7 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-11e6b7db3a4c9ab6  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
+2acc747214d4d987  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
@@ -139,7 +139,7 @@ e9076775ed60f7e0  app/src/main/java/com/saney/ytmimporter/bulk/BulkWriteRetryGua
 64dfbecaec3cc3a7  app/src/main/java/com/saney/ytmimporter/destination/DestinationForwardedWritePlan.kt
 a27466468fd212eb  app/src/main/java/com/saney/ytmimporter/destination/DestinationRemoteOperations.kt
 b13d29a22b59303d  app/src/main/java/com/saney/ytmimporter/history/HistoryRecoveryPolicy.kt
-4c717c805286fe04  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryPolicy.kt
+c802311c04604f68  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryPolicy.kt
 f95cf0389c0c041f  app/src/main/java/com/saney/ytmimporter/library/YouTubeEmbedPolicy.kt
 40a855ae48921e2e  app/src/main/java/com/saney/ytmimporter/model/AccountModels.kt
 cb264b7524d6f606  app/src/main/java/com/saney/ytmimporter/model/HistoryEntry.kt
@@ -260,7 +260,7 @@ d52736a993ac9175  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSelection
 c59f67d8bd6625e5  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncSessionPolicyTest.kt
 64e19bcc5ad4ab9c  app/src/test/java/com/saney/ytmimporter/bulk/BulkWriteRetryGuardTest.kt
 ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecoveryPolicyTest.kt
-d4d57f78b627b35d  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryPolicyTest.kt
+22d29bf2428a46f3  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryPolicyTest.kt
 5a47b3bfd3c3d716  app/src/test/java/com/saney/ytmimporter/library/YouTubeEmbedPolicyTest.kt
 9cc5a3fa406839b4  app/src/test/java/com/saney/ytmimporter/model/HistoryListFilterPolicyTest.kt
 55401bf27c73fe85  app/src/test/java/com/saney/ytmimporter/model/HistoryLogicalGroupPolicyTest.kt

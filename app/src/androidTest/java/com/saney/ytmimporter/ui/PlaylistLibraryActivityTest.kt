@@ -4,8 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.view.View
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
@@ -94,6 +98,37 @@ class PlaylistLibraryActivityTest {
             scene.onActivity { activity ->
                 assertTrue(activity.window.decorView.hasText("Тестова пісня"))
                 assertTrue(activity.window.decorView.hasText(name))
+            }
+        }
+    }
+
+    @Test fun catalogueCountsAreCenteredAndLinkedYtmUsesThemedIcon() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val name = "Плейліст зі зв'язком YTM ${UUID.randomUUID()}"
+        CurrentPlaylistStore(context).save(
+            ImportedPlaylist(name, mutableListOf(
+                Track("Пісня", "Виконавець", selectedVideoId = "abcdefghijk")
+            )),
+            "Перевірка іконок",
+            destinationPlaylistId = "PLfixture123",
+            localPlaylistId = "link-${UUID.randomUUID()}"
+        )
+        ActivityScenario.launch<PlaylistLibraryActivity>(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            idle()
+            scene.onActivity { activity ->
+                val root = activity.window.decorView
+                assertTrue(root.hasText(name))
+                assertTrue(root.hasImageDescription("Дані плейліста збережені на телефоні"))
+                assertTrue(root.hasImageDescription("Плейліст пов’язаний з YouTube Music"))
+                val counter = root.findImageDescription("На телефоні")
+                    ?: error("Counter's phone icon missing")
+                val counts = counter.parent as? LinearLayout
+                    ?: error("Counter group missing")
+                val params = counts.layoutParams as? FrameLayout.LayoutParams
+                    ?: error("Counts are not in a centered frame")
+                assertEquals(Gravity.CENTER, params.gravity)
             }
         }
     }
@@ -260,6 +295,18 @@ class PlaylistLibraryActivityTest {
             }
         }
     }
+
+    private fun View.findImageDescription(target: String): ImageView? {
+        if (this is ImageView && contentDescription == target) return this
+        if (this is ViewGroup) for (i in 0 until childCount) {
+            val result = getChildAt(i).findImageDescription(target)
+            if (result != null) return result
+        }
+        return null
+    }
+
+    private fun View.hasImageDescription(target: String): Boolean =
+        findImageDescription(target) != null
 
     private fun View.findLabel(target: String): TextView? {
         if (this is TextView && text?.toString() == target) return this

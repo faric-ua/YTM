@@ -54,6 +54,34 @@ class PlaylistLibraryPolicyTest {
         assertEquals("abcdefghijk", item.single().sampleVideoId)
     }
 
+    @Test fun coverSampleSkipsInvalidTrackIdsAndUsesNextValidId() {
+        val withMissingAndInvalid = saved("art-id", "Album", 10).copy(
+            playlist = ImportedPlaylist("Album", mutableListOf(
+                Track("Unknown", "A", selectedVideoId = "invalid"),
+                Track("Playable", "B", selectedVideoId = "abcdefghijk")
+            ))
+        )
+        val list = PlaylistLibraryPolicy.build(
+            saved = listOf(withMissingAndInvalid),
+            current = null,
+            history = emptyList()
+        )
+        assertEquals("abcdefghijk", list.single().sampleVideoId)
+    }
+
+    @Test fun archiveWithoutValidVideoIdsKeepsNeutralArtworkFallback() {
+        val entry = history("history-cover", null, "Archive", 20).copy(
+            tracks = listOf(HistoryTrack(
+                0, "Unknown video", "Artist", "invalid",
+                null, null, "MISSING", false, null
+            ))
+        )
+        val items = PlaylistLibraryPolicy.build(
+            saved = emptyList(), current = null, history = listOf(entry)
+        )
+        assertEquals(null, items.single().sampleVideoId)
+    }
+
     private fun playlist(name: String) = ImportedPlaylist(
         name, mutableListOf(
             Track("Track", "Artist", selectedVideoId = "abcdefghijk")

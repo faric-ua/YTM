@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -362,23 +363,26 @@ class PlaylistLibraryActivity : Activity() {
             setPadding(dp(8), dp(7), dp(8), dp(10))
             background = surface(palette.surface, 14)
         }
-        val summary = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
+        // Keep the two source counters visually centered in the WHOLE panel.
+        // Sort is overlaid at the right, not part of the counter's measured width.
+        val summary = FrameLayout(this).apply {
+            minimumHeight = dp(52)
         }
         val counts = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
+            gravity = Gravity.CENTER
+            contentDescription = "Кількість плейлістів за джерелами"
         }
         fun counter(icon: Int, label: String, value: String, tint: Int) {
             counts.addView(ImageView(this).apply {
                 setImageResource(icon)
                 setColorFilter(tint)
-                scaleType = ImageView.ScaleType.CENTER_INSIDE
+                scaleType = ImageView.ScaleType.FIT_CENTER
                 contentDescription = label
-            }, LinearLayout.LayoutParams(dp(17), dp(20)))
-            counts.addView(text(": $value", 13f, false, palette.muted).apply {
-                setPadding(dp(3), 0, dp(9), 0)
+            }, LinearLayout.LayoutParams(dp(23), dp(25)))
+            counts.addView(text(": $value", 16f, true, palette.muted).apply {
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(dp(4), 0, dp(13), 0)
                 contentDescription = "$label: $value"
             })
         }
@@ -390,12 +394,17 @@ class PlaylistLibraryActivity : Activity() {
             (if (access == null) "—" else cachedPlaylists?.size?.toString() ?: "—") +
                 if (!showAll && onlineTab) " ✓" else "",
             palette.accent)
-        summary.addView(counts, LinearLayout.LayoutParams(
-            0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        summary.addView(counts, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            Gravity.CENTER
+        ))
         val sortButton = iconButton(R.drawable.ic_ytm_sort,
             "Фільтрація і сортування плейлістів") {}
         sortButton.setOnClickListener { showSortMenu(sortButton) }
-        summary.addView(sortButton, LinearLayout.LayoutParams(dp(44), dp(46)))
+        summary.addView(sortButton, FrameLayout.LayoutParams(
+            dp(44), dp(46), Gravity.END or Gravity.CENTER_VERTICAL
+        ))
         panel.addView(summary)
         panel.addView(text(
             when {
@@ -672,18 +681,13 @@ class PlaylistLibraryActivity : Activity() {
 
     private fun renderConfirmation(type: String, args: Bundle): Dialog? {
         if (type == MODAL_HELP) {
-            return UiChrome.showFixedFooterMessageDialog(
+            return UiChrome.showContentDialog(
                 activity = this,
                 title = "Бібліотека плейлістів • довідка",
-                message = "Телефон — локальні збережені плейлісти й History. " +
-                    "YouTube — плейлісти підключеного акаунта (лише читання). " +
-                    "Натисніть активне джерело ще раз, щоб побачити всі. " +
-                    "Лупа відкриває пошук, стрілка — поточний плейліст, " +
-                    "значок списку/сітки змінює вигляд, " +
-                    "а фільтр у каталозі керує сортуванням. " +
-                    "Синій телефон ✓ означає локально збережені назви та ID, " +
-                    "не завантажені медіафайли. YTM ✓ — зв’язок із YouTube Music. " +
-                    "Число біля YouTube невідоме до отримання списку.",
+                subtitle = "Піктограми, джерела, сортування та обкладинки",
+                message = "Натискайте на піктограми для перегляду, пошуку й навігації. " +
+                    "Перегляд не змінює плейлісти у YouTube Music.",
+                content = createLibraryHelpContent(),
                 actions = listOf(UiChrome.DialogAction("Зрозуміло") {
                     modalController.clearState()
                 })
@@ -731,6 +735,94 @@ class PlaylistLibraryActivity : Activity() {
                 }
             )
         )
+    }
+
+    private fun createLibraryHelpContent(): View {
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, dp(2), 0, dp(7))
+        }
+        fun section(name: String) {
+            content.addView(text(name, 15f, true, palette.accent).apply {
+                setPadding(dp(4), dp(10), 0, dp(6))
+            })
+        }
+        fun entry(icon: Int, title: String, description: String, tint: Int = palette.text) {
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.TOP
+                setPadding(dp(7), dp(9), dp(7), dp(9))
+                background = surface(palette.surfaceAlt, 10)
+            }
+            row.addView(ImageView(this).apply {
+                setImageResource(icon)
+                setColorFilter(tint)
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                contentDescription = title
+            }, LinearLayout.LayoutParams(dp(30), dp(32)).apply { marginEnd = dp(13) })
+            val labels = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            labels.addView(text(title, 14f, true, palette.text))
+            labels.addView(text(description, 12.5f, false, palette.muted).apply {
+                setPadding(0, dp(4), 0, 0)
+            })
+            row.addView(labels, LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            ))
+            content.addView(row, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(5) })
+        }
+        section("Верхня панель")
+        entry(R.drawable.ic_ytm_device, "Телефон",
+            "Показує локальні плейлісти, поточний список і архів History. " +
+                "Натисніть вибрану кнопку вдруге, щоб повернутися до «Всі».",
+            palette.semantic.duplicate)
+        entry(R.drawable.ic_ytm_youtube_play, "YouTube",
+            "Показує плейлісти підключеного YouTube-акаунта. " +
+                "Каталог читається з інтернету; простий перегляд нічого не записує.",
+            palette.accent)
+        entry(R.drawable.ic_ytm_search, "Пошук",
+            "Відкриває поле для пошуку за назвою та описом у вибраному каталозі.")
+        entry(R.drawable.ic_ytm_library_current, "Поточний плейліст",
+            "Переходить до поточного локального плейліста, не перемикаючи інші.")
+        entry(R.drawable.ic_ytm_view_list, "Список / плитки",
+            "Перемикає один широкий рядок із деталями або сітку з двох карток.")
+        entry(R.drawable.ic_ytm_help, "Довідка (?)",
+            "Відкриває ці пояснення. Після закриття ви повернетеся на той самий екран.")
+        section("Каталог, фільтри та сортування")
+        entry(R.drawable.ic_ytm_sort, "Фільтр і сортування",
+            "«Всі / тільки телефон / тільки YouTube», за локальною датою, " +
+                "за абеткою А–Я / Я–А або за кількістю треків. " +
+                "Для YouTube дата може бути невідомою.")
+        entry(R.drawable.ic_ytm_device, "Лічильник телефону",
+            "Кількість локальних позицій у бібліотеці. Галочка біля числа " +
+                "позначає активний фільтр телефону.", palette.semantic.duplicate)
+        entry(R.drawable.ic_ytm_youtube_play, "Лічильник YouTube",
+            "Кількість плейлістів, прочитаних з акаунта. " +
+                "Символ «—» означає, що число ще невідоме.", palette.accent)
+        section("Позначки внизу карток")
+        entry(R.drawable.ic_ytm_device, "Телефон ✓",
+            "Назви, ID та список треків збережені локально в застосунку. " +
+                "Це НЕ означає завантаження музики чи відео без інтернету.",
+            palette.semantic.duplicate)
+        entry(R.drawable.ic_ytm_youtube_play, "YouTube ✓",
+            "Локальний запис має збережений ID пов’язаного плейліста " +
+                "YouTube Music. Це НЕ гарантує синхронізацію кожного треку.",
+            palette.accent)
+        entry(R.drawable.ic_ytm_youtube_play, "YouTube (без галочки)",
+            "Плейліст отримано з каталогу акаунта, але його локальне " +
+                "збереження чи зв’язок із місцевим записом не підтверджено.",
+            palette.accent)
+        section("Обкладинки та дублікати")
+        entry(R.drawable.ic_ytm_music, "Немає обкладинки",
+            "Мініатюра береться з доступних YouTube-даних за videoId. " +
+                "Коли дійсного ID немає, показується нейтральна нота. " +
+                "Для архівів може знадобитися відновлення метаданих.")
+        entry(R.drawable.ic_ytm_view_grid, "Схожі або повторні записи",
+            "Один плейліст може бути поточним, збереженим, в History і на YouTube. " +
+                "Самі назви не підтверджують, що це точні дублікати: " +
+                "поки записи не об’єднуються автоматично.")
+        return content
     }
 
     private fun setLocalCurrent(identity: String) {
@@ -1020,13 +1112,22 @@ class PlaylistLibraryActivity : Activity() {
                 setPadding(dp(3), 0, 0, 0)
             })
         }
-        if (info.linkedYtm) {
-            footer.addView(text("YTM ✓", 11f, true, palette.accent).apply {
-                setPadding(dp(if (info.localSaved) 9 else 0), 0, 0, 0)
-                contentDescription = "Плейліст пов’язаний з YouTube Music"
+        if (info.linkedYtm || info.badge == "YouTube") {
+            footer.addView(ImageView(this).apply {
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                setImageResource(R.drawable.ic_ytm_youtube_play)
+                setColorFilter(palette.accent)
+                contentDescription = if (info.linkedYtm)
+                    "Плейліст пов’язаний з YouTube Music"
+                else "Плейліст з каталогу YouTube"
+            }, LinearLayout.LayoutParams(dp(18), dp(19)).apply {
+                marginStart = dp(if (info.localSaved) 9 else 0)
             })
-        }
-        if (info.badge.isNotBlank()) {
+            footer.addView(text(if (info.linkedYtm) "✓" else "YouTube",
+                12f, true, palette.accent).apply {
+                setPadding(dp(3), 0, 0, 0)
+            })
+        } else if (info.badge.isNotBlank()) {
             footer.addView(text(info.badge, 11f, true, palette.accent))
         }
         labels.addView(footer, LinearLayout.LayoutParams(

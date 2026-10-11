@@ -27,6 +27,11 @@ data class LocalLibraryItem(
 )
 
 object PlaylistLibraryPolicy {
+    // Only official 11-character video IDs may request YouTube artwork.
+    // Skip invalid/missing IDs rather than making a failed thumbnail request
+    // and leaving an archive with an unintended generic placeholder.
+    private val validVideoId = Regex("^[A-Za-z0-9_-]{11}$")
+
     fun build(
         saved: List<RestorablePlaylistSnapshot>,
         current: CurrentPlaylistSnapshot?,
@@ -50,7 +55,7 @@ object PlaylistLibraryPolicy {
                 sourceLabel = active?.sourceLabel ?: snapshot.sourceLabel,
                 trackCount = playlist.tracks.size,
                 sampleVideoId = playlist.tracks.firstNotNullOfOrNull {
-                    it.selectedVideoId?.takeIf(String::isNotBlank)
+                    it.selectedVideoId?.takeIf(validVideoId::matches)
                 },
                 destinationPlaylistId =
                     active?.destinationPlaylistId ?: snapshot.destinationPlaylistId,
@@ -71,7 +76,7 @@ object PlaylistLibraryPolicy {
                 sourceLabel = current.sourceLabel,
                 trackCount = current.playlist.tracks.size,
                 sampleVideoId = current.playlist.tracks.firstNotNullOfOrNull {
-                    it.selectedVideoId?.takeIf(String::isNotBlank)
+                    it.selectedVideoId?.takeIf(validVideoId::matches)
                 },
                 destinationPlaylistId = current.destinationPlaylistId,
                 destinationTitle = current.destinationPlaylistTitle,
@@ -104,7 +109,7 @@ object PlaylistLibraryPolicy {
                 sourceLabel = entry.sourceLabel,
                 trackCount = entry.tracks.size,
                 sampleVideoId = entry.tracks.firstNotNullOfOrNull {
-                    it.videoId?.takeIf(String::isNotBlank)
+                    it.videoId?.takeIf(validVideoId::matches)
                 },
                 destinationPlaylistId = entry.playlistId,
                 destinationTitle = entry.playlistName.takeIf { entry.playlistId != null },
