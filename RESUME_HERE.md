@@ -2,11 +2,11 @@
 
 ## CURRENT ACTIVE CHECKPOINT — 2026-10-11 / Combined Playlist Library
 
-**Branch** `feat/v1.4.58-playlist-player`, **new app source** `f59091889cb515acb0b2f7222b51928a7a279aca` (not signed; Validate pending at checkpoint). Last signed GOOD baseline `b9cded25`, workflow `38135150801` attempt 2 SUCCESS; first attempt failed transient Maven dependencies, no source error.
+**Branch** `feat/v1.4.58-playlist-player`, **new app source** `f59091889cb515acb0b2f7222b51928a7a279aca` (Validate Android `38138143854` PASS BOTH jobs; signed APK for this code still pending). Last signed GOOD baseline `b9cded25`, workflow `38135150801` attempt 2 SUCCESS; first attempt failed transient Maven dependencies, no source error.
 
 Implemented: combined all/local/owned-YouTube catalogue (read-only remote), inline counts within one bordered card, compact six-icon toolbar portrait and landscape, source tap toggling/deselect-to-all, magnifier search on demand, current playlist, grid/list, popup source filters and sorting (local date, alphabet, track count), portrait/landscape responsive state and '?' help dialog restored on rotation. Updated Android Activity instrumentation and added sort/help vectors. YouTube metadata dates not provided; display unknown values honestly and do not sort remote entries by invented timestamps. No YTM write, no automatic playlist copying, no video download, no change to History storage.
 
-**NEXT:** inspect CI for new code, fix errors, verify `FILE_MANIFEST.txt` and final docs head, then **one signed manual workflow** on exact branch after both Validate jobs PASS; request focused phone QA only. Larger persistent account-scoped remote metadata and YouTube-player queue/rotation remain separate tasks. Do not mark new interface PHONE PASS without screenshots.
+**NEXT:** launch **one signed manual APK workflow** on exact current branch HEAD after successful Validate; request focused phone QA only. Larger persistent account-scoped remote metadata and YouTube-player queue/rotation remain separate tasks. Do not mark new interface PHONE PASS without screenshots.
 
 ## RESUME POINT — 2026-10-11 / Vector icons + neutral artwork wave
 
