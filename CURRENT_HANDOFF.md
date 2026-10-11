@@ -1,5 +1,10 @@
 # YTM Importer — CURRENT HANDOFF
 
+## VERIFIED CI / NEXT GATE — 2026-10-11
+
+Active branch `feat/v1.4.58-playlist-player`. Application code ends at `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`; prior docs HEAD `09e1c5090d085db5c04023ecf9e7cfa2e1cc8134` passed **Validate Android `38141951467` BOTH jobs SUCCESS** (preflight, JVM, unsigned release and emulator instrumentation including older Bulk geometry test). First failed run `38141213793` is superseded. This commit is a docs-only QA checkpoint: verify exact-HEAD CI before signing. Previous **signed** run `38139308362` is older `fe7c5f21` and excludes latest changes. Current-HEAD signed APK and PHONE PASS have not been verified. **NEXT:** after exact-HEAD Validate, one signed workflow via Termux:Widget `1 — Оновити проєкт` → `5 — Зібрати новий APK`, then `3 — Завантажити готовий APK` → `4 — Відкрити папку з APK`; focused Library phone QA. Do not merge/publish, mutate playlist identities or run YouTube writes.
+
+
 ## CURRENT HANDOFF — 2026-10-11 / Illustrated Help, source badges & cover sample
 
 Branch `feat/v1.4.58-playlist-player`. New source `fab16dc4c093607627c0a51ca5e01ca24d3dcca6` changes PlaylistLibraryActivity (illustrated Help, centered larger counters, YouTube icon badge linked✓ vs remote plain), PlaylistLibraryPolicy (valid videoId artwork sample) and JVM+Android tests. Prior signed phone version `fe7c5f21` was run `38139308362` SUCCESS. First new Validate `38141213793` Android UI job failed both old Bulk Sync geometry fixture and our overbroad ImageView matcher; latter fixed on `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`. Check new run, do not mark PASS speculatively. No YouTube writes/data mutation. Next: green Android tests then final manifest/docs HEAD, signed APK workflow and full UI paths for focused phone QA. Open future: History art reasons, identity-safe duplicates `db ost` / Experience Expanded, playback lifecycle and offline-first YouTube metadata. App Android versionName stays 1.4.55/code98.

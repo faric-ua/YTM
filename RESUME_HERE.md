@@ -1,5 +1,10 @@
 # YTM Importer — RESUME HERE
 
+## VERIFIED RESUME GATE — 2026-10-11 / Library UI CI
+
+Branch `feat/v1.4.58-playlist-player`; app-code `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`, prior docs HEAD `09e1c5090d085db5c04023ecf9e7cfa2e1cc8134` verified by `38141951467` **SUCCESS BOTH Validate jobs**. Earlier failure `38141213793` superseded. This docs-only commit must be checked against its own exact-HEAD CI before signing. Previous signed APK `38139308362` was older `fe7c5f21`. **NEXT ACTION:** after exact-head CI, one signed build via Termux:Widget YTM Importer `1 — Оновити проєкт` → `5 — Зібрати новий APK`, then `3 — Завантажити готовий APK` → `4 — Відкрити папку з APK`. Phone QA: illustrated Help/rotation, counters, badge icons and History cover sample. Do not claim PHONE PASS or alter remote YTM/identity/storage/main.
+
+
 ## CURRENT RESUME — 2026-10-11 / Playlist Library Help + visual consistency
 
 Project `faric-ua/YTM`, branch `feat/v1.4.58-playlist-player`; **latest app-code HEAD `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`**. User provided real portrait/landscape screenshots on prior signed candidate `fe7c5f21` (signed run `38139308362` SUCCESS); new changes not yet installed. First code Validate `38141213793` had emulator failures: unrelated Bulk Sync geometry fixture and a too-broad new ImageView test selector; selector corrected in `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`, latest CI must be checked. Never claim code PASS or signed success before logs confirm.

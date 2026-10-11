@@ -6,8 +6,8 @@
 - [x] Build illustrated Help rows with title, real drawable and useful text, preserving lifecycle and screen; differentiate Phone ✓ saved metadata, YouTube ✓ linked local ID, YouTube without ✓ remote catalogue.
 - [x] Center/enlarge counts without affecting sort button; skip invalid videoId for local/History preview sample and add coverage in JVM/instrumented tests.
 - [x] Fix ImageView selector test to exclude top header ImageButton `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`.
-- [ ] Validate exact code head `fab16dc4c093607627c0a51ca5e01ca24d3dcca6`; latest GitHub run pending. Previous `38141213793` had BulkRealScreenGeometryTest "No text layout: Почати синхронізацію" alongside the corrected image-selector failure.
-- [ ] Update final docs-only head and Validate, then exactly one signed workflow via manual action if connector cannot dispatch.
+- [x] Exact app-code `fab16dc4c093607627c0a51ca5e01ca24d3dcca6` validated on docs HEAD `09e1c5090d085db5c04023ecf9e7cfa2e1cc8134`: GitHub Validate `38141951467` **SUCCESS BOTH JOBS** (preflight, JVM, unsigned release, Android emulator, including former Bulk geometry fixture). Earlier failed `38141213793` is superseded.
+- [ ] Check exact-HEAD Validate for this docs-only QA status checkpoint; do not create another checkpoint solely to tick this line. Then start **one signed** `Build Signed Android APK` (`build-apk.yml`) from `feat/v1.4.58-playlist-player` via Termux:Widget menu `1 — Оновити проєкт` → `5 — Зібрати новий APK` (connector has no workflow-dispatch action). Verify successful run and artifact for exact HEAD before phone QA.
 - [ ] Provide numbered PHONE QA with the exact app path: Home → Плейліст → ? (illustrated Help + rotation); Home → Плейліст → [catalogue top] counts and badge icon comparisons; Help → close → sample archive `The Prodigy — Selected Mixes` and duplicated `db ost`. No repeat old closed tests.
 - [ ] Separate future tasks: identity-safe duplicate grouping, archive missing-art diagnosis, player rotation, background metadata/local cache and queue.
 
