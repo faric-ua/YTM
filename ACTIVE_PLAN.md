@@ -1,5 +1,17 @@
 # YTM Importer — ACTIVE PLAN
 
+## ACTIVE — Unified Library UX candidate (2026-10-11)
+
+- [x] Inspect prior signed baseline `b9cded25` and latest screenshots; distinguish local History snapshots from remote owned account playlists.
+- [x] Implement all/local/YouTube scope with tap again => all; one framed grid/list and device/YT counts; source + sort popup; portrait icon toolbar instead of giant tabs, landscape remains compact; dedicated Help modal and on-demand search. App source `f59091889cb515acb0b2f7222b51928a7a279aca`.
+- [x] Update Android UI tests: portrait source toggle, restore after recreate, six vector icons landscape, offline no-token browse and Help. Official remote list is read-only; no video/media download.
+- [ ] Watch Validate CI and repair failures; verify MANIFEST consistency and two jobs PASS before claiming tested.
+- [ ] Start exactly one signed APK build on final HEAD after PASS (manual GitHub workflow if dispatch unavailable), monitor real completion/artifact.
+- [ ] Scoped phone QA portrait/landscape, filter All/Phone/YT, panel counts, sort modes and Help; ensure scroll/covers and playlist data intact.
+- [ ] Keep deferred: durable per-account remote list cache with silent refresh, cross-source duplicate semantics and official video player lifecycle/auto-next.
+
+**NEXT:** CI, not phone work yet.
+
 ## ACTIVE — 2026-10-11 / One vector icon & artwork QA candidate
 
 - [x] Audit current source, preserve safe GitHub checkpoint `93fd8af5` and last signed run `38093341675`.

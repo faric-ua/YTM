@@ -1,5 +1,9 @@
 # YTM Importer — CURRENT HANDOFF
 
+## ACTIVE IMPLEMENTATION HANDOFF — 2026-10-11 / Combined Library
+
+Active branch `feat/v1.4.58-playlist-player`; app source `f59091889cb515acb0b2f7222b51928a7a279aca`; baseline signed run `38135150801` attempt 2 SUCCESS on earlier `b9cded25`. New source modifies `PlaylistLibraryActivity`, one Android test and two vector resources; `FILE_MANIFEST.txt` synchronized. User wants both orientations' catalogues in one bordered card with counts (local count accurate; YouTube count unknown until account read), icon toolbar, deselect-to-all source filtering, sorting (date local only), and Help explaining unlabeled icons. **Source committed, CI/PHONE not yet accepted at checkpoint.** No implicit YTM mutations, local overwrite, Bulk Sync, DRM/stream extraction. Inspect current GH Actions first, then one signed QA candidate and focused phone tests after Validate PASS. Deep offline metadata/player work remains backlog.
+
 ## CURRENT HANDOFF — 2026-10-11 / Visual icons and cover-art code PASS
 
 **Branch:** `feat/v1.4.58-playlist-player`. **App-source candidate:** `44d91f8ffda25cffc1005eaed7e5b0006c9a03be`, **Validate `38134018586` SUCCESS BOTH jobs**. New UI code removes font/emoji-dependent icon buttons, uses 5 vector drawables, a proper local metadata phone+check status, neutral missing-art icon and FIT_CENTER official YouTube cover previews; scoped Android emulator tests updated. No YTM writes/API mutations or storage migration.

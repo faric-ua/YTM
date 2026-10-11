@@ -1,5 +1,17 @@
 # YTM Importer — Roadmap
 
+## ACTIVE — Unified Playlist Library UI: all/local/YouTube + filters, sorting, Help (2026-10-11)
+
+Owner supplied portrait/landscape screenshots and requested a unified bordered catalogue card rather than a tall "На телефоні: N • Збережені та архівні плейлісти" banner. **Source commit `f59091889cb515acb0b2f7222b51928a7a279aca` — code implemented; CI and PHONE QA not yet confirmed.**
+
+- [x] Both orientations: six compact theme-aware actions (phone source, YouTube source, on-demand magnifier search, explicit current-playlist shortcut, one/two-column toggle, and '?' Help); large portrait tabs and permanent search row removed from catalogue.
+- [x] Source logic: first tap activates Phone-only or YouTube-only, second tap on already-active source deselects and shows **Всі**; an unselected source pair always means all. Preserve mode across ordinary Activity recreation; no remote write or local copy from filtering.
+- [x] Catalogue cards for saved/current/History and read-only owned YouTube playlists share one bordered panel; source counters use phone: local store count and YouTube: fetched count or '—' if unavailable, never invented numbers. Panel has filter/sort menu with active selection.
+- [x] Sort: local updatedAt newest first (remote playlists have no known dates and follow undated); alphabetical A–Я, Я–A and track count descending. Source identity and track order unchanged. Help explains local-metadata phone ✓ vs linked-YTM ✓ and what icons do; uses restorable modal lifecycle.
+- [ ] Verify Maven/Gradle JVM, release/Android instrumentation CI, portrait 6 icons, local-only/no-token all state, mode toggles, sorting and help/rotation. **No PHONE PASS until installed on real device.**
+- [ ] Future: prevent duplicate physical playlists in **Всі** when source has both local/YTM links, only after agreeing identity semantics; durable account-isolated offline-first remote catalogue and flicker-free background refresh; provider-safe continuous player queue and active-playback-only fullscreen (separate backlog).
+- [ ] Phone acceptance: all↔phone↔YouTube, counts, single bordered panel layout in portrait/landscape, one-/two-column mode, sort popup and help; verify no mutation or surprise playback.
+
 ## CURRENT CODE-ACCEPTED WAVE — Playlist Library vector icons and cover fallback (2026-10-11)
 
 **Implemented source:** `44d91f8ffda25cffc1005eaed7e5b0006c9a03be` (`44d91f8f`), branch `feat/v1.4.58-playlist-player`. **GitHub Validate Android `38134018586` — SUCCESS, BOTH jobs** (release preflight/JVM/unsigned release; Android emulator UI test with actual landscape vector icon checks). **PHONE QA NOT YET DONE**. This changes Library presentation and cover display only; no writes/remote playlist mutations or playlist data migration.
