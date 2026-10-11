@@ -1,12 +1,24 @@
 # YTM Importer — ACTIVE PLAN
 
+## FOCUSED PHONE QA ACCEPTED — 2026-10-11 / Exact-ID library
+
+- [x] Source `53f176ec` Validate `38153435363` PASS (both jobs). Docs HEAD `196f849f` Validate `38165507252` PASS; signed APK run `38166605993` SUCCESS and installed for owner PHONE QA.
+- [x] Source filtering All/Phone/YouTube shown; counters 93 local and 54 YouTube shown (counts not independently reconciled). Owner reported rotation PASS.
+- [x] `db ost` has 4 independent opened cards: local 19 not linked; local 19 linked; History 19; YouTube unlisted 18. Correct ID match badge; 19/18 content discrepancy remains unverified.
+- [x] `The Prodigy - Experience: Expanded (Remixes & B-sides) (2001)` has at least 5 separately opened cards: saved local 25, linked History 25, unlinked CSV History 25, two public YouTube 25-video playlists.
+- [x] Two remote playlist IDs differ: `PLOqFwo4I-TTo` and `PLYtZkL7iN0PA`. The linked local item's YouTube Music action opens `PLOqFwo4I-TTo`, not the other remote ID. No name-based merging, no remote writes.
+- [x] Scoped Library identity PHONE PASS, not full-app/player lifecycle PASS and not proof of track membership synchronization.
+- [ ] Deferred separate read-only investigation: `db ost` 19 local vs 18 remote; missing CSV History thumbnail/video metadata; long portrait header crop; previously deferred Play optical centering. No automatic merge, deletion, YTM writes or stable publish.
+
+**NEXT ACTION:** scoped library identity QA closed. No repeated phone test or rebuild needed. Define next bounded read-only track-completeness or UX wave separately.
+
 ## ACTIVE — 2026-10-11 / Catalogue exact-ID cross-reference (code candidate)
 
 - [x] Fixed unsafe History-only fallback: only shared localPlaylistId may collapse operations; without it each History row survives, even if title, source label or destination YTM ID match. Matches HistoryLogicalGroupPolicy semantics. Local track lists and History storage remain unmodified.
 - [x] New pure `PlaylistLibraryIdentityPolicy.exactRemoteMatches` uses only exact IDs in **currently fetched account** list; never names/artwork/count. Show "Збіг ID" on both cards while preserving both as distinct, clickable records; Help explicitly says no track verification.
 - [x] JVM tests for two similar editions, repeated orphan remote ID, exact-ID title difference, same-title IDs different, multiple local links, stale/unknown/blank IDs; Android Help text regression.
 - [x] Exact code HEAD `53f176ece3a91c7b33e9c16724bd9ffc542b7788`: Validate `38153435363` PASS (JVM tests, release preflight/unsigned build, emulator UI). Previous `f07182a` failed on Help modal window assertion; fixed by `53f176ec` and superseded.
-- [ ] **NEXT EXTERNAL ACTION:** after docs-only exact-HEAD Validate, start one signed APK from `feat/v1.4.58-playlist-player` (Termux:Widget → 1 Оновити проєкт → 5 Зібрати новий APK); then *focused* phone QA: all/phone/YouTube scope, counts (may rise because hidden History becomes visible), ID-match caption, independent card tap, rotation; no remote writes.
+- [x] **COMPLETED EXTERNAL ACTION:** after docs-only exact-HEAD Validate, started one signed APK from `feat/v1.4.58-playlist-player` (Termux:Widget → 1 Оновити проєкт → 5 Зібрати новий APK); then *focused* phone QA: all/phone/YouTube scope, counts (may rise because hidden History becomes visible), ID-match caption, independent card tap, rotation; no remote writes.
 - [ ] Keep deferred: portrait Play optical centering, album artwork gaps and deeper account/provenance read-only diagnosis. No auto merging/deletion.
 
 

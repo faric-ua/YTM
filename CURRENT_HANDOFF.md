@@ -1,5 +1,17 @@
 # YTM Importer — CURRENT HANDOFF
 
+## FOCUSED PHONE QA ACCEPTED — 2026-10-11 / Exact-ID library
+
+- [x] Source `53f176ec` Validate `38153435363` PASS (both jobs). Docs HEAD `196f849f` Validate `38165507252` PASS; signed APK run `38166605993` SUCCESS and installed for owner PHONE QA.
+- [x] Source filtering All/Phone/YouTube shown; counters 93 local and 54 YouTube shown (counts not independently reconciled). Owner reported rotation PASS.
+- [x] `db ost` has 4 independent opened cards: local 19 not linked; local 19 linked; History 19; YouTube unlisted 18. Correct ID match badge; 19/18 content discrepancy remains unverified.
+- [x] `The Prodigy - Experience: Expanded (Remixes & B-sides) (2001)` has at least 5 separately opened cards: saved local 25, linked History 25, unlinked CSV History 25, two public YouTube 25-video playlists.
+- [x] Two remote playlist IDs differ: `PLOqFwo4I-TTo` and `PLYtZkL7iN0PA`. The linked local item's YouTube Music action opens `PLOqFwo4I-TTo`, not the other remote ID. No name-based merging, no remote writes.
+- [x] Scoped Library identity PHONE PASS, not full-app/player lifecycle PASS and not proof of track membership synchronization.
+- [ ] Deferred separate read-only investigation: `db ost` 19 local vs 18 remote; missing CSV History thumbnail/video metadata; long portrait header crop; previously deferred Play optical centering. No automatic merge, deletion, YTM writes or stable publish.
+
+**NEXT ACTION:** scoped library identity QA closed. No repeated phone test or rebuild needed. Define next bounded read-only track-completeness or UX wave separately.
+
 ## CURRENT CANDIDATE — 2026-10-11 / Identity-safe catalogue
 
 Branch `feat/v1.4.58-playlist-player`; accepted baseline `55096f34`, signed run `38148291586`, owner PHONE+ (deferred Play centering). New candidate fixes library read-only History filtering: without localPlaylistId, every History operation remains individually visible, even with equal name/source/YTM ID. This aligns existing HistoryLogicalGroupPolicy; previously hidden editions may increase local count. New pure `PlaylistLibraryIdentityPolicy` matches `destinationPlaylistId` to already-fetched current-account owned YouTube playlist IDs, adds `Збіг ID` to BOTH separate cards and explains it in Help. No card collapse, sync inference, new API request, writes, data deletion or migration. JVM + Android Help assertion updated. **CODE CI PASS**: source `53f176ec`, Validate `38153435363` both jobs SUCCESS (JVM, unsigned release, Android emulator); earlier `f07182a` Android failure superseded. **NEXT**: docs-only HEAD check, then ONE manually dispatched signed APK on the active branch (Termux:Widget 1 → 5) and focused phone check. Keep owner-deferred Play geometry TODO unchanged.

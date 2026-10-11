@@ -1,5 +1,17 @@
 # YTM Importer — RESUME HERE
 
+## FOCUSED PHONE QA ACCEPTED — 2026-10-11 / Exact-ID library
+
+- [x] Source `53f176ec` Validate `38153435363` PASS (both jobs). Docs HEAD `196f849f` Validate `38165507252` PASS; signed APK run `38166605993` SUCCESS and installed for owner PHONE QA.
+- [x] Source filtering All/Phone/YouTube shown; counters 93 local and 54 YouTube shown (counts not independently reconciled). Owner reported rotation PASS.
+- [x] `db ost` has 4 independent opened cards: local 19 not linked; local 19 linked; History 19; YouTube unlisted 18. Correct ID match badge; 19/18 content discrepancy remains unverified.
+- [x] `The Prodigy - Experience: Expanded (Remixes & B-sides) (2001)` has at least 5 separately opened cards: saved local 25, linked History 25, unlinked CSV History 25, two public YouTube 25-video playlists.
+- [x] Two remote playlist IDs differ: `PLOqFwo4I-TTo` and `PLYtZkL7iN0PA`. The linked local item's YouTube Music action opens `PLOqFwo4I-TTo`, not the other remote ID. No name-based merging, no remote writes.
+- [x] Scoped Library identity PHONE PASS, not full-app/player lifecycle PASS and not proof of track membership synchronization.
+- [ ] Deferred separate read-only investigation: `db ost` 19 local vs 18 remote; missing CSV History thumbnail/video metadata; long portrait header crop; previously deferred Play optical centering. No automatic merge, deletion, YTM writes or stable publish.
+
+**NEXT ACTION:** scoped library identity QA closed. No repeated phone test or rebuild needed. Define next bounded read-only track-completeness or UX wave separately.
+
 ## NEXT VERIFICATION GATE — 2026-10-11 / History identity and remote-ID hints
 
 Working branch `feat/v1.4.58-playlist-player`. Prior signed `55096f34` / `38148291586` accepted on phone (+), with portrait Play centering deferred. New code changes only `PlaylistLibraryPolicy` for orphan History no longer silently grouped by title/remote ID and adds pure exact-ID relation policy + small `Збіг ID` caption on independent local+YouTube catalogue cards. Help clarifies match is not evidence all tracks are present. Tests cover identity cases; no YTM API writes or extra read beyond existing on-demand catalogue. **CODE VALIDATED:** `53f176ec`, run `38153435363` PASS both jobs. **NEXT:** check docs-only CI → one signed Android APK from final HEAD (Termux:Widget 1 update → 5 build) → narrow phone QA including changed counts. No destructive merges, no release publish.
