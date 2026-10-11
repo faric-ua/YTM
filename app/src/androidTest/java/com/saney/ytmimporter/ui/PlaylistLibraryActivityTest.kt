@@ -297,7 +297,7 @@ class PlaylistLibraryActivityTest {
     }
 
     private fun View.findImageDescription(target: String): ImageView? {
-        if (this is ImageView && contentDescription == target) return this
+        if (this is ImageView && this !is ImageButton && contentDescription == target) return this
         if (this is ViewGroup) for (i in 0 until childCount) {
             val result = getChildAt(i).findImageDescription(target)
             if (result != null) return result
