@@ -45,8 +45,11 @@ class PlaylistLibraryActivityTest {
             idle()
             scene.onActivity { activity ->
                 assertTrue(activity.window.decorView.hasText(name))
-                assertTrue(activity.window.decorView.hasText("На телефоні"))
-                assertTrue(activity.window.decorView.hasText("YouTube"))
+                assertTrue(activity.window.decorView.hasText("Всі •"))
+                assertTrue(activity.window.decorView.collectActions()
+                    .any { it.contentDescription == "На телефоні" && it is ImageButton })
+                assertTrue(activity.window.decorView.collectActions()
+                    .any { it.contentDescription == "YouTube" && it is ImageButton })
                 assertNotNull(RestorablePlaylistStore(activity).get(id))
             }
             scene.recreate()
@@ -158,7 +161,8 @@ class PlaylistLibraryActivityTest {
                 val controls = activity.window.decorView.collectActions()
                 for (name in listOf(
                     "На телефоні", "YouTube", "Знайти плейліст",
-                    "Відкрити поточний плейліст", "Список одним стовпчиком"
+                    "Відкрити поточний плейліст", "Список одним стовпчиком",
+                    "Довідка бібліотеки плейлістів"
                 )) {
                     assertTrue("Missing vector icon: $name", controls.any {
                         it is ImageButton && it.contentDescription == name &&
@@ -182,6 +186,58 @@ class PlaylistLibraryActivityTest {
         }
     }
 
+    @Test fun portraitSourceIconsToggleAllAndPhoneAndKeepStateAcrossRecreate() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val name = "Фільтр телефону ${UUID.randomUUID()}"
+        CurrentPlaylistStore(context).save(
+            ImportedPlaylist(name, mutableListOf(Track("Пісня", "Виконавець"))),
+            "Перевірка фільтрів", localPlaylistId = "filter-${UUID.randomUUID()}"
+        )
+        ActivityScenario.launch<PlaylistLibraryActivity>(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.hasText("Всі •"))
+                assertTrue(activity.window.decorView.hasText(name))
+                val phone = activity.window.decorView.collectActions()
+                    .first { it is ImageButton && it.contentDescription == "На телефоні" }
+                phone.performClick()
+            }
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.hasText("На телефоні •"))
+                assertTrue(activity.window.decorView.hasText(name))
+                val phone = activity.window.decorView.collectActions()
+                    .first { it is ImageButton && it.contentDescription == "На телефоні" }
+                assertTrue(phone.isSelected)
+                phone.performClick()
+            }
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.hasText("Всі •"))
+                assertTrue(activity.window.decorView.collectActions()
+                    .none { it is Button && it.isShown &&
+                        it.text.toString() == "Поточний плейліст →" })
+            }
+            scene.recreate()
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.hasText("Всі •"))
+                assertTrue(activity.window.decorView.hasText(name))
+                val help = activity.window.decorView.collectActions()
+                    .first { it.contentDescription == "Довідка бібліотеки плейлістів" }
+                assertTrue(help.isShown)
+                help.performClick()
+            }
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.hasText("Всі •"))
+                // Help opens a descriptive modal, never starts any playlist flow.
+            }
+        }
+    }
+
     @Test fun onlineTabWithoutConsentOrTokenDoesNotStartRemoteRead() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         ActivityScenario.launch<PlaylistLibraryActivity>(
@@ -190,12 +246,14 @@ class PlaylistLibraryActivityTest {
             idle()
             scene.onActivity { activity ->
                 val onlineButton = activity.window.decorView
-                    .collectButtons().first { it.text.toString() == "YouTube" }
+                    .collectActions().first {
+                        it is ImageButton && it.contentDescription == "YouTube"
+                    }
                 onlineButton.performClick()
             }
             idle()
             scene.onActivity { activity ->
-                assertTrue(activity.window.decorView.hasText("тільки читання"))
+                assertTrue(activity.window.decorView.hasText("YouTube не підключено"))
                 // Missing account: no automatic Google authorization prompt.
                 assertTrue(activity.window.decorView.collectButtons()
                     .none { it.text.contains("Створити") })

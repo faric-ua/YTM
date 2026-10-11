@@ -19,6 +19,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -47,6 +48,10 @@ import java.util.concurrent.Executors
  * never starts Bulk Sync or any create/insert/delete YTM operation.
  */
 class PlaylistLibraryActivity : Activity() {
+    private enum class SortMode { RECENT, NAME_ASC, NAME_DESC, TRACKS_DESC }
+    private var showAll = true
+    private var sortMode = SortMode.RECENT
+    private var cardTarget: LinearLayout? = null
     private val currentStore by lazy { CurrentPlaylistStore(this) }
     private val savedStore by lazy { RestorablePlaylistStore(this) }
     private val historyStore by lazy { HistoryStore(this) }
@@ -75,9 +80,9 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var compactSearchButton: ImageButton
     private lateinit var compactCurrentButton: ImageButton
     private lateinit var compactLayoutButton: ImageButton
+    private lateinit var compactHelpButton: ImageButton
     private lateinit var localTabButton: Button
     private lateinit var onlineTabButton: Button
-    private lateinit var layoutButton: Button
     private lateinit var searchBox: EditText
     private lateinit var statusLabel: TextView
     private lateinit var modalController: RestorableModalController
@@ -90,6 +95,10 @@ class PlaylistLibraryActivity : Activity() {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
         onlineTab = savedInstanceState?.getBoolean("online") ?: false
+        showAll = savedInstanceState?.getBoolean("show_all") ?: true
+        sortMode = runCatching {
+            SortMode.valueOf(savedInstanceState?.getString("sort_mode") ?: "RECENT")
+        }.getOrDefault(SortMode.RECENT)
         columns = savedInstanceState?.getInt("columns") ?: 2
         filterText = savedInstanceState?.getString("filter").orEmpty()
         landscapeSearchOpen = savedInstanceState?.getBoolean("landscape_search")
@@ -103,22 +112,22 @@ class PlaylistLibraryActivity : Activity() {
         buildUi()
         renderContent()
         modalController.restoreAfterContentReady(::renderConfirmation)
-        if (onlineTab && cachedPlaylists == null && token() != null) {
-            loadRemoteList()
-        } else if (onlineTab && selectedRemote != null &&
-            !cachedTracks.containsKey(selectedRemote)
-        ) {
+        if (selectedRemote != null && !cachedTracks.containsKey(selectedRemote)) {
             loadRemoteTracks(selectedRemote!!)
+        } else if (showsRemote() && cachedPlaylists == null && token() != null) {
+            loadRemoteList()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if (::body.isInitialized && !onlineTab) renderContent()
+        if (::body.isInitialized && showsLocal()) renderContent()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean("online", onlineTab)
+        outState.putBoolean("show_all", showAll)
+        outState.putString("sort_mode", sortMode.name)
         outState.putInt("columns", columns)
         outState.putString("filter", filterText)
         outState.putBoolean("landscape_search", landscapeSearchOpen)
@@ -147,6 +156,9 @@ class PlaylistLibraryActivity : Activity() {
         }
     }
 
+    private fun showsLocal(): Boolean = showAll || !onlineTab
+    private fun showsRemote(): Boolean = showAll || onlineTab
+
     private fun buildUi() {
         root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -155,8 +167,8 @@ class PlaylistLibraryActivity : Activity() {
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(if (landscape) 8 else 12), dp(if (landscape) 3 else 8),
-                dp(if (landscape) 8 else 12), dp(if (landscape) 3 else 6))
+            setPadding(dp(if (landscape) 8 else 12), dp(4),
+                dp(if (landscape) 8 else 12), dp(4))
         }
         header.addView(button("‹") { onBackPressed() },
             LinearLayout.LayoutParams(dp(if (landscape) 46 else 54), dp(48)))
@@ -167,8 +179,8 @@ class PlaylistLibraryActivity : Activity() {
             ellipsize = TextUtils.TruncateAt.END
         }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
 
-        // In landscape, keep the two library sources in the existing header.
-        // This gives the track list the vertical space used by large tabs.
+        // The same labelled icon actions are used in both orientations.
+        // On a narrow portrait screen they get their own compact row.
         compactLocalTabButton = iconButton(
             R.drawable.ic_ytm_device, "На телефоні"
         ) { selectTab(false) }
@@ -180,11 +192,8 @@ class PlaylistLibraryActivity : Activity() {
         ) {
             landscapeSearchOpen = !landscapeSearchOpen
             updateTopControls()
-            if (landscapeSearchOpen) {
-                searchBox.requestFocus()
-            } else {
-                searchBox.clearFocus()
-            }
+            if (landscapeSearchOpen) searchBox.requestFocus()
+            else searchBox.clearFocus()
         }
         compactCurrentButton = iconButton(
             R.drawable.ic_ytm_library_current, "Відкрити поточний плейліст"
@@ -196,34 +205,39 @@ class PlaylistLibraryActivity : Activity() {
             updateTopControls()
             renderContent()
         }
+        compactHelpButton = iconButton(
+            R.drawable.ic_ytm_help, "Довідка бібліотеки плейлістів"
+        ) { showHelp() }
+        val actions = listOf(compactLocalTabButton, compactOnlineTabButton,
+            compactSearchButton, compactCurrentButton, compactLayoutButton,
+            compactHelpButton)
         if (landscape) {
-            val actions = listOf(compactLocalTabButton, compactOnlineTabButton,
-                compactSearchButton, compactCurrentButton, compactLayoutButton)
             actions.forEach {
-                header.addView(it, LinearLayout.LayoutParams(dp(46), dp(48)).apply {
-                    marginStart = dp(5)
+                header.addView(it, LinearLayout.LayoutParams(dp(44), dp(48)).apply {
+                    marginStart = dp(4)
                 })
             }
         }
         root.addView(header)
-
         tabsRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(dp(12), dp(4), dp(12), dp(4))
-            visibility = if (landscape) View.GONE else View.VISIBLE
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(12), dp(2), dp(12), dp(4))
         }
+        if (!landscape) actions.forEach {
+            tabsRow.addView(it, LinearLayout.LayoutParams(0, dp(48), 1f).apply {
+                marginStart = dp(2)
+            })
+        }
+        if (!landscape) root.addView(tabsRow)
+        // Compat controls retained as invisible state mirrors for existing tests;
+        // no large portrait tabs or separate tall grid button are rendered.
         localTabButton = button("На телефоні") { selectTab(false) }
         onlineTabButton = button("YouTube") { selectTab(true) }
-        tabsRow.addView(localTabButton, LinearLayout.LayoutParams(0, dp(54), 1f))
-        tabsRow.addView(onlineTabButton, LinearLayout.LayoutParams(0, dp(54), 1f).apply {
-            marginStart = dp(8)
-        })
-        root.addView(tabsRow)
 
         filtersRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(12), dp(5), dp(12), dp(5))
+            setPadding(dp(12), dp(3), dp(12), dp(4))
         }
         searchBox = EditText(this).apply {
             hint = "Знайти плейліст"
@@ -243,32 +257,22 @@ class PlaylistLibraryActivity : Activity() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
-        filtersRow.addView(searchBox, LinearLayout.LayoutParams(0, dp(51), 1f))
-        layoutButton = button("▦") {
-            columns = if (columns == 2) 1 else 2
-            updateTopControls()
-            renderContent()
-        }
-        filtersRow.addView(layoutButton, LinearLayout.LayoutParams(dp(58), dp(51)).apply {
-            marginStart = dp(8)
-        })
+        filtersRow.addView(searchBox, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, dp(49)))
         root.addView(filtersRow)
 
         statusLabel = text("", 13f, false, palette.muted).apply {
-            setPadding(dp(if (landscape) 12 else 17), dp(5),
-                dp(if (landscape) 12 else 17), dp(if (landscape) 4 else 8))
+            setPadding(dp(12), dp(5), dp(12), dp(5))
             if (landscape) {
                 maxLines = 1
                 ellipsize = TextUtils.TruncateAt.END
             }
         }
         root.addView(statusLabel)
-        scroller = ScrollView(this).apply {
-            isFillViewport = true
-        }
+        scroller = ScrollView(this).apply { isFillViewport = true }
         body = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(12), 0, dp(12), dp(16))
+            setPadding(dp(10), 0, dp(10), dp(12))
         }
         scroller.addView(body)
         root.addView(scroller, LinearLayout.LayoutParams(
@@ -280,43 +284,48 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     private fun selectTab(online: Boolean) {
-        if (onlineTab == online) {
-            selectedLocal = null
-            selectedRemote = null
-        } else {
-            onlineTab = online
-            selectedLocal = null
-            selectedRemote = null
-        }
+        // Tapping the active source again deselects it and means "Всі".
+        val wasSelected = !showAll && onlineTab == online
+        showAll = wasSelected
+        onlineTab = online
+        selectedLocal = null
+        selectedRemote = null
         visibleTrackLimit = 60
         ensureRemoteAccountIsolation()
         updateTopControls()
         renderContent()
-        if (online && cachedPlaylists == null && token() != null) loadRemoteList()
+        scroller.scrollTo(0, 0)
+        if (showsRemote() && cachedPlaylists == null && token() != null) {
+            loadRemoteList()
+        }
     }
 
     private fun updateTopControls() {
-        localTabButton.setTextColor(if (!onlineTab) palette.accent else palette.text)
-        onlineTabButton.setTextColor(if (onlineTab) palette.accent else palette.text)
-        compactLocalTabButton.setColorFilter(if (!onlineTab) palette.accent else palette.text)
-        compactOnlineTabButton.setColorFilter(if (onlineTab) palette.accent else palette.text)
         val catalogue = selectedLocal == null && selectedRemote == null
-        // Search/grid actions operate on the catalogue, not on track details.
+        val localSelected = !showAll && !onlineTab
+        val remoteSelected = !showAll && onlineTab
+        compactLocalTabButton.setColorFilter(
+            if (localSelected) palette.accent else palette.text)
+        compactOnlineTabButton.setColorFilter(
+            if (remoteSelected) palette.accent else palette.text)
+        compactLocalTabButton.isSelected = localSelected
+        compactOnlineTabButton.isSelected = remoteSelected
         compactSearchButton.visibility = if (catalogue) View.VISIBLE else View.GONE
         compactLayoutButton.visibility = if (catalogue) View.VISIBLE else View.GONE
-        filtersRow.visibility = if (catalogue && (!landscape || landscapeSearchOpen))
-            View.VISIBLE else View.GONE
-        layoutButton.text = if (columns == 2) "☰" else "▦"
-        layoutButton.contentDescription =
-            if (columns == 2) "Список одним стовпчиком" else "Плитки у два стовпчики"
+        filtersRow.visibility =
+            if (catalogue && landscapeSearchOpen) View.VISIBLE else View.GONE
         compactLayoutButton.setImageResource(
             if (columns == 2) R.drawable.ic_ytm_view_list else R.drawable.ic_ytm_view_grid
         )
-        compactLayoutButton.contentDescription = layoutButton.contentDescription
+        compactLayoutButton.contentDescription =
+            if (columns == 2) "Список одним стовпчиком" else "Плитки у два стовпчики"
         compactSearchButton.setColorFilter(
             if (landscapeSearchOpen) palette.accent else palette.text)
         compactCurrentButton.isEnabled = currentStore.load() != null
         compactCurrentButton.alpha = if (compactCurrentButton.isEnabled) 1f else 0.45f
+        // Catalogue context is inside the bordered card; only track details
+        // retain the existing narrow status caption.
+        statusLabel.visibility = if (catalogue) View.GONE else View.VISIBLE
     }
 
     private fun renderContent() {
@@ -324,14 +333,13 @@ class PlaylistLibraryActivity : Activity() {
         updateTopControls()
         val oldY = scroller.scrollY
         body.removeAllViews()
+        cardTarget = null
         when {
             selectedLocal != null -> renderLocalDetails(selectedLocal!!)
             selectedRemote != null -> renderRemoteDetails(selectedRemote!!)
-            onlineTab -> renderOnlineCatalogue()
-            else -> renderLocalCatalogue()
+            else -> renderCatalogue()
         }
-        scroller.post { if (!isDestroyed) scroller.scrollTo(0, if (selectedLocal == null &&
-            selectedRemote == null) 0 else oldY) }
+        scroller.post { if (!isDestroyed) scroller.scrollTo(0, oldY) }
     }
 
     private fun localItems(): List<LocalLibraryItem> =
@@ -339,33 +347,88 @@ class PlaylistLibraryActivity : Activity() {
             savedStore.getAll(), currentStore.load(), historyStore.getAll()
         )
 
-    private fun renderLocalCatalogue() {
-        val all = localItems()
-        statusLabel.text = "На телефоні: ${all.size} • Збережені та архівні плейлісти"
-        if (!landscape) addFullButton("Поточний плейліст →") {
-            startActivity(Intent(this, PlaylistActivity::class.java))
+    private fun renderLocalCatalogue() = renderCatalogue()
+
+    private fun renderCatalogue() {
+        val localVisible = if (showsLocal()) localItems() else emptyList()
+        val remoteEnabled = showsRemote()
+        val access = token()
+        val remoteItems = if (remoteEnabled && access != null)
+            cachedPlaylists.orEmpty() else emptyList()
+
+        // A single large frame owns the count toolbar and the artwork grid.
+        val panel = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(8), dp(7), dp(8), dp(10))
+            background = surface(palette.surface, 14)
         }
-        if (all.isEmpty()) {
-            addInfo("Локальних плейлістів ще немає. Імпортуйте файл або збережіть плейліст.")
-            return
+        val summary = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
         }
-        val filtered = all.filter {
-            it.title.contains(filterText, true) ||
-                it.sourceLabel.contains(filterText, true)
+        val counts = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
         }
-        addCards(filtered.map { item ->
-            CardInfo(
+        fun counter(icon: Int, label: String, value: String, tint: Int) {
+            counts.addView(ImageView(this).apply {
+                setImageResource(icon)
+                setColorFilter(tint)
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
+                contentDescription = label
+            }, LinearLayout.LayoutParams(dp(17), dp(20)))
+            counts.addView(text(": $value", 13f, false, palette.muted).apply {
+                setPadding(dp(3), 0, dp(9), 0)
+                contentDescription = "$label: $value"
+            })
+        }
+        counter(R.drawable.ic_ytm_device, "На телефоні",
+            localItems().size.toString() +
+                if (!showAll && !onlineTab) " ✓" else "",
+            palette.semantic.duplicate)
+        counter(R.drawable.ic_ytm_youtube_play, "YouTube",
+            (if (access == null) "—" else cachedPlaylists?.size?.toString() ?: "—") +
+                if (!showAll && onlineTab) " ✓" else "",
+            palette.accent)
+        summary.addView(counts, LinearLayout.LayoutParams(
+            0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        val sortButton = iconButton(R.drawable.ic_ytm_sort,
+            "Фільтрація і сортування плейлістів") {}
+        sortButton.setOnClickListener { showSortMenu(sortButton) }
+        summary.addView(sortButton, LinearLayout.LayoutParams(dp(44), dp(46)))
+        panel.addView(summary)
+        panel.addView(text(
+            when {
+                showAll -> "Всі"
+                onlineTab -> "YouTube"
+                else -> "На телефоні"
+            } + " • " + when (sortMode) {
+                SortMode.RECENT -> "Нові (локально)"
+                SortMode.NAME_ASC -> "За абеткою А–Я"
+                SortMode.NAME_DESC -> "За абеткою Я–А"
+                SortMode.TRACKS_DESC -> "За кількістю треків"
+            }, 12f, false, palette.muted
+        ).apply { setPadding(dp(6), dp(1), dp(6), dp(8)) })
+
+        val cards = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        panel.addView(cards)
+        body.addView(panel)
+        cardTarget = cards
+
+        val all = mutableListOf<CardInfo>()
+        localVisible.forEach { item ->
+            all += CardInfo(
                 title = item.title,
-                subtitle = "${item.trackCount} треків • " +
-                    when (item.source) {
-                        LocalLibrarySource.CURRENT -> "Поточний"
-                        LocalLibrarySource.SAVED -> "На телефоні"
-                        LocalLibrarySource.HISTORY -> "Архів History"
-                    },
+                subtitle = "${item.trackCount} треків • " + when (item.source) {
+                    LocalLibrarySource.CURRENT -> "Поточний"
+                    LocalLibrarySource.SAVED -> "На телефоні"
+                    LocalLibrarySource.HISTORY -> "Архів History"
+                },
                 videoId = item.sampleVideoId,
-                badge = "",
                 localSaved = item.source != LocalLibrarySource.HISTORY,
                 linkedYtm = item.destinationPlaylistId != null,
+                updatedAt = item.updatedAt,
+                trackCount = item.trackCount.toLong(),
                 onClick = {
                     selectedLocal = item.identity
                     visibleTrackLimit = 60
@@ -373,8 +436,134 @@ class PlaylistLibraryActivity : Activity() {
                     scroller.scrollTo(0, 0)
                 }
             )
+        }
+        remoteItems.forEach { item ->
+            all += CardInfo(
+                title = item.title,
+                subtitle = "${item.itemCount} відео • ${item.privacyStatus}",
+                videoId = null,
+                thumbnail = item.thumbnailUrl,
+                badge = "YouTube",
+                trackCount = item.itemCount,
+                onClick = {
+                    selectedRemote = item.id
+                    visibleTrackLimit = 60
+                    renderContent()
+                    scroller.scrollTo(0, 0)
+                    if (!cachedTracks.containsKey(item.id)) loadRemoteTracks(item.id)
+                }
+            )
+        }
+        val filtered = all.filter {
+            it.title.contains(filterText, ignoreCase = true) ||
+                it.subtitle.contains(filterText, ignoreCase = true)
+        }
+        val ordered = when (sortMode) {
+            SortMode.RECENT -> filtered.sortedWith(
+                compareByDescending<CardInfo> { it.updatedAt }
+                    .thenBy { it.title.lowercase() })
+            SortMode.NAME_ASC -> filtered.sortedBy { it.title.lowercase() }
+            SortMode.NAME_DESC -> filtered.sortedByDescending { it.title.lowercase() }
+            SortMode.TRACKS_DESC -> filtered.sortedWith(
+                compareByDescending<CardInfo> { it.trackCount }
+                    .thenBy { it.title.lowercase() })
+        }
+        addCards(ordered)
+        if (filtered.isEmpty() && filterText.isNotBlank()) {
+            panelInfo(cards, "Нічого не знайдено за запитом.")
+        } else if (filtered.isEmpty() && !remoteEnabled) {
+            panelInfo(cards, "Локальних плейлістів ще немає.")
+        }
+        if (remoteEnabled && access == null) {
+            panelInfo(cards, "YouTube не підключено • підключіть Google/YTM на головному екрані.")
+        } else if (remoteEnabled && cachedPlaylists == null) {
+            panelInfo(cards, if (loadingList) "Читаю список YouTube…"
+                else "Список YouTube ще не завантажено.")
+        }
+        if (remoteEnabled && loadError != null) {
+            panelInfo(cards, "Не вдалося оновити YouTube: $loadError")
+        }
+        if (remoteEnabled && access != null) {
+            val refresh = button(if (loadingList) "Оновлення…" else "↻ Оновити YouTube") {
+                if (!loadingList) loadRemoteList()
+            }.apply { isEnabled = !loadingList }
+            cards.addView(refresh, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(45)
+            ).apply { topMargin = dp(6) })
+        }
+        cardTarget = null
+    }
+
+    private fun panelInfo(target: LinearLayout, value: String) {
+        target.addView(text(value, 12f, false, palette.muted).apply {
+            setPadding(dp(6), dp(5), dp(6), dp(6))
         })
-        if (filtered.isEmpty()) addInfo("Нічого не знайдено за запитом.")
+    }
+
+    private fun showSortMenu(anchor: View) {
+        val popup = PopupMenu(this, anchor)
+        val entries = listOf(
+            1 to "Всі плейлісти",
+            2 to "Тільки на телефоні",
+            3 to "Тільки YouTube",
+            10 to "За датою локального збереження",
+            11 to "За абеткою • А–Я",
+            12 to "За абеткою • Я–А",
+            13 to "За кількістю треків"
+        )
+        entries.forEachIndexed { index, entry ->
+            val group = if (index < 3) 1 else 2
+            popup.menu.add(group, entry.first, index, entry.second).apply {
+                isCheckable = true
+                isChecked = when (entry.first) {
+                    1 -> showAll
+                    2 -> !showAll && !onlineTab
+                    3 -> !showAll && onlineTab
+                    10 -> sortMode == SortMode.RECENT
+                    11 -> sortMode == SortMode.NAME_ASC
+                    12 -> sortMode == SortMode.NAME_DESC
+                    else -> sortMode == SortMode.TRACKS_DESC
+                }
+            }
+        }
+        popup.menu.setGroupCheckable(1, true, true)
+        popup.menu.setGroupCheckable(2, true, true)
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                1 -> {
+                    showAll = true
+                    selectedLocal = null; selectedRemote = null
+                }
+                2 -> {
+                    showAll = false; onlineTab = false
+                    selectedLocal = null; selectedRemote = null
+                }
+                3 -> {
+                    showAll = false; onlineTab = true
+                    selectedLocal = null; selectedRemote = null
+                }
+                10 -> sortMode = SortMode.RECENT
+                11 -> sortMode = SortMode.NAME_ASC
+                12 -> sortMode = SortMode.NAME_DESC
+                13 -> sortMode = SortMode.TRACKS_DESC
+            }
+            ensureRemoteAccountIsolation()
+            renderContent()
+            scroller.scrollTo(0, 0)
+            if (showsRemote() && cachedPlaylists == null && token() != null) {
+                loadRemoteList()
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun showHelp() {
+        modalController.show(
+            modalId = MODAL_HELP,
+            args = Bundle(),
+            renderer = ::renderConfirmation
+        )
     }
 
     private fun renderLocalDetails(identity: String) {
@@ -428,44 +617,7 @@ class PlaylistLibraryActivity : Activity() {
         showTracks(playlist.tracks)
     }
 
-    private fun renderOnlineCatalogue() {
-        val token = token()
-        statusLabel.text = "YouTube • тільки читання, без змін плейлістів"
-        if (token == null) {
-            addInfo("Google/YTM зараз не підключено. Поверніться на головний " +
-                "екран і натисніть «2. Google / YTM», потім відкрийте бібліотеку.")
-            return
-        }
-        addFullButton(if (loadingList) "Завантажую…" else "↻ Оновити список YouTube") {
-            if (!loadingList) loadRemoteList()
-        }
-        if (loadingList) addInfo("Читаю назви плейлістів з YouTube…")
-        loadError?.let { addInfo("Не вдалося оновити: $it") }
-        val lists = cachedPlaylists
-        if (lists == null) {
-            if (!loadingList) addInfo("Натисніть «Оновити» для отримання списку.")
-            return
-        }
-        val filtered = lists.filter { it.title.contains(filterText, true) }
-        addInfo("Доступно в акаунті: ${lists.size} плейлістів. Треки читаються лише при відкритті.")
-        addCards(filtered.map { item ->
-            CardInfo(
-                title = item.title,
-                subtitle = "${item.itemCount} відео • ${item.privacyStatus}",
-                videoId = null,
-                thumbnail = item.thumbnailUrl,
-                badge = "YouTube",
-                onClick = {
-                    selectedRemote = item.id
-                    visibleTrackLimit = 60
-                    renderContent()
-                    scroller.scrollTo(0, 0)
-                    if (!cachedTracks.containsKey(item.id)) loadRemoteTracks(item.id)
-                }
-            )
-        })
-        if (lists.isEmpty()) addInfo("У цьому YouTube-акаунті немає доступних власних плейлістів.")
-    }
+    private fun renderOnlineCatalogue() = renderCatalogue()
 
     private fun renderRemoteDetails(playlistId: String) {
         val item = cachedPlaylists?.firstOrNull { it.id == playlistId }
@@ -519,6 +671,24 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     private fun renderConfirmation(type: String, args: Bundle): Dialog? {
+        if (type == MODAL_HELP) {
+            return UiChrome.showFixedFooterMessageDialog(
+                activity = this,
+                title = "Бібліотека плейлістів • довідка",
+                message = "Телефон — локальні збережені плейлісти й History. " +
+                    "YouTube — плейлісти підключеного акаунта (лише читання). " +
+                    "Натисніть активне джерело ще раз, щоб побачити всі. " +
+                    "Лупа відкриває пошук, стрілка — поточний плейліст, " +
+                    "значок списку/сітки змінює вигляд, " +
+                    "а фільтр у каталозі керує сортуванням. " +
+                    "Синій телефон ✓ означає локально збережені назви та ID, " +
+                    "не завантажені медіафайли. YTM ✓ — зв’язок із YouTube Music. " +
+                    "Число біля YouTube невідоме до отримання списку.",
+                actions = listOf(UiChrome.DialogAction("Зрозуміло") {
+                    modalController.clearState()
+                })
+            )
+        }
         val id = args.getString("item") ?: return null
         val title: String
         val message: String
@@ -769,6 +939,8 @@ class PlaylistLibraryActivity : Activity() {
         val badge: String = "",
         val localSaved: Boolean = false,
         val linkedYtm: Boolean = false,
+        val updatedAt: Long = 0,
+        val trackCount: Long = 0,
         val onClick: () -> Unit
     )
 
@@ -788,7 +960,7 @@ class PlaylistLibraryActivity : Activity() {
                     0, dp(1), 1f
                 ).apply { marginStart = dp(8) })
             }
-            body.addView(row, LinearLayout.LayoutParams(
+            (cardTarget ?: body).addView(row, LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { bottomMargin = dp(9) })
         }
@@ -948,6 +1120,7 @@ class PlaylistLibraryActivity : Activity() {
         private const val STATE_MODAL = "playlist_library_modal"
         private const val MODAL_SWITCH = "switch_local_current"
         private const val MODAL_SAVE_REMOTE = "save_remote_local"
+        private const val MODAL_HELP = "playlist_library_help"
         private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
 
         // Temporary, account-scoped metadata cache survives Android rotation,

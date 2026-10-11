@@ -93,7 +93,7 @@ d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
-626f2abf9efebf36  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
+b7f55bec60617e0c  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
 4632c91acb804674  app/src/androidTest/java/com/saney/ytmimporter/ui/YouTubePlayerActivityTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
 3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
@@ -110,7 +110,7 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-f2055d18423bf140  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
+11e6b7db3a4c9ab6  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
@@ -227,6 +227,7 @@ c0bad27e1d705a3d  app/src/main/res/drawable/ic_ytm_clear.xml
 cd198506c250db35  app/src/main/res/drawable/ic_ytm_device.xml
 df71e3c795fdd8e4  app/src/main/res/drawable/ic_ytm_download.xml
 c7bb40a5439df404  app/src/main/res/drawable/ic_ytm_edit.xml
+6b98b0118b14e7fe  app/src/main/res/drawable/ic_ytm_help.xml
 6928f23cfd7311d6  app/src/main/res/drawable/ic_ytm_history.xml
 0bce0ab85d328832  app/src/main/res/drawable/ic_ytm_home.xml
 39243446d994b02c  app/src/main/res/drawable/ic_ytm_library_current.xml
@@ -237,6 +238,7 @@ d6fc687f18625e14  app/src/main/res/drawable/ic_ytm_playlist_add.xml
 d976c7bb3d0302e7  app/src/main/res/drawable/ic_ytm_queue.xml
 f2257d911c5a115f  app/src/main/res/drawable/ic_ytm_quota.xml
 a22bc2231f5a6fd9  app/src/main/res/drawable/ic_ytm_search.xml
+337c492adb11a430  app/src/main/res/drawable/ic_ytm_sort.xml
 cbfddac00e3a04e8  app/src/main/res/drawable/ic_ytm_view_grid.xml
 92399488bc31b022  app/src/main/res/drawable/ic_ytm_view_list.xml
 3a6a732a493cd3cb  app/src/main/res/drawable/ic_ytm_youtube_play.xml
