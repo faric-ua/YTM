@@ -1,5 +1,12 @@
 # YTM Importer — ACTIVE PLAN
 
+## QA CHECKPOINT — 2026-10-12 / Read-only Library duplicate finder
+
+- **CODE PASS:** exact source HEAD `e44ec6c17bae65312ab9a3ff90c26e8135166253`; GitHub Validate `38271784940` completed SUCCESS in both jobs (`validate` preflight + JVM + unsigned release; `Android UI geometry (emulator)`). Previous intermediate CI failures on manifest ordering and missing `) ` were fixed before this green run.
+- **PHONE PENDING:** no signed APK was installed for this new wave. Do not call phone QA PASS before owner tests on device. Next: Termux:Widget YTM `1 Оновити проєкт` and `5 Зібрати новий APK`, install over existing app; check pinned controls after long scroll, YouTube public/private/unlisted scope, Similar-only and similar-first grouping, source identity and rotation without touching Delete.
+- **DELETION TESTS DEFERRED BY OWNER:** do not pick expendable playlists, remove History, or delete YouTube until the owner can identify duplicates; prior remote cancel/rotation test remains PASS. Duplicate suggestions never auto-delete or merge. Pure finder compares complete valid videoId multisets or normalized titles with track counts; account-linked ID alone not evidence of duplicate content.
+- **Safety:** no remote mutations triggered by this feature, no mass YouTube track fetch, no branch promotion/stable release yet.
+
 ## ACTIVE WAVE — 2026-10-12 / Library discovery before deletion
 
 - [x] OWNER explicitly postponed **all actual deletion QA** until Library organization and discovery of possible duplicates make the targets understandable. No automatic deletes, no API writes or bulk actions.
