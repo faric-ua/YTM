@@ -93,7 +93,7 @@ d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
-8c16f73688f401cb  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
+b7edbd424c4dbb00  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
 4632c91acb804674  app/src/androidTest/java/com/saney/ytmimporter/ui/YouTubePlayerActivityTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
 3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
@@ -106,11 +106,11 @@ bf1a58d090226215  app/src/debug/AndroidManifest.xml
 a25d17ce55fe6774  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 e1d371ab53cffd83  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
-77d8a54ff24d6e3e  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+7f0138ef50888738  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-ef70e7b73ef3521c  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
+ad27351c3eeaee0c  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
@@ -168,7 +168,7 @@ c606025da7de4466  app/src/main/java/com/saney/ytmimporter/storage/AccountLibrary
 2bf17651466d4795  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncCheckpointStore.kt
 727fa7dde0b6e167  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncQaFaultStore.kt
 8ebb952d5156f8a5  app/src/main/java/com/saney/ytmimporter/storage/BulkSyncSessionStore.kt
-a7c51a26f60137e4  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
+144342e6ed4dd4bd  app/src/main/java/com/saney/ytmimporter/storage/CurrentPlaylistStore.kt
 52e409baf9a0ed79  app/src/main/java/com/saney/ytmimporter/storage/DirectDownloadFileQuery.kt
 835027dec859c077  app/src/main/java/com/saney/ytmimporter/storage/HistoryStore.kt
 6c482fb50c942036  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
@@ -176,7 +176,7 @@ a3f7b5bcc59704d1  app/src/main/java/com/saney/ytmimporter/storage/PendingJobStor
 d67cc3786098a8d2  app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt
 3de6e763afc03c12  app/src/main/java/com/saney/ytmimporter/storage/QuotaMath.kt
 7757d7891a19e2f2  app/src/main/java/com/saney/ytmimporter/storage/QuotaTracker.kt
-cdc3478ae48a57bb  app/src/main/java/com/saney/ytmimporter/storage/RestorablePlaylistStore.kt
+b8370e88b2b1654b  app/src/main/java/com/saney/ytmimporter/storage/RestorablePlaylistStore.kt
 855d8a2560bcb389  app/src/main/java/com/saney/ytmimporter/storage/SafRecentFileQuery.kt
 f946829e8e807845  app/src/main/java/com/saney/ytmimporter/storage/SafTreeAccess.kt
 fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWriter.kt
