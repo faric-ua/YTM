@@ -529,7 +529,7 @@ class PlaylistLibraryActivity : Activity() {
                 " • YouTube: ${privacyLabel(privacyMode.name)}" else "") +
                 (if (similarOnly) " • Тільки схожі" else ""),
             12f, false, palette.muted
-        ).apply { setPadding(dp(6), dp(1), dp(6), dp(6)) }
+        ).apply { setPadding(dp(6), dp(1), dp(6), dp(6)) })
 
         val cards = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         panel.addView(cards)
