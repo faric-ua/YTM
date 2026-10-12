@@ -571,8 +571,7 @@ class MainActivity : Activity() {
                     palette.surface,
                 subtitleAccent = true,
                 onClick = {
-                    clearDelegatedReturnRoute()
-                    openPlaylistHub()
+                    openDirectPlaylistHub()
                 }
             )
 
@@ -1284,6 +1283,7 @@ class MainActivity : Activity() {
         createPlaylist()
     }
 
+    private fun openDirectPlaylistHub() { clearDelegatedReturnRoute(); openPlaylistHub() }
     private fun openDirectPlaylistLibrary() {
         clearDelegatedReturnRoute()
         startActivityForResult(Intent(this, PlaylistLibraryActivity::class.java),
