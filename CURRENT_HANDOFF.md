@@ -1,5 +1,13 @@
 # YTM Importer — CURRENT HANDOFF
 
+## PHONE QA — 2026-10-12 / Remote delete Cancel + rotation PASS (narrow)
+
+- [x] Owner screenshot showed the source-specific irreversible confirmation for YouTube playlist `YTM QA Existing Target` (6 videos, ID `PLPOkx0D1IYBs`), with an explicit `Видалити з YouTube` / `Скасувати` choice.
+- [x] Owner returned `+` after requested rotation portrait → landscape → portrait and `Скасувати`; playlist remained in Library. **PASS: remote deletion dialog lifecycle and cancellation/no unintended deletion.**
+- [ ] Actual remote deletion, post-delete automatic catalogue reload and updated counters **NOT YET PHONE-VERIFIED**. No remote delete executed in this QA.
+- [ ] NEXT: local-copy deletion confirmation/cancellation with a safely expendable noncurrent local ID; then separately History-only confirmation and actual local deletion if owner chooses. Keep code and working APK unchanged.
+- [ ] Sticky counters/grid-only scroll and public/private/unlisted filtering remain backlog-only, as requested.
+
 ## NEW OWNER UX TODO — 2026-10-12 (do not implement yet)
 
 See `BACKLOG.md` "Library sticky controls and YouTube privacy filters": fixed counters/scope/source/sort controls above independently scrolling playlist grid; add `public/private/unlisted/all` *remote YouTube privacy filter* to existing sort/filter controls, with search, source-scope, refresh, rotation and insets QA. User requested TODO only. Source-scoped delete implementation is code CI PASS on `d81078db` (Validate `38197435492`), phone QA pending; user sent a deletion-screen screenshot but success/cancellation and no-side-effects not yet confirmed. Keep current app source untouched, do not delete anything automatically.

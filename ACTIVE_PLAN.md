@@ -1,5 +1,13 @@
 # YTM Importer — ACTIVE PLAN
 
+## PHONE QA — 2026-10-12 / Remote delete Cancel + rotation PASS (narrow)
+
+- [x] Owner screenshot showed the source-specific irreversible confirmation for YouTube playlist `YTM QA Existing Target` (6 videos, ID `PLPOkx0D1IYBs`), with an explicit `Видалити з YouTube` / `Скасувати` choice.
+- [x] Owner returned `+` after requested rotation portrait → landscape → portrait and `Скасувати`; playlist remained in Library. **PASS: remote deletion dialog lifecycle and cancellation/no unintended deletion.**
+- [ ] Actual remote deletion, post-delete automatic catalogue reload and updated counters **NOT YET PHONE-VERIFIED**. No remote delete executed in this QA.
+- [ ] NEXT: local-copy deletion confirmation/cancellation with a safely expendable noncurrent local ID; then separately History-only confirmation and actual local deletion if owner chooses. Keep code and working APK unchanged.
+- [ ] Sticky counters/grid-only scroll and public/private/unlisted filtering remain backlog-only, as requested.
+
 ## CURRENT WAVE — 2026-10-12 / Source-scoped Library deletion
 
 - [x] Saved/current detail: remove exactly one localPlaylistId, clear Home only if active. Linked History, independent local snapshots and YouTube remain untouched.
