@@ -22,6 +22,8 @@ import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -31,6 +33,61 @@ import java.util.UUID
 /** Real library Activity; local fixture only, no remote writes or credentials. */
 @RunWith(AndroidJUnit4::class)
 class PlaylistLibraryActivityTest {
+    @Test fun exactIdRemovePreservesSameTitlePeerAndGuardsCurrent() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val current = CurrentPlaylistStore(context)
+        val saved = RestorablePlaylistStore(context)
+        val first = "del-first-${UUID.randomUUID()}"
+        val second = "del-second-${UUID.randomUUID()}"
+        val title = "Same title different identities"
+        current.save(ImportedPlaylist(title, mutableListOf()), "Test",
+            localPlaylistId = first)
+        current.save(ImportedPlaylist(title, mutableListOf()), "Test",
+            localPlaylistId = second)
+        assertFalse(current.clearIfMatches(first))
+        assertTrue(saved.remove(first))
+        assertNull(saved.get(first))
+        assertNotNull(saved.get(second))
+        assertEquals(second, current.load()?.localPlaylistId)
+        assertTrue(current.clearIfMatches(second))
+        assertNull(current.load())
+        assertTrue(saved.remove(second))
+        assertFalse(saved.remove(second))
+    }
+
+    @Test fun onlyLocalDetailOffersDeleteButton() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val title = "Local delete QA ${UUID.randomUUID()}"
+        val localId = "delete-ui-${UUID.randomUUID()}"
+        CurrentPlaylistStore(context).save(
+            ImportedPlaylist(title, mutableListOf(Track("Song", "Artist"))),
+            "Local UI test", localPlaylistId = localId
+        )
+        ActivityScenario.launch<PlaylistLibraryActivity>(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            idle()
+            scene.onActivity { activity ->
+                val root = activity.window.decorView
+                assertFalse(root.collectButtons().any {
+                    it.text.toString() == "Видалити локальну копію"
+                })
+                val label = root.findLabel(title) ?: error("Local card not found")
+                var card: View? = label
+                while (card != null && !card.isClickable) card = card.parent as? View
+                assertNotNull(card)
+                card!!.performClick()
+            }
+            idle()
+            scene.onActivity { activity ->
+                assertTrue(activity.window.decorView.collectButtons().any {
+                    it.text.toString() == "Видалити локальну копію"
+                })
+                assertNotNull(RestorablePlaylistStore(activity).get(localId))
+            }
+        }
+    }
+
     @Test fun realLibraryShowsLocalPlaylistAndKeepsItAfterRecreate() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val id = "ui-library-" + UUID.randomUUID()

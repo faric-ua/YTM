@@ -653,6 +653,13 @@ class PlaylistLibraryActivity : Activity() {
                     Uri.encode(remoteId))
             }
         }
+        if (item.source != LocalLibrarySource.HISTORY &&
+            !item.localPlaylistId.isNullOrBlank()
+        ) {
+            addFullButton("Видалити локальну копію") {
+                showConfirmation(MODAL_DELETE_LOCAL, item.identity)
+            }
+        }
         addHeading("Треки • ${playlist.tracks.size}")
         showTracks(playlist.tracks)
     }
@@ -708,6 +715,27 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     private fun renderConfirmation(type: String, args: Bundle): Dialog? {
+        if (type == MODAL_DELETE_LOCAL) {
+            val identity = args.getString("item") ?: return null
+            val target = localItems().firstOrNull {
+                it.identity == identity && it.source != LocalLibrarySource.HISTORY
+            } ?: return null
+            val localId = target.localPlaylistId?.takeIf(String::isNotBlank)
+                ?: return null
+            return UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title = "Видалити локальну копію?",
+                message = "Плейлист «${target.title}» буде видалено з локальної " +
+                    "бібліотеки. Якщо він поточний, Home очиститься.\n\n" +
+                    "Інші локальні копії, History, YTM Project і YouTube не " +
+                    "зміняться. Архів History може залишитися видимим окремо.",
+                confirmLabel = "Видалити локально",
+                onCancel = { modalController.clearState() }
+            ) {
+                modalController.clearState()
+                deleteLocalCopy(localId)
+            }
+        }
         if (type == MODAL_HELP) {
             return UiChrome.showContentDialog(
                 activity = this,
@@ -763,6 +791,34 @@ class PlaylistLibraryActivity : Activity() {
                 }
             )
         )
+    }
+
+    private fun deleteLocalCopy(localId: String) {
+        // Check the exact opaque ID again after rotation/confirmation.
+        val target = localItems().firstOrNull {
+            it.localPlaylistId == localId &&
+                it.source != LocalLibrarySource.HISTORY
+        }
+        if (target == null) {
+            toast("Локальна копія вже недоступна")
+            selectedLocal = null
+            renderContent()
+            return
+        }
+        val clearedCurrent = currentStore.clearIfMatches(localId)
+        val removedSaved = savedStore.remove(localId)
+        if (!clearedCurrent && !removedSaved) {
+            toast("Локальну копію вже видалено")
+            return
+        }
+        if (clearedCurrent) {
+            setResult(RESULT_OK, Intent().putExtra(EXTRA_CURRENT_CHANGED, true))
+        }
+        selectedLocal = null
+        visibleTrackLimit = 60
+        renderContent()
+        scroller.scrollTo(0, 0)
+        toast("Локальну копію видалено")
     }
 
     private fun createLibraryHelpContent(): View {
@@ -849,6 +905,11 @@ class PlaylistLibraryActivity : Activity() {
             "Не можна знати, чи кожен трек присутній на YouTube, доки " +
                 "не порівняно склади плейлистів. Позначки ✓, ? або помилку " +
                 "для повноти можна показувати лише після такої перевірки.")
+        section("Видалення локальних копій")
+        entry(R.drawable.ic_ytm_device, "Видалити локальну копію",
+            "У деталях локального плейлиста є видалення з підтвердженням. " +
+                "Поточний список теж очиститься, якщо його видалено. " +
+                "History, YouTube і решта локальних записів не зміняться.")
         section("Обкладинки та дублікати")
         entry(R.drawable.ic_ytm_music, "Немає обкладинки",
             "Мініатюра береться з доступних YouTube-даних за videoId. " +
@@ -1358,6 +1419,7 @@ class PlaylistLibraryActivity : Activity() {
         const val EXTRA_CURRENT_CHANGED = "playlist_library_current_changed"
         private const val STATE_MODAL = "playlist_library_modal"
         private const val MODAL_SWITCH = "switch_local_current"
+        private const val MODAL_DELETE_LOCAL = "delete_saved_local_copy"
         private const val MODAL_SAVE_REMOTE = "save_remote_local"
         private const val MODAL_HELP = "playlist_library_help"
         private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")

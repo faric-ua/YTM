@@ -81,6 +81,16 @@ class RestorablePlaylistStore(
         )
     }
 
+    /** Deletes just the durable local identity, never History or remote data. */
+    @Synchronized
+    fun remove(localPlaylistId: String): Boolean {
+        if (localPlaylistId.isBlank()) return false
+        val entries = readAll()
+        if (entries.none { it.localPlaylistId == localPlaylistId }) return false
+        writeAll(entries.filterNot { it.localPlaylistId == localPlaylistId })
+        return true
+    }
+
     private fun readAll():
         List<RestorablePlaylistSnapshot> {
         val raw =

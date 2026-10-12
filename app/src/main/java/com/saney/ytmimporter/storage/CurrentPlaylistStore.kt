@@ -360,6 +360,16 @@ class CurrentPlaylistStore(
             .RENAMED
     }
 
+    /** A stale delete dialog must not clear a newly selected current playlist. */
+    @Synchronized
+    fun clearIfMatches(expectedLocalPlaylistId: String): Boolean {
+        if (expectedLocalPlaylistId.isBlank() ||
+            load()?.localPlaylistId != expectedLocalPlaylistId
+        ) return false
+        clear()
+        return true
+    }
+
     @Synchronized
     fun clear() {
         prefs.edit()

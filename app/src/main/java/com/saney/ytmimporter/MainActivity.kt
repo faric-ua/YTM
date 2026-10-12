@@ -732,7 +732,7 @@ class MainActivity : Activity() {
             activity = this,
             root = root,
             onSearch = ::openDirectSearchOrReview,
-            onPlaylist = ::openDirectPlaylistHub,
+            onPlaylist = ::openDirectPlaylistLibrary,
             onService = ::showServiceTools
         )
 
@@ -1155,6 +1155,17 @@ class MainActivity : Activity() {
                 }
             }
 
+            playlistLibraryRequestCode -> {
+                if (data.getBooleanExtra(PlaylistLibraryActivity.EXTRA_CURRENT_CHANGED, false)) {
+                    if (currentPlaylistStore.load() == null) {
+                        clearCurrentWorkspaceInMemory()
+                        status("Поточний плейлист видалено з локальної бібліотеки.")
+                    } else {
+                        reloadCurrentWorkspace(force = true)
+                    }
+                }
+            }
+
             historyScreenRequestCode -> {
                 reloadCurrentWorkspace(force = true)
                 status(
@@ -1283,8 +1294,11 @@ class MainActivity : Activity() {
         createPlaylist()
     }
 
-    // Historical Home route contract; its destination is now the full library.
-    private fun openDirectPlaylistHub() = openDirectPlaylistLibrary()
+    // Current playlist card and Library are separate navigation targets.
+    private fun openDirectPlaylistHub() {
+        clearDelegatedReturnRoute()
+        openPlaylistHub()
+    }
     private fun openDirectPlaylistLibrary() {
         clearDelegatedReturnRoute()
         startActivityForResult(Intent(this, PlaylistLibraryActivity::class.java),
