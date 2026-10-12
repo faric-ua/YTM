@@ -93,7 +93,7 @@ d3ada8086ca201c6  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
-b7edbd424c4dbb00  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
+645f94c6404b7c0e  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
 4632c91acb804674  app/src/androidTest/java/com/saney/ytmimporter/ui/YouTubePlayerActivityTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
 3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
@@ -110,7 +110,7 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-ad27351c3eeaee0c  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
+6bbd209dcef9e4f1  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
@@ -137,7 +137,7 @@ dc9c62fd21affffc  app/src/main/java/com/saney/ytmimporter/bulk/BulkSyncRollbackP
 e9076775ed60f7e0  app/src/main/java/com/saney/ytmimporter/bulk/BulkWriteRetryGuard.kt
 9430712c6f05319e  app/src/main/java/com/saney/ytmimporter/destination/DestinationCoordinator.kt
 64dfbecaec3cc3a7  app/src/main/java/com/saney/ytmimporter/destination/DestinationForwardedWritePlan.kt
-a27466468fd212eb  app/src/main/java/com/saney/ytmimporter/destination/DestinationRemoteOperations.kt
+547224880534036e  app/src/main/java/com/saney/ytmimporter/destination/DestinationRemoteOperations.kt
 b13d29a22b59303d  app/src/main/java/com/saney/ytmimporter/history/HistoryRecoveryPolicy.kt
 fae1f536e9f4821a  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryIdentityPolicy.kt
 cccd9f725edae129  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryPolicy.kt
