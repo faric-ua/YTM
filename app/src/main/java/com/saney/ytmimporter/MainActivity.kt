@@ -571,7 +571,8 @@ class MainActivity : Activity() {
                     palette.surface,
                 subtitleAccent = true,
                 onClick = {
-                    openDirectPlaylistHub()
+                    clearDelegatedReturnRoute()
+                    openPlaylistHub()
                 }
             )
 
@@ -1029,7 +1030,7 @@ class MainActivity : Activity() {
         val snapshot =
             currentPlaylistStore
                 .load()
-                ?: return
+                ?: return clearCurrentWorkspaceInMemory()
 
         val current =
             playlist
@@ -1151,17 +1152,6 @@ class MainActivity : Activity() {
                         )
                     } else {
                         resumePendingJob(job)
-                    }
-                }
-            }
-
-            playlistLibraryRequestCode -> {
-                if (data.getBooleanExtra(PlaylistLibraryActivity.EXTRA_CURRENT_CHANGED, false)) {
-                    if (currentPlaylistStore.load() == null) {
-                        clearCurrentWorkspaceInMemory()
-                        status("Поточний плейлист видалено з локальної бібліотеки.")
-                    } else {
-                        reloadCurrentWorkspace(force = true)
                     }
                 }
             }
@@ -1294,11 +1284,6 @@ class MainActivity : Activity() {
         createPlaylist()
     }
 
-    // Current playlist card and Library are separate navigation targets.
-    private fun openDirectPlaylistHub() {
-        clearDelegatedReturnRoute()
-        openPlaylistHub()
-    }
     private fun openDirectPlaylistLibrary() {
         clearDelegatedReturnRoute()
         startActivityForResult(Intent(this, PlaylistLibraryActivity::class.java),
