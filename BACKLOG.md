@@ -1,5 +1,12 @@
 # YTM Importer — Roadmap
 
+## TODO — 2026-10-12 / Library sticky controls and YouTube privacy filters (OWNER REQUEST, NO CODE CHANGE)
+
+- [ ] **Sticky Library controls / playlist-only scroll:** In `Бібліотека плейлистів` keep the top controls visible while scrolling cards: local-phone / YouTube counters, current scope summary (e.g. `Всі • Нові (локально)`), source selector and sorting/filter button. Only the playlist card/grid region scrolls. Keep search usable when active and avoid overlap when keyboard opens; consider insets, portrait/landscape, narrow widths, scroll restoration and rotation. Counter values remain live state, never snapshot hardcodes (owner observed 88 local / 53 YouTube on this screenshot).
+- [ ] **YouTube privacy filter in Library sort/filter UI:** Offer `Усі`, `Публічні (public)`, `Приватні (private)`, `За посиланням (unlisted)`. This is a **filter** on remote YouTube playlist `privacyStatus`, not an ordering sort. It should compose predictably with `Всі/На телефоні/YouTube` source scope and text search, avoid silently hiding local/History entries (define active applicability clearly), preserve chosen filter on rotation, update visible-result counts/empty state and never infer privacy from local/History metadata. Current public/private/unlisted badges remain visible on cards.
+- [ ] **Later phone QA:** Controls remain visible after deep scroll, privacy filtering is accurate across All/YouTube scopes, restoring All returns all entries; search/filter rotation and refresh preserve semantics.
+- [ ] **No implementation now** — requested as backlog only while existing source-scoped delete PHONE-QA is in progress. No additional APK/release for this TODO.
+
 ## CURRENT WAVE — 2026-10-12 / Source-scoped Library deletion
 
 - [x] Saved/current detail: remove exactly one localPlaylistId, clear Home only if active. Linked History, independent local snapshots and YouTube remain untouched.

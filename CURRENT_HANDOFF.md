@@ -1,5 +1,9 @@
 # YTM Importer — CURRENT HANDOFF
 
+## NEW OWNER UX TODO — 2026-10-12 (do not implement yet)
+
+See `BACKLOG.md` "Library sticky controls and YouTube privacy filters": fixed counters/scope/source/sort controls above independently scrolling playlist grid; add `public/private/unlisted/all` *remote YouTube privacy filter* to existing sort/filter controls, with search, source-scope, refresh, rotation and insets QA. User requested TODO only. Source-scoped delete implementation is code CI PASS on `d81078db` (Validate `38197435492`), phone QA pending; user sent a deletion-screen screenshot but success/cancellation and no-side-effects not yet confirmed. Keep current app source untouched, do not delete anything automatically.
+
 ## CURRENT WAVE — 2026-10-12 / Source-scoped Library deletion
 
 - [x] Saved/current detail: remove exactly one localPlaylistId, clear Home only if active. Linked History, independent local snapshots and YouTube remain untouched.
