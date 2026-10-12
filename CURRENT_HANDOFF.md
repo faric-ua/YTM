@@ -1,5 +1,9 @@
 # YTM Importer — CURRENT HANDOFF
 
+## OWNER SCREENSHOT TODO — 2026-10-12 (no code change)
+
+Phone screenshots show (a) uneven-height Library grid tiles, (b) native grey sort/filter menu with truncated names and mixed options, (c) fresh `House Dance Hit 2000 Vol.1` playlist detail apparently opening at old scroll position with track #1 clipped. Additional labels: remote-only `Нові (локально)` and candidate group counts with hidden peers under privacy filtering. All are **OPEN TODO** in `BACKLOG.md`; investigate and reproduce before changes. User explicitly deferred all delete tests, wants to identify duplicate candidates first. Do not modify app code or publish an APK as part of this documentation-only update.
+
 ## QA CHECKPOINT — 2026-10-12 / Read-only Library duplicate finder
 
 - **CODE PASS:** exact source HEAD `e44ec6c17bae65312ab9a3ff90c26e8135166253`; GitHub Validate `38271784940` completed SUCCESS in both jobs (`validate` preflight + JVM + unsigned release; `Android UI geometry (emulator)`). Previous intermediate CI failures on manifest ordering and missing `) ` were fixed before this green run.

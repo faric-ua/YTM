@@ -1,5 +1,16 @@
 # YTM Importer — Roadmap
 
+## TODO — 2026-10-12 / Library phone UI: grid, sorting menu, initial detail scroll (owner screenshots)
+
+Screenshots received in Library YouTube/private/possible-duplicates mode (88 phone, 53 YouTube; 13 shown, 7 similar groups). **Owner requested TODO only: no implementation or deletion now.**
+
+- [ ] **Uneven grid tiles:** in two-column catalogue, tiles in the same row have unequal heights as title, badges and duplicate explanations wrap differently. Make card bottoms align per row with consistent cover/text/badge regions and reasonable truncation; preserve full names in details. Check portrait/landscape, list and grid, long titles and one card with duplicate badge.
+- [ ] **Sort/filter popup style and readability:** native grey Android popup clashes with AppTheme and truncates labels (e.g. `За датою локального..`, `YouTube: будь-яка дос..`). Replace with themed scrollable filter sheet/dialog; group **Джерело**, **Сортування**, **Доступність YouTube**, **Дублікати** into distinct sections, with full labels, clear selected states, independent options, cancel/apply and rotation-safe state. Avoid overly tall popup covering screen.
+- [ ] **Detail opens at a stale scrolled position (investigate):** the screenshot after opening `House Dance Hit 2000 Vol.1` (9 tracks) shows clipped first-track content and track #2 in view. Reproduce opening a new playlist after scrolling catalogue or another detail; ensure newly selected playlist starts from detail header and item #1 (not from shared previous offset). Preserve the *same* detail's scroll on rotation and the *catalogue* offset upon Back; ensure header never covers first item.
+- [ ] **Remote date-sort wording:** screenshot says `YouTube • Нові (локально) • YouTube: приватний`; make sort meaning and fallback honest for remote-only playlists, not implying a known remote creation date.
+- [ ] **Duplicate groups when members hidden by filter:** `Схожі №1 (2)` may show just one item under YouTube/private filters; clarify visible vs total group count, and consider a deliberate cross-filter “Показати групу” view without losing filter state; confidence must distinguish complete-videoId match from title/count candidates.
+- [ ] **Acceptance:** fixed top toolbar unaffected; aligned tile rows; fully legible themed sorting choices; new detail opens at the top, same detail preserves rotation scroll, Back preserves catalogue scroll; filtered duplicate links understandable. **No deletion, merge, API write, or automatic grouping side effects.**
+
 ## QA CHECKPOINT — 2026-10-12 / Read-only Library duplicate finder
 
 - **CODE PASS:** exact source HEAD `e44ec6c17bae65312ab9a3ff90c26e8135166253`; GitHub Validate `38271784940` completed SUCCESS in both jobs (`validate` preflight + JVM + unsigned release; `Android UI geometry (emulator)`). Previous intermediate CI failures on manifest ordering and missing `) ` were fixed before this green run.
