@@ -704,7 +704,7 @@ class PlaylistLibraryActivity : Activity() {
             renderOnlineCatalogue()
             return
         }
-        statusLabel.text = "YouTube • ${item.itemCount} відео • тільки читання"
+        statusLabel.text = "YouTube • ${item.itemCount} відео • віддалений плейлист"
         // One header Back path is shared by local and YouTube details.
         addHeading(item.title)
         addInfo("На YouTube • ${item.privacyStatus}. Треки не завантажуються на телефон.")

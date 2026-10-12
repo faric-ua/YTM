@@ -1,5 +1,15 @@
 # YTM Importer — Roadmap
 
+## CURRENT WAVE — 2026-10-12 / Source-scoped Library deletion
+
+- [x] Saved/current detail: remove exactly one localPlaylistId, clear Home only if active. Linked History, independent local snapshots and YouTube remain untouched.
+- [x] History-only detail: “Видалити запис History”, independent confirmation and operation-ID deletion only. Rotation and browsing never delete.
+- [x] Remote YouTube detail: “Видалити з YouTube Music”, danger dialog naming exact playlist ID and irreversibility. Existing DestinationRemoteOperations owns remote work, authentication, errors and rotation lifecycle; no operation on open, cancel or rotation.
+- [x] Invalidate process-local YouTube catalogue and deleted playlist track cache after successful delete initiated either from Library or Destination. Library refreshes the remote list automatically when shown again; Library-origin success re-fetches immediately.
+- [x] New Android UI History isolation/rotation test, pre-existing local exact-ID tests preserved. Remote detail header says “віддалений плейлист”, not misleading “тільки читання”.
+- [ ] Exact SHA Validate/JVM/unsigned/emulator checks and phone QA required before acceptance; use Cancel/rotation first, then only an explicitly expendable YouTube playlist for remote deletion.
+- [ ] Signed APK and owner phone acceptance remain open. Do not merge main or publish stable automatically; CI never deletes from user account.
+
 ## FOCUSED PHONE QA ACCEPTED — 2026-10-11 / Exact-ID library
 
 - [x] Source `53f176ec` Validate `38153435363` PASS (both jobs). Docs HEAD `196f849f` Validate `38165507252` PASS; signed APK run `38166605993` SUCCESS and installed for owner PHONE QA.
