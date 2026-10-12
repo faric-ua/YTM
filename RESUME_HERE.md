@@ -1,5 +1,16 @@
 # YTM Importer — RESUME HERE
 
+## ACTIVE WAVE — 2026-10-12 / Library discovery before deletion
+
+- [x] OWNER explicitly postponed **all actual deletion QA** until Library organization and discovery of possible duplicates make the targets understandable. No automatic deletes, no API writes or bulk actions.
+- [x] Place source counters, scope/sort summary and sort control in a fixed top toolbar; only catalogue cards scroll. Source selector and search already live outside scroll. Preserve detail navigation and rotation state.
+- [x] Extend existing filter/sort menu with YouTube privacy (all / public / private / unlisted), duplicate candidates only, and duplicate-first sort. Privacy only affects remote YouTube cards; local and History remain visible under "All".
+- [x] Read-only `PlaylistLibraryDuplicatePolicy`: compare complete videoId multisets if available, normalized title + equal count as a candidate, or matching title + different count as a weaker relation. Linked `playlistId` alone does NOT imply duplicate or equal tracks. No remote bulk fetch.
+- [x] Show candidate group number, group size and reason on separate existing cards; do not collapse or automatically select/delete entries. Counters remain total and display visible result count / visible group count.
+- [x] Add JVM tests for punctuation/case, same name with different counts, full videoId multiset including repeats, incomplete IDs, unrelated editions, and same-title peers.
+- [ ] Exact HEAD CI: main preflight, JVM tests, unsigned release, Android UI. Signed APK + focused owner phone QA only after CI PASS. Check pinned toolbar in deep scroll and rotation; privacy filters and candidate grouping with `db ost` or `The Prodigy`; **do NOT delete any playlist during this wave**.
+- [ ] Old `delete/cancel` phone checks deliberately deferred until owner can distinguish source and duplicate candidates. Do not merge main or publish stable automatically.
+
 ## CURRENT WAVE — 2026-10-12 / Source-scoped Library deletion
 
 - [x] Saved/current detail: remove exactly one localPlaylistId, clear Home only if active. Linked History, independent local snapshots and YouTube remain untouched.

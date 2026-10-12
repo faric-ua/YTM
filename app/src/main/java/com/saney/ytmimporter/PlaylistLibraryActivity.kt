@@ -29,6 +29,7 @@ import com.saney.ytmimporter.destination.DestinationRemoteOperations
 import com.saney.ytmimporter.history.HistoryRecoveryPolicy
 import com.saney.ytmimporter.library.LocalLibraryItem
 import com.saney.ytmimporter.library.LocalLibrarySource
+import com.saney.ytmimporter.library.PlaylistLibraryDuplicatePolicy
 import com.saney.ytmimporter.library.PlaylistLibraryIdentityPolicy
 import com.saney.ytmimporter.library.PlaylistLibraryPolicy
 import com.saney.ytmimporter.model.ImportedPlaylist
@@ -52,9 +53,12 @@ import java.util.concurrent.Executors
  * confirmation; opening or recreating a screen never writes to YouTube.
  */
 class PlaylistLibraryActivity : Activity() {
-    private enum class SortMode { RECENT, NAME_ASC, NAME_DESC, TRACKS_DESC }
+    private enum class SortMode { RECENT, NAME_ASC, NAME_DESC, TRACKS_DESC, SIMILAR_FIRST }
+    private enum class PrivacyMode { ALL, PUBLIC, PRIVATE, UNLISTED }
     private var showAll = true
     private var sortMode = SortMode.RECENT
+    private var privacyMode = PrivacyMode.ALL
+    private var similarOnly = false
     private var cardTarget: LinearLayout? = null
     private val currentStore by lazy { CurrentPlaylistStore(this) }
     private val savedStore by lazy { RestorablePlaylistStore(this) }
@@ -82,6 +86,7 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var root: LinearLayout
     private lateinit var body: LinearLayout
     private lateinit var scroller: ScrollView
+    private lateinit var catalogueToolbar: LinearLayout
     private lateinit var tabsRow: LinearLayout
     private lateinit var filtersRow: LinearLayout
     private lateinit var compactLocalTabButton: ImageButton
@@ -108,6 +113,10 @@ class PlaylistLibraryActivity : Activity() {
         sortMode = runCatching {
             SortMode.valueOf(savedInstanceState?.getString("sort_mode") ?: "RECENT")
         }.getOrDefault(SortMode.RECENT)
+        privacyMode = runCatching {
+            PrivacyMode.valueOf(savedInstanceState?.getString("privacy_mode") ?: "ALL")
+        }.getOrDefault(PrivacyMode.ALL)
+        similarOnly = savedInstanceState?.getBoolean("similar_only") ?: false
         columns = savedInstanceState?.getInt("columns") ?: 2
         filterText = savedInstanceState?.getString("filter").orEmpty()
         landscapeSearchOpen = savedInstanceState?.getBoolean("landscape_search")
@@ -153,6 +162,8 @@ class PlaylistLibraryActivity : Activity() {
         outState.putBoolean("online", onlineTab)
         outState.putBoolean("show_all", showAll)
         outState.putString("sort_mode", sortMode.name)
+        outState.putString("privacy_mode", privacyMode.name)
+        outState.putBoolean("similar_only", similarOnly)
         outState.putInt("columns", columns)
         outState.putString("filter", filterText)
         outState.putBoolean("landscape_search", landscapeSearchOpen)
@@ -313,6 +324,16 @@ class PlaylistLibraryActivity : Activity() {
             }
         }
         root.addView(statusLabel)
+        // The counter/filter toolbar belongs outside the scrollable playlist grid.
+        catalogueToolbar = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), dp(6), dp(12), dp(6))
+            background = surface(palette.surface, 14)
+        }
+        root.addView(catalogueToolbar, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { leftMargin = dp(10); rightMargin = dp(10) })
         scroller = ScrollView(this).apply { isFillViewport = true }
         body = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -378,6 +399,7 @@ class PlaylistLibraryActivity : Activity() {
         // Catalogue context is inside the bordered card; only track details
         // retain the existing narrow status caption.
         statusLabel.visibility = if (catalogue) View.GONE else View.VISIBLE
+        catalogueToolbar.visibility = if (catalogue) View.VISIBLE else View.GONE
     }
 
     private fun renderContent() {
@@ -385,6 +407,7 @@ class PlaylistLibraryActivity : Activity() {
         updateTopControls()
         val oldY = scroller.scrollY
         body.removeAllViews()
+        catalogueToolbar.removeAllViews()
         cardTarget = null
         when {
             selectedLocal != null -> renderLocalDetails(selectedLocal!!)
@@ -402,24 +425,53 @@ class PlaylistLibraryActivity : Activity() {
     private fun renderLocalCatalogue() = renderCatalogue()
 
     private fun renderCatalogue() {
-        val allLocal = localItems()
+        val saved = savedStore.getAll()
+        val active = currentStore.load()
+        val archive = historyStore.getAll()
+        val allLocal = PlaylistLibraryPolicy.build(saved, active, archive)
         val localVisible = if (showsLocal()) allLocal else emptyList()
         val remoteEnabled = showsRemote()
         val access = token()
-        val remoteItems = if (remoteEnabled && access != null)
-            cachedPlaylists.orEmpty() else emptyList()
+        val allRemote = if (access != null) cachedPlaylists.orEmpty() else emptyList()
+        val remoteItems = if (remoteEnabled) allRemote.filter {
+            privacyMode == PrivacyMode.ALL ||
+                it.privacyStatus.equals(privacyMode.name, ignoreCase = true)
+        } else emptyList()
+        // Metadata-only candidates. Do not spend API quota fetching all
+        // remote tracks or treat an equal linked playlistId as track equality.
+        val savedById = saved.associateBy { it.localPlaylistId }
+        val archiveById = archive.associateBy { it.id }
+        val candidates = allLocal.map { item ->
+            val videoIds = when (item.source) {
+                LocalLibrarySource.HISTORY ->
+                    archiveById[item.historyEntryId]?.tracks?.map { it.videoId.orEmpty() }
+                else -> (active?.takeIf { it.localPlaylistId == item.localPlaylistId }
+                    ?.playlist ?: savedById[item.localPlaylistId]?.playlist)
+                    ?.tracks?.map { it.selectedVideoId.orEmpty() }
+            }
+            PlaylistLibraryDuplicatePolicy.Candidate(
+                item.identity, item.title, item.trackCount, videoIds
+            )
+        } + allRemote.map { remote ->
+            PlaylistLibraryDuplicatePolicy.Candidate(
+                "youtube:${remote.id}", remote.title,
+                remote.itemCount.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(),
+                cachedTracks[remote.id]?.map { it.selectedVideoId.orEmpty() }
+            )
+        }
+        val hints = PlaylistLibraryDuplicatePolicy.find(candidates)
         // Cross-reference only IDs in the current account's already fetched
         // catalogue. Retain BOTH cards and NEVER infer identical track lists.
         val exactLinks = PlaylistLibraryIdentityPolicy.exactRemoteMatches(
             allLocal, remoteItems)
 
-        // A single large frame owns the count toolbar and the artwork grid.
+        // Only the card grid is scrollable. Counts and filters live above it.
         val panel = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(8), dp(7), dp(8), dp(10))
             background = surface(palette.surface, 14)
         }
-        // Keep the two source counters visually centered in the WHOLE panel.
+        // Keep source counters centered within the pinned toolbar.
         // Sort is overlaid at the right, not part of the counter's measured width.
         val summary = FrameLayout(this).apply {
             minimumHeight = dp(52)
@@ -461,8 +513,8 @@ class PlaylistLibraryActivity : Activity() {
         summary.addView(sortButton, FrameLayout.LayoutParams(
             dp(44), dp(46), Gravity.END or Gravity.CENTER_VERTICAL
         ))
-        panel.addView(summary)
-        panel.addView(text(
+        catalogueToolbar.addView(summary)
+        catalogueToolbar.addView(text(
             when {
                 showAll -> "Всі"
                 onlineTab -> "YouTube"
@@ -472,8 +524,12 @@ class PlaylistLibraryActivity : Activity() {
                 SortMode.NAME_ASC -> "За абеткою А–Я"
                 SortMode.NAME_DESC -> "За абеткою Я–А"
                 SortMode.TRACKS_DESC -> "За кількістю треків"
-            }, 12f, false, palette.muted
-        ).apply { setPadding(dp(6), dp(1), dp(6), dp(8)) })
+                SortMode.SIMILAR_FIRST -> "Спочатку можливі дублікати"
+            } + (if (privacyMode != PrivacyMode.ALL && remoteEnabled)
+                " • YouTube: ${privacyLabel(privacyMode.name)}" else "") +
+                (if (similarOnly) " • Тільки схожі" else ""),
+            12f, false, palette.muted
+        ).apply { setPadding(dp(6), dp(1), dp(6), dp(6)) }
 
         val cards = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         panel.addView(cards)
@@ -482,6 +538,8 @@ class PlaylistLibraryActivity : Activity() {
 
         val all = mutableListOf<CardInfo>()
         localVisible.forEach { item ->
+            val hint = hints[item.identity]
+            if (similarOnly && hint == null) return@forEach
             all += CardInfo(
                 title = item.title,
                 subtitle = (if (item.destinationPlaylistId?.let {
@@ -497,6 +555,7 @@ class PlaylistLibraryActivity : Activity() {
                 linkedYtm = item.destinationPlaylistId != null,
                 updatedAt = item.updatedAt,
                 trackCount = item.trackCount.toLong(),
+                duplicateHint = hint,
                 onClick = {
                     selectedLocal = item.identity
                     visibleTrackLimit = 60
@@ -506,14 +565,17 @@ class PlaylistLibraryActivity : Activity() {
             )
         }
         remoteItems.forEach { item ->
+            val hint = hints["youtube:${item.id}"]
+            if (similarOnly && hint == null) return@forEach
             all += CardInfo(
                 title = item.title,
                 subtitle = (if (item.id in exactLinks) "Збіг ID • " else "") +
-                    "${item.itemCount} відео • ${item.privacyStatus}",
+                    "${item.itemCount} відео • ${privacyLabel(item.privacyStatus)}",
                 videoId = null,
                 thumbnail = item.thumbnailUrl,
                 badge = "YouTube",
                 trackCount = item.itemCount,
+                duplicateHint = hint,
                 onClick = {
                     selectedRemote = item.id
                     visibleTrackLimit = 60
@@ -536,9 +598,20 @@ class PlaylistLibraryActivity : Activity() {
             SortMode.TRACKS_DESC -> filtered.sortedWith(
                 compareByDescending<CardInfo> { it.trackCount }
                     .thenBy { it.title.lowercase() })
+            SortMode.SIMILAR_FIRST -> filtered.sortedWith(
+                compareBy<CardInfo> { if (it.duplicateHint == null) 1 else 0 }
+                    .thenBy { it.duplicateHint?.groupNumber ?: Int.MAX_VALUE }
+                    .thenBy { it.title.lowercase() })
         }
+        val groupCount = filtered.mapNotNull { it.duplicateHint?.groupNumber }
+            .distinct().size
+        panelInfo(cards, "Показано: ${filtered.size} • груп схожих: $groupCount" +
+            " • архівів History: ${allLocal.count { it.source == LocalLibrarySource.HISTORY }}")
         addCards(ordered)
-        if (filtered.isEmpty() && filterText.isNotBlank()) {
+        if (filtered.isEmpty() && similarOnly) {
+            panelInfo(cards, "У вибраному фільтрі схожих плейлистів немає. " +
+                "Список YouTube може бути ще не завантажений.")
+        } else if (filtered.isEmpty() && filterText.isNotBlank()) {
             panelInfo(cards, "Нічого не знайдено за запитом.")
         } else if (filtered.isEmpty() && !remoteEnabled) {
             panelInfo(cards, "Локальних плейлістів ще немає.")
@@ -563,6 +636,13 @@ class PlaylistLibraryActivity : Activity() {
         cardTarget = null
     }
 
+    private fun privacyLabel(status: String) = when (status.lowercase()) {
+        "public" -> "публічний"
+        "private" -> "приватний"
+        "unlisted" -> "за посиланням"
+        else -> status
+    }
+
     private fun panelInfo(target: LinearLayout, value: String) {
         target.addView(text(value, 12f, false, palette.muted).apply {
             setPadding(dp(6), dp(5), dp(6), dp(6))
@@ -578,10 +658,22 @@ class PlaylistLibraryActivity : Activity() {
             10 to "За датою локального збереження",
             11 to "За абеткою • А–Я",
             12 to "За абеткою • Я–А",
-            13 to "За кількістю треків"
+            13 to "За кількістю треків",
+            14 to "Спочатку можливі дублікати",
+            20 to "YouTube: будь-яка доступність",
+            21 to "YouTube: публічні",
+            22 to "YouTube: приватні",
+            23 to "YouTube: за посиланням",
+            30 to "Показати всі записи",
+            31 to "Лише можливі дублікати"
         )
         entries.forEachIndexed { index, entry ->
-            val group = if (index < 3) 1 else 2
+            val group = when (entry.first) {
+                in 1..3 -> 1
+                in 10..14 -> 2
+                in 20..23 -> 3
+                else -> 4
+            }
             popup.menu.add(group, entry.first, index, entry.second).apply {
                 isCheckable = true
                 isChecked = when (entry.first) {
@@ -591,12 +683,22 @@ class PlaylistLibraryActivity : Activity() {
                     10 -> sortMode == SortMode.RECENT
                     11 -> sortMode == SortMode.NAME_ASC
                     12 -> sortMode == SortMode.NAME_DESC
-                    else -> sortMode == SortMode.TRACKS_DESC
+                    13 -> sortMode == SortMode.TRACKS_DESC
+                    14 -> sortMode == SortMode.SIMILAR_FIRST
+                    20 -> privacyMode == PrivacyMode.ALL
+                    21 -> privacyMode == PrivacyMode.PUBLIC
+                    22 -> privacyMode == PrivacyMode.PRIVATE
+                    23 -> privacyMode == PrivacyMode.UNLISTED
+                    30 -> !similarOnly
+                    31 -> similarOnly
+                    else -> false
                 }
             }
         }
         popup.menu.setGroupCheckable(1, true, true)
         popup.menu.setGroupCheckable(2, true, true)
+        popup.menu.setGroupCheckable(3, true, true)
+        popup.menu.setGroupCheckable(4, true, true)
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 1 -> {
@@ -615,6 +717,13 @@ class PlaylistLibraryActivity : Activity() {
                 11 -> sortMode = SortMode.NAME_ASC
                 12 -> sortMode = SortMode.NAME_DESC
                 13 -> sortMode = SortMode.TRACKS_DESC
+                14 -> sortMode = SortMode.SIMILAR_FIRST
+                20 -> privacyMode = PrivacyMode.ALL
+                21 -> privacyMode = PrivacyMode.PUBLIC
+                22 -> privacyMode = PrivacyMode.PRIVATE
+                23 -> privacyMode = PrivacyMode.UNLISTED
+                30 -> similarOnly = false
+                31 -> similarOnly = true
             }
             ensureRemoteAccountIsolation()
             renderContent()
@@ -992,9 +1101,10 @@ class PlaylistLibraryActivity : Activity() {
             "Відкриває ці пояснення. Після закриття ви повернетеся на той самий екран.")
         section("Каталог, фільтри та сортування")
         entry(R.drawable.ic_ytm_sort, "Фільтр і сортування",
-            "«Всі / тільки телефон / тільки YouTube», за локальною датою, " +
-                "за абеткою А–Я / Я–А або за кількістю треків. " +
-                "Для YouTube дата може бути невідомою.")
+            "Панель з лічильниками й фільтром не прокручується разом із " +
+                "картками. Доступні джерело, назва, дата, кількість, " +
+                "можливі дублікати та public/private/unlisted для YouTube. " +
+                "Фільтр доступності не приховує локальні записи.")
         entry(R.drawable.ic_ytm_device, "Лічильник телефону",
             "Кількість локальних записів. ✓ біля ЧИСЛА означає лише " +
                 "вибраний фільтр «Телефон», а не перевірені треки.",
@@ -1038,10 +1148,12 @@ class PlaylistLibraryActivity : Activity() {
             "Мініатюра береться з доступних YouTube-даних за videoId. " +
                 "Коли дійсного ID немає, показується нейтральна нота. " +
                 "Для архівів може знадобитися відновлення метаданих.")
-        entry(R.drawable.ic_ytm_view_grid, "Схожі або повторні записи",
-            "Один плейліст може бути поточним, збереженим, в History і на YouTube. " +
-                "Самі назви не підтверджують, що це точні дублікати: " +
-                "поки записи не об’єднуються автоматично.")
+        entry(R.drawable.ic_ytm_view_grid, "Кандидати на дублікати",
+            "«Схожі» групуються за нормалізованою назвою; різна кількість " +
+                "треків означає можливу відмінність версій. «Збіг складу» " +
+                "вимагає повних доступних списків videoId. Не виконується " +
+                "масове читання YouTube або автоматичне видалення. " +
+                "Збіг пов’язаного playlistId сам по собі не є дублікатом.")
         entry(R.drawable.ic_ytm_youtube_play, "Збіг ID",
             "У локальній та YouTube-картці знайдено однаковий playlistId " +
                 "у вже завантаженому каталозі поточного акаунта. " +
@@ -1355,6 +1467,7 @@ class PlaylistLibraryActivity : Activity() {
         val linkedYtm: Boolean = false,
         val updatedAt: Long = 0,
         val trackCount: Long = 0,
+        val duplicateHint: PlaylistLibraryDuplicatePolicy.Hint? = null,
         val onClick: () -> Unit
     )
 
@@ -1416,6 +1529,18 @@ class PlaylistLibraryActivity : Activity() {
             maxLines = if (tile) 2 else 3
             ellipsize = TextUtils.TruncateAt.END
         })
+        info.duplicateHint?.let { hint ->
+            val reason = when (hint.evidence) {
+                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TRACKS -> "збіг складу"
+                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT -> "назва + кількість"
+                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE -> "назва, різний склад"
+            }
+            labels.addView(text("Схожі №${hint.groupNumber} " +
+                "(${hint.groupSize}) • $reason", 11f, true, palette.accent).apply {
+                maxLines = 2
+                ellipsize = TextUtils.TruncateAt.END
+            })
+        }
         // Reserve the same footer slot in every grid tile, even when there is
         // no linked YTM destination. Do not imply media was downloaded.
         val footer = LinearLayout(this).apply {
