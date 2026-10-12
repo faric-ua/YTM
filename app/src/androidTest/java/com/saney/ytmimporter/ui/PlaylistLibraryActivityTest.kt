@@ -17,9 +17,14 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.saney.ytmimporter.PlaylistLibraryActivity
+import com.saney.ytmimporter.model.HistoryEntry
+import com.saney.ytmimporter.model.HistoryStatus
+import com.saney.ytmimporter.model.HistoryTrack
+import com.saney.ytmimporter.model.PendingDestination
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -85,6 +90,61 @@ class PlaylistLibraryActivityTest {
                 })
                 assertNotNull(RestorablePlaylistStore(activity).get(localId))
             }
+        }
+    }
+
+    @Test fun historyDetailsOfferOnlyHistoryDeletionAndKeepEntryUntilConfirmation() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val store = HistoryStore(context)
+        val id = "history-delete-${UUID.randomUUID()}"
+        val title = "Архів для видалення ${UUID.randomUUID()}"
+        val tracks = listOf(HistoryTrack(
+            index = 0, originalTitle = "Song", originalArtist = "Artist",
+            videoId = null, selectedTitle = null, selectedChannel = null,
+            status = "MISSING", manuallySelected = false, error = null
+        ))
+        store.upsert(HistoryEntry(
+            id = id, createdAt = 1L, updatedAt = 2L,
+            status = HistoryStatus.COMPLETED, sourceLabel = "File",
+            playlistName = title, playlistId = null, privacyStatus = "private",
+            destination = PendingDestination.NEW_PLAYLIST,
+            googleEmail = null, youtubeChannelId = null, youtubeChannelTitle = null,
+            totalImportedCount = 1, writeTargetCount = 0, addedCount = 0,
+            failedCount = 0, pendingCount = 0, skippedCount = 0,
+            duplicateCount = 0, missingCount = 1, lastError = null, tracks = tracks
+        ))
+        try {
+            ActivityScenario.launch<PlaylistLibraryActivity>(
+                Intent(context, PlaylistLibraryActivity::class.java)
+            ).use { scene ->
+                idle()
+                scene.onActivity { activity ->
+                    val label = activity.window.decorView.findLabel(title)
+                        ?: error("History card not found")
+                    var card: View? = label
+                    while (card != null && !card.isClickable) card = card.parent as? View
+                    assertNotNull(card)
+                    card!!.performClick()
+                }
+                idle()
+                scene.onActivity { activity ->
+                    val names = activity.window.decorView.collectButtons()
+                        .filter { it.isShown }.map { it.text.toString() }
+                    assertTrue(names.contains("Видалити запис History"))
+                    assertFalse(names.contains("Видалити локальну копію"))
+                    assertFalse(names.contains("Видалити з YouTube Music"))
+                    assertNotNull(HistoryStore(activity).get(id))
+                }
+                scene.recreate()
+                idle()
+                scene.onActivity { activity ->
+                    assertTrue(activity.window.decorView.collectButtons()
+                        .any { it.text.toString() == "Видалити запис History" })
+                    assertNotNull(HistoryStore(activity).get(id))
+                }
+            }
+        } finally {
+            store.remove(id)
         }
     }
 

@@ -25,6 +25,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.destination.DestinationRemoteOperations
 import com.saney.ytmimporter.history.HistoryRecoveryPolicy
 import com.saney.ytmimporter.library.LocalLibraryItem
 import com.saney.ytmimporter.library.LocalLibrarySource
@@ -47,7 +48,8 @@ import java.util.concurrent.Executors
 /**
  * One discoverable playlist hub. Local browsing is completely offline.
  * Remote browsing explicitly reads the user's playlists and track metadata,
- * never starts Bulk Sync or any create/insert/delete YTM operation.
+ * only executes destructive operations after an explicit source-specific
+ * confirmation; opening or recreating a screen never writes to YouTube.
  */
 class PlaylistLibraryActivity : Activity() {
     private enum class SortMode { RECENT, NAME_ASC, NAME_DESC, TRACKS_DESC }
@@ -71,6 +73,9 @@ class PlaylistLibraryActivity : Activity() {
     private var loadingList = false
     private var loadingTracks = false
     private var loadError: String? = null
+    private var deletingRemoteId: String? = null
+    private val remoteDeleteListener: (DestinationRemoteOperations.State) -> Unit =
+        { state -> onRemoteDeleteState(state) }
 
     private lateinit var detailActions: LinearLayout
     private lateinit var detailCurrentButton: ImageButton
@@ -110,6 +115,7 @@ class PlaylistLibraryActivity : Activity() {
         selectedLocal = savedInstanceState?.getString("local")
         selectedRemote = savedInstanceState?.getString("remote")
         visibleTrackLimit = savedInstanceState?.getInt("limit") ?: 60
+        deletingRemoteId = savedInstanceState?.getString("deleting_remote")
         ensureRemoteAccountIsolation()
         modalController = RestorableModalController(this, STATE_MODAL)
         modalController.restore(savedInstanceState)
@@ -123,9 +129,24 @@ class PlaylistLibraryActivity : Activity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        DestinationRemoteOperations.addListener(remoteDeleteListener)
+    }
+
+    override fun onStop() {
+        DestinationRemoteOperations.removeListener(remoteDeleteListener)
+        super.onStop()
+    }
+
     override fun onResume() {
         super.onResume()
-        if (::body.isInitialized && showsLocal()) renderContent()
+        ensureRemoteAccountIsolation()
+        if (::body.isInitialized) {
+            if (showsRemote() && cachedPlaylists == null && token() != null) {
+                if (!loadingList) loadRemoteList()
+            } else if (showsLocal()) renderContent()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -138,6 +159,7 @@ class PlaylistLibraryActivity : Activity() {
         outState.putString("local", selectedLocal)
         outState.putString("remote", selectedRemote)
         outState.putInt("limit", visibleTrackLimit)
+        outState.putString("deleting_remote", deletingRemoteId)
         modalController.save(outState)
         super.onSaveInstanceState(outState)
     }
@@ -630,7 +652,14 @@ class PlaylistLibraryActivity : Activity() {
         }
         val playlist = current?.playlist ?: saved?.playlist ?: plan?.playlist
         if (playlist == null) {
+            statusLabel.text = "На телефоні • ${item.trackCount} треків"
+            addHeading(item.title)
             addInfo("Склад плейліста недоступний. Можливо, його дані вже видалено.")
+            if (item.source == LocalLibrarySource.HISTORY) {
+                addFullButton("Видалити запис History") {
+                    showConfirmation(MODAL_DELETE_HISTORY, item.identity)
+                }
+            }
             return
         }
         statusLabel.text = "На телефоні • ${item.trackCount} треків"
@@ -653,9 +682,11 @@ class PlaylistLibraryActivity : Activity() {
                     Uri.encode(remoteId))
             }
         }
-        if (item.source != LocalLibrarySource.HISTORY &&
-            !item.localPlaylistId.isNullOrBlank()
-        ) {
+        if (item.source == LocalLibrarySource.HISTORY) {
+            addFullButton("Видалити запис History") {
+                showConfirmation(MODAL_DELETE_HISTORY, item.identity)
+            }
+        } else if (!item.localPlaylistId.isNullOrBlank()) {
             addFullButton("Видалити локальну копію") {
                 showConfirmation(MODAL_DELETE_LOCAL, item.identity)
             }
@@ -680,6 +711,13 @@ class PlaylistLibraryActivity : Activity() {
         addFullButton("Відкрити в YouTube Music ↗") {
             openExternal("https://music.youtube.com/playlist?list=" +
                 Uri.encode(playlistId))
+        }
+        if (deletingRemoteId == playlistId) {
+            addInfo("Видаляю плейлист із YouTube Music…")
+        } else if (deletingRemoteId == null) {
+            addFullButton("Видалити з YouTube Music") {
+                showConfirmation(MODAL_DELETE_REMOTE, playlistId)
+            }
         }
         val tracks = cachedTracks[playlistId]
         if (tracks == null) {
@@ -715,6 +753,48 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     private fun renderConfirmation(type: String, args: Bundle): Dialog? {
+        if (type == MODAL_DELETE_HISTORY) {
+            val identity = args.getString("item") ?: return null
+            val entryId = localItems().firstOrNull {
+                it.identity == identity && it.source == LocalLibrarySource.HISTORY
+            }?.historyEntryId ?: return null
+            val entry = historyStore.get(entryId) ?: return null
+            return UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title = "Видалити запис History?",
+                message = "Буде видалено лише запис історії «${entry.playlistName}».\n\n" +
+                    "Поточний плейлист, збережені локальні копії та YouTube не зміняться.",
+                confirmLabel = "Видалити з History",
+                onCancel = { modalController.clearState() }
+            ) {
+                modalController.clearState()
+                if (historyStore.get(entryId) != null) {
+                    historyStore.remove(entryId)
+                    selectedLocal = null
+                    renderContent()
+                    toast("Запис History видалено")
+                }
+            }
+        }
+        if (type == MODAL_DELETE_REMOTE) {
+            val id = args.getString("item") ?: return null
+            val item = cachedPlaylists?.firstOrNull { it.id == id }
+                ?: return null
+            if (deletingRemoteId != null) return null
+            return UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title = "Видалити плейлист із YouTube Music?",
+                message = "«${item.title}» (${item.itemCount} відео) " +
+                    "буде назавжди видалено з YouTube Music.\n" +
+                    "ID: ${item.id}\n\n" +
+                    "Локальні копії та History залишаться. Цю дію неможливо скасувати.",
+                confirmLabel = "Видалити з YouTube",
+                onCancel = { modalController.clearState() }
+            ) {
+                modalController.clearState()
+                startRemoteDelete(id)
+            }
+        }
         if (type == MODAL_DELETE_LOCAL) {
             val identity = args.getString("item") ?: return null
             val target = localItems().firstOrNull {
@@ -791,6 +871,43 @@ class PlaylistLibraryActivity : Activity() {
                 }
             )
         )
+    }
+
+    private fun startRemoteDelete(id: String) {
+        val target = cachedPlaylists?.firstOrNull { it.id == id } ?: run {
+            toast("Плейлист більше не знайдено в каталозі")
+            return
+        }
+        if (deletingRemoteId != null) return
+        deletingRemoteId = id
+        if (!DestinationRemoteOperations.startDelete(this, target)) {
+            deletingRemoteId = null
+            toast("Не вдалося почати видалення. Перевірте підключення.")
+        }
+        renderContent()
+    }
+
+    private fun onRemoteDeleteState(state: DestinationRemoteOperations.State) {
+        val id = deletingRemoteId ?: return
+        if (state.kind != DestinationRemoteOperations.Kind.DELETE_PLAYLIST ||
+            state.target?.id != id
+        ) return
+        if (state.running || state.terminalSerial == 0L) return
+        deletingRemoteId = null
+        DestinationRemoteOperations.acknowledgeTerminal(state.terminalSerial)
+        if (state.successMessage != null) {
+            // Re-fetch exact server state; no optimistic count is treated as authoritative.
+            cachedPlaylists = null
+            cachedTracks.remove(id)
+            selectedRemote = null
+            visibleTrackLimit = 60
+            toast("Плейлист видалено з YouTube. Оновлюю каталог…")
+            if (showsRemote() && token() != null) loadRemoteList()
+            else renderContent()
+        } else {
+            toast(state.errorMessage ?: "Не вдалося видалити плейлист із YouTube")
+            renderContent()
+        }
     }
 
     private fun deleteLocalCopy(localId: String) {
@@ -905,11 +1022,17 @@ class PlaylistLibraryActivity : Activity() {
             "Не можна знати, чи кожен трек присутній на YouTube, доки " +
                 "не порівняно склади плейлистів. Позначки ✓, ? або помилку " +
                 "для повноти можна показувати лише після такої перевірки.")
-        section("Видалення локальних копій")
-        entry(R.drawable.ic_ytm_device, "Видалити локальну копію",
-            "У деталях локального плейлиста є видалення з підтвердженням. " +
-                "Поточний список теж очиститься, якщо його видалено. " +
-                "History, YouTube і решта локальних записів не зміняться.")
+        section("Видалення")
+        entry(R.drawable.ic_ytm_device, "Локальна копія",
+            "Видаляє лише точний локальний ID. Якщо це поточний список, " +
+                "головна сторінка очиститься. History та YouTube не зміняться.")
+        entry(R.drawable.ic_ytm_music, "Архів History",
+            "Видаляє лише конкретний запис операції з History, " +
+                "але не локальний і не YouTube-плейлист.")
+        entry(R.drawable.ic_ytm_youtube_play, "YouTube Music",
+            "Назавжди видаляє вибраний плейлист із YouTube за точним ID " +
+                "після окремого попередження. Локальні копії та History зберігаються. " +
+                "Після успіху каталог YouTube перечитується.", palette.accent)
         section("Обкладинки та дублікати")
         entry(R.drawable.ic_ytm_music, "Немає обкладинки",
             "Мініатюра береться з доступних YouTube-даних за videoId. " +
@@ -1420,12 +1543,20 @@ class PlaylistLibraryActivity : Activity() {
         private const val STATE_MODAL = "playlist_library_modal"
         private const val MODAL_SWITCH = "switch_local_current"
         private const val MODAL_DELETE_LOCAL = "delete_saved_local_copy"
+        private const val MODAL_DELETE_HISTORY = "delete_history_entry"
+        private const val MODAL_DELETE_REMOTE = "delete_remote_playlist"
         private const val MODAL_SAVE_REMOTE = "save_remote_local"
         private const val MODAL_HELP = "playlist_library_help"
         private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
 
         // Temporary, account-scoped metadata cache survives Android rotation,
         // never serializes an OAuth token or a private remote playlist to disk.
+        /** Called on main thread after a confirmed remote delete in any screen. */
+        fun invalidateDeletedRemotePlaylist(id: String) {
+            cachedPlaylists = null
+            cachedTracks.remove(id)
+        }
+
         private var cachedOwner: String? = null
         private var cachedPlaylists: List<YouTubePlaylistInfo>? = null
         private val cachedTracks = mutableMapOf<String, List<Track>>()

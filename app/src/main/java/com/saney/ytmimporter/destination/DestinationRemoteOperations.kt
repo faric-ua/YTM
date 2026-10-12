@@ -3,6 +3,7 @@ package com.saney.ytmimporter.destination
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.saney.ytmimporter.PlaylistLibraryActivity
 import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.auth.PersistentAuthStateStore
@@ -695,6 +696,11 @@ object DestinationRemoteOperations {
         target: YouTubePlaylistInfo
     ) {
         serialCounter += 1
+        // Invalidate Library's process-local catalogue even when deletion
+        // happened in DestinationActivity. Queue before terminal observers.
+        mainHandler.post {
+            PlaylistLibraryActivity.invalidateDeletedRemotePlaylist(target.id)
+        }
 
         publish(
             State(
