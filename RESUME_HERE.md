@@ -1,5 +1,12 @@
 # YTM Importer — RESUME HERE
 
+## SAFE PAUSE — 2026-10-14 09:33 / owner went to sleep, resume from here
+
+- **Resume at:** phone QA step "pinned top panel": Home → `Плейлист` → `Бібліотека плейлістів`, close menu, scroll list far down — does the top frame with counters + sort icon stay in place? Owner answer pending ("стоїть" / "їде разом зі списком").
+- Then, one step at a time: privacy filter result → `Лише можливі дублікати` → rotation. **No deletions.**
+- **Agreed order after QA:** (1) one cosmetic batch: themed filter/sort sheet with sections and full labels, equal-height grid tiles, playlist detail opens at track 1 + anything found in QA; (2) stable 1.4.58: bump versionName/versionCode, merge into `main` (only 4 doc conflicts), release for the in-app updater, close stale PRs #6 #14 #15 #18–#22 with explanation — **only after explicit owner "yes"**; (3) reorganize docs into a history/lesson folder from clean `main`, nothing deleted, add `CLAUDE.md`/`STATUS.md`/single `TODO.md`; (4) new work: player rotation bug → "Знайти дублікати" by track titles → Library polish.
+- Owner preferences: cosmetic fixes batched; economical with Actions minutes (repo is public, but phone build via Termux preferred when possible); record every phone PASS so it is never re-asked.
+
 ## PHONE QA — 2026-10-14 07:49 / Installed build has the 12.10 Library wave (owner screenshot)
 
 - [x] Owner screenshot: Home → `Плейлист` → `Бібліотека плейлістів` → sort icon. Menu contains `YouTube: публічні`, `YouTube: приватні`, `YouTube: за посиланн..`, `Спочатку можливі дуб..`, `Лише можливі дубліка..`; cards show `Збіг ID` and `Схожі №`. **PASS: phone runs the 12.10 wave code (e44ec6c+), presence of privacy/duplicate options confirmed.** Do not ask the owner to re-check presence.
