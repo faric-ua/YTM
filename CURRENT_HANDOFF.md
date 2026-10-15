@@ -1,5 +1,9 @@
 # YTM Importer — CURRENT HANDOFF
 
+## PHONE QA — 2026-10-16 00:42 / YouTube privacy filter PASS + owner decision
+
+`Тільки YouTube` + `приватні` → 13 cards, all private; `публічні` → all public. **PHONE PASS.** Owner: privacy options must be available only with `Тільки YouTube` (reset to any when source changes) → `BACKLOG.md` cosmetic batch. Next phone step: `Лише можливі дублікати`, then rotation. No deletions, no code change.
+
 ## PHONE QA — 2026-10-15 21:42 / Pinned Library top panel PASS
 
 Owner screen recording: counters, sort icon and scope line stay pinned while the list scrolls to the end. **PHONE PASS** (narrow). Info line `Показано…` scrolls away → cosmetic TODO in `BACKLOG.md`. Next phone step: privacy filter (`Тільки YouTube` + `YouTube: приватні`), then `Лише можливі дублікати`, then rotation. No deletions, no code change.
