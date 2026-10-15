@@ -2,8 +2,9 @@
 
 ## SAFE PAUSE — 2026-10-14 09:33 / owner went to sleep, resume from here
 
-- **Resume at:** phone QA step "pinned top panel": Home → `Плейлист` → `Бібліотека плейлістів`, close menu, scroll list far down — does the top frame with counters + sort icon stay in place? Owner answer pending ("стоїть" / "їде разом зі списком").
-- Then, one step at a time: privacy filter result → `Лише можливі дублікати` → rotation. **No deletions.**
+- **2026-10-15 21:42:** pinned top panel **PHONE PASS** (owner screen recording) — see PHONE QA section below.
+- **Resume at:** phone QA step "privacy filter": Library → sort icon → `Тільки YouTube`, then sort icon → `YouTube: приватні` — do all remaining cards say `приватний`? Owner answer pending.
+- Then, one step at a time: `Лише можливі дублікати` → rotation. **No deletions.**
 - **Agreed order after QA:** (1) one cosmetic batch: themed filter/sort sheet with sections and full labels, equal-height grid tiles, playlist detail opens at track 1 + anything found in QA; (2) stable 1.4.58: bump versionName/versionCode, merge into `main` (only 4 doc conflicts), release for the in-app updater, close stale PRs #6 #14 #15 #18–#22 with explanation — **only after explicit owner "yes"**; (3) reorganize docs into a history/lesson folder from clean `main`, nothing deleted, add `CLAUDE.md`/`STATUS.md`/single `TODO.md`; (4) new work: player rotation bug → "Знайти дублікати" by track titles → Library polish.
 - Owner preferences: cosmetic fixes batched; economical with Actions minutes (repo is public, but phone build via Termux preferred when possible); record every phone PASS so it is never re-asked.
 
@@ -11,7 +12,9 @@
 
 - [x] Owner screenshot: Home → `Плейлист` → `Бібліотека плейлістів` → sort icon. Menu contains `YouTube: публічні`, `YouTube: приватні`, `YouTube: за посиланн..`, `Спочатку можливі дуб..`, `Лише можливі дубліка..`; cards show `Збіг ID` and `Схожі №`. **PASS: phone runs the 12.10 wave code (e44ec6c+), presence of privacy/duplicate options confirmed.** Do not ask the owner to re-check presence.
 - [x] Same screenshot confirms the existing TODO (`BACKLOG.md` → "Sort/filter popup style and readability"): native grey Android popup, not the app theme; labels cut (`За датою локального..`, `YouTube: будь-яка дос..`); three radio groups mixed in one list. Owner: cosmetic fixes go into one TODO batch, not separate releases.
-- [ ] NEXT phone step (one at a time): pinned top panel stays in place during a long scroll; then privacy filter result; then `Лише можливі дублікати`; then rotation. No deletions.
+- [x] **PHONE PASS 2026-10-15 21:42 (owner screen recording, 9 s):** pinned top panel. Home → `Плейлист` → `Бібліотека плейлістів`, menu closed, list scrolled to the very end (`Оновити YouTube`): the frame with counters (phone 82 / YouTube 53), the sort icon and the scope line `Всі • Нові (локально)` stayed in place; only cards scrolled. Do not re-ask.
+  - Observation (cosmetic, into the TODO batch): the info line `Показано: 135 • груп схожих: 33 • архівів History: 65` is added to the scrolling cards container (`panelInfo(cards, …)` in `PlaylistLibraryActivity`) and scrolls away; consider moving it into the pinned frame. Grid tiles of uneven height and `♫` placeholder covers seen again (already in BACKLOG).
+- [ ] NEXT phone step (one at a time): privacy filter result (sort icon → `Тільки YouTube`, then sort icon → `YouTube: приватні`; every card must say `приватний`); then `Лише можливі дублікати`; then rotation. No deletions.
 - Session note: from 2026-10-13 the project is continued by Claude (chat "YTM Importer"), replacing the ChatGPT workflow; repository docs remain the source of truth.
 
 ## QA CHECKPOINT — 2026-10-12 / Read-only Library duplicate finder

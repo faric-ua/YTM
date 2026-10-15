@@ -1,5 +1,9 @@
 # YTM Importer — CURRENT HANDOFF
 
+## PHONE QA — 2026-10-15 21:42 / Pinned Library top panel PASS
+
+Owner screen recording: counters, sort icon and scope line stay pinned while the list scrolls to the end. **PHONE PASS** (narrow). Info line `Показано…` scrolls away → cosmetic TODO in `BACKLOG.md`. Next phone step: privacy filter (`Тільки YouTube` + `YouTube: приватні`), then `Лише можливі дублікати`, then rotation. No deletions, no code change.
+
 ## OWNER NEW TODO — 2026-10-12 / One-tap playlist duplicate scan by contained track titles
 
 Owner wants exactly one `Знайти дублікати` button inside Library to compare **track titles inside playlists** across locally saved/current, History archive and YouTube (regardless of playlist names). Show cross-source groups, matching vs unmatched track names, percentages and confidence tiers: exact full videoId multiset, 100% normalized title multiset, partial title overlap. Title equality alone does **not** certify the same audio. Remote track metadata may be missing; scans must be on-demand, read-only with explicit API budget/consent before extra YouTube reads, paginated, cached and rotation/cancel safe; never delete or merge. Detailed implementation/test acceptance in `BACKLOG.md` under "One-tap duplicate playlists by TRACK TITLES". **TODO only**; keep code unchanged and deletion tests deferred.
