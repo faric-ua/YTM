@@ -1,5 +1,19 @@
 # YTM Importer — ACTIVE PLAN
 
+
+## CURRENT TASK — 2026-10-16 / Library batch 1 (branch `feat/v1.4.58-library-batch1` → PR into `feat/v1.4.58-playlist-player`)
+
+- [x] Record phone findings (05:18 recording) and this plan before code.
+- [x] (code; Validate `38840724130` PASS both jobs on `f95b2620`) BUG-052: Library restores Google/YTM silently — on create/resume when no token but a prior successful authorization exists (`PersistentAuthStateStore`), using the same silent Identity authorization as Home; identity (Google account + YouTube channel) loaded so account isolation keeps working; then loads the YouTube list. Pinned frame shows `Відновлюю Google…` instead of `—` while it runs. If Google needs confirmation → clear message to open Home step 2. On auth failure of the list load (expired token) → one silent re-authorization and one retry, never a loop. Token still never written to disk.
+- [x] (code; Validate `38840724130` PASS both jobs on `f95b2620`) Themed filter window instead of native `PopupMenu`: restorable modal (survives rotation like `?`), sections **Джерело / Сортування / Доступність YouTube / Дублікати**, full labels, radio rows in app colours, applies on tap, `Готово`. **Доступність YouTube** only when source = `Тільки YouTube`, otherwise a short muted note. Leaving YouTube-only (window or toolbar icons) resets privacy to `будь-яка`; filtering also guards it. Pure policy + JVM test.
+- [x] (code; Validate `38840724130` PASS both jobs on `f95b2620`) Plain legend for «Схожі» at the top of the duplicates part of `?` + rename `назва, різний склад` → `назва, інша кількість`.
+- [x] (code; Validate `38840724130` PASS both jobs on `f95b2620`) Info line `Показано…` moves into the pinned frame; YouTube connection status line also pinned (was only at the bottom of the list).
+- [x] Docs (BUG_REGISTER BUG-052, BACKLOG, RESUME/HANDOFF), manifest, preflight PASS; Validate `38840724130` PASS (validate + Android UI emulator) on `f95b2620`.
+- [ ] Merge PR #62 into `feat/v1.4.58-playlist-player`, Validate on the merge HEAD, one signed APK (`build-apk.yml` dispatched by Claude), owner: YTM menu `1` → `3` → `4`, install over.
+- [ ] Phone QA, one step at a time: (1) sort icon opens the themed window «Фільтр і сортування»; rotate → window stays; (2) «Доступність YouTube» only with «Тільки YouTube», back to «Всі» → scope line has no `YouTube: …`; (3) `?` → «Червоний рядок «Схожі №…»» readable; (4) BUG-052 naturally: Library open → other apps a long time → back: YouTube counter `…` then number, no trip to Home. No deletions, no main merge, no stable release.
+- Implementation notes: new `auth/SilentGoogleSessionRestorer` (silent Identity authorize + identity load, off main thread), `auth/GoogleAuthScopes` (shared scopes; `GoogleAccessTokenRecovery` now uses it), Library `YouTubeApi(GoogleAccessTokenRecovery)` for HTTP-401 refresh, pure `library/LibraryFilterPolicy` + `LibraryFilterPolicyTest` (5 tests, run locally with the embedded Kotlin compiler: OK). Filter window = `MODAL_FILTER` via `RestorableModalController` + `UiChrome.showContentDialog`. Home flow unchanged.
+- Not in this batch (stay in BACKLOG): equal-height grid tiles, detail opens at track 1, safe YouTube link check (waiting owner yes/no), remembering filters between visits.
+
 ## SAFE PAUSE — 2026-10-14 09:33 / owner went to sleep, resume from here
 
 - **Resume at:** phone QA step "pinned top panel": Home → `Плейлист` → `Бібліотека плейлістів`, close menu, scroll list far down — does the top frame with counters + sort icon stay in place? Owner answer pending ("стоїть" / "їде разом зі списком").
@@ -18,7 +32,11 @@
 - [x] **PHONE PASS 2026-10-16 03:45 (6 owner screenshots):** `Лише можливі дублікати` with `Всі` + `YouTube: будь-яка доступність`. Scope line `Всі • Нові (локально) • Тільки схожі`; every visible card (phone, History archive, YouTube; down to `Оновити YouTube`) has a red `Схожі №N (size) • reason` line. Filter works. Do not re-ask.
   - **Owner feedback (03:45, voice): the labels are not understandable**, and `?` Help does not explain them in plain words (the entry «Кандидати на дублікати» exists in section «Обкладинки та дублікати» but is technical). Owner did not know whether it compares songs or whole albums. → `BACKLOG.md` (plain legend + label rename). Also: label `назва, різний склад` (Evidence.SAME_TITLE) is misleading — songs are NOT compared there, only the track count differs → rename to `назва, інша кількість`.
   - **Owner question (03:45):** some playlists were already deleted on YouTube but still exist in the app — how to sync without doing harm. → `BACKLOG.md` «Safe link check with YouTube» (read-only marking first; nothing deleted automatically). Waiting for owner yes/no.
-- [ ] NEXT phone step: rotation inside `Лише можливі дублікати` (scroll to the middle → landscape → portrait): filter `Тільки схожі` and list stay, no crash. No deletions.
+- [x] **Phone recording 2026-10-16 05:18 (owner, 14 s) — two problems found:**
+  - **BUG-052 (new): Library does not restore Google/YTM after the app was in the background a long time.** Library reopened directly showed YouTube counter `—` and no YouTube cards; owner had to go Back to Home (`Відновлення Google/YTM…` → `Підключено YouTube/YTM: faric`) and open Library again to see 53. Root cause (code): OAuth access token lives only in process memory (`AuthSessionStore`, by design never persisted); Android killed the process, restored `PlaylistLibraryActivity` alone; only `MainActivity.restorePriorAuthorizationSilently()` knows how to re-authorize silently; Library just checks `token() != null` and gives up. Same gap for an expired token (~1 h) while the process lives: list load fails, no silent retry.
+  - **Rotation closes the filter/sort menu** (native `PopupMenu`, not restorable). Filter state itself survived rotation (scope line unchanged). Owner again: style the menu to the app.
+  - Side note: after Back to Home and reopening Library, `Тільки схожі` was off (new screen = default filters). Not a bug of rotation; whether filters should be remembered between visits — ask owner later.
+- [ ] NEXT: implement CURRENT TASK «Library batch 1» (below), CI, one APK, then phone QA one step at a time. No deletions.
 - Session note: from 2026-10-13 the project is continued by Claude (chat "YTM Importer"), replacing the ChatGPT workflow; repository docs remain the source of truth.
 
 ## QA CHECKPOINT — 2026-10-12 / Read-only Library duplicate finder

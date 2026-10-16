@@ -1,5 +1,9 @@
 # YTM Importer — CURRENT HANDOFF
 
+## CODE — 2026-10-16 / Library batch 1 (PR #62)
+
+From owner recording 05:18: **BUG-052** Library did not restore Google/YTM after the app was killed in the background (YouTube `—` until Home) → silent restore in Library (`SilentGoogleSessionRestorer`), HTTP-401 refresh (`YouTubeApi(GoogleAccessTokenRecovery)`), pinned status line. Native grey sort/filter PopupMenu (closed on rotation) → themed rotation-safe window with sections; YouTube privacy only with `Тільки YouTube` (resets). Plain «Схожі №…» legend in `?`; label `назва, інша кількість`; `Показано…` pinned. Validate `38840724130` PASS both jobs. **Not phone-tested yet.** Next: merge → signed APK → phone QA one step at a time (ACTIVE_PLAN).
+
 ## PHONE QA — 2026-10-16 03:45 / Duplicates-only filter PASS, labels unclear
 
 Every card in `Лише можливі дублікати` has a red `Схожі №…` line → **PHONE PASS**. Owner does not understand the labels and Help does not explain them plainly → BACKLOG «Plain legend» (+ rename `назва, різний склад` → `назва, інша кількість`). Owner asked how to sync playlists deleted on YouTube → BACKLOG «Safe link check» (read-only marking first) — waiting yes/no. Next phone step: rotation. No deletions, no code change.

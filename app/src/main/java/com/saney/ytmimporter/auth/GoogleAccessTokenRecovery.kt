@@ -1,10 +1,8 @@
 package com.saney.ytmimporter.auth
 
 import android.content.Context
-import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.ClearTokenRequest
 import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.Tasks
 import com.saney.ytmimporter.youtube.YouTubeAccessTokenRecovery
 import java.util.concurrent.TimeUnit
@@ -83,7 +81,7 @@ class GoogleAccessTokenRecovery(
             runCatching {
                 Tasks.await(
                     client.authorize(
-                        buildAuthorizationRequest()
+                        GoogleAuthScopes.silentRequest()
                     ),
                     TOKEN_OPERATION_TIMEOUT_SECONDS,
                     TimeUnit.SECONDS
@@ -121,30 +119,8 @@ class GoogleAccessTokenRecovery(
         return refreshedToken
     }
 
-    private fun buildAuthorizationRequest():
-        AuthorizationRequest =
-        AuthorizationRequest
-            .builder()
-            .setRequestedScopes(
-                listOf(
-                    Scope(YOUTUBE_SCOPE),
-                    Scope(USERINFO_EMAIL_SCOPE),
-                    Scope(USERINFO_PROFILE_SCOPE)
-                )
-            )
-            .build()
-
     companion object {
         private const val TOKEN_OPERATION_TIMEOUT_SECONDS =
             30L
-
-        private const val YOUTUBE_SCOPE =
-            "https://www.googleapis.com/auth/youtube.force-ssl"
-
-        private const val USERINFO_EMAIL_SCOPE =
-            "https://www.googleapis.com/auth/userinfo.email"
-
-        private const val USERINFO_PROFILE_SCOPE =
-            "https://www.googleapis.com/auth/userinfo.profile"
     }
 }
