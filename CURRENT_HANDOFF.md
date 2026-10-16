@@ -1,5 +1,9 @@
 # YTM Importer — CURRENT HANDOFF
 
+## PHONE QA — 2026-10-16 03:45 / Duplicates-only filter PASS, labels unclear
+
+Every card in `Лише можливі дублікати` has a red `Схожі №…` line → **PHONE PASS**. Owner does not understand the labels and Help does not explain them plainly → BACKLOG «Plain legend» (+ rename `назва, різний склад` → `назва, інша кількість`). Owner asked how to sync playlists deleted on YouTube → BACKLOG «Safe link check» (read-only marking first) — waiting yes/no. Next phone step: rotation. No deletions, no code change.
+
 ## PHONE QA — 2026-10-16 00:42 / YouTube privacy filter PASS + owner decision
 
 `Тільки YouTube` + `приватні` → 13 cards, all private; `публічні` → all public. **PHONE PASS.** Owner: privacy options must be available only with `Тільки YouTube` (reset to any when source changes) → `BACKLOG.md` cosmetic batch. Next phone step: `Лише можливі дублікати`, then rotation. No deletions, no code change.
