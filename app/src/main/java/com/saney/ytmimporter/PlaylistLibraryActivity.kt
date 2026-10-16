@@ -20,13 +20,16 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import android.widget.PopupMenu
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.saney.ytmimporter.auth.AuthSessionStore
+import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
+import com.saney.ytmimporter.auth.PersistentAuthStateStore
+import com.saney.ytmimporter.auth.SilentGoogleSessionRestorer
 import com.saney.ytmimporter.destination.DestinationRemoteOperations
 import com.saney.ytmimporter.history.HistoryRecoveryPolicy
+import com.saney.ytmimporter.library.LibraryFilterPolicy
 import com.saney.ytmimporter.library.LocalLibraryItem
 import com.saney.ytmimporter.library.LocalLibrarySource
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicatePolicy
@@ -54,17 +57,19 @@ import java.util.concurrent.Executors
  */
 class PlaylistLibraryActivity : Activity() {
     private enum class SortMode { RECENT, NAME_ASC, NAME_DESC, TRACKS_DESC, SIMILAR_FIRST }
-    private enum class PrivacyMode { ALL, PUBLIC, PRIVATE, UNLISTED }
     private var showAll = true
     private var sortMode = SortMode.RECENT
-    private var privacyMode = PrivacyMode.ALL
+    private var privacyMode = LibraryFilterPolicy.Privacy.ALL
     private var similarOnly = false
     private var cardTarget: LinearLayout? = null
     private val currentStore by lazy { CurrentPlaylistStore(this) }
     private val savedStore by lazy { RestorablePlaylistStore(this) }
     private val historyStore by lazy { HistoryStore(this) }
     private val quotaTracker by lazy { QuotaTracker(this) }
-    private val api by lazy { YouTubeApi() }
+    // HTTP 401 (expired token) → one silent token refresh and retry.
+    private val api by lazy { YouTubeApi(GoogleAccessTokenRecovery(this)) }
+    private val sessionRestorer by lazy { SilentGoogleSessionRestorer(this) }
+    private val persistentAuth by lazy { PersistentAuthStateStore(this) }
     private val worker = Executors.newSingleThreadExecutor()
 
     private var onlineTab = false
@@ -77,6 +82,10 @@ class PlaylistLibraryActivity : Activity() {
     private var loadingList = false
     private var loadingTracks = false
     private var loadError: String? = null
+    // BUG-052: silent Google/YTM restore when the screen starts without a token.
+    private var restoringGoogle = false
+    private var googleNeedsUser = false
+    private var googleRestoreFailed = false
     private var deletingRemoteId: String? = null
     private val remoteDeleteListener: (DestinationRemoteOperations.State) -> Unit =
         { state -> onRemoteDeleteState(state) }
@@ -114,8 +123,8 @@ class PlaylistLibraryActivity : Activity() {
             SortMode.valueOf(savedInstanceState?.getString("sort_mode") ?: "RECENT")
         }.getOrDefault(SortMode.RECENT)
         privacyMode = runCatching {
-            PrivacyMode.valueOf(savedInstanceState?.getString("privacy_mode") ?: "ALL")
-        }.getOrDefault(PrivacyMode.ALL)
+            LibraryFilterPolicy.Privacy.valueOf(savedInstanceState?.getString("privacy_mode") ?: "ALL")
+        }.getOrDefault(LibraryFilterPolicy.Privacy.ALL)
         similarOnly = savedInstanceState?.getBoolean("similar_only") ?: false
         columns = savedInstanceState?.getInt("columns") ?: 2
         filterText = savedInstanceState?.getString("filter").orEmpty()
@@ -131,10 +140,12 @@ class PlaylistLibraryActivity : Activity() {
         buildUi()
         renderContent()
         modalController.restoreAfterContentReady(::renderConfirmation)
-        if (selectedRemote != null && !cachedTracks.containsKey(selectedRemote)) {
+        if (selectedRemote != null && !cachedTracks.containsKey(selectedRemote) &&
+            token() != null
+        ) {
             loadRemoteTracks(selectedRemote!!)
-        } else if (showsRemote() && cachedPlaylists == null && token() != null) {
-            loadRemoteList()
+        } else {
+            ensureRemoteReady()
         }
     }
 
@@ -152,9 +163,7 @@ class PlaylistLibraryActivity : Activity() {
         super.onResume()
         ensureRemoteAccountIsolation()
         if (::body.isInitialized) {
-            if (showsRemote() && cachedPlaylists == null && token() != null) {
-                if (!loadingList) loadRemoteList()
-            } else if (showsLocal()) renderContent()
+            if (!ensureRemoteReady() && showsLocal()) renderContent()
         }
     }
 
@@ -353,6 +362,7 @@ class PlaylistLibraryActivity : Activity() {
         val wasSelected = !showAll && onlineTab == online
         showAll = wasSelected
         onlineTab = online
+        onSourceChanged()
         selectedLocal = null
         selectedRemote = null
         visibleTrackLimit = 60
@@ -360,8 +370,82 @@ class PlaylistLibraryActivity : Activity() {
         updateTopControls()
         renderContent()
         scroller.scrollTo(0, 0)
-        if (showsRemote() && cachedPlaylists == null && token() != null) {
-            loadRemoteList()
+        ensureRemoteReady()
+    }
+
+    private fun currentSource(): LibraryFilterPolicy.Source =
+        LibraryFilterPolicy.source(showAll, onlineTab)
+
+    /** Leaving «Тільки YouTube» resets YouTube privacy (owner 2026-10-16). */
+    private fun onSourceChanged() {
+        privacyMode = LibraryFilterPolicy.privacyAfterSourceChange(
+            currentSource(), privacyMode)
+    }
+
+    /**
+     * Makes sure the YouTube list is (being) loaded. If the screen has no
+     * token but the device was authorized before (app was killed in the
+     * background, BUG-052), restores Google silently first.
+     * Returns true when it started work that will re-render the screen.
+     */
+    private fun ensureRemoteReady(): Boolean {
+        if (!showsRemote()) return false
+        if (token() != null) {
+            if (cachedPlaylists == null && !loadingList) {
+                loadRemoteList()
+                return true
+            }
+            return false
+        }
+        if (googleRestoreFailed) return false
+        if (!LibraryFilterPolicy.shouldRestoreGoogle(
+                showsRemote = true,
+                hasToken = false,
+                hadPriorAuthorization = persistentAuth.hadSuccessfulAuthorization(),
+                restoring = restoringGoogle,
+                userActionRequired = googleNeedsUser
+            )
+        ) return false
+        restoreGoogleSession()
+        return true
+    }
+
+    private fun restoreGoogleSession() {
+        restoringGoogle = true
+        googleRestoreFailed = false
+        renderContent()
+        worker.execute {
+            val result = runCatching {
+                sessionRestorer.restoreBlocking(api) {
+                    quotaTracker.recordGeneralUnits(QuotaTracker.SIMPLE_LIST_COST)
+                }
+            }.getOrDefault(SilentGoogleSessionRestorer.Result.FAILED)
+            runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                restoringGoogle = false
+                when (result) {
+                    SilentGoogleSessionRestorer.Result.RESTORED -> {
+                        googleNeedsUser = false
+                        ensureRemoteAccountIsolation()
+                        val pendingDetail = selectedRemote
+                            ?.takeIf { token() != null && !cachedTracks.containsKey(it) }
+                        if (pendingDetail != null) loadRemoteTracks(pendingDetail)
+                        if (token() != null && showsRemote() && cachedPlaylists == null) {
+                            loadRemoteList()
+                        } else if (pendingDetail == null) renderContent()
+                    }
+                    SilentGoogleSessionRestorer.Result.NEEDS_USER -> {
+                        googleNeedsUser = true
+                        renderContent()
+                    }
+                    SilentGoogleSessionRestorer.Result.NEVER_AUTHORIZED ->
+                        renderContent()
+                    SilentGoogleSessionRestorer.Result.FAILED -> {
+                        googleRestoreFailed = true
+                        renderContent()
+                    }
+                }
+            }
         }
     }
 
@@ -433,9 +517,10 @@ class PlaylistLibraryActivity : Activity() {
         val remoteEnabled = showsRemote()
         val access = token()
         val allRemote = if (access != null) cachedPlaylists.orEmpty() else emptyList()
+        val privacy = LibraryFilterPolicy.effectivePrivacy(currentSource(), privacyMode)
         val remoteItems = if (remoteEnabled) allRemote.filter {
-            privacyMode == PrivacyMode.ALL ||
-                it.privacyStatus.equals(privacyMode.name, ignoreCase = true)
+            privacy == LibraryFilterPolicy.Privacy.ALL ||
+                it.privacyStatus.equals(privacy.name, ignoreCase = true)
         } else emptyList()
         // Metadata-only candidates. Do not spend API quota fetching all
         // remote tracks or treat an equal linked playlistId as track equality.
@@ -499,7 +584,10 @@ class PlaylistLibraryActivity : Activity() {
                 if (!showAll && !onlineTab) " ✓" else "",
             palette.semantic.duplicate)
         counter(R.drawable.ic_ytm_youtube_play, "YouTube",
-            (if (access == null) "—" else cachedPlaylists?.size?.toString() ?: "—") +
+            (if (restoringGoogle || (access != null && loadingList &&
+                    cachedPlaylists == null)) "…"
+                else if (access == null) "—"
+                else cachedPlaylists?.size?.toString() ?: "—") +
                 if (!showAll && onlineTab) " ✓" else "",
             palette.accent)
         summary.addView(counts, FrameLayout.LayoutParams(
@@ -509,7 +597,7 @@ class PlaylistLibraryActivity : Activity() {
         ))
         val sortButton = iconButton(R.drawable.ic_ytm_sort,
             "Фільтрація і сортування плейлістів") {}
-        sortButton.setOnClickListener { showSortMenu(sortButton) }
+        sortButton.setOnClickListener { showFilterWindow() }
         summary.addView(sortButton, FrameLayout.LayoutParams(
             dp(44), dp(46), Gravity.END or Gravity.CENTER_VERTICAL
         ))
@@ -525,11 +613,24 @@ class PlaylistLibraryActivity : Activity() {
                 SortMode.NAME_DESC -> "За абеткою Я–А"
                 SortMode.TRACKS_DESC -> "За кількістю треків"
                 SortMode.SIMILAR_FIRST -> "Спочатку можливі дублікати"
-            } + (if (privacyMode != PrivacyMode.ALL && remoteEnabled)
-                " • YouTube: ${privacyLabel(privacyMode.name)}" else "") +
+            } + (if (privacy != LibraryFilterPolicy.Privacy.ALL && remoteEnabled)
+                " • YouTube: ${privacyLabel(privacy.name)}" else "") +
                 (if (similarOnly) " • Тільки схожі" else ""),
             12f, false, palette.muted
-        ).apply { setPadding(dp(6), dp(1), dp(6), dp(6)) })
+        ).apply { setPadding(dp(6), dp(1), dp(6), dp(2)) })
+        // Owner 2026-10-15: the «Показано…» line stays pinned, it no longer
+        // scrolls away with the cards. Text is filled in after filtering.
+        val shownLine = text("", 12f, false, palette.muted).apply {
+            setPadding(dp(6), 0, dp(6), dp(4))
+        }
+        catalogueToolbar.addView(shownLine)
+        // YouTube connection problems are shown here too, not only at the very
+        // bottom of a long list (BUG-052: the owner only saw «—»).
+        remoteStatusText(remoteEnabled, access)?.let { status ->
+            catalogueToolbar.addView(text(status, 12f, true, palette.accent).apply {
+                setPadding(dp(6), 0, dp(6), dp(6))
+            })
+        }
 
         val cards = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         panel.addView(cards)
@@ -605,8 +706,8 @@ class PlaylistLibraryActivity : Activity() {
         }
         val groupCount = filtered.mapNotNull { it.duplicateHint?.groupNumber }
             .distinct().size
-        panelInfo(cards, "Показано: ${filtered.size} • груп схожих: $groupCount" +
-            " • архівів History: ${allLocal.count { it.source == LocalLibrarySource.HISTORY }}")
+        shownLine.text = "Показано: ${filtered.size} • груп схожих: $groupCount" +
+            " • архівів History: ${allLocal.count { it.source == LocalLibrarySource.HISTORY }}"
         addCards(ordered)
         if (filtered.isEmpty() && similarOnly) {
             panelInfo(cards, "У вибраному фільтрі схожих плейлистів немає. " +
@@ -616,14 +717,16 @@ class PlaylistLibraryActivity : Activity() {
         } else if (filtered.isEmpty() && !remoteEnabled) {
             panelInfo(cards, "Локальних плейлістів ще немає.")
         }
-        if (remoteEnabled && access == null) {
-            panelInfo(cards, "YouTube не підключено • підключіть Google/YTM на головному екрані.")
-        } else if (remoteEnabled && cachedPlaylists == null) {
-            panelInfo(cards, if (loadingList) "Читаю список YouTube…"
-                else "Список YouTube ще не завантажено.")
-        }
-        if (remoteEnabled && loadError != null) {
-            panelInfo(cards, "Не вдалося оновити YouTube: $loadError")
+        if (remoteEnabled && access == null && !restoringGoogle && !googleNeedsUser &&
+            persistentAuth.hadSuccessfulAuthorization()
+        ) {
+            val retry = button("↻ Відновити підключення Google") {
+                googleRestoreFailed = false
+                ensureRemoteReady()
+            }
+            cards.addView(retry, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(45)
+            ).apply { topMargin = dp(6) })
         }
         if (remoteEnabled && access != null) {
             val refresh = button(if (loadingList) "Оновлення…" else "↻ Оновити YouTube") {
@@ -634,6 +737,24 @@ class PlaylistLibraryActivity : Activity() {
             ).apply { topMargin = dp(6) })
         }
         cardTarget = null
+    }
+
+    /** One short line about the YouTube connection, or null when all is fine. */
+    private fun remoteStatusText(remoteEnabled: Boolean, access: String?): String? {
+        if (!remoteEnabled) return null
+        return when {
+            restoringGoogle -> "Відновлюю підключення Google/YTM…"
+            access == null && googleNeedsUser ->
+                "Google просить підтвердження • Головна → «2. Google / YTM»."
+            access == null && googleRestoreFailed ->
+                "Не вдалося відновити Google/YTM • натисніть «↻ Відновити підключення Google» внизу."
+            access == null ->
+                "YouTube не підключено • підключіть Google/YTM на головному екрані."
+            loadError != null -> "Не вдалося оновити YouTube: $loadError"
+            cachedPlaylists == null && loadingList -> "Читаю список YouTube…"
+            cachedPlaylists == null -> "Список YouTube ще не завантажено."
+            else -> null
+        }
     }
 
     private fun privacyLabel(status: String) = when (status.lowercase()) {
@@ -649,91 +770,153 @@ class PlaylistLibraryActivity : Activity() {
         })
     }
 
-    private fun showSortMenu(anchor: View) {
-        val popup = PopupMenu(this, anchor)
-        val entries = listOf(
-            1 to "Всі плейлісти",
-            2 to "Тільки на телефоні",
-            3 to "Тільки YouTube",
-            10 to "За датою локального збереження",
-            11 to "За абеткою • А–Я",
-            12 to "За абеткою • Я–А",
-            13 to "За кількістю треків",
-            14 to "Спочатку можливі дублікати",
-            20 to "YouTube: будь-яка доступність",
-            21 to "YouTube: публічні",
-            22 to "YouTube: приватні",
-            23 to "YouTube: за посиланням",
-            30 to "Показати всі записи",
-            31 to "Лише можливі дублікати"
+    /**
+     * Themed filter window (owner 2026-10-15/16). Replaces the native grey
+     * PopupMenu, which was off-theme, cut long labels and closed on rotation.
+     * It is a RestorableModalController modal like «?», so it survives
+     * rotation; every choice applies at once and the window stays open.
+     */
+    private fun showFilterWindow() {
+        modalController.show(
+            modalId = MODAL_FILTER,
+            args = Bundle(),
+            renderer = ::renderConfirmation
         )
-        entries.forEachIndexed { index, entry ->
-            val group = when (entry.first) {
-                in 1..3 -> 1
-                in 10..14 -> 2
-                in 20..23 -> 3
-                else -> 4
-            }
-            popup.menu.add(group, entry.first, index, entry.second).apply {
-                isCheckable = true
-                isChecked = when (entry.first) {
-                    1 -> showAll
-                    2 -> !showAll && !onlineTab
-                    3 -> !showAll && onlineTab
-                    10 -> sortMode == SortMode.RECENT
-                    11 -> sortMode == SortMode.NAME_ASC
-                    12 -> sortMode == SortMode.NAME_DESC
-                    13 -> sortMode == SortMode.TRACKS_DESC
-                    14 -> sortMode == SortMode.SIMILAR_FIRST
-                    20 -> privacyMode == PrivacyMode.ALL
-                    21 -> privacyMode == PrivacyMode.PUBLIC
-                    22 -> privacyMode == PrivacyMode.PRIVATE
-                    23 -> privacyMode == PrivacyMode.UNLISTED
-                    30 -> !similarOnly
-                    31 -> similarOnly
-                    else -> false
-                }
+    }
+
+    private fun createFilterContent(): View {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, 0, 0, dp(4))
+        }
+        fillFilterContent(container)
+        return container
+    }
+
+    private fun fillFilterContent(container: LinearLayout) {
+        container.removeAllViews()
+        fun section(title: String, note: String? = null) {
+            container.addView(text(title, 15f, true, palette.accent).apply {
+                setPadding(dp(4), dp(10), 0, dp(5))
+            })
+            if (note != null) {
+                container.addView(text(note, 12.5f, false, palette.muted).apply {
+                    setPadding(dp(4), 0, dp(4), dp(6))
+                })
             }
         }
-        popup.menu.setGroupCheckable(1, true, true)
-        popup.menu.setGroupCheckable(2, true, true)
-        popup.menu.setGroupCheckable(3, true, true)
-        popup.menu.setGroupCheckable(4, true, true)
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                1 -> {
-                    showAll = true
-                    selectedLocal = null; selectedRemote = null
+        fun option(label: String, selected: Boolean, hint: String? = null,
+                   onPick: () -> Unit) {
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                minimumHeight = dp(46)
+                setPadding(dp(12), dp(8), dp(10), dp(8))
+                background = GradientDrawable().apply {
+                    setColor(palette.surfaceAlt)
+                    cornerRadius = dp(12).toFloat()
+                    setStroke(dp(if (selected) 2 else 1),
+                        if (selected) palette.accent else palette.border)
                 }
-                2 -> {
-                    showAll = false; onlineTab = false
-                    selectedLocal = null; selectedRemote = null
-                }
-                3 -> {
-                    showAll = false; onlineTab = true
-                    selectedLocal = null; selectedRemote = null
-                }
-                10 -> sortMode = SortMode.RECENT
-                11 -> sortMode = SortMode.NAME_ASC
-                12 -> sortMode = SortMode.NAME_DESC
-                13 -> sortMode = SortMode.TRACKS_DESC
-                14 -> sortMode = SortMode.SIMILAR_FIRST
-                20 -> privacyMode = PrivacyMode.ALL
-                21 -> privacyMode = PrivacyMode.PUBLIC
-                22 -> privacyMode = PrivacyMode.PRIVATE
-                23 -> privacyMode = PrivacyMode.UNLISTED
-                30 -> similarOnly = false
-                31 -> similarOnly = true
+                isClickable = true
+                isFocusable = true
+                contentDescription = label + if (selected) ", вибрано" else ""
             }
-            ensureRemoteAccountIsolation()
-            renderContent()
-            scroller.scrollTo(0, 0)
-            if (showsRemote() && cachedPlaylists == null && token() != null) {
-                loadRemoteList()
+            val labels = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            labels.addView(text(label, 14.5f, selected,
+                if (selected) palette.text else palette.muted))
+            if (hint != null) {
+                labels.addView(text(hint, 12f, false, palette.muted).apply {
+                    setPadding(0, dp(2), 0, 0)
+                })
             }
-            true
+            row.addView(labels, LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            row.addView(View(this).apply {
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    if (selected) setColor(palette.accent)
+                    else setColor(android.graphics.Color.TRANSPARENT)
+                    setStroke(dp(2), if (selected) palette.accent else palette.muted)
+                }
+            }, LinearLayout.LayoutParams(dp(18), dp(18)).apply { marginStart = dp(10) })
+            row.setOnClickListener {
+                onPick()
+                applyFilterChange()
+                fillFilterContent(container)
+            }
+            container.addView(row, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(5) })
         }
-        popup.show()
+        fun pickSource(all: Boolean, online: Boolean) {
+            showAll = all
+            if (!all) onlineTab = online
+            onSourceChanged()
+            selectedLocal = null
+            selectedRemote = null
+            visibleTrackLimit = 60
+        }
+        val source = currentSource()
+        section("Джерело")
+        option("Всі плейлісти", source == LibraryFilterPolicy.Source.ALL) {
+            pickSource(all = true, online = onlineTab)
+        }
+        option("Тільки на телефоні", source == LibraryFilterPolicy.Source.PHONE) {
+            pickSource(all = false, online = false)
+        }
+        option("Тільки YouTube", source == LibraryFilterPolicy.Source.YOUTUBE) {
+            pickSource(all = false, online = true)
+        }
+        section("Сортування")
+        option("Нові — за датою збереження на телефоні", sortMode == SortMode.RECENT) {
+            sortMode = SortMode.RECENT
+        }
+        option("За абеткою • А–Я", sortMode == SortMode.NAME_ASC) {
+            sortMode = SortMode.NAME_ASC
+        }
+        option("За абеткою • Я–А", sortMode == SortMode.NAME_DESC) {
+            sortMode = SortMode.NAME_DESC
+        }
+        option("За кількістю треків", sortMode == SortMode.TRACKS_DESC) {
+            sortMode = SortMode.TRACKS_DESC
+        }
+        option("Спочатку можливі дублікати", sortMode == SortMode.SIMILAR_FIRST,
+            hint = "Схожі плейлісти стоять поруч, за номером групи") {
+            sortMode = SortMode.SIMILAR_FIRST
+        }
+        if (LibraryFilterPolicy.privacyAvailable(source)) {
+            section("Доступність YouTube")
+            option("Будь-яка", privacyMode == LibraryFilterPolicy.Privacy.ALL) {
+                privacyMode = LibraryFilterPolicy.Privacy.ALL
+            }
+            option("Публічні", privacyMode == LibraryFilterPolicy.Privacy.PUBLIC) {
+                privacyMode = LibraryFilterPolicy.Privacy.PUBLIC
+            }
+            option("Приватні", privacyMode == LibraryFilterPolicy.Privacy.PRIVATE) {
+                privacyMode = LibraryFilterPolicy.Privacy.PRIVATE
+            }
+            option("За посиланням", privacyMode == LibraryFilterPolicy.Privacy.UNLISTED) {
+                privacyMode = LibraryFilterPolicy.Privacy.UNLISTED
+            }
+        } else {
+            section("Доступність YouTube",
+                "Доступно, коли в «Джерело» вибрано «Тільки YouTube».")
+        }
+        section("Дублікати")
+        option("Показати всі записи", !similarOnly) { similarOnly = false }
+        option("Лише можливі дублікати", similarOnly,
+            hint = "Лише плейлісти з червоним рядком «Схожі №…». Що він означає — у «?»") {
+            similarOnly = true
+        }
+    }
+
+    private fun applyFilterChange() {
+        ensureRemoteAccountIsolation()
+        updateTopControls()
+        renderContent()
+        scroller.scrollTo(0, 0)
+        ensureRemoteReady()
     }
 
     private fun showHelp() {
@@ -925,6 +1108,18 @@ class PlaylistLibraryActivity : Activity() {
                 deleteLocalCopy(localId)
             }
         }
+        if (type == MODAL_FILTER) {
+            return UiChrome.showContentDialog(
+                activity = this,
+                title = "Фільтр і сортування",
+                subtitle = "Вибір діє одразу",
+                message = "",
+                content = createFilterContent(),
+                actions = listOf(UiChrome.DialogAction("Готово") {
+                    modalController.clearState()
+                })
+            )
+        }
         if (type == MODAL_HELP) {
             return UiChrome.showContentDialog(
                 activity = this,
@@ -1102,9 +1297,11 @@ class PlaylistLibraryActivity : Activity() {
         section("Каталог, фільтри та сортування")
         entry(R.drawable.ic_ytm_sort, "Фільтр і сортування",
             "Панель з лічильниками й фільтром не прокручується разом із " +
-                "картками. Доступні джерело, назва, дата, кількість, " +
-                "можливі дублікати та public/private/unlisted для YouTube. " +
-                "Фільтр доступності не приховує локальні записи.")
+                "картками. У вікні фільтра: джерело, сортування, можливі " +
+                "дублікати. Доступність YouTube (публічні, приватні, за " +
+                "посиланням) з’являється лише при «Тільки YouTube»; коли " +
+                "джерело змінюється, вона скидається на «Будь-яка». " +
+                "Вікно не закривається при повороті екрана.")
         entry(R.drawable.ic_ytm_device, "Лічильник телефону",
             "Кількість локальних записів. ✓ біля ЧИСЛА означає лише " +
                 "вибраний фільтр «Телефон», а не перевірені треки.",
@@ -1143,17 +1340,35 @@ class PlaylistLibraryActivity : Activity() {
             "Назавжди видаляє вибраний плейлист із YouTube за точним ID " +
                 "після окремого попередження. Локальні копії та History зберігаються. " +
                 "Після успіху каталог YouTube перечитується.", palette.accent)
-        section("Обкладинки та дублікати")
+        // Owner 2026-10-16 03:45: the red «Схожі №…» line was not understandable.
+        section("Червоний рядок «Схожі №…»")
+        entry(R.drawable.ic_ytm_view_grid, "Порівнюються цілі плейлісти",
+            "Не окремі пісні, а плейлісти (альбоми) цілком — на телефоні, " +
+                "в архіві History і на YouTube. Однакові пісні в різних " +
+                "альбомах тут не шукаються. Нічого не видаляється й не " +
+                "об’єднується само.", palette.accent)
+        entry(R.drawable.ic_ytm_view_grid, "Схожі №8 (4)",
+            "Група №8, у ній 4 плейлісти. Картки з однаковим номером — " +
+                "імовірно копії одна одної. «Спочатку можливі дублікати» " +
+                "ставить їх поруч.")
+        entry(R.drawable.ic_ytm_view_grid, "збіг складу",
+            "Точно ті самі пісні (за списком відео YouTube). Справжня копія.")
+        entry(R.drawable.ic_ytm_view_grid, "назва + кількість",
+            "Та сама назва і стільки ж пісень, але самі пісні не " +
+                "порівнювались — їх список не завантажено. Імовірно копія, " +
+                "але не доведено.")
+        entry(R.drawable.ic_ytm_view_grid, "назва, інша кількість",
+            "Та сама назва, але інша кількість пісень. Скоріш за все, " +
+                "інша версія альбому.")
+        entry(R.drawable.ic_ytm_device, "Архів History",
+            "Запис про минулий імпорт, а не окремий плейліст. Тому в однієї " +
+                "назви може бути багато таких записів у групі.",
+            palette.semantic.duplicate)
+        section("Обкладинки та зв’язки")
         entry(R.drawable.ic_ytm_music, "Немає обкладинки",
             "Мініатюра береться з доступних YouTube-даних за videoId. " +
                 "Коли дійсного ID немає, показується нейтральна нота. " +
                 "Для архівів може знадобитися відновлення метаданих.")
-        entry(R.drawable.ic_ytm_view_grid, "Кандидати на дублікати",
-            "«Схожі» групуються за нормалізованою назвою; різна кількість " +
-                "треків означає можливу відмінність версій. «Збіг складу» " +
-                "вимагає повних доступних списків videoId. Не виконується " +
-                "масове читання YouTube або автоматичне видалення. " +
-                "Збіг пов’язаного playlistId сам по собі не є дублікатом.")
         entry(R.drawable.ic_ytm_youtube_play, "Збіг ID",
             "У локальній та YouTube-картці знайдено однаковий playlistId " +
                 "у вже завантаженому каталозі поточного акаунта. " +
@@ -1533,7 +1748,8 @@ class PlaylistLibraryActivity : Activity() {
             val reason = when (hint.evidence) {
                 PlaylistLibraryDuplicatePolicy.Evidence.SAME_TRACKS -> "збіг складу"
                 PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT -> "назва + кількість"
-                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE -> "назва, різний склад"
+                // Only the count differs; songs were not compared.
+                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE -> "назва, інша кількість"
             }
             labels.addView(text("Схожі №${hint.groupNumber} " +
                 "(${hint.groupSize}) • $reason", 11f, true, palette.accent).apply {
@@ -1672,6 +1888,7 @@ class PlaylistLibraryActivity : Activity() {
         private const val MODAL_DELETE_REMOTE = "delete_remote_playlist"
         private const val MODAL_SAVE_REMOTE = "save_remote_local"
         private const val MODAL_HELP = "playlist_library_help"
+        private const val MODAL_FILTER = "playlist_library_filter"
         private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
 
         // Temporary, account-scoped metadata cache survives Android rotation,
