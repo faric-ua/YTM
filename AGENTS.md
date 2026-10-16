@@ -38,6 +38,9 @@ chat memory.
 
 ## Mandatory reply layout (user-approved, 2026-10-08)
 
+> **Since 2026-10-16 the reply format is [`docs/RESPONSE_ALGORITHM.md`](docs/RESPONSE_ALGORITHM.md)** (Ukrainian, identical in every faric-ua repo; only the menu section differs). It wins where it differs from the text below: the user action — including the urgent 🟨/🔴 one — goes at the END in «Від тебе зараз:», at most 3 checks. **The three-parts rule (`Частина 1/3…`) is for ChatGPT only** (it froze and restarted from part 1); **Claude does not use it** — a long Claude chat moves to a new chat instead.
+> **Inspector notes — [`docs/INSPECTOR.md`](docs/INSPECTOR.md):** the faric-ua chat «GitHub Storage» keeps all repos consistent and may change files here; at session start read new entries, consider them, accept, or tell faric if they conflict.
+
 Before replying to the user about project work, signed APK, Termux or PHONE QA,
 read `docs/assistant-kit/USER_RESPONSE_TEMPLATE.md`. Keep the user-facing
 order: **short issue/fix heading → useful results → short exact Termux menu steps
