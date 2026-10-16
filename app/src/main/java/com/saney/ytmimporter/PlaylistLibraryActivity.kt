@@ -32,15 +32,19 @@ import com.saney.ytmimporter.history.HistoryRecoveryPolicy
 import com.saney.ytmimporter.library.LibraryFilterPolicy
 import com.saney.ytmimporter.library.LocalLibraryItem
 import com.saney.ytmimporter.library.LocalLibrarySource
+import com.saney.ytmimporter.library.PlaylistLibraryDuplicateGroupPolicy
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicatePolicy
 import com.saney.ytmimporter.library.PlaylistLibraryIdentityPolicy
 import com.saney.ytmimporter.library.PlaylistLibraryPolicy
+import com.saney.ytmimporter.model.HistoryEntry
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
+import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.QuotaTracker
+import com.saney.ytmimporter.storage.RestorablePlaylistSnapshot
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
 import com.saney.ytmimporter.ui.PlaylistCoverLoader
@@ -109,6 +113,14 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var searchBox: EditText
     private lateinit var statusLabel: TextView
     private lateinit var modalController: RestorableModalController
+    /** Catalogue scroll position to return to from a playlist (Back). */
+    private var catalogueScrollY = 0
+    /** Last duplicate analysis, shared by cards, details and the group window. */
+    private var dupCandidates: List<PlaylistLibraryDuplicatePolicy.Candidate> = emptyList()
+    private var dupHints: Map<String, PlaylistLibraryDuplicatePolicy.Hint> = emptyMap()
+    private var dupMembers: Map<String, DupMember> = emptyMap()
+    /** Cards shown by the last catalogue render; null = catalogue not built yet. */
+    private var visibleCardIdentities: Set<String>? = null
 
     private val palette get() = AppThemeManager.palette(this)
     private val landscape get() =
@@ -133,6 +145,7 @@ class PlaylistLibraryActivity : Activity() {
         selectedLocal = savedInstanceState?.getString("local")
         selectedRemote = savedInstanceState?.getString("remote")
         visibleTrackLimit = savedInstanceState?.getInt("limit") ?: 60
+        catalogueScrollY = savedInstanceState?.getInt("catalogue_scroll") ?: 0
         deletingRemoteId = savedInstanceState?.getString("deleting_remote")
         ensureRemoteAccountIsolation()
         modalController = RestorableModalController(this, STATE_MODAL)
@@ -179,6 +192,7 @@ class PlaylistLibraryActivity : Activity() {
         outState.putString("local", selectedLocal)
         outState.putString("remote", selectedRemote)
         outState.putInt("limit", visibleTrackLimit)
+        outState.putInt("catalogue_scroll", catalogueScrollY)
         outState.putString("deleting_remote", deletingRemoteId)
         modalController.save(outState)
         super.onSaveInstanceState(outState)
@@ -196,7 +210,8 @@ class PlaylistLibraryActivity : Activity() {
             selectedLocal = null
             selectedRemote = null
             visibleTrackLimit = 60
-            renderContent()
+            // Back returns to the catalogue where the owner left it.
+            renderContent(catalogueScrollY)
         } else {
             super.onBackPressed()
         }
@@ -368,8 +383,7 @@ class PlaylistLibraryActivity : Activity() {
         visibleTrackLimit = 60
         ensureRemoteAccountIsolation()
         updateTopControls()
-        renderContent()
-        scroller.scrollTo(0, 0)
+        renderContent(0)
         ensureRemoteReady()
     }
 
@@ -486,10 +500,17 @@ class PlaylistLibraryActivity : Activity() {
         catalogueToolbar.visibility = if (catalogue) View.VISIBLE else View.GONE
     }
 
-    private fun renderContent() {
+    /**
+     * Rebuilds the screen. [restoreY] null keeps the current scroll position
+     * (refresh of the same screen); a number scrolls there after layout.
+     * The old version always restored the previous position in a post{},
+     * which overrode the caller's scrollTo(0, 0): a playlist opened from deep
+     * in the catalogue started half-way down (owner screenshot 2026-10-12).
+     */
+    private fun renderContent(restoreY: Int? = null) {
         if (!::body.isInitialized) return
         updateTopControls()
-        val oldY = scroller.scrollY
+        val oldY = restoreY ?: scroller.scrollY
         body.removeAllViews()
         catalogueToolbar.removeAllViews()
         cardTarget = null
@@ -508,22 +529,27 @@ class PlaylistLibraryActivity : Activity() {
 
     private fun renderLocalCatalogue() = renderCatalogue()
 
-    private fun renderCatalogue() {
-        val saved = savedStore.getAll()
-        val active = currentStore.load()
-        val archive = historyStore.getAll()
-        val allLocal = PlaylistLibraryPolicy.build(saved, active, archive)
-        val localVisible = if (showsLocal()) allLocal else emptyList()
-        val remoteEnabled = showsRemote()
-        val access = token()
-        val allRemote = if (access != null) cachedPlaylists.orEmpty() else emptyList()
-        val privacy = LibraryFilterPolicy.effectivePrivacy(currentSource(), privacyMode)
-        val remoteItems = if (remoteEnabled) allRemote.filter {
-            privacy == LibraryFilterPolicy.Privacy.ALL ||
-                it.privacyStatus.equals(privacy.name, ignoreCase = true)
-        } else emptyList()
-        // Metadata-only candidates. Do not spend API quota fetching all
-        // remote tracks or treat an equal linked playlistId as track equality.
+    /** One playlist as shown in the «Група №…» window. */
+    private class DupMember(
+        val title: String,
+        val source: String,
+        val isRemote: Boolean,
+        val remoteTracksLoaded: Boolean,
+        val open: () -> Unit
+    )
+
+    /**
+     * Metadata-only candidates. Do not spend API quota fetching all remote
+     * tracks or treat an equal linked playlistId as track equality.
+     * Remembers the result for the group window and the detail button.
+     */
+    private fun analyseDuplicates(
+        saved: List<RestorablePlaylistSnapshot>,
+        active: CurrentPlaylistSnapshot?,
+        archive: List<HistoryEntry>,
+        allLocal: List<LocalLibraryItem>,
+        allRemote: List<YouTubePlaylistInfo>
+    ): Map<String, PlaylistLibraryDuplicatePolicy.Hint> {
         val savedById = saved.associateBy { it.localPlaylistId }
         val archiveById = archive.associateBy { it.id }
         val candidates = allLocal.map { item ->
@@ -545,6 +571,216 @@ class PlaylistLibraryActivity : Activity() {
             )
         }
         val hints = PlaylistLibraryDuplicatePolicy.find(candidates)
+        dupCandidates = candidates
+        dupHints = hints
+        dupMembers = allLocal.associate { item ->
+            item.identity to DupMember(
+                title = item.title,
+                source = when (item.source) {
+                    LocalLibrarySource.CURRENT -> "Телефон • поточний"
+                    LocalLibrarySource.SAVED -> "Телефон"
+                    LocalLibrarySource.HISTORY -> "Архів History"
+                },
+                isRemote = false,
+                remoteTracksLoaded = false,
+                open = {
+                    rememberCatalogueScroll()
+                    selectedLocal = item.identity
+                    selectedRemote = null
+                    visibleTrackLimit = 60
+                    renderContent(0)
+                }
+            )
+        } + allRemote.associate { remote ->
+            "youtube:${remote.id}" to DupMember(
+                title = remote.title,
+                source = "YouTube • ${privacyLabel(remote.privacyStatus)}",
+                isRemote = true,
+                remoteTracksLoaded = cachedTracks.containsKey(remote.id),
+                open = {
+                    rememberCatalogueScroll()
+                    selectedRemote = remote.id
+                    selectedLocal = null
+                    visibleTrackLimit = 60
+                    renderContent(0)
+                    if (!cachedTracks.containsKey(remote.id)) loadRemoteTracks(remote.id)
+                }
+            )
+        }
+        return hints
+    }
+
+    /** Only the catalogue position is remembered, not another playlist's. */
+    private fun rememberCatalogueScroll() {
+        if (selectedLocal == null && selectedRemote == null) {
+            catalogueScrollY = scroller.scrollY
+        }
+    }
+
+    /** Fresh analysis when a detail page or the group window needs it. */
+    private fun refreshDuplicates() {
+        val saved = savedStore.getAll()
+        val active = currentStore.load()
+        val archive = historyStore.getAll()
+        analyseDuplicates(saved, active, archive,
+            PlaylistLibraryPolicy.build(saved, active, archive),
+            if (token() != null) cachedPlaylists.orEmpty() else emptyList())
+    }
+
+    private fun showDuplicateGroup(identity: String) {
+        modalController.show(
+            modalId = MODAL_DUP_GROUP,
+            args = Bundle().apply { putString("item", identity) },
+            renderer = ::renderConfirmation
+        )
+    }
+
+    /** Detail button «Схожі: група №…» when this playlist has look-alikes. */
+    private fun addDuplicateGroupButton(identity: String) {
+        refreshDuplicates()
+        val hint = dupHints[identity] ?: return
+        addFullButton("Схожі плейлісти: група №${hint.groupNumber} " +
+            "(${hint.groupSize}) — порівняти ›") {
+            showDuplicateGroup(identity)
+        }
+    }
+
+    /**
+     * The «Група №…» window (owner 2026-10-16 21:57: which ones are full copies
+     * and which are not was unclear even after «?»). All members of the group,
+     * also those hidden by the current filter, laid out by number of songs.
+     * Returns the summary line and the content, or null when the group is gone.
+     */
+    private fun createDuplicateGroupContent(
+        identity: String,
+        close: () -> Unit
+    ): Pair<String, View>? {
+        val hint = dupHints[identity] ?: return null
+        val members = PlaylistLibraryDuplicateGroupPolicy.members(
+            hint.groupNumber, dupCandidates, dupHints)
+        val overview = PlaylistLibraryDuplicateGroupPolicy.overview(members)
+        val byId = members.associateBy { it.identity }
+        val container = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        container.addView(text(
+            "Тут усі плейлісти цієї групи — і ті, що сховані фільтром. " +
+                "Порівнюються цілі плейлісти, не окремі пісні.\n" +
+                "✓ однакові пісні — справжня копія\n" +
+                "≠ пісні інші — кількість та сама, а склад різний\n" +
+                "? не перевірено — пісні ще не порівнювались\n" +
+                "Різна кількість пісень — різні версії.",
+            12.5f, false, palette.muted).apply {
+            setPadding(dp(4), 0, dp(4), dp(8))
+            setLineSpacing(0f, 1.1f)
+        })
+        overview.bands.forEach { band ->
+            container.addView(text(
+                "${band.trackCount} " +
+                    PlaylistLibraryDuplicateGroupPolicy.songsWord(band.trackCount) +
+                    " — ${band.rows.size} " +
+                    PlaylistLibraryDuplicateGroupPolicy.playlistsWord(band.rows.size),
+                15f, true, palette.accent).apply {
+                setPadding(dp(4), dp(10), dp(4), dp(5))
+            })
+            band.rows.forEach { row ->
+                val member = dupMembers[row.identity]
+                val candidate = byId[row.identity]
+                val symbol: String
+                val colour: Int
+                when (row.mark) {
+                    PlaylistLibraryDuplicateGroupPolicy.Mark.SAME -> {
+                        symbol = "✓"; colour = palette.semantic.success
+                    }
+                    PlaylistLibraryDuplicateGroupPolicy.Mark.DIFFERENT -> {
+                        symbol = "≠"; colour = palette.semantic.warning
+                    }
+                    PlaylistLibraryDuplicateGroupPolicy.Mark.UNCHECKED -> {
+                        symbol = "?"; colour = palette.muted
+                    }
+                }
+                val videoIds = candidate?.videoIds
+                val explain = when (row.mark) {
+                    PlaylistLibraryDuplicateGroupPolicy.Mark.SAME ->
+                        "однакові пісні ще з ${row.sameWith}"
+                    PlaylistLibraryDuplicateGroupPolicy.Mark.DIFFERENT -> "пісні інші"
+                    PlaylistLibraryDuplicateGroupPolicy.Mark.UNCHECKED -> when {
+                        member != null && member.isRemote && !member.remoteTracksLoaded ->
+                            "не перевірено: відкрийте плейліст — пісні порівняються"
+                        videoIds == null -> "не перевірено: склад недоступний"
+                        videoIds.any { !VIDEO_ID.matches(it) } ->
+                            "не перевірено: не в усіх пісень є відео YouTube"
+                        videoIds.size != (candidate?.trackCount ?: -1) ->
+                            "не перевірено: список пісень неповний"
+                        else -> "не перевірено: немає з чим порівняти"
+                    }
+                }
+                val hidden = visibleCardIdentities?.let { row.identity !in it } ?: false
+                val rowView = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    minimumHeight = dp(52)
+                    setPadding(dp(10), dp(8), dp(10), dp(8))
+                    background = GradientDrawable().apply {
+                        setColor(palette.surfaceAlt)
+                        cornerRadius = dp(12).toFloat()
+                        setStroke(dp(1), palette.border)
+                    }
+                    isClickable = member != null
+                    isFocusable = member != null
+                    contentDescription = (member?.title ?: row.identity) + ", " + explain
+                    if (member != null) {
+                        setOnClickListener {
+                            close()
+                            member.open()
+                        }
+                    }
+                }
+                rowView.addView(text(symbol, 20f, true, colour).apply {
+                    gravity = Gravity.CENTER
+                }, LinearLayout.LayoutParams(dp(30), ViewGroup.LayoutParams.WRAP_CONTENT))
+                val labels = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+                labels.addView(text(member?.title ?: candidate?.title.orEmpty(),
+                    14f, true, palette.text).apply {
+                    maxLines = 2
+                    ellipsize = TextUtils.TruncateAt.END
+                })
+                labels.addView(text(
+                    listOfNotNull(member?.source, explain,
+                        if (hidden) "сховано фільтром" else null).joinToString(" • "),
+                    12f, false, palette.muted).apply { setPadding(0, dp(2), 0, 0) })
+                rowView.addView(labels, LinearLayout.LayoutParams(
+                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+                if (member != null) {
+                    rowView.addView(text("›", 20f, true, palette.muted).apply {
+                        setPadding(dp(8), 0, 0, 0)
+                    })
+                }
+                container.addView(rowView, LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(5) })
+            }
+        }
+        container.addView(text(
+            "Нічого не видаляється й не об’єднується само. Торкніться рядка, " +
+                "щоб відкрити плейліст.",
+            12f, false, palette.muted).apply { setPadding(dp(4), dp(8), dp(4), 0) })
+        return PlaylistLibraryDuplicateGroupPolicy.summary(overview) to container
+    }
+
+    private fun renderCatalogue() {
+        val saved = savedStore.getAll()
+        val active = currentStore.load()
+        val archive = historyStore.getAll()
+        val allLocal = PlaylistLibraryPolicy.build(saved, active, archive)
+        val localVisible = if (showsLocal()) allLocal else emptyList()
+        val remoteEnabled = showsRemote()
+        val access = token()
+        val allRemote = if (access != null) cachedPlaylists.orEmpty() else emptyList()
+        val privacy = LibraryFilterPolicy.effectivePrivacy(currentSource(), privacyMode)
+        val remoteItems = if (remoteEnabled) allRemote.filter {
+            privacy == LibraryFilterPolicy.Privacy.ALL ||
+                it.privacyStatus.equals(privacy.name, ignoreCase = true)
+        } else emptyList()
+        val hints = analyseDuplicates(saved, active, archive, allLocal, allRemote)
         // Cross-reference only IDs in the current account's already fetched
         // catalogue. Retain BOTH cards and NEVER infer identical track lists.
         val exactLinks = PlaylistLibraryIdentityPolicy.exactRemoteMatches(
@@ -642,6 +878,7 @@ class PlaylistLibraryActivity : Activity() {
             val hint = hints[item.identity]
             if (similarOnly && hint == null) return@forEach
             all += CardInfo(
+                identity = item.identity,
                 title = item.title,
                 subtitle = (if (item.destinationPlaylistId?.let {
                     it in exactLinks
@@ -658,10 +895,10 @@ class PlaylistLibraryActivity : Activity() {
                 trackCount = item.trackCount.toLong(),
                 duplicateHint = hint,
                 onClick = {
+                    catalogueScrollY = scroller.scrollY
                     selectedLocal = item.identity
                     visibleTrackLimit = 60
-                    renderContent()
-                    scroller.scrollTo(0, 0)
+                    renderContent(0)
                 }
             )
         }
@@ -669,6 +906,7 @@ class PlaylistLibraryActivity : Activity() {
             val hint = hints["youtube:${item.id}"]
             if (similarOnly && hint == null) return@forEach
             all += CardInfo(
+                identity = "youtube:${item.id}",
                 title = item.title,
                 subtitle = (if (item.id in exactLinks) "Збіг ID • " else "") +
                     "${item.itemCount} відео • ${privacyLabel(item.privacyStatus)}",
@@ -678,10 +916,10 @@ class PlaylistLibraryActivity : Activity() {
                 trackCount = item.itemCount,
                 duplicateHint = hint,
                 onClick = {
+                    catalogueScrollY = scroller.scrollY
                     selectedRemote = item.id
                     visibleTrackLimit = 60
-                    renderContent()
-                    scroller.scrollTo(0, 0)
+                    renderContent(0)
                     if (!cachedTracks.containsKey(item.id)) loadRemoteTracks(item.id)
                 }
             )
@@ -704,6 +942,7 @@ class PlaylistLibraryActivity : Activity() {
                     .thenBy { it.duplicateHint?.groupNumber ?: Int.MAX_VALUE }
                     .thenBy { it.title.lowercase() })
         }
+        visibleCardIdentities = filtered.map { it.identity }.toSet()
         val groupCount = filtered.mapNotNull { it.duplicateHint?.groupNumber }
             .distinct().size
         shownLine.text = "Показано: ${filtered.size} • груп схожих: $groupCount" +
@@ -793,8 +1032,25 @@ class PlaylistLibraryActivity : Activity() {
         return container
     }
 
-    private fun fillFilterContent(container: LinearLayout) {
-        container.removeAllViews()
+    private fun fillFilterContent(root: LinearLayout) {
+        root.removeAllViews()
+        // Portrait: one column. Landscape: Джерело + Доступність YouTube on the
+        // left, Сортування + Дублікати on the right (owner 2026-10-16 21:57).
+        var container = root
+        var leftColumn = root
+        var rightColumn = root
+        if (landscape) {
+            root.orientation = LinearLayout.HORIZONTAL
+            leftColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            rightColumn = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            root.addView(leftColumn, LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = dp(8) })
+            root.addView(rightColumn, LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(8) })
+            container = leftColumn
+        } else {
+            root.orientation = LinearLayout.VERTICAL
+        }
         fun section(title: String, note: String? = null) {
             container.addView(text(title, 15f, true, palette.accent).apply {
                 setPadding(dp(4), dp(10), 0, dp(5))
@@ -843,7 +1099,7 @@ class PlaylistLibraryActivity : Activity() {
             row.setOnClickListener {
                 onPick()
                 applyFilterChange()
-                fillFilterContent(container)
+                fillFilterContent(root)
             }
             container.addView(row, LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
@@ -868,6 +1124,7 @@ class PlaylistLibraryActivity : Activity() {
         option("Тільки YouTube", source == LibraryFilterPolicy.Source.YOUTUBE) {
             pickSource(all = false, online = true)
         }
+        container = rightColumn
         section("Сортування")
         option("Нові — за датою збереження на телефоні", sortMode == SortMode.RECENT) {
             sortMode = SortMode.RECENT
@@ -885,6 +1142,7 @@ class PlaylistLibraryActivity : Activity() {
             hint = "Схожі плейлісти стоять поруч, за номером групи") {
             sortMode = SortMode.SIMILAR_FIRST
         }
+        container = leftColumn
         if (LibraryFilterPolicy.privacyAvailable(source)) {
             section("Доступність YouTube")
             option("Будь-яка", privacyMode == LibraryFilterPolicy.Privacy.ALL) {
@@ -903,10 +1161,12 @@ class PlaylistLibraryActivity : Activity() {
             section("Доступність YouTube",
                 "Доступно, коли в «Джерело» вибрано «Тільки YouTube».")
         }
+        container = rightColumn
         section("Дублікати")
         option("Показати всі записи", !similarOnly) { similarOnly = false }
         option("Лише можливі дублікати", similarOnly,
-            hint = "Лише плейлісти з червоним рядком «Схожі №…». Що він означає — у «?»") {
+            hint = "Лише плейлісти з рядком «Копія… / Схоже на копію… / Інша версія…». " +
+                "Торкніться цього рядка на картці — побачите всю групу") {
             similarOnly = true
         }
     }
@@ -914,8 +1174,7 @@ class PlaylistLibraryActivity : Activity() {
     private fun applyFilterChange() {
         ensureRemoteAccountIsolation()
         updateTopControls()
-        renderContent()
-        scroller.scrollTo(0, 0)
+        renderContent(0)
         ensureRemoteReady()
     }
 
@@ -983,6 +1242,7 @@ class PlaylistLibraryActivity : Activity() {
                 showConfirmation(MODAL_DELETE_LOCAL, item.identity)
             }
         }
+        addDuplicateGroupButton(item.identity)
         addHeading("Треки • ${playlist.tracks.size}")
         showTracks(playlist.tracks)
     }
@@ -1011,6 +1271,7 @@ class PlaylistLibraryActivity : Activity() {
                 showConfirmation(MODAL_DELETE_REMOTE, playlistId)
             }
         }
+        addDuplicateGroupButton("youtube:$playlistId")
         val tracks = cachedTracks[playlistId]
         if (tracks == null) {
             addInfo(
@@ -1109,16 +1370,46 @@ class PlaylistLibraryActivity : Activity() {
             }
         }
         if (type == MODAL_FILTER) {
+            val done = UiChrome.DialogAction("Готово") { modalController.clearState() }
+            // Owner 2026-10-16 21:57: in landscape the window showed about one
+            // option. There: title and «Готово» in one row, options in two columns.
+            if (landscape) {
+                return UiChrome.showWideContentDialog(
+                    activity = this,
+                    title = "Фільтр і сортування",
+                    content = createFilterContent(),
+                    doneAction = done
+                )
+            }
             return UiChrome.showContentDialog(
                 activity = this,
                 title = "Фільтр і сортування",
                 subtitle = "Вибір діє одразу",
                 message = "",
                 content = createFilterContent(),
-                actions = listOf(UiChrome.DialogAction("Готово") {
+                actions = listOf(done)
+            )
+        }
+        if (type == MODAL_DUP_GROUP) {
+            val identity = args.getString("item") ?: return null
+            if (dupHints[identity] == null) refreshDuplicates()
+            val number = dupHints[identity]?.groupNumber ?: return null
+            var dialog: Dialog? = null
+            val built = createDuplicateGroupContent(identity) {
+                modalController.clearState()
+                dialog?.dismiss()
+            } ?: return null
+            dialog = UiChrome.showContentDialog(
+                activity = this,
+                title = "Група №$number — схожі плейлісти",
+                subtitle = built.first,
+                message = "",
+                content = built.second,
+                actions = listOf(UiChrome.DialogAction("Закрити") {
                     modalController.clearState()
                 })
             )
+            return dialog
         }
         if (type == MODAL_HELP) {
             return UiChrome.showContentDialog(
@@ -1237,8 +1528,7 @@ class PlaylistLibraryActivity : Activity() {
         }
         selectedLocal = null
         visibleTrackLimit = 60
-        renderContent()
-        scroller.scrollTo(0, 0)
+        renderContent(0)
         toast("Локальну копію видалено")
     }
 
@@ -1340,26 +1630,26 @@ class PlaylistLibraryActivity : Activity() {
             "Назавжди видаляє вибраний плейлист із YouTube за точним ID " +
                 "після окремого попередження. Локальні копії та History зберігаються. " +
                 "Після успіху каталог YouTube перечитується.", palette.accent)
-        // Owner 2026-10-16 03:45: the red «Схожі №…» line was not understandable.
-        section("Червоний рядок «Схожі №…»")
+        // Owner 2026-10-16 03:45 and 21:57: the duplicate line was not
+        // understandable, even with the old legend. Now the card says it in
+        // plain words and a tap opens the whole group side by side.
+        section("Рядок про копії на картці")
         entry(R.drawable.ic_ytm_view_grid, "Порівнюються цілі плейлісти",
             "Не окремі пісні, а плейлісти (альбоми) цілком — на телефоні, " +
-                "в архіві History і на YouTube. Однакові пісні в різних " +
-                "альбомах тут не шукаються. Нічого не видаляється й не " +
+                "в архіві History і на YouTube. Нічого не видаляється й не " +
                 "об’єднується само.", palette.accent)
-        entry(R.drawable.ic_ytm_view_grid, "Схожі №8 (4)",
-            "Група №8, у ній 4 плейлісти. Картки з однаковим номером — " +
-                "імовірно копії одна одної. «Спочатку можливі дублікати» " +
-                "ставить їх поруч.")
-        entry(R.drawable.ic_ytm_view_grid, "збіг складу",
-            "Точно ті самі пісні (за списком відео YouTube). Справжня копія.")
-        entry(R.drawable.ic_ytm_view_grid, "назва + кількість",
-            "Та сама назва і стільки ж пісень, але самі пісні не " +
-                "порівнювались — їх список не завантажено. Імовірно копія, " +
-                "але не доведено.")
-        entry(R.drawable.ic_ytm_view_grid, "назва, інша кількість",
-            "Та сама назва, але інша кількість пісень. Скоріш за все, " +
-                "інша версія альбому.")
+        entry(R.drawable.ic_ytm_view_grid, "Копія: ті самі пісні",
+            "Пісні перевірено — вони точно ті самі. Справжня копія.")
+        entry(R.drawable.ic_ytm_view_grid, "Схоже на копію",
+            "Та сама назва і стільки ж пісень, але самі пісні ще не " +
+                "порівнювались. Для YouTube — відкрийте плейліст, і пісні " +
+                "порівняються.")
+        entry(R.drawable.ic_ytm_view_grid, "Інша версія",
+            "Та сама назва, але інша кількість пісень.")
+        entry(R.drawable.ic_ytm_view_grid, "група №8 (4) ›",
+            "Торкніться цього рядка — відкриється «Група №8»: усі 4 плейлісти " +
+                "поруч, за кількістю пісень, з позначками ✓ однакові пісні, " +
+                "≠ пісні інші, ? не перевірено.", palette.accent)
         entry(R.drawable.ic_ytm_device, "Архів History",
             "Запис про минулий імпорт, а не окремий плейліст. Тому в однієї " +
                 "назви може бути багато таких записів у групі.",
@@ -1673,6 +1963,7 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     private data class CardInfo(
+        val identity: String,
         val title: String,
         val subtitle: String,
         val videoId: String?,
@@ -1693,8 +1984,11 @@ class PlaylistLibraryActivity : Activity() {
             val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
             group.forEachIndexed { index, item ->
                 val card = makeCard(item, useTwo)
+                // MATCH_PARENT in a wrap-content row = every tile in the row
+                // gets the height of the tallest one (BACKLOG «Uneven grid tiles»).
                 row.addView(card, LinearLayout.LayoutParams(
-                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+                    0, if (useTwo) ViewGroup.LayoutParams.MATCH_PARENT
+                    else ViewGroup.LayoutParams.WRAP_CONTENT, 1f
                 ).apply { if (index > 0) marginStart = dp(8) })
             }
             if (useTwo && group.size == 1) {
@@ -1745,16 +2039,25 @@ class PlaylistLibraryActivity : Activity() {
             ellipsize = TextUtils.TruncateAt.END
         })
         info.duplicateHint?.let { hint ->
-            val reason = when (hint.evidence) {
-                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TRACKS -> "збіг складу"
-                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT -> "назва + кількість"
-                // Only the count differs; songs were not compared.
-                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE -> "назва, інша кількість"
+            // Owner 2026-10-16: plain verdict instead of «Схожі №8 (4) • збіг
+            // складу»; a tap shows the whole group side by side.
+            val colour = when (hint.evidence) {
+                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TRACKS -> palette.accent
+                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT -> palette.semantic.warning
+                PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE -> palette.muted
             }
-            labels.addView(text("Схожі №${hint.groupNumber} " +
-                "(${hint.groupSize}) • $reason", 11f, true, palette.accent).apply {
+            labels.addView(text(
+                PlaylistLibraryDuplicateGroupPolicy.cardVerdict(hint.evidence) +
+                    " • група №${hint.groupNumber} (${hint.groupSize}) ›",
+                11.5f, true, colour).apply {
+                minLines = if (tile) 2 else 1
                 maxLines = 2
                 ellipsize = TextUtils.TruncateAt.END
+                setPadding(0, dp(4), 0, dp(4))
+                isClickable = true
+                isFocusable = true
+                contentDescription = "Схожі плейлісти, група ${hint.groupNumber}. Порівняти"
+                setOnClickListener { showDuplicateGroup(info.identity) }
             })
         }
         // Reserve the same footer slot in every grid tile, even when there is
@@ -1793,11 +2096,15 @@ class PlaylistLibraryActivity : Activity() {
         } else if (info.badge.isNotBlank()) {
             footer.addView(text(info.badge, 11f, true, palette.accent))
         }
+        if (tile) {
+            // Pushes the footer down so footers line up across a row.
+            labels.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
+        }
         labels.addView(footer, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, dp(24)
         ))
         card.addView(labels, if (tile) LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
         ) else LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
         return card
     }
@@ -1889,6 +2196,7 @@ class PlaylistLibraryActivity : Activity() {
         private const val MODAL_SAVE_REMOTE = "save_remote_local"
         private const val MODAL_HELP = "playlist_library_help"
         private const val MODAL_FILTER = "playlist_library_filter"
+        private const val MODAL_DUP_GROUP = "playlist_library_duplicate_group"
         private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
 
         // Temporary, account-scoped metadata cache survives Android rotation,

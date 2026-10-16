@@ -1,6 +1,18 @@
 # YTM Importer — ACTIVE PLAN
 
 
+## CURRENT TASK — 2026-10-16 / Library batch 2 (branch `feat/v1.4.58-library-batch2` → PR into `feat/v1.4.58-playlist-player`)
+
+Owner 2026-10-16 21:57 (screenshot, landscape filter window + voice): the filter window in landscape shows about one option — make it wider / full screen; duplicates: «I still don't understand which are full duplicates and which are not, even after reading Help». Owner: put it in TODO and, when taking work from TODO, choose what goes into one batch. «Погнали».
+
+- [x] (code) **Filter window in landscape:** title and `Готово` in one row (no subtitle, no footer) — new `UiChrome.showWideContentDialog`; options in two columns: Джерело + Доступність YouTube | Сортування + Дублікати. Portrait unchanged.
+- [x] (code) **Duplicates understandable:** card line in plain words — `Копія: ті самі пісні` / `Схоже на копію: назва і кількість ті самі` / `Інша версія: та сама назва, інша кількість пісень` + `група №N (M) ›`; a tap on that line opens the window **«Група №N — схожі плейлісти»**: all members (also hidden by the filter, marked `сховано фільтром`), laid out by number of songs, each row ✓ однакові пісні / ≠ пісні інші / ? не перевірено + why (YouTube not opened yet, a track without video…); tap a row → that playlist. Detail page: button `Схожі плейлісти: група №N (M) — порівняти ›`. Help legend rewritten to the same words. Pure `PlaylistLibraryDuplicateGroupPolicy` + 7 JVM tests (local run with embedded Kotlin: OK, 14/14 with the old duplicate tests).
+- [x] (code) **Equal tile heights in a grid row** (BACKLOG «Uneven grid tiles»): tiles stretch to the tallest in the row, footer at the bottom.
+- [x] (code) **Playlist opens at the top; Back returns to where the catalogue was** (BACKLOG «Detail opens at a stale scrolled position»). Cause found: `renderContent()` always re-applied the previous scroll in `post{}`, which overrode the caller's `scrollTo(0, 0)`. Now `renderContent(restoreY)`; catalogue position kept in `catalogueScrollY` (also over rotation).
+- Not in this batch (reason): safe YouTube link check (waiting owner yes/no); «Знайти дублікати» by track titles (big, needs YouTube reads + quota approval); remote date-sort wording (small, next cosmetic batch); remembering filters between visits (ask owner); stable 1.4.58 (only after owner «так»).
+- [ ] Validate on the branch, merge (fast-forward), one signed APK, phone QA one step at a time.
+
+
 ## CURRENT TASK — 2026-10-16 / Library batch 1 (branch `feat/v1.4.58-library-batch1` → PR into `feat/v1.4.58-playlist-player`)
 
 - [x] Record phone findings (05:18 recording) and this plan before code.

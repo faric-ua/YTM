@@ -31,15 +31,21 @@ object PlaylistLibraryDuplicatePolicy {
     fun normalizedTitle(title: String): String =
         title.lowercase(Locale.ROOT).replace(punctuation, " ").trim()
 
+    /**
+     * Sorted full list of video IDs, or null when the songs are not known
+     * completely (not loaded, a track without a valid video, wrong count).
+     * Order is ignored, repeats count.
+     */
+    fun songFingerprint(item: Candidate): List<String>? =
+        item.videoIds
+            ?.takeIf { it.size >= 2 && it.size == item.trackCount }
+            ?.takeIf { list -> list.all(videoId::matches) }
+            ?.sorted()
+
     fun find(items: List<Candidate>): Map<String, Hint> {
         if (items.size < 2) return emptyMap()
         val names = items.map { normalizedTitle(it.title) }
-        val contents = items.map { item ->
-            item.videoIds
-                ?.takeIf { it.size >= 2 && it.size == item.trackCount }
-                ?.takeIf { list -> list.all(videoId::matches) }
-                ?.sorted()
-        }
+        val contents = items.map(::songFingerprint)
         val parent = IntArray(items.size) { it }
         fun root(i: Int): Int {
             var p = i

@@ -1261,6 +1261,91 @@ object UiChrome {
         )
     }
 
+    /**
+     * Landscape variant for tall option lists (owner 2026-10-16: the filter
+     * window in landscape showed about one option). The title and the single
+     * close action share one row, there is no subtitle and no footer, so the
+     * content gets almost the whole screen height. Same window geometry and
+     * reveal logic as the other fixed dialogs.
+     */
+    fun showWideContentDialog(
+        activity: Activity,
+        title: String,
+        content: View,
+        doneAction: DialogAction
+    ): Dialog {
+        val dialog = customDialog(activity)
+        val card = dialogCard(activity).apply {
+            setPadding(
+                dp(context, 16),
+                dp(context, 10),
+                dp(context, 16),
+                dp(context, 12)
+            )
+        }
+
+        val header =
+            LinearLayout(activity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                isBaselineAligned = false
+            }
+
+        header.addView(
+            emphasizedTitle(
+                activity = activity,
+                label = title,
+                textSizeSp = 19f,
+                maxLines = 1
+            ),
+            LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        )
+
+        header.addView(
+            dialogActionButton(
+                activity = activity,
+                action = doneAction
+            ) {
+                dialog.dismiss()
+                doneAction.onClick()
+            }.apply {
+                minHeight = dp(context, 44)
+                minimumHeight = dp(context, 44)
+                minWidth = dp(context, 140)
+                minimumWidth = dp(context, 140)
+            },
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginStart = dp(activity, 12)
+            }
+        )
+
+        card.addView(
+            header,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dp(activity, 6)
+            }
+        )
+
+        return showFixedFooterContentDialog(
+            activity = activity,
+            dialog = dialog,
+            card = card,
+            content = content,
+            actions = emptyList(),
+            actionLayout = DialogActionLayout.AUTO
+        )
+    }
+
     fun showMultiChoiceDialog(
         activity: Activity,
         title: String,
