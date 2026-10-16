@@ -13,7 +13,8 @@ Owner 2026-10-16 21:57 (screenshot, landscape filter window + voice): the filter
 - [x] Validate `38952520337` PASS (both jobs) on `9e24545`; fast-forward into `feat/v1.4.58-playlist-player`; branch Validate `38953203501` PASS; signed APK `38953202499` SUCCESS.
 - [x] PHONE PASS 2026-10-16 23:46: (1) landscape filter window (header row + two columns).
 - [x] PHONE PASS 2026-10-17 00:04: (2) card duplicate line → «Група №N» (7 screenshots).
-- [ ] Phone QA next, one at a time: (3) playlist opens at top, top `‹` → same catalogue place; (4) equal tile heights.
+- [x] PHONE PASS 2026-10-17 00:14: (3) playlist opens at top, top `‹` → same catalogue place.
+- [ ] Phone QA next: (4) equal tile heights in the grid.
 - Next batch candidates (TODO): Back buttons swap (owner 2026-10-17), group «check YouTube songs» button.
 
 
