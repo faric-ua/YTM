@@ -14,7 +14,8 @@ Owner 2026-10-16 21:57 (screenshot, landscape filter window + voice): the filter
 - [x] PHONE PASS 2026-10-16 23:46: (1) landscape filter window (header row + two columns).
 - [x] PHONE PASS 2026-10-17 00:04: (2) card duplicate line → «Група №N» (7 screenshots).
 - [x] PHONE PASS 2026-10-17 00:14: (3) playlist opens at top, top `‹` → same catalogue place.
-- [ ] Phone QA next: (4) equal tile heights in the grid.
+- [x] PHONE PASS 2026-10-17 00:25: (4) equal tile heights. **Batch 2 accepted on phone.**
+- Next batch candidates (owner decides): short card verdicts so `група №N ›` is visible on 2-line tiles (found 00:25); «Перевірити пісні YouTube» button in the group window; honest date-sort wording for YouTube-only; still open from batch 1: privacy-only-with-YouTube check, BUG-052 natural check. Later: Back buttons swap (owner). Stable 1.4.58 only after owner «так».
 - Next batch candidates (TODO): Back buttons swap (owner 2026-10-17), group «check YouTube songs» button.
 
 
