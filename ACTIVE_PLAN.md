@@ -10,7 +10,9 @@ Owner 2026-10-16 21:57 (screenshot, landscape filter window + voice): the filter
 - [x] (code) **Equal tile heights in a grid row** (BACKLOG «Uneven grid tiles»): tiles stretch to the tallest in the row, footer at the bottom.
 - [x] (code) **Playlist opens at the top; Back returns to where the catalogue was** (BACKLOG «Detail opens at a stale scrolled position»). Cause found: `renderContent()` always re-applied the previous scroll in `post{}`, which overrode the caller's `scrollTo(0, 0)`. Now `renderContent(restoreY)`; catalogue position kept in `catalogueScrollY` (also over rotation).
 - Not in this batch (reason): safe YouTube link check (waiting owner yes/no); «Знайти дублікати» by track titles (big, needs YouTube reads + quota approval); remote date-sort wording (small, next cosmetic batch); remembering filters between visits (ask owner); stable 1.4.58 (only after owner «так»).
-- [ ] Validate on the branch, merge (fast-forward), one signed APK, phone QA one step at a time.
+- [x] Validate `38952520337` PASS (both jobs) on `9e24545`; fast-forward into `feat/v1.4.58-playlist-player`; branch Validate `38953203501` PASS; signed APK `38953202499` SUCCESS.
+- [x] PHONE PASS 2026-10-16 23:46: (1) landscape filter window (header row + two columns).
+- [ ] Phone QA next, one at a time: (2) card duplicate line → «Група №N»; (3) playlist opens at top, Back → same catalogue place; (4) equal tile heights.
 
 
 ## CURRENT TASK — 2026-10-16 / Library batch 1 (branch `feat/v1.4.58-library-batch1` → PR into `feat/v1.4.58-playlist-player`)
