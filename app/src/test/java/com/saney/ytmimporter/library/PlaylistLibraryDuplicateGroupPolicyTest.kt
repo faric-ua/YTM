@@ -3,6 +3,7 @@ package com.saney.ytmimporter.library
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicateGroupPolicy.Mark
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicatePolicy.Candidate
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PlaylistLibraryDuplicateGroupPolicyTest {
@@ -83,5 +84,48 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
         assertEquals("плейлістів", PlaylistLibraryDuplicateGroupPolicy.playlistsWord(12))
         assertEquals("пісня", PlaylistLibraryDuplicateGroupPolicy.songsWord(21))
         assertEquals("пісень", PlaylistLibraryDuplicateGroupPolicy.songsWord(19))
+    }
+
+    @Test fun cardVerdictIsShortAndTileKeepsGroupHintOnOwnLine() {
+        // Phone 2026-10-17 00:25: the long verdict was cut on 2-line tiles and
+        // «група №N ›» disappeared. Short verdict; on a tile — its own line.
+        val hint = PlaylistLibraryDuplicatePolicy.Hint(
+            12, 4, PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT)
+        assertEquals("Схоже на копію\nгрупа №12 (4) ›",
+            PlaylistLibraryDuplicateGroupPolicy.cardLine(hint, tile = true))
+        assertEquals("Схоже на копію • група №12 (4) ›",
+            PlaylistLibraryDuplicateGroupPolicy.cardLine(hint, tile = false))
+        PlaylistLibraryDuplicatePolicy.Evidence.values().forEach { evidence ->
+            val verdict = PlaylistLibraryDuplicateGroupPolicy.cardVerdict(evidence)
+            // Fits one line of a half-width tile at 11.5sp.
+            assertTrue("$evidence: $verdict", verdict.length <= 16)
+            assertTrue(PlaylistLibraryDuplicateGroupPolicy.verdictExplained(evidence)
+                .startsWith(verdict + " — "))
+        }
+    }
+
+    @Test fun songsCheckQuotaIsOneUnitPerFiftySongsAtLeastOne() {
+        assertEquals(0, PlaylistLibraryDuplicateGroupPolicy.songsCheckQuota(emptyList()))
+        assertEquals(1, PlaylistLibraryDuplicateGroupPolicy.songsCheckQuota(listOf(0)))
+        assertEquals(1, PlaylistLibraryDuplicateGroupPolicy.songsCheckQuota(listOf(50)))
+        assertEquals(2, PlaylistLibraryDuplicateGroupPolicy.songsCheckQuota(listOf(51)))
+        assertEquals(1 + 1 + 3, PlaylistLibraryDuplicateGroupPolicy.songsCheckQuota(
+            listOf(3, 25, 101)))
+    }
+
+    @Test fun loadedYouTubeSongsTurnUncheckedIntoSame() {
+        // What «Перевірити пісні YouTube» achieves: the same playlist before
+        // (no songs known) and after (songs read) the check.
+        val before = PlaylistLibraryDuplicateGroupPolicy.overview(listOf(
+            Candidate("phone", "Mix", 2, listOf(a, b)),
+            Candidate("youtube:PL1", "Mix", 2, null)
+        ))
+        assertEquals(2, before.unchecked)
+        val after = PlaylistLibraryDuplicateGroupPolicy.overview(listOf(
+            Candidate("phone", "Mix", 2, listOf(a, b)),
+            Candidate("youtube:PL1", "Mix", 2, listOf(b, a))
+        ))
+        assertEquals(2, after.exactCopies)
+        assertEquals(0, after.unchecked)
     }
 }

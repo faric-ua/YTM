@@ -55,4 +55,30 @@ class LibraryFilterPolicyTest {
         assertFalse("already running", restore(restoring = true))
         assertFalse("Google wants the user: no prompt loop", restore(needsUser = true))
     }
+
+    @Test fun recentSortSaysWhichDateIsUsed() {
+        // Before: «Нові (локально)» while YouTube cards had no date at all.
+        assertEquals("Нові (збережено на телефоні)",
+            LibraryFilterPolicy.recentScopeLabel(LibraryFilterPolicy.Source.PHONE))
+        assertEquals("Нові (створено на YouTube)",
+            LibraryFilterPolicy.recentScopeLabel(LibraryFilterPolicy.Source.YOUTUBE))
+        assertTrue(LibraryFilterPolicy.recentScopeLabel(LibraryFilterPolicy.Source.ALL)
+            .contains("YouTube — створено"))
+        LibraryFilterPolicy.Source.values().forEach {
+            assertFalse(LibraryFilterPolicy.recentScopeLabel(it).contains("локально"))
+            assertTrue(LibraryFilterPolicy.recentOptionHint(it).isNotBlank())
+        }
+    }
+
+    @Test fun remotePublishedAtIsParsedOrZero() {
+        assertEquals(1_614_861_296_000L,
+            LibraryFilterPolicy.remoteDateMillis("2021-03-04T12:34:56Z"))
+        assertEquals(1_614_861_296_123L,
+            LibraryFilterPolicy.remoteDateMillis("2021-03-04T12:34:56.123Z"))
+        assertEquals(1_614_861_296_000L,
+            LibraryFilterPolicy.remoteDateMillis("2021-03-04T14:34:56+02:00"))
+        assertEquals(0L, LibraryFilterPolicy.remoteDateMillis(null))
+        assertEquals(0L, LibraryFilterPolicy.remoteDateMillis(""))
+        assertEquals(0L, LibraryFilterPolicy.remoteDateMillis("вчора"))
+    }
 }

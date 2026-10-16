@@ -1,5 +1,6 @@
 package com.saney.ytmimporter.youtube
 
+import com.saney.ytmimporter.library.LibraryFilterPolicy
 import com.saney.ytmimporter.model.GoogleAccountInfo
 import com.saney.ytmimporter.model.SearchCandidate
 import com.saney.ytmimporter.model.Track
@@ -203,7 +204,11 @@ class YouTubeApi(
                                         ?: thumbnails.optJSONObject("default"))
                                         ?.optString("url")
                                         ?.takeIf(String::isNotBlank)
-                                }
+                                },
+                        publishedAtMillis =
+                            LibraryFilterPolicy.remoteDateMillis(
+                                snippet?.optString("publishedAt")
+                            )
                     )
                 }
             }

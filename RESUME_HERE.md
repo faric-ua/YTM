@@ -2,6 +2,7 @@
 
 ## SAFE PAUSE — 2026-10-14 09:33 / owner went to sleep, resume from here
 
+- **2026-10-17 02:10 owner (voice): «бери ту всю пачку і роби»** → Library batch 3 = (a) short card verdict + `група №N ›` on its own tile line, (b) `Перевірити пісні YouTube` in «Група №N» (read-only, ≈ quota shown), (c) honest «Нові» sort (YouTube creation date, label says which date). Branch `feat/v1.4.58-library-batch3`, plan in ACTIVE_PLAN → CURRENT TASK. Code + local JVM tests done; next: PR → Validate → fast-forward → signed APK → phone QA one step at a time.
 - **2026-10-15 21:42:** pinned top panel **PHONE PASS** (owner screen recording) — see PHONE QA section below.
 - **2026-10-16 00:42:** YouTube privacy filter **PHONE PASS** (owner recording). Owner decision: privacy options only when `Тільки YouTube` is chosen → BACKLOG cosmetic batch.
 - **2026-10-16 03:45:** `Лише можливі дублікати` **PHONE PASS**; owner: labels/Help not understandable; asked how to sync playlists already deleted on YouTube → BACKLOG (plain legend; safe link check — waiting yes/no).

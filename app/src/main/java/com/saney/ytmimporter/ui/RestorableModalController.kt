@@ -172,6 +172,15 @@ class RestorableModalController(
             }
     }
 
+    /**
+     * Arguments of [modalId] while that modal is visible now, else null.
+     * Lets a screen redraw an open window after background work finished,
+     * without opening a window the user has already closed.
+     */
+    fun visibleArgs(modalId: String): Bundle? =
+        if (openModalId == modalId && dialog?.isShowing == true) Bundle(openModalArgs)
+        else null
+
     fun clearState() {
         openModalId = null
         openModalArgs = Bundle()

@@ -1,6 +1,19 @@
 # YTM Importer — ACTIVE PLAN
 
 
+## CURRENT TASK — 2026-10-17 / Library batch 3 (branch `feat/v1.4.58-library-batch3` → PR into `feat/v1.4.58-playlist-player`)
+
+Owner 2026-10-17 02:10 (voice): «бери ту всю пачку і роби» — all three candidates from batch 2 QA (a + b + c) in one batch, one APK.
+
+- [x] (a, code) **Short card verdict** so the tap hint is always visible (found on the 00:25 screenshots: `Схоже на копію: назва і кількість ті…` cut after 2 lines, `група №N (M) ›` hidden). Card: `Копія` / `Схоже на копію` / `Інша версія`; on a grid tile the verdict and `група №N (M) ›` are two separate lines (always both visible); in the list one line. Full wording stays in the group window and in `?`.
+- [x] (b, code) **«Перевірити пісні YouTube» in the group window:** button only when the group has YouTube playlists whose songs were never opened; shows how many playlists and ≈ quota units (1 unit per 50 songs; daily 10 000). Read-only: `playlistItems.list` only, nothing written to YouTube. Loads them one after another, progress line `Перевіряю пісні YouTube: i з N…`; afterwards the window redraws, `?` become ✓ / ≠; a playlist YouTube did not give → `не перевірено: YouTube не віддав пісні`. Rotation stops the check, already loaded playlists stay; the button shows the rest. Pure helpers + JVM tests.
+- [x] (c, code) **Honest «Нові» sort:** YouTube playlists had no date (sorted to the end by name while the label said «Нові (локально)»). Now the YouTube creation date (`snippet.publishedAt`, already in the response — no extra quota) is used for YouTube cards; label says which date: `Нові (збережено на телефоні)` / `Нові (створено на YouTube)` / `Нові (телефон — збережено, YouTube — створено)`; option hint in the filter window. Pure policy + JVM tests.
+- Implementation notes: `PlaylistLibraryDuplicateGroupPolicy.cardLine/verdictExplained/groupTapHint/songsCheckQuota`; `LibraryFilterPolicy.recentScopeLabel/recentOptionHint/remoteDateMillis`; `YouTubePlaylistInfo.publishedAtMillis` (default 0 — backups and other screens unchanged), parsed in `YouTubeApi.listMyPlaylists`; Library `addSongsCheckBlock` / `startSongsCheck` (screen worker, one playlist after another, each answer into the shared track cache at once) / `redrawVisibleDuplicateGroup` (new `RestorableModalController.visibleArgs`, so a closed window is never reopened). Help: `Копія`, button mentioned under `Схоже на копію`, new entry `Нові спочатку`.
+- [x] Local JVM tests with the embedded Kotlin compiler: `LibraryFilterPolicyTest`, `PlaylistLibraryDuplicateGroupPolicyTest`, `PlaylistLibraryDuplicatePolicyTest` — OK (24 tests, 5 new). Android code (activity) is compiled only in CI.
+- [ ] Manifest, preflight; Validate PASS on the PR; fast-forward into `feat/v1.4.58-playlist-player`; one signed APK (`build-apk.yml`).
+- [ ] Phone QA, one step at a time: (1) grid tiles show `група №N (M) ›` on every yellow tile; (2) group with `?` YouTube rows → `Перевірити пісні YouTube` → marks become ✓ / ≠; (3) `Нові` order + label with `Тільки YouTube`.
+- Not in this batch: Back buttons swap (owner: later), safe YouTube link check (waiting yes/no), stable 1.4.58 (only after «так»).
+
 ## CURRENT TASK — 2026-10-16 / Library batch 2 (branch `feat/v1.4.58-library-batch2` → PR into `feat/v1.4.58-playlist-player`)
 
 Owner 2026-10-16 21:57 (screenshot, landscape filter window + voice): the filter window in landscape shows about one option — make it wider / full screen; duplicates: «I still don't understand which are full duplicates and which are not, even after reading Help». Owner: put it in TODO and, when taking work from TODO, choose what goes into one batch. «Погнали».

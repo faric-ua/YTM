@@ -15,5 +15,7 @@ data class YouTubePlaylistInfo(
     val title: String,
     val privacyStatus: String,
     val itemCount: Long,
-    val thumbnailUrl: String? = null
+    val thumbnailUrl: String? = null,
+    /** Creation date on YouTube (snippet.publishedAt), epoch millis; 0 = unknown. */
+    val publishedAtMillis: Long = 0L
 )

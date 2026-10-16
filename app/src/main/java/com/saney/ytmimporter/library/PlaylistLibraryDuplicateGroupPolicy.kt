@@ -88,14 +88,45 @@ object PlaylistLibraryDuplicateGroupPolicy {
         return "${overview.size} ${playlistsWord(overview.size)} • " + parts.joinToString(" • ")
     }
 
-    /** Short plain verdict shown on a catalogue card. */
+    /**
+     * Short plain verdict shown on a catalogue card (owner 2026-10-17 00:25:
+     * the long wording was cut on a 2-line grid tile and the tap hint
+     * «група №N ›» disappeared). The full wording is [verdictExplained],
+     * shown in the group window and in «?».
+     */
     fun cardVerdict(evidence: PlaylistLibraryDuplicatePolicy.Evidence): String = when (evidence) {
-        PlaylistLibraryDuplicatePolicy.Evidence.SAME_TRACKS -> "Копія: ті самі пісні"
-        PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT ->
-            "Схоже на копію: назва і кількість ті самі"
-        PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE ->
-            "Інша версія: та сама назва, інша кількість пісень"
+        PlaylistLibraryDuplicatePolicy.Evidence.SAME_TRACKS -> "Копія"
+        PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT -> "Схоже на копію"
+        PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE -> "Інша версія"
     }
+
+    /** What a short card verdict means, in full words. */
+    fun verdictExplained(evidence: PlaylistLibraryDuplicatePolicy.Evidence): String =
+        when (evidence) {
+            PlaylistLibraryDuplicatePolicy.Evidence.SAME_TRACKS -> "Копія — ті самі пісні"
+            PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT ->
+                "Схоже на копію — назва і кількість пісень ті самі, пісні ще не порівняні"
+            PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE ->
+                "Інша версія — та сама назва, інша кількість пісень"
+        }
+
+    /** Tap hint under the verdict: «група №8 (4) ›». */
+    fun groupTapHint(hint: PlaylistLibraryDuplicatePolicy.Hint): String =
+        "група №${hint.groupNumber} (${hint.groupSize}) ›"
+
+    /**
+     * Card line. On a 2-line grid tile the verdict and the tap hint are two
+     * separate lines, so the hint is never cut off; in the list — one line.
+     */
+    fun cardLine(hint: PlaylistLibraryDuplicatePolicy.Hint, tile: Boolean): String =
+        cardVerdict(hint.evidence) + (if (tile) "\n" else " • ") + groupTapHint(hint)
+
+    /**
+     * YouTube API quota for reading the songs of playlists with these song
+     * counts: playlistItems.list costs 1 unit per page of 50, at least 1.
+     */
+    fun songsCheckQuota(trackCounts: List<Int>): Int =
+        trackCounts.sumOf { count -> maxOf(1, (count + 49) / 50) }
 
     fun songsWord(n: Int): String = plural(n, "пісня", "пісні", "пісень")
 

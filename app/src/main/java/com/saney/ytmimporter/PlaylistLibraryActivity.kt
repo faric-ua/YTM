@@ -121,6 +121,11 @@ class PlaylistLibraryActivity : Activity() {
     private var dupMembers: Map<String, DupMember> = emptyMap()
     /** Cards shown by the last catalogue render; null = catalogue not built yet. */
     private var visibleCardIdentities: Set<String>? = null
+    /** Running «Перевірити пісні YouTube» (batch 3); null = not running. */
+    private var songsCheck: SongsCheck? = null
+    private var songsCheckProgress: TextView? = null
+    /** YouTube playlists whose songs YouTube did not give during this visit. */
+    private val songsCheckFailed = mutableMapOf<String, String>()
 
     private val palette get() = AppThemeManager.palette(this)
     private val landscape get() =
@@ -529,6 +534,10 @@ class PlaylistLibraryActivity : Activity() {
 
     private fun renderLocalCatalogue() = renderCatalogue()
 
+    private class SongsCheck(val total: Int) {
+        var done = 0
+    }
+
     /** One playlist as shown in the «Група №…» window. */
     private class DupMember(
         val title: String,
@@ -672,6 +681,7 @@ class PlaylistLibraryActivity : Activity() {
             setPadding(dp(4), 0, dp(4), dp(8))
             setLineSpacing(0f, 1.1f)
         })
+        addSongsCheckBlock(container, identity, members)
         overview.bands.forEach { band ->
             container.addView(text(
                 "${band.trackCount} " +
@@ -703,8 +713,10 @@ class PlaylistLibraryActivity : Activity() {
                         "однакові пісні ще з ${row.sameWith}"
                     PlaylistLibraryDuplicateGroupPolicy.Mark.DIFFERENT -> "пісні інші"
                     PlaylistLibraryDuplicateGroupPolicy.Mark.UNCHECKED -> when {
+                        remotePlaylistId(row.identity)?.let { it in songsCheckFailed } == true ->
+                            "не перевірено: YouTube не віддав пісні"
                         member != null && member.isRemote && !member.remoteTracksLoaded ->
-                            "не перевірено: відкрийте плейліст — пісні порівняються"
+                            "не перевірено: кнопка «Перевірити пісні YouTube» вгорі"
                         videoIds == null -> "не перевірено: склад недоступний"
                         videoIds.any { !VIDEO_ID.matches(it) } ->
                             "не перевірено: не в усіх пісень є відео YouTube"
@@ -764,6 +776,125 @@ class PlaylistLibraryActivity : Activity() {
                 "щоб відкрити плейліст.",
             12f, false, palette.muted).apply { setPadding(dp(4), dp(8), dp(4), 0) })
         return PlaylistLibraryDuplicateGroupPolicy.summary(overview) to container
+    }
+
+    private fun remotePlaylistId(identity: String): String? =
+        identity.takeIf { it.startsWith("youtube:") }?.removePrefix("youtube:")
+
+    /**
+     * Batch 3 (owner 2026-10-17 02:10): most «?» in a group were YouTube
+     * playlists never opened. One button reads their songs, read-only
+     * (playlistItems.list only, nothing is written to YouTube), so the
+     * marks become ✓ / ≠. Shows how much quota it takes before the tap.
+     */
+    private fun addSongsCheckBlock(
+        container: LinearLayout,
+        groupIdentity: String,
+        members: List<PlaylistLibraryDuplicatePolicy.Candidate>
+    ) {
+        val running = songsCheck
+        if (running != null) {
+            val line = text(songsCheckProgressText(running), 13.5f, true, palette.accent).apply {
+                setPadding(dp(10), dp(6), dp(10), dp(10))
+            }
+            songsCheckProgress = line
+            container.addView(line)
+            return
+        }
+        songsCheckProgress = null
+        val pending = members.filter { candidate ->
+            remotePlaylistId(candidate.identity)?.let { !cachedTracks.containsKey(it) } == true
+        }
+        if (pending.isEmpty()) return
+        if (token() == null) {
+            container.addView(text(
+                "Щоб перевірити пісні YouTube, підключіть Google на Головній.",
+                12.5f, false, palette.muted).apply { setPadding(dp(4), 0, dp(4), dp(8)) })
+            return
+        }
+        val units = PlaylistLibraryDuplicateGroupPolicy.songsCheckQuota(
+            pending.map { it.trackCount })
+        val label = "Перевірити пісні YouTube (${pending.size} " +
+            PlaylistLibraryDuplicateGroupPolicy.playlistsWord(pending.size) + ") ›"
+        val button = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            minimumHeight = dp(52)
+            setPadding(dp(12), dp(9), dp(12), dp(9))
+            background = GradientDrawable().apply {
+                setColor(palette.surfaceAlt)
+                cornerRadius = dp(12).toFloat()
+                setStroke(dp(2), palette.accent)
+            }
+            isClickable = true
+            isFocusable = true
+            contentDescription = label
+            setOnClickListener {
+                startSongsCheck(pending.mapNotNull { remotePlaylistId(it.identity) })
+            }
+        }
+        button.addView(text(label, 14.5f, true, palette.accent))
+        button.addView(text(
+            "Лише читання — у YouTube нічого не змінюється. " +
+                "≈$units од. квоти з " +
+                String.format(java.util.Locale.ROOT, "%,d", QuotaTracker.GENERAL_DAILY_LIMIT)
+                    .replace(',', ' ') + " на день.",
+            12f, false, palette.muted).apply { setPadding(0, dp(2), 0, 0) })
+        container.addView(button, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { bottomMargin = dp(8) })
+    }
+
+    private fun songsCheckProgressText(check: SongsCheck): String =
+        "Перевіряю пісні YouTube: ${minOf(check.done + 1, check.total)} з ${check.total}…"
+
+    /**
+     * Reads the songs of [ids] one after another on the screen worker.
+     * Each answer goes into the shared track cache at once, so a rotation
+     * (which stops the worker) keeps what was already read; the window then
+     * offers the rest. Never loops, never writes to YouTube.
+     */
+    private fun startSongsCheck(ids: List<String>) {
+        val access = token() ?: return
+        if (songsCheck != null || ids.isEmpty()) return
+        val check = SongsCheck(ids.size)
+        songsCheck = check
+        ids.forEach { songsCheckFailed.remove(it) }
+        redrawVisibleDuplicateGroup()
+        worker.execute {
+            for (id in ids) {
+                if (Thread.currentThread().isInterrupted) break
+                val result = runCatching {
+                    api.listPlaylistTracks(access, id) {
+                        quotaTracker.recordGeneralUnits(QuotaTracker.SIMPLE_LIST_COST)
+                    }
+                }
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    result.onSuccess { cachedTracks[id] = it.tracks }
+                        .onFailure { songsCheckFailed[id] = it.message ?: "Помилка YouTube API" }
+                    check.done++
+                    songsCheckProgress?.text = songsCheckProgressText(check)
+                }
+            }
+            runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                songsCheck = null
+                songsCheckProgress = null
+                refreshDuplicates()
+                if (selectedLocal == null && selectedRemote == null) renderContent()
+                redrawVisibleDuplicateGroup()
+            }
+        }
+    }
+
+    /** Redraws the «Група №…» window only if it is still open. */
+    private fun redrawVisibleDuplicateGroup() {
+        val args = modalController.visibleArgs(MODAL_DUP_GROUP) ?: return
+        modalController.show(
+            modalId = MODAL_DUP_GROUP,
+            args = args,
+            renderer = ::renderConfirmation
+        )
     }
 
     private fun renderCatalogue() {
@@ -844,7 +975,7 @@ class PlaylistLibraryActivity : Activity() {
                 onlineTab -> "YouTube"
                 else -> "На телефоні"
             } + " • " + when (sortMode) {
-                SortMode.RECENT -> "Нові (локально)"
+                SortMode.RECENT -> LibraryFilterPolicy.recentScopeLabel(currentSource())
                 SortMode.NAME_ASC -> "За абеткою А–Я"
                 SortMode.NAME_DESC -> "За абеткою Я–А"
                 SortMode.TRACKS_DESC -> "За кількістю треків"
@@ -914,6 +1045,8 @@ class PlaylistLibraryActivity : Activity() {
                 thumbnail = item.thumbnailUrl,
                 badge = "YouTube",
                 trackCount = item.itemCount,
+                // «Нові»: creation date on YouTube (0 = unknown → at the end).
+                updatedAt = item.publishedAtMillis,
                 duplicateHint = hint,
                 onClick = {
                     catalogueScrollY = scroller.scrollY
@@ -1126,7 +1259,8 @@ class PlaylistLibraryActivity : Activity() {
         }
         container = rightColumn
         section("Сортування")
-        option("Нові — за датою збереження на телефоні", sortMode == SortMode.RECENT) {
+        option("Нові спочатку", sortMode == SortMode.RECENT,
+            hint = LibraryFilterPolicy.recentOptionHint(source)) {
             sortMode = SortMode.RECENT
         }
         option("За абеткою • А–Я", sortMode == SortMode.NAME_ASC) {
@@ -1592,6 +1726,10 @@ class PlaylistLibraryActivity : Activity() {
                 "посиланням) з’являється лише при «Тільки YouTube»; коли " +
                 "джерело змінюється, вона скидається на «Будь-яка». " +
                 "Вікно не закривається при повороті екрана.")
+        entry(R.drawable.ic_ytm_sort, "Нові спочатку",
+            "Плейлісти на телефоні — за датою збереження на телефоні; " +
+                "плейлісти YouTube — за датою створення на YouTube. " +
+                "Рядок під лічильниками пише, яка дата діє.")
         entry(R.drawable.ic_ytm_device, "Лічильник телефону",
             "Кількість локальних записів. ✓ біля ЧИСЛА означає лише " +
                 "вибраний фільтр «Телефон», а не перевірені треки.",
@@ -1638,12 +1776,13 @@ class PlaylistLibraryActivity : Activity() {
             "Не окремі пісні, а плейлісти (альбоми) цілком — на телефоні, " +
                 "в архіві History і на YouTube. Нічого не видаляється й не " +
                 "об’єднується само.", palette.accent)
-        entry(R.drawable.ic_ytm_view_grid, "Копія: ті самі пісні",
+        entry(R.drawable.ic_ytm_view_grid, "Копія",
             "Пісні перевірено — вони точно ті самі. Справжня копія.")
         entry(R.drawable.ic_ytm_view_grid, "Схоже на копію",
             "Та сама назва і стільки ж пісень, але самі пісні ще не " +
-                "порівнювались. Для YouTube — відкрийте плейліст, і пісні " +
-                "порівняються.")
+                "порівнювались. Для YouTube — у вікні групи кнопка " +
+                "«Перевірити пісні YouTube» (лише читає, нічого не змінює), " +
+                "або відкрийте плейліст.")
         entry(R.drawable.ic_ytm_view_grid, "Інша версія",
             "Та сама назва, але інша кількість пісень.")
         entry(R.drawable.ic_ytm_view_grid, "група №8 (4) ›",
@@ -2046,9 +2185,10 @@ class PlaylistLibraryActivity : Activity() {
                 PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT -> palette.semantic.warning
                 PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE -> palette.muted
             }
+            // Owner 2026-10-17 00:25: the long verdict was cut on 2-line tiles
+            // and hid «група №N ›». Short verdict; on a tile it has its own line.
             labels.addView(text(
-                PlaylistLibraryDuplicateGroupPolicy.cardVerdict(hint.evidence) +
-                    " • група №${hint.groupNumber} (${hint.groupSize}) ›",
+                PlaylistLibraryDuplicateGroupPolicy.cardLine(hint, tile),
                 11.5f, true, colour).apply {
                 minLines = if (tile) 2 else 1
                 maxLines = 2
