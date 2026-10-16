@@ -9,7 +9,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 bb9e8bdcdeb0decb  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
 8f3289a8996d72e2  ACTIVE_PLAN.md
-acd045e07c18ca3c  AGENTS.md
+681184265e82aa01  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
@@ -29,7 +29,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-43954a438eef22a4  RESUME_HERE.md
+6bd33f21bdb72b45  RESUME_HERE.md
 02cff781bf9d6506  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -295,14 +295,16 @@ c046586be53a0584  artifacts/README.md
 03fc725ca9b1f89a  docs/ASSISTANT_TOOL_MAP.md
 87fc228b4c2c6d23  docs/BUILD_ARTIFACT_CONVENTION.md
 3c8c6e273019f706  docs/HANDOFF_HARDENING_2026-09-17.md
+b231431847ea6a2b  docs/INSPECTOR.md
 da6db67c9017a470  docs/README.md
+6aadff71c99c918b  docs/RESPONSE_ALGORITHM.md
 bb063331c071e088  docs/WORKFLOW_LESSONS.md
 f2d5c6457dce0b8d  docs/assistant-kit/AUDIT_CATALOG.md
 131ff62755c72a02  docs/assistant-kit/CONTEXT_FILES.txt
 b6a9a300bb8d0d5e  docs/assistant-kit/PORTABLE_AUDITS.txt
 b07c7177d0a2b73e  docs/assistant-kit/README.md
 ac598ab37685b5df  docs/assistant-kit/RELEASE_DOCUMENTATION_CONTRACT.md
-e5117f0b56236cca  docs/assistant-kit/USER_RESPONSE_TEMPLATE.md
+0d409b09826166b2  docs/assistant-kit/USER_RESPONSE_TEMPLATE.md
 8968c1071de09b81  docs/assistant-kit/YTM_CODE_HANDOFF_CONTRACT.md
 a210d9ca8304f4bb  docs/assistant-kit/portable/ASSISTANT_WORKFLOW_TEMPLATE.md
 f5c7d95af88808fb  docs/assistant-kit/portable/PROJECT_CONTEXT_TEMPLATE.md
