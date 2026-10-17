@@ -2,6 +2,7 @@
 
 ## SAFE PAUSE — 2026-10-14 09:33 / owner went to sleep, resume from here
 
+- **2026-10-17 21:27 ПАС (faric, голос):** batch 5 крок (1) — підтвердження з попередженням, «Скасувати» нічого не змінює. Знахідка: після «Скасувати» не повертає у вікно групи / на те саме місце → BACKLOG (поки не робити). Далі: крок (2) — видалити тестову ≠ копію групи №30.
 - **2026-10-17 20:49 faric: «Так, робимо»** — Library batch 5 «прибирання копій» (гілка `feat/v1.4.58-library-batch5`, ACTIVE_PLAN → CURRENT TASK). З цього місця нові записи в репо — українською.
 - **2026-10-17 20:47 OWNER DECISION (voice):** stable 1.4.58 is **postponed until everything is fixed** («щоб вже ми точно знали, що воно стабільне»). Do not propose it before the fix list is done. Next candidate: cleanup of copies from the group window (reuses the existing source-scoped deletion of 12.10, whose phone QA was deferred) — design sent to owner, waiting «так».
 - **2026-10-17 20:43 PHONE PASS (screenshot):** batch 4 step (2) — «Чим відрізняється» for group №30 phone ≠: only here Rick Astley «Never Gonna Give You Up» + «Me at the zoo» (typical test videos), missing «What Evil Lurks» + «We Gonna Rock». Do not re-ask. Left: step (3) memory after the app was closed (natural, later).
