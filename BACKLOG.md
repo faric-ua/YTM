@@ -1,5 +1,13 @@
 # YTM Importer — Roadmap
 
+## TODO — 2026-10-17 05:27 / Group window: «where is the original» and «what exactly differs» (OWNER QUESTION; waiting owner yes/no)
+
+Owner, after group №30 window (screenshot 05:27; 7 playlists × 4 songs: 5 ✓, 1 ≠ phone, 1 ? History): «not clear which one is the original playlist, why 7 here and 5 there, why songs are missing on YouTube». Facts: `(7)` = 7 playlists (each has 4 songs); the app does not know an «original» — it only compares songs.
+- [ ] **Origin and links per row:** date (phone — saved, YouTube — created on YouTube, History — import date) and «пов'язаний з YouTube-плейлістом …» (existing linked playlistId / `Збіг ID`), oldest marked `найстаріший` (honest word, not «оригінал»). No extra quota.
+- [ ] **Tap a ≠ or ? row → «Чим відрізняється»:** list the songs that differ from the ✓ copies (song name + which video), and for ? the songs without a YouTube video (search did not find them at import). Read-only.
+- [ ] Summary line in plain words: «7 плейлістів по 4 пісні: 5 однакові, 1 з іншим складом, 1 не перевірити».
+- Nothing is deleted or merged; owner decides later what to keep.
+
 ## TODO — 2026-10-17 03:02 / Help «?»: explain «група №7 (2)» (OWNER REQUEST; LATER, not now)
 
 - [ ] **Keep the card text as is** (`Копія` / `група №7 (2) ›` — owner 03:02: «два в скобках залиш»). **Expand the Help `?`** (section «Рядок про копії на картці», entry `група №8 (4) ›`), short and plain: `(2)` = **two playlists** in this group (not songs — the song count is the line above, `3 треків` / `3 відео`); `№7` = **just a label** to match the playlists of one group with each other — the number itself means nothing, it can be any number (groups are numbered by the alphabet of names, so it can change when new playlists appear; №1 is not «first» or «best»). Owner 03:02: «тільки це туди зразу не роби, потім». Why: owner read `(2)` as 2 tracks and thought №7 was a rank (phone screenshot 02:58, Baby's Got A Temper: phone «Поточний» 3 tracks + YouTube «публічний» 3 videos, `Копія`, `група №7 (2) ›`).
