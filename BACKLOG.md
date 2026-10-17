@@ -1,5 +1,9 @@
 # YTM Importer — Roadmap
 
+## TODO — 2026-10-17 03:02 / Help «?»: explain «група №7 (2)» (OWNER REQUEST; LATER, not now)
+
+- [ ] **Keep the card text as is** (`Копія` / `група №7 (2) ›` — owner 03:02: «два в скобках залиш»). **Expand the Help `?`** (section «Рядок про копії на картці», entry `група №8 (4) ›`), short and plain: `(2)` = **two playlists** in this group (not songs — the song count is the line above, `3 треків` / `3 відео`); `№7` = **just a label** to match the playlists of one group with each other — the number itself means nothing, it can be any number (groups are numbered by the alphabet of names, so it can change when new playlists appear; №1 is not «first» or «best»). Owner 03:02: «тільки це туди зразу не роби, потім». Why: owner read `(2)` as 2 tracks and thought №7 was a rank (phone screenshot 02:58, Baby's Got A Temper: phone «Поточний» 3 tracks + YouTube «публічний» 3 videos, `Копія`, `група №7 (2) ›`).
+
 ## TODO — 2026-10-16 21:57 / Owner phone feedback after Library batch 1 (→ Library batch 2)
 
 - [x] (code 2026-10-16, branch `feat/v1.4.58-library-batch2`; phone pending) **Filter window in landscape too cramped** (owner screenshot 21:57: only «Показати всі записи» and «Лише можливі дублікати» visible, title/subtitle/«Готово» take most of the height). Wanted wider or full screen. Done: header row title + `Готово`, two columns of options.

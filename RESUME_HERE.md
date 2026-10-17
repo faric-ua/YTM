@@ -2,6 +2,7 @@
 
 ## SAFE PAUSE — 2026-10-14 09:33 / owner went to sleep, resume from here
 
+- **2026-10-17 02:58 owner screenshot (batch 3 APK `38981098638` installed):** red `Копія` tiles show `група №7 (2) ›` on its own full line; scope line `Всі • Нові (телефон — збережено, YouTube — створено)`. Yellow tile not seen yet → step (1) still open. **03:02 owner:** keep `(2)`, but later expand Help `?`: `(2)` = 2 playlists, `№7` = just a label to match them (number can be any) → BACKLOG top, **not now**.
 - **2026-10-17 02:10 owner (voice): «бери ту всю пачку і роби»** → Library batch 3 = (a) short card verdict + `група №N ›` on its own tile line, (b) `Перевірити пісні YouTube` in «Група №N» (read-only, ≈ quota shown), (c) honest «Нові» sort (YouTube creation date, label says which date). Branch `feat/v1.4.58-library-batch3`, plan in ACTIVE_PLAN → CURRENT TASK. Code + local JVM tests done; next: PR → Validate → fast-forward → signed APK → phone QA one step at a time.
 - **2026-10-15 21:42:** pinned top panel **PHONE PASS** (owner screen recording) — see PHONE QA section below.
 - **2026-10-16 00:42:** YouTube privacy filter **PHONE PASS** (owner recording). Owner decision: privacy options only when `Тільки YouTube` is chosen → BACKLOG cosmetic batch.
