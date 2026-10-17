@@ -130,6 +130,10 @@ class PlaylistLibraryActivity : Activity() {
     /** Running «Перевірити пісні YouTube» (batch 3); null = not running. */
     private var songsCheck: SongsCheck? = null
     private var songsCheckProgress: TextView? = null
+    /** Batch 5: after a YouTube removal from the group window, reopen the group. */
+    private var pendingGroupReturn: String? = null
+    /** Phone/History entries linked to a playlist the account no longer has. */
+    private var missingOnYouTube: Set<String> = emptySet()
     /** YouTube playlists whose songs YouTube did not give during this visit. */
     private val songsCheckFailed = mutableMapOf<String, String>()
 
@@ -559,7 +563,10 @@ class PlaylistLibraryActivity : Activity() {
         /** When remembered songs (not read in this visit) were checked. */
         val rememberedAt: Long = 0L,
         /** Songs with titles, when known (for «чим відрізняється»). */
-        val songs: List<PlaylistLibraryDuplicateGroupPolicy.Song>? = null
+        val songs: List<PlaylistLibraryDuplicateGroupPolicy.Song>? = null,
+        /** Existing confirmation that removes exactly this copy, and its id. */
+        val removeType: String? = null,
+        val removeId: String? = null
     )
 
     /** Remembered songs of the current account (loaded once per account). */
@@ -612,6 +619,18 @@ class PlaylistLibraryActivity : Activity() {
         val savedById = saved.associateBy { it.localPlaylistId }
         val archiveById = archive.associateBy { it.id }
         val memory = currentSongMemory()
+        missingOnYouTube = if (token() == null) emptySet() else
+            PlaylistLibraryIdentityPolicy.missingOnYouTube(
+                linked = allLocal.map { item ->
+                    PlaylistLibraryIdentityPolicy.LinkedLocal(
+                        item.identity, item.destinationPlaylistId,
+                        item.historyEntryId?.let { archiveById[it]?.youtubeChannelId }
+                    )
+                },
+                remoteIds = allRemote.map { it.id }.toSet(),
+                catalogueComplete = PlaylistLibraryIdentityPolicy.catalogueComplete(cachedPlaylists),
+                currentChannelId = AuthSessionStore.current().youtubeChannelInfo?.id
+            )
         val candidates = allLocal.map { item ->
             val videoIds = when (item.source) {
                 LocalLibrarySource.HISTORY ->
@@ -649,6 +668,12 @@ class PlaylistLibraryActivity : Activity() {
                     else -> item.updatedAt
                 },
                 dateWord = if (history != null) "імпорт" else "збережено",
+                removeType = when {
+                    item.source == LocalLibrarySource.HISTORY -> MODAL_DELETE_HISTORY
+                    !item.localPlaylistId.isNullOrBlank() -> MODAL_DELETE_LOCAL
+                    else -> null
+                },
+                removeId = item.identity,
                 linkedRemoteId = (history?.playlistId ?: item.destinationPlaylistId)
                     ?.takeIf { it.isNotBlank() },
                 songs = history?.tracks?.map {
@@ -679,6 +704,8 @@ class PlaylistLibraryActivity : Activity() {
             "youtube:${remote.id}" to DupMember(
                 date = remote.publishedAtMillis,
                 dateWord = "створено на YouTube",
+                removeType = MODAL_DELETE_REMOTE,
+                removeId = remote.id,
                 rememberedAt = remembered?.checkedAt ?: 0L,
                 songs = loaded?.map {
                     trackSong(it.selectedVideoId, it.selectedTitle, it.originalTitle, it.originalArtist)
@@ -925,7 +952,9 @@ class PlaylistLibraryActivity : Activity() {
                 val dated = member?.let { m ->
                     m.date.takeIf { it > 0L }?.let { "${m.dateWord} ${shortDate(it)}" }
                 }
-                val linked = member?.linkedRemoteId?.takeIf { it in groupRemoteIds }
+                val linked = if (row.identity in missingOnYouTube)
+                    "пов'язаний з YouTube-плейлістом, якого вже немає" else
+                    member?.linkedRemoteId?.takeIf { it in groupRemoteIds }
                     ?.let { id ->
                         "пов'язаний з YouTube (" +
                             (dupMembers["youtube:$id"]?.source?.substringAfter("YouTube • ")
@@ -954,6 +983,28 @@ class PlaylistLibraryActivity : Activity() {
                         isFocusable = true
                         contentDescription = "Чим відрізняється " + (member?.title ?: "")
                         setOnClickListener { showDuplicateDifference(row.identity) }
+                    })
+                }
+                val removeType = member?.removeType
+                val removeId = member?.removeId
+                if (removeType != null && removeId != null &&
+                    !(removeType == MODAL_DELETE_REMOTE && deletingRemoteId != null)
+                ) {
+                    val warn = PlaylistLibraryDuplicateGroupPolicy.removalWarnings(
+                        row.identity, overview, oldest).joinToString("\n")
+                    val back = members.firstOrNull { it.identity != row.identity }?.identity
+                    labels.addView(text(
+                        if (removeType == MODAL_DELETE_REMOTE) "Прибрати з YouTube…"
+                        else "Прибрати цю копію…",
+                        13f, true, palette.semantic.warning).apply {
+                        setPadding(0, dp(6), dp(12), dp(4))
+                        isClickable = true
+                        isFocusable = true
+                        contentDescription = "Прибрати " + member?.title.orEmpty()
+                        setOnClickListener {
+                            close()
+                            showConfirmation(removeType, removeId, warn, back)
+                        }
                     })
                 }
                 rowView.addView(labels, LinearLayout.LayoutParams(
@@ -1211,9 +1262,11 @@ class PlaylistLibraryActivity : Activity() {
             all += CardInfo(
                 identity = item.identity,
                 title = item.title,
-                subtitle = (if (item.destinationPlaylistId?.let {
-                    it in exactLinks
-                } == true) "Збіг ID • " else "") +
+                subtitle = (when {
+                    item.identity in missingOnYouTube -> "немає на YouTube • "
+                    item.destinationPlaylistId?.let { it in exactLinks } == true -> "Збіг ID • "
+                    else -> ""
+                }) +
                     "${item.trackCount} треків • " + when (item.source) {
                         LocalLibrarySource.CURRENT -> "Поточний"
                         LocalLibrarySource.SAVED -> "На телефоні"
@@ -1631,12 +1684,39 @@ class PlaylistLibraryActivity : Activity() {
         showTracks(tracks)
     }
 
-    private fun showConfirmation(type: String, id: String) {
+    private fun showConfirmation(
+        type: String,
+        id: String,
+        warning: String? = null,
+        groupReturn: String? = null
+    ) {
         modalController.show(
             modalId = type,
-            args = Bundle().apply { putString("item", id) },
+            args = Bundle().apply {
+                putString("item", id)
+                warning?.takeIf { it.isNotBlank() }?.let { putString("warn", it) }
+                groupReturn?.let { putString("group_return", it) }
+            },
             renderer = ::renderConfirmation
         )
+    }
+
+    /** Text added under a removal message when it came from the group window. */
+    private fun warningBlock(args: Bundle): String =
+        args.getString("warn")?.let { "\n\n$it" }.orEmpty()
+
+    /**
+     * After a removal started in «Група №…», show that group again (through
+     * any other member). If only one playlist is left, there is no group.
+     */
+    private fun reopenGroup(identity: String?) {
+        identity ?: return
+        refreshDuplicates()
+        if (dupHints[identity] != null) {
+            window.decorView.post { if (!isDestroyed) showDuplicateGroup(identity) }
+        } else {
+            toast("Групи більше нема: лишився один плейліст")
+        }
     }
 
     private fun renderConfirmation(type: String, args: Bundle): Dialog? {
@@ -1650,7 +1730,8 @@ class PlaylistLibraryActivity : Activity() {
                 activity = this,
                 title = "Видалити запис History?",
                 message = "Буде видалено лише запис історії «${entry.playlistName}».\n\n" +
-                    "Поточний плейлист, збережені локальні копії та YouTube не зміняться.",
+                    "Поточний плейлист, збережені локальні копії та YouTube не зміняться." +
+                    warningBlock(args),
                 confirmLabel = "Видалити з History",
                 onCancel = { modalController.clearState() }
             ) {
@@ -1660,6 +1741,7 @@ class PlaylistLibraryActivity : Activity() {
                     selectedLocal = null
                     renderContent()
                     toast("Запис History видалено")
+                    reopenGroup(args.getString("group_return"))
                 }
             }
         }
@@ -1674,11 +1756,13 @@ class PlaylistLibraryActivity : Activity() {
                 message = "«${item.title}» (${item.itemCount} відео) " +
                     "буде назавжди видалено з YouTube Music.\n" +
                     "ID: ${item.id}\n\n" +
-                    "Локальні копії та History залишаться. Цю дію неможливо скасувати.",
+                    "Локальні копії та History залишаться. Цю дію неможливо скасувати." +
+                    warningBlock(args),
                 confirmLabel = "Видалити з YouTube",
                 onCancel = { modalController.clearState() }
             ) {
                 modalController.clearState()
+                pendingGroupReturn = args.getString("group_return")
                 startRemoteDelete(id)
             }
         }
@@ -1695,12 +1779,13 @@ class PlaylistLibraryActivity : Activity() {
                 message = "Плейлист «${target.title}» буде видалено з локальної " +
                     "бібліотеки. Якщо він поточний, Home очиститься.\n\n" +
                     "Інші локальні копії, History, YTM Project і YouTube не " +
-                    "зміняться. Архів History може залишитися видимим окремо.",
+                    "зміняться. Архів History може залишитися видимим окремо." +
+                    warningBlock(args),
                 confirmLabel = "Видалити локально",
                 onCancel = { modalController.clearState() }
             ) {
                 modalController.clearState()
-                deleteLocalCopy(localId)
+                if (deleteLocalCopy(localId)) reopenGroup(args.getString("group_return"))
             }
         }
         if (type == MODAL_FILTER) {
@@ -1848,14 +1933,21 @@ class PlaylistLibraryActivity : Activity() {
             visibleTrackLimit = 60
             toast("Плейлист видалено з YouTube. Оновлюю каталог…")
             if (showsRemote() && token() != null) loadRemoteList()
-            else renderContent()
+            else {
+                renderContent()
+                pendingGroupReturn?.let { back ->
+                    pendingGroupReturn = null
+                    reopenGroup(back)
+                }
+            }
         } else {
+            pendingGroupReturn = null
             toast(state.errorMessage ?: "Не вдалося видалити плейлист із YouTube")
             renderContent()
         }
     }
 
-    private fun deleteLocalCopy(localId: String) {
+    private fun deleteLocalCopy(localId: String): Boolean {
         // Check the exact opaque ID again after rotation/confirmation.
         val target = localItems().firstOrNull {
             it.localPlaylistId == localId &&
@@ -1865,13 +1957,13 @@ class PlaylistLibraryActivity : Activity() {
             toast("Локальна копія вже недоступна")
             selectedLocal = null
             renderContent()
-            return
+            return false
         }
         val clearedCurrent = currentStore.clearIfMatches(localId)
         val removedSaved = savedStore.remove(localId)
         if (!clearedCurrent && !removedSaved) {
             toast("Локальну копію вже видалено")
-            return
+            return false
         }
         if (clearedCurrent) {
             setResult(RESULT_OK, Intent().putExtra(EXTRA_CURRENT_CHANGED, true))
@@ -1880,6 +1972,7 @@ class PlaylistLibraryActivity : Activity() {
         visibleTrackLimit = 60
         renderContent(0)
         toast("Локальну копію видалено")
+        return true
     }
 
     private fun createLibraryHelpContent(): View {
@@ -1974,6 +2067,17 @@ class PlaylistLibraryActivity : Activity() {
                 "не порівняно склади плейлистів. Позначки ✓, ? або помилку " +
                 "для повноти можна показувати лише після такої перевірки.")
         section("Видалення")
+        entry(R.drawable.ic_ytm_view_grid, "Прибрати цю копію…",
+            "У вікні групи біля кожного плейліста. Відкриває те саме " +
+                "підтвердження, що й на сторінці плейліста, і додає підказку: " +
+                "чи загубляться пісні (✓ — ні, лишаються копії; ≠ / ? — можуть). " +
+                "Лише по одному, лише вашим натисканням. Після видалення " +
+                "вікно групи відкривається знову.", palette.semantic.warning)
+        entry(R.drawable.ic_ytm_device, "немає на YouTube",
+            "Плейліст на телефоні пов’язаний з YouTube-плейлістом, якого вже " +
+                "нема у вашому акаунті (список YouTube завантажено повністю). " +
+                "Лише позначка: копія на телефоні лишається, нічого не " +
+                "відв’язується й не видаляється само.")
         entry(R.drawable.ic_ytm_device, "Локальна копія",
             "Видаляє лише точний локальний ID. Якщо це поточний список, " +
                 "головна сторінка очиститься. History та YouTube не зміняться.")
@@ -2098,6 +2202,12 @@ class PlaylistLibraryActivity : Activity() {
                 result.onSuccess { cachedPlaylists = it }
                     .onFailure { loadError = it.message ?: "Помилка YouTube API" }
                 renderContent()
+                if (result.isSuccess) {
+                    pendingGroupReturn?.let { back ->
+                        pendingGroupReturn = null
+                        reopenGroup(back)
+                    }
+                }
             }
         }
     }

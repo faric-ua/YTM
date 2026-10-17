@@ -173,4 +173,21 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
         assertTrue(PlaylistLibraryDuplicateGroupPolicy.summary(o)
             .startsWith("2 плейлісти по 4 пісні • "))
     }
+
+    @Test fun removalWarningsSayWhetherSongsAreLost() {
+        val o = PlaylistLibraryDuplicateGroupPolicy.overview(listOf(
+            Candidate("a", "X", 2, listOf(a, b)),
+            Candidate("b", "X", 2, listOf(b, a)),
+            Candidate("odd", "X", 2, listOf(a, c)),
+            Candidate("q", "X", 3, null)
+        ))
+        val same = PlaylistLibraryDuplicateGroupPolicy.removalWarnings("a", o, oldest = "a")
+        assertTrue(same[0].startsWith("Пісні не загубляться: лишиться ще 1 плейліст"))
+        assertEquals("Це найстаріший плейліст групи.", same[1])
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.removalWarnings("odd", o, null)
+            .single().startsWith("Увага: такого складу"))
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.removalWarnings("q", o, null)
+            .single().contains("не перевірені"))
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.removalWarnings("none", o, null).isEmpty())
+    }
 }

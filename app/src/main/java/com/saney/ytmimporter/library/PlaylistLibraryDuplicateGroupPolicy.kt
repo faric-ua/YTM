@@ -107,6 +107,29 @@ object PlaylistLibraryDuplicateGroupPolicy {
         return first.singleOrNull()
     }
 
+    /**
+     * Extra lines in the «remove this copy» confirmation (batch 5, owner
+     * 2026-10-17 20:49: remove copies one at a time, only by hand). Plain
+     * facts, never a block: removing a ✓ copy loses nothing (identical copies
+     * stay), removing a ≠ / ? copy may lose a song list that exists nowhere
+     * else in the group.
+     */
+    fun removalWarnings(target: String, overview: Overview, oldest: String?): List<String> {
+        val row = overview.bands.flatMap { it.rows }.firstOrNull { it.identity == target }
+            ?: return emptyList()
+        val lines = mutableListOf<String>()
+        when (row.mark) {
+            Mark.SAME -> lines += "Пісні не загубляться: лишиться ще ${row.sameWith} " +
+                "${playlistsWord(row.sameWith)} з тими самими піснями."
+            Mark.DIFFERENT -> lines += "Увага: такого складу пісень більше ніде в групі нема — " +
+                "після видалення його не лишиться (див. «чим відрізняється»)."
+            Mark.UNCHECKED -> lines += "Увага: пісні цього плейліста не перевірені — " +
+                "невідомо, чи є такий самий склад деінде."
+        }
+        if (target == oldest) lines += "Це найстаріший плейліст групи."
+        return lines
+    }
+
     data class Song(val videoId: String?, val title: String)
 
     data class Difference(

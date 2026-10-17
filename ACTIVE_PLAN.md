@@ -1,6 +1,19 @@
 # YTM Importer — ACTIVE PLAN
 
 
+## CURRENT TASK — 2026-10-17 / Library batch 5 — прибирання копій (branch `feat/v1.4.58-library-batch5` → PR into `feat/v1.4.58-playlist-player`)
+
+faric 2026-10-17 20:49: «Так, робимо» (план 20:47). Стабільна 1.4.58 — лише після всіх виправлень (faric 20:47).
+
+- [x] (код) У «Група №N» біля кожного рядка `Прибрати цю копію…` / `Прибрати з YouTube…` → ТІ САМІ підтвердження, що й на сторінці плейліста (телефон — лише цей локальний ID; History — лише цей запис; YouTube — червоне попередження з ID, назавжди). По одному, лише натисканням.
+- [x] (код) У підтвердженні додаткові рядки (`removalWarnings`): ✓ — «Пісні не загубляться: лишиться ще N…»; ≠ — «такого складу більше ніде нема»; ? — «пісні не перевірені»; «Це найстаріший плейліст групи». Поточний на Головній — як і раніше «Home очиститься».
+- [x] (код) Після видалення вікно групи відкривається знову (через іншого учасника); якщо лишився один — «Групи більше нема». YouTube — після перечитування списку.
+- [x] (код) Безпечна перевірка зв'язків, крок 1: `немає на YouTube` на картці й «пов'язаний з YouTube-плейлістом, якого вже немає» у групі — лише коли список YouTube завантажено повністю (< 1000), і не для записів іншого каналу. Лише позначка, нічого не відв'язується.
+- [x] Довідка: «Прибрати цю копію…», «немає на YouTube». JVM-тести: 42 OK (5 нових + 5 старих identity) — `removalWarnings`, `missingOnYouTube`, `catalogueComplete`.
+- [x] Маніфест, preflight PASS.
+- [ ] PR Validate; fast-forward; підписаний APK.
+- [ ] Перевірка на телефоні, по кроку: (1) група №30 → `Прибрати цю копію…` біля ≠ «Телефон» → підтвердження з рядком «Увага: такого складу…» → **Скасувати** → нічого не змінилось; поворот екрана з відкритим підтвердженням → воно лишається; (2) та сама ≠ копія (з Rick Astley) → **Видалити локально** → вікно групи знову, у ній 6; (3) позначка `немає на YouTube`, якщо такі є. YouTube-видалення — лише плейліст, який назве faric.
+
 ## CURRENT TASK — 2026-10-17 / Library batch 4 (branch `feat/v1.4.58-library-batch4` → PR into `feat/v1.4.58-playlist-player`)
 
 Owner 2026-10-17 15:46 (voice): «і так, і там» — yes to both questions (group window «where is the original / what differs» and remembering checked YouTube songs); owner is lost in why we do this → reminded the goal: find which copies are complete before ever deleting anything (deletions postponed by owner 2026-10-12). Help explanation of «група №7 (2)» (owner 03:02 «потім») goes into the same window work → taken now.
