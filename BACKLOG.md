@@ -1,5 +1,15 @@
 # YTM Importer — Roadmap
 
+## TODO — 2026-10-17 20:47 / Cleanup of copies from the group window (proposed; waiting owner «так»)
+
+Goal of the whole Library work (owner 12.10): remove extra copies only when it is clear which one is complete. Now visible (✓ / ≠ / ?, dates, «чим відрізняється»).
+- [ ] In «Група №N» each row gets `Прибрати цю копію…` → the EXISTING source-scoped confirmations (phone copy → only that local ID; History → only that record; YouTube → danger dialog with exact playlist ID, irreversible). One at a time, never automatic, never several at once.
+- [ ] Guard: the last ✓ copy of a group and the `найстаріший` get an extra warning line; the current Home playlist says «головна очиститься».
+- [ ] After removal the group window redraws; Library counters update.
+- [ ] Phone QA order (deletion QA deferred since 12.10): first Cancel + rotation on every source, then one phone copy that is clearly broken (e.g. group №30 phone ≠ with test videos), only then History; YouTube deletion last and only on a playlist the owner names.
+- [ ] Same batch candidate: «Safe link check with YouTube» step 1 (read-only mark `на YouTube вже немає` after a complete catalogue load).
+- **Stable 1.4.58 — only after all fixes (owner 20:47).**
+
 ## TODO — 2026-10-17 15:37 / Remember checked YouTube songs (phone observation; owner decides)
 
 - [x] (code 2026-10-17 batch 4, owner «так» 15:46; phone pending) After «Перевірити пісні YouTube» the result is lost when Android kills the app (YouTube «Baby's Got A Temper» `Копія` at 02:58 → `Схоже на копію` at 15:37). Songs of YouTube playlists live only in memory on purpose: private playlists are never written to disk. Options for the owner: (1) keep as is — press the button again (cheap: ~1 quota unit per playlist); (2) remember on the phone only the **fingerprint** (sorted video IDs) + date of check, per account, no titles, cleared on account switch / when the playlist count changes. Needs owner «так» because it writes YouTube data to the phone.
