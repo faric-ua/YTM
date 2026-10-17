@@ -1,5 +1,9 @@
 # YTM Importer — Roadmap
 
+## TODO — 2026-10-17 15:37 / Remember checked YouTube songs (phone observation; owner decides)
+
+- [ ] After «Перевірити пісні YouTube» the result is lost when Android kills the app (YouTube «Baby's Got A Temper» `Копія` at 02:58 → `Схоже на копію` at 15:37). Songs of YouTube playlists live only in memory on purpose: private playlists are never written to disk. Options for the owner: (1) keep as is — press the button again (cheap: ~1 quota unit per playlist); (2) remember on the phone only the **fingerprint** (sorted video IDs) + date of check, per account, no titles, cleared on account switch / when the playlist count changes. Needs owner «так» because it writes YouTube data to the phone.
+
 ## TODO — 2026-10-17 05:27 / Group window: «where is the original» and «what exactly differs» (OWNER QUESTION; waiting owner yes/no)
 
 Owner, after group №30 window (screenshot 05:27; 7 playlists × 4 songs: 5 ✓, 1 ≠ phone, 1 ? History): «not clear which one is the original playlist, why 7 here and 5 there, why songs are missing on YouTube». Facts: `(7)` = 7 playlists (each has 4 songs); the app does not know an «original» — it only compares songs.
