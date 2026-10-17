@@ -12,8 +12,8 @@ Owner 2026-10-17 15:46 (voice): «і так, і там» — yes to both questio
 - Implementation notes: pure `PlaylistLibraryDuplicateGroupPolicy.oldest/referenceFor/difference` (+ summary «по N пісні»), `RemoteSongMemoryPolicy` (line format with id count; max 500; usable only with the same item count) + `storage/RemoteSongMemoryStore` (SharedPreferences `library_remote_song_memory`, key per account); Library `DupMember` got date/dateWord/linkedRemoteId/rememberedAt/songs; remembered songs feed both the marks and the button (button only for never-checked playlists); new modal `MODAL_DUP_DIFF` («Назад до групи» reopens the group). Note: app has `allowBackup=true`, so this memory goes into the owner's own Android backup like the other stores.
 - [x] Local JVM tests (embedded Kotlin): 33 OK (9 new).
 - [x] Manifest, preflight PASS.
-- [ ] PR Validate PASS; fast-forward; one signed APK.
-- [ ] Phone QA one step at a time: (1) group №30 rows show dates and one `найстаріший`; (2) ≠ row → `чим відрізняється ›` → song lists; (3) after the app was closed for a long time, «Baby's Got A Temper» stays `Копія` once checked.
+- [x] PR #67 Validate `39034265060` PASS (validate + Android UI emulator) on `d793434`; fast-forward; branch Validate `39034679544` PASS; signed APK `39034684887` SUCCESS (2026-10-17 ~16:25). Owner installed.
+- [ ] Phone QA one step at a time: (1) dates and one `найстаріший` — **PHONE PASS 20:19** (owner «пас», screenshot group №7: phone `найстаріший • збережено 27.09.2026 • пов'язаний з YouTube (публічний)`, YouTube `створено на YouTube 12.10.2026`, summary `2 плейлісти по 3 пісні • не перевірено: 2` — songs not yet remembered in the new version, expected); next (1b) same group: `Перевірити пісні YouTube` → both ✓ (seeds the memory); (2) ≠ row → `чим відрізняється ›` → song lists; (3) after the app was closed for a long time, «Baby's Got A Temper» stays `Копія` once checked.
 
 ## CURRENT TASK — 2026-10-17 / Library batch 3 (branch `feat/v1.4.58-library-batch3` → PR into `feat/v1.4.58-playlist-player`)
 
