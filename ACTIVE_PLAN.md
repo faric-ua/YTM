@@ -1,6 +1,20 @@
 # YTM Importer — ACTIVE PLAN
 
 
+## CURRENT TASK — 2026-10-17 / Library batch 4 (branch `feat/v1.4.58-library-batch4` → PR into `feat/v1.4.58-playlist-player`)
+
+Owner 2026-10-17 15:46 (voice): «і так, і там» — yes to both questions (group window «where is the original / what differs» and remembering checked YouTube songs); owner is lost in why we do this → reminded the goal: find which copies are complete before ever deleting anything (deletions postponed by owner 2026-10-12). Help explanation of «група №7 (2)» (owner 03:02 «потім») goes into the same window work → taken now.
+
+- [x] (a, code) **Group window rows: date + «найстаріший» + link.** Each row: `збережено 12.10.2026` (phone: first saved) / `імпорт 10.10.2026` (History) / `створено на YouTube 03.03.2021`; the unique earliest dated member marked `найстаріший` (honest word — the app cannot know an «original»); phone/History rows linked to a YouTube playlist of the same group: `пов'язаний з YouTube (приватний)`. Summary in plain words, `7 плейлістів по 4 пісні • …`. No extra quota.
+- [x] (b, code) **«чим відрізняється ›» on ≠ and ? rows** → window «Чим відрізняється»: compared with the most common song list of the same number of songs; sections `Є тільки тут`, `Немає тут, але є в копіях`, `Без відео YouTube` (song titles); `Назад до групи`. Restorable on rotation. Read-only.
+- [x] (c, code) **Remember checked YouTube songs** (owner «так»): after a YouTube playlist's songs are read (button or opening it), its video IDs + item count + date are kept in app-private storage, per account, max 500 playlists; **no titles, no token**. Used only while the playlist still has the same number of songs. Row says `перевірено 17.10`. Pure `RemoteSongMemoryPolicy` + tests.
+- [x] (d, code) **Help `?`:** `(2)` = two playlists in this group (songs are the line above); `№7` = just a label to find the playlists of one group, the number means nothing and can change.
+- Implementation notes: pure `PlaylistLibraryDuplicateGroupPolicy.oldest/referenceFor/difference` (+ summary «по N пісні»), `RemoteSongMemoryPolicy` (line format with id count; max 500; usable only with the same item count) + `storage/RemoteSongMemoryStore` (SharedPreferences `library_remote_song_memory`, key per account); Library `DupMember` got date/dateWord/linkedRemoteId/rememberedAt/songs; remembered songs feed both the marks and the button (button only for never-checked playlists); new modal `MODAL_DUP_DIFF` («Назад до групи» reopens the group). Note: app has `allowBackup=true`, so this memory goes into the owner's own Android backup like the other stores.
+- [x] Local JVM tests (embedded Kotlin): 33 OK (9 new).
+- [x] Manifest, preflight PASS.
+- [ ] PR Validate PASS; fast-forward; one signed APK.
+- [ ] Phone QA one step at a time: (1) group №30 rows show dates and one `найстаріший`; (2) ≠ row → `чим відрізняється ›` → song lists; (3) after the app was closed for a long time, «Baby's Got A Temper» stays `Копія` once checked.
+
 ## CURRENT TASK — 2026-10-17 / Library batch 3 (branch `feat/v1.4.58-library-batch3` → PR into `feat/v1.4.58-playlist-player`)
 
 Owner 2026-10-17 02:10 (voice): «бери ту всю пачку і роби» — all three candidates from batch 2 QA (a + b + c) in one batch, one APK.

@@ -3,6 +3,7 @@ package com.saney.ytmimporter.library
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicateGroupPolicy.Mark
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicatePolicy.Candidate
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -127,5 +128,49 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
         ))
         assertEquals(2, after.exactCopies)
         assertEquals(0, after.unchecked)
+    }
+
+    @Test fun oldestNeedsAUniqueEarliestDate() {
+        assertEquals("phone", PlaylistLibraryDuplicateGroupPolicy.oldest(
+            mapOf("phone" to 100L, "yt" to 200L, "history" to 0L)))
+        assertNull("only one dated", PlaylistLibraryDuplicateGroupPolicy.oldest(
+            mapOf("phone" to 100L, "yt" to 0L)))
+        assertNull("shared earliest", PlaylistLibraryDuplicateGroupPolicy.oldest(
+            mapOf("a" to 100L, "b" to 100L, "c" to 300L)))
+    }
+
+    @Test fun referenceIsTheMostCommonOtherList() {
+        val band = listOf(
+            Candidate("odd", "X", 2, listOf(a, c)),
+            Candidate("y1", "X", 2, listOf(a, b)),
+            Candidate("y2", "X", 2, listOf(b, a)),
+            Candidate("q", "X", 2, null)
+        )
+        assertEquals("y1", PlaylistLibraryDuplicateGroupPolicy.referenceFor("odd", band))
+        // Tie (each other list once): the first in the band.
+        assertEquals("odd", PlaylistLibraryDuplicateGroupPolicy.referenceFor("y1", band))
+        assertNull(PlaylistLibraryDuplicateGroupPolicy.referenceFor("odd",
+            listOf(Candidate("odd", "X", 2, listOf(a, c)), Candidate("q", "X", 2, null))))
+    }
+
+    @Test fun differenceSongBySong() {
+        val S = PlaylistLibraryDuplicateGroupPolicy::Song
+        val target = listOf(S(a, "A"), S(c, "C"), S(null, "No video"), S(a, "A again"))
+        val reference = listOf(S(a, "A"), S(b, "B"), S(a, "A2"), S(b, "B2"))
+        val d = PlaylistLibraryDuplicateGroupPolicy.difference(target, reference)
+        assertEquals(listOf("C"), d.onlyHere.map { it.title })
+        assertEquals(listOf("B", "B2"), d.missingHere.map { it.title })
+        assertEquals(listOf("No video"), d.withoutVideo.map { it.title })
+        val none = PlaylistLibraryDuplicateGroupPolicy.difference(listOf(S(a, "A")), null)
+        assertTrue(none.isEmpty)
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.difference(
+            listOf(S(a, "1"), S(b, "2")), listOf(S(b, "x"), S(a, "y"))).isEmpty)
+    }
+
+    @Test fun summarySaysSongsPerPlaylistForOneBand() {
+        val o = PlaylistLibraryDuplicateGroupPolicy.overview(listOf(
+            Candidate("p", "Mix", 4, null), Candidate("y", "Mix", 4, null)))
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.summary(o)
+            .startsWith("2 плейлісти по 4 пісні • "))
     }
 }

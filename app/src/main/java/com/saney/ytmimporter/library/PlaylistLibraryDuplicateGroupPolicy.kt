@@ -85,7 +85,71 @@ object PlaylistLibraryDuplicateGroupPolicy {
             parts += "кількість пісень різна: " +
                 overview.bands.joinToString(" / ") { it.trackCount.toString() }
         }
-        return "${overview.size} ${playlistsWord(overview.size)} • " + parts.joinToString(" • ")
+        // Owner 2026-10-17 05:27: «7» read as songs. Say «по 4 пісні» when
+        // all have the same number of songs.
+        val head = "${overview.size} ${playlistsWord(overview.size)}" +
+            (overview.bands.singleOrNull()?.let { " по ${it.trackCount} ${songsWord(it.trackCount)}" }
+                ?: "")
+        return head + " • " + parts.joinToString(" • ")
+    }
+
+    /**
+     * The member with the earliest date (phone: first saved, History: import,
+     * YouTube: created on YouTube) — shown as «найстаріший». The app cannot
+     * know an «original»; this is only the honest fact closest to it.
+     * Null when fewer than two members have a date or the earliest is shared.
+     */
+    fun oldest(dates: Map<String, Long>): String? {
+        val known = dates.filterValues { it > 0L }
+        if (known.size < 2) return null
+        val min = known.values.minOrNull() ?: return null
+        val first = known.filterValues { it == min }.keys
+        return first.singleOrNull()
+    }
+
+    data class Song(val videoId: String?, val title: String)
+
+    data class Difference(
+        /** Songs (with a video) in this playlist that the reference lacks. */
+        val onlyHere: List<Song>,
+        /** Songs of the reference that this playlist lacks. */
+        val missingHere: List<Song>,
+        /** Songs of this playlist with no YouTube video at all. */
+        val withoutVideo: List<Song>
+    ) {
+        val isEmpty: Boolean
+            get() = onlyHere.isEmpty() && missingHere.isEmpty() && withoutVideo.isEmpty()
+    }
+
+    private val videoIdPattern = Regex("^[A-Za-z0-9_-]{11}$")
+
+    private fun validId(id: String?): String? = id?.takeIf(videoIdPattern::matches)
+
+    /**
+     * What a «≠» or «?» playlist is compared with: among the OTHER members
+     * with the same number of songs and a complete known song list, the list
+     * shared by most of them (ties — the first in [band] order).
+     */
+    fun referenceFor(target: String, band: List<Candidate>): String? {
+        val others = band.filter { it.identity != target }
+            .mapNotNull { c -> PlaylistLibraryDuplicatePolicy.songFingerprint(c)?.let { c to it } }
+        if (others.isEmpty()) return null
+        val counts = others.groupingBy { it.second }.eachCount()
+        val best = counts.values.maxOrNull() ?: return null
+        return others.first { counts[it.second] == best }.first.identity
+    }
+
+    /** Song-by-song difference by video, repeats count, order ignored. */
+    fun difference(target: List<Song>, reference: List<Song>?): Difference {
+        val withoutVideo = target.filter { validId(it.videoId) == null }
+        if (reference == null) return Difference(emptyList(), emptyList(), withoutVideo)
+        val left = reference.filter { validId(it.videoId) != null }.toMutableList()
+        val onlyHere = mutableListOf<Song>()
+        target.filter { validId(it.videoId) != null }.forEach { song ->
+            val i = left.indexOfFirst { it.videoId == song.videoId }
+            if (i >= 0) left.removeAt(i) else onlyHere += song
+        }
+        return Difference(onlyHere, left, withoutVideo)
     }
 
     /**

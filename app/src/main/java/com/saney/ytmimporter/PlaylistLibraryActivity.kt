@@ -36,6 +36,7 @@ import com.saney.ytmimporter.library.PlaylistLibraryDuplicateGroupPolicy
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicatePolicy
 import com.saney.ytmimporter.library.PlaylistLibraryIdentityPolicy
 import com.saney.ytmimporter.library.PlaylistLibraryPolicy
+import com.saney.ytmimporter.library.RemoteSongMemoryPolicy
 import com.saney.ytmimporter.model.HistoryEntry
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.Track
@@ -44,6 +45,7 @@ import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.QuotaTracker
+import com.saney.ytmimporter.storage.RemoteSongMemoryStore
 import com.saney.ytmimporter.storage.RestorablePlaylistSnapshot
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
@@ -74,6 +76,10 @@ class PlaylistLibraryActivity : Activity() {
     private val api by lazy { YouTubeApi(GoogleAccessTokenRecovery(this)) }
     private val sessionRestorer by lazy { SilentGoogleSessionRestorer(this) }
     private val persistentAuth by lazy { PersistentAuthStateStore(this) }
+    // Batch 4: checked YouTube songs survive the app being closed (owner «так»).
+    private val songMemoryStore by lazy { RemoteSongMemoryStore(this) }
+    private var songMemoryOwner: String? = null
+    private var songMemory: Map<String, RemoteSongMemoryPolicy.Entry> = emptyMap()
     private val worker = Executors.newSingleThreadExecutor()
 
     private var onlineTab = false
@@ -544,8 +550,52 @@ class PlaylistLibraryActivity : Activity() {
         val source: String,
         val isRemote: Boolean,
         val remoteTracksLoaded: Boolean,
-        val open: () -> Unit
+        val open: () -> Unit,
+        /** Phone: first saved; History: import; YouTube: created there. 0 = unknown. */
+        val date: Long = 0L,
+        val dateWord: String = "",
+        /** YouTube playlist this phone/History entry is linked to. */
+        val linkedRemoteId: String? = null,
+        /** When remembered songs (not read in this visit) were checked. */
+        val rememberedAt: Long = 0L,
+        /** Songs with titles, when known (for «чим відрізняється»). */
+        val songs: List<PlaylistLibraryDuplicateGroupPolicy.Song>? = null
     )
+
+    /** Remembered songs of the current account (loaded once per account). */
+    private fun currentSongMemory(): Map<String, RemoteSongMemoryPolicy.Entry> {
+        val owner = cachedOwner
+        if (owner.isNullOrBlank() || token() == null) return emptyMap()
+        if (owner != songMemoryOwner) {
+            songMemoryOwner = owner
+            songMemory = songMemoryStore.load(owner)
+        }
+        return songMemory
+    }
+
+    /** Called on the UI thread after the songs of a YouTube playlist were read. */
+    private fun rememberRemoteSongs(id: String, tracks: List<Track>) {
+        val owner = cachedOwner?.takeIf { it.isNotBlank() } ?: return
+        val itemCount = cachedPlaylists?.firstOrNull { it.id == id }?.itemCount
+            ?: tracks.size.toLong()
+        // Small (≤ 500 short lines) and SharedPreferences writes in the
+        // background itself; done here so a closing screen cannot drop it.
+        val updated = songMemoryStore.remember(owner, id, itemCount,
+            tracks.map { it.selectedVideoId })
+        if (songMemoryOwner == owner) songMemory = updated
+    }
+
+    private fun trackSong(videoId: String?, selected: String?, title: String, artist: String) =
+        PlaylistLibraryDuplicateGroupPolicy.Song(
+            videoId,
+            selected?.takeIf { it.isNotBlank() }
+                ?: listOf(artist, title).filter { it.isNotBlank() }.joinToString(" — ")
+                    .ifBlank { "Без назви" }
+        )
+
+    private fun shortDate(millis: Long): String =
+        java.text.SimpleDateFormat("dd.MM.yyyy", java.util.Locale.ROOT)
+            .format(java.util.Date(millis))
 
     /**
      * Metadata-only candidates. Do not spend API quota fetching all remote
@@ -561,6 +611,7 @@ class PlaylistLibraryActivity : Activity() {
     ): Map<String, PlaylistLibraryDuplicatePolicy.Hint> {
         val savedById = saved.associateBy { it.localPlaylistId }
         val archiveById = archive.associateBy { it.id }
+        val memory = currentSongMemory()
         val candidates = allLocal.map { item ->
             val videoIds = when (item.source) {
                 LocalLibrarySource.HISTORY ->
@@ -577,13 +628,34 @@ class PlaylistLibraryActivity : Activity() {
                 "youtube:${remote.id}", remote.title,
                 remote.itemCount.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(),
                 cachedTracks[remote.id]?.map { it.selectedVideoId.orEmpty() }
+                    ?: RemoteSongMemoryPolicy.usable(memory[remote.id], remote.itemCount)
+                        ?.videoIds
             )
         }
         val hints = PlaylistLibraryDuplicatePolicy.find(candidates)
         dupCandidates = candidates
         dupHints = hints
         dupMembers = allLocal.associate { item ->
+            val history = item.historyEntryId?.let { archiveById[it] }
+                ?.takeIf { item.source == LocalLibrarySource.HISTORY }
+            val snapshot = savedById[item.localPlaylistId]
+            val playlist = if (history == null) (active?.takeIf {
+                it.localPlaylistId == item.localPlaylistId }?.playlist
+                ?: snapshot?.playlist) else null
             item.identity to DupMember(
+                date = when {
+                    history != null -> history.createdAt
+                    snapshot != null -> snapshot.createdAt
+                    else -> item.updatedAt
+                },
+                dateWord = if (history != null) "імпорт" else "збережено",
+                linkedRemoteId = (history?.playlistId ?: item.destinationPlaylistId)
+                    ?.takeIf { it.isNotBlank() },
+                songs = history?.tracks?.map {
+                    trackSong(it.videoId, it.selectedTitle, it.originalTitle, it.originalArtist)
+                } ?: playlist?.tracks?.map {
+                    trackSong(it.selectedVideoId, it.selectedTitle, it.originalTitle, it.originalArtist)
+                },
                 title = item.title,
                 source = when (item.source) {
                     LocalLibrarySource.CURRENT -> "Телефон • поточний"
@@ -601,11 +673,22 @@ class PlaylistLibraryActivity : Activity() {
                 }
             )
         } + allRemote.associate { remote ->
+            val loaded = cachedTracks[remote.id]
+            val remembered = if (loaded == null)
+                RemoteSongMemoryPolicy.usable(memory[remote.id], remote.itemCount) else null
             "youtube:${remote.id}" to DupMember(
+                date = remote.publishedAtMillis,
+                dateWord = "створено на YouTube",
+                rememberedAt = remembered?.checkedAt ?: 0L,
+                songs = loaded?.map {
+                    trackSong(it.selectedVideoId, it.selectedTitle, it.originalTitle, it.originalArtist)
+                } ?: remembered?.videoIds?.map {
+                    PlaylistLibraryDuplicateGroupPolicy.Song(it, "")
+                },
                 title = remote.title,
                 source = "YouTube • ${privacyLabel(remote.privacyStatus)}",
                 isRemote = true,
-                remoteTracksLoaded = cachedTracks.containsKey(remote.id),
+                remoteTracksLoaded = loaded != null || remembered != null,
                 open = {
                     rememberCatalogueScroll()
                     selectedRemote = remote.id
@@ -644,6 +727,83 @@ class PlaylistLibraryActivity : Activity() {
         )
     }
 
+    private fun showDuplicateDifference(identity: String) {
+        modalController.show(
+            modalId = MODAL_DUP_DIFF,
+            args = Bundle().apply { putString("item", identity) },
+            renderer = ::renderConfirmation
+        )
+    }
+
+    /**
+     * «Чим відрізняється» (owner 2026-10-17 05:27: which one is the original,
+     * why songs are missing). Compares this playlist with the song list most
+     * other playlists of the same group and the same number of songs share.
+     * Read-only. Returns (subtitle, content) or null when the group is gone.
+     */
+    private fun createDifferenceContent(identity: String): Pair<String, View>? {
+        val hint = dupHints[identity] ?: return null
+        val member = dupMembers[identity] ?: return null
+        val songs = member.songs ?: return null
+        val members = PlaylistLibraryDuplicateGroupPolicy.members(
+            hint.groupNumber, dupCandidates, dupHints)
+        val target = members.firstOrNull { it.identity == identity } ?: return null
+        val band = members.filter { it.trackCount == target.trackCount }
+        val referenceId = PlaylistLibraryDuplicateGroupPolicy.referenceFor(identity, band)
+        val reference = referenceId?.let { dupMembers[it] }
+        // Remembered YouTube songs have no titles: borrow them from any member.
+        val titles = members.flatMap { dupMembers[it.identity]?.songs.orEmpty() }
+            .filter { it.title.isNotBlank() && it.videoId != null }
+            .associate { it.videoId!! to it.title }
+        fun named(list: List<PlaylistLibraryDuplicateGroupPolicy.Song>) = list.map { song ->
+            when {
+                song.title.isNotBlank() -> song.title
+                song.videoId.isNullOrBlank() -> "пісня без відео (назва на YouTube невідома)"
+                else -> titles[song.videoId] ?: "відео ${song.videoId}"
+            }
+        }
+        val diff = PlaylistLibraryDuplicateGroupPolicy.difference(songs, reference?.songs)
+        val container = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        fun line(value: String, size: Float, bold: Boolean, colour: Int, top: Int = 0) {
+            container.addView(text(value, size, bold, colour).apply {
+                setPadding(dp(4), dp(top), dp(4), dp(3))
+            })
+        }
+        line(member.title + " • " + member.source, 14f, true, palette.text)
+        if (reference != null) {
+            line("Порівняно з: ${reference.title} • ${reference.source}" +
+                " (такий самий склад у більшості плейлістів групи з " +
+                "${target.trackCount} ${PlaylistLibraryDuplicateGroupPolicy.songsWord(target.trackCount)})",
+                12.5f, false, palette.muted)
+        } else {
+            line("Немає з чим порівняти: у групі нема іншого плейліста з " +
+                "${target.trackCount} ${PlaylistLibraryDuplicateGroupPolicy.songsWord(target.trackCount)}, " +
+                "пісні якого відомі.", 12.5f, false, palette.muted)
+        }
+        fun section(title: String, why: String, list: List<PlaylistLibraryDuplicateGroupPolicy.Song>,
+                    colour: Int) {
+            if (list.isEmpty()) return
+            line("$title (${list.size})", 14.5f, true, colour, top = 10)
+            line(why, 12f, false, palette.muted)
+            named(list).forEachIndexed { i, name -> line("${i + 1}. $name", 13.5f, false, palette.text) }
+        }
+        section("Є тільки тут", "Цих відео нема в плейлісті, з яким порівняно. " +
+            "Часто це та сама пісня, але інше відео на YouTube.", diff.onlyHere,
+            palette.semantic.warning)
+        section("Немає тут, але є в копіях", "Ці відео є в плейлісті, з яким порівняно.",
+            diff.missingHere, palette.semantic.warning)
+        section("Без відео YouTube", "Для цих пісень під час імпорту не знайшлося " +
+            "відео на YouTube — тому плейліст не можна перевірити до кінця.",
+            diff.withoutVideo, palette.muted)
+        if (diff.isEmpty) {
+            line(if (reference != null) "Відмінностей у піснях немає." else
+                "Усі пісні мають відео YouTube.", 14f, true, palette.semantic.success, top = 10)
+        }
+        line("Нічого не змінюється й не видаляється.", 12f, false, palette.muted, top = 10)
+        return "група №${hint.groupNumber} • ${target.trackCount} " +
+            PlaylistLibraryDuplicateGroupPolicy.songsWord(target.trackCount) to container
+    }
+
     /** Detail button «Схожі: група №…» when this playlist has look-alikes. */
     private fun addDuplicateGroupButton(identity: String) {
         refreshDuplicates()
@@ -669,6 +829,9 @@ class PlaylistLibraryActivity : Activity() {
             hint.groupNumber, dupCandidates, dupHints)
         val overview = PlaylistLibraryDuplicateGroupPolicy.overview(members)
         val byId = members.associateBy { it.identity }
+        val oldest = PlaylistLibraryDuplicateGroupPolicy.oldest(
+            members.associate { it.identity to (dupMembers[it.identity]?.date ?: 0L) })
+        val groupRemoteIds = members.mapNotNull { remotePlaylistId(it.identity) }.toSet()
         val container = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         container.addView(text(
             "Тут усі плейлісти цієї групи — і ті, що сховані фільтром. " +
@@ -676,7 +839,9 @@ class PlaylistLibraryActivity : Activity() {
                 "✓ однакові пісні — справжня копія\n" +
                 "≠ пісні інші — кількість та сама, а склад різний\n" +
                 "? не перевірено — пісні ще не порівнювались\n" +
-                "Різна кількість пісень — різні версії.",
+                "Різна кількість пісень — різні версії.\n" +
+                "«Оригінал» застосунок знати не може: «найстаріший» — той, " +
+                "що з'явився найраніше (на телефоні — збережено, YouTube — створено).",
             12.5f, false, palette.muted).apply {
             setPadding(dp(4), 0, dp(4), dp(8))
             setLineSpacing(0f, 1.1f)
@@ -755,10 +920,42 @@ class PlaylistLibraryActivity : Activity() {
                     maxLines = 2
                     ellipsize = TextUtils.TruncateAt.END
                 })
+                val remembered = member?.rememberedAt?.takeIf { it > 0L }
+                    ?.let { "перевірено ${shortDate(it)}" }
+                val dated = member?.let { m ->
+                    m.date.takeIf { it > 0L }?.let { "${m.dateWord} ${shortDate(it)}" }
+                }
+                val linked = member?.linkedRemoteId?.takeIf { it in groupRemoteIds }
+                    ?.let { id ->
+                        "пов'язаний з YouTube (" +
+                            (dupMembers["youtube:$id"]?.source?.substringAfter("YouTube • ")
+                                ?: "плейліст") + ")"
+                    }
                 labels.addView(text(
-                    listOfNotNull(member?.source, explain,
+                    listOfNotNull(member?.source, explain, remembered,
                         if (hidden) "сховано фільтром" else null).joinToString(" • "),
                     12f, false, palette.muted).apply { setPadding(0, dp(2), 0, 0) })
+                val facts = listOfNotNull(dated, linked)
+                if (facts.isNotEmpty() || row.identity == oldest) {
+                    labels.addView(text(
+                        listOfNotNull(
+                            if (row.identity == oldest) "найстаріший" else null
+                        ).plus(facts).joinToString(" • "),
+                        12f, row.identity == oldest,
+                        if (row.identity == oldest) palette.accent else palette.muted
+                    ).apply { setPadding(0, dp(1), 0, 0) })
+                }
+                val canDiff = row.mark != PlaylistLibraryDuplicateGroupPolicy.Mark.SAME &&
+                    member?.songs != null
+                if (canDiff) {
+                    labels.addView(text("чим відрізняється ›", 13f, true, palette.accent).apply {
+                        setPadding(0, dp(6), dp(12), dp(4))
+                        isClickable = true
+                        isFocusable = true
+                        contentDescription = "Чим відрізняється " + (member?.title ?: "")
+                        setOnClickListener { showDuplicateDifference(row.identity) }
+                    })
+                }
                 rowView.addView(labels, LinearLayout.LayoutParams(
                     0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
                 if (member != null) {
@@ -803,7 +1000,8 @@ class PlaylistLibraryActivity : Activity() {
         }
         songsCheckProgress = null
         val pending = members.filter { candidate ->
-            remotePlaylistId(candidate.identity)?.let { !cachedTracks.containsKey(it) } == true
+            candidate.identity.startsWith("youtube:") &&
+                dupMembers[candidate.identity]?.remoteTracksLoaded == false
         }
         if (pending.isEmpty()) return
         if (token() == null) {
@@ -870,8 +1068,10 @@ class PlaylistLibraryActivity : Activity() {
                 }
                 runOnUiThread {
                     if (isFinishing || isDestroyed) return@runOnUiThread
-                    result.onSuccess { cachedTracks[id] = it.tracks }
-                        .onFailure { songsCheckFailed[id] = it.message ?: "Помилка YouTube API" }
+                    result.onSuccess {
+                        cachedTracks[id] = it.tracks
+                        rememberRemoteSongs(id, it.tracks)
+                    }.onFailure { songsCheckFailed[id] = it.message ?: "Помилка YouTube API" }
                     check.done++
                     songsCheckProgress?.text = songsCheckProgressText(check)
                 }
@@ -1545,6 +1745,22 @@ class PlaylistLibraryActivity : Activity() {
             )
             return dialog
         }
+        if (type == MODAL_DUP_DIFF) {
+            val identity = args.getString("item") ?: return null
+            if (dupHints[identity] == null) refreshDuplicates()
+            val built = createDifferenceContent(identity) ?: return null
+            return UiChrome.showContentDialog(
+                activity = this,
+                title = "Чим відрізняється",
+                subtitle = built.first,
+                message = "",
+                content = built.second,
+                actions = listOf(UiChrome.DialogAction("Назад до групи") {
+                    modalController.clearState()
+                    window.decorView.post { if (!isDestroyed) showDuplicateGroup(identity) }
+                })
+            )
+        }
         if (type == MODAL_HELP) {
             return UiChrome.showContentDialog(
                 activity = this,
@@ -1785,10 +2001,22 @@ class PlaylistLibraryActivity : Activity() {
                 "або відкрийте плейліст.")
         entry(R.drawable.ic_ytm_view_grid, "Інша версія",
             "Та сама назва, але інша кількість пісень.")
+        // Owner 2026-10-17 03:02: «(2)» was read as 2 songs, «№7» as a rank.
         entry(R.drawable.ic_ytm_view_grid, "група №8 (4) ›",
-            "Торкніться цього рядка — відкриється «Група №8»: усі 4 плейлісти " +
-                "поруч, за кількістю пісень, з позначками ✓ однакові пісні, " +
-                "≠ пісні інші, ? не перевірено.", palette.accent)
+            "(4) — у групі 4 ПЛЕЙЛІСТИ (не пісні; скільки пісень — рядком вище). " +
+                "№8 — просто ярлик, щоб знайти плейлісти однієї групи: у них " +
+                "однаковий номер. Сам номер нічого не означає і може змінитися, " +
+                "коли з’являться нові плейлісти. Торкніться рядка — відкриється " +
+                "«Група №8»: усі 4 плейлісти поруч, з позначками ✓ однакові пісні, " +
+                "≠ пісні інші, ? не перевірено, з датою і позначкою «найстаріший».",
+            palette.accent)
+        entry(R.drawable.ic_ytm_view_grid, "чим відрізняється ›",
+            "У вікні групи біля ≠ і ?: показує, які саме пісні інші, яких " +
+                "бракує і для яких нема відео YouTube. Лише показує.")
+        entry(R.drawable.ic_ytm_youtube_play, "перевірено 17.10",
+            "Пісні YouTube-плейліста, перевірені раніше, телефон пам’ятає " +
+                "(лише коди відео, без назв, для кожного акаунта окремо), поки " +
+                "кількість пісень у плейлісті та сама.")
         entry(R.drawable.ic_ytm_device, "Архів History",
             "Запис про минулий імпорт, а не окремий плейліст. Тому в однієї " +
                 "назви може бути багато таких записів у групі.",
@@ -1889,8 +2117,10 @@ class PlaylistLibraryActivity : Activity() {
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread
                 loadingTracks = false
-                result.onSuccess { cachedTracks[id] = it.tracks }
-                    .onFailure { loadError = it.message ?: "Помилка YouTube API" }
+                result.onSuccess {
+                    cachedTracks[id] = it.tracks
+                    rememberRemoteSongs(id, it.tracks)
+                }.onFailure { loadError = it.message ?: "Помилка YouTube API" }
                 if (selectedRemote == id) renderContent()
             }
         }
@@ -2337,6 +2567,7 @@ class PlaylistLibraryActivity : Activity() {
         private const val MODAL_HELP = "playlist_library_help"
         private const val MODAL_FILTER = "playlist_library_filter"
         private const val MODAL_DUP_GROUP = "playlist_library_duplicate_group"
+        private const val MODAL_DUP_DIFF = "playlist_library_duplicate_difference"
         private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
 
         // Temporary, account-scoped metadata cache survives Android rotation,
