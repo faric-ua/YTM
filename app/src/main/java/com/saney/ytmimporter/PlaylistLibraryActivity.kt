@@ -9,6 +9,8 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.text.TextUtils
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
@@ -31,6 +33,7 @@ import com.saney.ytmimporter.destination.DestinationRemoteOperations
 import com.saney.ytmimporter.history.HistoryRecoveryPolicy
 import com.saney.ytmimporter.library.GroupNumberPolicy
 import com.saney.ytmimporter.library.LibraryFilterPolicy
+import com.saney.ytmimporter.library.LibrarySearchPolicy
 import com.saney.ytmimporter.library.LocalLibraryItem
 import com.saney.ytmimporter.library.LocalLibrarySource
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicateGroupPolicy
@@ -141,6 +144,30 @@ class PlaylistLibraryActivity : Activity() {
     private var missingOnYouTube: Set<String> = emptySet()
     /** YouTube playlists whose songs YouTube did not give during this visit. */
     private val songsCheckFailed = mutableMapOf<String, String>()
+    /**
+     * Library batch 7 (owner 2026-10-18 14:21, «пошук дуже тормозить»): the
+     * stores and the duplicate analysis of the last full redraw. A search
+     * redraw reuses them and only filters cards; every other redraw (open,
+     * Back, delete, YouTube loaded, songs checked) builds them fresh.
+     */
+    private class CatalogueData(
+        val allLocal: List<LocalLibraryItem>,
+        val allRemote: List<YouTubePlaylistInfo>,
+        val hints: Map<String, PlaylistLibraryDuplicatePolicy.Hint>,
+        val hasCurrent: Boolean,
+        /** cachedPlaylists object and token presence it was built with. */
+        val remoteList: List<YouTubePlaylistInfo>?,
+        val connected: Boolean
+    )
+    private var catalogueData: CatalogueData? = null
+    /** Search redraws wait for a pause in typing instead of every letter. */
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private val searchRedraw = Runnable {
+        if (!isDestroyed && selectedLocal == null && selectedRemote == null) {
+            // Results start from the top of the list.
+            renderContent(0, searchOnly = true)
+        }
+    }
 
     private val palette get() = AppThemeManager.palette(this)
     private val landscape get() =
@@ -219,6 +246,7 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     override fun onDestroy() {
+        searchHandler.removeCallbacks(searchRedraw)
         modalController.onDestroy()
         worker.shutdownNow()
         super.onDestroy()
@@ -352,7 +380,11 @@ class PlaylistLibraryActivity : Activity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 filterText = s?.toString().orEmpty()
-                if (selectedLocal == null && selectedRemote == null) renderContent()
+                // Library batch 7: one redraw after a short pause, not per letter.
+                searchHandler.removeCallbacks(searchRedraw)
+                if (selectedLocal == null && selectedRemote == null) {
+                    searchHandler.postDelayed(searchRedraw, LibrarySearchPolicy.TYPING_PAUSE_MS)
+                }
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -483,7 +515,21 @@ class PlaylistLibraryActivity : Activity() {
         }
     }
 
-    private fun updateTopControls() {
+    /** Data of the last full redraw, if a search redraw may use it. */
+    private fun reusableCatalogueData(searchOnly: Boolean): CatalogueData? {
+        val data = catalogueData
+        val connected = token() != null
+        return data.takeIf {
+            LibrarySearchPolicy.canReuse(
+                searchOnly = searchOnly,
+                hasCache = data != null,
+                sameRemoteList = data?.remoteList === cachedPlaylists,
+                sameConnection = data?.connected == connected
+            )
+        }
+    }
+
+    private fun updateTopControls(reuse: CatalogueData? = null) {
         val catalogue = selectedLocal == null && selectedRemote == null
         val localSelected = !showAll && !onlineTab
         val remoteSelected = !showAll && onlineTab
@@ -510,7 +556,7 @@ class PlaylistLibraryActivity : Activity() {
             if (columns == 2) "Список одним стовпчиком" else "Плитки у два стовпчики"
         compactSearchButton.setColorFilter(
             if (landscapeSearchOpen) palette.accent else palette.text)
-        compactCurrentButton.isEnabled = currentStore.load() != null
+        compactCurrentButton.isEnabled = reuse?.hasCurrent ?: (currentStore.load() != null)
         compactCurrentButton.alpha = if (compactCurrentButton.isEnabled) 1f else 0.45f
         detailCurrentButton.isEnabled = compactCurrentButton.isEnabled
         detailCurrentButton.alpha = compactCurrentButton.alpha
@@ -527,9 +573,10 @@ class PlaylistLibraryActivity : Activity() {
      * which overrode the caller's scrollTo(0, 0): a playlist opened from deep
      * in the catalogue started half-way down (owner screenshot 2026-10-12).
      */
-    private fun renderContent(restoreY: Int? = null) {
+    private fun renderContent(restoreY: Int? = null, searchOnly: Boolean = false) {
         if (!::body.isInitialized) return
-        updateTopControls()
+        val reuse = reusableCatalogueData(searchOnly)
+        updateTopControls(reuse)
         val oldY = restoreY ?: scroller.scrollY
         body.removeAllViews()
         catalogueToolbar.removeAllViews()
@@ -537,7 +584,7 @@ class PlaylistLibraryActivity : Activity() {
         when {
             selectedLocal != null -> renderLocalDetails(selectedLocal!!)
             selectedRemote != null -> renderRemoteDetails(selectedRemote!!)
-            else -> renderCatalogue()
+            else -> renderCatalogue(reuse)
         }
         scroller.post { if (!isDestroyed) scroller.scrollTo(0, oldY) }
     }
@@ -1165,21 +1212,33 @@ class PlaylistLibraryActivity : Activity() {
         )
     }
 
-    private fun renderCatalogue() {
-        val saved = savedStore.getAll()
-        val active = currentStore.load()
-        val archive = historyStore.getAll()
-        val allLocal = PlaylistLibraryPolicy.build(saved, active, archive)
+    private fun renderCatalogue(reuse: CatalogueData? = null) {
+        val access = token()
+        val data = reuse ?: run {
+            val saved = savedStore.getAll()
+            val active = currentStore.load()
+            val archive = historyStore.getAll()
+            val local = PlaylistLibraryPolicy.build(saved, active, archive)
+            val remote = if (access != null) cachedPlaylists.orEmpty() else emptyList()
+            CatalogueData(
+                allLocal = local,
+                allRemote = remote,
+                hints = analyseDuplicates(saved, active, archive, local, remote),
+                hasCurrent = active != null,
+                remoteList = cachedPlaylists,
+                connected = access != null
+            ).also { catalogueData = it }
+        }
+        val allLocal = data.allLocal
         val localVisible = if (showsLocal()) allLocal else emptyList()
         val remoteEnabled = showsRemote()
-        val access = token()
-        val allRemote = if (access != null) cachedPlaylists.orEmpty() else emptyList()
+        val allRemote = data.allRemote
         val privacy = LibraryFilterPolicy.effectivePrivacy(currentSource(), privacyMode)
         val remoteItems = if (remoteEnabled) allRemote.filter {
             privacy == LibraryFilterPolicy.Privacy.ALL ||
                 it.privacyStatus.equals(privacy.name, ignoreCase = true)
         } else emptyList()
-        val hints = analyseDuplicates(saved, active, archive, allLocal, allRemote)
+        val hints = data.hints
         // Cross-reference only IDs in the current account's already fetched
         // catalogue. Retain BOTH cards and NEVER infer identical track lists.
         val exactLinks = PlaylistLibraryIdentityPolicy.exactRemoteMatches(
@@ -1328,8 +1387,7 @@ class PlaylistLibraryActivity : Activity() {
             )
         }
         val filtered = all.filter {
-            it.title.contains(filterText, ignoreCase = true) ||
-                it.subtitle.contains(filterText, ignoreCase = true)
+            LibrarySearchPolicy.matches(it.title, it.subtitle, filterText)
         }
         val ordered = when (sortMode) {
             SortMode.RECENT -> filtered.sortedWith(
@@ -1354,7 +1412,7 @@ class PlaylistLibraryActivity : Activity() {
         if (filtered.isEmpty() && similarOnly) {
             panelInfo(cards, "У вибраному фільтрі схожих плейлистів немає. " +
                 "Список YouTube може бути ще не завантажений.")
-        } else if (filtered.isEmpty() && filterText.isNotBlank()) {
+        } else if (filtered.isEmpty() && LibrarySearchPolicy.normalize(filterText).isNotEmpty()) {
             panelInfo(cards, "Нічого не знайдено за запитом.")
         } else if (filtered.isEmpty() && !remoteEnabled) {
             panelInfo(cards, "Локальних плейлістів ще немає.")
@@ -2067,7 +2125,9 @@ class PlaylistLibraryActivity : Activity() {
                 "Каталог читається з інтернету; простий перегляд нічого не записує.",
             palette.accent)
         entry(R.drawable.ic_ytm_search, "Пошук",
-            "Відкриває поле для пошуку за назвою та описом у вибраному каталозі.")
+            "Відкриває поле для пошуку за назвою та описом у вибраному каталозі. " +
+                "Шукає лише в уже завантаженому списку — під час набору до YouTube не звертається. " +
+                "Список оновлюється, коли ви на мить перестали набирати.")
         entry(R.drawable.ic_ytm_library_current, "Поточний плейліст",
             "Переходить до поточного локального плейліста, не перемикаючи інші.")
         entry(R.drawable.ic_ytm_view_list, "Список / плитки",

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.LruCache
 import android.widget.ImageView
+import com.saney.ytmimporter.library.LibrarySearchPolicy
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.HttpURLConnection
@@ -20,7 +21,13 @@ import java.util.concurrent.Executors
  */
 object PlaylistCoverLoader {
     private val workers = Executors.newFixedThreadPool(2)
-    private val cache = LruCache<String, Bitmap>(24)
+    // Library batch 7 (owner 2026-10-18): by size, not 24 pictures — with
+    // ~135 playlists most covers were decoded from disk again on each redraw.
+    private val cache = object : LruCache<String, Bitmap>(
+        LibrarySearchPolicy.coverCacheBytes(Runtime.getRuntime().maxMemory())
+    ) {
+        override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
+    }
     private val waiting = mutableMapOf<String, MutableList<Pair<Activity, ImageView>>>()
     private val videoIdPattern = Regex("^[A-Za-z0-9_-]{11}$")
     private const val MAX_IMAGE_BYTES = 1_048_576
