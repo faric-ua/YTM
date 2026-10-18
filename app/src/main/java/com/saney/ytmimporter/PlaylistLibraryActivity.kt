@@ -29,6 +29,7 @@ import com.saney.ytmimporter.auth.PersistentAuthStateStore
 import com.saney.ytmimporter.auth.SilentGoogleSessionRestorer
 import com.saney.ytmimporter.destination.DestinationRemoteOperations
 import com.saney.ytmimporter.history.HistoryRecoveryPolicy
+import com.saney.ytmimporter.library.GroupNumberPolicy
 import com.saney.ytmimporter.library.LibraryFilterPolicy
 import com.saney.ytmimporter.library.LocalLibraryItem
 import com.saney.ytmimporter.library.LocalLibrarySource
@@ -43,6 +44,7 @@ import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
+import com.saney.ytmimporter.storage.GroupNumberStore
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RemoteSongMemoryStore
@@ -78,6 +80,9 @@ class PlaylistLibraryActivity : Activity() {
     private val persistentAuth by lazy { PersistentAuthStateStore(this) }
     // Batch 4: checked YouTube songs survive the app being closed (owner «так»).
     private val songMemoryStore by lazy { RemoteSongMemoryStore(this) }
+    // Batch 6: permanent group numbers (owner 2026-10-18 04:44).
+    private val groupNumberStore by lazy { GroupNumberStore(this) }
+    private var groupNumbers: GroupNumberPolicy.Memory? = null
     private var songMemoryOwner: String? = null
     private var songMemory: Map<String, RemoteSongMemoryPolicy.Entry> = emptyMap()
     private val worker = Executors.newSingleThreadExecutor()
@@ -651,7 +656,19 @@ class PlaylistLibraryActivity : Activity() {
                         ?.videoIds
             )
         }
-        val hints = PlaylistLibraryDuplicatePolicy.find(candidates)
+        val found = PlaylistLibraryDuplicatePolicy.find(candidates)
+        val memoryBefore = groupNumbers ?: groupNumberStore.load().also { groupNumbers = it }
+        val numbered = GroupNumberPolicy.renumber(candidates, found, memoryBefore)
+        // Save only when the YouTube part is really there (or Google was never
+        // used): numbers given while YouTube is still loading are temporary,
+        // otherwise the first save after the update could shift «№30».
+        val complete = !persistentAuth.hadSuccessfulAuthorization() ||
+            (token() != null && cachedPlaylists != null)
+        if (complete && numbered.memory != memoryBefore) {
+            groupNumbers = numbered.memory
+            groupNumberStore.save(numbered.memory)
+        }
+        val hints = numbered.hints
         dupCandidates = candidates
         dupHints = hints
         dupMembers = allLocal.associate { item ->
@@ -1701,6 +1718,28 @@ class PlaylistLibraryActivity : Activity() {
         )
     }
 
+    /**
+     * «Скасувати» in a removal started from «Група №…» goes back to that group
+     * (owner 2026-10-17 21:27: it dropped him into the list at another place).
+     */
+    private fun cancelBackToGroup(args: Bundle) {
+        modalController.clearState()
+        val back = args.getString("group_return") ?: return
+        window.decorView.post {
+            if (!isDestroyed && dupHints[back] != null) showDuplicateGroup(back)
+        }
+    }
+
+    /**
+     * The History record of the same import that the Library hides while the
+     * phone copy exists (PlaylistLibraryPolicy.build). After the copy is
+     * removed it shows up (owner recording 2026-10-18 01:03: «nothing changed»).
+     */
+    private fun hiddenArchiveOf(localId: String): HistoryEntry? =
+        historyStore.getAll()
+            .filter { it.localPlaylistId == localId && it.tracks.isNotEmpty() }
+            .maxByOrNull { it.updatedAt }
+
     /** Text added under a removal message when it came from the group window. */
     private fun warningBlock(args: Bundle): String =
         args.getString("warn")?.let { "\n\n$it" }.orEmpty()
@@ -1733,7 +1772,7 @@ class PlaylistLibraryActivity : Activity() {
                     "Поточний плейлист, збережені локальні копії та YouTube не зміняться." +
                     warningBlock(args),
                 confirmLabel = "Видалити з History",
-                onCancel = { modalController.clearState() }
+                onCancel = { cancelBackToGroup(args) }
             ) {
                 modalController.clearState()
                 if (historyStore.get(entryId) != null) {
@@ -1759,7 +1798,7 @@ class PlaylistLibraryActivity : Activity() {
                     "Локальні копії та History залишаться. Цю дію неможливо скасувати." +
                     warningBlock(args),
                 confirmLabel = "Видалити з YouTube",
-                onCancel = { modalController.clearState() }
+                onCancel = { cancelBackToGroup(args) }
             ) {
                 modalController.clearState()
                 pendingGroupReturn = args.getString("group_return")
@@ -1779,10 +1818,16 @@ class PlaylistLibraryActivity : Activity() {
                 message = "Плейлист «${target.title}» буде видалено з локальної " +
                     "бібліотеки. Якщо він поточний, Home очиститься.\n\n" +
                     "Інші локальні копії, History, YTM Project і YouTube не " +
-                    "зміняться. Архів History може залишитися видимим окремо." +
+                    "зміняться. " + (hiddenArchiveOf(localId)?.let { archive ->
+                        "Після цього в Бібліотеці з’явиться архів History цього " +
+                            "імпорту (${shortDate(archive.createdAt)}): " +
+                            "${archive.tracks.size} " +
+                            PlaylistLibraryDuplicateGroupPolicy.songsWord(archive.tracks.size) +
+                            ". Він не видаляється."
+                    } ?: "Архів History може залишитися видимим окремо.") +
                     warningBlock(args),
                 confirmLabel = "Видалити локально",
-                onCancel = { modalController.clearState() }
+                onCancel = { cancelBackToGroup(args) }
             ) {
                 modalController.clearState()
                 if (deleteLocalCopy(localId)) reopenGroup(args.getString("group_return"))
@@ -1971,7 +2016,9 @@ class PlaylistLibraryActivity : Activity() {
         selectedLocal = null
         visibleTrackLimit = 60
         renderContent(0)
-        toast("Локальну копію видалено")
+        toast("Локальну копію видалено" + (hiddenArchiveOf(localId)?.let {
+            " • з’явився архів History ${shortDate(it.createdAt)}"
+        } ?: ""))
         return true
     }
 
@@ -2109,8 +2156,9 @@ class PlaylistLibraryActivity : Activity() {
         entry(R.drawable.ic_ytm_view_grid, "група №8 (4) ›",
             "(4) — у групі 4 ПЛЕЙЛІСТИ (не пісні; скільки пісень — рядком вище). " +
                 "№8 — просто ярлик, щоб знайти плейлісти однієї групи: у них " +
-                "однаковий номер. Сам номер нічого не означає і може змінитися, " +
-                "коли з’являться нові плейлісти. Торкніться рядка — відкриється " +
+                "однаковий номер. Сам номер нічого не означає, але він постійний: " +
+                "група тримає його, поки існує, а нові групи отримують нові " +
+                "номери. Торкніться рядка — відкриється " +
                 "«Група №8»: усі 4 плейлісти поруч, з позначками ✓ однакові пісні, " +
                 "≠ пісні інші, ? не перевірено, з датою і позначкою «найстаріший».",
             palette.accent)
