@@ -14,6 +14,8 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -41,6 +43,7 @@ import com.saney.ytmimporter.library.PlaylistLibraryDuplicatePolicy
 import com.saney.ytmimporter.library.PlaylistLibraryIdentityPolicy
 import com.saney.ytmimporter.library.PlaylistLibraryPolicy
 import com.saney.ytmimporter.library.RemoteSongMemoryPolicy
+import com.saney.ytmimporter.library.SongOverlapPolicy
 import com.saney.ytmimporter.model.HistoryEntry
 import com.saney.ytmimporter.model.ImportedPlaylist
 import com.saney.ytmimporter.model.Track
@@ -176,6 +179,12 @@ class PlaylistLibraryActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppThemeManager.applyWindow(this)
+        // Batch 8 (owner recording 2026-10-18 16:10): the keyboard popped up
+        // by itself whenever a window closed, because the search field kept
+        // focus. It now appears only when the owner taps the field.
+        window.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN or
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         onlineTab = savedInstanceState?.getBoolean("online") ?: false
         showAll = savedInstanceState?.getBoolean("show_all") ?: true
         sortMode = runCatching {
@@ -272,6 +281,9 @@ class PlaylistLibraryActivity : Activity() {
         root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(palette.background)
+            // Takes the focus itself, so the search cursor does not come back.
+            isFocusable = true
+            isFocusableInTouchMode = true
         }
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -301,8 +313,11 @@ class PlaylistLibraryActivity : Activity() {
         ) {
             landscapeSearchOpen = !landscapeSearchOpen
             updateTopControls()
-            if (landscapeSearchOpen) searchBox.requestFocus()
-            else searchBox.clearFocus()
+            if (landscapeSearchOpen) {
+                searchBox.requestFocus()
+                // Explicit: the window no longer shows the keyboard on its own.
+                inputMethods()?.showSoftInput(searchBox, InputMethodManager.SHOW_IMPLICIT)
+            } else hideKeyboard()
         }
         compactCurrentButton = iconButton(
             R.drawable.ic_ytm_library_current, "Відкрити поточний плейліст"
@@ -512,6 +527,19 @@ class PlaylistLibraryActivity : Activity() {
                     }
                 }
             }
+        }
+    }
+
+    private fun inputMethods(): InputMethodManager? =
+        getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+
+    /** Batch 8: no cursor in the search field and no keyboard behind a window. */
+    private fun hideKeyboard() {
+        if (!::searchBox.isInitialized) return
+        inputMethods()?.hideSoftInputFromWindow(searchBox.windowToken, 0)
+        if (searchBox.hasFocus()) {
+            searchBox.clearFocus()
+            root.requestFocus()
         }
     }
 
@@ -824,6 +852,117 @@ class PlaylistLibraryActivity : Activity() {
             args = Bundle().apply { putString("item", identity) },
             renderer = ::renderConfirmation
         )
+    }
+
+    private fun showSongDuplicates() {
+        modalController.show(
+            modalId = MODAL_SONG_DUPS,
+            args = Bundle(),
+            renderer = ::renderConfirmation
+        )
+    }
+
+    /**
+     * Library batch 8 — «Дублікати за піснями» (owner TODO 2026-10-12, taken
+     * 2026-10-18 19:31). Compares the songs inside every playlist already on
+     * the phone (phone, History, YouTube read earlier / remembered) and shows
+     * only what «Група №N» does not: renamed copies and copies with part of
+     * the songs different. Read-only; reading unknown YouTube songs needs the
+     * same explicit button as in the group window.
+     */
+    private fun renderSongDuplicates(): Dialog? {
+        if (dupMembers.isEmpty()) refreshDuplicates()
+        val entries = dupMembers.map { (identity, member) ->
+            SongOverlapPolicy.Entry(identity, member.title, member.songs,
+                dupHints[identity]?.groupNumber)
+        }
+        val result = SongOverlapPolicy.find(entries)
+        var dialog: Dialog? = null
+        fun closeThen(action: () -> Unit) {
+            modalController.clearState()
+            dialog?.dismiss()
+            window.decorView.post { if (!isDestroyed) action() }
+        }
+        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        fun line(value: String, size: Float, bold: Boolean, colour: Int) =
+            text(value, size, bold, colour).apply { setPadding(dp(4), dp(3), dp(4), dp(3)) }
+        content.addView(line(
+            "Порівнюються пісні всередині плейлістів — на телефоні, в архіві History " +
+                "і на YouTube. Тут лише те, чого не видно в групах №N: копії з іншою " +
+                "назвою або з частиною інших пісень. Нічого не видаляється.",
+            12.5f, false, palette.muted))
+        val unknown = result.unknown.toSet()
+        if (unknown.isNotEmpty() || songsCheck != null) {
+            content.addView(line(
+                "Не порівнювались (пісні ще невідомі): ${unknown.size} " +
+                    PlaylistLibraryDuplicateGroupPolicy.playlistsWord(unknown.size) +
+                    " YouTube.", 12.5f, false, palette.text))
+            addSongsCheckBlock(content, "", dupCandidates.filter { it.identity in unknown })
+        }
+        if (result.matches.isEmpty()) {
+            content.addView(line(
+                "Копій з іншою назвою не знайдено серед ${result.compared} " +
+                    PlaylistLibraryDuplicateGroupPolicy.playlistsWord(result.compared) +
+                    ", у яких відомі пісні.", 14f, true, palette.text))
+        }
+        fun sideView(side: SongOverlapPolicy.Side): View {
+            val member = dupMembers[side.identity]
+            val title = member?.title ?: side.identity
+            val label = side.groupNumber?.let { number ->
+                val size = dupHints[side.identity]?.groupSize ?: 0
+                "Група №$number ($size) • $title ›"
+            } ?: "$title • ${member?.source.orEmpty()} ›"
+            return text(label, 14f, true, palette.text).apply {
+                maxLines = 3
+                ellipsize = TextUtils.TruncateAt.END
+                setPadding(0, dp(4), 0, dp(4))
+                minHeight = dp(40)
+                gravity = Gravity.CENTER_VERTICAL
+                isClickable = true
+                isFocusable = true
+                contentDescription = "Відкрити: $label"
+                setOnClickListener {
+                    if (side.groupNumber != null) closeThen { showDuplicateGroup(side.identity) }
+                    else closeThen { dupMembers[side.identity]?.open?.invoke() }
+                }
+            }
+        }
+        result.matches.forEach { match ->
+            val colour = when (match.level) {
+                SongOverlapPolicy.Level.SAME_VIDEOS -> palette.accent
+                SongOverlapPolicy.Level.SAME_SONGS -> palette.semantic.warning
+                SongOverlapPolicy.Level.PARTIAL -> palette.muted
+            }
+            val card = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(dp(12), dp(8), dp(12), dp(8))
+                background = surface(palette.surfaceAlt, 12)
+            }
+            card.addView(sideView(match.first))
+            card.addView(text("↕", 13f, true, palette.muted).apply {
+                setPadding(0, 0, 0, 0)
+            })
+            card.addView(sideView(match.second))
+            card.addView(text(SongOverlapPolicy.verdict(match), 12.5f, true, colour).apply {
+                setPadding(0, dp(4), 0, 0)
+            })
+            content.addView(card, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topMargin = dp(8) })
+        }
+        val subtitle = if (result.matches.isEmpty()) "Порівняно: ${result.compared}"
+            else "Знайдено: ${result.matches.size} • порівняно: ${result.compared}"
+        dialog = UiChrome.showContentDialog(
+            activity = this,
+            title = "Дублікати за піснями",
+            subtitle = subtitle,
+            message = "",
+            content = content,
+            actions = listOf(UiChrome.DialogAction("Закрити") {
+                modalController.clearState()
+            })
+        )
+        return dialog
     }
 
     /**
@@ -1202,8 +1341,12 @@ class PlaylistLibraryActivity : Activity() {
         }
     }
 
-    /** Redraws the «Група №…» window only if it is still open. */
+    /** Redraws the «Група №…» (or «Дублікати за піснями») window if open. */
     private fun redrawVisibleDuplicateGroup() {
+        modalController.visibleArgs(MODAL_SONG_DUPS)?.let { args ->
+            modalController.show(MODAL_SONG_DUPS, args, ::renderConfirmation)
+            return
+        }
         val args = modalController.visibleArgs(MODAL_DUP_GROUP) ?: return
         modalController.show(
             modalId = MODAL_DUP_GROUP,
@@ -1289,6 +1432,11 @@ class PlaylistLibraryActivity : Activity() {
             ViewGroup.LayoutParams.WRAP_CONTENT,
             Gravity.CENTER
         ))
+        // Batch 8: copies with another name / partly other songs.
+        summary.addView(iconButton(R.drawable.ic_ytm_compare,
+            "Знайти дублікати за піснями") { showSongDuplicates() },
+            FrameLayout.LayoutParams(dp(44), dp(46),
+                Gravity.START or Gravity.CENTER_VERTICAL))
         val sortButton = iconButton(R.drawable.ic_ytm_sort,
             "Фільтрація і сортування плейлістів") {}
         sortButton.setOnClickListener { showFilterWindow() }
@@ -1817,6 +1965,8 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     private fun renderConfirmation(type: String, args: Bundle): Dialog? {
+        hideKeyboard()
+        if (type == MODAL_SONG_DUPS) return renderSongDuplicates()
         if (type == MODAL_DELETE_HISTORY) {
             val identity = args.getString("item") ?: return null
             val entryId = localItems().firstOrNull {
@@ -2233,6 +2383,15 @@ class PlaylistLibraryActivity : Activity() {
             "Запис про минулий імпорт, а не окремий плейліст. Тому в однієї " +
                 "назви може бути багато таких записів у групі.",
             palette.semantic.duplicate)
+        // Batch 8 (owner TODO 2026-10-12): songs inside, names may differ.
+        entry(R.drawable.ic_ytm_compare, "Знайти дублікати за піснями",
+            "Кнопка зліва вгорі. Порівнює пісні ВСЕРЕДИНІ плейлістів і показує копії, " +
+                "яких не видно в групах №N: з іншою назвою або з частиною інших пісень. " +
+                "«однакові пісні — ті самі відео» — точно ті самі; «за назвами» — назви " +
+                "пісень збігаються, але це ще не доказ, що записи ті самі; «спільних N» — " +
+                "частина пісень спільна. YouTube-плейлісти, пісні яких ще не читались, " +
+                "можна перевірити кнопкою (лише читання). Нічого не видаляє.",
+            palette.accent)
         section("Обкладинки та зв’язки")
         entry(R.drawable.ic_ytm_music, "Немає обкладинки",
             "Мініатюра береться з доступних YouTube-даних за videoId. " +
@@ -2786,6 +2945,7 @@ class PlaylistLibraryActivity : Activity() {
         private const val MODAL_FILTER = "playlist_library_filter"
         private const val MODAL_DUP_GROUP = "playlist_library_duplicate_group"
         private const val MODAL_DUP_DIFF = "playlist_library_duplicate_difference"
+        private const val MODAL_SONG_DUPS = "playlist_library_song_duplicates"
         private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
 
         // Temporary, account-scoped metadata cache survives Android rotation,

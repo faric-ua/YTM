@@ -466,6 +466,44 @@ class PlaylistLibraryActivityTest {
         }
     }
 
+    /** Batch 8: «Знайти дублікати за піснями» is on the pinned panel and only shows a window. */
+    @Test fun songDuplicatesButtonOpensReadOnlyWindow() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val suffix = UUID.randomUUID().toString().take(6)
+        fun tracks(vararg ids: String) = ids.map {
+            Track("Пісня $it", "Виконавець", selectedVideoId = it)
+        }.toMutableList()
+        val store = CurrentPlaylistStore(context)
+        store.save(ImportedPlaylist("Перша назва $suffix",
+            tracks("aaaaaaaaaa1", "aaaaaaaaaa2", "aaaaaaaaaa3", "aaaaaaaaaa4")),
+            "Перевірка дублікатів", localPlaylistId = "dupA-$suffix")
+        store.save(ImportedPlaylist("Зовсім інша $suffix",
+            tracks("aaaaaaaaaa1", "aaaaaaaaaa2", "aaaaaaaaaa3", "aaaaaaaaaa9")),
+            "Перевірка дублікатів", localPlaylistId = "dupB-$suffix")
+        ActivityScenario.launch<PlaylistLibraryActivity>(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            idle()
+            scene.onActivity { activity ->
+                val button = activity.window.decorView.collectActions().first {
+                    it is ImageButton && it.isShown &&
+                        it.contentDescription == "Знайти дублікати за піснями"
+                }
+                assertNotNull((button as ImageButton).drawable)
+                button.performClick()
+            }
+            idle()
+            scene.onActivity { activity ->
+                assertFalse(activity.isFinishing)
+                assertTrue(activity.window.decorView.hasText("Перша назва $suffix"))
+                assertTrue(activity.window.decorView.hasText("Зовсім інша $suffix"))
+            }
+            scene.recreate()
+            idle()
+            scene.onActivity { activity -> assertFalse(activity.isFinishing) }
+        }
+    }
+
     @Test fun onlineTabWithoutConsentOrTokenDoesNotStartRemoteRead() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         ActivityScenario.launch<PlaylistLibraryActivity>(
