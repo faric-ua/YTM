@@ -108,17 +108,51 @@ object PlaylistLibraryDuplicateGroupPolicy {
     }
 
     /**
+     * Batch 9/10: the biggest member whose songs are known — the yardstick the
+     * members of another size are compared with («усі 320 є в 866»). Only when
+     * the group has members of different sizes. Ties: the oldest (date > 0).
+     */
+    fun biggest(
+        members: List<Candidate>,
+        songsKnown: Set<String>,
+        dates: Map<String, Long>
+    ): String? = members
+        .takeIf { list -> list.map { it.trackCount }.distinct().size > 1 }
+        ?.filter { it.identity in songsKnown }
+        ?.maxWithOrNull(compareBy<Candidate> { it.trackCount }
+            .thenByDescending { dates[it.identity]?.takeIf { d -> d > 0L } ?: Long.MAX_VALUE })
+        ?.identity
+
+    /**
+     * Batch 10 (faric screenshot 2026-10-19 20:50, group №5 «mylist» 866):
+     * the biggest member had «?» and «чим відрізняється ›», though its songs
+     * are known and there is nobody of its size to compare with. Such a row
+     * is the yardstick: «★ найбільший — з ним порівняно інші», no «?».
+     */
+    fun isYardstick(row: Row, biggest: String?, songsKnown: Boolean): Boolean =
+        biggest != null && row.identity == biggest && songsKnown &&
+            row.mark == Mark.UNCHECKED
+
+    /**
      * Extra lines in the «remove this copy» confirmation (batch 5, owner
      * 2026-10-17 20:49: remove copies one at a time, only by hand). Plain
      * facts, never a block: removing a ✓ copy loses nothing (identical copies
      * stay), removing a ≠ / ? copy may lose a song list that exists nowhere
      * else in the group.
      */
-    fun removalWarnings(target: String, overview: Overview, oldest: String?): List<String> {
+    fun removalWarnings(
+        target: String,
+        overview: Overview,
+        oldest: String?,
+        biggest: String? = null,
+        songsKnown: Boolean = false
+    ): List<String> {
         val row = overview.bands.flatMap { it.rows }.firstOrNull { it.identity == target }
             ?: return emptyList()
         val lines = mutableListOf<String>()
-        when (row.mark) {
+        if (isYardstick(row, biggest, songsKnown)) {
+            lines += "Увага: це найбільший плейліст групи — в інших копіях пісень менше."
+        } else when (row.mark) {
             Mark.SAME -> lines += "Пісні не загубляться: лишиться ще ${row.sameWith} " +
                 "${playlistsWord(row.sameWith)} з тими самими піснями."
             Mark.DIFFERENT -> lines += "Увага: такого складу пісень більше ніде в групі нема — " +

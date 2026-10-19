@@ -201,6 +201,57 @@ object SongOverlapPolicy {
     private fun rank(m: Match): Long =
         (Level.values().size - m.level.ordinal).toLong() * 1_000_000L + m.common
 
+    /**
+     * Batch 10 (faric 2026-10-18 19:53: «Частковий збіг» finds different
+     * releases — an album and its Expanded edition, studio songs and a live
+     * album). Words in a playlist name that mark a release, not a copy.
+     * Normalised (lower case, no accents); «remastered» counts as «remaster».
+     */
+    private val editionWords = mapOf(
+        "expanded" to "Expanded", "deluxe" to "Deluxe", "remaster" to "Remaster",
+        "remastered" to "Remaster", "anniversary" to "Anniversary", "edition" to "Edition",
+        "bonus" to "Bonus", "extended" to "Extended", "special" to "Special",
+        "live" to "Live", "unplugged" to "Unplugged", "acoustic" to "Acoustic",
+        "demo" to "Demo", "demos" to "Demo", "instrumental" to "Instrumental",
+        "instrumentals" to "Instrumental", "remix" to "Remix", "remixes" to "Remix",
+        "mono" to "Mono", "collector" to "Collector", "collectors" to "Collector",
+        "concert" to "Concert", "наживо" to "наживо", "концерт" to "концерт"
+    )
+
+    /** Release words of [title], e.g. «World's on Fire (Live)» → {Live}. */
+    fun editionMarks(title: String): Set<String> =
+        normalizeSong(title).split(' ').mapNotNull { editionWords[it] }.toSet()
+
+    private val liveMarks = setOf("Live", "Unplugged", "Concert", "наживо", "концерт")
+
+    /**
+     * «інше видання (Expanded) — не копія», when the names differ by release
+     * words; only for a partial match (the same songs are a copy whatever the
+     * name says). Null when the names carry the same release words.
+     */
+    fun editionNote(match: Match, firstTitle: String, secondTitle: String): String? {
+        if (match.level != Level.PARTIAL) return null
+        val a = editionMarks(firstTitle)
+        val b = editionMarks(secondTitle)
+        val differ = (a - b) + (b - a)
+        if (differ.isEmpty()) return null
+        return "інше видання (${differ.sorted().joinToString(", ")}) — не копія"
+    }
+
+    /**
+     * Batch 10 (group №31 live album ↔ studio albums): a live and a non-live
+     * playlist that share the same YouTube VIDEOS. A live song and a studio
+     * song are different videos, so here one of the imports probably picked
+     * the wrong recording. Null when not that case.
+     */
+    fun liveVideoNote(match: Match, firstTitle: String, secondTitle: String): String? {
+        val liveA = editionMarks(firstTitle).any { it in liveMarks }
+        val liveB = editionMarks(secondTitle).any { it in liveMarks }
+        if (liveA == liveB || match.commonByVideo == 0) return null
+        return "у live і студійному ті самі відео: ${match.commonByVideo} — " +
+            "можливо, при імпорті підібрались не ті записи"
+    }
+
     /** Short plain line for a result row. */
     fun verdict(match: Match): String = when (match.level) {
         Level.SAME_VIDEOS -> "однакові пісні: ${match.common} — ті самі відео YouTube"

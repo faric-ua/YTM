@@ -190,4 +190,49 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
             .single().contains("не перевірені"))
         assertTrue(PlaylistLibraryDuplicateGroupPolicy.removalWarnings("none", o, null).isEmpty())
     }
+
+    /** Batch 10: group №5 — YouTube 866 with known songs, two History copies of 320. */
+    @Test fun biggestWithKnownSongsIsTheYardstickNotUnchecked() {
+        val big = (1..4).map { "big%08d".format(it) }
+        val members = listOf(
+            Candidate("youtube:mylist", "mylist", 4, big),
+            Candidate("h1", "mylist", 2, listOf(big[0], big[1])),
+            Candidate("h2", "mylist", 2, listOf(big[1], big[0]))
+        )
+        val o = PlaylistLibraryDuplicateGroupPolicy.overview(members)
+        val known = setOf("youtube:mylist", "h1", "h2")
+        val biggest = PlaylistLibraryDuplicateGroupPolicy.biggest(members, known, emptyMap())
+        assertEquals("youtube:mylist", biggest)
+        val bigRow = o.bands.flatMap { it.rows }.first { it.identity == "youtube:mylist" }
+        assertEquals(Mark.UNCHECKED, bigRow.mark)
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.isYardstick(bigRow, biggest, songsKnown = true))
+        // Songs not known → stays «?».
+        assertTrue(!PlaylistLibraryDuplicateGroupPolicy.isYardstick(bigRow, biggest, songsKnown = false))
+        // A ✓ row of the small band is never the yardstick.
+        val small = o.bands.flatMap { it.rows }.first { it.identity == "h1" }
+        assertTrue(!PlaylistLibraryDuplicateGroupPolicy.isYardstick(small, biggest, true))
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.removalWarnings(
+            "youtube:mylist", o, null, biggest, songsKnown = true).single()
+            .contains("найбільший"))
+    }
+
+    @Test fun noYardstickWhenAllHaveTheSameSize() {
+        val members = listOf(
+            Candidate("a", "X", 2, listOf(a, b)),
+            Candidate("b", "X", 2, listOf(b, a))
+        )
+        assertNull(PlaylistLibraryDuplicateGroupPolicy.biggest(members, setOf("a", "b"), emptyMap()))
+    }
+
+    @Test fun biggestTieGoesToTheOldestAndNeedsKnownSongs() {
+        val members = listOf(
+            Candidate("new", "X", 3, null),
+            Candidate("old", "X", 3, null),
+            Candidate("small", "X", 1, null)
+        )
+        assertEquals("old", PlaylistLibraryDuplicateGroupPolicy.biggest(members,
+            setOf("new", "old", "small"), mapOf("new" to 200L, "old" to 100L)))
+        assertEquals("small", PlaylistLibraryDuplicateGroupPolicy.biggest(members,
+            setOf("small"), emptyMap()))
+    }
 }

@@ -156,4 +156,37 @@ class SongOverlapPolicyTest {
         assertEquals("за назвами", SongOverlapPolicy.matchedByLabel(byName))
         assertNull(SongOverlapPolicy.insideLabel(byName))
     }
+
+    /** Batch 10: an album and its Expanded edition share songs — not a copy. */
+    @Test
+    fun differentEditionsAreNamed() {
+        val m = SongOverlapPolicy.Match(
+            SongOverlapPolicy.Side("a", 10, 12), SongOverlapPolicy.Side("b", null, 25),
+            Level.PARTIAL, 12)
+        assertEquals("інше видання (Expanded) — не копія",
+            SongOverlapPolicy.editionNote(m, "Music for the Jilted Generation",
+                "Music for the Jilted Generation (Expanded)"))
+        assertEquals(setOf("Live"), SongOverlapPolicy.editionMarks("World's on Fire (Live)"))
+        assertEquals(setOf("Remaster", "Deluxe"),
+            SongOverlapPolicy.editionMarks("Album – Remastered / DELUXE"))
+        // Same release words, or the same songs → no note.
+        assertNull(SongOverlapPolicy.editionNote(m, "A (Live)", "B live"))
+        assertNull(SongOverlapPolicy.editionNote(m.copy(level = Level.SAME_VIDEOS), "A", "A (Expanded)"))
+        assertNull(SongOverlapPolicy.editionNote(m, "Official Singles", "Invaders Must Die"))
+    }
+
+    /** Batch 10: group №31 — a live album sharing VIDEOS with studio songs. */
+    @Test
+    fun liveAlbumWithStudioVideosIsFlagged() {
+        val m = SongOverlapPolicy.Match(
+            SongOverlapPolicy.Side("a", 19, 20), SongOverlapPolicy.Side("b", 31, 14),
+            Level.PARTIAL, 10, commonByVideo = 7)
+        assertTrue(SongOverlapPolicy.liveVideoNote(m, "Official Singles", "World's on Fire (Live)")!!
+            .startsWith("у live і студійному ті самі відео: 7"))
+        // Matched only by names → a live song may well be another recording: no flag.
+        assertNull(SongOverlapPolicy.liveVideoNote(m.copy(commonByVideo = 0),
+            "Official Singles", "World's on Fire (Live)"))
+        assertNull(SongOverlapPolicy.liveVideoNote(m, "Live A", "Live B"))
+        assertNull(SongOverlapPolicy.liveVideoNote(m, "A", "B"))
+    }
 }

@@ -18,6 +18,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -35,6 +36,7 @@ import com.saney.ytmimporter.destination.DestinationRemoteOperations
 import com.saney.ytmimporter.history.HistoryRecoveryPolicy
 import com.saney.ytmimporter.library.GroupNumberPolicy
 import com.saney.ytmimporter.library.LibraryFilterPolicy
+import com.saney.ytmimporter.library.LibraryRestorePolicy
 import com.saney.ytmimporter.library.LibrarySearchPolicy
 import com.saney.ytmimporter.library.LocalLibraryItem
 import com.saney.ytmimporter.library.LocalLibrarySource
@@ -132,6 +134,19 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var modalController: RestorableModalController
     /** Catalogue scroll position to return to from a playlist (Back). */
     private var catalogueScrollY = 0
+    /**
+     * Batch 10: the same place as «this card, this far down it» — survives
+     * Android closing the app and YouTube cards arriving later.
+     */
+    private var catalogueAnchor: LibraryRestorePolicy.Anchor? = null
+    /** Anchor still to apply after the next redraws (restore / Back). */
+    private var pendingAnchor: LibraryRestorePolicy.Anchor? = null
+    /** Where the anchor last put the list (to notice the owner scrolling). */
+    private var lastAnchorY: Int? = null
+    /** Cards container of the last catalogue render. */
+    private var catalogueCards: LinearLayout? = null
+    /** Batch 10: a restored window that waits for the YouTube list. */
+    private var waitingModal: Pair<String, Bundle>? = null
     /** Last duplicate analysis, shared by cards, details and the group window. */
     private var dupCandidates: List<PlaylistLibraryDuplicatePolicy.Candidate> = emptyList()
     private var dupHints: Map<String, PlaylistLibraryDuplicatePolicy.Hint> = emptyMap()
@@ -204,13 +219,23 @@ class PlaylistLibraryActivity : Activity() {
         selectedRemote = savedInstanceState?.getString("remote")
         visibleTrackLimit = savedInstanceState?.getInt("limit") ?: 60
         catalogueScrollY = savedInstanceState?.getInt("catalogue_scroll") ?: 0
+        savedInstanceState?.let { state ->
+            catalogueAnchor = state.getString("catalogue_anchor")?.let {
+                LibraryRestorePolicy.Anchor(it, state.getInt("catalogue_anchor_off"))
+            }
+            waitingModal = state.getString("waiting_modal")?.let { id ->
+                id to (state.getBundle("waiting_modal_args") ?: Bundle())
+            }
+        }
+        if (selectedLocal == null && selectedRemote == null) pendingAnchor = catalogueAnchor
         deletingRemoteId = savedInstanceState?.getString("deleting_remote")
         ensureRemoteAccountIsolation()
         modalController = RestorableModalController(this, STATE_MODAL)
         modalController.restore(savedInstanceState)
         buildUi()
         renderContent()
-        modalController.restoreAfterContentReady(::renderConfirmation)
+        modalController.restoreAfterContentReady(::renderRestoredModal)
+        if (waitingModal != null) window.decorView.post { resumeWaitingModal() }
         if (selectedRemote != null && !cachedTracks.containsKey(selectedRemote) &&
             token() != null
         ) {
@@ -251,6 +276,17 @@ class PlaylistLibraryActivity : Activity() {
         outState.putString("remote", selectedRemote)
         outState.putInt("limit", visibleTrackLimit)
         outState.putInt("catalogue_scroll", catalogueScrollY)
+        // Batch 10: the place in the catalogue, now — or the one to go Back to.
+        val anchor = if (selectedLocal == null && selectedRemote == null)
+            (captureAnchor() ?: pendingAnchor) else catalogueAnchor
+        anchor?.let {
+            outState.putString("catalogue_anchor", it.identity)
+            outState.putInt("catalogue_anchor_off", it.offset)
+        }
+        waitingModal?.let { (id, args) ->
+            outState.putString("waiting_modal", id)
+            outState.putBundle("waiting_modal_args", Bundle(args))
+        }
         outState.putString("deleting_remote", deletingRemoteId)
         modalController.save(outState)
         super.onSaveInstanceState(outState)
@@ -272,7 +308,7 @@ class PlaylistLibraryActivity : Activity() {
             selectedRemote = null
             visibleTrackLimit = 60
             // Back returns to the catalogue where the owner left it.
-            renderContent(catalogueScrollY)
+            renderContent(catalogueScrollY, anchor = catalogueAnchor)
         } else {
             super.onBackPressed()
         }
@@ -530,6 +566,8 @@ class PlaylistLibraryActivity : Activity() {
                         renderContent()
                     }
                 }
+                // Batch 10: nothing more will come — open (or explain) the waiting window.
+                resumeWaitingModal()
             }
         }
     }
@@ -605,21 +643,91 @@ class PlaylistLibraryActivity : Activity() {
      * which overrode the caller's scrollTo(0, 0): a playlist opened from deep
      * in the catalogue started half-way down (owner screenshot 2026-10-12).
      */
-    private fun renderContent(restoreY: Int? = null, searchOnly: Boolean = false) {
+    private fun renderContent(
+        restoreY: Int? = null,
+        searchOnly: Boolean = false,
+        anchor: LibraryRestorePolicy.Anchor? = null
+    ) {
         if (!::body.isInitialized) return
         val reuse = reusableCatalogueData(searchOnly)
         updateTopControls(reuse)
         val oldY = restoreY ?: scroller.scrollY
+        // Batch 10: an explicit place (open, search, Back) replaces the
+        // restore anchor; the owner scrolling himself cancels it too.
+        if (restoreY != null) {
+            pendingAnchor = anchor
+            lastAnchorY = null
+        } else if (pendingAnchor != null && LibraryRestorePolicy.userMoved(
+                scroller.scrollY, lastAnchorY, dp(24))
+        ) {
+            pendingAnchor = null
+        }
         body.removeAllViews()
         catalogueToolbar.removeAllViews()
         cardTarget = null
+        catalogueCards = null
         when {
             selectedLocal != null -> renderLocalDetails(selectedLocal!!)
             selectedRemote != null -> renderRemoteDetails(selectedRemote!!)
             else -> renderCatalogue(reuse)
         }
-        scroller.post { if (!isDestroyed) scroller.scrollTo(0, oldY) }
+        afterLayout {
+            val wanted = pendingAnchor?.takeIf { catalogueCards != null }
+            val y = wanted?.let { LibraryRestorePolicy.scrollFor(it, cardBoxes()) } ?: oldY
+            scroller.scrollTo(0, y)
+            if (wanted != null) {
+                lastAnchorY = scroller.scrollY
+                if (!LibraryRestorePolicy.keepAnchor(youTubeStillComing(), userMoved = false)) {
+                    pendingAnchor = null
+                    lastAnchorY = null
+                }
+            }
+        }
     }
+
+    /**
+     * Runs [action] once the new content is measured. A plain post{} could
+     * run before the first layout after a restore, when the list has no
+     * height yet and scrollTo() is cut to 0.
+     */
+    private fun afterLayout(action: () -> Unit) {
+        scroller.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                if (scroller.viewTreeObserver.isAlive) {
+                    scroller.viewTreeObserver.removeOnPreDrawListener(this)
+                }
+                if (!isDestroyed) action()
+                return true
+            }
+        })
+    }
+
+    private fun youTubeStillComing(): Boolean =
+        LibraryRestorePolicy.youTubeStillComing(showsRemote(), restoringGoogle, loadingList)
+
+    /** Cards of the catalogue with their place inside the scrolled content. */
+    private fun cardBoxes(): List<LibraryRestorePolicy.CardBox> {
+        val cards = catalogueCards ?: return emptyList()
+        val boxes = mutableListOf<LibraryRestorePolicy.CardBox>()
+        val rect = android.graphics.Rect()
+        fun walk(view: View) {
+            val tag = view.tag as? String
+            if (tag != null && tag.startsWith(CARD_TAG)) {
+                rect.set(0, 0, view.width, view.height)
+                body.offsetDescendantRectToMyCoords(view, rect)
+                boxes += LibraryRestorePolicy.CardBox(tag.removePrefix(CARD_TAG), rect.top, rect.bottom)
+                return
+            }
+            if (view is ViewGroup) for (i in 0 until view.childCount) walk(view.getChildAt(i))
+        }
+        if (cards.parent != null) walk(cards)
+        return boxes
+    }
+
+    /** The catalogue place now, as an anchor (null at the very top / no cards). */
+    private fun captureAnchor(): LibraryRestorePolicy.Anchor? =
+        if (catalogueCards == null) null
+        else LibraryRestorePolicy.anchorAt(cardBoxes(), scroller.scrollY)
 
     private fun localItems(): List<LocalLibraryItem> =
         PlaylistLibraryPolicy.build(
@@ -829,6 +937,7 @@ class PlaylistLibraryActivity : Activity() {
     private fun rememberCatalogueScroll() {
         if (selectedLocal == null && selectedRemote == null) {
             catalogueScrollY = scroller.scrollY
+            catalogueAnchor = captureAnchor()
         }
     }
 
@@ -939,7 +1048,14 @@ class PlaylistLibraryActivity : Activity() {
                 }
             }
         }
-        result.matches.forEach { match ->
+        fun titleOf(side: SongOverlapPolicy.Side) = dupMembers[side.identity]?.title ?: ""
+        // Batch 10: different releases (Expanded, Live…) go after real copies.
+        val editions = result.matches.associateWith { match ->
+            SongOverlapPolicy.editionNote(match, titleOf(match.first), titleOf(match.second))
+        }
+        val ordered = result.matches.sortedBy { if (editions[it] != null) 1 else 0 }
+        ordered.forEach { match ->
+            val edition = editions[match]
             val colour = when (match.level) {
                 SongOverlapPolicy.Level.SAME_VIDEOS -> palette.accent
                 SongOverlapPolicy.Level.SAME_SONGS -> palette.semantic.warning
@@ -962,6 +1078,17 @@ class PlaylistLibraryActivity : Activity() {
             card.addView(text(listOfNotNull(SongOverlapPolicy.matchedByLabel(match),
                 SongOverlapPolicy.insideLabel(match)).joinToString(" • "),
                 12f, false, palette.muted).apply { setPadding(0, dp(2), 0, 0) })
+            edition?.let {
+                card.addView(text(it, 12.5f, true, palette.text).apply {
+                    setPadding(0, dp(3), 0, 0)
+                })
+            }
+            SongOverlapPolicy.liveVideoNote(match, titleOf(match.first), titleOf(match.second))
+                ?.let {
+                    card.addView(text(it, 12.5f, true, palette.semantic.warning).apply {
+                        setPadding(0, dp(3), 0, 0)
+                    })
+                }
             val (small, big) = if (match.first.size <= match.second.size)
                 match.first to match.second else match.second to match.first
             if (match.level != SongOverlapPolicy.Level.SAME_VIDEOS) {
@@ -979,8 +1106,11 @@ class PlaylistLibraryActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { topMargin = dp(8) })
         }
+        val editionCount = editions.values.count { it != null }
         val subtitle = if (result.matches.isEmpty()) "Порівняно: ${result.compared}"
-            else "Знайдено: ${result.matches.size} • порівняно: ${result.compared}"
+            else "Знайдено: ${result.matches.size}" +
+                (if (editionCount > 0) " • з них інші видання: $editionCount" else "") +
+                " • порівняно: ${result.compared}"
         dialog = UiChrome.showContentDialog(
             activity = this,
             title = "Дублікати за піснями",
@@ -1108,10 +1238,11 @@ class PlaylistLibraryActivity : Activity() {
         val groupRemoteIds = members.mapNotNull { remotePlaylistId(it.identity) }.toSet()
         // Batch 9 (owner 2026-10-19 01:29: «320 чи 866?»): the biggest member
         // whose songs are known is the yardstick for members of another size.
-        val biggest = members.takeIf { list -> list.map { it.trackCount }.distinct().size > 1 }
-            ?.filter { dupMembers[it.identity]?.songs != null }
-            ?.maxWithOrNull(compareBy<PlaylistLibraryDuplicatePolicy.Candidate> { it.trackCount }
-                .thenByDescending { dupMembers[it.identity]?.date?.takeIf { d -> d > 0L } ?: Long.MAX_VALUE })
+        val songsKnown = members.filter { dupMembers[it.identity]?.songs != null }
+            .map { it.identity }.toSet()
+        val biggest = PlaylistLibraryDuplicateGroupPolicy.biggest(members, songsKnown,
+            members.associate { it.identity to (dupMembers[it.identity]?.date ?: 0L) })
+            ?.let { byId[it] }
         val biggestMember = biggest?.let { dupMembers[it.identity] }
         val container = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         container.addView(text(
@@ -1120,6 +1251,7 @@ class PlaylistLibraryActivity : Activity() {
                 "✓ однакові пісні — справжня копія\n" +
                 "≠ пісні інші — кількість та сама, а склад різний\n" +
                 "? не перевірено — пісні ще не порівнювались\n" +
+                "★ найбільший — з ним порівнюються ті, де пісень менше\n" +
                 "Різна кількість пісень — різні версії.\n" +
                 "«Оригінал» застосунок знати не може: «найстаріший» — той, " +
                 "що з'явився найраніше (на телефоні — збережено, YouTube — створено).",
@@ -1154,7 +1286,11 @@ class PlaylistLibraryActivity : Activity() {
                     }
                 }
                 val videoIds = candidate?.videoIds
-                val explain = when (row.mark) {
+                // Batch 10: the biggest one is the yardstick, not «?».
+                val yardstick = PlaylistLibraryDuplicateGroupPolicy.isYardstick(
+                    row, biggest?.identity, row.identity in songsKnown)
+                val explain = if (yardstick) "найбільший — з ним порівняно інші"
+                else when (row.mark) {
                     PlaylistLibraryDuplicateGroupPolicy.Mark.SAME ->
                         "однакові пісні ще з ${row.sameWith}"
                     PlaylistLibraryDuplicateGroupPolicy.Mark.DIFFERENT -> "пісні інші"
@@ -1193,7 +1329,8 @@ class PlaylistLibraryActivity : Activity() {
                         }
                     }
                 }
-                rowView.addView(text(symbol, 20f, true, colour).apply {
+                rowView.addView(text(if (yardstick) "★" else symbol, 20f, true,
+                    if (yardstick) palette.accent else colour).apply {
                     gravity = Gravity.CENTER
                 }, LinearLayout.LayoutParams(dp(30), ViewGroup.LayoutParams.WRAP_CONTENT))
                 val labels = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
@@ -1259,7 +1396,7 @@ class PlaylistLibraryActivity : Activity() {
                     }
                 }
                 val canDiff = row.mark != PlaylistLibraryDuplicateGroupPolicy.Mark.SAME &&
-                    member?.songs != null && !partlyInBiggest
+                    member?.songs != null && !partlyInBiggest && !yardstick
                 if (canDiff) {
                     labels.addView(text("чим відрізняється ›", 13f, true, palette.accent).apply {
                         setPadding(0, dp(6), dp(12), dp(4))
@@ -1275,7 +1412,8 @@ class PlaylistLibraryActivity : Activity() {
                     !(removeType == MODAL_DELETE_REMOTE && deletingRemoteId != null)
                 ) {
                     val warn = PlaylistLibraryDuplicateGroupPolicy.removalWarnings(
-                        row.identity, overview, oldest).joinToString("\n")
+                        row.identity, overview, oldest, biggest?.identity,
+                        row.identity in songsKnown).joinToString("\n")
                     val back = members.firstOrNull { it.identity != row.identity }?.identity
                     labels.addView(text(
                         if (removeType == MODAL_DELETE_REMOTE) "Прибрати з YouTube…"
@@ -1561,6 +1699,7 @@ class PlaylistLibraryActivity : Activity() {
         panel.addView(cards)
         body.addView(panel)
         cardTarget = cards
+        catalogueCards = cards
 
         val all = mutableListOf<CardInfo>()
         localVisible.forEach { item ->
@@ -1586,7 +1725,7 @@ class PlaylistLibraryActivity : Activity() {
                 trackCount = item.trackCount.toLong(),
                 duplicateHint = hint,
                 onClick = {
-                    catalogueScrollY = scroller.scrollY
+                    rememberCatalogueScroll()
                     selectedLocal = item.identity
                     visibleTrackLimit = 60
                     renderContent(0)
@@ -1609,7 +1748,7 @@ class PlaylistLibraryActivity : Activity() {
                 updatedAt = item.publishedAtMillis,
                 duplicateHint = hint,
                 onClick = {
-                    catalogueScrollY = scroller.scrollY
+                    rememberCatalogueScroll()
                     selectedRemote = item.id
                     visibleTrackLimit = 60
                     renderContent(0)
@@ -2104,6 +2243,40 @@ class PlaylistLibraryActivity : Activity() {
         }
     }
 
+    /**
+     * Batch 10: a window brought back after Android closed the app. Windows
+     * that may need the YouTube list wait for it (they used to silently not
+     * open, and faric saw the catalogue instead of «Група №5»).
+     */
+    private fun renderRestoredModal(type: String, args: Bundle): Dialog? {
+        val needsYouTube = type in YOUTUBE_WINDOWS
+        if (LibraryRestorePolicy.waitForYouTube(needsYouTube, youTubeStillComing())) {
+            waitingModal = type to Bundle(args)
+            return null
+        }
+        val dialog = renderConfirmation(type, args)
+        if (dialog == null && (type == MODAL_DUP_GROUP || type == MODAL_DUP_DIFF)) {
+            toast("Вікно групи не відновлено: цієї групи зараз нема у вибраному джерелі")
+        }
+        return dialog
+    }
+
+    /** Opens the waiting window once the YouTube list is there (or will not come). */
+    private fun resumeWaitingModal() {
+        val (type, args) = waitingModal ?: return
+        if (isFinishing || isDestroyed || youTubeStillComing()) return
+        waitingModal = null
+        // The owner went elsewhere meanwhile — do not cover what he opened.
+        if (modalController.hasVisible() || selectedLocal != null || selectedRemote != null) return
+        modalController.show(type, args, ::renderConfirmation)
+        if (modalController.visibleArgs(type) == null &&
+            (type == MODAL_DUP_GROUP || type == MODAL_DUP_DIFF)
+        ) {
+            toast(if (token() == null) "Вікно групи не відновлено: YouTube не підключено"
+                else "Групи вже нема — склад плейлістів змінився")
+        }
+    }
+
     private fun renderConfirmation(type: String, args: Bundle): Dialog? {
         hideKeyboard()
         if (type == MODAL_SONG_DUPS) return renderSongDuplicates()
@@ -2529,6 +2702,11 @@ class PlaylistLibraryActivity : Activity() {
             "У вікні групи біля плейліста з іншою кількістю пісень: чи всі його " +
                 "пісні є в найбільшому плейлісті групи. Якщо не всі — «спільних N з M» " +
                 "і «чим відрізняється від найбільшого ›».", palette.accent)
+        // Batch 10 (faric screenshot 2026-10-19 20:50).
+        entry(R.drawable.ic_ytm_view_grid, "★ найбільший",
+            "У вікні групи — плейліст, з яким порівнюються ті, де пісень менше. " +
+                "Сам він ні з чим не порівнюється, тому без «?» і без «чим відрізняється».",
+            palette.accent)
         entry(R.drawable.ic_ytm_view_grid, "чим відрізняється ›",
             "У вікні групи біля ≠ і ?: показує, які саме пісні інші, яких " +
                 "бракує і для яких нема відео YouTube. Лише показує.")
@@ -2549,7 +2727,11 @@ class PlaylistLibraryActivity : Activity() {
                 "«однакові пісні — ті самі відео» — точно ті самі; «за назвами» — назви " +
                 "пісень збігаються, але це ще не доказ, що записи ті самі; «спільних N» — " +
                 "частина пісень спільна. YouTube-плейлісти, пісні яких ще не читались, " +
-                "можна перевірити кнопкою (лише читання). Нічого не видаляє.",
+                "можна перевірити кнопкою (лише читання). Нічого не видаляє. " +
+                "«інше видання (Expanded / Live…) — не копія»: назви відрізняються " +
+                "словами видання — це різні випуски альбому, такі пари внизу списку. " +
+                "«у live і студійному ті самі відео» — при імпорті, можливо, " +
+                "підібрались не ті записи.",
             palette.accent)
         section("Обкладинки та зв’язки")
         entry(R.drawable.ic_ytm_music, "Немає обкладинки",
@@ -2634,6 +2816,7 @@ class PlaylistLibraryActivity : Activity() {
                         reopenGroup(back)
                     }
                 }
+                resumeWaitingModal()
             }
         }
     }
@@ -2916,6 +3099,8 @@ class PlaylistLibraryActivity : Activity() {
             isClickable = true
             isFocusable = true
             setOnClickListener { info.onClick() }
+            // Batch 10: found again by identity to restore the catalogue place.
+            tag = CARD_TAG + info.identity
         }
         val cover = ImageView(this).apply {
             scaleType = ImageView.ScaleType.CENTER_INSIDE
@@ -3103,6 +3288,10 @@ class PlaylistLibraryActivity : Activity() {
         private const val MODAL_HELP = "playlist_library_help"
         private const val MODAL_FILTER = "playlist_library_filter"
         private const val MODAL_DUP_GROUP = "playlist_library_duplicate_group"
+        private const val CARD_TAG = "library_card:"
+        /** Windows that may need the YouTube list to be drawn (batch 10). */
+        private val YOUTUBE_WINDOWS = setOf(MODAL_DUP_GROUP, MODAL_DUP_DIFF,
+            MODAL_SONG_DUPS, MODAL_DELETE_REMOTE)
         private const val MODAL_DUP_DIFF = "playlist_library_duplicate_difference"
         private const val MODAL_SONG_DUPS = "playlist_library_song_duplicates"
         private const val BACK_GROUP = "group"

@@ -504,6 +504,70 @@ class PlaylistLibraryActivityTest {
         }
     }
 
+    /** Batch 10: after the screen is rebuilt the catalogue is at the same card. */
+    @Test fun catalogueKeepsItsPlaceAfterRecreate() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val suffix = UUID.randomUUID().toString().take(6)
+        val store = CurrentPlaylistStore(context)
+        val names = (1..24).map { "Місце $suffix №%02d".format(it) }
+        names.forEachIndexed { i, name ->
+            store.save(ImportedPlaylist(name, mutableListOf(Track("Пісня $i", "Гурт"))),
+                "Тест місця", localPlaylistId = "place-$suffix-$i")
+        }
+        // «Нові» first: the 6th one saved is deep in the list.
+        val target = names[5]
+        ActivityScenario.launch<PlaylistLibraryActivity>(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            idle()
+            scene.onActivity { activity ->
+                val root = activity.window.decorView
+                val scroller = root.findCatalogueScroller() ?: error("No catalogue scroll")
+                val label = root.findLabel(target) ?: error("Card missing")
+                scroller.scrollTo(0, label.topInside(scroller.getChildAt(0)))
+                assertTrue(scroller.scrollY > 0)
+            }
+            idle()
+            scene.recreate()
+            var shown = false
+            var tries = 0
+            while (!shown && tries++ < 20) {
+                idle()
+                scene.onActivity { activity ->
+                    val root = activity.window.decorView
+                    val scroller = root.findCatalogueScroller()
+                    val label = root.findLabel(target)
+                    if (scroller != null && label != null && scroller.scrollY > 0) {
+                        val onScreen = label.topInside(scroller.getChildAt(0)) - scroller.scrollY
+                        shown = onScreen >= -label.height && onScreen < scroller.height
+                    }
+                }
+                if (!shown) android.os.SystemClock.sleep(100)
+            }
+            assertTrue("Catalogue did not come back to the same card", shown)
+        }
+    }
+
+    private fun View.findCatalogueScroller(): android.widget.ScrollView? {
+        val found = mutableListOf<android.widget.ScrollView>()
+        fun walk(view: View) {
+            if (view is android.widget.ScrollView && view.childCount == 1) found += view
+            if (view is ViewGroup) for (i in 0 until view.childCount) walk(view.getChildAt(i))
+        }
+        walk(this)
+        return found.maxByOrNull { it.getChildAt(0).height }
+    }
+
+    private fun View.topInside(ancestor: View): Int {
+        var y = 0
+        var view: View? = this
+        while (view != null && view !== ancestor) {
+            y += view.top
+            view = view.parent as? View
+        }
+        return y
+    }
+
     @Test fun onlineTabWithoutConsentOrTokenDoesNotStartRemoteRead() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         ActivityScenario.launch<PlaylistLibraryActivity>(

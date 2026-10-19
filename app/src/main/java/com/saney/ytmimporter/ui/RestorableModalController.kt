@@ -181,6 +181,9 @@ class RestorableModalController(
         if (openModalId == modalId && dialog?.isShowing == true) Bundle(openModalArgs)
         else null
 
+    /** Library batch 10: some window of this controller is on screen now. */
+    fun hasVisible(): Boolean = dialog?.isShowing == true
+
     /**
      * Library batch 9: changes the saved arguments of the visible [modalId]
      * without redrawing it (a confirmation shown on top of a window keeps its
