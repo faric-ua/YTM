@@ -181,6 +181,21 @@ class RestorableModalController(
         if (openModalId == modalId && dialog?.isShowing == true) Bundle(openModalArgs)
         else null
 
+    /**
+     * Library batch 9: changes the saved arguments of the visible [modalId]
+     * without redrawing it (a confirmation shown on top of a window keeps its
+     * state here, so a rotation brings both back).
+     */
+    fun updateArgs(modalId: String, args: Bundle) {
+        if (openModalId == modalId) openModalArgs = Bundle(args)
+    }
+
+    /** Closes the visible window and forgets it (nothing is executed). */
+    fun dismissVisible() {
+        detachCurrent(dismiss = true)
+        clearState()
+    }
+
     fun clearState() {
         openModalId = null
         openModalArgs = Bundle()

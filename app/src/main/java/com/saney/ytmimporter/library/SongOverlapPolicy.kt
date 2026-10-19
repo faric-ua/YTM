@@ -43,8 +43,55 @@ object SongOverlapPolicy {
         val first: Side,
         val second: Side,
         val level: Level,
-        val common: Int
+        val common: Int,
+        /** How many of [common] matched by the YouTube video (the rest by name). */
+        val commonByVideo: Int = common
     )
+
+    /** Batch 9: how the common songs matched. */
+    enum class MatchedBy { VIDEO, NAME, BOTH }
+
+    fun matchedBy(match: Match): MatchedBy = when (match.commonByVideo) {
+        match.common -> MatchedBy.VIDEO
+        0 -> MatchedBy.NAME
+        else -> MatchedBy.BOTH
+    }
+
+    fun matchedByLabel(match: Match): String = when (matchedBy(match)) {
+        MatchedBy.VIDEO -> "за відео"
+        MatchedBy.NAME -> "за назвами"
+        MatchedBy.BOTH -> "за відео і назвами"
+    }
+
+    /** «усі 320 є в 813» when one side is fully inside the other, else null. */
+    fun insideLabel(match: Match): String? = when {
+        match.first.size == match.second.size -> null
+        match.common >= match.first.size -> "усі ${match.first.size} є в ${match.second.size}"
+        match.common >= match.second.size -> "усі ${match.second.size} є в ${match.first.size}"
+        else -> null
+    }
+
+    /**
+     * Batch 9 (owner 2026-10-19 01:29: «320 чи 866?»): how many songs of
+     * [target] are also in [reference]. Repeats count once per copy.
+     * Returns (common, songs of target that could be compared).
+     */
+    fun containment(
+        target: List<PlaylistLibraryDuplicateGroupPolicy.Song>,
+        reference: List<PlaylistLibraryDuplicateGroupPolicy.Song>
+    ): Pair<Int, Int> {
+        val mine = target.mapNotNull(::songKey)
+        val theirs = reference.mapNotNull(::songKey).groupingBy { it }.eachCount().toMutableMap()
+        var common = 0
+        for (key in mine) {
+            val left = theirs[key] ?: 0
+            if (left > 0) {
+                common++
+                theirs[key] = left - 1
+            }
+        }
+        return common to mine.size
+    }
 
     data class Result(
         val matches: List<Match>,
@@ -120,6 +167,8 @@ object SongOverlapPolicy {
             // Already shown together by «Група №N».
             if (ga != null && ga == gb) continue
             val common = a.keys.entries.sumOf { (k, n) -> minOf(n, b.keys[k] ?: 0) }
+            val byVideo = a.keys.entries.filter { it.key.startsWith("v:") }
+                .sumOf { (k, n) -> minOf(n, b.keys[k] ?: 0) }
             val same = a.keys == b.keys
             val smaller = minOf(a.size, b.size)
             val enough = common >= minCommon && common * 2 >= smaller
@@ -132,7 +181,7 @@ object SongOverlapPolicy {
             }
             fun side(p: Prepared) = Side(p.entry.identity, p.entry.groupNumber, p.size)
             val (first, second) = listOf(side(a), side(b)).sortedBy { unitKey(it) }
-            val match = Match(first, second, level, common)
+            val match = Match(first, second, level, common, byVideo)
             // Several copies of one group against the same playlist → one line.
             val unit = unitKey(first) + "|" + unitKey(second)
             val old = best[unit]

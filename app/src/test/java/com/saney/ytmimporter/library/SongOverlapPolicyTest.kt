@@ -123,4 +123,37 @@ class SongOverlapPolicyTest {
         assertEquals(Level.SAME_VIDEOS, r.matches.first().level)
         assertEquals(Level.PARTIAL, r.matches.last().level)
     }
+
+    @Test
+    fun containmentAllInside() {
+        val small = videos(1, 2, 3)
+        val big = videos(9, 3, 2, 1, 8)
+        assertEquals(3 to 3, SongOverlapPolicy.containment(small, big))
+    }
+
+    @Test
+    fun containmentPartlyInside() {
+        assertEquals(2 to 4, SongOverlapPolicy.containment(videos(1, 2, 50, 51), videos(1, 2, 3)))
+    }
+
+    @Test
+    fun containmentRepeatsNeedEnoughCopies() {
+        assertEquals(2 to 3, SongOverlapPolicy.containment(videos(1, 1, 2), videos(1, 2, 3)))
+    }
+
+    @Test
+    fun matchedByAndInsideLabels() {
+        val byVideo = SongOverlapPolicy.find(listOf(
+            Entry("p:a", "A", videos(1, 2, 3)),
+            Entry("p:b", "B", videos(1, 2, 3, 4, 5))
+        )).matches.single()
+        assertEquals("за відео", SongOverlapPolicy.matchedByLabel(byVideo))
+        assertEquals("усі 3 є в 5", SongOverlapPolicy.insideLabel(byVideo))
+        val byName = SongOverlapPolicy.find(listOf(
+            Entry("p:a", "A", names("x one", "x two", "x three", "x four")),
+            Entry("p:b", "B", names("X One", "X Two", "X Three", "Y"))
+        )).matches.single()
+        assertEquals("за назвами", SongOverlapPolicy.matchedByLabel(byName))
+        assertNull(SongOverlapPolicy.insideLabel(byName))
+    }
 }

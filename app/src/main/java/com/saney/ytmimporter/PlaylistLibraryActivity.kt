@@ -163,6 +163,8 @@ class PlaylistLibraryActivity : Activity() {
         val connected: Boolean
     )
     private var catalogueData: CatalogueData? = null
+    /** Batch 9: «Прибрати…» confirmation shown on top of «Група №…». */
+    private var overDialog: Dialog? = null
     /** Search redraws wait for a pause in typing instead of every letter. */
     private val searchHandler = Handler(Looper.getMainLooper())
     private val searchRedraw = Runnable {
@@ -255,6 +257,8 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     override fun onDestroy() {
+        overDialog?.dismiss()
+        overDialog = null
         searchHandler.removeCallbacks(searchRedraw)
         modalController.onDestroy()
         worker.shutdownNow()
@@ -846,10 +850,18 @@ class PlaylistLibraryActivity : Activity() {
         )
     }
 
-    private fun showDuplicateDifference(identity: String) {
+    private fun showDuplicateDifference(
+        identity: String,
+        against: String? = null,
+        back: String = BACK_GROUP
+    ) {
         modalController.show(
             modalId = MODAL_DUP_DIFF,
-            args = Bundle().apply { putString("item", identity) },
+            args = Bundle().apply {
+                putString("item", identity)
+                against?.let { putString("against", it) }
+                putString("back", back)
+            },
             renderer = ::renderConfirmation
         )
     }
@@ -946,6 +958,23 @@ class PlaylistLibraryActivity : Activity() {
             card.addView(text(SongOverlapPolicy.verdict(match), 12.5f, true, colour).apply {
                 setPadding(0, dp(4), 0, 0)
             })
+            // Batch 9: how the songs matched and whether one is inside the other.
+            card.addView(text(listOfNotNull(SongOverlapPolicy.matchedByLabel(match),
+                SongOverlapPolicy.insideLabel(match)).joinToString(" • "),
+                12f, false, palette.muted).apply { setPadding(0, dp(2), 0, 0) })
+            val (small, big) = if (match.first.size <= match.second.size)
+                match.first to match.second else match.second to match.first
+            if (match.level != SongOverlapPolicy.Level.SAME_VIDEOS) {
+                card.addView(text("чим відрізняється ›", 13f, true, palette.accent).apply {
+                    setPadding(0, dp(6), dp(12), dp(2))
+                    isClickable = true
+                    isFocusable = true
+                    contentDescription = "Чим відрізняється"
+                    setOnClickListener {
+                        closeThen { showDuplicateDifference(small.identity, big.identity, BACK_SONGS) }
+                    }
+                })
+            }
             content.addView(card, LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { topMargin = dp(8) })
@@ -971,18 +1000,28 @@ class PlaylistLibraryActivity : Activity() {
      * other playlists of the same group and the same number of songs share.
      * Read-only. Returns (subtitle, content) or null when the group is gone.
      */
-    private fun createDifferenceContent(identity: String): Pair<String, View>? {
-        val hint = dupHints[identity] ?: return null
+    private fun createDifferenceContent(
+        identity: String,
+        against: String? = null
+    ): Pair<String, View>? {
         val member = dupMembers[identity] ?: return null
         val songs = member.songs ?: return null
-        val members = PlaylistLibraryDuplicateGroupPolicy.members(
-            hint.groupNumber, dupCandidates, dupHints)
-        val target = members.firstOrNull { it.identity == identity } ?: return null
-        val band = members.filter { it.trackCount == target.trackCount }
-        val referenceId = PlaylistLibraryDuplicateGroupPolicy.referenceFor(identity, band)
+        val hint = dupHints[identity]
+        // Batch 9: also outside a group (pairs from «Дублікати за піснями»).
+        val members = hint?.let {
+            PlaylistLibraryDuplicateGroupPolicy.members(it.groupNumber, dupCandidates, dupHints)
+        }.orEmpty()
+        val target = members.firstOrNull { it.identity == identity }
+        if (hint != null && target == null && against == null) return null
+        val count = target?.trackCount ?: songs.size
+        val referenceId = against ?: target?.let { t ->
+            PlaylistLibraryDuplicateGroupPolicy.referenceFor(identity,
+                members.filter { it.trackCount == t.trackCount })
+        }
         val reference = referenceId?.let { dupMembers[it] }
         // Remembered YouTube songs have no titles: borrow them from any member.
-        val titles = members.flatMap { dupMembers[it.identity]?.songs.orEmpty() }
+        val titles = (members.map { it.identity } + listOfNotNull(referenceId, identity))
+            .flatMap { dupMembers[it]?.songs.orEmpty() }
             .filter { it.title.isNotBlank() && it.videoId != null }
             .associate { it.videoId!! to it.title }
         fun named(list: List<PlaylistLibraryDuplicateGroupPolicy.Song>) = list.map { song ->
@@ -1000,14 +1039,19 @@ class PlaylistLibraryActivity : Activity() {
             })
         }
         line(member.title + " • " + member.source, 14f, true, palette.text)
-        if (reference != null) {
+        if (reference != null && against != null) {
+            val refCount = reference.songs?.size ?: 0
+            line("Порівняно з: ${reference.title} • ${reference.source} ($refCount " +
+                PlaylistLibraryDuplicateGroupPolicy.songsWord(refCount) + ")",
+                12.5f, false, palette.muted)
+        } else if (reference != null) {
             line("Порівняно з: ${reference.title} • ${reference.source}" +
                 " (такий самий склад у більшості плейлістів групи з " +
-                "${target.trackCount} ${PlaylistLibraryDuplicateGroupPolicy.songsWord(target.trackCount)})",
+                "$count ${PlaylistLibraryDuplicateGroupPolicy.songsWord(count)})",
                 12.5f, false, palette.muted)
         } else {
             line("Немає з чим порівняти: у групі нема іншого плейліста з " +
-                "${target.trackCount} ${PlaylistLibraryDuplicateGroupPolicy.songsWord(target.trackCount)}, " +
+                "$count ${PlaylistLibraryDuplicateGroupPolicy.songsWord(count)}, " +
                 "пісні якого відомі.", 12.5f, false, palette.muted)
         }
         fun section(title: String, why: String, list: List<PlaylistLibraryDuplicateGroupPolicy.Song>,
@@ -1030,8 +1074,8 @@ class PlaylistLibraryActivity : Activity() {
                 "Усі пісні мають відео YouTube.", 14f, true, palette.semantic.success, top = 10)
         }
         line("Нічого не змінюється й не видаляється.", 12f, false, palette.muted, top = 10)
-        return "група №${hint.groupNumber} • ${target.trackCount} " +
-            PlaylistLibraryDuplicateGroupPolicy.songsWord(target.trackCount) to container
+        return (hint?.let { "група №${it.groupNumber} • " }.orEmpty()) + "$count " +
+            PlaylistLibraryDuplicateGroupPolicy.songsWord(count) to container
     }
 
     /** Detail button «Схожі: група №…» when this playlist has look-alikes. */
@@ -1062,6 +1106,13 @@ class PlaylistLibraryActivity : Activity() {
         val oldest = PlaylistLibraryDuplicateGroupPolicy.oldest(
             members.associate { it.identity to (dupMembers[it.identity]?.date ?: 0L) })
         val groupRemoteIds = members.mapNotNull { remotePlaylistId(it.identity) }.toSet()
+        // Batch 9 (owner 2026-10-19 01:29: «320 чи 866?»): the biggest member
+        // whose songs are known is the yardstick for members of another size.
+        val biggest = members.takeIf { list -> list.map { it.trackCount }.distinct().size > 1 }
+            ?.filter { dupMembers[it.identity]?.songs != null }
+            ?.maxWithOrNull(compareBy<PlaylistLibraryDuplicatePolicy.Candidate> { it.trackCount }
+                .thenByDescending { dupMembers[it.identity]?.date?.takeIf { d -> d > 0L } ?: Long.MAX_VALUE })
+        val biggestMember = biggest?.let { dupMembers[it.identity] }
         val container = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         container.addView(text(
             "Тут усі плейлісти цієї групи — і ті, що сховані фільтром. " +
@@ -1117,7 +1168,8 @@ class PlaylistLibraryActivity : Activity() {
                             "не перевірено: не в усіх пісень є відео YouTube"
                         videoIds.size != (candidate?.trackCount ?: -1) ->
                             "не перевірено: список пісень неповний"
-                        else -> "не перевірено: немає з чим порівняти"
+                        else -> "пісні відомі; інших плейлістів на ${candidate?.trackCount ?: 0} " +
+                            "у групі нема"
                     }
                 }
                 val hidden = visibleCardIdentities?.let { row.identity !in it } ?: false
@@ -1177,8 +1229,37 @@ class PlaylistLibraryActivity : Activity() {
                         if (row.identity == oldest) palette.accent else palette.muted
                     ).apply { setPadding(0, dp(1), 0, 0) })
                 }
+                // Batch 9: members of another size against the biggest one.
+                var partlyInBiggest = false
+                val songsHere = member?.songs
+                val bigSongs = biggestMember?.songs
+                if (biggest != null && biggestMember != null && songsHere != null &&
+                    bigSongs != null && row.identity != biggest.identity &&
+                    candidate?.trackCount != biggest.trackCount
+                ) {
+                    val (common, size) = SongOverlapPolicy.containment(songsHere, bigSongs)
+                    val bigName = "«${biggestMember.title}» (${biggest.trackCount})"
+                    if (size > 0 && common >= size) {
+                        labels.addView(text("усі $size є в $bigName", 12.5f, true,
+                            palette.semantic.success).apply { setPadding(0, dp(3), 0, 0) })
+                    } else if (size > 0) {
+                        partlyInBiggest = true
+                        labels.addView(text("спільних з $bigName: $common з $size", 12.5f, true,
+                            palette.semantic.warning).apply { setPadding(0, dp(3), 0, 0) })
+                        labels.addView(text("чим відрізняється від найбільшого ›", 13f, true,
+                            palette.accent).apply {
+                            setPadding(0, dp(6), dp(12), dp(4))
+                            isClickable = true
+                            isFocusable = true
+                            contentDescription = "Чим відрізняється від " + biggestMember.title
+                            setOnClickListener {
+                                showDuplicateDifference(row.identity, biggest.identity)
+                            }
+                        })
+                    }
+                }
                 val canDiff = row.mark != PlaylistLibraryDuplicateGroupPolicy.Mark.SAME &&
-                    member?.songs != null
+                    member?.songs != null && !partlyInBiggest
                 if (canDiff) {
                     labels.addView(text("чим відрізняється ›", 13f, true, palette.accent).apply {
                         setPadding(0, dp(6), dp(12), dp(4))
@@ -1205,8 +1286,8 @@ class PlaylistLibraryActivity : Activity() {
                         isFocusable = true
                         contentDescription = "Прибрати " + member?.title.orEmpty()
                         setOnClickListener {
-                            close()
-                            showConfirmation(removeType, removeId, warn, back)
+                            // Batch 9: on top of the group, which stays open.
+                            showConfirmationOverGroup(removeType, removeId, warn, back)
                         }
                     })
                 }
@@ -1226,7 +1307,9 @@ class PlaylistLibraryActivity : Activity() {
             "Нічого не видаляється й не об’єднується само. Торкніться рядка, " +
                 "щоб відкрити плейліст.",
             12f, false, palette.muted).apply { setPadding(dp(4), dp(8), dp(4), 0) })
-        return PlaylistLibraryDuplicateGroupPolicy.summary(overview) to container
+        val biggestNote = if (biggest != null && biggestMember != null)
+            " • найбільший: ${biggestMember.title} (${biggest.trackCount})" else ""
+        return PlaylistLibraryDuplicateGroupPolicy.summary(overview) + biggestNote to container
     }
 
     private fun remotePlaylistId(identity: String): String? =
@@ -1925,10 +2008,65 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     /**
+     * Batch 9 (owner recording 2026-10-19 01:28: «поведінка вікон незрозуміла»):
+     * the group window used to close, the confirmation opened, and «Скасувати»
+     * reopened the group from the top. Now the confirmation opens on top of the
+     * group, which stays where it was. Its state lives in the group's saved
+     * arguments, so a rotation restores both.
+     */
+    private fun showConfirmationOverGroup(
+        type: String, id: String, warning: String?, back: String?
+    ) {
+        val group = modalController.visibleArgs(MODAL_DUP_GROUP)
+        if (group == null) {
+            showConfirmation(type, id, warning, back)
+            return
+        }
+        group.putString(OVER_TYPE, type)
+        group.putString(OVER_ITEM, id)
+        warning?.takeIf { it.isNotBlank() }?.let { group.putString(OVER_WARN, it) }
+            ?: group.remove(OVER_WARN)
+        back?.let { group.putString(OVER_BACK, it) } ?: group.remove(OVER_BACK)
+        modalController.updateArgs(MODAL_DUP_GROUP, group)
+        openOverDialog(group)
+    }
+
+    private fun openOverDialog(groupArgs: Bundle) {
+        val type = groupArgs.getString(OVER_TYPE) ?: return
+        overDialog?.dismiss()
+        overDialog = null
+        val args = Bundle().apply {
+            putString("item", groupArgs.getString(OVER_ITEM))
+            groupArgs.getString(OVER_WARN)?.let { putString("warn", it) }
+            groupArgs.getString(OVER_BACK)?.let { putString("group_return", it) }
+            putBoolean("over_group", true)
+        }
+        val dialog = renderConfirmation(type, args)
+        if (dialog == null) {
+            clearOver()
+            return
+        }
+        // Back / touch outside on the confirmation only: the group stays.
+        dialog.setOnCancelListener { clearOver() }
+        overDialog = dialog
+    }
+
+    private fun clearOver() {
+        overDialog = null
+        val group = modalController.visibleArgs(MODAL_DUP_GROUP) ?: return
+        listOf(OVER_TYPE, OVER_ITEM, OVER_WARN, OVER_BACK).forEach(group::remove)
+        modalController.updateArgs(MODAL_DUP_GROUP, group)
+    }
+
+    /**
      * «Скасувати» in a removal started from «Група №…» goes back to that group
      * (owner 2026-10-17 21:27: it dropped him into the list at another place).
      */
     private fun cancelBackToGroup(args: Bundle) {
+        if (args.getBoolean("over_group")) {
+            clearOver()
+            return
+        }
         modalController.clearState()
         val back = args.getString("group_return") ?: return
         window.decorView.post {
@@ -1960,6 +2098,8 @@ class PlaylistLibraryActivity : Activity() {
         if (dupHints[identity] != null) {
             window.decorView.post { if (!isDestroyed) showDuplicateGroup(identity) }
         } else {
+            // Batch 9: the old group window may still be open under the confirmation.
+            modalController.dismissVisible()
             toast("Групи більше нема: лишився один плейліст")
         }
     }
@@ -2081,21 +2221,33 @@ class PlaylistLibraryActivity : Activity() {
                     modalController.clearState()
                 })
             )
+            // Batch 9: a confirmation that was open on top comes back on top.
+            if (args.containsKey(OVER_TYPE)) {
+                window.decorView.post { if (!isDestroyed) openOverDialog(args) }
+            }
             return dialog
         }
         if (type == MODAL_DUP_DIFF) {
             val identity = args.getString("item") ?: return null
-            if (dupHints[identity] == null) refreshDuplicates()
-            val built = createDifferenceContent(identity) ?: return null
+            val against = args.getString("against")
+            val back = args.getString("back") ?: BACK_GROUP
+            if (dupMembers[identity] == null) refreshDuplicates()
+            val built = createDifferenceContent(identity, against) ?: return null
             return UiChrome.showContentDialog(
                 activity = this,
                 title = "Чим відрізняється",
                 subtitle = built.first,
                 message = "",
                 content = built.second,
-                actions = listOf(UiChrome.DialogAction("Назад до групи") {
+                actions = listOf(UiChrome.DialogAction(
+                    if (back == BACK_SONGS) "Назад до дублікатів" else "Назад до групи"
+                ) {
                     modalController.clearState()
-                    window.decorView.post { if (!isDestroyed) showDuplicateGroup(identity) }
+                    window.decorView.post {
+                        if (isDestroyed) return@post
+                        if (back == BACK_SONGS) showSongDuplicates()
+                        else if (dupHints[identity] != null) showDuplicateGroup(identity)
+                    }
                 })
             )
         }
@@ -2372,6 +2524,11 @@ class PlaylistLibraryActivity : Activity() {
                 "«Група №8»: усі 4 плейлісти поруч, з позначками ✓ однакові пісні, " +
                 "≠ пісні інші, ? не перевірено, з датою і позначкою «найстаріший».",
             palette.accent)
+        // Batch 9 (owner 2026-10-19 01:29: «320 чи 866?»).
+        entry(R.drawable.ic_ytm_view_grid, "усі 320 є в «mylist» (866)",
+            "У вікні групи біля плейліста з іншою кількістю пісень: чи всі його " +
+                "пісні є в найбільшому плейлісті групи. Якщо не всі — «спільних N з M» " +
+                "і «чим відрізняється від найбільшого ›».", palette.accent)
         entry(R.drawable.ic_ytm_view_grid, "чим відрізняється ›",
             "У вікні групи біля ≠ і ?: показує, які саме пісні інші, яких " +
                 "бракує і для яких нема відео YouTube. Лише показує.")
@@ -2387,6 +2544,8 @@ class PlaylistLibraryActivity : Activity() {
         entry(R.drawable.ic_ytm_compare, "Знайти дублікати за піснями",
             "Кнопка зліва вгорі. Порівнює пісні ВСЕРЕДИНІ плейлістів і показує копії, " +
                 "яких не видно в групах №N: з іншою назвою або з частиною інших пісень. " +
+                "Під кожною парою — «за відео» або «за назвами» (чим збіглись) і «усі N є в M», " +
+                "якщо один плейліст повністю всередині іншого. " +
                 "«однакові пісні — ті самі відео» — точно ті самі; «за назвами» — назви " +
                 "пісень збігаються, але це ще не доказ, що записи ті самі; «спільних N» — " +
                 "частина пісень спільна. YouTube-плейлісти, пісні яких ще не читались, " +
@@ -2946,6 +3105,12 @@ class PlaylistLibraryActivity : Activity() {
         private const val MODAL_DUP_GROUP = "playlist_library_duplicate_group"
         private const val MODAL_DUP_DIFF = "playlist_library_duplicate_difference"
         private const val MODAL_SONG_DUPS = "playlist_library_song_duplicates"
+        private const val BACK_GROUP = "group"
+        private const val BACK_SONGS = "songs"
+        private const val OVER_TYPE = "over_type"
+        private const val OVER_ITEM = "over_item"
+        private const val OVER_WARN = "over_warn"
+        private const val OVER_BACK = "over_back"
         private val VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
 
         // Temporary, account-scoped metadata cache survives Android rotation,
