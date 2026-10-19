@@ -104,6 +104,26 @@ jobs:
           emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
           script: gradle :app:connectedDebugAndroidTest --stacktrace
 
+      # 2026-10-19 (batch 10): Claude's session cannot open Actions logs or
+      # artifacts (blob storage blocked), so failing tests are also written as
+      # annotations, which the GitHub API returns.
+      - name: Report failing instrumentation tests
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          import glob, xml.etree.ElementTree as ET
+          shown = 0
+          for path in glob.glob('app/build/outputs/androidTest-results/connected/**/*.xml', recursive=True):
+              for case in ET.parse(path).getroot().iter('testcase'):
+                  for bad in list(case.findall('failure')) + list(case.findall('error')):
+                      text = (bad.text or bad.get('message') or '').strip()
+                      text = text[:900].replace('%', '%25').replace('\r', '').replace('\n', '%0A')
+                      print(f"::error title={case.get('classname','').split('.')[-1]}.{case.get('name')}::{text}")
+                      shown += 1
+          if shown == 0:
+              print('::error title=no test report::no failing testcase found in androidTest XML')
+          PY
+
       - name: Keep instrumentation evidence
         if: always()
         uses: actions/upload-artifact@v4

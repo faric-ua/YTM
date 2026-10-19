@@ -6,9 +6,9 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 207aa607b11cc911  .github/workflows/bootstrap.yml
 957b553c7b6dec80  .github/workflows/build-apk.yml
 06a09c3088029d02  .github/workflows/publish-release.yml
-bb9e8bdcdeb0decb  .github/workflows/validate.yml
+98c346565cc5ba99  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-d62bf5091581751a  ACTIVE_PLAN.md
+b4265196ad15c649  ACTIVE_PLAN.md
 681184265e82aa01  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
@@ -110,7 +110,7 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-edbe4d0d61e7a140  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
+39b2032a6770c1d4  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt

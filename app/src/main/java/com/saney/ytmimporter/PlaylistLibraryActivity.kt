@@ -143,6 +143,12 @@ class PlaylistLibraryActivity : Activity() {
     private var pendingAnchor: LibraryRestorePolicy.Anchor? = null
     /** Where the anchor last put the list (to notice the owner scrolling). */
     private var lastAnchorY: Int? = null
+    /**
+     * Number of the latest redraw. Only its «after layout» step scrolls: on a
+     * restore onCreate and onResume redraw back to back, and the older step
+     * (run later in the same frame) used to put the list back to the top.
+     */
+    private var renderSerial = 0
     /** Cards container of the last catalogue render. */
     private var catalogueCards: LinearLayout? = null
     /** Batch 10: a restored window that waits for the YouTube list. */
@@ -671,7 +677,9 @@ class PlaylistLibraryActivity : Activity() {
             selectedRemote != null -> renderRemoteDetails(selectedRemote!!)
             else -> renderCatalogue(reuse)
         }
+        val serial = ++renderSerial
         afterLayout {
+            if (serial != renderSerial) return@afterLayout
             val wanted = pendingAnchor?.takeIf { catalogueCards != null }
             val y = wanted?.let { LibraryRestorePolicy.scrollFor(it, cardBoxes()) } ?: oldY
             scroller.scrollTo(0, y)
