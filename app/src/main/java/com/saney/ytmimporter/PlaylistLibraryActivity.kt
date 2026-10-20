@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.text.TextUtils
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.view.View
 import android.view.ViewGroup
@@ -120,6 +122,10 @@ class PlaylistLibraryActivity : Activity() {
         { state -> onRemoteDeleteState(state) }
 
     private lateinit var detailActions: LinearLayout
+    /** Batch 13: the top row «‹ Бібліотека плейлістів» (hidden while typing a search). */
+    private lateinit var header: LinearLayout
+    /** Batch 13: the keyboard is open for the search — header and descriptions hidden. */
+    private var searchTyping = false
     private lateinit var detailCurrentButton: ImageButton
     private lateinit var root: LinearLayout
     private lateinit var body: LinearLayout
@@ -352,7 +358,7 @@ class PlaylistLibraryActivity : Activity() {
             isFocusable = true
             isFocusableInTouchMode = true
         }
-        val header = LinearLayout(this).apply {
+        header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(if (landscape) 8 else 12), dp(4),
@@ -457,6 +463,14 @@ class PlaylistLibraryActivity : Activity() {
             setText(filterText)
             setPadding(dp(14), dp(7), dp(10), dp(7))
             background = surface(palette.surface, 12)
+            // Batch 13: «Готово» on the keyboard closes it — the header comes back.
+            imeOptions = EditorInfo.IME_ACTION_DONE
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    hideKeyboard()
+                    true
+                } else false
+            }
         }
         searchBox.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -503,7 +517,44 @@ class PlaylistLibraryActivity : Activity() {
         ))
         setContentView(root)
         UiChrome.applyScreenInsets(this, root)
+        // Batch 13: follow the keyboard to hide / bring back the header.
+        root.viewTreeObserver.addOnGlobalLayoutListener {
+            val typing = LibrarySearchPolicy.searchTyping(keyboardOpen(), searchBox.hasFocus(),
+                selectedLocal == null && selectedRemote == null)
+            if (typing != searchTyping) {
+                searchTyping = typing
+                applySearchTyping()
+            }
+        }
         updateTopControls()
+    }
+
+    private fun keyboardOpen(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            root.rootWindowInsets?.let {
+                return it.isVisible(android.view.WindowInsets.Type.ime())
+            }
+        }
+        val frame = android.graphics.Rect()
+        root.getWindowVisibleDisplayFrame(frame)
+        return LibrarySearchPolicy.keyboardOpenByFrame(root.rootView.height, frame.bottom)
+    }
+
+    /**
+     * Batch 13 (faric 2026-10-20 22:58): while typing a search only the search
+     * field, the counters row (⧉ · 📱 · ▶ · ⇅) and the tiles are shown.
+     */
+    private fun applySearchTyping() {
+        if (!::header.isInitialized) return
+        val catalogue = selectedLocal == null && selectedRemote == null
+        val typing = searchTyping && catalogue
+        header.visibility = if (typing) View.GONE else View.VISIBLE
+        if (!landscape) {
+            tabsRow.visibility = if (typing || !catalogue) View.GONE else View.VISIBLE
+        }
+        for (i in 1 until catalogueToolbar.childCount) {
+            catalogueToolbar.getChildAt(i).visibility = if (typing) View.GONE else View.VISIBLE
+        }
     }
 
     private fun selectTab(online: Boolean) {
@@ -664,6 +715,7 @@ class PlaylistLibraryActivity : Activity() {
         // retain the existing narrow status caption.
         statusLabel.visibility = if (catalogue) View.GONE else View.VISIBLE
         catalogueToolbar.visibility = if (catalogue) View.VISIBLE else View.GONE
+        applySearchTyping()
     }
 
     /**
@@ -702,6 +754,8 @@ class PlaylistLibraryActivity : Activity() {
             selectedRemote != null -> renderRemoteDetails(selectedRemote!!)
             else -> renderCatalogue(reuse)
         }
+        // Batch 13: the toolbar was built again — keep it compact while typing.
+        applySearchTyping()
         val serial = ++renderSerial
         afterLayout {
             if (serial != renderSerial) return@afterLayout
@@ -768,6 +822,38 @@ class PlaylistLibraryActivity : Activity() {
         }
         if (cards.parent != null) walk(cards)
         return boxes
+    }
+
+    /**
+     * Batch 13 (faric 2026-10-20 23:00, landscape screenshot: the group window
+     * showed one line of one row — the title, two lines of subtitle and a tall
+     * «Закрити» took the rest): long Library windows in landscape use the wide
+     * layout — title and the single button in one row, the subtitle scrolls
+     * with the content, so the rows get the whole height. Portrait — as before.
+     */
+    private fun showLibraryWindow(
+        title: String,
+        subtitle: String,
+        message: String,
+        content: View,
+        actions: List<UiChrome.DialogAction>
+    ): Dialog {
+        val action = actions.single()
+        if (!landscape) {
+            return UiChrome.showContentDialog(
+                activity = this, title = title, subtitle = subtitle,
+                message = message, content = content, actions = actions)
+        }
+        val wrapped = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        listOf(subtitle, message).filter { it.isNotBlank() }.forEach { line ->
+            wrapped.addView(text(line, 13f, false, palette.muted).apply {
+                setPadding(dp(4), 0, dp(4), dp(6))
+            })
+        }
+        wrapped.addView(content, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        return UiChrome.showWideContentDialog(
+            activity = this, title = title, content = wrapped, doneAction = action)
     }
 
     /** Batch 12: rows of an open window, tagged with [ROW_TAG]. */
@@ -1227,8 +1313,7 @@ class PlaylistLibraryActivity : Activity() {
             else "Знайдено: ${result.matches.size}" +
                 (if (editionCount > 0) " • з них інші видання: $editionCount" else "") +
                 " • порівняно: ${result.compared}"
-        dialog = UiChrome.showContentDialog(
-            activity = this,
+        dialog = showLibraryWindow(
             title = "Дублікати за піснями",
             subtitle = subtitle,
             message = "",
@@ -2530,8 +2615,7 @@ class PlaylistLibraryActivity : Activity() {
                 modalController.clearState()
                 dialog?.dismiss()
             } ?: return null
-            dialog = UiChrome.showContentDialog(
-                activity = this,
+            dialog = showLibraryWindow(
                 title = "Група №$number — схожі плейлісти",
                 subtitle = built.first,
                 message = "",
@@ -2554,8 +2638,7 @@ class PlaylistLibraryActivity : Activity() {
             if (dupMembers[identity] == null) refreshDuplicates()
             val built = createDifferenceContent(identity, against) ?: return null
             restoreWindowPlace(MODAL_DUP_DIFF, built.second, args)
-            return UiChrome.showContentDialog(
-                activity = this,
+            return showLibraryWindow(
                 title = "Чим відрізняється",
                 subtitle = built.first,
                 message = "",
@@ -2573,8 +2656,7 @@ class PlaylistLibraryActivity : Activity() {
             )
         }
         if (type == MODAL_HELP) {
-            return UiChrome.showContentDialog(
-                activity = this,
+            return showLibraryWindow(
                 title = "Бібліотека плейлістів • довідка",
                 subtitle = "Піктограми, джерела, сортування та обкладинки",
                 message = "Натискайте на піктограми для перегляду, пошуку й навігації. " +
@@ -2752,7 +2834,9 @@ class PlaylistLibraryActivity : Activity() {
         entry(R.drawable.ic_ytm_search, "Пошук",
             "Відкриває поле для пошуку за назвою та описом у вибраному каталозі. " +
                 "Шукає лише в уже завантаженому списку — під час набору до YouTube не звертається. " +
-                "Список оновлюється, коли ви на мить перестали набирати.")
+                "Список оновлюється, коли ви на мить перестали набирати. " +
+                "Поки відкрита клавіатура, заголовок, ряд кнопок і рядки опису ховаються — " +
+                "лишаються поле пошуку, лічильники й плитки; «Готово» на клавіатурі повертає все назад.")
         entry(R.drawable.ic_ytm_library_current, "Поточний плейліст",
             "Переходить до поточного локального плейліста, не перемикаючи інші.")
         entry(R.drawable.ic_ytm_view_list, "Список / плитки",

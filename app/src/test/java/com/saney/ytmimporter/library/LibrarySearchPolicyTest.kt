@@ -54,4 +54,16 @@ class LibrarySearchPolicyTest {
         // ≈ 140 YouTube covers (320×180×4 bytes) on a 256 MB heap.
         assertTrue(LibrarySearchPolicy.coverCacheBytes(256 * mb) / (320 * 180 * 4) >= 120)
     }
+
+    /** Batch 13: the header hides only while typing a search in the catalogue. */
+    @Test fun headerHidesOnlyWhileTypingASearch() {
+        assertTrue(LibrarySearchPolicy.searchTyping(true, true, true))
+        assertFalse(LibrarySearchPolicy.searchTyping(false, true, true))
+        assertFalse(LibrarySearchPolicy.searchTyping(true, false, true))
+        assertFalse(LibrarySearchPolicy.searchTyping(true, true, catalogue = false))
+        // 2000 px window: a 130 px navigation bar is not a keyboard, 900 px is.
+        assertFalse(LibrarySearchPolicy.keyboardOpenByFrame(2000, 1870))
+        assertTrue(LibrarySearchPolicy.keyboardOpenByFrame(2000, 1100))
+        assertFalse(LibrarySearchPolicy.keyboardOpenByFrame(0, 0))
+    }
 }

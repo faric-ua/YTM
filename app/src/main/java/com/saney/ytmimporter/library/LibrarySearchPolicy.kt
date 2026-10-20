@@ -44,4 +44,21 @@ object LibrarySearchPolicy {
      */
     fun coverCacheBytes(maxHeapBytes: Long): Int =
         (maxHeapBytes / 8).coerceIn(MIN_COVER_CACHE.toLong(), MAX_COVER_CACHE.toLong()).toInt()
+
+    /**
+     * Batch 13 (faric 2026-10-20 22:58: «клавіатура закриває пів екрана, я
+     * нічого не бачу»): while the keyboard is open for the search field in the
+     * catalogue, the header, the button row and the description lines hide —
+     * only the search field, the counters row and the tiles stay.
+     */
+    fun searchTyping(keyboardOpen: Boolean, searchFocused: Boolean, catalogue: Boolean): Boolean =
+        keyboardOpen && searchFocused && catalogue
+
+    /**
+     * Keyboard open by the visible window frame (Android < 11): the screen
+     * bottom is covered by more than 15 % of the window height — more than a
+     * navigation bar, less than any keyboard.
+     */
+    fun keyboardOpenByFrame(windowHeight: Int, visibleBottom: Int): Boolean =
+        windowHeight > 0 && windowHeight - visibleBottom > windowHeight * 15 / 100
 }
