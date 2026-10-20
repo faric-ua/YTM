@@ -157,6 +157,15 @@ class PlaylistLibraryActivity : Activity() {
     private var renderSerial = 0
     /** Cards container of the last catalogue render. */
     private var catalogueCards: LinearLayout? = null
+    /**
+     * Batch 12 (faric screenshots 2026-10-20 16:33): the scrolled content of
+     * the open «Група №…» / «Дублікати» / «Чим відрізняється» window, so its
+     * place survives Android closing the app and a redraw after YouTube.
+     */
+    private var windowContent: View? = null
+    private var windowContentId: String? = null
+    /** Batch 12: the place on a playlist page to come back to after a restore. */
+    private var pendingDetailY: Int? = null
     /** Batch 10: a restored window that waits for the YouTube list. */
     private var waitingModal: Pair<String, Bundle>? = null
     /** Last duplicate analysis, shared by cards, details and the group window. */
@@ -240,6 +249,7 @@ class PlaylistLibraryActivity : Activity() {
             }
         }
         if (selectedLocal == null && selectedRemote == null) pendingAnchor = catalogueAnchor
+        else pendingDetailY = savedInstanceState?.getInt("detail_scroll")?.takeIf { it > 0 }
         deletingRemoteId = savedInstanceState?.getString("deleting_remote")
         ensureRemoteAccountIsolation()
         modalController = RestorableModalController(this, STATE_MODAL)
@@ -295,6 +305,11 @@ class PlaylistLibraryActivity : Activity() {
             outState.putString("catalogue_anchor", it.identity)
             outState.putInt("catalogue_anchor_off", it.offset)
         }
+        // Batch 12: the place on a playlist page and inside an open window.
+        if (selectedLocal != null || selectedRemote != null) {
+            outState.putInt("detail_scroll", pendingDetailY ?: scroller.scrollY)
+        }
+        rememberWindowPlace()
         waitingModal?.let { (id, args) ->
             outState.putString("waiting_modal", id)
             outState.putBundle("waiting_modal_args", Bundle(args))
@@ -672,6 +687,7 @@ class PlaylistLibraryActivity : Activity() {
         if (restoreY != null) {
             pendingAnchor = anchor
             lastAnchorY = null
+            pendingDetailY = null
         } else if (pendingAnchor != null && LibraryRestorePolicy.userMoved(
                 scroller.scrollY, lastAnchorY, dp(24))
         ) {
@@ -689,6 +705,19 @@ class PlaylistLibraryActivity : Activity() {
         val serial = ++renderSerial
         afterLayout {
             if (serial != renderSerial) return@afterLayout
+            // Batch 12: a playlist page comes back to its place once its songs
+            // are there (YouTube songs arrive a moment after the restore).
+            pendingDetailY?.let { want ->
+                if (selectedLocal == null && selectedRemote == null) {
+                    pendingDetailY = null
+                } else {
+                    scroller.scrollTo(0, want)
+                    if (LibraryRestorePolicy.detailReached(scroller.scrollY, want, dp(24))) {
+                        pendingDetailY = null
+                    }
+                    return@afterLayout
+                }
+            }
             val wanted = pendingAnchor?.takeIf { catalogueCards != null }
             val y = wanted?.let { LibraryRestorePolicy.scrollFor(it, cardBoxes()) } ?: oldY
             scroller.scrollTo(0, y)
@@ -739,6 +768,70 @@ class PlaylistLibraryActivity : Activity() {
         }
         if (cards.parent != null) walk(cards)
         return boxes
+    }
+
+    /** Batch 12: rows of an open window, tagged with [ROW_TAG]. */
+    private fun windowScroller(): ScrollView? {
+        var view: View? = windowContent
+        while (view != null && view !is ScrollView) view = view.parent as? View
+        return view as? ScrollView
+    }
+
+    private fun windowRows(scroll: ScrollView): List<LibraryRestorePolicy.CardBox> {
+        val inner = scroll.getChildAt(0) as? ViewGroup ?: return emptyList()
+        val boxes = mutableListOf<LibraryRestorePolicy.CardBox>()
+        val rect = android.graphics.Rect()
+        fun walk(view: View) {
+            val tag = view.tag as? String
+            if (tag != null && tag.startsWith(ROW_TAG)) {
+                rect.set(0, 0, view.width, view.height)
+                inner.offsetDescendantRectToMyCoords(view, rect)
+                boxes += LibraryRestorePolicy.CardBox(tag.removePrefix(ROW_TAG), rect.top, rect.bottom)
+                return
+            }
+            if (view is ViewGroup) for (i in 0 until view.childCount) walk(view.getChildAt(i))
+        }
+        walk(inner)
+        return boxes
+    }
+
+    /** Writes «which row is at the top» of the open window into its arguments. */
+    private fun rememberWindowPlace() {
+        val id = windowContentId ?: return
+        val args = modalController.visibleArgs(id) ?: return
+        val scroll = windowScroller() ?: return
+        val anchor = LibraryRestorePolicy.anchorAt(windowRows(scroll), scroll.scrollY)
+        args.remove(PLACE_ROW); args.remove(PLACE_OFF); args.remove(PLACE_Y)
+        if (anchor != null) {
+            args.putString(PLACE_ROW, anchor.identity)
+            args.putInt(PLACE_OFF, anchor.offset)
+        } else if (scroll.scrollY > 0) {
+            args.putInt(PLACE_Y, scroll.scrollY)
+        }
+        modalController.updateArgs(id, args)
+    }
+
+    /** Puts a freshly built window back where it was (no saved place — top). */
+    private fun restoreWindowPlace(modalId: String, content: View, args: Bundle) {
+        windowContent = content
+        windowContentId = modalId
+        val row = args.getString(PLACE_ROW)
+        val savedY = args.getInt(PLACE_Y, 0)
+        if (row == null && savedY <= 0) return
+        content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                if (content.viewTreeObserver.isAlive) {
+                    content.viewTreeObserver.removeOnPreDrawListener(this)
+                }
+                val scroll = windowScroller() ?: return true
+                val y = row?.let {
+                    LibraryRestorePolicy.scrollFor(
+                        LibraryRestorePolicy.Anchor(it, args.getInt(PLACE_OFF)), windowRows(scroll))
+                } ?: savedY
+                scroll.scrollTo(0, y)
+                return true
+            }
+        })
     }
 
     /** The catalogue place now, as an anchor (null at the very top / no cards). */
@@ -1013,7 +1106,7 @@ class PlaylistLibraryActivity : Activity() {
      * the songs different. Read-only; reading unknown YouTube songs needs the
      * same explicit button as in the group window.
      */
-    private fun renderSongDuplicates(): Dialog? {
+    private fun renderSongDuplicates(args: Bundle = Bundle()): Dialog? {
         if (dupMembers.isEmpty()) refreshDuplicates()
         val entries = dupMembers.map { (identity, member) ->
             SongOverlapPolicy.Entry(identity, member.title, member.songs,
@@ -1087,6 +1180,7 @@ class PlaylistLibraryActivity : Activity() {
                 orientation = LinearLayout.VERTICAL
                 setPadding(dp(12), dp(8), dp(12), dp(8))
                 background = surface(palette.surfaceAlt, 12)
+                tag = ROW_TAG + match.first.identity + "|" + match.second.identity
             }
             card.addView(sideView(match.first))
             card.addView(text("↕", 13f, true, palette.muted).apply {
@@ -1143,6 +1237,7 @@ class PlaylistLibraryActivity : Activity() {
                 modalController.clearState()
             })
         )
+        restoreWindowPlace(MODAL_SONG_DUPS, content, args)
         return dialog
     }
 
@@ -1334,6 +1429,8 @@ class PlaylistLibraryActivity : Activity() {
                 val rowView = LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER_VERTICAL
+                    // Batch 12: found again to restore the place in the window.
+                    tag = ROW_TAG + row.identity
                     minimumHeight = dp(52)
                     setPadding(dp(10), dp(8), dp(10), dp(8))
                     background = GradientDrawable().apply {
@@ -1588,6 +1685,8 @@ class PlaylistLibraryActivity : Activity() {
 
     /** Redraws the «Група №…» (or «Дублікати за піснями») window if open. */
     private fun redrawVisibleDuplicateGroup() {
+        // Batch 12: the redrawn window stays on the same row.
+        rememberWindowPlace()
         modalController.visibleArgs(MODAL_SONG_DUPS)?.let { args ->
             modalController.show(MODAL_SONG_DUPS, args, ::renderConfirmation)
             return
@@ -2321,7 +2420,7 @@ class PlaylistLibraryActivity : Activity() {
 
     private fun renderConfirmation(type: String, args: Bundle): Dialog? {
         hideKeyboard()
-        if (type == MODAL_SONG_DUPS) return renderSongDuplicates()
+        if (type == MODAL_SONG_DUPS) return renderSongDuplicates(args)
         if (type == MODAL_DELETE_HISTORY) {
             val identity = args.getString("item") ?: return null
             val entryId = localItems().firstOrNull {
@@ -2441,6 +2540,7 @@ class PlaylistLibraryActivity : Activity() {
                     modalController.clearState()
                 })
             )
+            restoreWindowPlace(MODAL_DUP_GROUP, built.second, args)
             // Batch 9: a confirmation that was open on top comes back on top.
             if (args.containsKey(OVER_TYPE)) {
                 window.decorView.post { if (!isDestroyed) openOverDialog(args) }
@@ -2453,6 +2553,7 @@ class PlaylistLibraryActivity : Activity() {
             val back = args.getString("back") ?: BACK_GROUP
             if (dupMembers[identity] == null) refreshDuplicates()
             val built = createDifferenceContent(identity, against) ?: return null
+            restoreWindowPlace(MODAL_DUP_DIFF, built.second, args)
             return UiChrome.showContentDialog(
                 activity = this,
                 title = "Чим відрізняється",
@@ -3390,6 +3491,11 @@ class PlaylistLibraryActivity : Activity() {
         private const val MODAL_FILTER = "playlist_library_filter"
         private const val MODAL_DUP_GROUP = "playlist_library_duplicate_group"
         private const val CARD_TAG = "library_card:"
+        /** Batch 12: rows of a window and the saved place inside it. */
+        private const val ROW_TAG = "library_row:"
+        private const val PLACE_ROW = "place_row"
+        private const val PLACE_OFF = "place_off"
+        private const val PLACE_Y = "place_y"
         /** Windows that may need the YouTube list to be drawn (batch 10). */
         private val YOUTUBE_WINDOWS = setOf(MODAL_DUP_GROUP, MODAL_DUP_DIFF,
             MODAL_SONG_DUPS, MODAL_DELETE_REMOTE)

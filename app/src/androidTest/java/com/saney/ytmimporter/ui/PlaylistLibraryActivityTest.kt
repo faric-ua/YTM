@@ -548,6 +548,71 @@ class PlaylistLibraryActivityTest {
         }
     }
 
+    /** Batch 12: «Група №…» comes back on the same row after the screen is rebuilt. */
+    @android.annotation.TargetApi(29)
+    @Test fun groupWindowKeepsItsPlaceAfterRecreate() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val suffix = UUID.randomUUID().toString().take(6)
+        val title = "Група місця $suffix"
+        val store = CurrentPlaylistStore(context)
+        repeat(14) { i ->
+            store.save(ImportedPlaylist(title, mutableListOf(
+                Track("Пісня 1", "Гурт", selectedVideoId = "grpplace001"),
+                Track("Пісня 2", "Гурт", selectedVideoId = "grpplace002"))),
+                "Тест вікна групи", localPlaylistId = "grp-$suffix-$i")
+        }
+        ActivityScenario.launch<PlaylistLibraryActivity>(
+            Intent(context, PlaylistLibraryActivity::class.java)
+        ).use { scene ->
+            idle()
+            scene.onActivity { activity ->
+                val root = activity.window.decorView
+                val label = root.findLabel(title) ?: error("Card missing")
+                var card: View? = label
+                while (card != null && !(card.isClickable && card.tag is String)) {
+                    card = card.parent as? View
+                }
+                val hint = (card as ViewGroup).findClickableDescription("Схожі плейлісти, група")
+                    ?: error("Group hint missing")
+                hint.performClick()
+            }
+            idle()
+            var before = 0
+            scene.onActivity {
+                val scroll = groupWindowScroller(title) ?: error("Group window missing")
+                scroll.scrollTo(0, scroll.getChildAt(0).height)
+                before = scroll.scrollY
+                assertTrue(before > 0)
+            }
+            idle()
+            scene.recreate()
+            var after = 0
+            var tries = 0
+            while (after == 0 && tries++ < 20) {
+                idle()
+                scene.onActivity { after = groupWindowScroller(title)?.scrollY ?: 0 }
+                if (after == 0) android.os.SystemClock.sleep(100)
+            }
+            assertTrue("Group window came back at the top ($after, was $before)",
+                after > before / 2)
+        }
+    }
+
+    @android.annotation.TargetApi(29)
+    private fun groupWindowScroller(title: String): android.widget.ScrollView? =
+        android.view.inspector.WindowInspector.getGlobalWindowViews()
+            .filter { it.isShown && it.hasText("— схожі плейлісти") && it.hasText(title) }
+            .firstNotNullOfOrNull { it.findCatalogueScroller() }
+
+    private fun ViewGroup.findClickableDescription(prefix: String): View? {
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            if (child.isClickable && child.contentDescription?.startsWith(prefix) == true) return child
+            if (child is ViewGroup) child.findClickableDescription(prefix)?.let { return it }
+        }
+        return null
+    }
+
     private fun View.findCatalogueScroller(): android.widget.ScrollView? {
         val found = mutableListOf<android.widget.ScrollView>()
         fun walk(view: View) {

@@ -67,4 +67,11 @@ object LibraryRestorePolicy {
      */
     fun waitForYouTube(needsYouTube: Boolean, stillComing: Boolean): Boolean =
         needsYouTube && stillComing
+
+    /**
+     * Batch 12: a playlist page reached its saved place (its songs may arrive a
+     * moment later, so the list can be too short at first).
+     */
+    fun detailReached(appliedY: Int, wantedY: Int, slop: Int): Boolean =
+        appliedY >= wantedY - slop
 }

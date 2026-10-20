@@ -57,4 +57,12 @@ class LibraryRestorePolicyTest {
         assertFalse(LibraryRestorePolicy.waitForYouTube(needsYouTube = true, stillComing = false))
         assertFalse(LibraryRestorePolicy.waitForYouTube(needsYouTube = false, stillComing = true))
     }
+
+    /** Batch 12: a playlist page waits until its songs make it long enough. */
+    @Test fun detailPlaceIsReachedOnlyWhenTheListIsLongEnough() {
+        assertFalse(LibraryRestorePolicy.detailReached(appliedY = 0, wantedY = 1200, slop = 24))
+        assertFalse(LibraryRestorePolicy.detailReached(600, 1200, 24))
+        assertTrue(LibraryRestorePolicy.detailReached(1190, 1200, 24))
+        assertTrue(LibraryRestorePolicy.detailReached(1200, 1200, 24))
+    }
 }
