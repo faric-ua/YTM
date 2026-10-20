@@ -17,6 +17,7 @@ import android.content.Context
 class PersistentAuthStateStore(
     context: Context
 ) {
+    private val appContext = context.applicationContext
     private val prefs =
         context.applicationContext.getSharedPreferences(
             PREFS_NAME,
@@ -42,6 +43,9 @@ class PersistentAuthStateStore(
         prefs.edit()
             .clear()
             .apply()
+        // Library batch 11: the kept YouTube playlist list belongs to the
+        // signed-in account; when Google has to be connected again it goes too.
+        com.saney.ytmimporter.storage.RemotePlaylistListStore(appContext).clear()
     }
 
     companion object {

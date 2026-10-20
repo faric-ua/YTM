@@ -106,7 +106,7 @@ bf1a58d090226215  app/src/debug/AndroidManifest.xml
 a25d17ce55fe6774  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 e1d371ab53cffd83  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
 bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.kt
-cc6704ce5b07c2b4  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
+7502f3be74fdaf2d  app/src/main/java/com/saney/ytmimporter/MainActivity.kt
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
@@ -122,7 +122,7 @@ a6103ab954f7f0f5  app/src/main/java/com/saney/ytmimporter/YouTubePlayerActivity.
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 d1dd3017e7223816  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
 7e3bf1b1b822aa95  app/src/main/java/com/saney/ytmimporter/auth/GoogleAuthScopes.kt
-5ba264e8f2b8a874  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
+ca1737014ffffdc3  app/src/main/java/com/saney/ytmimporter/auth/PersistentAuthStateStore.kt
 28b6d11602702ee4  app/src/main/java/com/saney/ytmimporter/auth/SilentGoogleSessionRestorer.kt
 92a9df68e5f8f8f8  app/src/main/java/com/saney/ytmimporter/bulk/BulkCreateBatchPolicy.kt
 bcd64759292d16a9  app/src/main/java/com/saney/ytmimporter/bulk/BulkSessionPreparationCoordinator.kt
