@@ -44,6 +44,7 @@ import com.saney.ytmimporter.library.PlaylistLibraryDuplicateGroupPolicy
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicatePolicy
 import com.saney.ytmimporter.library.PlaylistLibraryIdentityPolicy
 import com.saney.ytmimporter.library.PlaylistLibraryPolicy
+import com.saney.ytmimporter.library.RemotePlaylistListPolicy
 import com.saney.ytmimporter.library.RemoteSongMemoryPolicy
 import com.saney.ytmimporter.library.SongOverlapPolicy
 import com.saney.ytmimporter.model.HistoryEntry
@@ -56,6 +57,7 @@ import com.saney.ytmimporter.storage.GroupNumberStore
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RemoteSongMemoryStore
+import com.saney.ytmimporter.storage.RemotePlaylistListStore
 import com.saney.ytmimporter.storage.RestorablePlaylistSnapshot
 import com.saney.ytmimporter.storage.RestorablePlaylistStore
 import com.saney.ytmimporter.ui.AppThemeManager
@@ -88,6 +90,8 @@ class PlaylistLibraryActivity : Activity() {
     private val persistentAuth by lazy { PersistentAuthStateStore(this) }
     // Batch 4: checked YouTube songs survive the app being closed (owner «так»).
     private val songMemoryStore by lazy { RemoteSongMemoryStore(this) }
+    /** Batch 11: the last account's YouTube list, shown at once after a pause. */
+    private val playlistListStore by lazy { RemotePlaylistListStore(this) }
     // Batch 6: permanent group numbers (owner 2026-10-18 04:44).
     private val groupNumberStore by lazy { GroupNumberStore(this) }
     private var groupNumbers: GroupNumberPolicy.Memory? = null
@@ -103,6 +107,8 @@ class PlaylistLibraryActivity : Activity() {
     private var selectedRemote: String? = null
     private var visibleTrackLimit = 60
     private var loadingList = false
+    /** Batch 11: the kept list is refreshed once per visit by itself, then by «↻». */
+    private var refreshTriedThisVisit = false
     private var loadingTracks = false
     private var loadError: String? = null
     // BUG-052: silent Google/YTM restore when the screen starts without a token.
@@ -518,7 +524,9 @@ class PlaylistLibraryActivity : Activity() {
     private fun ensureRemoteReady(): Boolean {
         if (!showsRemote()) return false
         if (token() != null) {
-            if (cachedPlaylists == null && !loadingList) {
+            if (RemotePlaylistListPolicy.needsRefresh(true, cachedPlaylists != null,
+                    remoteFromMemory, loadingList) && !refreshTriedThisVisit
+            ) {
                 loadRemoteList()
                 return true
             }
@@ -557,7 +565,8 @@ class PlaylistLibraryActivity : Activity() {
                         val pendingDetail = selectedRemote
                             ?.takeIf { token() != null && !cachedTracks.containsKey(it) }
                         if (pendingDetail != null) loadRemoteTracks(pendingDetail)
-                        if (token() != null && showsRemote() && cachedPlaylists == null) {
+                        if (token() != null && showsRemote() &&
+                            (cachedPlaylists == null || remoteFromMemory)) {
                             loadRemoteList()
                         } else if (pendingDetail == null) renderContent()
                     }
@@ -772,7 +781,7 @@ class PlaylistLibraryActivity : Activity() {
     /** Remembered songs of the current account (loaded once per account). */
     private fun currentSongMemory(): Map<String, RemoteSongMemoryPolicy.Entry> {
         val owner = cachedOwner
-        if (owner.isNullOrBlank() || token() == null) return emptyMap()
+        if (owner.isNullOrBlank()) return emptyMap()
         if (owner != songMemoryOwner) {
             songMemoryOwner = owner
             songMemory = songMemoryStore.load(owner)
@@ -800,6 +809,10 @@ class PlaylistLibraryActivity : Activity() {
                     .ifBlank { "Без назви" }
         )
 
+    private fun shortDateTime(millis: Long): String =
+        java.text.SimpleDateFormat("dd.MM HH:mm", java.util.Locale.ROOT)
+            .format(java.util.Date(millis))
+
     private fun shortDate(millis: Long): String =
         java.text.SimpleDateFormat("dd.MM.yyyy", java.util.Locale.ROOT)
             .format(java.util.Date(millis))
@@ -819,7 +832,8 @@ class PlaylistLibraryActivity : Activity() {
         val savedById = saved.associateBy { it.localPlaylistId }
         val archiveById = archive.associateBy { it.id }
         val memory = currentSongMemory()
-        missingOnYouTube = if (token() == null) emptySet() else
+        // Only against a list read in this visit, never the kept one.
+        missingOnYouTube = if (token() == null || remoteFromMemory) emptySet() else
             PlaylistLibraryIdentityPolicy.missingOnYouTube(
                 linked = allLocal.map { item ->
                     PlaylistLibraryIdentityPolicy.LinkedLocal(
@@ -858,7 +872,7 @@ class PlaylistLibraryActivity : Activity() {
         // used): numbers given while YouTube is still loading are temporary,
         // otherwise the first save after the update could shift «№30».
         val complete = !persistentAuth.hadSuccessfulAuthorization() ||
-            (token() != null && cachedPlaylists != null)
+            (token() != null && cachedPlaylists != null && !remoteFromMemory)
         if (complete && numbered.memory != memoryBefore) {
             groupNumbers = numbered.memory
             groupNumberStore.save(numbered.memory)
@@ -956,7 +970,7 @@ class PlaylistLibraryActivity : Activity() {
         val archive = historyStore.getAll()
         analyseDuplicates(saved, active, archive,
             PlaylistLibraryPolicy.build(saved, active, archive),
-            if (token() != null) cachedPlaylists.orEmpty() else emptyList())
+            remoteList())
     }
 
     private fun showDuplicateGroup(identity: String) {
@@ -1417,7 +1431,8 @@ class PlaylistLibraryActivity : Activity() {
                 val removeType = member?.removeType
                 val removeId = member?.removeId
                 if (removeType != null && removeId != null &&
-                    !(removeType == MODAL_DELETE_REMOTE && deletingRemoteId != null)
+                    !(removeType == MODAL_DELETE_REMOTE &&
+                        (deletingRemoteId != null || remoteFromMemory || token() == null))
                 ) {
                     val warn = PlaylistLibraryDuplicateGroupPolicy.removalWarnings(
                         row.identity, overview, oldest, biggest?.identity,
@@ -1455,7 +1470,8 @@ class PlaylistLibraryActivity : Activity() {
             12f, false, palette.muted).apply { setPadding(dp(4), dp(8), dp(4), 0) })
         val biggestNote = if (biggest != null && biggestMember != null)
             " • найбільший: ${biggestMember.title} (${biggest.trackCount})" else ""
-        return PlaylistLibraryDuplicateGroupPolicy.summary(overview) + biggestNote to container
+        val star = biggest?.identity?.takeIf { it in songsKnown }
+        return PlaylistLibraryDuplicateGroupPolicy.summary(overview, star) + biggestNote to container
     }
 
     private fun remotePlaylistId(identity: String): String? =
@@ -1591,7 +1607,7 @@ class PlaylistLibraryActivity : Activity() {
             val active = currentStore.load()
             val archive = historyStore.getAll()
             val local = PlaylistLibraryPolicy.build(saved, active, archive)
-            val remote = if (access != null) cachedPlaylists.orEmpty() else emptyList()
+            val remote = remoteList()
             CatalogueData(
                 allLocal = local,
                 allRemote = remote,
@@ -1650,7 +1666,8 @@ class PlaylistLibraryActivity : Activity() {
                 if (!showAll && !onlineTab) " ✓" else "",
             palette.semantic.duplicate)
         counter(R.drawable.ic_ytm_youtube_play, "YouTube",
-            (if (restoringGoogle || (access != null && loadingList &&
+            (if (remoteFromMemory && cachedPlaylists != null) cachedPlaylists!!.size.toString()
+                else if (restoringGoogle || (access != null && loadingList &&
                     cachedPlaylists == null)) "…"
                 else if (access == null) "—"
                 else cachedPlaylists?.size?.toString() ?: "—") +
@@ -1820,6 +1837,17 @@ class PlaylistLibraryActivity : Activity() {
     /** One short line about the YouTube connection, or null when all is fine. */
     private fun remoteStatusText(remoteEnabled: Boolean, access: String?): String? {
         if (!remoteEnabled) return null
+        if (remoteFromMemory && cachedPlaylists != null) {
+            val kept = "Список YouTube — збережений ${shortDateTime(remoteSavedAt)}"
+            return when {
+                restoringGoogle || loadingList -> "$kept • оновлюю…"
+                access == null && googleNeedsUser ->
+                    "$kept • Google просить підтвердження: Головна → «2. Google / YTM»."
+                access == null -> "$kept • не вдалося оновити: Google не підключився."
+                loadError != null -> "$kept • не вдалося оновити: $loadError"
+                else -> "$kept • оновлення — «↻ Оновити YouTube» внизу."
+            }
+        }
         return when {
             restoringGoogle -> "Відновлюю підключення Google/YTM…"
             access == null && googleNeedsUser ->
@@ -2106,6 +2134,9 @@ class PlaylistLibraryActivity : Activity() {
         }
         if (deletingRemoteId == playlistId) {
             addInfo("Видаляю плейлист із YouTube Music…")
+        } else if (deletingRemoteId == null && (remoteFromMemory || token() == null)) {
+            // Batch 11: the kept list may be old — delete only after it is read again.
+            addInfo("Видалити з YouTube можна, коли список YouTube оновиться.")
         } else if (deletingRemoteId == null) {
             addFullButton("Видалити з YouTube Music") {
                 showConfirmation(MODAL_DELETE_REMOTE, playlistId)
@@ -2258,7 +2289,9 @@ class PlaylistLibraryActivity : Activity() {
      */
     private fun renderRestoredModal(type: String, args: Bundle): Dialog? {
         val needsYouTube = type in YOUTUBE_WINDOWS
-        if (LibraryRestorePolicy.waitForYouTube(needsYouTube, youTubeStillComing())) {
+        // Batch 11: with the kept list the window opens at once.
+        if (RemotePlaylistListPolicy.windowMustWait(needsYouTube,
+                remoteList().isNotEmpty(), youTubeStillComing())) {
             waitingModal = type to Bundle(args)
             return null
         }
@@ -2272,7 +2305,8 @@ class PlaylistLibraryActivity : Activity() {
     /** Opens the waiting window once the YouTube list is there (or will not come). */
     private fun resumeWaitingModal() {
         val (type, args) = waitingModal ?: return
-        if (isFinishing || isDestroyed || youTubeStillComing()) return
+        if (isFinishing || isDestroyed) return
+        if (youTubeStillComing() && remoteList().isEmpty()) return
         waitingModal = null
         // The owner went elsewhere meanwhile — do not cover what he opened.
         if (modalController.hasVisible() || selectedLocal != null || selectedRemote != null) return
@@ -2315,6 +2349,11 @@ class PlaylistLibraryActivity : Activity() {
         }
         if (type == MODAL_DELETE_REMOTE) {
             val id = args.getString("item") ?: return null
+            // Batch 11: never from the kept list — only after it was read again.
+            if (remoteFromMemory || token() == null) {
+                toast("Видалити з YouTube можна, коли список YouTube оновиться")
+                return null
+            }
             val item = cachedPlaylists?.firstOrNull { it.id == id }
                 ?: return null
             if (deletingRemoteId != null) return null
@@ -2514,6 +2553,8 @@ class PlaylistLibraryActivity : Activity() {
         if (state.successMessage != null) {
             // Re-fetch exact server state; no optimistic count is treated as authoritative.
             cachedPlaylists = null
+            remoteFromMemory = false
+            playlistListStore.forget(id)
             cachedTracks.remove(id)
             selectedRemote = null
             visibleTrackLimit = 60
@@ -2722,6 +2763,12 @@ class PlaylistLibraryActivity : Activity() {
             "Пісні YouTube-плейліста, перевірені раніше, телефон пам’ятає " +
                 "(лише коди відео, без назв, для кожного акаунта окремо), поки " +
                 "кількість пісень у плейлісті та сама.")
+        // Batch 11 (faric 2026-10-20 «план Б»).
+        entry(R.drawable.ic_ytm_youtube_play, "Список YouTube — збережений 20.10 05:40",
+            "Телефон пам’ятає список ваших YouTube-плейлістів (назва, кількість пісень, " +
+                "доступність, обкладинка — без пісень і без входу Google). Після довгої " +
+                "паузи Бібліотека показує його одразу, а свіжий читає у фоні й тихо " +
+                "оновлює. Поки список не оновився, «Видалити з YouTube» недоступне.")
         entry(R.drawable.ic_ytm_device, "Архів History",
             "Запис про минулий імпорт, а не окремий плейліст. Тому в однієї " +
                 "назви може бути багато таких записів у групі.",
@@ -2804,6 +2851,7 @@ class PlaylistLibraryActivity : Activity() {
         val access = token() ?: return
         if (loadingList) return
         loadingList = true
+        refreshTriedThisVisit = true
         loadError = null
         renderContent()
         worker.execute {
@@ -2815,9 +2863,22 @@ class PlaylistLibraryActivity : Activity() {
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread
                 loadingList = false
-                result.onSuccess { cachedPlaylists = it }
-                    .onFailure { loadError = it.message ?: "Помилка YouTube API" }
+                val before = remoteList()
+                result.onSuccess { fresh ->
+                    cachedPlaylists = fresh
+                    remoteFromMemory = false
+                    remoteSavedAt = 0L
+                    // Batch 11: keep it on the phone for the next return after a pause.
+                    cachedOwner?.takeIf { it.isNotBlank() }?.let { owner ->
+                        playlistListStore.save(owner, fresh)
+                    }
+                }.onFailure { loadError = it.message ?: "Помилка YouTube API" }
                 renderContent()
+                // An open group / «Дублікати» window is redrawn only if YouTube changed.
+                if (result.isSuccess && result.getOrNull() != before) {
+                    refreshDuplicates()
+                    redrawVisibleDuplicateGroup()
+                }
                 if (result.isSuccess) {
                     pendingGroupReturn?.let { back ->
                         pendingGroupReturn = null
@@ -2855,20 +2916,52 @@ class PlaylistLibraryActivity : Activity() {
 
     private fun ensureRemoteAccountIsolation() {
         val auth = AuthSessionStore.current()
-        if (auth.accessToken == null) {
+        val hasToken = auth.accessToken != null
+        val owner = if (hasToken) auth.youtubeChannelInfo?.id
+            ?: auth.googleAccountInfo?.email ?: "" else null
+        // Batch 11 (faric 2026-10-20 «план Б»): the kept list of the last
+        // account is shown at once — also while Google is still being restored.
+        val saved = keptList()?.takeIf {
+            RemotePlaylistListPolicy.usable(it, persistentAuth.hadSuccessfulAuthorization(),
+                hasToken, owner)
+        }
+        val effectiveOwner = owner ?: saved?.owner
+        if (effectiveOwner == null) {
             cachedPlaylists = null
+            remoteFromMemory = false
             cachedTracks.clear()
             cachedOwner = null
             return
         }
-        val owner = auth.youtubeChannelInfo?.id
-            ?: auth.googleAccountInfo?.email ?: ""
-        if (owner != cachedOwner) {
-            cachedOwner = owner
+        if (effectiveOwner != cachedOwner) {
+            cachedOwner = effectiveOwner
             cachedPlaylists = null
+            remoteFromMemory = false
             cachedTracks.clear()
         }
+        if (cachedPlaylists == null && saved != null) {
+            cachedPlaylists = saved.playlists
+            remoteFromMemory = true
+            remoteSavedAt = saved.savedAt
+        }
     }
+
+    /** The kept list without playlists deleted since it was saved. */
+    private fun keptList(): RemotePlaylistListPolicy.Saved? {
+        var saved = playlistListStore.load() ?: return null
+        if (deletedSinceSave.isNotEmpty()) {
+            deletedSinceSave.forEach { id ->
+                playlistListStore.forget(id)
+                saved = RemotePlaylistListPolicy.without(saved, id)
+            }
+            deletedSinceSave.clear()
+        }
+        return saved
+    }
+
+    /** YouTube playlists to show: the fresh list, or the kept one (batch 11). */
+    private fun remoteList(): List<YouTubePlaylistInfo> =
+        if (token() != null || remoteFromMemory) cachedPlaylists.orEmpty() else emptyList()
 
     private fun token(): String? = AuthSessionStore.current().accessToken
 
@@ -3315,11 +3408,20 @@ class PlaylistLibraryActivity : Activity() {
         /** Called on main thread after a confirmed remote delete in any screen. */
         fun invalidateDeletedRemotePlaylist(id: String) {
             cachedPlaylists = null
+            remoteFromMemory = false
             cachedTracks.remove(id)
+            // Batch 11: also out of the list kept on the phone (applied by the Library).
+            deletedSinceSave += id
         }
 
         private var cachedOwner: String? = null
         private var cachedPlaylists: List<YouTubePlaylistInfo>? = null
+        /** Batch 11: [cachedPlaylists] is the list kept on the phone, not read yet in this visit. */
+        private var remoteFromMemory = false
+        /** When the kept list was saved (0 = not from memory). */
+        private var remoteSavedAt = 0L
+        /** Deleted from YouTube while the kept list may still have them. */
+        private val deletedSinceSave = mutableSetOf<String>()
         private val cachedTracks = mutableMapOf<String, List<Track>>()
     }
 }

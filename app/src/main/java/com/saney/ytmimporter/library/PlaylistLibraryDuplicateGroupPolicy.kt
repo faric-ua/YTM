@@ -76,11 +76,15 @@ object PlaylistLibraryDuplicateGroupPolicy {
     }
 
     /** One line for the top of the group window. */
-    fun summary(overview: Overview): String {
+    fun summary(overview: Overview, yardstick: String? = null): String {
         val parts = mutableListOf<String>()
         if (overview.exactCopies > 0) parts += "однакові пісні: ${overview.exactCopies}"
         if (overview.different > 0) parts += "пісні різні: ${overview.different}"
-        if (overview.unchecked > 0) parts += "не перевірено: ${overview.unchecked}"
+        // Batch 11 (faric screenshot 2026-10-20 04:02): the ★ row is not «не перевірено».
+        val starUnchecked = overview.bands.flatMap { it.rows }
+            .count { it.identity == yardstick && it.mark == Mark.UNCHECKED }
+        val unchecked = overview.unchecked - starUnchecked
+        if (unchecked > 0) parts += "не перевірено: $unchecked"
         if (overview.bands.size > 1) {
             parts += "кількість пісень різна: " +
                 overview.bands.joinToString(" / ") { it.trackCount.toString() }

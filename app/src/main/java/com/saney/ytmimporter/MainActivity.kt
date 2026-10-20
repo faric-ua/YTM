@@ -1761,6 +1761,8 @@ class MainActivity : Activity() {
         restoringPriorAuthorization = false
         AuthSessionStore.clear()
         persistentAuthStateStore.clear()
+        // Batch 11: the kept YouTube list belongs to the signed-in account only.
+        com.saney.ytmimporter.storage.RemotePlaylistListStore(this).clear()
         updateAccountPanel()
         status(
             "$message Натисніть «2. Google / YTM» і підключіть акаунт знову."
@@ -1990,6 +1992,8 @@ class MainActivity : Activity() {
         pendingAfterAuth = null
         AuthSessionStore.clear()
         persistentAuthStateStore.clear()
+        // Batch 11: the kept YouTube list belongs to the signed-in account only.
+        com.saney.ytmimporter.storage.RemotePlaylistListStore(this).clear()
 
         updateAccountPanel()
         status(

@@ -235,4 +235,18 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
         assertEquals("small", PlaylistLibraryDuplicateGroupPolicy.biggest(members,
             setOf("small"), emptyMap()))
     }
+
+    /** Batch 11 (screenshot 2026-10-20 04:02): «не перевірено: 1» was the ★ itself. */
+    @Test fun summaryDoesNotCountTheStarAsUnchecked() {
+        val big = (1..4).map { "big%08d".format(it) }
+        val o = PlaylistLibraryDuplicateGroupPolicy.overview(listOf(
+            Candidate("youtube:mylist", "mylist", 4, big),
+            Candidate("h1", "mylist", 2, listOf(big[0], big[1])),
+            Candidate("h2", "mylist", 2, listOf(big[1], big[0]))
+        ))
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.summary(o).contains("не перевірено: 1"))
+        val withStar = PlaylistLibraryDuplicateGroupPolicy.summary(o, "youtube:mylist")
+        assertTrue(!withStar.contains("не перевірено"))
+        assertTrue(withStar.contains("однакові пісні: 2"))
+    }
 }

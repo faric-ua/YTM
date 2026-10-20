@@ -568,6 +568,32 @@ class PlaylistLibraryActivityTest {
         return y
     }
 
+    /** Batch 11: the kept YouTube list is shown at once, before Google is back. */
+    @Test fun keptYouTubeListIsShownWithoutConnection() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val suffix = UUID.randomUUID().toString().take(6)
+        val title = "Збережений YouTube $suffix"
+        val store = com.saney.ytmimporter.storage.RemotePlaylistListStore(context)
+        val auth = com.saney.ytmimporter.auth.PersistentAuthStateStore(context)
+        store.save("UCtest$suffix", listOf(com.saney.ytmimporter.model.YouTubePlaylistInfo(
+            "PLkept$suffix", title, "private", 12)))
+        auth.markSuccessfulAuthorization()
+        try {
+            ActivityScenario.launch<PlaylistLibraryActivity>(
+                Intent(context, PlaylistLibraryActivity::class.java)
+            ).use { scene ->
+                idle()
+                scene.onActivity { activity ->
+                    val root = activity.window.decorView
+                    assertTrue("kept YouTube card missing", root.hasText(title))
+                }
+            }
+        } finally {
+            store.clear()
+            auth.clear()
+        }
+    }
+
     @Test fun onlineTabWithoutConsentOrTokenDoesNotStartRemoteRead() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         ActivityScenario.launch<PlaylistLibraryActivity>(
