@@ -249,4 +249,18 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
         assertTrue(!withStar.contains("не перевірено"))
         assertTrue(withStar.contains("однакові пісні: 2"))
     }
+
+    /** Batch 14: deleting a copy together with its History archive. */
+    @Test fun archiveRemovalSaysWhetherTheSongsStayElsewhere() {
+        val others = listOf(
+            Candidate("youtube:x", "X", 2, listOf(b, a)),
+            Candidate("phone:y", "Y", 2, listOf(a, c))
+        )
+        assertEquals(1, PlaylistLibraryDuplicateGroupPolicy.sameSongsElsewhere(listOf(a, b), others))
+        assertEquals(0, PlaylistLibraryDuplicateGroupPolicy.sameSongsElsewhere(listOf(b, c), others))
+        // A song without a video — the list cannot be proven anywhere.
+        assertEquals(0, PlaylistLibraryDuplicateGroupPolicy.sameSongsElsewhere(listOf(a, ""), others))
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.archiveRemovalLine(1).startsWith("Пісні не загубляться"))
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.archiveRemovalLine(0).startsWith("Увага"))
+    }
 }

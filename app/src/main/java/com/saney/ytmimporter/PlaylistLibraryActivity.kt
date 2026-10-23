@@ -142,6 +142,8 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var localTabButton: Button
     private lateinit var onlineTabButton: Button
     private lateinit var searchBox: EditText
+    /** Batch 14: «×» inside the search field. */
+    private lateinit var searchClear: TextView
     private lateinit var statusLabel: TextView
     private lateinit var modalController: RestorableModalController
     /** Catalogue scroll position to return to from a playlist (Back). */
@@ -461,7 +463,8 @@ class PlaylistLibraryActivity : Activity() {
             setTextColor(palette.text)
             setHintTextColor(palette.muted)
             setText(filterText)
-            setPadding(dp(14), dp(7), dp(10), dp(7))
+            // Room on the right for «×» (batch 14).
+            setPadding(dp(14), dp(7), dp(48), dp(7))
             background = surface(palette.surface, 12)
             // Batch 13: «Готово» on the keyboard closes it — the header comes back.
             imeOptions = EditorInfo.IME_ACTION_DONE
@@ -476,6 +479,9 @@ class PlaylistLibraryActivity : Activity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 filterText = s?.toString().orEmpty()
+                if (::searchClear.isInitialized) {
+                    searchClear.visibility = if (filterText.isEmpty()) View.GONE else View.VISIBLE
+                }
                 // Library batch 7: one redraw after a short pause, not per letter.
                 searchHandler.removeCallbacks(searchRedraw)
                 if (selectedLocal == null && selectedRemote == null) {
@@ -484,7 +490,28 @@ class PlaylistLibraryActivity : Activity() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
-        filtersRow.addView(searchBox, LinearLayout.LayoutParams(
+        // Batch 14 (faric 2026-10-21 01:48): «×» at the right edge clears the field.
+        val searchFrame = FrameLayout(this)
+        searchFrame.addView(searchBox, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, dp(49)))
+        searchClear = text("×", 22f, true, palette.muted).apply {
+            gravity = Gravity.CENTER
+            contentDescription = "Очистити пошук"
+            isClickable = true
+            isFocusable = true
+            visibility = if (filterText.isEmpty()) View.GONE else View.VISIBLE
+            setOnClickListener {
+                searchBox.setText("")
+                // At once, without the typing pause.
+                searchHandler.removeCallbacks(searchRedraw)
+                if (selectedLocal == null && selectedRemote == null) {
+                    renderContent(0, searchOnly = true)
+                }
+            }
+        }
+        searchFrame.addView(searchClear, FrameLayout.LayoutParams(
+            dp(48), dp(49), Gravity.END or Gravity.CENTER_VERTICAL))
+        filtersRow.addView(searchFrame, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, dp(49)))
         root.addView(filtersRow)
 
@@ -2564,7 +2591,29 @@ class PlaylistLibraryActivity : Activity() {
             } ?: return null
             val localId = target.localPlaylistId?.takeIf(String::isNotBlank)
                 ?: return null
-            return UiChrome.showDangerConfirmDialog(
+            val archive = hiddenArchiveOf(localId)
+            val deleteCopy = UiChrome.DialogAction("Видалити локально", UiChrome.ActionTone.DANGER) {
+                modalController.clearState()
+                if (deleteLocalCopy(localId)) reopenGroup(args.getString("group_return"))
+            }
+            // Batch 14 (faric 2026-10-23 13:25 «так, робимо»): the copy and its
+            // History archive in one go — through a second, separate confirmation.
+            val deleteBoth = archive?.let {
+                UiChrome.DialogAction("Видалити і копію, і архів…", UiChrome.ActionTone.DANGER) {
+                    val warn = args.getString("warn")
+                    val back = args.getString("group_return")
+                    window.decorView.post {
+                        if (isDestroyed) return@post
+                        if (args.getBoolean("over_group")) {
+                            showConfirmationOverGroup(MODAL_DELETE_LOCAL_AND_ARCHIVE, identity, warn, back)
+                        } else {
+                            showConfirmation(MODAL_DELETE_LOCAL_AND_ARCHIVE, identity, warn, back)
+                        }
+                    }
+                }
+            }
+            val cancel = UiChrome.DialogAction("Скасувати") { cancelBackToGroup(args) }
+            return UiChrome.showMessageDialog(
                 activity = this,
                 title = "Видалити локальну копію?",
                 message = "Плейлист «${target.title}» буде видалено з локальної " +
@@ -2578,11 +2627,47 @@ class PlaylistLibraryActivity : Activity() {
                             ". Він не видаляється."
                     } ?: "Архів History може залишитися видимим окремо.") +
                     warningBlock(args),
-                confirmLabel = "Видалити локально",
+                actions = listOfNotNull(deleteCopy, deleteBoth, cancel)
+            )
+        }
+        if (type == MODAL_DELETE_LOCAL_AND_ARCHIVE) {
+            val identity = args.getString("item") ?: return null
+            val target = localItems().firstOrNull {
+                it.identity == identity && it.source != LocalLibrarySource.HISTORY
+            } ?: return null
+            val localId = target.localPlaylistId?.takeIf(String::isNotBlank) ?: return null
+            val archive = hiddenArchiveOf(localId) ?: return null
+            val songs = archive.tracks.size
+            val elsewhere = PlaylistLibraryDuplicateGroupPolicy.sameSongsElsewhere(
+                archive.tracks.map { it.videoId.orEmpty() },
+                dupCandidates.filter { it.identity != identity })
+            return UiChrome.showDangerConfirmDialog(
+                activity = this,
+                title = "Видалити і копію, і архів History?",
+                message = "Буде видалено одразу два записи на телефоні:\n" +
+                    "1) локальну копію «${target.title}»;\n" +
+                    "2) архів History цього імпорту (${shortDate(archive.createdAt)}): " +
+                    "$songs ${PlaylistLibraryDuplicateGroupPolicy.songsWord(songs)}.\n\n" +
+                    PlaylistLibraryDuplicateGroupPolicy.archiveRemovalLine(elsewhere) +
+                    "\n\nYouTube, інші копії та інші записи History не зміняться. " +
+                    "Скасувати видалення не можна." + warningBlock(args),
+                confirmLabel = "Видалити обидва",
                 onCancel = { cancelBackToGroup(args) }
             ) {
                 modalController.clearState()
-                if (deleteLocalCopy(localId)) reopenGroup(args.getString("group_return"))
+                // The archive id is checked again: rotation or another screen may
+                // have changed it while the window was open.
+                val archiveId = hiddenArchiveOf(localId)?.id?.takeIf { it == archive.id }
+                if (deleteLocalCopy(localId, quiet = true)) {
+                    if (archiveId != null && historyStore.get(archiveId) != null) {
+                        historyStore.remove(archiveId)
+                        renderContent()
+                        toast("Видалено копію й архів History ${shortDate(archive.createdAt)}")
+                    } else {
+                        toast("Копію видалено • архів History уже змінився — його не чіпали")
+                    }
+                    reopenGroup(args.getString("group_return"))
+                }
             }
         }
         if (type == MODAL_FILTER) {
@@ -2757,7 +2842,7 @@ class PlaylistLibraryActivity : Activity() {
         }
     }
 
-    private fun deleteLocalCopy(localId: String): Boolean {
+    private fun deleteLocalCopy(localId: String, quiet: Boolean = false): Boolean {
         // Check the exact opaque ID again after rotation/confirmation.
         val target = localItems().firstOrNull {
             it.localPlaylistId == localId &&
@@ -2781,7 +2866,7 @@ class PlaylistLibraryActivity : Activity() {
         selectedLocal = null
         visibleTrackLimit = 60
         renderContent(0)
-        toast("Локальну копію видалено" + (hiddenArchiveOf(localId)?.let {
+        if (!quiet) toast("Локальну копію видалено" + (hiddenArchiveOf(localId)?.let {
             " • з’явився архів History ${shortDate(it.createdAt)}"
         } ?: ""))
         return true
@@ -2836,7 +2921,8 @@ class PlaylistLibraryActivity : Activity() {
                 "Шукає лише в уже завантаженому списку — під час набору до YouTube не звертається. " +
                 "Список оновлюється, коли ви на мить перестали набирати. " +
                 "Поки відкрита клавіатура, заголовок, ряд кнопок і рядки опису ховаються — " +
-                "лишаються поле пошуку, лічильники й плитки; «Готово» на клавіатурі повертає все назад.")
+                "лишаються поле пошуку, лічильники й плитки; «Готово» на клавіатурі повертає все назад. " +
+                "«×» праворуч у полі одразу очищає пошук.")
         entry(R.drawable.ic_ytm_library_current, "Поточний плейліст",
             "Переходить до поточного локального плейліста, не перемикаючи інші.")
         entry(R.drawable.ic_ytm_view_list, "Список / плитки",
@@ -2958,6 +3044,12 @@ class PlaylistLibraryActivity : Activity() {
             "Запис про минулий імпорт, а не окремий плейліст. Тому в однієї " +
                 "назви може бути багато таких записів у групі.",
             palette.semantic.duplicate)
+        // Batch 14 (faric 2026-10-23).
+        entry(R.drawable.ic_ytm_device, "Видалити і копію, і архів…",
+            "У вікні «Видалити локальну копію?», якщо в копії є свій архів History того " +
+                "самого імпорту. Відкриває друге підтвердження: що саме буде видалено і чи " +
+                "лишаться ці пісні деінде. Видаляє лише після «Видалити обидва». YouTube не змінюється.",
+            palette.semantic.warning)
         // Batch 8 (owner TODO 2026-10-12): songs inside, names may differ.
         entry(R.drawable.ic_ytm_compare, "Знайти дублікати за піснями",
             "Кнопка зліва вгорі. Порівнює пісні ВСЕРЕДИНІ плейлістів і показує копії, " +
@@ -3568,6 +3660,8 @@ class PlaylistLibraryActivity : Activity() {
         private const val STATE_MODAL = "playlist_library_modal"
         private const val MODAL_SWITCH = "switch_local_current"
         private const val MODAL_DELETE_LOCAL = "delete_saved_local_copy"
+        /** Batch 14: the copy and its hidden History archive, second confirmation. */
+        private const val MODAL_DELETE_LOCAL_AND_ARCHIVE = "delete_local_copy_and_archive"
         private const val MODAL_DELETE_HISTORY = "delete_history_entry"
         private const val MODAL_DELETE_REMOTE = "delete_remote_playlist"
         private const val MODAL_SAVE_REMOTE = "save_remote_local"

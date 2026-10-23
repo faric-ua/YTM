@@ -168,6 +168,23 @@ object PlaylistLibraryDuplicateGroupPolicy {
         return lines
     }
 
+    /**
+     * Batch 14: how many OTHER playlists have exactly the songs of [videoIds]
+     * (a History archive about to be deleted together with its copy).
+     */
+    fun sameSongsElsewhere(videoIds: List<String>, others: List<Candidate>): Int {
+        val print = PlaylistLibraryDuplicatePolicy.songFingerprint(
+            Candidate("target", "", videoIds.size, videoIds)) ?: return 0
+        return others.count { PlaylistLibraryDuplicatePolicy.songFingerprint(it) == print }
+    }
+
+    /** Plain line for the «copy and archive» confirmation. */
+    fun archiveRemovalLine(sameElsewhere: Int): String =
+        if (sameElsewhere > 0) "Пісні не загубляться: такий самий склад є ще в " +
+            "$sameElsewhere ${if (sameElsewhere == 1) "плейлісті" else "плейлістах"}."
+        else "Увага: такого самого складу пісень більше ніде не знайдено — " +
+            "після видалення цей список пісень зникне з телефона."
+
     data class Song(val videoId: String?, val title: String)
 
     data class Difference(

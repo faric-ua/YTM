@@ -93,6 +93,81 @@ class PlaylistLibraryActivityTest {
         }
     }
 
+    /** Batch 14: «Видалити і копію, і архів…» removes both only after the second confirmation. */
+    @android.annotation.TargetApi(29)
+    @Test fun copyAndItsArchiveAreDeletedOnlyAfterSecondConfirmation() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val suffix = UUID.randomUUID().toString().take(6)
+        val title = "Копія з архівом $suffix"
+        val localId = "copy-archive-$suffix"
+        val archiveId = "archive-$suffix"
+        CurrentPlaylistStore(context).save(
+            ImportedPlaylist(title, mutableListOf(Track("Song", "Artist", selectedVideoId = "cparchive01"))),
+            "Тест копії з архівом", localPlaylistId = localId)
+        val history = HistoryStore(context)
+        history.upsert(HistoryEntry(
+            id = archiveId, createdAt = 1L, updatedAt = 2L,
+            status = HistoryStatus.COMPLETED, sourceLabel = "File",
+            playlistName = title, playlistId = null, privacyStatus = "private",
+            destination = PendingDestination.NEW_PLAYLIST,
+            googleEmail = null, youtubeChannelId = null, youtubeChannelTitle = null,
+            totalImportedCount = 1, writeTargetCount = 1, addedCount = 1,
+            failedCount = 0, pendingCount = 0, skippedCount = 0,
+            duplicateCount = 0, missingCount = 0, lastError = null,
+            tracks = listOf(HistoryTrack(
+                index = 0, originalTitle = "Song", originalArtist = "Artist",
+                videoId = "cparchive01", selectedTitle = "Song", selectedChannel = null,
+                status = "ADDED", manuallySelected = false, error = null)),
+            localPlaylistId = localId))
+        try {
+            ActivityScenario.launch<PlaylistLibraryActivity>(
+                Intent(context, PlaylistLibraryActivity::class.java)
+            ).use { scene ->
+                idle()
+                scene.onActivity { activity ->
+                    val label = activity.window.decorView.findLabel(title) ?: error("Card missing")
+                    var card: View? = label
+                    while (card != null && !card.isClickable) card = card.parent as? View
+                    card!!.performClick()
+                }
+                idle()
+                scene.onActivity { activity ->
+                    activity.window.decorView.collectButtons()
+                        .first { it.isShown && it.text.toString() == "Видалити локальну копію" }
+                        .performClick()
+                }
+                idle()
+                scene.onActivity { clickInWindows("Видалити і копію, і архів…") }
+                idle()
+                scene.onActivity { activity ->
+                    // Nothing is deleted yet — only the second window is open.
+                    assertNotNull(RestorablePlaylistStore(activity).get(localId))
+                    assertNotNull(HistoryStore(activity).get(archiveId))
+                    clickInWindows("Видалити обидва")
+                }
+                idle()
+                scene.onActivity { activity ->
+                    assertNull(RestorablePlaylistStore(activity).get(localId))
+                    assertNull(HistoryStore(activity).get(archiveId))
+                }
+            }
+        } finally {
+            history.remove(archiveId)
+            RestorablePlaylistStore(context).remove(localId)
+            CurrentPlaylistStore(context).clearIfMatches(localId)
+        }
+    }
+
+    @android.annotation.TargetApi(29)
+    private fun clickInWindows(label: String) {
+        val target = android.view.inspector.WindowInspector.getGlobalWindowViews()
+            .filter { it.isShown }
+            .firstNotNullOfOrNull { it.findLabel(label) } ?: error("«$label» not shown")
+        var view: View? = target
+        while (view != null && !view.isClickable) view = view.parent as? View
+        (view ?: target).performClick()
+    }
+
     @Test fun historyDetailsOfferOnlyHistoryDeletionAndKeepEntryUntilConfirmation() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val store = HistoryStore(context)
