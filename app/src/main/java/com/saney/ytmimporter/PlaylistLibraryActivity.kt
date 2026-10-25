@@ -2468,6 +2468,15 @@ class PlaylistLibraryActivity : Activity() {
      * phone copy exists (PlaylistLibraryPolicy.build). After the copy is
      * removed it shows up (owner recording 2026-10-18 01:03: «nothing changed»).
      */
+    /** Batch 15: YouTube playlists of the same group whose songs were never read. */
+    private fun uncheckedYouTubeInGroupOf(identity: String): Int {
+        val number = dupHints[identity]?.groupNumber ?: return 0
+        return dupHints.count { (id, hint) ->
+            hint.groupNumber == number && id.startsWith("youtube:") &&
+                dupMembers[id]?.remoteTracksLoaded != true
+        }
+    }
+
     private fun hiddenArchiveOf(localId: String): HistoryEntry? =
         historyStore.getAll()
             .filter { it.localPlaylistId == localId && it.tracks.isNotEmpty() }
@@ -2648,7 +2657,8 @@ class PlaylistLibraryActivity : Activity() {
                     "1) локальну копію «${target.title}»;\n" +
                     "2) архів History цього імпорту (${shortDate(archive.createdAt)}): " +
                     "$songs ${PlaylistLibraryDuplicateGroupPolicy.songsWord(songs)}.\n\n" +
-                    PlaylistLibraryDuplicateGroupPolicy.archiveRemovalLine(elsewhere) +
+                    PlaylistLibraryDuplicateGroupPolicy.archiveRemovalLine(elsewhere,
+                        uncheckedYouTubeInGroupOf(identity), dupHints[identity]?.groupNumber) +
                     "\n\nYouTube, інші копії та інші записи History не зміняться. " +
                     "Скасувати видалення не можна." + warningBlock(args),
                 confirmLabel = "Видалити обидва",

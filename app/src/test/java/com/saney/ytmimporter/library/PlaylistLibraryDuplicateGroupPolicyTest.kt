@@ -263,4 +263,21 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
         assertTrue(PlaylistLibraryDuplicateGroupPolicy.archiveRemovalLine(1).startsWith("Пісні не загубляться"))
         assertTrue(PlaylistLibraryDuplicateGroupPolicy.archiveRemovalLine(0).startsWith("Увага"))
     }
+
+    /** Batch 15 (screenshot 2026-10-25, group №27): unchecked YouTube is not «nowhere». */
+    @Test fun uncheckedYouTubeIsNotCalledNowhere() {
+        val line = PlaylistLibraryDuplicateGroupPolicy.archiveRemovalLine(0, uncheckedYouTube = 1, groupNumber = 27)
+        assertTrue(line.startsWith("Невідомо"))
+        assertTrue(line.contains("1 плейліст YouTube у групі №27 ще не перевірено"))
+        // Proven same songs still win.
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.archiveRemovalLine(2, 1, 27).startsWith("Пісні не загубляться"))
+        // DIFFERENT next to an unchecked member of the same size — not «нема ніде».
+        val o = PlaylistLibraryDuplicateGroupPolicy.overview(listOf(
+            Candidate("a", "X", 2, listOf(a, b)),
+            Candidate("odd", "X", 2, listOf(a, c)),
+            Candidate("q", "X", 2, null)
+        ))
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.removalWarnings("odd", o, null)
+            .single().startsWith("Серед перевірених"))
+    }
 }

@@ -159,8 +159,16 @@ object PlaylistLibraryDuplicateGroupPolicy {
         } else when (row.mark) {
             Mark.SAME -> lines += "Пісні не загубляться: лишиться ще ${row.sameWith} " +
                 "${playlistsWord(row.sameWith)} з тими самими піснями."
-            Mark.DIFFERENT -> lines += "Увага: такого складу пісень більше ніде в групі нема — " +
-                "після видалення його не лишиться (див. «чим відрізняється»)."
+            Mark.DIFFERENT -> {
+                // Batch 15: not proven while others of the same size are unchecked.
+                val unchecked = overview.bands.firstOrNull { band -> band.rows.any { it.identity == target } }
+                    ?.rows?.count { it.mark == Mark.UNCHECKED } ?: 0
+                lines += if (unchecked > 0) "Серед перевірених такого складу пісень більше нема, але " +
+                    "$unchecked ${playlistsWord(unchecked)} з тією самою кількістю пісень ще не перевірено " +
+                    "(див. «чим відрізняється»)."
+                else "Увага: такого складу пісень більше ніде в групі нема — " +
+                    "після видалення його не лишиться (див. «чим відрізняється»)."
+            }
             Mark.UNCHECKED -> lines += "Увага: пісні цього плейліста не перевірені — " +
                 "невідомо, чи є такий самий склад деінде."
         }
@@ -178,12 +186,23 @@ object PlaylistLibraryDuplicateGroupPolicy {
         return others.count { PlaylistLibraryDuplicatePolicy.songFingerprint(it) == print }
     }
 
-    /** Plain line for the «copy and archive» confirmation. */
-    fun archiveRemovalLine(sameElsewhere: Int): String =
-        if (sameElsewhere > 0) "Пісні не загубляться: такий самий склад є ще в " +
-            "$sameElsewhere ${if (sameElsewhere == 1) "плейлісті" else "плейлістах"}."
-        else "Увага: такого самого складу пісень більше ніде не знайдено — " +
-            "після видалення цей список пісень зникне з телефона."
+    /**
+     * Plain line for the «copy and archive» confirmation. Batch 15 (faric
+     * screenshot 2026-10-25 03:07, group №27): «більше ніде не знайдено» read
+     * as proven, though the YouTube twin's songs were never read. With
+     * unchecked YouTube playlists in the group it says so instead.
+     */
+    fun archiveRemovalLine(sameElsewhere: Int, uncheckedYouTube: Int = 0, groupNumber: Int? = null): String =
+        when {
+            sameElsewhere > 0 -> "Пісні не загубляться: такий самий склад є ще в " +
+                "$sameElsewhere ${if (sameElsewhere == 1) "плейлісті" else "плейлістах"}."
+            uncheckedYouTube > 0 -> "Невідомо, чи є такий самий склад деінде: " +
+                "$uncheckedYouTube ${playlistsWord(uncheckedYouTube)} YouTube" +
+                (groupNumber?.let { " у групі №$it" } ?: "") + " ще не перевірено. " +
+                "Щоб знати напевно, спершу натисніть «Перевірити пісні YouTube» у вікні групи."
+            else -> "Увага: такого самого складу пісень більше ніде не знайдено — " +
+                "після видалення цей список пісень зникне з телефона."
+        }
 
     data class Song(val videoId: String?, val title: String)
 
