@@ -18,7 +18,7 @@ faric 25.10 03:10: «Да, роби малу пачку, один потім п�
 ```
 - [x] (код) `archiveRemovalLine(same, uncheckedYouTube, groupNumber)`, `uncheckedYouTubeInGroupOf`; `removalWarnings` для ≠ з неперевіреними поруч.
 - [x] JVM **93 OK** (`uncheckedYouTubeIsNotCalledNowhere`). Маніфест, preflight.
-- [ ] PR → Validate → документи ДО збірки → fast-forward → підписаний APK.
+- [x] PR #80 → Validate `40145743744` PASS (обидві частини) на `6bb2bf8` → документи ДО збірки → fast-forward → підписаний APK.
 - [ ] Телефон: той самий шлях, що в batch 14 крок 2 (Prodigy «The Night Is My Friend EP» → «Видалити локальну копію» → «Видалити і копію, і архів…») → у другому вікні «Невідомо, чи є такий самий склад деінде… у групі №27…» → **«Скасувати»**.
 
 ## CURRENT TASK — 2026-10-23 / Library batch 14 — «Видалити і копію, і архів…» + «×» у полі пошуку (гілка `feat/v1.4.58-library-batch14`)
