@@ -550,6 +550,8 @@ class ServiceActivity : Activity() {
             serviceCard(
                 "Версія",
                 "YTM Importer ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
+                    // Library batch 16: which build exactly (faric 2026-10-28).
+                    "Збірка ${BuildConfig.VERSION_CODE} • коміт ${BuildConfig.GIT_COMMIT}\n" +
                     "Цільовий SDK Android: ${applicationInfo.targetSdkVersion}"
             ) {
                 open(Page.VERSION)
@@ -619,6 +621,8 @@ class ServiceActivity : Activity() {
             infoCard(
                 "Встановлено",
                 "YTM Importer ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
+                    // Library batch 16: which build exactly (faric 2026-10-28).
+                    "Збірка ${BuildConfig.VERSION_CODE} • коміт ${BuildConfig.GIT_COMMIT}\n" +
                     "Цільовий SDK Android: ${applicationInfo.targetSdkVersion}"
             )
         )

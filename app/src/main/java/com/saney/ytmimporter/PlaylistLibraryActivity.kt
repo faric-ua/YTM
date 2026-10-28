@@ -1533,6 +1533,10 @@ class PlaylistLibraryActivity : Activity() {
                             "не перевірено: не в усіх пісень є відео YouTube"
                         videoIds.size != (candidate?.trackCount ?: -1) ->
                             "не перевірено: список пісень неповний"
+                        // Batch 16 (faric recording 2026-10-28, group №27): others of the
+                        // same size exist, only their songs are not read yet.
+                        band.rows.size > 1 -> "пісні відомі; порівняти ще ні з ким: " +
+                            "інші на ${candidate?.trackCount ?: 0} не перевірені"
                         else -> "пісні відомі; інших плейлістів на ${candidate?.trackCount ?: 0} " +
                             "у групі нема"
                     }
