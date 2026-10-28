@@ -33,14 +33,21 @@ android {
         applicationId = "com.saney.ytmimporter"
         minSdk = 26
         targetSdk = 36
-        versionCode = 99
+        versionCode = 98
         versionName = "1.4.55"
         // Library batch 16 (faric 2026-10-28: «99-та білд не стає, остається 98-ма»):
-        // the commit of this build, shown in «Про YTM Importer» next to the number.
+        // test builds keep versionCode (the release audits pin it); the GitHub
+        // build number grows by itself with every APK and is shown in
+        // «Про YTM Importer» together with the commit.
+        buildConfigField(
+            "String",
+            "CI_BUILD",
+            "\"" + (System.getenv("GITHUB_RUN_NUMBER") ?: "локальна") + "\""
+        )
         buildConfigField(
             "String",
             "GIT_COMMIT",
-            "\"" + (System.getenv("GITHUB_SHA")?.take(7) ?: "локальна") + "\""
+            "\"" + (System.getenv("GITHUB_SHA")?.take(7) ?: "—") + "\""
         )
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

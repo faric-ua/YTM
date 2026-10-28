@@ -8,14 +8,14 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 98c346565cc5ba99  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-e63f570037c97a63  ACTIVE_PLAN.md
+1d67b2dadd3269c6  ACTIVE_PLAN.md
 681184265e82aa01  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
-244ca601510e519b  BACKLOG.md
+e11c774528dd7788  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
 8e0f4244a2907d2f  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
@@ -29,7 +29,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-1b0b0779a92637fb  RESUME_HERE.md
+93409b8fe712150d  RESUME_HERE.md
 02cff781bf9d6506  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -89,7 +89,7 @@ dda0dfee8e9ec237  TERMINAL_APPLY_v1.4.9.md
 bf54b69b8bb58e3d  TERMUX_COMMANDS.md
 55cdc8a68f1e48f2  TERMUX_ORGANIZE_DOWNLOAD_ZIPS.txt
 22bed1fcaf915359  YTM_ASSISTANT_WORKFLOW.md
-2d4d482c1cb19d3d  app/build.gradle.kts
+814dd46a128fae86  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
@@ -115,7 +115,7 @@ f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
 350505edd235e5f6  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
-daed732029d2254f  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
+6100be7080a45aec  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 562db04bb216f33f  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
 8923bc28bad4dcbe  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
 a6103ab954f7f0f5  app/src/main/java/com/saney/ytmimporter/YouTubePlayerActivity.kt
