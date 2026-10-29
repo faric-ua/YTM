@@ -1,0 +1,61 @@
+name: UI screens (presentation)
+
+# Screenshots of the app with demo data for the presentation video
+# (faric 2026-10-29). Push to diag/ui-screens* → PNGs committed to the branch
+# diag/ui-screens-out (Claude's session cannot download Actions artifacts).
+on:
+  push:
+    branches:
+      - 'diag/ui-screens*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  screens:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Enable KVM acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Screens on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: false
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+          script: |
+            gradle :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.saney.ytmimporter.tour.ScreenTourTest -Pandroid.testInstrumentationRunnerArguments.screenTour=1 --stacktrace || true
+            mkdir -p out
+            adb pull /data/local/tmp/tour/. out/ || true
+            adb logcat -d -s ScreenTour:V AndroidRuntime:E TestRunner:V > out/log.txt || true
+            ls -la out
+      - name: Commit screens to diag/ui-screens-out
+        run: |
+          set -euo pipefail
+          git config user.name "ytm-screens-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git fetch origin diag/ui-screens-out || true
+          git switch --orphan screens-tmp
+          git rm -rf --cached . >/dev/null 2>&1 || true
+          find . -mindepth 1 -maxdepth 1 ! -name out ! -name .git -exec rm -rf {} +
+          mv out/* . && rmdir out
+          echo "source: ${GITHUB_SHA}" > SOURCE.txt
+          git add -A
+          git commit -m "UI screens from ${GITHUB_SHA::7}"
+          git push -f origin HEAD:diag/ui-screens-out

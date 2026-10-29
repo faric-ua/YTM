@@ -6,6 +6,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 207aa607b11cc911  .github/workflows/bootstrap.yml
 957b553c7b6dec80  .github/workflows/build-apk.yml
 06a09c3088029d02  .github/workflows/publish-release.yml
+34e4ae9f429c0fba  .github/workflows/ui-screens.yml
 98c346565cc5ba99  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
 9a1606f67619ab24  ACTIVE_PLAN.md
@@ -91,6 +92,7 @@ bf54b69b8bb58e3d  TERMUX_COMMANDS.md
 22bed1fcaf915359  YTM_ASSISTANT_WORKFLOW.md
 814dd46a128fae86  app/build.gradle.kts
 9efd52561bd57811  app/proguard-rules.pro
+a839986258b36319  app/src/androidTest/java/com/saney/ytmimporter/tour/ScreenTourTest.kt
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
 a3580f5d2b40919a  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
