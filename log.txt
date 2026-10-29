@@ -1,0 +1,21 @@
+--------- beginning of main
+10-29 17:19:58.052  4304  4318 I TestRunner: run started: 1 tests
+10-29 17:19:58.053  4304  4318 I TestRunner: started: tour(com.saney.ytmimporter.tour.ScreenTourTest)
+10-29 17:20:06.584  4304  4318 I ScreenTour: shot 01_welcome
+10-29 17:20:12.894  4304  4318 I ScreenTour: shot 02_home
+10-29 17:20:18.594  4304  4318 I ScreenTour: shot 03_menu
+10-29 17:20:24.610  4304  4318 I ScreenTour: shot 04_import
+10-29 17:20:30.909  4304  4318 I ScreenTour: shot 05_playlist
+10-29 17:20:37.043  4304  4318 I ScreenTour: shot 06_review
+10-29 17:20:44.629  4304  4318 I ScreenTour: shot 07_edit
+10-29 17:20:50.886  4304  4318 I ScreenTour: shot 08_history
+10-29 17:20:56.820  4304  4318 I ScreenTour: shot 09_queue
+10-29 17:21:03.011  4304  4318 I ScreenTour: shot 10_quota
+10-29 17:21:09.848  4304  4318 I ScreenTour: shot 11_library
+10-29 17:21:15.922  4304  4318 I ScreenTour: shot 12_url
+10-29 17:21:21.901  4304  4318 I ScreenTour: shot 13_data
+10-29 17:21:28.239  4304  4318 I ScreenTour: shot 14_recovery
+10-29 17:21:34.211  4304  4318 I ScreenTour: shot 15_about
+10-29 17:21:40.307  4304  4318 I ScreenTour: shot 16_service
+10-29 17:21:41.150  4304  4318 I TestRunner: finished: tour(com.saney.ytmimporter.tour.ScreenTourTest)
+10-29 17:21:41.193  4304  4318 I TestRunner: run finished: 1 tests, 0 failed, 0 ignored
