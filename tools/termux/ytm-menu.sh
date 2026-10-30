@@ -9,7 +9,7 @@ cd "$HOME" || exit 1
 pause_menu() {
   echo
   printf "Натисни Enter, щоб повернутися в меню..."
-  read -r _
+  read -r _ || exit 0  # Termux закрили не пунктом 0 — не крутитись по колу (інспектор 2026-10-30)
 }
 
 run_tool() {
@@ -60,7 +60,7 @@ while true; do
   echo "0 — Вийти"
   echo
   printf "Вибір: "
-  read -r choice
+  read -r choice || exit 0  # Termux закрили не пунктом 0 — не крутитись по колу (інспектор 2026-10-30)
 
   case "$choice" in
     1) run_tool "ytm-sync.sh" ;;
