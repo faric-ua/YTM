@@ -33,7 +33,9 @@ faric 05.11 05:58: «давай 6 оці виправляти, а стабіль
 - [x] (5) `ui/ImportHelpText.kt` (слова, JVM-тест: кожна кнопка Імпорту пояснена і досі існує) + `ui/ImportHelpWindow.kt` (вигляд як довідка Бібліотеки), вікно переживає поворот (`RestorableModalController`).
 - [x] (6) `UrlSnapshotResolver.resolveMixAttempt` + `UrlSnapshotMixPolicy` + `YouTubeApi.listPlaylistSnapshotItems(pageLimit)`; звичайний `resolve()` Mix, як і раніше, не читає (аудит v1.4.51 і тест `dynamicMix_returnsUnsupportedWithoutReadOrQuota` лишаються). Mix не кешується. Прихованого scraper — нема.
 - [x] Довідка Бібліотеки: рядок «Показано…», «назад» повертає в групу, «Є тут, але без відео».
-- [ ] PR → Validate (обидві частини) → документи ДО збірки → fast-forward → підписаний APK.
+- [x] PR #83 → Validate `41968083938` PASS (обидві частини, з новими тестами емулятора) на `8ffc210`. По дорозі: перший прогін впав на компіляції — новий параметр `pageLimit` став після `onListRequest` і зламав три старі виклики з лямбдою в кінці (`BulkSyncExecutor`, `BulkSessionPreparationCoordinator`, `BulkSyncPreviewActivity`) → `pageLimit` перед `onListRequest`. **Урок:** новий параметр зі значенням за замовчуванням — ніколи не після параметра-функції, бо виклики `f(a, b) { … }` прив'язують лямбду до ОСТАННЬОГО параметра.
+- [x] CI: помилки компіляції JVM і тестів емулятора тепер видно анотаціями (раніше лише «exit code 1» / «no failing testcase found» — журнали із сесії не відкриваються).
+- [ ] Документи ДО збірки → fast-forward → підписаний APK.
 - [ ] Телефон (по одному кроку): (1) група → плейліст → «назад» → група; (2) «Тільки YouTube» + пошук → «Показано» = плиток, без «архівів History»; (3) стрілка «←»; (4) «Чим відрізняється» для архіву без відео; (5) «?» на Імпорті; (6) посилання на Mix → «Спробувати прочитати Mix».
 
 ## CURRENT TASK — 2026-10-28 / Library batch 16 — номер збірки в застосунку + «порівняти ще ні з ким» (гілка `feat/v1.4.58-library-batch16`)
