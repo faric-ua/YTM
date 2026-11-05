@@ -8,14 +8,14 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 44be1f23513cb874  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-750124b74eb44307  ACTIVE_PLAN.md
+555fb8762075a32d  ACTIVE_PLAN.md
 681184265e82aa01  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
-51bc4b45430fac46  BACKLOG.md
+aa83c7209effd26c  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
 8e0f4244a2907d2f  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
@@ -117,7 +117,7 @@ f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 350505edd235e5f6  app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt
 6100be7080a45aec  app/src/main/java/com/saney/ytmimporter/ServiceActivity.kt
 562db04bb216f33f  app/src/main/java/com/saney/ytmimporter/StorageChooserActivity.kt
-a19221bd43f947e9  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
+d0b11a026282bd27  app/src/main/java/com/saney/ytmimporter/UrlSnapshotActivity.kt
 3606e52444a15782  app/src/main/java/com/saney/ytmimporter/YouTubePlayerActivity.kt
 c6cb0a547305366c  app/src/main/java/com/saney/ytmimporter/auth/AuthSessionStore.kt
 d1dd3017e7223816  app/src/main/java/com/saney/ytmimporter/auth/GoogleAccessTokenRecovery.kt
@@ -221,7 +221,7 @@ f8eef70204bb169c  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapsho
 a7e3ea909f69dfb5  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotDuplicatePolicy.kt
 188eba82e35ca27c  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotLocalCommitter.kt
 d0a955ea1ab22526  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotReadPolicy.kt
-9bcf8e55fd9f3df5  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotRemoteOperations.kt
+1e202d54e77d0641  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotRemoteOperations.kt
 ef6dfa72192d3d70  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotResolution.kt
 ce1b5394442d92cb  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotResolver.kt
 334967fe2e7b875e  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapshotSourceParser.kt

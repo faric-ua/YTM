@@ -6,6 +6,7 @@ import android.os.Looper
 import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.auth.GoogleAccessTokenRecovery
 import com.saney.ytmimporter.auth.PersistentAuthStateStore
+import com.saney.ytmimporter.auth.SilentGoogleSessionRestorer
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.youtube.YouTubeApi
@@ -207,11 +208,21 @@ object UrlSnapshotRemoteOperations {
                 UrlSnapshotSourceKind
                     .DYNAMIC_MIX
 
-        if (
-            (source.kind ==
+        val needsToken =
+            source.kind ==
                 UrlSnapshotSourceKind
-                    .CONCRETE_PLAYLIST || readsMix) &&
-            token == null
+                    .CONCRETE_PLAYLIST || readsMix
+
+        // Batch 17 (faric 2026-11-06 00:13: «Спочатку підключіть Google»
+        // while Home showed «Підключено: faric»): the access token lives only
+        // in memory and is gone after Android closed the app in the background.
+        // Restore it silently, like the Library does (BUG-052), instead of
+        // sending the owner to Home.
+        if (
+            needsToken &&
+            token == null &&
+            !PersistentAuthStateStore(appContext)
+                .hadSuccessfulAuthorization()
         ) {
             publish(
                 State(
@@ -261,16 +272,59 @@ object UrlSnapshotRemoteOperations {
                     appContext
                 )
 
+            val api =
+                YouTubeApi(
+                    accessTokenRecovery =
+                        GoogleAccessTokenRecovery(
+                            appContext
+                        )
+                )
+
+            val liveToken =
+                if (needsToken && token == null) {
+                    val restored =
+                        runCatching {
+                            SilentGoogleSessionRestorer(appContext)
+                                .restoreBlocking(api) {
+                                    quotaTracker.recordGeneralUnits(
+                                        QuotaTracker.SIMPLE_LIST_COST
+                                    )
+                                }
+                        }.getOrDefault(
+                            SilentGoogleSessionRestorer.Result.FAILED
+                        )
+
+                    val fresh =
+                        AuthSessionStore
+                            .current()
+                            .accessToken
+                            ?.takeIf { it.isNotBlank() }
+
+                    if (fresh == null) {
+                        publish(
+                            State(
+                                phase =
+                                    Phase.ERROR,
+                                inputUrl =
+                                    input,
+                                source =
+                                    source,
+                                message =
+                                    restoreFailureMessage(restored)
+                            )
+                        )
+                        return@execute
+                    }
+                    fresh
+                } else {
+                    token
+                }
+
             val resolver =
                 UrlSnapshotResolver
                     .production(
                         api =
-                            YouTubeApi(
-                                accessTokenRecovery =
-                                    GoogleAccessTokenRecovery(
-                                        appContext
-                                    )
-                            ),
+                            api,
                         quotaTracker =
                             quotaTracker
                     )
@@ -280,14 +334,14 @@ object UrlSnapshotRemoteOperations {
                     if (readsMix) {
                         resolver.resolveMixAttempt(
                             accessToken =
-                                token.orEmpty(),
+                                liveToken.orEmpty(),
                             source =
                                 source
                         )
                     } else {
                         resolver.resolve(
                             accessToken =
-                                token.orEmpty(),
+                                liveToken.orEmpty(),
                             source =
                                 source
                         )
@@ -577,6 +631,22 @@ object UrlSnapshotRemoteOperations {
             }
         }
     }
+
+    /** Batch 17: why the silent Google restore did not give a token. */
+    private fun restoreFailureMessage(
+        result: SilentGoogleSessionRestorer.Result
+    ): String =
+        when (result) {
+            SilentGoogleSessionRestorer.Result.NEEDS_USER ->
+                "Google просить підтвердити вхід. Відкрийте Головна → " +
+                    "«2. Google / YTM» і підтвердьте, потім спробуйте ще раз."
+            SilentGoogleSessionRestorer.Result.NEVER_AUTHORIZED ->
+                "Спочатку підключіть Google / YTM на головному екрані."
+            SilentGoogleSessionRestorer.Result.FAILED,
+            SilentGoogleSessionRestorer.Result.RESTORED ->
+                "Не вдалося відновити підключення Google (немає інтернету " +
+                    "або Google не відповів). Спробуйте ще раз трохи пізніше."
+        }
 
     private fun unsupportedMessage(
         result:

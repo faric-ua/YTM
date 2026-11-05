@@ -567,10 +567,8 @@ class UrlSnapshotActivity : Activity() {
                         }
                     )
                 }
-
-                content.addView(
-                    cancelPreviewButton()
-                )
+                // Batch 17: «Скасувати preview» stays only in the footer
+                // (faric's screenshot 2026-11-06 00:13 showed it twice).
             }
 
             UrlSnapshotRemoteOperations
@@ -589,10 +587,7 @@ class UrlSnapshotActivity : Activity() {
                             state.message
                     )
                 )
-
-                content.addView(
-                    cancelPreviewButton()
-                )
+                // Batch 17: «Скасувати preview» — only in the footer.
             }
         }
 
