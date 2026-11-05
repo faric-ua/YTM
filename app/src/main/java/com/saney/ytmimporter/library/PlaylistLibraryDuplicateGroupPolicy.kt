@@ -212,10 +212,24 @@ object PlaylistLibraryDuplicateGroupPolicy {
         /** Songs of the reference that this playlist lacks. */
         val missingHere: List<Song>,
         /** Songs of this playlist with no YouTube video at all. */
-        val withoutVideo: List<Song>
+        val withoutVideo: List<Song>,
+        /**
+         * Batch 17: songs of this playlist with no video whose name is the
+         * name of a reference song this playlist «lacks» — the same song, only
+         * without a video here. Not in [missingHere] nor in [withoutVideo].
+         */
+        val sameNameNoVideo: List<Song> = emptyList()
     ) {
         val isEmpty: Boolean
-            get() = onlyHere.isEmpty() && missingHere.isEmpty() && withoutVideo.isEmpty()
+            get() = onlyHere.isEmpty() && missingHere.isEmpty() && withoutVideo.isEmpty() &&
+                sameNameNoVideo.isEmpty()
+    }
+
+    /** Batch 17: names compared without case and extra spaces. */
+    fun sameName(a: String, b: String): Boolean {
+        fun norm(v: String) = v.trim().lowercase().replace(Regex("\\s+"), " ")
+        val left = norm(a)
+        return left.isNotEmpty() && left == norm(b)
     }
 
     private val videoIdPattern = Regex("^[A-Za-z0-9_-]{11}$")
@@ -236,8 +250,20 @@ object PlaylistLibraryDuplicateGroupPolicy {
         return others.first { counts[it.second] == best }.first.identity
     }
 
-    /** Song-by-song difference by video, repeats count, order ignored. */
-    fun difference(target: List<Song>, reference: List<Song>?): Difference {
+    /**
+     * Song-by-song difference by video, repeats count, order ignored.
+     *
+     * Batch 17 (faric 2026-11-05, group №10: the History archive without videos
+     * listed all 25 songs as «Немає тут» and the same 25 again as «Без відео»):
+     * a song without a video here whose name ([titleOf]) is the name of a
+     * reference song this playlist lacks is the same song without a video —
+     * it goes to [Difference.sameNameNoVideo] instead of both lists.
+     */
+    fun difference(
+        target: List<Song>,
+        reference: List<Song>?,
+        titleOf: (Song) -> String = { it.title }
+    ): Difference {
         val withoutVideo = target.filter { validId(it.videoId) == null }
         if (reference == null) return Difference(emptyList(), emptyList(), withoutVideo)
         val left = reference.filter { validId(it.videoId) != null }.toMutableList()
@@ -246,8 +272,23 @@ object PlaylistLibraryDuplicateGroupPolicy {
             val i = left.indexOfFirst { it.videoId == song.videoId }
             if (i >= 0) left.removeAt(i) else onlyHere += song
         }
-        return Difference(onlyHere, left, withoutVideo)
+        val sameName = mutableListOf<Song>()
+        val unmatched = mutableListOf<Song>()
+        withoutVideo.forEach { song ->
+            val i = left.indexOfFirst { sameName(titleOf(it), titleOf(song)) }
+            if (i >= 0) {
+                left.removeAt(i)
+                sameName += song
+            } else {
+                unmatched += song
+            }
+        }
+        return Difference(onlyHere, left, unmatched, sameName)
     }
+
+    /** Batch 17: not one song of the playlist has a YouTube video. */
+    fun noVideoAtAll(songs: List<Song>): Boolean =
+        songs.isNotEmpty() && songs.all { validId(it.videoId) == null }
 
     /**
      * Short plain verdict shown on a catalogue card (owner 2026-10-17 00:25:

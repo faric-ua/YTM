@@ -61,7 +61,9 @@ class YouTubePlayerActivity : Activity() {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
-        header.addView(action("‹") { finish() }, LinearLayout.LayoutParams(dp(54), dp(52)))
+        // Batch 17 (faric 2026-11-05): the same «←» as on every other screen.
+        header.addView(UiChrome.backButton(this) { finish() },
+            LinearLayout.LayoutParams(dp(54), dp(48)))
         header.addView(caption(title, 19f, palette.text), LinearLayout.LayoutParams(
             0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
         ))

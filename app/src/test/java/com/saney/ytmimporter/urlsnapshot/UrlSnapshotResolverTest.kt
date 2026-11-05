@@ -1,6 +1,7 @@
 package com.saney.ytmimporter.urlsnapshot
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -364,6 +365,95 @@ class UrlSnapshotResolverTest {
         ).resolve("token", source("PLtitle")) as UrlSnapshotResolutionResult.Resolved
         assertEquals("Remote playlist title", result.playlistTitle)
         assertEquals(2, result.requestCount)
+    }
+
+    // Batch 17 (faric 2026-11-05): one explicit, official attempt to read a Mix.
+    private fun mixResolver(
+        reads: IntArray,
+        quota: IntArray,
+        mix: UrlSnapshotMixReader
+    ) = UrlSnapshotResolver(
+        playlistReader = UrlSnapshotConcretePlaylistReader { _, _, _ ->
+            reads[0] += 1
+            UrlSnapshotPlaylistRead(items = emptyList(), requestCount = 0)
+        },
+        quotaRecorder = UrlSnapshotQuotaRecorder { quota[0] += 1 },
+        mixReader = mix
+    )
+
+    private val mixSource get() = source(
+        playlistId = "RDREDRRxBLCgTn4p2e5sfWmEpQ",
+        kind = UrlSnapshotSourceKind.DYNAMIC_MIX
+    )
+
+    @Test
+    fun dynamicMix_plainResolveStillNeverReadsEvenWithMixReader() {
+        val reads = intArrayOf(0)
+        val quota = intArrayOf(0)
+        var mixReads = 0
+        val result = mixResolver(reads, quota) { _, _, _ ->
+            mixReads += 1
+            UrlSnapshotPlaylistRead(items = emptyList(), requestCount = 0)
+        }.resolve("token", mixSource)
+        assertTrue(result is UrlSnapshotResolutionResult.Unsupported)
+        assertEquals(0, mixReads)
+        assertEquals(0, quota[0])
+    }
+
+    @Test
+    fun mixAttempt_givesSnapshotNamedAfterFirstSong() {
+        val reads = intArrayOf(0)
+        val quota = intArrayOf(0)
+        val result = mixResolver(reads, quota) { _, id, onListRequest ->
+            assertEquals("RDREDRRxBLCgTn4p2e5sfWmEpQ", id)
+            onListRequest()
+            onListRequest()
+            UrlSnapshotPlaylistRead(
+                items = listOf(raw(0, "AAAAAAAAAAA", "Breathe"), raw(1, "BBBBBBBBBBB", "Firestarter")),
+                requestCount = 2
+            )
+        }.resolveMixAttempt("token", mixSource) as UrlSnapshotResolutionResult.Resolved
+        assertEquals(listOf("AAAAAAAAAAA", "BBBBBBBBBBB"), result.items.map { it.videoId })
+        assertEquals("Mix — Breathe", result.playlistTitle)
+        assertEquals(2, quota[0])
+        assertEquals(0, reads[0])
+    }
+
+    @Test
+    fun mixAttempt_youTubeRefusalIsAnHonestAnswer() {
+        val result = mixResolver(intArrayOf(0), intArrayOf(0)) { _, _, onListRequest ->
+            onListRequest()
+            throw com.saney.ytmimporter.youtube.YouTubeApiException(
+                404, "playlistNotFound", "Плейлист не знайдено")
+        }.resolveMixAttempt("token", mixSource)
+        assertEquals(UrlSnapshotUnsupportedReason.MIX_NOT_GIVEN_BY_YOUTUBE,
+            (result as UrlSnapshotResolutionResult.Unsupported).reason)
+    }
+
+    @Test
+    fun mixAttempt_withoutPlayableSongsIsAnHonestAnswer() {
+        val result = mixResolver(intArrayOf(0), intArrayOf(0)) { _, _, _ ->
+            UrlSnapshotPlaylistRead(items = listOf(raw(0, null, null)), requestCount = 1)
+        }.resolveMixAttempt("token", mixSource)
+        assertTrue(result is UrlSnapshotResolutionResult.Unsupported)
+    }
+
+    @Test
+    fun mixAttempt_signInOrQuotaProblemsAreNotHidden() {
+        assertTrue(UrlSnapshotMixPolicy.youTubeRefused(404, "playlistNotFound", quota = false))
+        assertTrue(UrlSnapshotMixPolicy.youTubeRefused(403, "playlistItemsNotAccessible", quota = false))
+        assertFalse(UrlSnapshotMixPolicy.youTubeRefused(403, "quotaExceeded", quota = true))
+        assertFalse(UrlSnapshotMixPolicy.youTubeRefused(401, "authError", quota = false))
+        assertFalse(UrlSnapshotMixPolicy.youTubeRefused(500, null, quota = false))
+        var thrown = false
+        try {
+            mixResolver(intArrayOf(0), intArrayOf(0)) { _, _, _ ->
+                throw com.saney.ytmimporter.youtube.YouTubeApiException(401, "authError", "401")
+            }.resolveMixAttempt("token", mixSource)
+        } catch (_: com.saney.ytmimporter.youtube.YouTubeApiException) {
+            thrown = true
+        }
+        assertTrue(thrown)
     }
 
     private fun resolverReturning(

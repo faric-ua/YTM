@@ -84,4 +84,14 @@ object LibraryFilterPolicy {
             .getOrDefault(0L)
             .coerceAtLeast(0L)
     }
+
+    /**
+     * Batch 17 (faric 2026-11-05: «Показано 27… архівів History 2» with
+     * «Тільки YouTube» — «як може бути показана історія 2 із Ютуба»).
+     * The line counts only what is shown: History archives among the shown
+     * cards, and no History part at all when phone cards are not shown.
+     */
+    fun shownLine(shown: Int, groups: Int, historyShown: Int, source: Source): String =
+        "Показано: $shown • груп схожих: $groups" +
+            if (source == Source.YOUTUBE) "" else " • архівів History: $historyShown"
 }

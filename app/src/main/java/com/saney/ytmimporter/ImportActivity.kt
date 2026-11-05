@@ -1,5 +1,6 @@
 package com.saney.ytmimporter
 import com.saney.ytmimporter.ui.AppThemeManager
+import com.saney.ytmimporter.ui.ImportHelpWindow
 import com.saney.ytmimporter.ui.RestorableModalController
 import com.saney.ytmimporter.ui.ScrollPositionState
 import com.saney.ytmimporter.ui.UiChrome
@@ -3549,6 +3550,12 @@ class ImportActivity : Activity() {
         modalId: String,
         args: Bundle
     ): Dialog? {
+        if (modalId == MODAL_IMPORT_HELP) {
+            return ImportHelpWindow.show(this) {
+                clearWorkspaceModalController.clearState()
+            }
+        }
+
         if (modalId != MODAL_CLEAR_WORKSPACE) {
             return null
         }
@@ -3692,6 +3699,20 @@ class ImportActivity : Activity() {
                     0,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     1f
+                )
+            )
+
+            // Batch 17 (faric 2026-11-05): «?» — what every button does.
+            addView(
+                ImportHelpWindow.button(this@ImportActivity) {
+                    clearWorkspaceModalController.show(
+                        modalId = MODAL_IMPORT_HELP,
+                        renderer = ::renderClearWorkspaceModal
+                    )
+                },
+                LinearLayout.LayoutParams(
+                    dp(48),
+                    dp(48)
                 )
             )
         }
@@ -3890,6 +3911,10 @@ class ImportActivity : Activity() {
 
         private const val MODAL_CLEAR_WORKSPACE =
             "clear_workspace"
+
+        /** Batch 17: the Import «?» window (kept across rotation like the others). */
+        private const val MODAL_IMPORT_HELP =
+            "import_help"
 
         private const val ARG_CLEAR_WORKSPACE_ID =
             "clear_workspace_local_playlist_id"

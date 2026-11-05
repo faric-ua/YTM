@@ -673,6 +673,136 @@ class PlaylistLibraryActivityTest {
         }
     }
 
+    /** Batch 17: Back from a playlist opened in «Група №N» shows the group window again. */
+    @Test fun backFromPlaylistOpenedInGroupWindowReturnsToTheWindow() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val suffix = UUID.randomUUID().toString().take(6)
+        val title = "Повернення в групу $suffix"
+        val store = CurrentPlaylistStore(context)
+        repeat(3) { i ->
+            store.save(ImportedPlaylist(title, mutableListOf(
+                Track("Пісня 1", "Гурт", selectedVideoId = "grpback0001"),
+                Track("Пісня 2", "Гурт", selectedVideoId = "grpback0002"))),
+                "Тест повернення в групу", localPlaylistId = "grpback-$suffix-$i")
+        }
+        try {
+            ActivityScenario.launch<PlaylistLibraryActivity>(
+                Intent(context, PlaylistLibraryActivity::class.java)
+            ).use { scene ->
+                idle()
+                scene.onActivity { activity ->
+                    val label = activity.window.decorView.findLabel(title) ?: error("Card missing")
+                    var card: View? = label
+                    while (card != null && !(card.isClickable && card.tag is String)) {
+                        card = card.parent as? View
+                    }
+                    ((card as ViewGroup).findClickableDescription("Схожі плейлісти, група")
+                        ?: error("Group hint missing")).performClick()
+                }
+                idle()
+                scene.onActivity {
+                    assertNotNull("Group window missing", groupWindowScroller(title))
+                    clickGroupRow(title)
+                }
+                idle()
+                scene.onActivity { activity ->
+                    assertNull("Group window still open over the playlist", groupWindowScroller(title))
+                    // The playlist page is open (its own songs are listed).
+                    assertTrue(activity.window.decorView.hasText("Пісня 1"))
+                    activity.onBackPressedDispatcher.onBackPressed()
+                }
+                var back: android.widget.ScrollView? = null
+                var tries = 0
+                while (back == null && tries++ < 20) {
+                    idle()
+                    scene.onActivity { back = groupWindowScroller(title) }
+                    if (back == null) android.os.SystemClock.sleep(100)
+                }
+                assertNotNull("Back did not return to «Група №…»", back)
+                // A second Back closes the window and leaves the catalogue.
+            }
+        } finally {
+            repeat(3) { i ->
+                RestorablePlaylistStore(context).remove("grpback-$suffix-$i")
+                store.clearIfMatches("grpback-$suffix-$i")
+            }
+        }
+    }
+
+    @android.annotation.TargetApi(29)
+    private fun clickGroupRow(title: String) {
+        val window = android.view.inspector.WindowInspector.getGlobalWindowViews()
+            .first { it.isShown && it.hasText("— схожі плейлісти") && it.hasText(title) }
+        val rows = mutableListOf<View>()
+        fun walk(view: View) {
+            if (view.isClickable && (view.tag as? String)?.startsWith("library_row:") == true) {
+                rows += view
+                return
+            }
+            if (view is ViewGroup) for (i in 0 until view.childCount) walk(view.getChildAt(i))
+        }
+        walk(window)
+        rows.first().performClick()
+    }
+
+    /** Batch 17: «Показано» = tiles on screen; no «архівів History» for «Тільки YouTube». */
+    @Test fun shownCountMatchesTilesAndYouTubeOnlyHasNoArchives() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val suffix = UUID.randomUUID().toString().take(6)
+        val store = com.saney.ytmimporter.storage.RemotePlaylistListStore(context)
+        val auth = com.saney.ytmimporter.auth.PersistentAuthStateStore(context)
+        store.save("UCcount$suffix", (1..27).map { i ->
+            com.saney.ytmimporter.model.YouTubePlaylistInfo(
+                "PLcount$suffix$i", "Рахунок $suffix №$i", "public", i.toLong())
+        } + com.saney.ytmimporter.model.YouTubePlaylistInfo(
+            "PLother$suffix", "Інше $suffix", "public", 3))
+        auth.markSuccessfulAuthorization()
+        try {
+            ActivityScenario.launch<PlaylistLibraryActivity>(
+                Intent(context, PlaylistLibraryActivity::class.java)
+            ).use { scene ->
+                idle()
+                scene.onActivity { activity ->
+                    activity.window.decorView.collectActions()
+                        .first { it is ImageButton && it.contentDescription == "YouTube" }
+                        .performClick()
+                }
+                idle()
+                scene.onActivity { activity ->
+                    assertTrue("not «Тільки YouTube»", activity.window.decorView.hasText("YouTube • Нові"))
+                    val box = activity.window.decorView.findSearchBox() ?: error("Search box missing")
+                    box.setText("Рахунок $suffix")
+                }
+                android.os.SystemClock.sleep(
+                    com.saney.ytmimporter.library.LibrarySearchPolicy.TYPING_PAUSE_MS + 400)
+                idle()
+                scene.onActivity { activity ->
+                    val root = activity.window.decorView
+                    val tiles = root.countTags("library_card:youtube:PLcount$suffix")
+                    assertEquals(27, tiles)
+                    assertEquals(27, root.countTags("library_card:"))
+                    assertTrue("«Показано: 27» missing", root.hasText("Показано: 27 •"))
+                    assertFalse("YouTube-only must not count History", root.hasText("архівів History"))
+                }
+            }
+        } finally {
+            store.clear()
+            auth.clear()
+        }
+    }
+
+    private fun View.countTags(prefix: String): Int {
+        var count = if ((tag as? String)?.startsWith(prefix) == true) 1 else 0
+        if (this is ViewGroup) for (i in 0 until childCount) count += getChildAt(i).countTags(prefix)
+        return count
+    }
+
+    private fun View.findSearchBox(): android.widget.EditText? {
+        if (this is android.widget.EditText && hint?.toString() == "Знайти плейліст") return this
+        if (this is ViewGroup) for (i in 0 until childCount) getChildAt(i).findSearchBox()?.let { return it }
+        return null
+    }
+
     @android.annotation.TargetApi(29)
     private fun groupWindowScroller(title: String): android.widget.ScrollView? =
         android.view.inspector.WindowInspector.getGlobalWindowViews()

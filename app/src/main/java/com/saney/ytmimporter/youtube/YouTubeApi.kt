@@ -371,7 +371,12 @@ class YouTubeApi(
     fun listPlaylistSnapshotItems(
         accessToken: String,
         playlistId: String,
-        onListRequest: () -> Unit = {}
+        onListRequest: () -> Unit = {},
+        /**
+         * Batch 17: a YouTube Mix has no end — read at most this many pages
+         * (50 songs each) and stop without an error. Null = whole playlist.
+         */
+        pageLimit: Int? = null
     ): PlaylistSnapshotItemsResult {
         val items =
             mutableListOf<
@@ -572,10 +577,10 @@ class YouTubeApi(
             pages += 1
         } while (
             pageToken != null &&
-            pages < 200
+            pages < (pageLimit ?: 200)
         )
 
-        if (pageToken != null) {
+        if (pageToken != null && pageLimit == null) {
             throw IllegalStateException(
                 "Playlist snapshot exceeded page safety limit"
             )

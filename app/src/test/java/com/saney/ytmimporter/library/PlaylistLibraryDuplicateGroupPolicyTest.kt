@@ -3,6 +3,7 @@ package com.saney.ytmimporter.library
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicateGroupPolicy.Mark
 import com.saney.ytmimporter.library.PlaylistLibraryDuplicatePolicy.Candidate
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -165,6 +166,35 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
         assertTrue(none.isEmpty)
         assertTrue(PlaylistLibraryDuplicateGroupPolicy.difference(
             listOf(S(a, "1"), S(b, "2")), listOf(S(b, "x"), S(a, "y"))).isEmpty)
+    }
+
+    @Test fun songWithoutVideoButSameNameIsNotListedTwice() {
+        // faric 2026-11-05, group №10: archive of 25 songs, none with a video —
+        // «Немає тут (25)» and «Без відео (25)» named the same songs.
+        val S = PlaylistLibraryDuplicateGroupPolicy::Song
+        val target = listOf(S(null, "Prodigy — Breathe"), S(null, "Prodigy  —  FIRESTARTER"),
+            S(null, "Інша пісня"))
+        val reference = listOf(S(a, "Prodigy — Breathe"), S(b, "Prodigy — Firestarter"),
+            S(c, "Smack My"))
+        val d = PlaylistLibraryDuplicateGroupPolicy.difference(target, reference)
+        assertEquals(listOf("Prodigy — Breathe", "Prodigy  —  FIRESTARTER"),
+            d.sameNameNoVideo.map { it.title })
+        assertEquals(listOf("Smack My"), d.missingHere.map { it.title })
+        assertEquals(listOf("Інша пісня"), d.withoutVideo.map { it.title })
+        assertTrue(PlaylistLibraryDuplicateGroupPolicy.noVideoAtAll(target))
+        assertFalse(PlaylistLibraryDuplicateGroupPolicy.noVideoAtAll(reference))
+        assertFalse(PlaylistLibraryDuplicateGroupPolicy.noVideoAtAll(emptyList()))
+        // Names of remembered YouTube songs come from elsewhere ([titleOf]).
+        val named = PlaylistLibraryDuplicateGroupPolicy.difference(
+            listOf(S(null, "Breathe")), listOf(S(a, "")),
+            titleOf = { if (it.videoId == a) "breathe" else it.title })
+        assertEquals(1, named.sameNameNoVideo.size)
+        assertTrue(named.missingHere.isEmpty())
+        // One reference song is matched once only.
+        val twice = PlaylistLibraryDuplicateGroupPolicy.difference(
+            listOf(S(null, "X"), S(null, "X")), listOf(S(a, "X")))
+        assertEquals(1, twice.sameNameNoVideo.size)
+        assertEquals(1, twice.withoutVideo.size)
     }
 
     @Test fun summarySaysSongsPerPlaylistForOneBand() {

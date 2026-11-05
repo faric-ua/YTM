@@ -12,7 +12,9 @@ enum class UrlSnapshotUnavailableReason {
 }
 
 enum class UrlSnapshotUnsupportedReason {
-    DYNAMIC_MIX_NOT_SUPPORTED_BY_CURRENT_RESOLVER
+    DYNAMIC_MIX_NOT_SUPPORTED_BY_CURRENT_RESOLVER,
+    /** Batch 17: the one explicit Mix attempt was made, YouTube gave no songs. */
+    MIX_NOT_GIVEN_BY_YOUTUBE
 }
 
 data class UrlSnapshotRawItem(
@@ -47,6 +49,40 @@ fun interface UrlSnapshotConcretePlaylistReader {
         playlistId: String,
         onListRequest: () -> Unit
     ): UrlSnapshotPlaylistRead
+}
+
+/**
+ * Batch 17 (faric 2026-11-05 05:45: «чому ми не можемо мікси взяти… може
+ * запрос пошлемо, і він нам пришле пачку»): reads the first pages of a Mix
+ * through the official YouTube Data API — the same request as for a playlist.
+ */
+fun interface UrlSnapshotMixReader {
+    fun read(
+        accessToken: String,
+        playlistId: String,
+        onListRequest: () -> Unit
+    ): UrlSnapshotPlaylistRead
+}
+
+/** Batch 17: pure rules of the one explicit Mix attempt. */
+object UrlSnapshotMixPolicy {
+    /** At most 2 pages = up to 100 songs, 2 quota units. */
+    const val PAGE_LIMIT = 2
+
+    /** YouTube said «no such playlist / not readable» — not a sign-in or quota problem. */
+    fun youTubeRefused(httpCode: Int, reason: String?, quota: Boolean): Boolean =
+        !quota && when (httpCode) {
+            404, 400 -> true
+            403 -> reason?.contains("NotAccessible", ignoreCase = true) == true ||
+                reason?.contains("playlistForbidden", ignoreCase = true) == true
+            else -> false
+        }
+
+    /** «Mix — <first song>», as YouTube names it; without songs — «YouTube Mix». */
+    fun title(items: List<UrlSnapshotResolvedItem>): String =
+        items.firstOrNull {
+            it.availability == UrlSnapshotAvailability.AVAILABLE && !it.title.isNullOrBlank()
+        }?.title?.let { "Mix — $it" } ?: "YouTube Mix"
 }
 
 fun interface UrlSnapshotQuotaRecorder {

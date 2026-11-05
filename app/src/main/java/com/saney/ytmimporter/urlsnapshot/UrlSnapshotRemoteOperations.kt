@@ -41,7 +41,10 @@ object UrlSnapshotRemoteOperations {
         val fromCache:
             Boolean = false,
         val cachedAt:
-            Long? = null
+            Long? = null,
+        /** Batch 17: the one explicit «Спробувати прочитати Mix» was made. */
+        val mixAttempted:
+            Boolean = false
     ) {
         val running: Boolean
             get() =
@@ -100,7 +103,9 @@ object UrlSnapshotRemoteOperations {
     fun startResolve(
         context: Context,
         rawUrl: String,
-        forceRemote: Boolean = false
+        forceRemote: Boolean = false,
+        /** Batch 17: the owner pressed «Спробувати прочитати Mix». */
+        mixAttempt: Boolean = false
     ): Boolean {
         if (state.running) {
             return false
@@ -196,10 +201,16 @@ object UrlSnapshotRemoteOperations {
                     it.isNotBlank()
                 }
 
-        if (
-            source.kind ==
+        val readsMix =
+            mixAttempt &&
+                source.kind ==
                 UrlSnapshotSourceKind
-                    .CONCRETE_PLAYLIST &&
+                    .DYNAMIC_MIX
+
+        if (
+            (source.kind ==
+                UrlSnapshotSourceKind
+                    .CONCRETE_PLAYLIST || readsMix) &&
             token == null
         ) {
             publish(
@@ -227,7 +238,10 @@ object UrlSnapshotRemoteOperations {
                 source =
                     source,
                 message =
-                    if (
+                    if (readsMix) {
+                        "Пробую прочитати Mix: до ${UrlSnapshotMixPolicy.PAGE_LIMIT} " +
+                            "запитів до YouTube…"
+                    } else if (
                         source.kind ==
                         UrlSnapshotSourceKind
                             .DYNAMIC_MIX
@@ -263,12 +277,21 @@ object UrlSnapshotRemoteOperations {
 
             val result =
                 runCatching {
-                    resolver.resolve(
-                        accessToken =
-                            token.orEmpty(),
-                        source =
-                            source
-                    )
+                    if (readsMix) {
+                        resolver.resolveMixAttempt(
+                            accessToken =
+                                token.orEmpty(),
+                            source =
+                                source
+                        )
+                    } else {
+                        resolver.resolve(
+                            accessToken =
+                                token.orEmpty(),
+                            source =
+                                source
+                        )
+                    }
                 }
 
             result.onSuccess {
@@ -277,8 +300,9 @@ object UrlSnapshotRemoteOperations {
                 when (resolution) {
                     is UrlSnapshotResolutionResult
                         .Resolved -> {
+                        // A Mix is different every time — never cached (batch 17).
                         val cachedAt =
-                            runCatching {
+                            if (readsMix) null else runCatching {
                                 UrlSnapshotCache(
                                     appContext
                                 )
@@ -325,7 +349,9 @@ object UrlSnapshotRemoteOperations {
                                 message =
                                     unsupportedMessage(
                                         resolution
-                                    )
+                                    ),
+                                mixAttempted =
+                                    readsMix
                             )
                         )
                     }
@@ -560,11 +586,21 @@ object UrlSnapshotRemoteOperations {
         when (result.reason) {
             UrlSnapshotUnsupportedReason
                 .DYNAMIC_MIX_NOT_SUPPORTED_BY_CURRENT_RESOLVER ->
-                "Це динамічний YouTube/YTM Mix. " +
-                    "Поточна офіційна інтеграція не може надійно " +
-                    "перелічити його як повний snapshot. " +
+                "Це динамічний YouTube/YTM Mix: YouTube складає його сам " +
+                    "і щоразу інакше, тому повного списку в нього нема. " +
+                    "Можна спробувати прочитати його офіційним запитом " +
+                    "(до ${UrlSnapshotMixPolicy.PAGE_LIMIT} одиниць квоти): якщо " +
+                    "YouTube віддасть пісні, вони відкриються як знімок Mix " +
+                    "на цю хвилину. " +
                     "Застосунок не використовує прихований scraper, " +
                     "не вгадує треки й не підміняє Mix пошуком."
+
+            UrlSnapshotUnsupportedReason
+                .MIX_NOT_GIVEN_BY_YOUTUBE ->
+                "YouTube не віддав пісень цього Mix через офіційний доступ. " +
+                    "Що можна зробити: відкрийте Mix у YouTube Music, збережіть " +
+                    "його як звичайний плейліст («⋮» → «Додати в плейліст») " +
+                    "і вставте сюди посилання вже на цей плейліст."
         }
 
     private fun invalidateAuthorization(

@@ -26,6 +26,8 @@ import com.saney.ytmimporter.urlsnapshot.UrlSnapshotDuplicatePolicy
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotLocalCommitter
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotReadPolicy
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotRemoteOperations
+import com.saney.ytmimporter.urlsnapshot.UrlSnapshotSourceKind
+import com.saney.ytmimporter.urlsnapshot.UrlSnapshotMixPolicy
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotResolvedItem
 import com.saney.ytmimporter.urlsnapshot.UrlSnapshotUnavailableReason
 import java.text.SimpleDateFormat
@@ -528,11 +530,43 @@ class UrlSnapshotActivity : Activity() {
                 content.addView(
                     infoCard(
                         title =
-                            "Mix не підтримується цим resolver",
+                            if (state.mixAttempted) {
+                                "YouTube не віддав пісень Mix"
+                            } else {
+                                "Це Mix YouTube"
+                            },
                         body =
                             state.message
                     )
                 )
+
+                // Batch 17 (faric 2026-11-05): one explicit, official attempt.
+                if (!state.mixAttempted) {
+                    content.addView(
+                        actionButton(
+                            label =
+                                "Спробувати прочитати Mix • до " +
+                                    "${UrlSnapshotMixPolicy.PAGE_LIMIT} API",
+                            primary =
+                                true,
+                            topMarginDp =
+                                4
+                        ) {
+                            duplicateChoiceOpen =
+                                false
+                            captureInput()
+                            UrlSnapshotRemoteOperations
+                                .startResolve(
+                                    context =
+                                        this@UrlSnapshotActivity,
+                                    rawUrl =
+                                        enteredUrl,
+                                    mixAttempt =
+                                        true
+                                )
+                        }
+                    )
+                }
 
                 content.addView(
                     cancelPreviewButton()
@@ -729,6 +763,18 @@ class UrlSnapshotActivity : Activity() {
                     "Жоден Review/Search/write flow автоматично не запускається."
             )
         )
+
+        // Batch 17: a Mix is a snapshot of this moment, never «complete».
+        if (resolved.source.kind == UrlSnapshotSourceKind.DYNAMIC_MIX) {
+            summaryCard.addView(
+                infoText(
+                    "Це Mix: YouTube щоразу складає його інакше. Тут — знімок " +
+                        "на цю хвилину, ${resolved.items.size} пісень " +
+                        "(не більше ${UrlSnapshotMixPolicy.PAGE_LIMIT * 50}). " +
+                        "Наступного разу Mix може бути вже іншим."
+                )
+            )
+        }
 
         if (state.fromCache && resolved.playlistTitle.isNullOrBlank()) {
             summaryCard.addView(

@@ -81,4 +81,14 @@ class LibraryFilterPolicyTest {
         assertEquals(0L, LibraryFilterPolicy.remoteDateMillis(""))
         assertEquals(0L, LibraryFilterPolicy.remoteDateMillis("вчора"))
     }
+
+    @Test fun shownLineCountsOnlyShownArchivesAndSkipsThemForYouTube() {
+        // faric 2026-11-05: «Тільки YouTube» + «the prodigy» said «архівів History: 2».
+        assertEquals("Показано: 26 • груп схожих: 0",
+            LibraryFilterPolicy.shownLine(26, 0, historyShown = 2, source = Source.YOUTUBE))
+        assertEquals("Показано: 5 • груп схожих: 1 • архівів History: 2",
+            LibraryFilterPolicy.shownLine(5, 1, historyShown = 2, source = Source.PHONE))
+        assertEquals("Показано: 31 • груп схожих: 1 • архівів History: 0",
+            LibraryFilterPolicy.shownLine(31, 1, historyShown = 0, source = Source.ALL))
+    }
 }
