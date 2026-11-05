@@ -15,7 +15,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
-25d05e01751f3d21  BACKLOG.md
+cedc32bc420ef847  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
 8e0f4244a2907d2f  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
@@ -388,6 +388,8 @@ e9d9473d790b8b85  docs/documentation/HISTORICAL_RELEASE_MATRIX.md
 1c2281d82e35a871  docs/issues/BUG-002/evidence/BUG002-dialog-entrance-motion-v1.4.27-2026-09-17.mp4
 99c7f4028960389c  docs/issues/BUG-004/PHONE_REPRO_v1.4.40_2026-09-19.md
 896621664e5d5f19  docs/issues/BUG-009/PHONE_REPRO_v1.4.40_2026-09-19.md
+4ea9bf0cae45f1a9  docs/mockups/create_description_mock.html
+9080ed25f226c454  docs/mockups/create_description_mock.png
 c9ee2b8d6edda935  docs/mockups/import_file_mock.html
 fb1d8c38d891e54d  docs/mockups/import_file_mock.png
 306eed7f316fe389  docs/mockups/save_tree_mock.html
