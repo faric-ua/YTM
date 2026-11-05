@@ -152,6 +152,9 @@ check_file "app/src/main/java/com/saney/ytmimporter/PendingActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/ImportActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/ReviewActivity.kt"
 check_file "app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt"
+check_file "scripts/signing-keys-guard-audit.sh"
+check_file "tools/termux/ytm-keys.sh"
+check_file ".github/workflows/key-backup.yml"
 check_file "scripts/mainactivity-audit.sh"
 check_file "scripts/mainactivity-cleanup-audit.sh"
 check_file "scripts/search-coordinator-audit.sh"
@@ -256,6 +259,7 @@ for termux_script in tools/termux/*.sh; do
 done
 
 
+bash scripts/signing-keys-guard-audit.sh
 bash scripts/mainactivity-audit.sh
 bash scripts/mainactivity-cleanup-audit.sh
 bash scripts/search-coordinator-audit.sh

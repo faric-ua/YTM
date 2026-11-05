@@ -5,7 +5,7 @@ This file is generated from the repository audit scripts.
 Do not hand-edit the inventory; update scripts or
 `docs/assistant-kit/PORTABLE_AUDITS.txt`, then regenerate.
 
-Total audit scripts: **124**
+Total audit scripts: **125**
 
 ## Portable/system subset
 
@@ -78,6 +78,7 @@ contracts.
 - `scripts/rotation-layout-audit.sh`
 - `scripts/search-coordinator-audit.sh`
 - `scripts/service-navigation-audit.sh`
+- `scripts/signing-keys-guard-audit.sh`
 - `scripts/ui-chrome-audit.sh`
 - `scripts/ui-window-contract-audit.sh`
 

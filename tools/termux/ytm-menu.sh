@@ -56,6 +56,7 @@ while true; do
   echo "5 — Зібрати новий APK"
   echo "6 — Перевірити локальні зміни"
   echo "7 — Розширені / релізні дії"
+  echo "8 — 🔑 Ключі підпису"
   echo "H — Допомога"
   echo "0 — Вийти"
   echo
@@ -72,6 +73,10 @@ while true; do
     7)
       clear
       bash "$TOOLS/ytm-advanced-menu.sh"
+      ;;
+    8)
+      clear
+      bash "$TOOLS/ytm-keys.sh"
       ;;
     h|H) run_tool "ytm-help.sh" ;;
     0)

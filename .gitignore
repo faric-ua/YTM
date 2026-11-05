@@ -8,7 +8,11 @@ local.properties
 # Signing material — NEVER commit.
 *.jks
 *.keystore
+*.p12
+*.age
 release-signing.properties
+# Spare key copies live only on the phone (~/Ключі), never here.
+Ключі/
 
 .DS_Store
 Thumbs.db
