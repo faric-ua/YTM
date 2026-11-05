@@ -62,7 +62,16 @@ jobs:
           "$SDKMANAGER" "platforms;android-36" "build-tools;35.0.0"
 
       - name: Run JVM unit tests
-        run: gradle :app:testDebugUnitTest
+        shell: bash
+        # Logs are not readable from Claude's session (blob storage 403), so
+        # compile errors and failed tests are repeated as annotations (batch 17).
+        run: |
+          set -o pipefail
+          if ! gradle :app:testDebugUnitTest 2>&1 | tee jvm.log; then
+            { grep -E "^e: " jvm.log; grep -E "FAILED|AssertionError|ComparisonFailure|expected:" jvm.log; } \
+              | head -10 | while IFS= read -r line; do echo "::error::$line"; done
+            exit 1
+          fi
 
       - name: Assemble unsigned release
         run: gradle :app:assembleRelease
