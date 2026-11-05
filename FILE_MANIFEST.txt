@@ -93,7 +93,7 @@ bf54b69b8bb58e3d  TERMUX_COMMANDS.md
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
-c8cc8f3cb160ebb7  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
+0029708fc9e75825  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
 4632c91acb804674  app/src/androidTest/java/com/saney/ytmimporter/ui/YouTubePlayerActivityTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
 3e78f291f370bcf6  app/src/debug/java/com/saney/ytmimporter/ui/UiGeometryTestActivity.kt
@@ -232,7 +232,7 @@ ce1b5394442d92cb  app/src/main/java/com/saney/ytmimporter/urlsnapshot/UrlSnapsho
 49ea39322f16188f  app/src/main/java/com/saney/ytmimporter/youtube/MatchScorer.kt
 df98593f1614f580  app/src/main/java/com/saney/ytmimporter/youtube/PlaylistEditPolicy.kt
 e0bbad95f7dda319  app/src/main/java/com/saney/ytmimporter/youtube/SearchCache.kt
-42d2c1a197b26e71  app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
+d3a86866b89fe382  app/src/main/java/com/saney/ytmimporter/youtube/YouTubeApi.kt
 6ecbcbde9759db28  app/src/main/java/com/saney/ytmimporter/youtube/YouTubeLimitPolicy.kt
 b7d379baa14b67cd  app/src/main/res/drawable/bg_ytm_dialog.xml
 8e20eea93a69f40b  app/src/main/res/drawable/ic_arrow_back_24.xml

@@ -709,7 +709,7 @@ class PlaylistLibraryActivityTest {
                     assertNull("Group window still open over the playlist", groupWindowScroller(title))
                     // The playlist page is open (its own songs are listed).
                     assertTrue(activity.window.decorView.hasText("Пісня 1"))
-                    activity.onBackPressedDispatcher.onBackPressed()
+                    @Suppress("DEPRECATION") activity.onBackPressed()
                 }
                 var back: android.widget.ScrollView? = null
                 var tries = 0

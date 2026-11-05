@@ -371,12 +371,13 @@ class YouTubeApi(
     fun listPlaylistSnapshotItems(
         accessToken: String,
         playlistId: String,
-        onListRequest: () -> Unit = {},
         /**
          * Batch 17: a YouTube Mix has no end — read at most this many pages
          * (50 songs each) and stop without an error. Null = whole playlist.
+         * Before [onListRequest], so callers keep the trailing lambda.
          */
-        pageLimit: Int? = null
+        pageLimit: Int? = null,
+        onListRequest: () -> Unit = {}
     ): PlaylistSnapshotItemsResult {
         val items =
             mutableListOf<
