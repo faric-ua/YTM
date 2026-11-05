@@ -1,0 +1,143 @@
+name: Key backup (locked box)
+
+# faric 2026-11-06 01:26–01:50: a spare copy of the YTM signing key for his
+# brother. The key lives only in GitHub secrets, and nobody can read a secret
+# back. This workflow puts the key and its passwords into a «locked box»:
+# it encrypts them with the PUBLIC half of a lock made on faric's phone
+# (age, https://age-encryption.org). The box is uploaded as an artifact; it
+# can be seen by anyone, but only the phone that holds the private half can
+# open it. The phone menu («🔑 Ключі» → «Забрати ключ YTM з GitHub») starts
+# this workflow, downloads the box, opens it and deletes the artifact.
+#
+# Nothing secret is printed: the log shows only the certificate fingerprint,
+# which is public anyway (it is inside every released APK).
+
+on:
+  workflow_dispatch:
+    inputs:
+      recipient:
+        description: "Public half of the phone lock (starts with age1)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  box:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check the lock (public half only)
+        env:
+          RECIPIENT: ${{ inputs.recipient }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$RECIPIENT" =~ ^age1[02-9ac-hj-np-z]{58}$ ]]; then
+            echo "::error::Це не відкрита половина замка age (має починатися з age1)."
+            exit 1
+          fi
+
+      - name: Check signing secrets
+        env:
+          KEYSTORE_B64: ${{ secrets.YTM_KEYSTORE_B64 }}
+          STORE_PASSWORD: ${{ secrets.YTM_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.YTM_KEY_PASSWORD }}
+        run: |
+          test -n "$KEYSTORE_B64" || { echo "::error::Нема секрету YTM_KEYSTORE_B64"; exit 1; }
+          test -n "$STORE_PASSWORD" || { echo "::error::Нема секрету YTM_STORE_PASSWORD"; exit 1; }
+          test -n "$KEY_PASSWORD" || { echo "::error::Нема секрету YTM_KEY_PASSWORD"; exit 1; }
+
+      - name: Install age
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq age >/dev/null
+          age --version
+
+      - name: Put the key into the locked box
+        env:
+          KEYSTORE_B64: ${{ secrets.YTM_KEYSTORE_B64 }}
+          STORE_PASSWORD: ${{ secrets.YTM_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.YTM_KEY_PASSWORD }}
+          RECIPIENT: ${{ inputs.recipient }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          ALIAS=ytmimporter
+          BOX="$RUNNER_TEMP/box"
+          DIR="$BOX/YTM"
+          mkdir -p "$DIR"
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$DIR/ytm-importer-release.jks"
+
+          # Both passwords must really open the key: -list checks the file
+          # password, a test copy of the private key checks the key password.
+          KEY_FP="$(keytool -list -v -keystore "$DIR/ytm-importer-release.jks" \
+              -storepass:env STORE_PASSWORD -alias "$ALIAS" |
+            awk '/SHA256:/ {print $2; exit}' | tr -d ':' | tr 'A-F' 'a-f')"
+          test -n "$KEY_FP" || { echo "::error::Пароль файлу не відкриває ключ"; exit 1; }
+          keytool -importkeystore -noprompt -srckeystore "$DIR/ytm-importer-release.jks" \
+              -srcstorepass:env STORE_PASSWORD -srcalias "$ALIAS" -srckeypass:env KEY_PASSWORD \
+              -destkeystore "$RUNNER_TEMP/check.p12" -deststoretype PKCS12 \
+              -deststorepass:env STORE_PASSWORD >/dev/null 2>&1 ||
+            { echo "::error::Пароль ключа не підходить"; exit 1; }
+          rm -f "$RUNNER_TEMP/check.p12"
+
+          # Compare with the certificate of the latest released APK (the one on phones).
+          RELEASE_CHECK="не перевірено: у релізі нема APK"
+          mkdir -p "$RUNNER_TEMP/release"
+          if gh release download --repo "$GITHUB_REPOSITORY" --pattern '*.apk' \
+               --dir "$RUNNER_TEMP/release" 2>/dev/null; then
+            APKSIGNER="$(ls -d "${ANDROID_HOME:-/usr/local/lib/android/sdk}"/build-tools/*/apksigner 2>/dev/null | sort -V | tail -n 1)"
+            test -n "$APKSIGNER" || { echo "::error::На GitHub нема apksigner"; exit 1; }
+            APK="$(ls "$RUNNER_TEMP"/release/*.apk | head -n 1)"
+            TAG="$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName)"
+            APK_FP="$("$APKSIGNER" verify --print-certs "$APK" |
+              awk -F': ' '/Signer #1 certificate SHA-256 digest/ {print $2; exit}' | tr 'A-F' 'a-f')"
+            if [ "$APK_FP" = "$KEY_FP" ]; then
+              RELEASE_CHECK="✓ збігається з APK релізу $TAG"
+            else
+              echo "::error::Ключ НЕ збігається з підписом APK релізу $TAG"
+              exit 1
+            fi
+          fi
+
+          {
+            echo "Застосунок: YTM Importer (faric-ua/YTM)"
+            echo "Файл ключа: ytm-importer-release.jks"
+            echo "Пароль файлу (storePassword): $STORE_PASSWORD"
+            echo "Назва ключа (keyAlias): $ALIAS"
+            echo "Пароль ключа (keyPassword): $KEY_PASSWORD"
+            echo
+            echo "Секрети GitHub для збірки (Settings → Secrets and variables → Actions):"
+            echo "  YTM_KEYSTORE_B64   = файл ключа в base64 (base64 -w0 ytm-importer-release.jks)"
+            echo "  YTM_STORE_PASSWORD = пароль файлу"
+            echo "  YTM_KEY_PASSWORD   = пароль ключа"
+          } > "$DIR/паролі.txt"
+          {
+            echo "SHA-256 сертифіката: $KEY_FP"
+            echo "Перевірка з релізом: $RELEASE_CHECK"
+            echo "Забрано з GitHub: $(TZ=Europe/Kyiv date '+%d.%m.%Y %H:%M')"
+          } > "$DIR/відбиток.txt"
+          (cd "$DIR" && sha256sum ytm-importer-release.jks паролі.txt відбиток.txt > контроль.sha256)
+
+          tar -C "$BOX" -czf - YTM | age -r "$RECIPIENT" -o "$RUNNER_TEMP/ytm-key-box.age"
+          rm -rf "$BOX"
+
+          echo "Відбиток ключа (публічний): $KEY_FP"
+          echo "Перевірка з релізом: $RELEASE_CHECK"
+          {
+            echo "### 🔑 Скринька з ключем YTM готова"
+            echo "- Відбиток ключа: \`$KEY_FP\`"
+            echo "- Перевірка з релізом: $RELEASE_CHECK"
+            echo "- Відкрити скриньку може тільки телефон, який зробив замок."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the locked box
+        uses: actions/upload-artifact@v4
+        with:
+          name: ytm-key-box
+          path: ${{ runner.temp }}/ytm-key-box.age
+          retention-days: 1
+          if-no-files-found: error
