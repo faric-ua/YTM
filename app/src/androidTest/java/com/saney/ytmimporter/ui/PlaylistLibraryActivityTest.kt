@@ -782,6 +782,11 @@ class PlaylistLibraryActivityTest {
                     assertEquals(27, tiles)
                     assertEquals(27, root.countTags("library_card:"))
                     assertTrue("«Показано: 27» missing", root.hasText("Показано: 27 •"))
+                    // faric 2026-11-05 20:10: the 27th (lone last) tile was 1 dp high.
+                    val minHeight = (60 * activity.resources.displayMetrics.density).toInt()
+                    val flat = root.tagged("library_card:youtube:PLcount$suffix")
+                        .filter { it.height < minHeight }
+                    assertTrue("Tiles too low to see: ${flat.map { it.tag }}", flat.isEmpty())
                     assertFalse("YouTube-only must not count History", root.hasText("архівів History"))
                 }
             }
@@ -789,6 +794,12 @@ class PlaylistLibraryActivityTest {
             store.clear()
             auth.clear()
         }
+    }
+
+    private fun View.tagged(prefix: String): List<View> = buildList {
+        if ((this@tagged.tag as? String)?.startsWith(prefix) == true) add(this@tagged)
+        if (this@tagged is ViewGroup) for (i in 0 until this@tagged.childCount)
+            addAll(this@tagged.getChildAt(i).tagged(prefix))
     }
 
     private fun View.countTags(prefix: String): Int {

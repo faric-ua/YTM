@@ -3559,8 +3559,13 @@ class PlaylistLibraryActivity : Activity() {
                 ).apply { if (index > 0) marginStart = dp(8) })
             }
             if (useTwo && group.size == 1) {
+                // Batch 17 (faric 2026-11-05 20:10: «Показано: 27», on screen 26).
+                // The spacer used to be 1 dp high: a wrap-content row with a
+                // MATCH_PARENT tile and a fixed-height spacer takes the spacer's
+                // height, so the LAST tile of an odd count shrank to 1 dp and
+                // was invisible. MATCH_PARENT keeps the tile its own height.
                 row.addView(View(this), LinearLayout.LayoutParams(
-                    0, dp(1), 1f
+                    0, ViewGroup.LayoutParams.MATCH_PARENT, 1f
                 ).apply { marginStart = dp(8) })
             }
             (cardTarget ?: body).addView(row, LinearLayout.LayoutParams(
