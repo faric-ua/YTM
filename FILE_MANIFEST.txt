@@ -8,7 +8,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 44be1f23513cb874  .github/workflows/validate.yml
 78cdd1de7657652f  .gitignore
-d6f9af4dda859303  ACTIVE_PLAN.md
+f53e9a1e95ed70b3  ACTIVE_PLAN.md
 681184265e82aa01  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
