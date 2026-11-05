@@ -312,6 +312,34 @@ object PlaylistLibraryDuplicateGroupPolicy {
                 "Інша версія — та сама назва, інша кількість пісень"
         }
 
+    /**
+     * Batch 18 (faric 2026-11-05 23:42: «оця запис повинна бути стандартна
+     * для кожного плейлиста — дві одиниці: локальна і онлайнова на Ютубі»).
+     * A phone playlist and the YouTube playlist it is linked to by ID, alone
+     * in their group with the same song count, are the normal state — not a
+     * «copy» to worry about. Returns the identities of such pairs.
+     *
+     * [links]: phone identity → «youtube:<id>» it is linked to.
+     */
+    fun normalPairs(
+        hints: Map<String, PlaylistLibraryDuplicatePolicy.Hint>,
+        links: Map<String, String>
+    ): Set<String> = buildSet {
+        links.forEach { (phone, youtube) ->
+            val a = hints[phone] ?: return@forEach
+            val b = hints[youtube] ?: return@forEach
+            if (a.groupNumber == b.groupNumber && a.groupSize == 2 &&
+                a.evidence != PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE
+            ) {
+                add(phone)
+                add(youtube)
+            }
+        }
+    }
+
+    /** Batch 18: the calm line on a card of a normal pair. */
+    const val PAIR_LINE = "Пара: телефон ↔ YouTube ✓"
+
     /** Tap hint under the verdict: «група №8 (4) ›». */
     fun groupTapHint(hint: PlaylistLibraryDuplicatePolicy.Hint): String =
         "група №${hint.groupNumber} (${hint.groupSize}) ›"

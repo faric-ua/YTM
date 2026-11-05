@@ -276,11 +276,14 @@ class UrlSnapshotActivity : Activity() {
                             false
                         )
 
+                        // Batch 18 (faric 2026-11-06 00:12): small while empty;
+                        // after a paste the field grows to the whole link (a
+                        // Mix link is 4–5 lines), with room above and below.
                         minLines =
                             2
 
                         maxLines =
-                            3
+                            7
 
                         gravity =
                             Gravity.TOP or
@@ -311,9 +314,9 @@ class UrlSnapshotActivity : Activity() {
 
                         setPadding(
                             dp(12),
-                            dp(10),
+                            dp(12),
                             dp(52),
-                            dp(10)
+                            dp(12)
                         )
 
                         background =

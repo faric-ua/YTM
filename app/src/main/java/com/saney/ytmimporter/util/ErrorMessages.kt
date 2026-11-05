@@ -51,7 +51,8 @@ object ErrorMessages {
                             "Цей системний плейлист YouTube не підтримує цю операцію."
 
                         else ->
-                            "YouTube відхилив запит. Перевірте вибраний трек або плейлист."
+                            "YouTube відхилив запит. Перевірте вибраний трек або плейлист." +
+                                reasonNote(apiError.reason)
                     }
 
                 401 ->
@@ -66,12 +67,14 @@ object ErrorMessages {
                                 "Перевірте акаунт і доступ YouTube."
 
                         else ->
-                            "YouTube заборонив цю операцію для поточного акаунта або каналу."
+                            "YouTube заборонив цю операцію для поточного акаунта або каналу." +
+                                reasonNote(apiError.reason)
                     }
 
                 404 ->
                     "YouTube не знайшов потрібний трек або плейлист. " +
-                        "Можливо, його видалено або він недоступний."
+                        "Можливо, його видалено або він недоступний." +
+                        reasonNote(apiError.reason)
 
                 409 ->
                     "YouTube повідомив про конфлікт даних. " +
@@ -125,4 +128,13 @@ object ErrorMessages {
                 "${error::class.java.simpleName}: " +
                     (error.message ?: "без додаткового опису")
         }
+
+    /**
+     * Batch 18 (faric 2026-11-05 23:29: one song «YouTube відхилив запит» —
+     * without a reason it was impossible to tell what was wrong): YouTube's
+     * own short reason code, e.g. « (причина YouTube: videoNotFound)».
+     */
+    fun reasonNote(reason: String?): String =
+        reason?.trim()?.takeIf { it.isNotEmpty() && it.length <= 60 }
+            ?.let { " (причина YouTube: $it)" }.orEmpty()
 }

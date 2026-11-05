@@ -66,4 +66,23 @@ class LibrarySearchPolicyTest {
         assertTrue(LibrarySearchPolicy.keyboardOpenByFrame(2000, 1100))
         assertFalse(LibrarySearchPolicy.keyboardOpenByFrame(0, 0))
     }
+
+    @Test fun searchHistoryKeepsLastQueriesWithoutRepeats() {
+        var h = emptyList<String>()
+        h = LibrarySearchPolicy.remember(h, "the prodigy ")
+        h = LibrarySearchPolicy.remember(h, "armin")
+        h = LibrarySearchPolicy.remember(h, "The Prodigy")
+        h = LibrarySearchPolicy.remember(h, "   ")
+        assertEquals(listOf("The Prodigy", "armin"), h)
+        val many = (1..30).fold(emptyList<String>()) { acc, n -> LibrarySearchPolicy.remember(acc, "q$n") }
+        assertEquals(LibrarySearchPolicy.HISTORY_MAX, many.size)
+        assertEquals("q30", many.first())
+        assertEquals(listOf("The Prodigy", "armin"), LibrarySearchPolicy.suggestions(h, ""))
+        assertEquals(listOf("The Prodigy"), LibrarySearchPolicy.suggestions(h, "prod"))
+        assertEquals(emptyList<String>(), LibrarySearchPolicy.suggestions(h, "the prodigy"))
+        assertEquals(listOf("armin"), LibrarySearchPolicy.forget(h, "the PRODIGY"))
+        assertEquals(h, LibrarySearchPolicy.decodeHistory(LibrarySearchPolicy.encodeHistory(h)))
+        assertEquals(emptyList<String>(), LibrarySearchPolicy.decodeHistory(null))
+        assertEquals(5, LibrarySearchPolicy.HISTORY_VISIBLE)
+    }
 }

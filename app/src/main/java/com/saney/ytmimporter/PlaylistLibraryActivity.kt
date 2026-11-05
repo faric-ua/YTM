@@ -56,6 +56,7 @@ import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.storage.CurrentPlaylistSnapshot
 import com.saney.ytmimporter.storage.CurrentPlaylistStore
 import com.saney.ytmimporter.storage.GroupNumberStore
+import com.saney.ytmimporter.storage.LibrarySearchHistoryStore
 import com.saney.ytmimporter.storage.HistoryStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.storage.RemoteSongMemoryStore
@@ -81,6 +82,8 @@ class PlaylistLibraryActivity : Activity() {
     private var sortMode = SortMode.RECENT
     private var privacyMode = LibraryFilterPolicy.Privacy.ALL
     private var similarOnly = false
+    /** Batch 18: only phone playlists that are not on YouTube yet. */
+    private var notOnYouTubeOnly = false
     private var cardTarget: LinearLayout? = null
     private val currentStore by lazy { CurrentPlaylistStore(this) }
     private val savedStore by lazy { RestorablePlaylistStore(this) }
@@ -150,6 +153,10 @@ class PlaylistLibraryActivity : Activity() {
     private lateinit var searchBox: EditText
     /** Batch 14: «×» inside the search field. */
     private lateinit var searchClear: TextView
+    /** Batch 18: last queries under the search field. */
+    private lateinit var searchHistoryBox: ScrollView
+    private lateinit var searchHistoryList: LinearLayout
+    private val searchHistoryStore by lazy { LibrarySearchHistoryStore(this) }
     private lateinit var statusLabel: TextView
     private lateinit var modalController: RestorableModalController
     /** Catalogue scroll position to return to from a playlist (Back). */
@@ -246,6 +253,7 @@ class PlaylistLibraryActivity : Activity() {
             LibraryFilterPolicy.Privacy.valueOf(savedInstanceState?.getString("privacy_mode") ?: "ALL")
         }.getOrDefault(LibraryFilterPolicy.Privacy.ALL)
         similarOnly = savedInstanceState?.getBoolean("similar_only") ?: false
+        notOnYouTubeOnly = savedInstanceState?.getBoolean("not_on_youtube_only") ?: false
         columns = savedInstanceState?.getInt("columns") ?: 2
         filterText = savedInstanceState?.getString("filter").orEmpty()
         landscapeSearchOpen = savedInstanceState?.getBoolean("landscape_search")
@@ -308,6 +316,7 @@ class PlaylistLibraryActivity : Activity() {
         outState.putString("sort_mode", sortMode.name)
         outState.putString("privacy_mode", privacyMode.name)
         outState.putBoolean("similar_only", similarOnly)
+        outState.putBoolean("not_on_youtube_only", notOnYouTubeOnly)
         outState.putInt("columns", columns)
         outState.putString("filter", filterText)
         outState.putBoolean("landscape_search", landscapeSearchOpen)
@@ -490,9 +499,15 @@ class PlaylistLibraryActivity : Activity() {
             imeOptions = EditorInfo.IME_ACTION_DONE
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    rememberSearch()
                     hideKeyboard()
                     true
                 } else false
+            }
+            // Batch 18: the history shows while the field is in use.
+            setOnFocusChangeListener { _, focused ->
+                if (!focused) rememberSearch()
+                updateSearchHistory()
             }
         }
         searchBox.addTextChangedListener(object : TextWatcher {
@@ -502,6 +517,7 @@ class PlaylistLibraryActivity : Activity() {
                 if (::searchClear.isInitialized) {
                     searchClear.visibility = if (filterText.isEmpty()) View.GONE else View.VISIBLE
                 }
+                updateSearchHistory()
                 // Library batch 7: one redraw after a short pause, not per letter.
                 searchHandler.removeCallbacks(searchRedraw)
                 if (selectedLocal == null && selectedRemote == null) {
@@ -534,6 +550,18 @@ class PlaylistLibraryActivity : Activity() {
         filtersRow.addView(searchFrame, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, dp(49)))
         root.addView(filtersRow)
+        // Batch 18 (faric 2026-11-05 20:24): the last queries drop down under
+        // the field — about 5 rows visible, the rest scroll, so the list
+        // never reaches the keyboard.
+        searchHistoryList = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        searchHistoryBox = ScrollView(this).apply {
+            visibility = View.GONE
+            background = surface(palette.surface, 12)
+            addView(searchHistoryList)
+        }
+        root.addView(searchHistoryBox, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { setMargins(dp(12), 0, dp(12), dp(4)) })
 
         statusLabel = text("", 13f, false, palette.muted).apply {
             setPadding(dp(12), dp(5), dp(12), dp(5))
@@ -703,6 +731,69 @@ class PlaylistLibraryActivity : Activity() {
     private fun inputMethods(): InputMethodManager? =
         getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as? InputMethodManager
 
+    /** Batch 18: keep the query in the search history. */
+    private fun rememberSearch() {
+        if (!::searchBox.isInitialized) return
+        val query = searchBox.text?.toString().orEmpty()
+        if (LibrarySearchPolicy.normalize(query).isEmpty()) return
+        searchHistoryStore.save(LibrarySearchPolicy.remember(searchHistoryStore.load(), query))
+    }
+
+    /** Batch 18: the drop-down of last queries under the search field. */
+    private fun updateSearchHistory() {
+        if (!::searchHistoryBox.isInitialized) return
+        val catalogue = selectedLocal == null && selectedRemote == null
+        val items = if (searchBox.hasFocus() && catalogue)
+            LibrarySearchPolicy.suggestions(searchHistoryStore.load(), filterText) else emptyList()
+        searchHistoryList.removeAllViews()
+        if (items.isEmpty()) {
+            searchHistoryBox.visibility = View.GONE
+            return
+        }
+        val rowHeight = dp(44)
+        items.forEach { query ->
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                tag = "search_history:$query"
+            }
+            row.addView(text("↺  $query", 14f, false, palette.text).apply {
+                maxLines = 1
+                ellipsize = TextUtils.TruncateAt.END
+                setPadding(dp(14), 0, dp(6), 0)
+                gravity = Gravity.CENTER_VERTICAL
+                isClickable = true
+                isFocusable = true
+                contentDescription = "Шукати: $query"
+                setOnClickListener {
+                    searchBox.setText(query)
+                    searchBox.setSelection(query.length)
+                    searchHandler.removeCallbacks(searchRedraw)
+                    rememberSearch()
+                    hideKeyboard()
+                    renderContent(0, searchOnly = true)
+                }
+            }, LinearLayout.LayoutParams(0, rowHeight, 1f))
+            row.addView(text("×", 18f, true, palette.muted).apply {
+                gravity = Gravity.CENTER
+                isClickable = true
+                isFocusable = true
+                contentDescription = "Прибрати з історії: $query"
+                setOnClickListener {
+                    searchHistoryStore.save(
+                        LibrarySearchPolicy.forget(searchHistoryStore.load(), query))
+                    updateSearchHistory()
+                }
+            }, LinearLayout.LayoutParams(dp(44), rowHeight))
+            searchHistoryList.addView(row)
+        }
+        val visible = minOf(items.size, LibrarySearchPolicy.HISTORY_VISIBLE)
+        searchHistoryBox.layoutParams = searchHistoryBox.layoutParams.apply {
+            height = visible * rowHeight
+        }
+        searchHistoryBox.visibility = View.VISIBLE
+    }
+
     /** Batch 8: no cursor in the search field and no keyboard behind a window. */
     private fun hideKeyboard() {
         if (!::searchBox.isInitialized) return
@@ -798,6 +889,7 @@ class PlaylistLibraryActivity : Activity() {
         catalogueCards = null
         // Batch 17: the window to go back to belongs to one playlist page only.
         if (selectedLocal == null && selectedRemote == null) returnWindow = null
+        updateSearchHistory()
         when {
             selectedLocal != null -> renderLocalDetails(selectedLocal!!)
             selectedRemote != null -> renderRemoteDetails(selectedRemote!!)
@@ -1203,6 +1295,7 @@ class PlaylistLibraryActivity : Activity() {
 
     /** Only the catalogue position is remembered, not another playlist's. */
     private fun rememberCatalogueScroll() {
+        rememberSearch()
         if (selectedLocal == null && selectedRemote == null) {
             catalogueScrollY = scroller.scrollY
             catalogueAnchor = captureAnchor()
@@ -1674,6 +1767,9 @@ class PlaylistLibraryActivity : Activity() {
                 }
                 // Batch 9: members of another size against the biggest one.
                 var partlyInBiggest = false
+                // Batch 18 (faric 2026-11-05 20:32, group №5): «усі 320 є в
+                // mylist (870)» + «чим відрізняється ›» opened an empty window.
+                var fullyInBiggest = false
                 val songsHere = member?.songs
                 val bigSongs = biggestMember?.songs
                 if (biggest != null && biggestMember != null && songsHere != null &&
@@ -1683,6 +1779,7 @@ class PlaylistLibraryActivity : Activity() {
                     val (common, size) = SongOverlapPolicy.containment(songsHere, bigSongs)
                     val bigName = "«${biggestMember.title}» (${biggest.trackCount})"
                     if (size > 0 && common >= size) {
+                        fullyInBiggest = true
                         labels.addView(text("усі $size є в $bigName", 12.5f, true,
                             palette.semantic.success).apply { setPadding(0, dp(3), 0, 0) })
                     } else if (size > 0) {
@@ -1702,7 +1799,7 @@ class PlaylistLibraryActivity : Activity() {
                     }
                 }
                 val canDiff = row.mark != PlaylistLibraryDuplicateGroupPolicy.Mark.SAME &&
-                    member?.songs != null && !partlyInBiggest && !yardstick
+                    member?.songs != null && !partlyInBiggest && !fullyInBiggest && !yardstick
                 if (canDiff) {
                     labels.addView(text("чим відрізняється ›", 13f, true, palette.accent).apply {
                         setPadding(0, dp(6), dp(12), dp(4))
@@ -1989,7 +2086,8 @@ class PlaylistLibraryActivity : Activity() {
                 SortMode.SIMILAR_FIRST -> "Спочатку можливі дублікати"
             } + (if (privacy != LibraryFilterPolicy.Privacy.ALL && remoteEnabled)
                 " • YouTube: ${privacyLabel(privacy.name)}" else "") +
-                (if (similarOnly) " • Тільки схожі" else ""),
+                (if (similarOnly) " • Тільки схожі" else "") +
+                (if (notOnYouTubeOnly) " • Нема на YouTube" else ""),
             12f, false, palette.muted
         ).apply { setPadding(dp(6), dp(1), dp(6), dp(2)) })
         // Owner 2026-10-15: the «Показано…» line stays pinned, it no longer
@@ -2012,10 +2110,25 @@ class PlaylistLibraryActivity : Activity() {
         cardTarget = cards
         catalogueCards = cards
 
+        // Batch 18: a phone playlist with its own YouTube playlist is the
+        // normal state — a calm green line, not «Схоже на копію».
+        val pairs = PlaylistLibraryDuplicateGroupPolicy.normalPairs(hints,
+            allLocal.filter { it.source != LocalLibrarySource.HISTORY }
+                .mapNotNull { item ->
+                    item.destinationPlaylistId?.takeIf { it.isNotBlank() }
+                        ?.let { item.identity to "youtube:$it" }
+                }.toMap())
+        val remoteIdSet = allRemote.map { it.id }.toSet()
+        val youTubeGroups = LibraryFilterPolicy.groupsWithYouTube(
+            hints.mapValues { it.value.groupNumber })
         val all = mutableListOf<CardInfo>()
         localVisible.forEach { item ->
             val hint = hints[item.identity]
-            if (similarOnly && hint == null) return@forEach
+            if (similarOnly && (hint == null || item.identity in pairs)) return@forEach
+            if (notOnYouTubeOnly && (item.source == LocalLibrarySource.HISTORY ||
+                    !LibraryFilterPolicy.notOnYouTube(item.destinationPlaylistId, remoteIdSet,
+                        hint?.groupNumber?.let { it in youTubeGroups } == true))
+            ) return@forEach
             all += CardInfo(
                 identity = item.identity,
                 title = item.title,
@@ -2036,6 +2149,7 @@ class PlaylistLibraryActivity : Activity() {
                 updatedAt = item.updatedAt,
                 trackCount = item.trackCount.toLong(),
                 duplicateHint = hint,
+                normalPair = item.identity in pairs,
                 onClick = {
                     rememberCatalogueScroll()
                     selectedLocal = item.identity
@@ -2044,9 +2158,9 @@ class PlaylistLibraryActivity : Activity() {
                 }
             )
         }
-        remoteItems.forEach { item ->
+        if (!notOnYouTubeOnly) remoteItems.forEach { item ->
             val hint = hints["youtube:${item.id}"]
-            if (similarOnly && hint == null) return@forEach
+            if (similarOnly && (hint == null || "youtube:${item.id}" in pairs)) return@forEach
             all += CardInfo(
                 identity = "youtube:${item.id}",
                 title = item.title,
@@ -2059,6 +2173,7 @@ class PlaylistLibraryActivity : Activity() {
                 // «Нові»: creation date on YouTube (0 = unknown → at the end).
                 updatedAt = item.publishedAtMillis,
                 duplicateHint = hint,
+                normalPair = "youtube:${item.id}" in pairs,
                 onClick = {
                     rememberCatalogueScroll()
                     selectedRemote = item.id
@@ -2086,14 +2201,20 @@ class PlaylistLibraryActivity : Activity() {
                     .thenBy { it.title.lowercase() })
         }
         visibleCardIdentities = filtered.map { it.identity }.toSet()
-        val groupCount = filtered.mapNotNull { it.duplicateHint?.groupNumber }
+        val groupCount = filtered.filterNot { it.normalPair }
+            .mapNotNull { it.duplicateHint?.groupNumber }
             .distinct().size
         // Batch 17: only the archives among the shown cards; none for «Тільки YouTube».
         val shownArchives = filtered.count { it.archive }
         val drawn = addCards(ordered)
         shownLine.text = LibraryFilterPolicy.shownLine(drawn, groupCount, shownArchives,
             currentSource())
-        if (filtered.isEmpty() && similarOnly) {
+        if (notOnYouTubeOnly && allRemote.isEmpty()) {
+            panelInfo(cards, "Список YouTube ще не завантажений — поки не видно, " +
+                "яких плейлістів там нема. Виберіть джерело «Всі», і застосунок його завантажить.")
+        } else if (filtered.isEmpty() && notOnYouTubeOnly) {
+            panelInfo(cards, "Усі плейлісти з телефона вже є на YouTube.")
+        } else if (filtered.isEmpty() && similarOnly) {
             panelInfo(cards, "У вибраному фільтрі схожих плейлистів немає. " +
                 "Список YouTube може бути ще не завантажений.")
         } else if (filtered.isEmpty() && LibrarySearchPolicy.normalize(filterText).isNotEmpty()) {
@@ -2319,12 +2440,23 @@ class PlaylistLibraryActivity : Activity() {
                 "Доступно, коли в «Джерело» вибрано «Тільки YouTube».")
         }
         container = rightColumn
-        section("Дублікати")
-        option("Показати всі записи", !similarOnly) { similarOnly = false }
+        section("Показати")
+        option("Усі записи", !similarOnly && !notOnYouTubeOnly) {
+            similarOnly = false
+            notOnYouTubeOnly = false
+        }
         option("Лише можливі дублікати", similarOnly,
             hint = "Лише плейлісти з рядком «Копія… / Схоже на копію… / Інша версія…». " +
                 "Торкніться цього рядка на картці — побачите всю групу") {
             similarOnly = true
+            notOnYouTubeOnly = false
+        }
+        // Batch 18 (faric «так» 2026-11-06 00:09).
+        option("Нема на YouTube", notOnYouTubeOnly,
+            hint = "Плейлісти з телефона, яких ще нема на YouTube: не пов’язані з " +
+                "YouTube-плейлістом і без YouTube-плейліста з такою самою назвою") {
+            notOnYouTubeOnly = true
+            similarOnly = false
         }
     }
 
@@ -3029,6 +3161,18 @@ class PlaylistLibraryActivity : Activity() {
             "Плейлісти на телефоні — за датою збереження на телефоні; " +
                 "плейлісти YouTube — за датою створення на YouTube. " +
                 "Рядок під лічильниками пише, яка дата діє.")
+        entry(R.drawable.ic_ytm_search, "Історія пошуку",
+            "Торкніться поля пошуку — під ним з’являться останні запити (видно 5, " +
+                "решта прокручується). Торкніться запиту — він підставиться. «×» праворуч " +
+                "прибирає запит з історії. Історія зберігається лише на телефоні.")
+        entry(R.drawable.ic_ytm_youtube_play, "Нема на YouTube",
+            "Фільтр (кнопка зі списком угорі): лише плейлісти з телефона, яких ще нема " +
+                "на YouTube — не пов’язані з YouTube-плейлістом і без YouTube-плейліста з " +
+                "такою самою назвою. Разом з пошуком (наприклад «prodigy») — готовий список " +
+                "того, що ще треба завантажити.")
+        entry(R.drawable.ic_ytm_music, "Пісня — відтворити",
+            "На сторінці плейліста торкніться пісні в будь-якому місці — відкриється " +
+                "плеєр YouTube.")
         entry(R.drawable.ic_ytm_view_grid, "Рядок «Показано…»",
             "Скільки плиток зараз у списку (з урахуванням джерела, фільтра й пошуку), " +
                 "скільки серед них груп схожих і архівів History. " +
@@ -3099,6 +3243,12 @@ class PlaylistLibraryActivity : Activity() {
                 "або відкрийте плейліст.")
         entry(R.drawable.ic_ytm_view_grid, "Інша версія",
             "Та сама назва, але інша кількість пісень.")
+        entry(R.drawable.ic_ytm_view_grid, "Пара: телефон ↔ YouTube ✓",
+            "Плейліст на телефоні і його власний плейліст на YouTube (пов’язані за ID, " +
+                "стільки ж пісень). Це звичайний, правильний стан — не копія. Така пара " +
+                "не рахується в «групах схожих». Якщо в групі є ще щось (інша копія, " +
+                "архів History, ще один YouTube-плейліст) — знову з’явиться жовте попередження.",
+            palette.semantic.success)
         // Owner 2026-10-17 03:02: «(2)» was read as 2 songs, «№7» as a rank.
         entry(R.drawable.ic_ytm_view_grid, "група №8 (4) ›",
             "(4) — у групі 4 ПЛЕЙЛІСТИ (не пісні; скільки пісень — рядком вище). " +
@@ -3407,18 +3557,9 @@ class PlaylistLibraryActivity : Activity() {
             row.addView(detail, LinearLayout.LayoutParams(
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
             ))
-            if (id != null) {
-                val play = button("▶") {
-                    startActivity(
-                        Intent(this, YouTubePlayerActivity::class.java)
-                            .putExtra(YouTubePlayerActivity.EXTRA_VIDEO_ID, id)
-                            .putExtra(YouTubePlayerActivity.EXTRA_TITLE, title)
-                    )
-                }.apply { contentDescription = "Відтворити $title у застосунку" }
-                row.addView(play, LinearLayout.LayoutParams(dp(54), dp(48)).apply {
-                    marginStart = dp(5)
-                })
-            }
+            // Batch 18 (faric 2026-11-05 20:26): no separate ▶ — a tap anywhere
+            // on the row opens the YouTube player.
+            if (id != null) openPlayerOnTap(row, id, title)
             body.addView(row, LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { bottomMargin = dp(6) })
@@ -3474,31 +3615,9 @@ class PlaylistLibraryActivity : Activity() {
             Gravity.TOP or Gravity.START
         ).apply { leftMargin = dp(6); topMargin = dp(6) })
 
-        if (id != null) {
-            val play = button("▶") {
-                startActivity(
-                    Intent(this, YouTubePlayerActivity::class.java)
-                        .putExtra(YouTubePlayerActivity.EXTRA_VIDEO_ID, id)
-                        .putExtra(YouTubePlayerActivity.EXTRA_TITLE, title)
-                )
-            }.apply {
-                contentDescription = "Відтворити $title у застосунку"
-                textSize = 18f
-                minWidth = 0
-                minimumWidth = 0
-                minHeight = 0
-                minimumHeight = 0
-                setPadding(0, 0, 0, 0)
-                setTextColor(android.graphics.Color.WHITE)
-                background = GradientDrawable().apply {
-                    setColor(0x77000000)
-                    cornerRadius = dp(12).toFloat()
-                }
-            }
-            artwork.addView(play, FrameLayout.LayoutParams(
-                dp(42), dp(42), Gravity.TOP or Gravity.CENTER_HORIZONTAL
-            ).apply { topMargin = dp(6) })
-        }
+        // Batch 18 (faric 2026-11-05 20:26: «цю кнопку Play по центру уберемо…
+        // на любе місце плитки — відкриється плеєр YouTube»).
+        if (id != null) openPlayerOnTap(tile, id, title)
         tile.addView(artwork, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, dp(112)
         ))
@@ -3524,6 +3643,23 @@ class PlaylistLibraryActivity : Activity() {
         ).apply { bottomMargin = dp(6) })
     }
 
+    /** Batch 18: the whole song row / tile opens the in-app YouTube player. */
+    private fun openPlayerOnTap(view: View, id: String, title: String) {
+        view.isClickable = true
+        view.isFocusable = true
+        view.contentDescription = "Відтворити $title у застосунку"
+        view.foreground = android.graphics.drawable.RippleDrawable(
+            android.content.res.ColorStateList.valueOf(0x33FFFFFF), null,
+            surface(palette.surface, 10))
+        view.setOnClickListener {
+            startActivity(
+                Intent(this, YouTubePlayerActivity::class.java)
+                    .putExtra(YouTubePlayerActivity.EXTRA_VIDEO_ID, id)
+                    .putExtra(YouTubePlayerActivity.EXTRA_TITLE, title)
+            )
+        }
+    }
+
     private data class CardInfo(
         val identity: String,
         val title: String,
@@ -3538,6 +3674,8 @@ class PlaylistLibraryActivity : Activity() {
         val duplicateHint: PlaylistLibraryDuplicatePolicy.Hint? = null,
         /** Batch 17: an archive History card (counted in «архівів History»). */
         val archive: Boolean = false,
+        /** Batch 18: phone playlist + its own YouTube playlist — the normal state. */
+        val normalPair: Boolean = false,
         val onClick: () -> Unit
     )
 
@@ -3613,7 +3751,20 @@ class PlaylistLibraryActivity : Activity() {
             maxLines = if (tile) 2 else 3
             ellipsize = TextUtils.TruncateAt.END
         })
-        info.duplicateHint?.let { hint ->
+        if (info.normalPair) info.duplicateHint?.let { hint ->
+            // Batch 18: calm, green; a tap still shows both side by side.
+            labels.addView(text(PlaylistLibraryDuplicateGroupPolicy.PAIR_LINE,
+                11.5f, true, palette.semantic.success).apply {
+                minLines = if (tile) 2 else 1
+                maxLines = 2
+                ellipsize = TextUtils.TruncateAt.END
+                setPadding(0, dp(4), 0, dp(4))
+                isClickable = true
+                isFocusable = true
+                contentDescription = "Пара: телефон і YouTube, група ${hint.groupNumber}. Порівняти"
+                setOnClickListener { showDuplicateGroup(info.identity) }
+            })
+        } else info.duplicateHint?.let { hint ->
             // Owner 2026-10-16: plain verdict instead of «Схожі №8 (4) • збіг
             // складу»; a tap shows the whole group side by side.
             val colour = when (hint.evidence) {

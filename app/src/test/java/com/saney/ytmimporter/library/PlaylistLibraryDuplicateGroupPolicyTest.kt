@@ -168,6 +168,35 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
             listOf(S(a, "1"), S(b, "2")), listOf(S(b, "x"), S(a, "y"))).isEmpty)
     }
 
+    @Test fun phonePlaylistWithItsOwnYouTubePlaylistIsANormalPair() {
+        // faric 2026-11-05 23:42: «Best of the Best» — phone + YouTube, group №36 (2).
+        val H = PlaylistLibraryDuplicatePolicy::Hint
+        val sameCount = PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE_COUNT
+        val sameTracks = PlaylistLibraryDuplicatePolicy.Evidence.SAME_TRACKS
+        val sameTitle = PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE
+        val hints = mapOf(
+            "local:best" to H(36, 2, sameCount),
+            "youtube:PLbest" to H(36, 2, sameCount),
+            // A third copy makes the group worth a look again.
+            "local:fat" to H(7, 3, sameTracks),
+            "youtube:PLfat" to H(7, 3, sameTracks),
+            "history:fat" to H(7, 3, sameTracks),
+            // Linked, but the song counts differ (49 vs 50) — still a warning.
+            "local:mix" to H(9, 2, sameTitle),
+            "youtube:PLmix" to H(9, 2, sameTitle),
+            // Same name, not linked — a real «copy?» question.
+            "local:other" to H(11, 2, sameCount),
+            "youtube:PLother" to H(11, 2, sameCount)
+        )
+        val pairs = PlaylistLibraryDuplicateGroupPolicy.normalPairs(hints, mapOf(
+            "local:best" to "youtube:PLbest",
+            "local:fat" to "youtube:PLfat",
+            "local:mix" to "youtube:PLmix",
+            "local:other" to "youtube:PLsomethingElse"
+        ))
+        assertEquals(setOf("local:best", "youtube:PLbest"), pairs)
+    }
+
     @Test fun songWithoutVideoButSameNameIsNotListedTwice() {
         // faric 2026-11-05, group №10: archive of 25 songs, none with a video —
         // «Немає тут (25)» and «Без відео (25)» named the same songs.

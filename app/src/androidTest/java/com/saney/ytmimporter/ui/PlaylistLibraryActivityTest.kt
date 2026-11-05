@@ -384,10 +384,11 @@ class PlaylistLibraryActivityTest {
                 assertTrue(image.alpha in 0.39f..0.51f)
                 val overlay = image.parent as? FrameLayout
                     ?: error("Portrait artwork must fill an overlay frame")
-                val play = root.collectButtons().firstOrNull {
-                    it.contentDescription == "Відтворити Трек з прев’ю у застосунку"
-                } ?: error("Portrait overlay play missing")
-                assertTrue(play.parent === overlay)
+                // Batch 18: no separate ▶ — the whole tile opens the player.
+                assertTrue(root.collectButtons().none { it.text?.toString() == "▶" })
+                val tile = overlay.parent as View
+                assertTrue(tile.isClickable)
+                assertEquals("Відтворити Трек з прев’ю у застосунку", tile.contentDescription)
                 assertTrue(overlay.hasText("1."))
                 assertTrue(root.hasText("Трек з прев’ю"))
             }
@@ -434,9 +435,11 @@ class PlaylistLibraryActivityTest {
                 val image = root.findImageDescription("Прев’ю: Ландшафтний трек")
                     ?: error("Landscape cover missing")
                 assertTrue(image.parent is LinearLayout)
-                assertTrue(root.collectButtons().any {
-                    it.contentDescription == "Відтворити Ландшафтний трек у застосунку"
-                })
+                // Batch 18: the row itself opens the player, no ▶ button.
+                val row = image.parent as View
+                assertTrue(row.isClickable)
+                assertEquals("Відтворити Ландшафтний трек у застосунку", row.contentDescription)
+                assertTrue(root.collectButtons().none { it.text?.toString() == "▶" })
                 activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
             idle()
@@ -800,6 +803,41 @@ class PlaylistLibraryActivityTest {
         if ((this@tagged.tag as? String)?.startsWith(prefix) == true) add(this@tagged)
         if (this@tagged is ViewGroup) for (i in 0 until this@tagged.childCount)
             addAll(this@tagged.getChildAt(i).tagged(prefix))
+    }
+
+    /** Batch 18: last queries drop down under the search field; a tap fills it in. */
+    @Test fun searchHistoryDropsDownAndFillsTheField() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val store = com.saney.ytmimporter.storage.LibrarySearchHistoryStore(context)
+        val before = store.load()
+        val query = "Історія ${UUID.randomUUID().toString().take(6)}"
+        store.save(listOf(query, "другий запит"))
+        try {
+            ActivityScenario.launch<PlaylistLibraryActivity>(
+                Intent(context, PlaylistLibraryActivity::class.java)
+            ).use { scene ->
+                idle()
+                scene.onActivity { activity ->
+                    val box = activity.window.decorView.findSearchBox() ?: error("Search box missing")
+                    box.requestFocus()
+                }
+                idle()
+                scene.onActivity { activity ->
+                    val root = activity.window.decorView
+                    val row = root.tagged("search_history:$query").firstOrNull()
+                        ?: error("History row missing")
+                    assertTrue(row.isShown)
+                    ((row as ViewGroup).getChildAt(0)).performClick()
+                }
+                idle()
+                scene.onActivity { activity ->
+                    val box = activity.window.decorView.findSearchBox() ?: error("Search box missing")
+                    assertEquals(query, box.text.toString())
+                }
+            }
+        } finally {
+            store.save(before)
+        }
     }
 
     private fun View.countTags(prefix: String): Int {

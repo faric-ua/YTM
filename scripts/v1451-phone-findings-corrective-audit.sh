@@ -54,10 +54,16 @@ for needle in (
     "setHorizontallyScrolling(",
     "TYPE_TEXT_FLAG_MULTI_LINE",
     "minLines =\n                            2",
-    "maxLines =\n                            3",
 ):
     if needle not in url:
         raise SystemExit("FAIL: URL multiline editor missing: " + needle)
+
+# Batch 18 (faric 2026-11-06 00:12): a Mix link is 4-5 lines, so the field may
+# grow beyond 3 lines after a paste; it must still be multi-line (>= 3).
+import re as _re
+_max = _re.search(r"maxLines =\n\s+(\d+)", url)
+if not _max or int(_max.group(1)) < 3:
+    raise SystemExit("FAIL: URL multiline editor missing: maxLines >= 3")
 
 for needle in (
     "FrameLayout(",

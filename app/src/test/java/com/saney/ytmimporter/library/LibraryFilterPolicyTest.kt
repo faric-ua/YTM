@@ -91,4 +91,18 @@ class LibraryFilterPolicyTest {
         assertEquals("Показано: 31 • груп схожих: 1 • архівів History: 0",
             LibraryFilterPolicy.shownLine(31, 1, historyShown = 0, source = Source.ALL))
     }
+
+    @Test fun notOnYouTubeMeansNotLinkedAndNoYouTubeTwin() {
+        val remote = setOf("PLbest", "PLfat")
+        // Linked to a playlist that is on YouTube.
+        assertFalse(LibraryFilterPolicy.notOnYouTube("PLbest", remote, groupHasYouTube = false))
+        // Linked, but that YouTube playlist was deleted.
+        assertTrue(LibraryFilterPolicy.notOnYouTube("PLgone", remote, groupHasYouTube = false))
+        // Never uploaded, but a YouTube playlist with the same name exists.
+        assertFalse(LibraryFilterPolicy.notOnYouTube(null, remote, groupHasYouTube = true))
+        // Never uploaded, nothing similar on YouTube — the one to upload.
+        assertTrue(LibraryFilterPolicy.notOnYouTube(null, remote, groupHasYouTube = false))
+        assertEquals(setOf(3),
+            LibraryFilterPolicy.groupsWithYouTube(mapOf("local:a" to 1, "youtube:PLx" to 3, "history:b" to 3)))
+    }
 }

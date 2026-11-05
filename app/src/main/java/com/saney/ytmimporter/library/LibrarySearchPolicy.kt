@@ -61,4 +61,38 @@ object LibrarySearchPolicy {
      */
     fun keyboardOpenByFrame(windowHeight: Int, visibleBottom: Int): Boolean =
         windowHeight > 0 && windowHeight - visibleBottom > windowHeight * 15 / 100
+
+    /**
+     * Batch 18 (faric 2026-11-05 20:24: «в поле пошуку… хай випадає менюшко…
+     * попередні записи… штук 5, щоб видно було, остальні прокручуватися…
+     * постійно написую одне й те саме»). Search history kept on the phone.
+     */
+    const val HISTORY_MAX = 20
+
+    /** Rows visible at once under the field; the rest scrolls. */
+    const val HISTORY_VISIBLE = 5
+
+    /** The query goes to the top, without a second copy (any case), at most [max]. */
+    fun remember(history: List<String>, query: String, max: Int = HISTORY_MAX): List<String> {
+        val q = normalize(query)
+        if (q.isEmpty()) return history
+        return (listOf(q) + history.filterNot { it.equals(q, ignoreCase = true) }).take(max)
+    }
+
+    /** What to offer under the field for the text typed so far. */
+    fun suggestions(history: List<String>, typed: String): List<String> {
+        val t = normalize(typed)
+        if (t.isEmpty()) return history
+        return history.filter {
+            it.contains(t, ignoreCase = true) && !it.equals(t, ignoreCase = true)
+        }
+    }
+
+    fun forget(history: List<String>, query: String): List<String> =
+        history.filterNot { it.equals(query, ignoreCase = true) }
+
+    fun encodeHistory(history: List<String>): String = history.joinToString("\n")
+
+    fun decodeHistory(raw: String?): List<String> =
+        raw.orEmpty().split('\n').map { it.trim() }.filter { it.isNotEmpty() }.take(HISTORY_MAX)
 }

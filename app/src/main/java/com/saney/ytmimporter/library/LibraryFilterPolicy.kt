@@ -94,4 +94,22 @@ object LibraryFilterPolicy {
     fun shownLine(shown: Int, groups: Int, historyShown: Int, source: Source): String =
         "Показано: $shown • груп схожих: $groups" +
             if (source == Source.YOUTUBE) "" else " • архівів History: $historyShown"
+
+    /**
+     * Batch 18 (faric 2026-11-05 20:42: «як мені зрозуміти, які плейлісти
+     * Prodigy у мене є на YouTube, а яких немає»; «так» 2026-11-06 00:09).
+     * A phone playlist is «not on YouTube» when it is not linked to a
+     * playlist that is still in the YouTube list, and no YouTube playlist is
+     * in its group of similar ones (same name).
+     */
+    fun notOnYouTube(
+        destinationId: String?,
+        remoteIds: Set<String>,
+        groupHasYouTube: Boolean
+    ): Boolean =
+        (destinationId.isNullOrBlank() || destinationId !in remoteIds) && !groupHasYouTube
+
+    /** Groups that have at least one YouTube playlist in them. */
+    fun groupsWithYouTube(groupOf: Map<String, Int>): Set<Int> =
+        groupOf.filterKeys { it.startsWith("youtube:") }.values.toSet()
 }
