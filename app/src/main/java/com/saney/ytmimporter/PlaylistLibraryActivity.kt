@@ -254,7 +254,7 @@ class PlaylistLibraryActivity : Activity() {
         selectedRemote = savedInstanceState?.getString("remote")
         visibleTrackLimit = savedInstanceState?.getInt("limit") ?: 60
         returnWindow = savedInstanceState?.getString("return_window")?.let { id ->
-            id to (savedInstanceState.getBundle("return_window_args") ?: Bundle())
+            id to (savedInstanceState?.getBundle("return_window_args") ?: Bundle())
         }
         catalogueScrollY = savedInstanceState?.getInt("catalogue_scroll") ?: 0
         savedInstanceState?.let { state ->
