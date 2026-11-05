@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Структура збережень</title>
+<style>
+:root{--bg:#0b0d12;--surface:#171b24;--surface2:#1e2330;--line:#2c3242;--text:#f3f4f7;--muted:#9aa1b0;--accent:#ff2d6f;--ok:#3ddc84;--blue:#7fb2ff}
+*{box-sizing:border-box}body{margin:0;background:#000;color:var(--text);font-family:Roboto,"Segoe UI",Arial,sans-serif}
+.phone{width:430px;padding:16px 12px 18px;background:var(--bg)}
+h1{color:var(--accent);font-size:23px;margin:4px 4px 2px}
+.sub{color:var(--muted);font-size:13.5px;margin:0 4px 10px}
+.tree{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 4px}
+.row{display:flex;align-items:flex-start;gap:7px;padding:6px 6px;border-radius:8px;font-size:15px}
+.row:nth-child(even){background:var(--surface2)}
+.ch{width:13px;color:var(--muted);font-size:13px;flex:none;text-align:center;padding-top:1px}
+.ico{flex:none;font-size:15px}
+.lbl{flex:1}
+.lbl small{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+.file .lbl{font-size:13.5px;color:#dfe3ea}
+.d1{padding-left:22px}.d2{padding-left:40px}.d3{padding-left:58px}
+.tag{font-size:11px;border:1px solid var(--line);border-radius:6px;padding:0 5px;color:var(--muted);margin-left:4px;white-space:nowrap}
+.note{font-size:12.5px;color:var(--muted);margin:9px 4px 0;line-height:1.4}
+.note b{color:var(--text)}
+</style></head><body>
+<div class="phone">
+ <h1>Де що зберігається</h1>
+ <div class="sub">Одна папка «YTM Importer» — вибирається один раз. Далі застосунок сам кладе кожен файл у свою підпапку.</div>
+ <div class="tree">
+  <div class="row"><span class="ch">⌄</span><span class="ico">📁</span><span class="lbl"><b>YTM Importer</b><small>головна папка (наприклад, у Download)</small></span></div>
+
+  <div class="row d1"><span class="ch">⌄</span><span class="ico">📁</span><span class="lbl">1 Мої списки пісень<small>CSV / TXT, які ти готуєш сам або з ChatGPT — для «Імпорт із файлу»</small></span></div>
+  <div class="row d2"><span class="ch">⌄</span><span class="ico">📁</span><span class="lbl">The Prodigy</span></div>
+  <div class="row d3 file"><span class="ch"></span><span class="ico">📄</span><span class="lbl">01_The_Prodigy_Best_of_the_Best.csv</span></div>
+  <div class="row d2"><span class="ch">›</span><span class="ico">📁</span><span class="lbl">Linkin Park</span></div>
+
+  <div class="row d1"><span class="ch">⌄</span><span class="ico">📁</span><span class="lbl">2 Плейлісти (YTM Project)<small>«Експорт» поточного плейліста — назва, пісні, точні відео</small></span></div>
+  <div class="row d2 file"><span class="ch"></span><span class="ico">📄</span><span class="lbl">YTM_Project_The_Prodigy_-_Best_of_the_Best_2026-11-05.ytm-project.json</span></div>
+
+  <div class="row d1"><span class="ch">⌄</span><span class="ico">📁</span><span class="lbl">3 Backup плейлістів YouTube<small>Імпорт → «Експортувати всі / вибрані», «Оновити backup», «Зібрати з ланцюжка»</small></span></div>
+  <div class="row d2"><span class="ch">⌄</span><span class="ico">📁</span><span class="lbl">2026-11-05_2045-YTM-Export <span class="tag">повний</span></span></div>
+  <div class="row d3 file"><span class="ch"></span><span class="ico">📄</span><span class="lbl">manifest.json<small>зміст: які плейлісти збережено</small></span></div>
+  <div class="row d3 file"><span class="ch"></span><span class="ico">📄</span><span class="lbl">mylist_PLIrF7GkQz.ytm-project.json  …</span></div>
+  <div class="row d2"><span class="ch">›</span><span class="ico">📁</span><span class="lbl">2026-11-12_2100-YTM-Sync <span class="tag">оновлення</span></span></div>
+  <div class="row d2"><span class="ch">›</span><span class="ico">📁</span><span class="lbl">2026-11-20_1900-YTM-Full <span class="tag">зібраний</span></span></div>
+
+  <div class="row d1"><span class="ch">⌄</span><span class="ico">📁</span><span class="lbl">4 Повні копії застосунку<small>Дані → «Повна резервна копія»: історія, черга, робочий список, кеш пошуку</small></span></div>
+  <div class="row d2 file"><span class="ch"></span><span class="ico">📄</span><span class="lbl">YTM_Backup_2026-11-05_2350.json</span></div>
+
+  <div class="row d1"><span class="ch">⌄</span><span class="ico">📁</span><span class="lbl">5 Історія і черга<small>Історія → експорт; черга очікування</small></span></div>
+  <div class="row d2 file"><span class="ch"></span><span class="ico">📄</span><span class="lbl">YTM_History_2026-11-05_2350.json</span></div>
+  <div class="row d2 file"><span class="ch"></span><span class="ico">📄</span><span class="lbl">YTM_Pending_2026-11-05_2350.json</span></div>
+
+  <div class="row d1"><span class="ch">⌄</span><span class="ico">📁</span><span class="lbl">6 Діагностика<small>Сервіс → звіт для розбору проблем</small></span></div>
+  <div class="row d2 file"><span class="ch"></span><span class="ico">📄</span><span class="lbl">YTM_Diagnostics_2026-11-05_2350.txt</span></div>
+ </div>
+ <div class="note"><b>Зараз</b> застосунок щоразу питає, куди зберегти, — тому файли розкидані. <b>Буде</b>: папку «YTM Importer» вибрав один раз — і все лягає за цією схемою; той самий малюнок — у довідці «?».<br>Назви файлів — справжні (так їх уже називає застосунок); дати — для прикладу.</div>
+</div>
+</body></html>
