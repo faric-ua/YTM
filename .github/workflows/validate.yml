@@ -103,6 +103,18 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      # Batch 17: compile errors of the instrumentation tests become annotations
+      # (they gave only «no failing testcase found» before).
+      - name: Compile instrumentation tests
+        shell: bash
+        run: |
+          set -o pipefail
+          if ! gradle :app:compileDebugAndroidTestKotlin 2>&1 | tee android-test-compile.log; then
+            grep -E "^e: " android-test-compile.log | head -10 \
+              | while IFS= read -r line; do echo "::error::$line"; done
+            exit 1
+          fi
+
       - name: Run real Android action geometry tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
