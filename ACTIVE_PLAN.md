@@ -17,7 +17,8 @@ faric 06.11 03:58: «що там хочеш робити, роби, і в імп
 - [x] Причина «вікно під шапкою» (емулятор 06.11, `docs/mockups/windows_before_*`): плаваюче вікно Dialog.Alert ставало нижче статус-бару, а UiChrome ще раз додавав висоту статус-бару — верх картки на 105 dp замість ~53. Після: `docs/mockups/windows_full_area_emulator.png`.
 - [x] Код: `library/PlaylistReorderPolicy` (LIS + симуляція), `YouTubeApi.listPlaylistOrder / movePlaylistItem`, `reorder/PlaylistReorderRunner` (поза екраном, переживає поворот), Library `addReorderSection / renderReorderPlan` + довідка; `styles.xml YtmFullAreaDialogTheme`, `UiChrome.useWholeScreen`.
 - [x] JVM 119 OK (+7 порядок). CI batch 20 зелений (validate + емулятор).
-- [ ] Збірка №256, кроки на телефоні.
+- [x] Збірка №256 (`0f15d1b`) встановлена 04:27.
+- [ ] Кроки: 2 «?» Імпорту на всю площу · 3 плитки · 4 «mylist» · 5 пара на сторінці · 6 «Вирівняти порядок» (Best of the Best).
 
 ## DONE — 2026-11-06 / Batch 19 (гілка `feat/v1.4.58-library-batch19`)
 
