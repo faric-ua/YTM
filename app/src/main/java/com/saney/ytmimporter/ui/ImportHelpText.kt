@@ -12,7 +12,15 @@ package com.saney.ytmimporter.ui
  * - «Read-only» stays as a status word, explained once: «(лише читання)» (06:02);
  * - no jargon such as «videoId» or «локальний робочий список».
  */
-object ImportHelpText {
+/** Batch 21: the words of a «?» window (Import, «Створити / додати»…). */
+interface HelpContent {
+    val title: String
+    val subtitle: String
+    val lead: String
+    val sections: List<ImportHelpText.Section>
+}
+
+object ImportHelpText : HelpContent {
     enum class Icon { CURRENT, YOUTUBE, BACKUP, FILE, TEXT, HELP, QUOTA }
 
     data class Entry(val icon: Icon, val title: String, val text: String)
@@ -23,8 +31,11 @@ object ImportHelpText {
     const val SUBTITLE = "Що робить кожна кнопка і що буде з вашими даними"
     const val LEAD = "Імпорт лише відкриває плейліст на телефоні. " +
         "У YouTube Music звідси нічого не змінюється."
+    override val title: String get() = TITLE
+    override val subtitle: String get() = SUBTITLE
+    override val lead: String get() = LEAD
 
-    val sections: List<Section> = listOf(
+    override val sections: List<Section> = listOf(
         Section("Спершу — кілька слів", listOf(
             Entry(Icon.CURRENT, "Поточний плейліст",
                 "Будь-який імпорт відкриває плейліст на телефоні як «Поточний плейліст». " +

@@ -148,7 +148,8 @@ class MainActivity : Activity() {
             PlaylistWriteCoordinator(
                 api = api,
                 pendingJobStore = pendingJobStore,
-                quotaTracker = quotaTracker
+                quotaTracker = quotaTracker,
+                descriptions = com.saney.ytmimporter.storage.PlaylistDescriptionStore(this)
             )
         historyStore = HistoryStore(this)
         currentPlaylistStore = CurrentPlaylistStore(this)

@@ -1,4 +1,9 @@
 package com.saney.ytmimporter
+import com.saney.ytmimporter.library.PlaylistDescriptionPolicy
+import com.saney.ytmimporter.storage.PlaylistDescriptionStore
+import com.saney.ytmimporter.ui.DescriptionPicker
+import com.saney.ytmimporter.ui.CreateHelpText
+import com.saney.ytmimporter.ui.ImportHelpWindow
 import com.saney.ytmimporter.auth.AuthSessionStore
 import com.saney.ytmimporter.destination.DestinationRemoteOperations
 import com.saney.ytmimporter.model.TrackStatus
@@ -488,7 +493,13 @@ class DestinationActivity : Activity() {
         root.addView(
             topBar(
                 title = "Створити / додати",
-                onBack = { finish() }
+                onBack = { finish() },
+                onHelp = {
+                    deleteModalController.show(
+                        modalId = MODAL_CREATE_HELP,
+                        renderer = ::renderDeleteModal
+                    )
+                }
             )
         )
         addRemoteNotice(
@@ -580,6 +591,9 @@ class DestinationActivity : Activity() {
                 bottomMargin = dp(10)
             }
         )
+
+        // Batch 21: signature + the owner's descriptions (faric 01:19–01:25).
+        newCard.addView(descriptionPicker().view)
 
         val privacyGroup = RadioGroup(this).apply {
             orientation = RadioGroup.VERTICAL
@@ -2063,6 +2077,14 @@ class DestinationActivity : Activity() {
         modalId: String,
         args: Bundle
     ): Dialog? {
+        if (modalId == MODAL_CREATE_HELP) {
+            return ImportHelpWindow.show(this, CreateHelpText) {
+                deleteModalController.clearState()
+            }
+        }
+        if (modalId == MODAL_DESCRIPTION_EDIT) {
+            return renderDescriptionEdit(args)
+        }
         if (modalId != MODAL_DELETE_PLAYLIST) {
             return null
         }
@@ -2797,7 +2819,8 @@ class DestinationActivity : Activity() {
 
     private fun topBar(
         title: String,
-        onBack: () -> Unit
+        onBack: () -> Unit,
+        onHelp: (() -> Unit)? = null
     ): LinearLayout =
         LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -2829,7 +2852,87 @@ class DestinationActivity : Activity() {
                     1f
                 )
             )
+            // Batch 21 (faric 2026-11-06 01:23): «?» in the top right corner.
+            onHelp?.let { help ->
+                addView(
+                    ImportHelpWindow.button(
+                        this@DestinationActivity, "Довідка «Створити / додати»"
+                    ) { help() },
+                    LinearLayout.LayoutParams(dp(48), dp(48))
+                )
+            }
         }
+
+    private var picker: DescriptionPicker? = null
+
+    private fun descriptionPicker(): DescriptionPicker =
+        DescriptionPicker(this, PlaylistDescriptionStore(this)) { id ->
+            deleteModalController.show(
+                modalId = MODAL_DESCRIPTION_EDIT,
+                args = Bundle().apply { putString(ARG_DESCRIPTION_ID, id.orEmpty()) },
+                renderer = ::renderDeleteModal
+            )
+        }.also { picker = it }
+
+    /** Batch 21: write a new description or change the chosen one. */
+    private fun renderDescriptionEdit(args: Bundle): Dialog? {
+        val store = PlaylistDescriptionStore(this)
+        val state = store.load()
+        val id = args.getString(ARG_DESCRIPTION_ID).orEmpty()
+        val existing = state.descriptions.firstOrNull { it.id == id }
+        if (id.isNotEmpty() && existing == null) return null
+        val field = EditText(this).apply {
+            setText(args.getString(ARG_DESCRIPTION_DRAFT) ?: existing?.text.orEmpty())
+            hint = "Кілька слів про плейліст або про застосунок"
+            minLines = 4
+            maxLines = 10
+            gravity = Gravity.TOP or Gravity.START
+            textSize = 14.5f
+            setTextColor(Color.WHITE)
+            setHintTextColor(Color.rgb(120, 123, 130))
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            background = roundedBackground(color = SURFACE, radiusDp = 12, strokeColor = BORDER)
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit
+                override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit
+                override fun afterTextChanged(s: Editable?) {
+                    // Kept in the window's saved arguments: a rotation keeps the draft.
+                    deleteModalController.visibleArgs(MODAL_DESCRIPTION_EDIT)?.let { saved ->
+                        saved.putString(ARG_DESCRIPTION_DRAFT, s?.toString().orEmpty())
+                        deleteModalController.updateArgs(MODAL_DESCRIPTION_EDIT, saved)
+                    }
+                }
+            })
+        }
+        return UiChrome.showContentDialog(
+            activity = this,
+            title = if (existing == null) "Новий опис" else
+                "Змінити опис №${PlaylistDescriptionPolicy.number(state, existing.id)}",
+            message = "Опис іде нижче рядка «${PlaylistDescriptionPolicy.SIGNATURE}», " +
+                "з порожнього рядка. YouTube спершу показує лише підпис. " +
+                "Знаки «<» і «>» YouTube не приймає — їх буде замінено.",
+            content = field,
+            actions = listOf(
+                UiChrome.DialogAction("Скасувати") { deleteModalController.clearState() },
+                UiChrome.DialogAction("Зберегти", UiChrome.ActionTone.ACCENT) {
+                    deleteModalController.clearState()
+                    val text = field.text.toString()
+                    if (text.isBlank()) {
+                        toast("Порожній опис не збережено")
+                    } else {
+                        store.update { current ->
+                            if (existing == null) {
+                                PlaylistDescriptionPolicy.add(current, text, System.currentTimeMillis())
+                            } else {
+                                PlaylistDescriptionPolicy.edit(current, existing.id, text)
+                            }
+                        }
+                        picker?.render()
+                    }
+                }
+            )
+        )
+    }
 
     private fun card(): LinearLayout =
         LinearLayout(this).apply {
@@ -3210,6 +3313,10 @@ class DestinationActivity : Activity() {
             "destination_playlist_edit_privacy"
         private const val STATE_DELETE_MODAL =
             "destination_delete_modal_state"
+        private const val MODAL_CREATE_HELP = "destination_create_help"
+        private const val MODAL_DESCRIPTION_EDIT = "destination_description_edit"
+        private const val ARG_DESCRIPTION_ID = "description_id"
+        private const val ARG_DESCRIPTION_DRAFT = "description_draft"
         private const val MODAL_DELETE_PLAYLIST =
             "delete_playlist"
         private const val ARG_DELETE_PLAYLIST_ID =

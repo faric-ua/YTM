@@ -1,6 +1,7 @@
 package com.saney.ytmimporter.youtube
 
 import com.saney.ytmimporter.library.PlaylistReorderPolicy
+import com.saney.ytmimporter.library.PlaylistDescriptionPolicy
 import com.saney.ytmimporter.library.LibraryFilterPolicy
 import com.saney.ytmimporter.model.GoogleAccountInfo
 import com.saney.ytmimporter.model.SearchCandidate
@@ -779,7 +780,9 @@ class YouTubeApi(
     fun createPlaylist(
         accessToken: String,
         title: String,
-        privacyStatus: String
+        privacyStatus: String,
+        // Batch 21: signature first, the owner's description below.
+        description: String = PlaylistDescriptionPolicy.SIGNATURE
     ): String {
         val url = "https://www.googleapis.com/youtube/v3/playlists?part=snippet,status"
         val body = JSONObject()
@@ -787,7 +790,7 @@ class YouTubeApi(
                 "snippet",
                 JSONObject()
                     .put("title", title.take(150))
-                    .put("description", "Створено через YTM Importer")
+                    .put("description", description.take(PlaylistDescriptionPolicy.MAX_LENGTH))
             )
             .put(
                 "status",

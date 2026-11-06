@@ -8,6 +8,7 @@ import com.saney.ytmimporter.model.PendingTrack
 import com.saney.ytmimporter.model.Track
 import com.saney.ytmimporter.model.TrackStatus
 import com.saney.ytmimporter.storage.PendingJobStore
+import com.saney.ytmimporter.storage.PlaylistDescriptionStore
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.util.ErrorMessages
 import com.saney.ytmimporter.youtube.YouTubeApi
@@ -18,7 +19,9 @@ import java.util.UUID
 class PlaylistWriteCoordinator(
     private val api: YouTubeApi,
     private val pendingJobStore: PendingJobStore,
-    private val quotaTracker: QuotaTracker
+    private val quotaTracker: QuotaTracker,
+    /** Batch 21: the owner's description for new playlists (null = signature only). */
+    private val descriptions: PlaylistDescriptionStore? = null
 ) {
     data class AccountContext(
         val googleEmail: String?,
@@ -136,11 +139,15 @@ class PlaylistWriteCoordinator(
 
             try {
                 playlistId =
-                    api.createPlaylist(
-                        token,
-                        job.playlistName,
-                        job.privacyStatus
-                    )
+                    descriptions?.forNewPlaylist().let { chosen ->
+                        api.createPlaylist(
+                            token,
+                            job.playlistName,
+                            job.privacyStatus,
+                            chosen?.first ?: com.saney.ytmimporter.library
+                                .PlaylistDescriptionPolicy.SIGNATURE
+                        ).also { descriptions?.markUsed(chosen?.second) }
+                    }
 
                 onPlaylistIdAvailable(playlistId)
 

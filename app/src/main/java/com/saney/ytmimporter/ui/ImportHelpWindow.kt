@@ -18,24 +18,28 @@ import com.saney.ytmimporter.R
  * button an icon, its name and what it does. Words — [ImportHelpText].
  */
 object ImportHelpWindow {
-    fun show(activity: Activity, onDone: () -> Unit): Dialog {
+    fun show(
+        activity: Activity,
+        help: HelpContent = ImportHelpText,
+        onDone: () -> Unit
+    ): Dialog {
         val landscape = activity.resources.configuration.orientation ==
             Configuration.ORIENTATION_LANDSCAPE
-        val content = content(activity, withLead = landscape)
+        val content = content(activity, help, withLead = landscape)
         val done = UiChrome.DialogAction("Зрозуміло") { onDone() }
         return if (landscape) {
             UiChrome.showWideContentDialog(
                 activity = activity,
-                title = ImportHelpText.TITLE,
+                title = help.title,
                 content = content,
                 doneAction = done
             )
         } else {
             UiChrome.showContentDialog(
                 activity = activity,
-                title = ImportHelpText.TITLE,
-                subtitle = ImportHelpText.SUBTITLE,
-                message = ImportHelpText.LEAD,
+                title = help.title,
+                subtitle = help.subtitle,
+                message = help.lead,
                 content = content,
                 actions = listOf(done)
             )
@@ -43,9 +47,13 @@ object ImportHelpWindow {
     }
 
     /** The «?» in the Import header — same look as the «←» next to it. */
-    fun button(activity: Activity, onClick: () -> Unit): android.widget.ImageButton =
+    fun button(
+        activity: Activity,
+        description: String = "Довідка імпорту",
+        onClick: () -> Unit
+    ): android.widget.ImageButton =
         android.widget.ImageButton(activity).apply {
-            contentDescription = "Довідка імпорту"
+            contentDescription = description
             setImageResource(R.drawable.ic_ytm_help)
             imageTintList = android.content.res.ColorStateList.valueOf(
                 AppThemeManager.palette(activity).text)
@@ -59,7 +67,7 @@ object ImportHelpWindow {
             setOnClickListener { onClick() }
         }
 
-    private fun content(activity: Activity, withLead: Boolean): View {
+    private fun content(activity: Activity, help: HelpContent, withLead: Boolean): View {
         val palette = AppThemeManager.palette(activity)
         fun dp(value: Int) = (value * activity.resources.displayMetrics.density).toInt()
         fun text(value: String, size: Float, bold: Boolean, colour: Int) =
@@ -74,11 +82,11 @@ object ImportHelpWindow {
             setPadding(0, dp(2), 0, dp(7))
         }
         if (withLead) {
-            content.addView(text(ImportHelpText.LEAD, 13f, false, palette.muted).apply {
+            content.addView(text(help.lead, 13f, false, palette.muted).apply {
                 setPadding(dp(4), 0, dp(4), dp(4))
             })
         }
-        ImportHelpText.sections.forEach { section ->
+        help.sections.forEach { section ->
             content.addView(text(section.title, 15f, true, palette.accent).apply {
                 setPadding(dp(4), dp(10), 0, dp(6))
             })
