@@ -30,7 +30,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-e64aa0a1e16979a3  RESUME_HERE.md
+70dcc27f6683a0e3  RESUME_HERE.md
 02cff781bf9d6506  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -1871,7 +1871,7 @@ b4a014a51031168c  tools/termux/ytm-actions-status.sh
 c014e29783373746  tools/termux/ytm-finalize-release.sh
 fdaa5a8a5e4b88ef  tools/termux/ytm-help.sh
 1145acd427c8ec17  tools/termux/ytm-install-apk.sh
-818d3b005a60d80b  tools/termux/ytm-keys.sh
+c1d23f4cc41e2469  tools/termux/ytm-keys.sh
 23a85d54afa7b096  tools/termux/ytm-menu.sh
 10bc294251a1400b  tools/termux/ytm-release-status.sh
 0d0e22c4ec0747ad  tools/termux/ytm-repo-status.sh
