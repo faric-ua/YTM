@@ -1642,7 +1642,7 @@ class PlaylistLibraryActivity : Activity() {
             val source = dupMembers[ref.identity]?.source?.let { " ($it)" }.orEmpty()
             addFullButton("Вирівняти порядок як у «${ref.title}»$source ›") {
                 startReorder(playlistId, title, ref)
-            }
+            }.maxLines = 4 // batch 20b: «(Телефон) ›» was cut off on 2 lines
         }
     }
 
@@ -1736,7 +1736,8 @@ class PlaylistLibraryActivity : Activity() {
         return UiChrome.showContentDialog(this, "Вирівняти порядок",
             "Не на своєму місці (порівняно з «${run.referenceTitle}»): " +
                 "${PlaylistReorderRunner.countWord(count)} з ${plan.youTubeCount}. " +
-                "Буде переміщено лише їх, інші не зрушаться; нічого не додається й не " +
+                (if (count == 1) "Буде переміщено лише її" else "Буде переміщено лише їх") +
+                ", інші не зрушаться; нічого не додається й не " +
                 "видаляється.\nКвота: $count × ${PlaylistReorderPolicy.UNITS_PER_MOVE} = " +
                 "${count * PlaylistReorderPolicy.UNITS_PER_MOVE} одиниць." +
                 (if (notes.isNotEmpty()) "\n\n$notes" else ""),

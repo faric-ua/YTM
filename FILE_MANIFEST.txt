@@ -30,7 +30,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-6cee535ace7f9d8d  RESUME_HERE.md
+a2a4b7bd839204d3  RESUME_HERE.md
 02cff781bf9d6506  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -111,7 +111,7 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-bd5e76af96aa1dde  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
+bcffcd1f9c35d90b  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
