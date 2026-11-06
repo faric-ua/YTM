@@ -18,7 +18,7 @@ faric 06.11 03:58: «що там хочеш робити, роби, і в імп
 - [x] Код: `library/PlaylistReorderPolicy` (LIS + симуляція), `YouTubeApi.listPlaylistOrder / movePlaylistItem`, `reorder/PlaylistReorderRunner` (поза екраном, переживає поворот), Library `addReorderSection / renderReorderPlan` + довідка; `styles.xml YtmFullAreaDialogTheme`, `UiChrome.useWholeScreen`.
 - [x] JVM 119 OK (+7 порядок). CI batch 20 зелений (validate + емулятор).
 - [x] Збірка №256 (`0f15d1b`) встановлена 04:27.
-- [ ] Кроки: 2 «?» Імпорту на всю площу · 3 плитки · 4 «mylist» · 5 пара на сторінці · 6 «Вирівняти порядок» (Best of the Best).
+- [x] Кроки на №256/№257 — усі пас (04:29–04:53); 20b (знімок у групі, кнопка до 4 рядків, «лише її») — №257.
 
 ## DONE — 2026-11-06 / Batch 19 (гілка `feat/v1.4.58-library-batch19`)
 
