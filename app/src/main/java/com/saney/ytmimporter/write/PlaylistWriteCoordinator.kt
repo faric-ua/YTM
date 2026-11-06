@@ -299,6 +299,12 @@ class PlaylistWriteCoordinator(
         val createOffset =
             if (job.destination == PendingDestination.NEW_PLAYLIST) 1 else 0
 
+        // Batch 19: songs go to their own place in an existing playlist.
+        // If YouTube refuses a position (playlist not sorted by hand), the
+        // song is appended and the rest of this run appends too.
+        var positionsAllowed =
+            job.destination == PendingDestination.EXISTING_PLAYLIST
+
         for ((index, track) in tracks.withIndex()) {
             onTrackStart(
                 track,
@@ -339,11 +345,23 @@ class PlaylistWriteCoordinator(
             )
 
             try {
-                api.addVideo(
-                    token,
-                    playlistId!!,
-                    videoId
-                )
+                val position = track.insertPosition.takeIf { positionsAllowed }
+                try {
+                    api.addVideo(
+                        token,
+                        playlistId!!,
+                        videoId,
+                        position
+                    )
+                } catch (refused: YouTubeApiException) {
+                    if (position == null || refused.httpCode != 400 ||
+                        refused.reason.orEmpty() !in PlaylistInsertPositionPolicy.positionRefusedReasons
+                    ) throw refused
+                    positionsAllowed = false
+                    quotaTracker.recordGeneralUnits(QuotaTracker.PLAYLIST_ITEM_INSERT_COST)
+                    api.addVideo(token, playlistId!!, videoId)
+                }
+                track.insertPosition = null
 
                 track.status = TrackStatus.ADDED
                 track.error = null

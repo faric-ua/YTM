@@ -34,6 +34,14 @@ data class Track(
     var durableExactSelection: Boolean = false,
     var historyIndex: Int? = null
 ) {
+    /**
+     * Batch 19: where to insert this song in an existing YouTube playlist
+     * (0-based), set by the duplicate scan; null = append. Kept out of the
+     * constructor (not part of equals/copy) and never saved: a resumed
+     * pending job simply appends.
+     */
+    var insertPosition: Int? = null
+
     val query: String
         get() = listOf(originalArtist, originalTitle)
             .filter { it.isNotBlank() }

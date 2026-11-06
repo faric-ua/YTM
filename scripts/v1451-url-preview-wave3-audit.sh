@@ -148,7 +148,7 @@ for forbidden in (
         )
 
 for needle in (
-    '"Імпорт за URL / Mix"',
+    '"Імпорт за URL"',  # batch 19: «/ Mix» removed (faric 06.11 01:07)
     "UrlSnapshotActivity::class.java",
 ):
     if needle not in import_activity:

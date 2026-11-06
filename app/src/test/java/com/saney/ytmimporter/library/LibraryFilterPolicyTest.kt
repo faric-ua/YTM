@@ -105,4 +105,33 @@ class LibraryFilterPolicyTest {
         assertEquals(setOf(3),
             LibraryFilterPolicy.groupsWithYouTube(mapOf("local:a" to 1, "youtube:PLx" to 3, "history:b" to 3)))
     }
+
+    // Batch 19: «URL snapshot • PLIrF7GkQzd-E» (faric's mylist read by link).
+    @Test fun urlSnapshotKnowsItsYouTubePlaylist() {
+        val label = "URL snapshot (PLIrF7GkQzd-Eabc123) • дублікати прибрано"
+        assertEquals("PLIrF7GkQzd-Eabc123", LibraryFilterPolicy.urlSnapshotSourceId(label))
+        assertEquals(null, LibraryFilterPolicy.urlSnapshotSourceId("Файл: prodigy.csv"))
+        assertEquals("PLown", LibraryFilterPolicy.youTubeLink("PLown", label))
+        assertEquals("PLIrF7GkQzd-Eabc123", LibraryFilterPolicy.youTubeLink(null, label))
+        assertEquals(null, LibraryFilterPolicy.youTubeLink(" ", "Вставлений текст"))
+    }
+
+    @Test fun urlSnapshotShowsTheYouTubeName() {
+        val id = "PLIrF7GkQzd-Eabc123"
+        val label = "URL snapshot ($id)"
+        val titles = mapOf(id to "mylist")
+        assertEquals("mylist", LibraryFilterPolicy.shownTitle("URL snapshot • ${id.take(18)}", label, titles))
+        assertEquals("mylist", LibraryFilterPolicy.shownTitle("URL snapshot", label, titles))
+        // A real name stays; an unknown playlist keeps the technical one.
+        assertEquals("Моя назва", LibraryFilterPolicy.shownTitle("Моя назва", label, titles))
+        assertEquals("URL snapshot", LibraryFilterPolicy.shownTitle("URL snapshot", label, emptyMap()))
+        // Not a snapshot at all.
+        assertEquals("URL snapshot", LibraryFilterPolicy.shownTitle("URL snapshot", "Файл", titles))
+    }
+
+    @Test fun urlSnapshotOfAYouTubePlaylistIsNotMissingThere() {
+        val id = "PLIrF7GkQzd-Eabc123"
+        val link = LibraryFilterPolicy.youTubeLink(null, "URL snapshot ($id)")
+        assertFalse(LibraryFilterPolicy.notOnYouTube(link, setOf(id), groupHasYouTube = false))
+    }
 }

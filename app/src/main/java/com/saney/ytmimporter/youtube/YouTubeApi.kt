@@ -66,7 +66,9 @@ class YouTubeApi(
 
     data class PlaylistVideoIdsResult(
         val videoIds: Set<String>,
-        val requestCount: Int
+        val requestCount: Int,
+        /** Batch 19: the playlist in its order, repeats kept (for insert positions). */
+        val orderedVideoIds: List<String> = emptyList()
     )
 
     data class PlaylistTracksResult(
@@ -599,6 +601,7 @@ class YouTubeApi(
         playlistId: String
     ): PlaylistVideoIdsResult {
         val videoIds = linkedSetOf<String>()
+        val ordered = mutableListOf<String>()
         var pageToken: String? = null
         var requestCount = 0
         var pages = 0
@@ -644,6 +647,7 @@ class YouTubeApi(
 
                     if (videoId.isNotBlank()) {
                         videoIds += videoId
+                        ordered += videoId
                     }
                 }
             }
@@ -658,7 +662,8 @@ class YouTubeApi(
 
         return PlaylistVideoIdsResult(
             videoIds = videoIds,
-            requestCount = requestCount
+            requestCount = requestCount,
+            orderedVideoIds = ordered
         )
     }
 
@@ -1048,7 +1053,8 @@ class YouTubeApi(
     fun addVideo(
         accessToken: String,
         playlistId: String,
-        videoId: String
+        videoId: String,
+        position: Int? = null
     ): String {
         val url =
             "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet"
@@ -1062,6 +1068,10 @@ class YouTubeApi(
                             "playlistId",
                             playlistId
                         )
+                        .apply {
+                            // Batch 19: the song's own place (0-based).
+                            if (position != null && position >= 0) put("position", position)
+                        }
                         .put(
                             "resourceId",
                             JSONObject()

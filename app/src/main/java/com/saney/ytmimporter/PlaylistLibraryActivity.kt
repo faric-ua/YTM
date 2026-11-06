@@ -192,6 +192,8 @@ class PlaylistLibraryActivity : Activity() {
     /** Last duplicate analysis, shared by cards, details and the group window. */
     private var dupCandidates: List<PlaylistLibraryDuplicatePolicy.Candidate> = emptyList()
     private var dupHints: Map<String, PlaylistLibraryDuplicatePolicy.Hint> = emptyMap()
+    /** Batch 19: normal «phone ↔ YouTube» pairs, for tiles and the detail page alike. */
+    private var dupNormalPairs: Set<String> = emptySet()
     private var dupMembers: Map<String, DupMember> = emptyMap()
     /** Cards shown by the last catalogue render; null = catalogue not built yet. */
     private var visibleCardIdentities: Set<String>? = null
@@ -1218,6 +1220,14 @@ class PlaylistLibraryActivity : Activity() {
         val hints = numbered.hints
         dupCandidates = candidates
         dupHints = hints
+        // Batch 18/19: a phone list with its own YouTube playlist (written
+        // there, or read from it by link) is a normal pair, not a copy.
+        dupNormalPairs = PlaylistLibraryDuplicateGroupPolicy.normalPairs(hints,
+            allLocal.filter { it.source != LocalLibrarySource.HISTORY }
+                .mapNotNull { item ->
+                    LibraryFilterPolicy.youTubeLink(item.destinationPlaylistId, item.sourceLabel)
+                        ?.let { item.identity to "youtube:$it" }
+                }.toMap())
         dupMembers = allLocal.associate { item ->
             val history = item.historyEntryId?.let { archiveById[it] }
                 ?.takeIf { item.source == LocalLibrarySource.HISTORY }
@@ -1603,6 +1613,14 @@ class PlaylistLibraryActivity : Activity() {
     private fun addDuplicateGroupButton(identity: String) {
         refreshDuplicates()
         val hint = dupHints[identity] ?: return
+        // Batch 19 (faric's screenshot 2026-11-06 01:04): a normal pair says
+        // so on the page too — the same calm green line as on its tile.
+        if (identity in dupNormalPairs) {
+            addFullButton(PlaylistLibraryDuplicateGroupPolicy.PAIR_LINE + " — порівняти ›") {
+                showDuplicateGroup(identity)
+            }.setTextColor(palette.semantic.success)
+            return
+        }
         addFullButton("Схожі плейлісти: група №${hint.groupNumber} " +
             "(${hint.groupSize}) — порівняти ›") {
             showDuplicateGroup(identity)
@@ -2112,13 +2130,10 @@ class PlaylistLibraryActivity : Activity() {
 
         // Batch 18: a phone playlist with its own YouTube playlist is the
         // normal state — a calm green line, not «Схоже на копію».
-        val pairs = PlaylistLibraryDuplicateGroupPolicy.normalPairs(hints,
-            allLocal.filter { it.source != LocalLibrarySource.HISTORY }
-                .mapNotNull { item ->
-                    item.destinationPlaylistId?.takeIf { it.isNotBlank() }
-                        ?.let { item.identity to "youtube:$it" }
-                }.toMap())
+        val pairs = dupNormalPairs
         val remoteIdSet = allRemote.map { it.id }.toSet()
+        // Batch 19: «URL snapshot • PLIr…» shows its YouTube name.
+        val youTubeTitles = allRemote.associate { it.id to it.title }
         val youTubeGroups = LibraryFilterPolicy.groupsWithYouTube(
             hints.mapValues { it.value.groupNumber })
         val all = mutableListOf<CardInfo>()
@@ -2126,13 +2141,16 @@ class PlaylistLibraryActivity : Activity() {
             val hint = hints[item.identity]
             if (similarOnly && (hint == null || item.identity in pairs)) return@forEach
             if (notOnYouTubeOnly && (item.source == LocalLibrarySource.HISTORY ||
-                    !LibraryFilterPolicy.notOnYouTube(item.destinationPlaylistId, remoteIdSet,
+                    !LibraryFilterPolicy.notOnYouTube(
+                        LibraryFilterPolicy.youTubeLink(item.destinationPlaylistId, item.sourceLabel),
+                        remoteIdSet,
                         hint?.groupNumber?.let { it in youTubeGroups } == true))
             ) return@forEach
             all += CardInfo(
                 identity = item.identity,
-                title = item.title,
-                subtitle = (when {
+                title = LibraryFilterPolicy.shownTitle(item.title, item.sourceLabel, youTubeTitles),
+                subtitle = (if (LibraryFilterPolicy.urlSnapshotSourceId(item.sourceLabel) != null)
+                    LibraryFilterPolicy.SNAPSHOT_MARK else "") + (when {
                     item.identity in missingOnYouTube -> "немає на YouTube • "
                     item.destinationPlaylistId?.let { it in exactLinks } == true -> "Збіг ID • "
                     else -> ""
@@ -3685,7 +3703,7 @@ class PlaylistLibraryActivity : Activity() {
         val useTwo = columns == 2 && resources.configuration.screenWidthDp >= 340
         val rowCount = if (useTwo) 2 else 1
         items.chunked(rowCount).forEach { group ->
-            val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+            val row = ContentHeightRow(this).apply { orientation = LinearLayout.HORIZONTAL }
             group.forEachIndexed { index, item ->
                 val card = makeCard(item, useTwo)
                 drawn++
@@ -3848,7 +3866,7 @@ class PlaylistLibraryActivity : Activity() {
         })
     }
 
-    private fun addFullButton(label: String, onClick: () -> Unit) {
+    private fun addFullButton(label: String, onClick: () -> Unit): Button {
         val b = button(label, onClick)
         body.addView(b, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
@@ -3856,6 +3874,7 @@ class PlaylistLibraryActivity : Activity() {
             bottomMargin = dp(8)
         })
         b.minHeight = dp(54)
+        return b
     }
 
     /** Icon-only actions are ImageButtons, never text/emoji glyphs that wrap. */
@@ -3967,3 +3986,19 @@ class PlaylistLibraryActivity : Activity() {
         private val cachedTracks = mutableMapOf<String, List<Track>>()
     }
 }
+
+/**
+ * Batch 19 (faric's screenshot 2026-11-06 00:57): with one row of tiles each
+ * tile took the whole screen height. The scroller fills the viewport, so a
+ * short catalogue gave the row «up to the bottom» (AT_MOST), and MATCH_PARENT
+ * tiles grew to it. The row measures by its content instead; the two tiles of
+ * a row still get the same height (the tallest one), as before.
+ */
+private class ContentHeightRow(context: android.content.Context) : LinearLayout(context) {
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val height = if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.AT_MOST)
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED) else heightMeasureSpec
+        super.onMeasure(widthMeasureSpec, height)
+    }
+}
+

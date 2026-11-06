@@ -543,33 +543,8 @@ class UrlSnapshotActivity : Activity() {
                     )
                 )
 
-                // Batch 17 (faric 2026-11-05): one explicit, official attempt.
-                if (!state.mixAttempted) {
-                    content.addView(
-                        actionButton(
-                            label =
-                                "Спробувати прочитати Mix • до " +
-                                    "${UrlSnapshotMixPolicy.PAGE_LIMIT} API",
-                            primary =
-                                true,
-                            topMarginDp =
-                                4
-                        ) {
-                            duplicateChoiceOpen =
-                                false
-                            captureInput()
-                            UrlSnapshotRemoteOperations
-                                .startResolve(
-                                    context =
-                                        this@UrlSnapshotActivity,
-                                    rawUrl =
-                                        enteredUrl,
-                                    mixAttempt =
-                                        true
-                                )
-                        }
-                    )
-                }
+                // Batch 19 (faric 06.11 01:07): the «Спробувати прочитати Mix»
+                // button is gone — YouTube does not give mixes; the card stays.
                 // Batch 17: «Скасувати preview» stays only in the footer
                 // (faric's screenshot 2026-11-06 00:13 showed it twice).
             }

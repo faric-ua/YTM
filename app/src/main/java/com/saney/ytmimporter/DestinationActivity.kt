@@ -1942,6 +1942,14 @@ class DestinationActivity : Activity() {
                         EXTRA_LOCAL_SKIP_POSITIONS
                     ) ?: IntArray(0)
                 )
+                .putExtra(
+                    EXTRA_INSERT_POSITIONS_SKIP,
+                    intent.getIntArrayExtra(EXTRA_INSERT_POSITIONS_SKIP) ?: IntArray(0)
+                )
+                .putExtra(
+                    EXTRA_INSERT_POSITIONS_ALL,
+                    intent.getIntArrayExtra(EXTRA_INSERT_POSITIONS_ALL) ?: IntArray(0)
+                )
         )
     }
 
@@ -2608,6 +2616,8 @@ class DestinationActivity : Activity() {
             EXTRA_LOCAL_SKIP_POSITIONS,
             scan.skipPositions
         )
+        intent.putExtra(EXTRA_INSERT_POSITIONS_SKIP, scan.insertPositionsSkip)
+        intent.putExtra(EXTRA_INSERT_POSITIONS_ALL, scan.insertPositionsAll)
         intent.putExtra(
             EXTRA_QUOTA_SKIP,
             quotaPlanForWrite(
@@ -3148,6 +3158,9 @@ class DestinationActivity : Activity() {
         const val EXTRA_QUOTA_ALL = "destination_quota_all"
         const val EXTRA_DUPLICATE_MODE = "destination_duplicate_mode"
         const val EXTRA_LOCAL_SKIP_POSITIONS = "destination_local_skip_positions"
+        // Batch 19: where each selected song goes in the existing playlist.
+        const val EXTRA_INSERT_POSITIONS_SKIP = "destination_insert_positions_skip"
+        const val EXTRA_INSERT_POSITIONS_ALL = "destination_insert_positions_all"
 
         const val MODE_START = "start"
         const val MODE_EXISTING_LIST = "existing_list"

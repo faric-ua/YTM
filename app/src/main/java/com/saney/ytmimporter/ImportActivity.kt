@@ -516,7 +516,9 @@ class ImportActivity : Activity() {
                 addView(
                     actionButton(
                         label =
-                            "Імпорт за URL / Mix",
+                            // Batch 19 (faric 06.11 01:07): mixes are not given
+                            // by YouTube — the button says just «URL».
+                            "Імпорт за URL",
                         primary = false,
                         topMarginDp = 10
                     ) {

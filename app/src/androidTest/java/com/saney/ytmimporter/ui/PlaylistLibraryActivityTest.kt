@@ -799,6 +799,55 @@ class PlaylistLibraryActivityTest {
         }
     }
 
+    /** Batch 19: with one row the two tiles are as high as their content, not the screen. */
+    @Test fun fewTilesAreNotStretchedToTheScreen() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val suffix = UUID.randomUUID().toString().take(6)
+        val store = com.saney.ytmimporter.storage.RemotePlaylistListStore(context)
+        val auth = com.saney.ytmimporter.auth.PersistentAuthStateStore(context)
+        store.save("UCfew$suffix", (1..2).map { i ->
+            com.saney.ytmimporter.model.YouTubePlaylistInfo(
+                "PLfew$suffix$i", "Мало $suffix №$i", "public", i.toLong())
+        })
+        auth.markSuccessfulAuthorization()
+        try {
+            ActivityScenario.launch<PlaylistLibraryActivity>(
+                Intent(context, PlaylistLibraryActivity::class.java)
+            ).use { scene ->
+                idle()
+                scene.onActivity { activity ->
+                    activity.window.decorView.collectActions()
+                        .first { it is ImageButton && it.contentDescription == "YouTube" }
+                        .performClick()
+                }
+                idle()
+                scene.onActivity { activity ->
+                    val box = activity.window.decorView.findSearchBox() ?: error("Search box missing")
+                    box.setText("Мало $suffix")
+                }
+                android.os.SystemClock.sleep(
+                    com.saney.ytmimporter.library.LibrarySearchPolicy.TYPING_PAUSE_MS + 400)
+                idle()
+                scene.onActivity { activity ->
+                    val root = activity.window.decorView
+                    val tiles = root.tagged("library_card:youtube:PLfew$suffix")
+                    assertEquals(2, tiles.size)
+                    val screen = activity.resources.displayMetrics.heightPixels
+                    tiles.forEach { tile ->
+                        assertTrue("Tile ${tile.tag} is ${tile.height}px of $screen — stretched",
+                            tile.height < screen * 0.45)
+                        assertTrue("Tile ${tile.tag} too low: ${tile.height}px",
+                            tile.height > (60 * activity.resources.displayMetrics.density))
+                    }
+                    assertEquals("Tiles of one row differ", tiles[0].height, tiles[1].height)
+                }
+            }
+        } finally {
+            store.clear()
+            auth.clear()
+        }
+    }
+
     private fun View.tagged(prefix: String): List<View> = buildList {
         if ((this@tagged.tag as? String)?.startsWith(prefix) == true) add(this@tagged)
         if (this@tagged is ViewGroup) for (i in 0 until this@tagged.childCount)

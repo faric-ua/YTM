@@ -1,6 +1,27 @@
 # YTM Importer — ACTIVE PLAN
 
-## CURRENT TASK — 2026-11-06 / Library batch 18 (гілка `feat/v1.4.58-library-batch18`)
+## CURRENT TASK — 2026-11-06 / Batch 19 (гілка `feat/v1.4.58-library-batch19`)
+
+faric 06.11 02:41: «переходимо до наступного нашого пункту». Claude вибрала знахідки останніх двох днів; опис / стрічка описів / «?» на «Створити / додати» — пачка 20 (один екран).
+
+```
+1. Пісня — на своє місце: додавання в існуючий плейліст ставить кожну пісню на її номер
+   (YouTube playlistItems.insert snippet.position), а не в кінець (№30 «Invaders Must Die»
+   стала 50-ю). Якщо YouTube не приймає позицію (плейліст не «вручну») — у кінець, як раніше.
+   Відкладене завдання (черга після квоти) — у кінець (позиції не зберігаються).
+2. Кнопка «Імпорт за URL» (без «/ Mix»); кнопки «Спробувати прочитати Mix» нема;
+   картка «Це Mix YouTube» лишається з порадою зберегти Mix як плейліст.
+3. Сторінка плейліста нормальної пари: зелене «Пара: телефон ↔ YouTube ✓ — порівняти ›»
+   замість «Схожі плейлісти: група №36 (2)».
+4. «URL snapshot • PLIrF…» → назва YouTube-плейліста («mylist»), підпис «знімок за
+   посиланням •», не в «Нема на YouTube», пара з тим плейлістом.
+5. Плитки не розтягуються на весь екран, коли їх мало (ряд міряється за вмістом).
+```
+- [x] Код: `write/PlaylistInsertPositionPolicy` (+ `Track.insertPosition`, `YouTubeApi.addVideo(position)`, `listPlaylistVideoIds.orderedVideoIds`, `DuplicateScanResult.insertPositions`, extras `EXTRA_INSERT_POSITIONS_SKIP/ALL`, запасний шлях `manualSortRequired`); `ImportActivity` «Імпорт за URL»; `UrlSnapshotActivity` без кнопки Mix; `LibraryFilterPolicy.urlSnapshotSourceId / youTubeLink / shownTitle`; `dupNormalPairs` спільний для плиток і сторінки; `ContentHeightRow`.
+- [x] JVM локально: 112 OK (+8 позиції, +3 знімок). Емулятор: `fewTilesAreNotStretchedToTheScreen`.
+- [ ] CI, збірка, кроки на телефоні.
+
+## DONE — 2026-11-06 / Library batch 18 (гілка `feat/v1.4.58-library-batch18`)
 
 faric 06.11 00:33: «бери пачку, що там у нас ще осталось, і рубим далі». Claude вибрала те, що прибирає плутанину Бібліотеки, + дрібниці; великі речі (папка «YTM Importer» з деревом, «Імпорт файла», позиція доданої пісні, «Прибрати повтори», вікна на всю площу) — наступною пачкою.
 

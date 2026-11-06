@@ -7,6 +7,7 @@ import com.saney.ytmimporter.model.YouTubePlaylistInfo
 import com.saney.ytmimporter.storage.QuotaTracker
 import com.saney.ytmimporter.youtube.YouTubeApi
 import com.saney.ytmimporter.youtube.YouTubeApiException
+import com.saney.ytmimporter.write.PlaylistInsertPositionPolicy
 
 /**
  * Owns destination-playlist and duplicate domain orchestration.
@@ -42,8 +43,25 @@ class DestinationCoordinator(
     data class DuplicateScanResult(
         val target: YouTubePlaylistInfo,
         val analysis: DuplicateAnalysis,
-        val requestCount: Int
-    )
+        val requestCount: Int,
+        /** Batch 19: the target playlist in its order (for insert positions). */
+        val existingOrder: List<String> = emptyList()
+    ) {
+        /**
+         * Batch 19: where each selected song goes (aligned with `selected`,
+         * -1 = append / not written), for «skip duplicates» and «add all».
+         */
+        fun insertPositions(selected: List<Track>, skipDuplicates: Boolean): IntArray {
+            val skip = analysis.tracksToSkip
+            return PlaylistInsertPositionPolicy.positions(
+                order = selected.map { it.selectedVideoId },
+                write = selected.map { track ->
+                    !skipDuplicates || skip.none { it === track }
+                },
+                existing = existingOrder
+            )
+        }
+    }
 
     enum class DuplicateMode {
         SKIP,
@@ -72,6 +90,7 @@ class DestinationCoordinator(
     private var pendingTarget: YouTubePlaylistInfo? = null
     private var pendingAnalysis: DuplicateAnalysis? = null
     private var pendingScanRequestCount: Int = 0
+    private var pendingExistingOrder: List<String> = emptyList()
 
     fun reset() {
         cachedDestinationPlaylists = emptyList()
@@ -160,10 +179,13 @@ class DestinationCoordinator(
             pendingAnalysis = analysis
             pendingScanRequestCount = playlistContents.requestCount
 
+            pendingExistingOrder = playlistContents.orderedVideoIds
+
             return DuplicateScanResult(
                 target = target,
                 analysis = analysis,
-                requestCount = playlistContents.requestCount
+                requestCount = playlistContents.requestCount,
+                existingOrder = playlistContents.orderedVideoIds
             )
         } catch (error: Throwable) {
             if (isQuotaError(error)) {
@@ -244,6 +266,19 @@ class DestinationCoordinator(
                 }
             }
 
+        // Batch 19: each written song goes to its own place, not to the end.
+        selected.forEach { it.insertPosition = null }
+        if (plan.scanSucceeded) {
+            val positions = PlaylistInsertPositionPolicy.positions(
+                order = selected.map { it.selectedVideoId },
+                write = selected.map { track -> plan.tracksToWrite.any { it === track } },
+                existing = pendingExistingOrder
+            )
+            selected.forEachIndexed { index, track ->
+                track.insertPosition = positions[index].takeIf { it >= 0 }
+            }
+        }
+
         clearPendingSelection()
         return plan
     }
@@ -294,6 +329,7 @@ class DestinationCoordinator(
     }
 
     private fun clearPendingSelection() {
+        pendingExistingOrder = emptyList()
         pendingTarget = null
         pendingAnalysis = null
         pendingScanRequestCount = 0

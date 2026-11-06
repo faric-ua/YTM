@@ -656,14 +656,13 @@ object UrlSnapshotRemoteOperations {
         when (result.reason) {
             UrlSnapshotUnsupportedReason
                 .DYNAMIC_MIX_NOT_SUPPORTED_BY_CURRENT_RESOLVER ->
+                // Batch 19 (faric 06.11 01:07): no «try to read Mix» button —
+                // the official API does not give mixes (checked 06.11 00:28).
                 "Це динамічний YouTube/YTM Mix: YouTube складає його сам " +
-                    "і щоразу інакше, тому повного списку в нього нема. " +
-                    "Можна спробувати прочитати його офіційним запитом " +
-                    "(до ${UrlSnapshotMixPolicy.PAGE_LIMIT} одиниць квоти): якщо " +
-                    "YouTube віддасть пісні, вони відкриються як знімок Mix " +
-                    "на цю хвилину. " +
-                    "Застосунок не використовує прихований scraper, " +
-                    "не вгадує треки й не підміняє Mix пошуком."
+                    "і щоразу інакше, тому застосункам його не віддає. " +
+                    "Що можна зробити: відкрийте Mix у YouTube Music, збережіть " +
+                    "його як звичайний плейліст («⋮» → «Додати в плейліст») " +
+                    "і вставте сюди посилання вже на цей плейліст."
 
             UrlSnapshotUnsupportedReason
                 .MIX_NOT_GIVEN_BY_YOUTUBE ->

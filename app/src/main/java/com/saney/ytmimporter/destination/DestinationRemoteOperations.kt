@@ -38,7 +38,10 @@ object DestinationRemoteOperations {
         val repeatedCount: Int,
         val newCount: Int,
         val requestCount: Int,
-        val skipPositions: IntArray
+        val skipPositions: IntArray,
+        /** Batch 19: own place of each selected song (-1 = append), per duplicate mode. */
+        val insertPositionsSkip: IntArray = IntArray(0),
+        val insertPositionsAll: IntArray = IntArray(0)
     )
 
     data class State(
@@ -300,7 +303,11 @@ object DestinationRemoteOperations {
                         requestCount =
                             result.requestCount,
                         skipPositions =
-                            skipPositions
+                            skipPositions,
+                        insertPositionsSkip =
+                            result.insertPositions(selected, skipDuplicates = true),
+                        insertPositionsAll =
+                            result.insertPositions(selected, skipDuplicates = false)
                     )
                 )
             }.onFailure {

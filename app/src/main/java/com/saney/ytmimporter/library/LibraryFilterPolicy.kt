@@ -112,4 +112,34 @@ object LibraryFilterPolicy {
     /** Groups that have at least one YouTube playlist in them. */
     fun groupsWithYouTube(groupOf: Map<String, Int>): Set<Int> =
         groupOf.filterKeys { it.startsWith("youtube:") }.values.toSet()
+
+    /*
+     * Batch 19 (faric's screenshot 2026-11-06 00:57): a list read «за URL»
+     * from his own «mylist» showed as «URL snapshot • PLIrF7GkQzd-E» and fell
+     * into «Нема на YouTube», though it is a copy of a YouTube playlist.
+     * The snapshot's source label keeps the playlist ID: «URL snapshot (ID)…».
+     */
+    private val urlSnapshotSource = Regex("^URL snapshot \\(([^)\\s]+)\\)")
+
+    /** Playlist ID a URL snapshot was read from, or null. */
+    fun urlSnapshotSourceId(sourceLabel: String): String? =
+        urlSnapshotSource.find(sourceLabel.trim())?.groupValues?.get(1)?.takeIf { it.isNotBlank() }
+
+    /** The YouTube playlist a phone list belongs to: written there, or read from there. */
+    fun youTubeLink(destinationPlaylistId: String?, sourceLabel: String): String? =
+        destinationPlaylistId?.trim()?.takeIf { it.isNotEmpty() } ?: urlSnapshotSourceId(sourceLabel)
+
+    /** «URL snapshot» names given when the real title was not read. */
+    fun isTechnicalSnapshotTitle(title: String, sourceId: String): Boolean =
+        title == "URL snapshot" || title == "URL snapshot • ${sourceId.take(18)}"
+
+    /** Title on the tile: the YouTube name instead of a technical snapshot name. */
+    fun shownTitle(title: String, sourceLabel: String, youTubeTitles: Map<String, String>): String {
+        val id = urlSnapshotSourceId(sourceLabel) ?: return title
+        if (!isTechnicalSnapshotTitle(title, id)) return title
+        return youTubeTitles[id]?.trim()?.takeIf { it.isNotEmpty() } ?: title
+    }
+
+    /** Subtitle mark of a list read by link. */
+    const val SNAPSHOT_MARK = "знімок за посиланням • "
 }

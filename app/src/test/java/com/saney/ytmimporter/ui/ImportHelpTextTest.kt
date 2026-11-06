@@ -10,7 +10,7 @@ class ImportHelpTextTest {
     private val importButtons = listOf(
         "Очистити поточний список",
         "Вибрати плейлист з YTM",
-        "Імпорт за URL / Mix",
+        "Імпорт за URL",
         "Вибрати плейлисти для експорту",
         "Експортувати всі плейлисти в папку",
         "Відкрити backup / manifest.json",

@@ -111,6 +111,19 @@ object DestinationForwardedWritePlan {
                 selected
             }
 
+        // Batch 19: each written song goes to its own place, not to the end.
+        val positions =
+            data.getIntArrayExtra(
+                if (mode == DestinationActivity.DUPLICATE_MODE_SKIP)
+                    DestinationActivity.EXTRA_INSERT_POSITIONS_SKIP
+                else
+                    DestinationActivity.EXTRA_INSERT_POSITIONS_ALL
+            ) ?: IntArray(0)
+        selected.forEachIndexed { index, track ->
+            track.insertPosition =
+                if (positions.size == selected.size) positions[index].takeIf { it >= 0 } else null
+        }
+
         return Plan(
             target = target,
             tracksToWrite =
