@@ -5,7 +5,7 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 
 207aa607b11cc911  .github/workflows/bootstrap.yml
 957b553c7b6dec80  .github/workflows/build-apk.yml
-7c24e6b67f4fc4ea  .github/workflows/key-backup.yml
+68d4a1ecedb5a823  .github/workflows/key-backup.yml
 06a09c3088029d02  .github/workflows/publish-release.yml
 44be1f23513cb874  .github/workflows/validate.yml
 cdb79ca6fd05b092  .gitignore

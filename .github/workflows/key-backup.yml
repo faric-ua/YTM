@@ -85,6 +85,8 @@ jobs:
           rm -f "$RUNNER_TEMP/check.p12"
 
           # Compare with the certificate of the latest released APK (the one on phones).
+          # apksigner prints «Signer #1 certificate …» or, in newer build-tools,
+          # «Signer (minSdkVersion=…, maxSdkVersion=…) certificate …» (lesson 06.11).
           RELEASE_CHECK="не перевірено: у релізі нема APK"
           mkdir -p "$RUNNER_TEMP/release"
           if gh release download --repo "$GITHUB_REPOSITORY" --pattern '*.apk' \
@@ -94,7 +96,7 @@ jobs:
             APK="$(ls "$RUNNER_TEMP"/release/*.apk | head -n 1)"
             TAG="$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName)"
             APK_FP="$("$APKSIGNER" verify --print-certs "$APK" |
-              awk -F': ' '/Signer #1 certificate SHA-256 digest/ {print $2; exit}' | tr 'A-F' 'a-f')"
+              awk -F': ' '/certificate SHA-256 digest/ {print $NF; exit}' | tr -d ' :' | tr 'A-F' 'a-f')"
             if [ "$APK_FP" = "$KEY_FP" ]; then
               RELEASE_CHECK="✓ збігається з APK релізу $TAG"
             else
