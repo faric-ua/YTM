@@ -98,6 +98,8 @@ jobs:
             if [ "$APK_FP" = "$KEY_FP" ]; then
               RELEASE_CHECK="✓ збігається з APK релізу $TAG"
             else
+              echo "Відбиток ключа з секретів: ${KEY_FP:-?}"
+              echo "Відбиток APK релізу $TAG: ${APK_FP:-?}"
               echo "::error::Ключ НЕ збігається з підписом APK релізу $TAG"
               exit 1
             fi
