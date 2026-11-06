@@ -1202,7 +1202,7 @@ class PlaylistLibraryActivity : Activity() {
                     ?.tracks?.map { it.selectedVideoId.orEmpty() }
             }
             PlaylistLibraryDuplicatePolicy.Candidate(
-                item.identity, item.title, item.trackCount, videoIds
+                item.identity, shownTitle(item), item.trackCount, videoIds
             )
         } + allRemote.map { remote ->
             PlaylistLibraryDuplicatePolicy.Candidate(
@@ -1263,7 +1263,7 @@ class PlaylistLibraryActivity : Activity() {
                 } ?: playlist?.tracks?.map {
                     trackSong(it.selectedVideoId, it.selectedTitle, it.originalTitle, it.originalArtist)
                 },
-                title = item.title,
+                title = shownTitle(item),
                 source = when (item.source) {
                     LocalLibrarySource.CURRENT -> "Телефон • поточний"
                     LocalLibrarySource.SAVED -> "Телефон"
@@ -2657,7 +2657,7 @@ class PlaylistLibraryActivity : Activity() {
         val playlist = current?.playlist ?: saved?.playlist ?: plan?.playlist
         if (playlist == null) {
             statusLabel.text = "На телефоні • ${item.trackCount} треків"
-            addHeading(item.title)
+            addHeading(shownTitle(item))
             addInfo("Склад плейліста недоступний. Можливо, його дані вже видалено.")
             if (item.source == LocalLibrarySource.HISTORY) {
                 addFullButton("Видалити запис History") {
@@ -2668,7 +2668,10 @@ class PlaylistLibraryActivity : Activity() {
         }
         statusLabel.text = "На телефоні • ${item.trackCount} треків"
         // The header Back arrow already returns to the catalogue.
-        addHeading(playlist.name)
+        // Batch 20: a list read by link shows its YouTube name.
+        addHeading(if (LibraryFilterPolicy.isTechnicalSnapshotTitle(playlist.name,
+                LibraryFilterPolicy.urlSnapshotSourceId(item.sourceLabel) ?: "")) shownTitle(item)
+            else playlist.name)
         addInfo(
             when (item.source) {
                 LocalLibrarySource.HISTORY -> "Архів History • ${item.sourceLabel}"
@@ -2680,7 +2683,7 @@ class PlaylistLibraryActivity : Activity() {
                 showConfirmation(MODAL_SWITCH, item.identity)
             }
         }
-        item.destinationPlaylistId?.let { remoteId ->
+        LibraryFilterPolicy.youTubeLink(item.destinationPlaylistId, item.sourceLabel)?.let { remoteId ->
             addFullButton("Переглянути плейліст на YouTube Music ↗") {
                 openExternal("https://music.youtube.com/playlist?list=" +
                     Uri.encode(remoteId))
@@ -3658,6 +3661,15 @@ class PlaylistLibraryActivity : Activity() {
     }
 
     /** YouTube playlists to show: the fresh list, or the kept one (batch 11). */
+    /**
+     * Batch 20 (faric's screenshot 2026-11-06 04:31): a list read by link has
+     * the YouTube name everywhere — on its page, in the group window and when
+     * looking for look-alikes — not only on the tile.
+     */
+    private fun shownTitle(item: LocalLibraryItem): String =
+        LibraryFilterPolicy.shownTitle(item.title, item.sourceLabel,
+            remoteList().associate { it.id to it.title })
+
     private fun remoteList(): List<YouTubePlaylistInfo> =
         if (token() != null || remoteFromMemory) cachedPlaylists.orEmpty() else emptyList()
 
