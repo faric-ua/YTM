@@ -215,7 +215,7 @@ afc0650a335fe833  app/src/main/java/com/saney/ytmimporter/ui/RestorableModalCont
 c930f8781965f59d  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextState.kt
 5020cb0274b7a831  app/src/main/java/com/saney/ytmimporter/ui/SelectableTextSurfaceState.kt
 9280056bf2b0b6b0  app/src/main/java/com/saney/ytmimporter/ui/TrackAdapter.kt
-0a74fe6db0f3443b  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
+fdedc284694d3c37  app/src/main/java/com/saney/ytmimporter/ui/UiChrome.kt
 78da56fe6d4f0417  app/src/main/java/com/saney/ytmimporter/ui/WorkflowRelayOverlay.kt
 97950a5f9f861111  app/src/main/java/com/saney/ytmimporter/updater/UpdaterDownloadPolicy.kt
 8bc5cda5c2b4c663  app/src/main/java/com/saney/ytmimporter/updater/UpdaterManifestPolicy.kt
@@ -274,7 +274,7 @@ ae92c429e7ef5c0b  app/src/main/res/mipmap-anydpi-v33/ic_launcher_round.xml
 ea8180e420e98f2d  app/src/main/res/values/colors.xml
 2c8480e6ab81ee19  app/src/main/res/values/ids.xml
 7c794e3e8b44bad5  app/src/main/res/values/strings.xml
-9d05e1fd1b661172  app/src/main/res/values/styles.xml
+c9f5e23ac6f5d4da  app/src/main/res/values/styles.xml
 5dfe2d611d0acf07  app/src/main/res/xml/file_paths.xml
 69c5e4bc5f513bac  app/src/test/java/com/saney/ytmimporter/bulk/BulkCreateBatchPolicyTest.kt
 351daabcfb9ec663  app/src/test/java/com/saney/ytmimporter/bulk/BulkSyncPreflightPolicyTest.kt

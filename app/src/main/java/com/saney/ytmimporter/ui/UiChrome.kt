@@ -926,12 +926,29 @@ object UiChrome {
             }
         }
 
+    /**
+     * Batch 20: the dialog window starts at the very top-left of the screen,
+     * also beside a camera cutout; the card is then padded by the real insets.
+     */
+    private fun useWholeScreen(window: android.view.Window) {
+        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+        // A field in a window must stay above the keyboard (insets include the IME).
+        window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+            window.attributes = window.attributes.apply {
+                layoutInDisplayCutoutMode = android.view.WindowManager.LayoutParams
+                    .LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            }
+        }
+    }
+
     private fun customDialog(
         activity: Activity
     ): Dialog =
         Dialog(
             activity,
-            R.style.YtmAlertDialogTheme
+            // Batch 20: full-area window (was the floating YtmAlertDialogTheme).
+            R.style.YtmFullAreaDialogTheme
         ).apply {
             setCanceledOnTouchOutside(true)
         }
@@ -1847,11 +1864,12 @@ object UiChrome {
         dialog: Dialog,
         card: LinearLayout
     ): Dialog {
+        // Batch 20: a small equal margin around the window (was 18 dp).
         val horizontalInset =
-            dp(activity, 18)
+            dp(activity, 10)
 
         val minimumVerticalInset =
-            dp(activity, 12)
+            dp(activity, 8)
 
         val outer =
             FrameLayout(activity).apply {
@@ -1902,6 +1920,7 @@ object UiChrome {
                 ViewGroup.LayoutParams
                     .MATCH_PARENT
             )
+            useWholeScreen(window)
         }
 
         var insetsApplied =
@@ -2029,7 +2048,10 @@ object UiChrome {
                         safeInsets.right,
                     maxOf(
                         minimumVerticalInset,
-                        safeInsets.bottom +
+                        maxOf(
+                            safeInsets.bottom,
+                            insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+                        ) +
                             dp(
                                 activity,
                                 8
@@ -2067,11 +2089,12 @@ object UiChrome {
         dialog: Dialog,
         card: LinearLayout
     ): Dialog {
+        // Batch 20: a small equal margin around the window (was 18 dp).
         val horizontalInset =
-            dp(activity, 18)
+            dp(activity, 10)
 
         val minimumVerticalInset =
-            dp(activity, 12)
+            dp(activity, 8)
 
         val outer =
             FrameLayout(activity).apply {
@@ -2168,6 +2191,7 @@ object UiChrome {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
+            useWholeScreen(window)
         }
 
         var insetsApplied = false
@@ -2242,7 +2266,8 @@ object UiChrome {
                 horizontalInset + safeInsets.left,
                 maxOf(minimumVerticalInset, safeInsets.top + dp(activity, 8)),
                 horizontalInset + safeInsets.right,
-                maxOf(minimumVerticalInset, safeInsets.bottom + dp(activity, 8))
+                maxOf(minimumVerticalInset, maxOf(safeInsets.bottom,
+                    insets.getInsets(WindowInsetsCompat.Type.ime()).bottom) + dp(activity, 8))
             )
 
             insetsApplied = true

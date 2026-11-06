@@ -20,6 +20,28 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
+    <!--
+        Batch 20 (faric 2026-11-05 23:38 / 11-06 03:58): app windows take the
+        whole available area. The floating Dialog.Alert window was placed below
+        the status bar and then padded by the status bar again (emulator 06.11:
+        card top at 105 dp in portrait, wide gaps in landscape). A non-floating,
+        transparent window covers the screen; UiChrome pads the card by the real
+        system bars / camera cutout plus a small equal margin.
+    -->
+    <style name="YtmFullAreaDialogTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/app_accent</item>
+        <item name="android:textColorPrimary">@color/app_text</item>
+        <item name="android:textColorSecondary">@color/app_muted</item>
+    </style>
+
     <style name="YtmAlertDialogTheme" parent="@android:style/Theme.Material.Dialog.Alert">
         <item name="android:windowBackground">@drawable/bg_ytm_dialog</item>
         <item name="android:fontFamily">sans</item>
