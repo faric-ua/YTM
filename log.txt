@@ -1,0 +1,12 @@
+--------- beginning of main
+11-06 02:11:09.400  4216  4230 I TestRunner: run started: 2 tests
+11-06 02:11:09.400  4216  4230 I TestRunner: started: importHelpBothOrientations(com.saney.ytmimporter.tour.DialogTourTest)
+11-06 02:11:14.493  4216  4230 I ScreenTour: shot 01_import_portrait
+11-06 02:11:17.826  4216  4230 I ScreenTour: shot 02_import_help_portrait
+11-06 02:11:23.658  4216  4230 I ScreenTour: shot 03_import_help_landscape
+11-06 02:11:24.978  4216  4230 I TestRunner: finished: importHelpBothOrientations(com.saney.ytmimporter.tour.DialogTourTest)
+11-06 02:11:25.071  4216  4230 I TestRunner: started: libraryHelpBothOrientations(com.saney.ytmimporter.tour.DialogTourTest)
+11-06 02:11:31.625  4216  4230 I ScreenTour: shot 04_library_help_portrait
+11-06 02:11:37.443  4216  4230 I ScreenTour: shot 05_library_help_landscape
+11-06 02:11:38.325  4216  4230 I TestRunner: finished: libraryHelpBothOrientations(com.saney.ytmimporter.tour.DialogTourTest)
+11-06 02:11:38.334  4216  4230 I TestRunner: run finished: 2 tests, 0 failed, 0 ignored
