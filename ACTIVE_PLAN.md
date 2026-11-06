@@ -1,6 +1,25 @@
 # YTM Importer — ACTIVE PLAN
 
-## CURRENT TASK — 2026-11-06 / Batch 19 (гілка `feat/v1.4.58-library-batch19`)
+## CURRENT TASK — 2026-11-06 / Batch 20 (гілка `feat/v1.4.58-library-batch20`)
+
+faric 06.11 03:58: «що там хочеш робити, роби, і в імпорті вікно help… розширити вікно максимально доступної зони».
+
+```
+1. «Вирівняти порядок як у «…» ›» на сторінці YouTube-плейліста (для кожного списку на
+   телефоні з його групи, до 3): читає порядок на YouTube (1 од./50 пісень), показує план
+   «№50 → №30 Назва», «Перемістити (N)» — playlistItems.update з position, 50 од. кожна.
+   Переставляє лише пісні не на місці (найдовший ряд у правильному порядку лишається).
+   Не додає й не видаляє. Помилки: квота (скільки встигло), «не вручну» (manualSortRequired).
+2. Вікна на всю доступну площу: тема вікон — не «плаваюча» (YtmFullAreaDialogTheme),
+   вікно від верху екрана, біля вирізу камери; картка — відступ 10 dp (було 18) + реальні
+   системні панелі; клавіатура не закриває вікно.
+```
+- [x] Причина «вікно під шапкою» (емулятор 06.11, `docs/mockups/windows_before_*`): плаваюче вікно Dialog.Alert ставало нижче статус-бару, а UiChrome ще раз додавав висоту статус-бару — верх картки на 105 dp замість ~53. Після: `docs/mockups/windows_full_area_emulator.png`.
+- [x] Код: `library/PlaylistReorderPolicy` (LIS + симуляція), `YouTubeApi.listPlaylistOrder / movePlaylistItem`, `reorder/PlaylistReorderRunner` (поза екраном, переживає поворот), Library `addReorderSection / renderReorderPlan` + довідка; `styles.xml YtmFullAreaDialogTheme`, `UiChrome.useWholeScreen`.
+- [x] JVM 119 OK (+7 порядок). CI batch 20 зелений (validate + емулятор).
+- [ ] Збірка №256, кроки на телефоні.
+
+## DONE — 2026-11-06 / Batch 19 (гілка `feat/v1.4.58-library-batch19`)
 
 faric 06.11 02:41: «переходимо до наступного нашого пункту». Claude вибрала знахідки останніх двох днів; опис / стрічка описів / «?» на «Створити / додати» — пачка 20 (один екран).
 
