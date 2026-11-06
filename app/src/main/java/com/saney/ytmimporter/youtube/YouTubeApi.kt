@@ -1,5 +1,6 @@
 package com.saney.ytmimporter.youtube
 
+import com.saney.ytmimporter.library.PlaylistReorderPolicy
 import com.saney.ytmimporter.library.LibraryFilterPolicy
 import com.saney.ytmimporter.model.GoogleAccountInfo
 import com.saney.ytmimporter.model.SearchCandidate
@@ -1048,6 +1049,75 @@ class YouTubeApi(
             response,
             "Видалення треку з плейлиста"
         )
+    }
+
+    /**
+     * Batch 20 («Вирівняти порядок»): every item of a playlist in its order,
+     * with the item ID needed to move it. Items without a video (deleted /
+     * private) are kept — they still take a place in the order.
+     */
+    fun listPlaylistOrder(
+        accessToken: String,
+        playlistId: String,
+        onListRequest: () -> Unit = {}
+    ): List<PlaylistReorderPolicy.Item> {
+        val items = mutableListOf<PlaylistReorderPolicy.Item>()
+        var pageToken: String? = null
+        var pages = 0
+        do {
+            var url = "https://www.googleapis.com/youtube/v3/playlistItems" +
+                "?part=snippet,contentDetails&maxResults=50&playlistId=" +
+                URLEncoder.encode(playlistId, Charsets.UTF_8.name())
+            if (!pageToken.isNullOrBlank()) {
+                url += "&pageToken=" + URLEncoder.encode(pageToken, Charsets.UTF_8.name())
+            }
+            onListRequest()
+            val response = request("GET", url, accessToken)
+            requireSuccess(response, "Читання порядку плейліста")
+            val json = JSONObject(response.body)
+            val array = json.optJSONArray("items")
+            if (array != null) for (i in 0 until array.length()) {
+                val item = array.getJSONObject(i)
+                val snippet = item.optJSONObject("snippet")
+                val videoId = item.optJSONObject("contentDetails")?.optString("videoId").orEmpty().trim()
+                    .ifBlank {
+                        snippet?.optJSONObject("resourceId")?.optString("videoId").orEmpty().trim()
+                    }
+                val itemId = item.optString("id").trim()
+                if (itemId.isBlank()) continue
+                items += PlaylistReorderPolicy.Item(
+                    itemId = itemId,
+                    videoId = videoId,
+                    title = decodeEntities(snippet?.optString("title").orEmpty()).trim()
+                        .ifBlank { "YouTube video $videoId" }
+                )
+            }
+            pageToken = json.optString("nextPageToken").trim().takeIf { it.isNotBlank() }
+            pages += 1
+        } while (pageToken != null && pages < 200)
+        return items
+    }
+
+    /** Batch 20: move one playlist item to [position] (0-based), 50 units. */
+    fun movePlaylistItem(
+        accessToken: String,
+        playlistId: String,
+        item: PlaylistReorderPolicy.Item,
+        position: Int
+    ) {
+        val body = JSONObject()
+            .put("id", item.itemId)
+            .put("snippet", JSONObject()
+                .put("playlistId", playlistId)
+                .put("position", position)
+                .put("resourceId", JSONObject()
+                    .put("kind", "youtube#video")
+                    .put("videoId", item.videoId)))
+            .toString()
+        val response = request(
+            "PUT", "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet",
+            accessToken, body)
+        requireSuccess(response, "Переміщення пісні в плейлисті")
     }
 
     fun addVideo(

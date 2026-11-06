@@ -1,5 +1,7 @@
 package com.saney.ytmimporter
 
+import com.saney.ytmimporter.library.PlaylistReorderPolicy
+import com.saney.ytmimporter.reorder.PlaylistReorderRunner
 import android.app.Activity
 import android.app.Dialog
 import android.content.res.Configuration
@@ -129,6 +131,10 @@ class PlaylistLibraryActivity : Activity() {
     private var deletingRemoteId: String? = null
     private val remoteDeleteListener: (DestinationRemoteOperations.State) -> Unit =
         { state -> onRemoteDeleteState(state) }
+    /** Batch 20: «Вирівняти порядок» runs outside the screen (rotation-safe). */
+    private val reorderListener: (PlaylistReorderRunner.State) -> Unit =
+        { state -> onReorderState(state) }
+    private var reorderHandledSerial = -1L
 
     private lateinit var detailActions: LinearLayout
     /** Batch 13: the top row «‹ Бібліотека плейлістів» (hidden while typing a search). */
@@ -297,10 +303,12 @@ class PlaylistLibraryActivity : Activity() {
     override fun onStart() {
         super.onStart()
         DestinationRemoteOperations.addListener(remoteDeleteListener)
+        PlaylistReorderRunner.addListener(reorderListener)
     }
 
     override fun onStop() {
         DestinationRemoteOperations.removeListener(remoteDeleteListener)
+        PlaylistReorderRunner.removeListener(reorderListener)
         super.onStop()
     }
 
@@ -1609,6 +1617,144 @@ class PlaylistLibraryActivity : Activity() {
             PlaylistLibraryDuplicateGroupPolicy.songsWord(count) to container
     }
 
+    /**
+     * Batch 20 (faric 2026-11-06 03:06): «Вирівняти порядок» — on a YouTube
+     * playlist page, for each list on the phone in its group (the imported
+     * file, a saved copy, an archive): read the order on YouTube, show which
+     * songs are out of place, move only them after «Перемістити».
+     */
+    private fun addReorderSection(playlistId: String, title: String) {
+        val run = PlaylistReorderRunner.state
+        if (run.playlistId == playlistId) {
+            when (run.phase) {
+                PlaylistReorderRunner.Phase.READING -> { addInfo(run.message); return }
+                PlaylistReorderRunner.Phase.MOVING -> {
+                    addInfo("Переміщую пісні: ${run.moved} з ${run.plan?.moves?.size ?: 0}…")
+                    return
+                }
+                PlaylistReorderRunner.Phase.DONE, PlaylistReorderRunner.Phase.ERROR ->
+                    addInfo(run.message)
+                else -> Unit
+            }
+        }
+        if (run.busy) return
+        reorderReferences(playlistId).take(3).forEach { ref ->
+            val source = dupMembers[ref.identity]?.source?.let { " ($it)" }.orEmpty()
+            addFullButton("Вирівняти порядок як у «${ref.title}»$source ›") {
+                startReorder(playlistId, title, ref)
+            }
+        }
+    }
+
+    /** Lists on the phone in the same group, with songs: the pair partner first. */
+    private fun reorderReferences(playlistId: String): List<PlaylistLibraryDuplicatePolicy.Candidate> {
+        val me = "youtube:$playlistId"
+        val group = dupHints[me]?.groupNumber ?: return emptyList()
+        return dupCandidates.filter { candidate ->
+            !candidate.identity.startsWith("youtube:") &&
+                dupHints[candidate.identity]?.groupNumber == group &&
+                !candidate.videoIds.isNullOrEmpty()
+        }.sortedWith(compareBy<PlaylistLibraryDuplicatePolicy.Candidate> {
+            if (it.identity in dupNormalPairs) 0 else 1
+        }.thenBy { if (it.identity.startsWith("history:")) 1 else 0 }
+            .thenByDescending { it.videoIds?.size ?: 0 })
+    }
+
+    private fun startReorder(
+        playlistId: String, title: String, ref: PlaylistLibraryDuplicatePolicy.Candidate
+    ) {
+        val access = token() ?: run {
+            toast("Спершу підключіть Google на Головній (крок 2)")
+            return
+        }
+        PlaylistReorderRunner.read(api, access, playlistId, title, ref.identity, ref.title,
+            ref.videoIds.orEmpty()) {
+            quotaTracker.recordGeneralUnits(QuotaTracker.SIMPLE_LIST_COST)
+        }
+        renderContent()
+    }
+
+    private fun onReorderState(state: PlaylistReorderRunner.State) {
+        if (isFinishing || isDestroyed || state.serial == reorderHandledSerial) return
+        reorderHandledSerial = state.serial
+        if (state.phase == PlaylistReorderRunner.Phase.PLANNED &&
+            selectedRemote == state.playlistId && modalController.visibleArgs(MODAL_REORDER) == null
+        ) {
+            showConfirmation(MODAL_REORDER, state.playlistId)
+        }
+        if (state.phase == PlaylistReorderRunner.Phase.DONE ||
+            (state.phase == PlaylistReorderRunner.Phase.ERROR && state.moved > 0)
+        ) {
+            // The order on YouTube changed — read the songs again.
+            cachedTracks.remove(state.playlistId)
+            if (selectedRemote == state.playlistId) loadRemoteTracks(state.playlistId)
+        }
+        if (selectedRemote == state.playlistId) renderContent()
+    }
+
+    private fun renderReorderPlan(args: Bundle): Dialog? {
+        val run = PlaylistReorderRunner.state
+        val plan = run.plan
+        if (run.phase != PlaylistReorderRunner.Phase.PLANNED || plan == null ||
+            run.playlistId != args.getString("item")
+        ) return null
+        val notes = buildList {
+            if (plan.missingOnYouTube > 0) add("Пісень зі списку нема на YouTube: " +
+                "${plan.missingOnYouTube} — вирівнювання їх не додає.")
+            if (plan.notInList > 0) add("На YouTube є пісні, яких нема в списку (або повтори): " +
+                "${plan.notInList} — вони лишаються на своїх місцях.")
+        }.joinToString("\n")
+        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        plan.moves.take(300).forEach { move ->
+            content.addView(TextView(this).apply {
+                text = PlaylistReorderPolicy.moveLine(move) + "   " + move.item.title
+                textSize = 14f
+                setTextColor(palette.text)
+                setPadding(dp(4), dp(5), dp(4), dp(5))
+            })
+        }
+        if (plan.moves.size > 300) content.addView(TextView(this).apply {
+            text = "… і ще ${plan.moves.size - 300}"
+            setTextColor(palette.muted)
+        })
+        val cancel = UiChrome.DialogAction("Скасувати") {
+            modalController.clearState()
+            PlaylistReorderRunner.clear()
+            renderContent()
+        }
+        if (plan.inOrder) {
+            return UiChrome.showContentDialog(this, "Вирівняти порядок",
+                "Пісні на YouTube уже стоять так, як у «${run.referenceTitle}» ✓" +
+                    (if (notes.isNotEmpty()) "\n\n$notes" else ""),
+                content, listOf(UiChrome.DialogAction("Зрозуміло") {
+                    modalController.clearState()
+                    PlaylistReorderRunner.clear()
+                    renderContent()
+                }), subtitle = run.playlistTitle)
+        }
+        val count = plan.moves.size
+        return UiChrome.showContentDialog(this, "Вирівняти порядок",
+            "Не на своєму місці (порівняно з «${run.referenceTitle}»): " +
+                "${PlaylistReorderRunner.countWord(count)} з ${plan.youTubeCount}. " +
+                "Буде переміщено лише їх, інші не зрушаться; нічого не додається й не " +
+                "видаляється.\nКвота: $count × ${PlaylistReorderPolicy.UNITS_PER_MOVE} = " +
+                "${count * PlaylistReorderPolicy.UNITS_PER_MOVE} одиниць." +
+                (if (notes.isNotEmpty()) "\n\n$notes" else ""),
+            content, listOf(cancel, UiChrome.DialogAction("Перемістити ($count)",
+                UiChrome.ActionTone.ACCENT) {
+                modalController.clearState()
+                val access = token()
+                if (access == null) {
+                    toast("Спершу підключіть Google на Головній (крок 2)")
+                } else {
+                    PlaylistReorderRunner.move(api, access) {
+                        quotaTracker.recordGeneralUnits(PlaylistReorderPolicy.UNITS_PER_MOVE)
+                    }
+                }
+                renderContent()
+            }), subtitle = run.playlistTitle)
+    }
+
     /** Detail button «Схожі: група №…» when this playlist has look-alikes. */
     private fun addDuplicateGroupButton(identity: String) {
         refreshDuplicates()
@@ -2582,6 +2728,7 @@ class PlaylistLibraryActivity : Activity() {
             }
         }
         addDuplicateGroupButton("youtube:$playlistId")
+        addReorderSection(playlistId, item.title)
         val tracks = cachedTracks[playlistId]
         if (tracks == null) {
             addInfo(
@@ -2770,6 +2917,7 @@ class PlaylistLibraryActivity : Activity() {
     private fun renderConfirmation(type: String, args: Bundle): Dialog? {
         hideKeyboard()
         if (type == MODAL_SONG_DUPS) return renderSongDuplicates(args)
+        if (type == MODAL_REORDER) return renderReorderPlan(args)
         if (type == MODAL_DELETE_HISTORY) {
             val identity = args.getString("item") ?: return null
             val entryId = localItems().firstOrNull {
@@ -3267,6 +3415,15 @@ class PlaylistLibraryActivity : Activity() {
                 "не рахується в «групах схожих». Якщо в групі є ще щось (інша копія, " +
                 "архів History, ще один YouTube-плейліст) — знову з’явиться жовте попередження.",
             palette.semantic.success)
+        // Batch 20 (faric 2026-11-06 03:06): order of songs on YouTube.
+        entry(R.drawable.ic_ytm_sort, "Вирівняти порядок як у «…» ›",
+            "На сторінці YouTube-плейліста, коли в його групі є список на телефоні " +
+                "(щойно імпортований файл, збережена копія, архів History). Застосунок " +
+                "читає порядок пісень на YouTube і показує, які стоять не на своєму " +
+                "місці («№50 → №30»). Після «Перемістити» переставляє лише їх — 50 " +
+                "одиниць квоти за кожну. Пісні не додаються й не видаляються. Нові " +
+                "пісні, додані в наявний плейліст, і так стають на свої номери.",
+            palette.accent)
         // Owner 2026-10-17 03:02: «(2)» was read as 2 songs, «№7» as a rank.
         entry(R.drawable.ic_ytm_view_grid, "група №8 (4) ›",
             "(4) — у групі 4 ПЛЕЙЛІСТИ (не пісні; скільки пісень — рядком вище). " +
@@ -3956,6 +4113,7 @@ class PlaylistLibraryActivity : Activity() {
             MODAL_SONG_DUPS, MODAL_DELETE_REMOTE)
         private const val MODAL_DUP_DIFF = "playlist_library_duplicate_difference"
         private const val MODAL_SONG_DUPS = "playlist_library_song_duplicates"
+        private const val MODAL_REORDER = "playlist_library_reorder_plan"
         private const val BACK_GROUP = "group"
         private const val BACK_SONGS = "songs"
         private const val OVER_TYPE = "over_type"
