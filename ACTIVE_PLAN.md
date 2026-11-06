@@ -19,7 +19,8 @@ faric 06.11 02:41: «переходимо до наступного нашого
 ```
 - [x] Код: `write/PlaylistInsertPositionPolicy` (+ `Track.insertPosition`, `YouTubeApi.addVideo(position)`, `listPlaylistVideoIds.orderedVideoIds`, `DuplicateScanResult.insertPositions`, extras `EXTRA_INSERT_POSITIONS_SKIP/ALL`, запасний шлях `manualSortRequired`); `ImportActivity` «Імпорт за URL»; `UrlSnapshotActivity` без кнопки Mix; `LibraryFilterPolicy.urlSnapshotSourceId / youTubeLink / shownTitle`; `dupNormalPairs` спільний для плиток і сторінки; `ContentHeightRow`.
 - [x] JVM локально: 112 OK (+8 позиції, +3 знімок). Емулятор: `fewTilesAreNotStretchedToTheScreen`.
-- [ ] CI, збірка, кроки на телефоні.
+- [x] CI зелений (PR #89). Збірка №253.
+- [ ] Кроки на телефоні.
 
 ## DONE — 2026-11-06 / Library batch 18 (гілка `feat/v1.4.58-library-batch18`)
 
