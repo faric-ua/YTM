@@ -19,8 +19,8 @@ faric 06.11 02:41: «переходимо до наступного нашого
 ```
 - [x] Код: `write/PlaylistInsertPositionPolicy` (+ `Track.insertPosition`, `YouTubeApi.addVideo(position)`, `listPlaylistVideoIds.orderedVideoIds`, `DuplicateScanResult.insertPositions`, extras `EXTRA_INSERT_POSITIONS_SKIP/ALL`, запасний шлях `manualSortRequired`); `ImportActivity` «Імпорт за URL»; `UrlSnapshotActivity` без кнопки Mix; `LibraryFilterPolicy.urlSnapshotSourceId / youTubeLink / shownTitle`; `dupNormalPairs` спільний для плиток і сторінки; `ContentHeightRow`.
 - [x] JVM локально: 112 OK (+8 позиції, +3 знімок). Емулятор: `fewTilesAreNotStretchedToTheScreen`.
-- [x] CI зелений (PR #89). Збірка №253.
-- [ ] Кроки на телефоні.
+- [x] CI зелений (PR #89). Збірка №253 → через #90 інспектора без маніфесту — №255 (`e6a2604`), встановлена 03:57.
+- [ ] Кроки на телефоні: 1 пас (встановлено).
 
 ## DONE — 2026-11-06 / Library batch 18 (гілка `feat/v1.4.58-library-batch18`)
 
