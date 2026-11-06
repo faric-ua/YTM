@@ -2,6 +2,7 @@
 
 ## SAFE PAUSE — 2026-10-14 09:33 / owner went to sleep, resume from here
 
+- **2026-11-06 02:36 ключі крок 4 (показати + паролі на папір) — ПАС** (faric: «пас», без скріну паролів). Далі крок 5 — 8 → 4 (архів у Download).
 - **2026-11-06 02:20 ключі крок 3 — ПАС:** «✅ КЛЮЧ YTM ЗБЕРЕЖЕНО», Ключі → YTM, відбиток 5892ff37f3e5b85b…, «✓ збігається з APK релізу v1.4.53»; age поставилось само, скриньку на GitHub видалено. Далі крок 4 — 8 → 3 (показати; скрін лише списку, НЕ паролів).
 - **2026-11-06 02:17 ключі крок 2 (пошук) — ПАС:** знайдено 9 файлів, ключа YTM серед них НЕМА (тому — з GitHub). Є ключі інших застосунків: `~/.android/` — (1, видно лише дату 18.10 19:35 — ймовірно aolithium-live), audio-converter.jks, caravan-lean.jks, dorama-alpha.keystore, track-catcher.jks; `~/.faric-secrets/music-visualizer-dev/faric-music-visualizer-dev.jks`; `~/.renault-secrets/renault-docs-dev/renault-docs-dev.jks`; копії в `Documents/Aolithium Live/key-backup/` і `Documents/Caravan Lean/key-backup/`. Паролі до них — у тих проєктах (їхні чати). Caravan Lean — проєкт друга. Далі крок 3 — 8 → 2.
 - **2026-11-06 02:15 ключі крок 1 — ПАС:** після «1 — Оновити проєкт» у меню YTM є «8 — 🔑 Ключі підпису» (скрін). Далі крок 2 — 8 → 1 (пошук).
