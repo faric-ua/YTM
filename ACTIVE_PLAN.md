@@ -19,7 +19,8 @@ faric 06.11 05:17: «давай зроби ще сьогодні, що ти мо
 ```
 - [x] Код: `library/PlaylistDescriptionPolicy`, `storage/PlaylistDescriptionStore`, `YouTubeApi.createPlaylist(description)`, `PlaylistWriteCoordinator(descriptions)` (MainActivity +1 рядок → 4098 < 4100), `ui/DescriptionPicker`, `ui/CreateHelpText` + `HelpContent` (спільне вікно довідки), `DestinationActivity` (topBar «?», вікно «Новий опис / Змінити опис» з чернеткою, що переживає поворот).
 - [x] JVM 129 OK (+9 опис, +2 довідка). Емулятор: `DestinationDescriptionTest`. CI зелений.
-- [ ] Збірка, кроки на телефоні.
+- [x] Збірка №258 (`dfe35a9`) встановлена 07.11 18:12.
+- [ ] Кроки на телефоні.
 
 ## DONE — 2026-11-06 / Batch 20 (гілка `feat/v1.4.58-library-batch20`)
 
