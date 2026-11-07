@@ -18,7 +18,7 @@ faric 07.11 18:32–20:47 (знахідки на №258 + «Exclusive Missing» 
 - [x] Код: `PlaylistLibraryDuplicateGroupPolicy.pairsWithGaps / gapLine`, Library `dupPairGaps`, `CardInfo.pairGap`; `PlaylistDescriptionPolicy.delete / number(id) / seededOnce / lastNumber`, store (міграція `seeded`), `DescriptionPicker` (видалити, прокрутка до активної), `DestinationActivity` вікно «Видалити опис №N?»; довідка.
 - [x] JVM 131 OK. Емулятор: `DestinationDescriptionTest` + кнопка видалення.
 - [x] CI зелений (PR #94), збірка №259 (`9cb0436`) встановлена 07.11 21:29.
-- [ ] Кроки: 1 пара з пропусками — пас; 2 лічильник; 3 опис у YouTube Music; 4 видалити №2 + активна плитка.
+- [x] Кроки: пара з пропусками, лічильник «використано 1 раз», активна плитка (обидва боки), видалення №2 — усе пас 07.11 21:29–21:34. Лишилось: опис у YouTube Music.
 
 ## DONE — 2026-11-06 / Batch 21 (гілка `feat/v1.4.58-library-batch21`)
 
