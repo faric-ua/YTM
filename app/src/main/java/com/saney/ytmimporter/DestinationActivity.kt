@@ -2085,6 +2085,9 @@ class DestinationActivity : Activity() {
         if (modalId == MODAL_DESCRIPTION_EDIT) {
             return renderDescriptionEdit(args)
         }
+        if (modalId == MODAL_DESCRIPTION_DELETE) {
+            return renderDescriptionDelete(args)
+        }
         if (modalId != MODAL_DELETE_PLAYLIST) {
             return null
         }
@@ -2866,13 +2869,47 @@ class DestinationActivity : Activity() {
     private var picker: DescriptionPicker? = null
 
     private fun descriptionPicker(): DescriptionPicker =
-        DescriptionPicker(this, PlaylistDescriptionStore(this)) { id ->
-            deleteModalController.show(
-                modalId = MODAL_DESCRIPTION_EDIT,
-                args = Bundle().apply { putString(ARG_DESCRIPTION_ID, id.orEmpty()) },
-                renderer = ::renderDeleteModal
+        DescriptionPicker(this, PlaylistDescriptionStore(this),
+            onEdit = { id ->
+                deleteModalController.show(
+                    modalId = MODAL_DESCRIPTION_EDIT,
+                    args = Bundle().apply { putString(ARG_DESCRIPTION_ID, id.orEmpty()) },
+                    renderer = ::renderDeleteModal
+                )
+            },
+            onDelete = { id ->
+                deleteModalController.show(
+                    modalId = MODAL_DESCRIPTION_DELETE,
+                    args = Bundle().apply { putString(ARG_DESCRIPTION_ID, id) },
+                    renderer = ::renderDeleteModal
+                )
+            }
+        ).also { picker = it }
+
+    /** Batch 22: delete a description — only after this question. */
+    private fun renderDescriptionDelete(args: Bundle): Dialog? {
+        val store = PlaylistDescriptionStore(this)
+        val state = store.load()
+        val item = state.descriptions.firstOrNull { it.id == args.getString(ARG_DESCRIPTION_ID) }
+            ?: return null
+        val number = PlaylistDescriptionPolicy.number(state, item.id)
+        return UiChrome.showContentDialog(
+            activity = this,
+            title = "Видалити опис №$number?",
+            message = "«${PlaylistDescriptionPolicy.firstLine(item.text)}»\n\n" +
+                "Опис зникне зі стрічки на телефоні. Плейлісти на YouTube, створені з " +
+                "ним, не зміняться. Активним стане найновіший з тих, що лишаться.",
+            content = android.view.View(this),
+            actions = listOf(
+                UiChrome.DialogAction("Скасувати") { deleteModalController.clearState() },
+                UiChrome.DialogAction("Видалити", UiChrome.ActionTone.DANGER) {
+                    deleteModalController.clearState()
+                    store.update { PlaylistDescriptionPolicy.delete(it, item.id) }
+                    picker?.render()
+                }
             )
-        }.also { picker = it }
+        )
+    }
 
     /** Batch 21: write a new description or change the chosen one. */
     private fun renderDescriptionEdit(args: Bundle): Dialog? {
@@ -3315,6 +3352,7 @@ class DestinationActivity : Activity() {
             "destination_delete_modal_state"
         private const val MODAL_CREATE_HELP = "destination_create_help"
         private const val MODAL_DESCRIPTION_EDIT = "destination_description_edit"
+        private const val MODAL_DESCRIPTION_DELETE = "destination_description_delete"
         private const val ARG_DESCRIPTION_ID = "description_id"
         private const val ARG_DESCRIPTION_DRAFT = "description_draft"
         private const val MODAL_DELETE_PLAYLIST =

@@ -53,6 +53,8 @@ class PlaylistDescriptionStore(context: Context) {
     private fun encode(state: State): String = JSONObject()
         .put("active", state.activeId ?: JSONObject.NULL)
         .put("enabled", state.enabled)
+        .put("seeded", state.seededOnce)
+        .put("lastNumber", state.lastNumber)
         .put("items", JSONArray().apply {
             state.descriptions.forEach {
                 put(JSONObject().put("id", it.id).put("text", it.text)
@@ -70,7 +72,10 @@ class PlaylistDescriptionStore(context: Context) {
                     item.optLong("createdAt"), item.optInt("uses"))
             },
             activeId = json.optString("active").takeIf { it.isNotBlank() && it != "null" },
-            enabled = json.optBoolean("enabled", true)
+            enabled = json.optBoolean("enabled", true),
+            // Batch 22: states saved before deletion existed were seeded already.
+            seededOnce = json.optBoolean("seeded", items.length() > 0),
+            lastNumber = json.optInt("lastNumber", 0)
         )
     }
 

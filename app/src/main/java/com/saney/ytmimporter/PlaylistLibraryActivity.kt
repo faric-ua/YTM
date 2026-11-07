@@ -200,6 +200,8 @@ class PlaylistLibraryActivity : Activity() {
     private var dupHints: Map<String, PlaylistLibraryDuplicatePolicy.Hint> = emptyMap()
     /** Batch 19: normal «phone ↔ YouTube» pairs, for tiles and the detail page alike. */
     private var dupNormalPairs: Set<String> = emptySet()
+    /** Batch 22: pair → songs of the phone list missing on YouTube (0 = full pair). */
+    private var dupPairGaps: Map<String, Int> = emptyMap()
     private var dupMembers: Map<String, DupMember> = emptyMap()
     /** Cards shown by the last catalogue render; null = catalogue not built yet. */
     private var visibleCardIdentities: Set<String>? = null
@@ -1230,12 +1232,14 @@ class PlaylistLibraryActivity : Activity() {
         dupHints = hints
         // Batch 18/19: a phone list with its own YouTube playlist (written
         // there, or read from it by link) is a normal pair, not a copy.
-        dupNormalPairs = PlaylistLibraryDuplicateGroupPolicy.normalPairs(hints,
+        // Batch 22: …also when YouTube simply lacks the songs it did not find.
+        dupPairGaps = PlaylistLibraryDuplicateGroupPolicy.pairsWithGaps(hints,
             allLocal.filter { it.source != LocalLibrarySource.HISTORY }
                 .mapNotNull { item ->
                     LibraryFilterPolicy.youTubeLink(item.destinationPlaylistId, item.sourceLabel)
                         ?.let { item.identity to "youtube:$it" }
-                }.toMap())
+                }.toMap(), candidates)
+        dupNormalPairs = dupPairGaps.keys
         dupMembers = allLocal.associate { item ->
             val history = item.historyEntryId?.let { archiveById[it] }
                 ?.takeIf { item.source == LocalLibrarySource.HISTORY }
@@ -1763,7 +1767,10 @@ class PlaylistLibraryActivity : Activity() {
         // Batch 19 (faric's screenshot 2026-11-06 01:04): a normal pair says
         // so on the page too — the same calm green line as on its tile.
         if (identity in dupNormalPairs) {
-            addFullButton(PlaylistLibraryDuplicateGroupPolicy.PAIR_LINE + " — порівняти ›") {
+            val gap = dupPairGaps[identity] ?: 0
+            addFullButton(PlaylistLibraryDuplicateGroupPolicy.PAIR_LINE +
+                (if (gap > 0) " • " + PlaylistLibraryDuplicateGroupPolicy.gapLine(gap) else "") +
+                " — порівняти ›") {
                 showDuplicateGroup(identity)
             }.setTextColor(palette.semantic.success)
             return
@@ -2315,6 +2322,7 @@ class PlaylistLibraryActivity : Activity() {
                 trackCount = item.trackCount.toLong(),
                 duplicateHint = hint,
                 normalPair = item.identity in pairs,
+                pairGap = dupPairGaps[item.identity] ?: 0,
                 onClick = {
                     rememberCatalogueScroll()
                     selectedLocal = item.identity
@@ -2339,6 +2347,7 @@ class PlaylistLibraryActivity : Activity() {
                 updatedAt = item.publishedAtMillis,
                 duplicateHint = hint,
                 normalPair = "youtube:${item.id}" in pairs,
+                pairGap = dupPairGaps["youtube:${item.id}"] ?: 0,
                 onClick = {
                     rememberCatalogueScroll()
                     selectedRemote = item.id
@@ -3864,6 +3873,8 @@ class PlaylistLibraryActivity : Activity() {
         val archive: Boolean = false,
         /** Batch 18: phone playlist + its own YouTube playlist — the normal state. */
         val normalPair: Boolean = false,
+        /** Batch 22: songs of the pair missing on YouTube. */
+        val pairGap: Int = 0,
         val onClick: () -> Unit
     )
 
@@ -3950,6 +3961,15 @@ class PlaylistLibraryActivity : Activity() {
                 isClickable = true
                 isFocusable = true
                 contentDescription = "Пара: телефон і YouTube, група ${hint.groupNumber}. Порівняти"
+                setOnClickListener { showDuplicateGroup(info.identity) }
+            })
+            // Batch 22: the songs YouTube did not get — amber, under the pair.
+            if (info.pairGap > 0) labels.addView(text(
+                PlaylistLibraryDuplicateGroupPolicy.gapLine(info.pairGap),
+                11.5f, true, palette.semantic.warning).apply {
+                maxLines = 2
+                ellipsize = TextUtils.TruncateAt.END
+                setPadding(0, 0, 0, dp(4))
                 setOnClickListener { showDuplicateGroup(info.identity) }
             })
         } else info.duplicateHint?.let { hint ->

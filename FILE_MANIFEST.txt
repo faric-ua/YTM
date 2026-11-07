@@ -9,14 +9,14 @@ FILE_MANIFEST.txt intentionally excludes itself to avoid a recursive hash.
 06a09c3088029d02  .github/workflows/publish-release.yml
 44be1f23513cb874  .github/workflows/validate.yml
 cdb79ca6fd05b092  .gitignore
-61bb744c4249dd64  ACTIVE_PLAN.md
+716b94a57275496a  ACTIVE_PLAN.md
 681184265e82aa01  AGENTS.md
 2727c4cf73ef3212  APPLY_FULL_VERSION.txt
 398965c0bf3dc1df  APPLY_QA_EVIDENCE_v1.4.16.txt
 d2195f060cf8311d  APPLY_QA_UPDATE_G07_AUTH_v1.4.16.txt
 a42bbe4f39ea8d29  APPLY_v1.4.18_PHONE_QA.txt
 f55c429cb7c58e3d  ASSISTANT_CONTEXT_INDEX.md
-26c462e03c01717d  BACKLOG.md
+d3ae37ac9c9c0fb8  BACKLOG.md
 68e6cd18098133a7  CHANGELOG.md
 8e0f4244a2907d2f  CURRENT_HANDOFF.md
 5d465ceab7b2e037  OAUTH_SETUP.txt
@@ -30,7 +30,7 @@ a3aa1abb963a13e6  README.md
 00d3794c574d72ac  README_QA_STATUS_AUDIT_FIX.md
 507c98c422f65352  README_UA.md
 613b826a8ac42ef7  RELEASE_TEST_STATUS.md
-1f87685b676f71c2  RESUME_HERE.md
+0689fa58c951ec31  RESUME_HERE.md
 02cff781bf9d6506  START_HERE_ASSISTANT.md
 da20c193bb87130f  TERMINAL_APPLY_ROADMAP.md
 eaa07362c75957ea  TERMINAL_APPLY_VERSIONED_DOCS.md
@@ -94,7 +94,7 @@ bf54b69b8bb58e3d  TERMUX_COMMANDS.md
 9efd52561bd57811  app/proguard-rules.pro
 c1c2aad22582fda4  app/src/androidTest/java/com/saney/ytmimporter/ui/AdaptiveActionsGeometryTest.kt
 fb501a16c5af37a7  app/src/androidTest/java/com/saney/ytmimporter/ui/BulkRealScreenGeometryTest.kt
-ea398d9e52fea67a  app/src/androidTest/java/com/saney/ytmimporter/ui/DestinationDescriptionTest.kt
+3f7b94d9e24803ee  app/src/androidTest/java/com/saney/ytmimporter/ui/DestinationDescriptionTest.kt
 7f35da4f67b2abdf  app/src/androidTest/java/com/saney/ytmimporter/ui/PlaylistLibraryActivityTest.kt
 4632c91acb804674  app/src/androidTest/java/com/saney/ytmimporter/ui/YouTubePlayerActivityTest.kt
 bf1a58d090226215  app/src/debug/AndroidManifest.xml
@@ -103,7 +103,7 @@ bf1a58d090226215  app/src/debug/AndroidManifest.xml
 004317077f78b30e  app/src/main/java/com/saney/ytmimporter/BulkSyncPreviewActivity.kt
 471fe06f23073bd4  app/src/main/java/com/saney/ytmimporter/BulkSyncSessionActivity.kt
 0af4ad581bd9e32c  app/src/main/java/com/saney/ytmimporter/DataActivity.kt
-7bee7631629da7cc  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
+e9f77f6c15c236e5  app/src/main/java/com/saney/ytmimporter/DestinationActivity.kt
 26e235d6d47f5d97  app/src/main/java/com/saney/ytmimporter/EditPlaylistActivity.kt
 a25d17ce55fe6774  app/src/main/java/com/saney/ytmimporter/HistoryActivity.kt
 f2e6adcd683f1073  app/src/main/java/com/saney/ytmimporter/ImportActivity.kt
@@ -112,7 +112,7 @@ bb2c206f99af6d5e  app/src/main/java/com/saney/ytmimporter/ListSelectorActivity.k
 6790ba414c267e14  app/src/main/java/com/saney/ytmimporter/MenuActivity.kt
 01c3c50bc7d20232  app/src/main/java/com/saney/ytmimporter/PendingActivity.kt
 be962328e1657832  app/src/main/java/com/saney/ytmimporter/PlaylistActivity.kt
-bcffcd1f9c35d90b  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
+fdcf04813d1d3768  app/src/main/java/com/saney/ytmimporter/PlaylistLibraryActivity.kt
 f1daa2fa49c8b7ac  app/src/main/java/com/saney/ytmimporter/QuotaActivity.kt
 91198ada3bb1b659  app/src/main/java/com/saney/ytmimporter/RecentFileChooserActivity.kt
 7a3dcf3f7bffc89f  app/src/main/java/com/saney/ytmimporter/RecoveryCenterActivity.kt
@@ -147,8 +147,8 @@ f4247edf95d282cf  app/src/main/java/com/saney/ytmimporter/library/GroupNumberPol
 bbb1e0f056ee9b00  app/src/main/java/com/saney/ytmimporter/library/LibraryFilterPolicy.kt
 14b36149298ba13c  app/src/main/java/com/saney/ytmimporter/library/LibraryRestorePolicy.kt
 1c6fceaec8e2214f  app/src/main/java/com/saney/ytmimporter/library/LibrarySearchPolicy.kt
-63a34bdfbd85bdf6  app/src/main/java/com/saney/ytmimporter/library/PlaylistDescriptionPolicy.kt
-de6245b8d8d398ec  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryDuplicateGroupPolicy.kt
+3ab8bd1100b39d3a  app/src/main/java/com/saney/ytmimporter/library/PlaylistDescriptionPolicy.kt
+5ef6fd719c9f9733  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryDuplicateGroupPolicy.kt
 de9d7f22839bfc8c  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryDuplicatePolicy.kt
 9c93d9b69b01e7b7  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryIdentityPolicy.kt
 cccd9f725edae129  app/src/main/java/com/saney/ytmimporter/library/PlaylistLibraryPolicy.kt
@@ -191,7 +191,7 @@ c606025da7de4466  app/src/main/java/com/saney/ytmimporter/storage/AccountLibrary
 ec77181febc11743  app/src/main/java/com/saney/ytmimporter/storage/LibrarySearchHistoryStore.kt
 6c482fb50c942036  app/src/main/java/com/saney/ytmimporter/storage/LocalBackupManager.kt
 a3f7b5bcc59704d1  app/src/main/java/com/saney/ytmimporter/storage/PendingJobStore.kt
-bf55762845608e86  app/src/main/java/com/saney/ytmimporter/storage/PlaylistDescriptionStore.kt
+7449d7652083191b  app/src/main/java/com/saney/ytmimporter/storage/PlaylistDescriptionStore.kt
 d67cc3786098a8d2  app/src/main/java/com/saney/ytmimporter/storage/PlaylistProjectCodec.kt
 3de6e763afc03c12  app/src/main/java/com/saney/ytmimporter/storage/QuotaMath.kt
 7757d7891a19e2f2  app/src/main/java/com/saney/ytmimporter/storage/QuotaTracker.kt
@@ -205,8 +205,8 @@ fec6ba7c925c8d21  app/src/main/java/com/saney/ytmimporter/storage/SafTreeFileWri
 bce7265e013c71ab  app/src/main/java/com/saney/ytmimporter/storage/YtmArtifactClassifier.kt
 c9be4e8b88578bdb  app/src/main/java/com/saney/ytmimporter/ui/AppThemeManager.kt
 fc672610d9e9d783  app/src/main/java/com/saney/ytmimporter/ui/BulkHierarchyChrome.kt
-4a42f9db5a1d6424  app/src/main/java/com/saney/ytmimporter/ui/CreateHelpText.kt
-1c3174a26afb243e  app/src/main/java/com/saney/ytmimporter/ui/DescriptionPicker.kt
+487d7d4891f13619  app/src/main/java/com/saney/ytmimporter/ui/CreateHelpText.kt
+73cd36e854c19a13  app/src/main/java/com/saney/ytmimporter/ui/DescriptionPicker.kt
 88174cd2da5b393b  app/src/main/java/com/saney/ytmimporter/ui/HomeDashboardChrome.kt
 8763d6337d2bee83  app/src/main/java/com/saney/ytmimporter/ui/HomeHistoryDetailLink.kt
 823a106bf53acbc6  app/src/main/java/com/saney/ytmimporter/ui/ImportHelpText.kt
@@ -292,8 +292,8 @@ ce677d41822c9d03  app/src/test/java/com/saney/ytmimporter/history/HistoryRecover
 2f3d4adfab84b990  app/src/test/java/com/saney/ytmimporter/library/LibraryFilterPolicyTest.kt
 da71cffe1cc4cbd1  app/src/test/java/com/saney/ytmimporter/library/LibraryRestorePolicyTest.kt
 124f96d12659b49f  app/src/test/java/com/saney/ytmimporter/library/LibrarySearchPolicyTest.kt
-a9725c7607f41314  app/src/test/java/com/saney/ytmimporter/library/PlaylistDescriptionPolicyTest.kt
-8fee9d201b4dcc06  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryDuplicateGroupPolicyTest.kt
+968a7b8c39856d03  app/src/test/java/com/saney/ytmimporter/library/PlaylistDescriptionPolicyTest.kt
+1060017019cc2dd1  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryDuplicateGroupPolicyTest.kt
 7c8eb00d0ac6400e  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryDuplicatePolicyTest.kt
 a49ded4ccbfcedc7  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryIdentityPolicyTest.kt
 96a17227e4ee7c55  app/src/test/java/com/saney/ytmimporter/library/PlaylistLibraryLinkCheckTest.kt

@@ -33,7 +33,11 @@ object PlaylistDescriptionPolicy {
         val descriptions: List<Description> = emptyList(),
         val activeId: String? = null,
         /** The «Опис (необов'язково)» tick. */
-        val enabled: Boolean = true
+        val enabled: Boolean = true,
+        /** Batch 22: the first description was offered once — a deleted one does not come back. */
+        val seededOnce: Boolean = false,
+        /** Batch 22: the highest number ever given — a deleted №2 is never given again. */
+        val lastNumber: Int = 0
     ) {
         val active: Description? get() = descriptions.firstOrNull { it.id == activeId }
     }
@@ -46,8 +50,9 @@ object PlaylistDescriptionPolicy {
             "Докладніше: https://github.com/faric-ua/YTM"
 
     fun seeded(state: State, now: Long): State =
-        if (state.descriptions.isNotEmpty()) state
-        else state.copy(descriptions = listOf(Description("d1", FIRST_TEXT, now)), activeId = "d1")
+        if (state.descriptions.isNotEmpty() || state.seededOnce) state
+        else state.copy(descriptions = listOf(Description("d1", FIRST_TEXT, now)), activeId = "d1",
+            seededOnce = true, lastNumber = maxOf(state.lastNumber, 1))
 
     /** YouTube does not accept «<» and «>» in a description. */
     fun clean(text: String): String =
@@ -67,9 +72,11 @@ object PlaylistDescriptionPolicy {
     fun add(state: State, text: String, now: Long): State {
         val cleaned = clean(text)
         if (cleaned.isEmpty()) return state
-        val id = "d" + ((state.descriptions.mapNotNull { it.id.drop(1).toIntOrNull() }.maxOrNull() ?: 0) + 1)
+        val next = maxOf(state.lastNumber,
+            state.descriptions.mapNotNull { it.id.drop(1).toIntOrNull() }.maxOrNull() ?: 0) + 1
+        val id = "d$next"
         return state.copy(descriptions = state.descriptions + Description(id, cleaned, now),
-            activeId = id, enabled = true)
+            activeId = id, enabled = true, lastNumber = next)
     }
 
     fun edit(state: State, id: String, text: String): State {
@@ -88,8 +95,24 @@ object PlaylistDescriptionPolicy {
             if (it.id == id) it.copy(uses = it.uses + 1) else it
         })
 
-    /** «№3» — the number of a description in the strip. */
-    fun number(state: State, id: String): Int = state.descriptions.indexOfFirst { it.id == id } + 1
+    /**
+     * «№3» — the number of a description. Batch 22: taken from its id, so it
+     * stays the same after another description is deleted.
+     */
+    fun number(state: State, id: String): Int =
+        id.removePrefix("d").toIntOrNull() ?: (state.descriptions.indexOfFirst { it.id == id } + 1)
+
+    /**
+     * Batch 22 (faric 2026-11-07 18:34: «тестовий… зберіг, видалити не
+     * можу»): delete one description by hand. If it was the active one, the
+     * newest of the rest becomes active; none left — only the signature goes.
+     */
+    fun delete(state: State, id: String): State {
+        if (state.descriptions.none { it.id == id }) return state
+        val rest = state.descriptions.filterNot { it.id == id }
+        val active = if (state.activeId == id) rest.lastOrNull()?.id else state.activeId
+        return state.copy(descriptions = rest, activeId = active)
+    }
 
     /** «використано 3 рази» */
     fun usesLine(uses: Int): String {

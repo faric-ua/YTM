@@ -1,6 +1,25 @@
 # YTM Importer — ACTIVE PLAN
 
-## CURRENT TASK — 2026-11-06 / Batch 21 (гілка `feat/v1.4.58-library-batch21`)
+## CURRENT TASK — 2026-11-07 / Batch 22 (гілка `feat/v1.4.58-library-batch22`)
+
+faric 07.11 18:32–20:47 (знахідки на №258 + «Exclusive Missing» 103 / 95).
+
+```
+1. Пара з пропусками: телефонний список, пов'язаний зі своїм YouTube-плейлістом, де на YouTube
+   менше пісень і всі вони є в списку (або пісні YouTube ще не прочитані — тоді за кількістю),
+   — це пара, а не «схожі, група №39»: «Пара: телефон ↔ YouTube ✓» + жовтим «8 пісень нема
+   на YouTube»; на сторінці — «Пара … • 8 пісень нема на YouTube — порівняти ›».
+2. «🗑 Видалити цей опис (№N)» під «Змінити…» — лише після підтвердження; активним стає
+   найновіший з решти; нема жодного — лише підпис. Номери — за id (не з'їжджають), видалений
+   номер не повторюється; перший опис після видалення не повертається.
+3. Активна плитка опису завжди видна повністю (обрізана праворуч — до правого краю, ліворуч — до
+   лівого); стрічка тримає місце між перемальовками.
+```
+- [x] Код: `PlaylistLibraryDuplicateGroupPolicy.pairsWithGaps / gapLine`, Library `dupPairGaps`, `CardInfo.pairGap`; `PlaylistDescriptionPolicy.delete / number(id) / seededOnce / lastNumber`, store (міграція `seeded`), `DescriptionPicker` (видалити, прокрутка до активної), `DestinationActivity` вікно «Видалити опис №N?»; довідка.
+- [x] JVM 131 OK. Емулятор: `DestinationDescriptionTest` + кнопка видалення.
+- [ ] CI, збірка, кроки.
+
+## DONE — 2026-11-06 / Batch 21 (гілка `feat/v1.4.58-library-batch21`)
 
 faric 06.11 05:17: «давай зроби ще сьогодні, що ти можеш зробити». Екран «Створити / додати» за макетом `docs/mockups/create_description_mock.*` (faric 01:19–01:25).
 

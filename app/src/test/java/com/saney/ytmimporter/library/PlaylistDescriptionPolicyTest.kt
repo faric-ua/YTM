@@ -71,4 +71,21 @@ class PlaylistDescriptionPolicyTest {
         assertEquals("Рядок один", PlaylistDescriptionPolicy.firstLine("\n Рядок один \nдва"))
         assertTrue(PlaylistDescriptionPolicy.firstLine("а".repeat(200)).endsWith("…"))
     }
+
+    // Batch 22: delete by hand; numbers stay; the first one does not come back.
+    @Test fun deleteKeepsNumbersAndPicksTheNewest() {
+        var st = PlaylistDescriptionPolicy.add(seeded, "Другий", 2L)
+        st = PlaylistDescriptionPolicy.add(st, "Третій", 3L)
+        assertEquals("d3", st.activeId)
+        st = PlaylistDescriptionPolicy.delete(st, "d2")
+        assertEquals(3, PlaylistDescriptionPolicy.number(st, "d3"))
+        st = PlaylistDescriptionPolicy.delete(st, "d3")
+        assertEquals("d1", st.activeId)
+        st = PlaylistDescriptionPolicy.add(st, "Четвертий", 4L)
+        assertEquals("d4", st.activeId)
+        st = PlaylistDescriptionPolicy.delete(PlaylistDescriptionPolicy.delete(st, "d4"), "d1")
+        assertNull(st.activeId)
+        assertEquals(PlaylistDescriptionPolicy.SIGNATURE, PlaylistDescriptionPolicy.forNewPlaylist(st))
+        assertEquals(st, PlaylistDescriptionPolicy.seeded(st, 9L))
+    }
 }

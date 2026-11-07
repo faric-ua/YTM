@@ -29,7 +29,9 @@ class DescriptionPicker(
     private val activity: Activity,
     private val store: PlaylistDescriptionStore,
     /** Edit the description with this id, or write a new one (null). */
-    private val onEdit: (String?) -> Unit
+    private val onEdit: (String?) -> Unit,
+    /** Batch 22: delete this description (the screen asks first). */
+    private val onDelete: (String) -> Unit = {}
 ) {
     val view: LinearLayout = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL }
     private val palette get() = AppThemeManager.palette(activity)
@@ -95,19 +97,43 @@ class DescriptionPicker(
 
         view.addView(label("Мої описи — гортайте ← →, торкніться, щоб вибрати"))
         val strip = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL }
+        var activeTile: View? = null
         state.descriptions.asReversed().forEach { item ->
-            strip.addView(tile(state, item), LinearLayout.LayoutParams(dp(250),
+            val tile = tile(state, item)
+            if (item.id == state.activeId) activeTile = tile
+            strip.addView(tile, LinearLayout.LayoutParams(dp(250),
                 ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginEnd = dp(8) })
         }
-        view.addView(HorizontalScrollView(activity).apply {
+        val scroller = HorizontalScrollView(activity).apply {
             isHorizontalScrollBarEnabled = true
             addView(strip)
-        }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            setOnScrollChangeListener { _, x, _, _, _ -> stripScrollX = x }
+        }
+        view.addView(scroller, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4); bottomMargin = dp(6) })
+        // Batch 22 (faric 2026-11-07 18:32): the active tile is always seen
+        // whole — a tile cut on the right sticks to the right edge, one cut on
+        // the left to the left edge. The strip keeps its place between redraws.
+        val keep = stripScrollX
+        scroller.post {
+            scroller.scrollTo(keep, 0)
+            activeTile?.let { tile ->
+                val left = tile.left
+                val right = tile.right
+                val viewLeft = scroller.scrollX
+                val viewRight = viewLeft + scroller.width
+                val target = when {
+                    left < viewLeft -> left
+                    right > viewRight -> right - scroller.width
+                    else -> viewLeft
+                }
+                if (target != viewLeft) scroller.smoothScrollTo(target.coerceAtLeast(0), 0)
+            }
+        }
         state.active?.let { active ->
-            view.addView(button("✎ Змінити цей опис (№${PlaylistDescriptionPolicy.number(state, active.id)})") {
-                onEdit(active.id)
-            })
+            val number = PlaylistDescriptionPolicy.number(state, active.id)
+            view.addView(button("✎ Змінити цей опис (№$number)") { onEdit(active.id) })
+            view.addView(button("🗑 Видалити цей опис (№$number)") { onDelete(active.id) })
         }
         view.addView(button("＋ Новий опис") { onEdit(null) })
         view.addView(label("Старі описи не губляться — лишаються в цій стрічці. Вибраний (✓) " +
@@ -187,6 +213,8 @@ class DescriptionPicker(
     companion object {
         /** Unfolded or not — kept for a rotation (process-wide is enough). */
         private var expanded = false
+        /** Batch 22: where the strip was scrolled, kept between redraws. */
+        private var stripScrollX = 0
         private val DATE = SimpleDateFormat("dd.MM.yyyy", Locale.ROOT)
     }
 }

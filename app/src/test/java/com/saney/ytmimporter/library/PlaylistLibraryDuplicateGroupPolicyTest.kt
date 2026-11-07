@@ -339,4 +339,29 @@ class PlaylistLibraryDuplicateGroupPolicyTest {
         assertTrue(PlaylistLibraryDuplicateGroupPolicy.removalWarnings("odd", o, null)
             .single().startsWith("Серед перевірених"))
     }
+
+    // Batch 22 (faric 2026-11-07 20:47): phone 103 = original, YouTube 95 = what was found.
+    @Test fun pairWithGapsWhenYouTubeOnlyLacksSongs() {
+        val H = { n: Int, size: Int ->
+            PlaylistLibraryDuplicatePolicy.Hint(n, size, PlaylistLibraryDuplicatePolicy.Evidence.SAME_TITLE)
+        }
+        val C = PlaylistLibraryDuplicatePolicy::Candidate
+        val phoneIds = (1..95).map { "v$it" } + List(8) { "" }
+        val hints = mapOf("local:ex" to H(39, 2), "youtube:PLex" to H(39, 2),
+            "local:odd" to H(40, 2), "youtube:PLodd" to H(40, 2),
+            "local:more" to H(41, 2), "youtube:PLmore" to H(41, 2))
+        val candidates = listOf(
+            C("local:ex", "Exclusive", 103, phoneIds),
+            C("youtube:PLex", "Exclusive", 95, null),            // not read yet: counts decide
+            C("local:odd", "Odd", 10, (1..10).map { "o$it" }),
+            C("youtube:PLodd", "Odd", 8, listOf("o1", "o2", "x3", "o4", "o5", "o6", "o7", "o8")),
+            C("local:more", "More", 8, (1..8).map { "m$it" }),
+            C("youtube:PLmore", "More", 10, null))
+        val gaps = PlaylistLibraryDuplicateGroupPolicy.pairsWithGaps(hints, mapOf(
+            "local:ex" to "youtube:PLex", "local:odd" to "youtube:PLodd",
+            "local:more" to "youtube:PLmore"), candidates)
+        assertEquals(mapOf("local:ex" to 8, "youtube:PLex" to 8), gaps)
+        assertEquals("8 пісень нема на YouTube", PlaylistLibraryDuplicateGroupPolicy.gapLine(8))
+        assertEquals("1 пісні нема на YouTube", PlaylistLibraryDuplicateGroupPolicy.gapLine(1))
+    }
 }

@@ -337,6 +337,52 @@ object PlaylistLibraryDuplicateGroupPolicy {
         }
     }
 
+    /**
+     * Batch 22 (faric 2026-11-07 20:47: «на телефоні наш оригінал… а на
+     * Ютубі — те, що знайдено відносно оригінала»). A phone list linked to its
+     * YouTube playlist, alone with it in the group, where YouTube has fewer
+     * songs and all of them are in the phone list (YouTube did not find the
+     * rest, or refused them) is still a pair — with gaps. Returns identity →
+     * number of songs missing on YouTube (0 = a full pair), for both members.
+     * When the YouTube songs are not read yet, the counts decide.
+     */
+    fun pairsWithGaps(
+        hints: Map<String, PlaylistLibraryDuplicatePolicy.Hint>,
+        links: Map<String, String>,
+        candidates: List<PlaylistLibraryDuplicatePolicy.Candidate>
+    ): Map<String, Int> = buildMap {
+        val byId = candidates.associateBy { it.identity }
+        normalPairs(hints, links).forEach { put(it, 0) }
+        links.forEach { (phone, youtube) ->
+            if (phone in this) return@forEach
+            val a = hints[phone] ?: return@forEach
+            val b = hints[youtube] ?: return@forEach
+            if (a.groupNumber != b.groupNumber || a.groupSize != 2) return@forEach
+            val local = byId[phone] ?: return@forEach
+            val remote = byId[youtube] ?: return@forEach
+            val gap = local.trackCount - remote.trackCount
+            if (gap <= 0) return@forEach
+            val remoteIds = remote.videoIds?.map { it.trim() }?.filter { it.isNotEmpty() }
+            val localIds = local.videoIds?.map { it.trim() }?.filter { it.isNotEmpty() }?.toSet()
+            val inside = remoteIds == null || localIds == null || localIds.containsAll(remoteIds)
+            if (inside) {
+                put(phone, gap)
+                put(youtube, gap)
+            }
+        }
+    }
+
+    /** Batch 22: the amber line under the pair: «8 пісень нема на YouTube». */
+    fun gapLine(gap: Int): String {
+        val mod10 = gap % 10
+        val mod100 = gap % 100
+        val word = when {
+            mod10 == 1 && mod100 != 11 -> "пісні"
+            else -> "пісень"
+        }
+        return "$gap $word нема на YouTube"
+    }
+
     /** Batch 18: the calm line on a card of a normal pair. */
     const val PAIR_LINE = "Пара: телефон ↔ YouTube ✓"
 

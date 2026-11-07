@@ -72,6 +72,11 @@ class DestinationDescriptionTest {
                 idle()
                 assertEquals("d1", store.load().activeId)
                 scene.onActivity { activity ->
+                    // Batch 22: the active one can be deleted (after a question).
+                    assertTrue(activity.window.decorView.texts().any {
+                        it == "🗑 Видалити цей опис (№1)" })
+                }
+                scene.onActivity { activity ->
                     activity.window.decorView.byDescription("Довідка «Створити / додати»")!!.performClick()
                 }
                 idle()
